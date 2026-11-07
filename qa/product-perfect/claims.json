@@ -18,7 +18,7 @@
   "expectedClaimCount": 40,
   "releaseSurface": {
     "algorithm": "sha256",
-    "sourceCommit": "2bddc6e25f5b28de5d5e5658cf7ff784250ce0cb",
+    "sourceCommit": "b9cbfd65b8a4d2bd1af69a4589f1e4f95c8e4c2b",
     "pathSetSha256": "b6936f4f1c2711051c6a141e4a9a2df780a60ebc56ff298234ab7908169015a3",
     "files": [
       {
@@ -33,8 +33,8 @@
       },
       {
         "path": "README.md",
-        "bytes": 9141,
-        "sha256": "f1b0c140c64e0885371b090934d21f9e879e8d9c3d585dae26888e92c0e13ab4"
+        "bytes": 9301,
+        "sha256": "4e3b0d1a7867691c2497e17dda15d01a19b9b69f847c8f0cfcc97d89425634d2"
       },
       {
         "path": "RELEASE_NOTES.md",
@@ -173,8 +173,8 @@
       },
       {
         "path": "frontend/app/app.js",
-        "bytes": 434544,
-        "sha256": "2e1b6e66ee2bf91f895718ba11e943db35b32b04d03b63a63fb3e8eabbe8cebb"
+        "bytes": 434496,
+        "sha256": "e5d6dcf7c59f6dc256b65fbe56a50313aad33a354cdf0246ab681638c9348bdb"
       },
       {
         "path": "frontend/app/approved-sheet-effects.js",
@@ -498,8 +498,8 @@
       },
       {
         "path": "frontend/app/eyehold-factions.js",
-        "bytes": 5279,
-        "sha256": "00b0aea2f4570ea95218db7e29ab14cff567a6de3f083df2c4a22f0aa398bccb"
+        "bytes": 5713,
+        "sha256": "35f46fdfb6681f205b7bf7c37944175b693e25b0d5052fbae6918c19c54b86f0"
       },
       {
         "path": "frontend/app/eyehold-layout-install.js",
@@ -758,8 +758,8 @@
       },
       {
         "path": "frontend/app/modeldock.js",
-        "bytes": 55371,
-        "sha256": "d78eb98ccc99e879246fc6b34dd5f8103ad89b851c2458422d0f1d788f0ee0df"
+        "bytes": 54995,
+        "sha256": "ed13cd8befde727842bc1e77ab5484f9f6e2ef8674b2005eed4d8daa8cb4053e"
       },
       {
         "path": "frontend/app/modelpicker.js",
@@ -1243,8 +1243,8 @@
       },
       {
         "path": "frontend/app/stationui.js",
-        "bytes": 847437,
-        "sha256": "2aa4e6d9c8fb5a5835d9c3505263a62ac63cc74c589e04614a7cdc24e637af2a"
+        "bytes": 847496,
+        "sha256": "aa2fd232f0f12428c56f10411fcaf87f42dc4e2295bbb7c9118e7ae64fb35de9"
       },
       {
         "path": "frontend/app/stepin.js",
@@ -1513,8 +1513,8 @@
       },
       {
         "path": "frontend/app/world.js",
-        "bytes": 846623,
-        "sha256": "821b014ace353f479e3d5dea8d8b5ae12217376375e07a4f12759ddbb0f53122"
+        "bytes": 846853,
+        "sha256": "f9bc863ccd7bfc5eb61adc984433b8e22b9c487f78aa0a6eebe2a1f53a688062"
       },
       {
         "path": "frontend/app/worldlab.js",
@@ -1773,8 +1773,8 @@
       },
       {
         "path": "frontend/css/style.css",
-        "bytes": 104395,
-        "sha256": "0929f2a7c58a11c413a9826e61c361d837597fe6e0b1573d644c164e88338326"
+        "bytes": 104941,
+        "sha256": "0b5da5d1f1456390de4ee8fe301bed17d93feb6ba64becffb7932d81f2a0e56d"
       },
       {
         "path": "frontend/css/tasks.css",
@@ -1878,8 +1878,8 @@
       },
       {
         "path": "frontend/index.html",
-        "bytes": 99943,
-        "sha256": "bf1377a974606b5679a1725141c4f6622e29277fe9b9b6bc74114d171b9ca47b"
+        "bytes": 100292,
+        "sha256": "0b31d30f4c489931fcd7460d4a423c1098617d96f1161d681fd1460637ccd955"
       },
       {
         "path": "frontend/js/arcade.js",
