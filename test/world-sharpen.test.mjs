@@ -8,7 +8,7 @@ import { spawn } from 'node:child_process';
 import { readFileSync, mkdtempSync, rmSync } from 'node:fs';
 import { createRequire } from 'node:module';
 import { createServer } from 'node:net';
-import { tmpdir } from 'node:os';
+import { tmpdir, userInfo } from 'node:os';
 import { join, relative, resolve, isAbsolute } from 'node:path';
 import { findChrome, connectCDP, evalJS, sleep } from '../scripts/lib/cdp.mjs';
 
@@ -121,9 +121,9 @@ let failed = false;
 try {
   const executable = findChrome(), port = await freePort();
   profile = mkdtempSync(join(tmpdir(), 'starnet-sharpen-parity-'));
-  chrome = spawn(executable, ['--headless=new', '--no-first-run', '--no-default-browser-check', '--mute-audio',
+  chrome = spawn(executable, ['--headless=new', '--no-sandbox', '--disable-dev-shm-usage', '--no-first-run', '--no-default-browser-check', '--mute-audio',
     '--use-angle=swiftshader', '--enable-unsafe-swiftshader', `--remote-debugging-port=${port}`,
-    `--user-data-dir=${profile}`, 'about:blank'], { stdio: 'ignore', windowsHide: true });
+    `--user-data-dir=${profile}`, 'about:blank'], { stdio: 'ignore', windowsHide: true, env: { ...process.env, HOME: userInfo().homedir } });
   cdp = await connectCDP(port);
   const result = await evalJS(cdp, '(' + gpuProbe.toString() + ')(' + JSON.stringify({ shaders, cases }) + ')');
   assert.equal(result.outputs.length, cases.length);
