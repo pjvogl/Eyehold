@@ -14,6 +14,10 @@ on:
       tag:
         description: "Release tag whose staged draft installer to prove, e.g. v0.10.0"
         required: true
+      release_repository:
+        description: "Owner release repository (owner/name). Required. Do not enter the upstream releases repository."
+        required: true
+        type: string
       build_run_id:
         description: "Optional private desktop-build run; proves its exact installer before a draft exists"
         required: false
@@ -44,7 +48,7 @@ jobs:
       actions: read
     env:
       GH_TOKEN: ${{ secrets.RELEASES_TOKEN }}
-      REPO: androoAGI/starnet-releases
+      REPO: ${{ inputs.release_repository }}
       TAG: ${{ inputs.tag }}
     steps:
       - name: Download staged draft installer

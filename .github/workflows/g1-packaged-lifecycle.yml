@@ -23,6 +23,10 @@ on:
         description: "Release tag to prove (draft or published), e.g. v0.10.7. Blank = latest published release."
         required: false
         default: ""
+      release_repository:
+        description: "Owner release repository (owner/name). Required. Do not enter the upstream releases repository."
+        required: true
+        type: string
       cases:
         description: "Comma list of cases to run (default all): idle-close,close-to-tray,updater-smoke"
         required: false
@@ -46,7 +50,7 @@ jobs:
       contents: read
     env:
       GH_TOKEN: ${{ secrets.RELEASES_TOKEN }}
-      RELEASE_REPO: androoAGI/starnet-releases
+      RELEASE_REPO: ${{ inputs.release_repository }}
       TARGET_TAG: ${{ inputs.tag }}
       BASELINE_TAG: ${{ inputs.baseline_tag }}
     steps:
@@ -100,7 +104,7 @@ jobs:
     timeout-minutes: 45
     env:
       GH_TOKEN: ${{ secrets.RELEASES_TOKEN }}
-      REPO: androoAGI/starnet-releases
+      REPO: ${{ inputs.release_repository }}
     steps:
       - uses: actions/checkout@v4
 

@@ -5120,31 +5120,36 @@ const App = (() => {
     const cv = el('sp-stars'); if (!cv || !cv.getContext) return;
     const ctx = cv.getContext('2d');
     let W = 0, H = 0, stars = [];
-    const rgb = () => (getComputedStyle(document.body).getPropertyValue('--ph-rgb').trim() || '255,140,40');
-    // draw() is the paint step, deliberately SEPARATE from the rAF loop: it's called directly on seed and on
-    // resize so a static starfield is always on screen even when requestAnimationFrame is paused (a
-    // backgrounded tab, or a resize that lands before the first frame). rAF only layers the twinkle on top.
     const draw = t => {
       if (!W || !H) return;
-      const c = rgb();
-      ctx.clearRect(0, 0, W, H);
+      ctx.fillStyle = '#140e16';
+      ctx.fillRect(0, 0, W, H);
+      const moonX = W * 0.74, moonY = H * 0.28, moonR = Math.min(W, H) * 0.09;
+      ctx.fillStyle = '#f0d7a8';
+      ctx.beginPath(); ctx.arc(moonX, moonY, moonR, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = '#140e16';
+      ctx.beginPath(); ctx.arc(moonX + moonR * 0.35, moonY - moonR * 0.1, moonR * 0.82, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = '#243028';
+      ctx.beginPath(); ctx.moveTo(0, H * 0.72);
+      for (let x = 0; x <= W; x += 8) ctx.lineTo(x, H * 0.62 + Math.sin(x * 0.01) * 18 + Math.sin(x * 0.003) * 26);
+      ctx.lineTo(W, H); ctx.lineTo(0, H); ctx.closePath(); ctx.fill();
       for (const st of stars) {
-        const a = .22 + .58 * Math.abs(Math.sin(st.p + t * .001 * st.s));
-        ctx.fillStyle = 'rgba(' + c + ',' + a.toFixed(3) + ')';
+        const a = .25 + .55 * Math.abs(Math.sin(st.p + t * .001 * st.s));
+        ctx.fillStyle = 'rgba(230,172,101,' + a.toFixed(3) + ')';
         ctx.fillRect(st.x, st.y, st.r, st.r);
       }
     };
     const seed = () => {
       W = cv.width = cv.clientWidth || window.innerWidth || 1280;
       H = cv.height = cv.clientHeight || window.innerHeight || 720;
-      const n = Math.max(90, Math.round((W * H) / 16000));
+      const n = Math.max(24, Math.round((W * H) / 70000));
       stars = Array.from({ length: n }, () => ({
-        x: Math.random() * W, y: Math.random() * H,
-        r: Math.random() < .88 ? 1 : 2,                        // mostly single-pixel points, a few brights
-        p: Math.random() * Math.PI * 2,                        // twinkle phase
-        s: .5 + Math.random() * 1.4                            // twinkle speed
+        x: Math.random() * W, y: Math.random() * H * 0.62,
+        r: Math.random() < .8 ? 1 : 2,
+        p: Math.random() * Math.PI * 2,
+        s: .4 + Math.random() * 1.1
       }));
-      draw(0);   // setting canvas.width cleared the bitmap — repaint immediately so the field never blanks
+      draw(0);
     };
     seed();
     // re-seed on resize AND when the tab returns to the foreground (rAF was paused while hidden, and a

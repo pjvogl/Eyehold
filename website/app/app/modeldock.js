@@ -945,20 +945,14 @@ const ModelDock = (() => {
     if (open) closeDock(); else openDock();
   }
 
-  // The model picker's account door always leads to StarNet. It does not change the
-  // active provider, promise a working model, or start a subscription transaction.
+  // Eyehold does not bill through the upstream account. This control says so and
+  // does not open a payment page or change the active provider.
   function openSubscription(event) {
-    const invoke = (typeof window !== 'undefined' && window.__TAURI__ && window.__TAURI__.core)
-      ? window.__TAURI__.core.invoke : null;
-    if (!invoke) return; // Browser: the anchor's normal target=_blank navigation owns this.
-    event.preventDefault();
+    if (event) event.preventDefault();
     closeDock();
-    Promise.resolve().then(() => invoke('open_external_url', { url: 'https://www.starnetos.com/pricing' }))
-      .catch(() => {
-        if (typeof StationUI !== 'undefined' && StationUI.notify) {
-          StationUI.notify('Could not open your browser. Visit www.starnetos.com/pricing for your StarNet subscription.', 'warn');
-        }
-      });
+    if (typeof StationUI !== 'undefined' && StationUI.notify) {
+      StationUI.notify('Eyehold billing is not configured. Connect your own provider key. Crowns track verified work and are not money.', 'warn');
+    }
   }
 
   function wire() {

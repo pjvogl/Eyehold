@@ -19,14 +19,14 @@
   // hiding a bare link would leave the surrounding prose referring to a page nobody can reach.
   document.querySelectorAll('[data-pricing-link]').forEach(function(el){ el.hidden = !PRICING_LIVE; });
 
-  var RELEASES_REPO = 'androoAGI/starnet-releases';
+  var RELEASES_REPO = '';
 
   // StarNet Credits (managed plans). The billing service is a separate host; until it is
   // deployed `live:false` keeps every buy button honest — no button on this site may imply
   // a purchase we cannot actually take. Flip `live` to true once the service answers.
   var CREDITS = {
-    live: true,
-    accountUrl: 'https://account.starnetos.com'
+    live: false,
+    accountUrl: ''
   };
   (function wireCredits(){
     var ctas = document.querySelectorAll('[data-credits-cta]');
@@ -146,7 +146,7 @@
   // Try to resolve exact asset URLs from the latest release. If the API call
   // fails (offline, rate limit, repo not public yet) the buttons keep their
   // fallback href: the releases page itself. Never a dead link.
-  fetch('https://api.github.com/repos/' + RELEASES_REPO + '/releases/latest')
+  if (RELEASES_REPO) fetch('https://api.github.com/repos/' + RELEASES_REPO + '/releases/latest')
     .then(function(r){ if(!r.ok) throw new Error(r.status); return r.json(); })
     .then(function(rel){
       if(rel.tag_name) setVersion(rel.tag_name);

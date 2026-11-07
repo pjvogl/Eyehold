@@ -9,6 +9,7 @@
 //
 // Zero dependencies: Node 22 has global fetch + global WebSocket.
 import { spawn } from 'node:child_process';
+import { userInfo } from 'node:os';
 import { mkdirSync, writeFileSync, existsSync } from 'node:fs';
 import { join } from 'node:path';
 
@@ -30,11 +31,11 @@ export function findChrome() {
 export function launchChrome({ cdpPort, win = '1440,900', profileDir }) {
   const chrome = findChrome();
   const proc = spawn(chrome, [
-    '--headless=new', '--disable-gpu', '--no-first-run', '--no-default-browser-check',
+    '--headless=new', '--no-sandbox', '--disable-dev-shm-usage', '--disable-gpu', '--no-first-run', '--no-default-browser-check',
     '--hide-scrollbars', '--mute-audio', `--remote-debugging-port=${cdpPort}`,
     `--window-size=${win}`, `--user-data-dir=${profileDir}`,
     'about:blank',
-  ], { stdio: 'ignore' });
+  ], { stdio: 'ignore', env: { ...process.env, HOME: userInfo().homedir } });
   return { proc, chrome };
 }
 

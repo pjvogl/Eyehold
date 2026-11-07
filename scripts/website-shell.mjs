@@ -25,7 +25,7 @@ const CHECK = process.argv.includes('--check');
 const V = '20260913-brand-nav';
 const ORIGIN = 'https://starnetos.com';
 const GITHUB = 'https://github.com/androoAGI/starnet';
-const RELEASES = 'https://github.com/androoAGI/starnet-releases/releases/latest';
+const RELEASES = '/index.html#download';
 const CONTACT = 'mailto:androo.agi@gmail.com';
 const FALLBACK_RELEASE = /var FALLBACK_VERSION = '([^']+)'/.exec(readFileSync(join(ROOT, 'site.js'), 'utf8'))?.[1];
 if (!FALLBACK_RELEASE) throw new Error('site.js must declare the verified public release fallback');

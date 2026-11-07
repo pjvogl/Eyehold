@@ -1,27 +1,26 @@
 <div align="center">
 
-<img src=".github/media/starnet-logo-glow.png" alt="StarNet" width="560">
+<img src=".github/media/starnet-logo-glow.png" alt="Eyehold" width="560">
 
-**A living pixel-art station where real AI agents do real work.**
+**A living pixel-art realm where real AI agents do real work.**
 
-[![Download](https://img.shields.io/github/v/release/androoAGI/starnet-releases?label=download&color=f5a623)](https://github.com/androoAGI/starnet-releases/releases/latest)
 [![Platforms](https://img.shields.io/badge/platform-Windows%20%7C%20macOS-4a90d9)](INSTALL.md)
 [![License: MIT](https://img.shields.io/badge/license-MIT-2ea44f)](LICENSE)
 [![Local-first](https://img.shields.io/badge/local--first-your%20machine%2C%20your%20data-8250df)](PRIVACY.md)
 
-[Download](https://github.com/androoAGI/starnet-releases/releases/latest) ·
+[Install](INSTALL.md) ·
 [Install guide](INSTALL.md) ·
 [Run from source](#run-from-source) ·
 [Docs](docs/INDEX.md) ·
 [Contributing](CONTRIBUTING.md)
 
-<img src=".github/media/station-iso.png" alt="The StarNet station — rooms, crew, and workstations rendered from live harness state" width="540">
+<img src=".github/media/eyehold-realm.png" alt="The Eyehold realm — original pixel art of a moonlit keep in a forest" width="540">
 
 </div>
 
-StarNet is a local-first desktop harness where you create AI agents, organize them into a
-pixel-art space station, and watch them perform real work with real models and tools. The
-station is not decoration — it is a projection of live runtime state, and the product contract
+Eyehold is a local-first desktop harness where you create AI agents, organize them into a
+pixel-art fantasy realm, and watch them perform real work with real models and tools. The
+realm is not decoration — it is a projection of live runtime state, and the product contract
 is literal: **A room is a capability-scoped team**, **a hallway is** an authorized handoff
 lane, and **a placed object is a real capability grant**.
 The layout you draw *is* the workflow the agents run.
@@ -54,13 +53,14 @@ simulation.
 - Multiple agents run concurrently with separate workspaces and bounded permissions.
 - The visual station projects the same runtime state the harness can prove.
 
-StarNet does not simulate revenue, completed work, model activity, or spend. Its core product
+Eyehold does not simulate revenue, completed work, model activity, or spend. Its core product
 law is that **the interface must never assert state the harness cannot prove.**
 
 ## Download
 
-Desktop builds are published on the
-[StarNet releases page](https://github.com/androoAGI/starnet-releases/releases/latest).
+This fork does not publish desktop installers. Upstream release feeds are not used.
+Install from source with [INSTALL.md](INSTALL.md). An owned, signed release repository
+is still required before any public download.
 
 | Platform | Asset |
 | --- | --- |
@@ -175,3 +175,8 @@ implication.
 MIT means you may fork, modify, and redistribute the code, including commercially. What you
 may not do is ship it as StarNet: forks and derivatives must use their own name, logo, and
 artwork, and must not present themselves as this project or as endorsed by it.
+
+This checkout is the Eyehold fork. Its visible marks and the default realm art added here
+are original. The reserved StarNet name, the traced station sheets under `frontend/assets`,
+and the signed skill catalog are not relicensed. See
+[docs/EYEHOLD_UPSTREAM_LEFTOVERS.md](docs/EYEHOLD_UPSTREAM_LEFTOVERS.md).
