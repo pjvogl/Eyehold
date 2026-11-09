@@ -400,6 +400,20 @@
       "title"
     ]
   },
+  "deliverable.accepted": {
+    "required": [
+      "deliverableId",
+      "taskId"
+    ],
+    "properties": [
+      "deliverableId",
+      "taskId"
+    ]
+  },
+  "eyehold.productivity.error": {
+    "required": [],
+    "properties": []
+  },
   "flagged": {
     "required": [],
     "properties": []
