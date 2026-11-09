@@ -9,12 +9,12 @@
   if(document.getElementById('eyehold-workboard'))return;
   const toggle=document.createElement('button');
   toggle.type='button';toggle.textContent='WORK BOARD';toggle.setAttribute('aria-controls','eyehold-workboard');
-  toggle.style.cssText='position:fixed;bottom:18px;right:18px;z-index:995;padding:9px 13px;border:1px solid #aa8d5c;border-radius:5px;background:#1b1719;color:#e7d8b8;font:14px monospace;cursor:pointer';
+  toggle.style.cssText='position:fixed;bottom:18px;right:18px;z-index:995;padding:9px 13px;border:1px solid #aa8d5c;border-radius:5px;background:#1b1719;color:#e7d8b8;font:14px VT323,monospace;cursor:pointer';
   const board=document.createElement('section');
   board.id='eyehold-workboard';board.setAttribute('aria-label','Eyehold work board');
   board.hidden=true;
-  board.style.cssText='position:fixed;bottom:57px;right:18px;z-index:995;box-sizing:border-box;width:min(420px,calc(100vw * var(--sn-unzoom,1) - 36px));max-height:calc(55vh * var(--sn-unzoom,1));overflow-wrap:anywhere;overflow:auto;padding:14px;border:1px solid #aa8d5c;border-radius:6px;background:#171518;color:#e7d8b8;font:13px/1.5 monospace;box-shadow:0 8px 35px #000b';
-  const heading=document.createElement('h2');heading.textContent='THE EYE — WORK BOARD';heading.style.cssText='font:17px monospace;margin:0 0 8px';
+  board.style.cssText='position:fixed;bottom:57px;right:18px;z-index:995;box-sizing:border-box;width:min(420px,calc(100vw * var(--sn-unzoom,1) - 36px));max-height:calc(55vh * var(--sn-unzoom,1));overflow-wrap:anywhere;overflow:auto;padding:14px;border:1px solid #aa8d5c;border-radius:6px;background:#171518;color:#e7d8b8;font:13px/1.5 VT323,monospace;box-shadow:0 8px 35px #000b';
+  const heading=document.createElement('h2');heading.textContent='THE EYE — WORK BOARD';heading.style.cssText='font:17px VT323,monospace;margin:0 0 8px';
   const description=document.createElement('p');description.textContent='Live sidecar run history. Finished work must still be reviewed; no Crowns are implied.';description.style.margin='0 0 9px';
   const status=document.createElement('p');status.textContent='Open to load real run records.';status.setAttribute('role','status');
   const list=document.createElement('ol');list.style.cssText='padding-left:20px;margin:8px 0';
