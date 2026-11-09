@@ -275,13 +275,8 @@ input[type=file]::file-selector-button:hover { border-color: var(--ph); backgrou
     radial-gradient(ellipse 34% 26% at 14% 78%, rgba(var(--ph-rgb),.07), transparent 70%),
     radial-gradient(ellipse 60% 42% at 50% 52%, rgba(var(--ph-rgb),.06), transparent 72%);
 }
-/* the grid floor: a plane of phosphor graph lines pitched away from the camera, faded into the horizon */
-.sp-floor {
-  position: absolute; left: -18%; right: -18%; bottom: 0; height: 46vh;
-  perspective: 340px; perspective-origin: 50% 0%; pointer-events: none;
-  -webkit-mask-image: linear-gradient(180deg, transparent 0, #000 34%, #000 100%);
-  mask-image: linear-gradient(180deg, transparent 0, #000 34%, #000 100%);
-}
+/* The night forest is painted on #sp-stars. The old pitched grid stays in the markup and stays hidden. */
+.sp-floor { display: none; }
 .sp-grid {
   position: absolute; inset: 0; transform: rotateX(62deg); transform-origin: 50% 0%;
   background:
