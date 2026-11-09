@@ -6,7 +6,7 @@ const {createOwnerReviewHandler}=require('../sidecar/eyehold-owner-review-http.j
 const workspaceDir=fs.mkdtempSync(path.join(os.tmpdir(),'eye-owner-http-'));
 const run={id:'r1',taskId:'r1',agentId:'deepforge',status:'completed'};
 const decision={taskId:'r1',deliverableId:'d1',runId:'r1',goalId:'g1',goalAdvanced:true,goalEvidenceRef:'p1',evidenceRefs:['p1'],verificationMethod:'user',contributors:['deepforge'],quality:5,testPassed:true,predeclaredComplexity:1};
-const handler=createOwnerReviewHandler({workspaceDir,events:new EventEmitter(),getRun:id=>id==='r1'?run:null,getHistory:()=>[],getAgentIds:()=>['deepforge'],authorizeRequest:async req=>req.headers['x-test-owner']==='yes'?{authorized:true,id:'owner'}:null,inspectEvidence:(_d,_r,ctx)=>ctx.operatorId==='owner'&&ctx.reviewedEvidenceRef==='p1'});
+const handler=createOwnerReviewHandler({workspaceDir,events:new EventEmitter(),getRun:id=>id==='r1'?run:null,getHistory:()=>[],getAgentIds:()=>['deepforge'],now:()=>1,authorizeRequest:async req=>req.headers['x-test-owner']==='yes'?{authorized:true,id:'owner'}:null,inspectEvidence:(_d,_r,ctx)=>ctx.operatorId==='owner'&&ctx.reviewedEvidenceRef==='p1'});
 async function request(data,owner){const req=Readable.from([JSON.stringify(data)]);req.method='POST';req.headers={'x-test-owner':owner?'yes':'no'};let code=0,out='';const res={writeHead:c=>{code=c},end:s=>{out=s}};await handler.handle(req,res);return {code,body:JSON.parse(out)}}
 (async()=>{try{
  assert.equal((await request({decision,actorType:'operator',authenticated:true},false)).code,403,'body cannot grant auth');

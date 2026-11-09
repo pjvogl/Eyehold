@@ -2756,7 +2756,7 @@ function engineCredentialError(provider, what) {
 // localStorage as a fast cache and writes through here on every persist; on boot it pulls the newer of the two.
 const saveStore = makeSaveStore({ fs, pathMod: path, root: WORKSPACES, clock: { now: () => Date.now() } });
 // Sibling of agent FS jails; local operator imports only. API is read-only and uses the existing token gate.
-const eyeholdFinanceStore = require('./eyehold-finance-store.js').createFinanceStore({file:path.join(WORKSPACES,'eyehold-finance.json')});
+const eyeholdFinanceStore = require('./eyehold-finance-store.js').createFinanceStore({file:path.join(WORKSPACES,'eyehold-finance.json'), now: () => new Date().toISOString()});
 
 /* ---- Cortex M-mem.5b: post-run reflection -> Keep/Edit/Discard turn-in ----
    After a substantive browser run COMPLETES, one cheap aux-model call (the same seam summarize() uses)

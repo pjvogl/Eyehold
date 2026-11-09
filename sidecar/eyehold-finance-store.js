@@ -13,7 +13,7 @@ function receipt(bytes){
  if(!r||typeof r.id!=='string'||!r.id.trim()||r.id.length>200||r.currency!=='USD'||!TYPES.includes(r.type)||!Number.isSafeInteger(r.cents)||r.cents<0)throw Error('Receipt must contain a unique id, USD currency, valid type and nonnegative integer cents');
  return r;
 }
-function createFinanceStore({file}){
+function createFinanceStore({file, now}){
  if(!path.isAbsolute(file))throw Error('Absolute host store path required');
  function snapshot(){
   let state;
@@ -39,7 +39,7 @@ function createFinanceStore({file}){
   // Validate arithmetic before replacing the last good state.
   reportBusinessProfit({records:entries.map(e=>{const r=receipt(e.bytes);return {type:r.type,cents:r.cents,verified:true,evidenceRef:e.sha256};})});
   if(entries.reduce((n,e)=>n+Buffer.byteLength(e.bytes),0)>8*1024*1024)throw Error('Receipt batch exceeds 8 MiB');
-  const state={version:1,reviewedBy:'local-operator',reviewedAt:new Date().toISOString(),receipts:entries};
+  const state={version:1,reviewedBy:'local-operator',reviewedAt:typeof now==='function'?now():'unspecified',receipts:entries};
   fs.mkdirSync(path.dirname(file),{recursive:true,mode:0o700});
   const temp=file+'.'+crypto.randomUUID()+'.tmp';
   try{fs.writeFileSync(temp,JSON.stringify(state)+'\n',{mode:0o600,flag:'wx'});fs.renameSync(temp,file);}
