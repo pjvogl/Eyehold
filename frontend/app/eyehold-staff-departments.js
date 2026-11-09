@@ -21,13 +21,12 @@
   const action=document.createElement('button');action.type='button';action.textContent='SUMMON & ASSIGN SIX SPECIALISTS';
   const status=document.createElement('p');status.setAttribute('role','status');
   box.append(message,action,status);board.appendChild(box);
-  action.addEventListener('click',()=>{
+  function staffDepartments(){
    if(action.disabled)return;
    if(typeof App==='undefined'||typeof App.station!=='function'||typeof App.summonAgent!=='function'||typeof App.agents!=='function'||typeof Specialties==='undefined') {status.textContent='Start the station and its roster first.';return}
    const station=App.station();if(!station||typeof station.assignDesk!=='function'){status.textContent='Canonical WorldModel unavailable.';return}
    const doc=station.serialize();const rooms=Object.values(doc.rooms||{}).filter(r=>r.kind!=='corridor');
    if(rooms.length!==7){status.textContent='This station does not have the seven-room layout. Install or build it first.';return}
-   if(!window.confirm('Summon and assign up to six real specialist agents? This updates the roster and places agents in the current world. It does not launch model calls, create business accounts or authorize spending.'))return;
    action.disabled=true;
    const reports=[];
    try{
@@ -55,7 +54,12 @@
     status.textContent=reports.join(' | ');
    }catch(e){status.textContent='Some assignments may have succeeded; review roster: '+e.message+' — '+reports.join(' | ')}
    finally{action.disabled=false}
-  });
+  }
+  if(typeof ArmConfirm!=='undefined'&&ArmConfirm.wire){
+   ArmConfirm.wire(action,{armedLabel:'SURE? SUMMON SIX',restLabel:'SUMMON & ASSIGN SIX SPECIALISTS',onConfirm:staffDepartments});
+  }else{
+   action.addEventListener('click',()=>{status.textContent='Confirm control unavailable. Roster unchanged.';});
+  }
  }
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mount,{once:true});else mount();
 })();

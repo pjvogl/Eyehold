@@ -9,12 +9,14 @@ const board=fs.readFileSync(path.join(root,'frontend/app/eyehold-workboard.js'),
 assert(layout.includes('replaceLayout(candidate.doc)'));
 assert(layout.includes('eyehold-station-backup.json'));
 assert(layout.includes('rooms.length!==1'),'guard existing multiroom worlds');
-assert(layout.includes('window.confirm('),'explicit operator consent');
+assert(layout.includes('ArmConfirm.wire('),'explicit operator consent');
+assert(!/window\s*\.\s*confirm\s*\(/.test(layout),'layout install stays inside the station confirm');
 assert(staffing.includes('App.summonAgent('),'real in-app agent creation');
 assert(staffing.includes('station.assignDesk('),'real workstation binding');
 assert(staffing.includes('App.pushRoster('),'push roster to live backend');
 assert(staffing.includes('rooms.length!==7'),'refuse invalid layout');
-assert(staffing.includes('window.confirm('),'explicit operator consent');
+assert(staffing.includes('ArmConfirm.wire('),'explicit operator consent');
+assert(!/window\s*\.\s*confirm\s*\(/.test(staffing),'staffing stays inside the station confirm');
 assert(!/innerHTML\s*=/.test(layout+staffing),'avoid unsafe source interpolation');
 assert(board.includes('PREPARE RAVEN → DEEPFORGE TASK'));
 assert(board.includes('Workstreams.create('),'real persistent named sessions for dispatch');
