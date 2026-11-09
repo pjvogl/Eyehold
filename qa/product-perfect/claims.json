@@ -18,7 +18,7 @@
   "expectedClaimCount": 40,
   "releaseSurface": {
     "algorithm": "sha256",
-    "sourceCommit": "da818032f97221ea7382f28798652d45afeacd1e",
+    "sourceCommit": "cb7b9bd6a95603e42c37c74436c1154bb2aac6ce",
     "pathSetSha256": "b6936f4f1c2711051c6a141e4a9a2df780a60ebc56ff298234ab7908169015a3",
     "files": [
       {
@@ -503,8 +503,8 @@
       },
       {
         "path": "frontend/app/eyehold-layout-install.js",
-        "bytes": 4390,
-        "sha256": "08822c0991b2ab56454cc3e9a85123f81d9ee592c9988f7fac19b84b040d82d1"
+        "bytes": 4451,
+        "sha256": "3fa4c532337d2021be81685f8ecc4db1a807918b4d273ea62ba44bfa619798cd"
       },
       {
         "path": "frontend/app/eyehold-loot-preview.js",
@@ -538,8 +538,8 @@
       },
       {
         "path": "frontend/app/eyehold-staff-departments.js",
-        "bytes": 4116,
-        "sha256": "7601113391abc02f0124d771edc8302b674eb92607eefc66058315702fe7070e"
+        "bytes": 4188,
+        "sha256": "e3f3193125b75b18489deb1a1097da261549e6b73d0d04e205d98cb6d01f8467"
       },
       {
         "path": "frontend/app/eyehold-territories.js",
