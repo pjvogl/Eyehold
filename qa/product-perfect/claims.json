@@ -18,7 +18,7 @@
   "expectedClaimCount": 40,
   "releaseSurface": {
     "algorithm": "sha256",
-    "sourceCommit": "48e65d9b8ca619a7c0614e97cd43e1ca644d294d",
+    "sourceCommit": "fea92985f5f27f4f8ef918deeb948347ad78e5a4",
     "pathSetSha256": "cca67e57f660c92d4c8b3b69daf79759a44c4598e8c5258e8a140f8abc35969d",
     "files": [
       {
@@ -173,8 +173,8 @@
       },
       {
         "path": "frontend/app/app.js",
-        "bytes": 434496,
-        "sha256": "e5d6dcf7c59f6dc256b65fbe56a50313aad33a354cdf0246ab681638c9348bdb"
+        "bytes": 434497,
+        "sha256": "f06fa522be4197ccfee26b38a5b35dc6d6f9c7cd00c759fc1e4eea75e148e5e9"
       },
       {
         "path": "frontend/app/approved-sheet-effects.js",
@@ -449,7 +449,7 @@
       {
         "path": "frontend/app/dialogue.js",
         "bytes": 26672,
-        "sha256": "db332cdc37c814a2350a2ca69eb0ff3ed966eb174994d43f01b0ce08381cf1aa"
+        "sha256": "58ec2123af7beed2e49de607a6981d09ed470f2d184e274f789534d8325a1023"
       },
       {
         "path": "frontend/app/discoverystore.js",
@@ -558,8 +558,8 @@
       },
       {
         "path": "frontend/app/eyehold-workboard.js",
-        "bytes": 19102,
-        "sha256": "fe53d5fb37f5a5f9ff9a7f779cd3978a32efbf1d1be7dc9c72d450027040c258"
+        "bytes": 19111,
+        "sha256": "78ed8d29a940436438fbb6f577d312f9c71fa8fa9a18ff60f7cf9f7104848d45"
       },
       {
         "path": "frontend/app/firstvalue.js",
@@ -688,8 +688,8 @@
       },
       {
         "path": "frontend/app/kepler-showcase.js",
-        "bytes": 4900,
-        "sha256": "54c668d2cbb2b35ff1e25c74adda0580e401677c0562cadf2d3e2bec1ac183a6"
+        "bytes": 4898,
+        "sha256": "c5d28f7ece2b53c99e42b8035e99920e9b72b7adb7a4f4c76e2d1b25a78afbd5"
       },
       {
         "path": "frontend/app/keycta.js",
@@ -848,8 +848,8 @@
       },
       {
         "path": "frontend/app/places.js",
-        "bytes": 11262,
-        "sha256": "537d1abb29c9346cb3fa3dd059611f4ed0738e3d0069a32ce0954108e2d99eac"
+        "bytes": 11280,
+        "sha256": "da0c8bfcdd431b563a14af1356ac5641a0ff38fb6b5d2ae47851a6125bba1c37"
       },
       {
         "path": "frontend/app/planpreview.js",
@@ -883,8 +883,8 @@
       },
       {
         "path": "frontend/app/project-home.js",
-        "bytes": 12941,
-        "sha256": "cb2e68af6390bbd7e1893575aa0cc17abc88c78cb3f4448efb24cff9c4ad485e"
+        "bytes": 12944,
+        "sha256": "61e821ddd22e687c92d4caf4275593b4da04587a4696d6feb02009ddd2b24d0e"
       },
       {
         "path": "frontend/app/projection-audit-panel.js",
@@ -1253,8 +1253,8 @@
       },
       {
         "path": "frontend/app/stationui.js",
-        "bytes": 847497,
-        "sha256": "025f0321d0fce1bb2c905582c3411b4f67dc4f9e43cd1b5d4bd848005e82902f"
+        "bytes": 847477,
+        "sha256": "378ef69a0f5e838dd9fa7eb3b213e1ddb547e1d01ab18633bb33c0a1153c3d31"
       },
       {
         "path": "frontend/app/stepin.js",
@@ -1318,8 +1318,8 @@
       },
       {
         "path": "frontend/app/topbar.js",
-        "bytes": 12613,
-        "sha256": "c1ea060f928e1e859587275f098a8dcf2aedb083ce3530c909f4283344bf146f"
+        "bytes": 12617,
+        "sha256": "c03d8ea6e1cd823ad477349102ff7754351f78cd87a3d3b01abf8dec515f4f92"
       },
       {
         "path": "frontend/app/topicmatch.js",
@@ -1403,8 +1403,8 @@
       },
       {
         "path": "frontend/app/warroom.js",
-        "bytes": 7510,
-        "sha256": "c9fc0e13a91d37e55989dea5f74c73930f0c8b7fdd12b6017a84eaa4515d729f"
+        "bytes": 7504,
+        "sha256": "a824a09599a21d1038bf732f777464ad9eaaecd6d72678a455e00a37494da45b"
       },
       {
         "path": "frontend/app/widgets.js",
@@ -1888,8 +1888,8 @@
       },
       {
         "path": "frontend/index.html",
-        "bytes": 100466,
-        "sha256": "5dc00a43ee80334d837c9bf908c28279194c770a81917a0db3fa8ef755717de2"
+        "bytes": 100490,
+        "sha256": "de8d4e415e4aa52cb3b03be938f47c228c0a83c3084b7e94053343ae9d86ddb0"
       },
       {
         "path": "frontend/js/arcade.js",
