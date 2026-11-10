@@ -297,11 +297,14 @@ function loadSaveModule() {
     A.ok(/const EYEHOLD_UPDATES_ENABLED = false;/.test(updatesSrc), 'no automatic checks without an owned update channel');
     A.ok(/const RELEASES_PAGE = null;/.test(updatesSrc), 'unsigned fork does not offer an upstream manual release');
   } else {
+  const host = JSON.parse(fs.readFileSync(path.join(ROOT, 'eyehold.host.json'), 'utf8'));
+  const origin = 'https://' + host.baseDomain;
   A.ok(pageMatch, 'updates.js declares RELEASES_PAGE');
-  const slugOf = u => (String(u).match(/github\.com\/([^/]+\/[^/]+)\//) || [])[1];
-  A.eq(slugOf((pageMatch && pageMatch[1] || '') + '/'), slugOf(endpoint),
-    'manual-fallback releases page and the baked updater endpoint point at the SAME owner/repo');
-  A.ok(/\/releases\/latest$/.test(pageMatch && pageMatch[1] || ''), 'manual fallback points at /releases/latest (never a pinned tag)');
+  A.eq(endpoint, origin + host.updaterPath, 'updater endpoint is the Eyehold feed');
+  A.eq(pageMatch && pageMatch[1], origin + host.releaseNotesPath, 'release notes page uses the same domain');
+  A.eq(conf.bundle.createUpdaterArtifacts, false, 'artifacts stay off until the owner signing key replaces the baked pubkey');
+  A.ok(!/starnetos\.com|androoAGI|github\.com/.test(endpoint + (pageMatch && pageMatch[1] || '')), 'updater does not follow an upstream host');
+  A.ok(/const EYEHOLD_UPDATES_ENABLED = false;/.test(updatesSrc), 'client checks stay off until signing is replaced');
   }
 }
 

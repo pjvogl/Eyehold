@@ -9,11 +9,10 @@ const Updates = (() => {
   // failure, an unsupported install layout). Reinstalling the latest build over the top keeps
   // ALL user data (workspaces live in Application Support; localStorage/IndexedDB in the WebView
   // store keyed by the unchanged bundle id — both OUTSIDE the app bundle the installer replaces).
-  // Kept in sync with tauri.conf.json plugins.updater.endpoints[0] (same repo, /releases/latest).
-  // Eyehold distribution has not configured an independently signed updater.
-  // Keep all update operations fail-closed instead of following upstream releases.
+  // Kept in sync with eyehold.host.json and tauri.conf.json plugins.updater.endpoints[0].
+  // Checks stay off until the owner replaces the baked signing key. See docs/EYEHOLD_PUBLISHER.md.
   const EYEHOLD_UPDATES_ENABLED = false;
-  const RELEASES_PAGE = null;
+  const RELEASES_PAGE = 'https://eyehold.babelbook.net/download';
   const CORE = (typeof UpdateCore !== 'undefined') ? UpdateCore : null;
   const TAURI = (typeof window !== 'undefined' && window.__TAURI__ && window.__TAURI__.core) ? window.__TAURI__.core : null;
   const invoke = (cmd, args) => TAURI.invoke(cmd, args || {});

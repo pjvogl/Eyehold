@@ -12,11 +12,14 @@ const indexJs = fs.readFileSync(path.join(root, 'sidecar', 'index.js'), 'utf8');
 const browserJs = fs.readFileSync(path.join(root, 'sidecar', 'tools', 'builtin', 'browser.js'), 'utf8');
 const cargoToml = fs.readFileSync(path.join(root, 'src-tauri', 'Cargo.toml'), 'utf8');
 
-// Eyehold has no owned signing identity/channel configured yet. The unsigned
-// fork must neither impersonate the upstream publisher nor enable updates.
-A.eq(conf.bundle && conf.bundle.publisher, undefined, 'unsigned Eyehold does not claim a publisher signing identity');
+// The feed URL is Eyehold's own domain. Artifacts stay off until the baked
+// pubkey is replaced. See docs/EYEHOLD_PUBLISHER.md.
+const host = JSON.parse(fs.readFileSync(path.join(root, 'eyehold.host.json'), 'utf8'));
+const eyeholdFeed = 'https://' + host.baseDomain + host.updaterPath;
+A.eq(conf.bundle && conf.bundle.publisher, 'Eyehold', 'publisher name is Eyehold');
 A.eq(conf.bundle && conf.bundle.createUpdaterArtifacts, false, 'unsigned Eyehold does not create updater artifacts');
-A.eq(JSON.stringify(conf.plugins && conf.plugins.updater && conf.plugins.updater.endpoints), '[]', 'unsigned Eyehold has no update channel');
+A.eq(JSON.stringify(conf.plugins && conf.plugins.updater && conf.plugins.updater.endpoints), JSON.stringify([eyeholdFeed]), 'update channel is the Eyehold feed');
+A.ok(!/starnetos\.com|androoAGI|github\.com/.test(eyeholdFeed), 'update channel does not follow an upstream host');
 A.ok(!cargoToml.includes('???'), 'desktop package metadata contains no corrupted placeholder punctuation');
 
 const csp = String(conf.app && conf.app.security && conf.app.security.csp || '');

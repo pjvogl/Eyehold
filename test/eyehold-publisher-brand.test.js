@@ -3,9 +3,11 @@ const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('n
 const root=path.resolve(__dirname,'..');
 const cfg=JSON.parse(fs.readFileSync(path.join(root,'src-tauri/tauri.conf.json'),'utf8'));
 assert.equal(cfg.productName,'The Eyehold');
+const host=JSON.parse(fs.readFileSync(path.join(root,'eyehold.host.json'),'utf8'));
+assert.equal(cfg.bundle.publisher,'Eyehold');
 assert.notEqual(cfg.bundle.publisher,'Andrew Sims');
 assert.equal(cfg.bundle.createUpdaterArtifacts,false);
-assert.deepEqual(cfg.plugins.updater.endpoints,[]);
+assert.deepEqual(cfg.plugins.updater.endpoints,['https://'+host.baseDomain+host.updaterPath]);
 const ui=fs.readFileSync(path.join(root,'frontend/app/updates.js'),'utf8');
 assert.doesNotMatch(ui,/androoAGI\/starnet-releases/);
 assert.match(ui,/EYEHOLD_UPDATES_ENABLED = false/);
