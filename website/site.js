@@ -26,7 +26,7 @@
   // a purchase we cannot actually take. Flip `live` to true once the service answers.
   var CREDITS = {
     live: false,
-    accountUrl: ''
+    accountUrl: 'https://eyehold.babelbook.net'
   };
   (function wireCredits(){
     var ctas = document.querySelectorAll('[data-credits-cta]');

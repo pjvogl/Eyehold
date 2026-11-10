@@ -224,6 +224,7 @@ test/sidecar.security.test.js
 test/agent-color-escape.test.js
 test/tauri.hardening.test.js
 test/eyehold-host-config.test.js
+test/eyehold-billing.test.mjs
 test/desktop-csp-inline-scan.test.js
 test/finish-line-doctrine.test.js
 test/manual.test.js
