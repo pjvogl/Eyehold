@@ -19,4 +19,8 @@ assert.match(roles, /paper trading/i);
 assert.match(docs, /\$1,000,000/);
 assert.match(docs, /practice points/);
 assert.match(docs, /not connected/i);
+assert.match(docs, /Researcher/);
+assert.match(roles, /sole job is research/i);
+assert.match(fs.readFileSync(path.join(root, 'frontend/app/eyehold-departments.js'), 'utf8'), /cite sources/);
+assert.match(ui, /shared research queue/);
 console.log('Venture board, Manager instructions, and marketing copy agree');

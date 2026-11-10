@@ -46,7 +46,15 @@
         if (!response.ok) throw new Error(body.error || 'unavailable');
         const cash = body.treasury ? body.treasury.availableCents : null;
         list.appendChild(line(cash == null ? 'Treasury unavailable.' : 'Treasury available: $' + (cash / 100).toFixed(2) + ' (earned plus owner top-ups, minus approved spends).'));
-        list.appendChild(line('Etsy: not connected. Trader: paper only until you graduate a good record.'));
+        list.appendChild(line('Etsy: not connected. Trader: paper only until you graduate a good record. Researcher: Raven Court, via the shared research queue.'));
+        const research = body.research || { opportunities: [], requests: [] };
+        for (const request of research.opportunities || []) {
+          const count = (request.briefs || []).length;
+          list.appendChild(line('Manager asked: ' + request.question + (count ? ' · ' + count + ' briefs filed' : ' · waiting on the Researcher')));
+        }
+        for (const request of research.requests || []) {
+          list.appendChild(line(request.agentId + ' asked the Researcher about ' + request.ventureId + ': ' + request.topic));
+        }
         const scores = body.scores || [];
         if (!scores.length) list.appendChild(line('No verified profit yet. Crowns stay at zero.'));
         for (const row of scores) {

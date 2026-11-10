@@ -11009,6 +11009,8 @@ const eyeholdVentureHttp = require('./eyehold-venture-http.js').createVentureHtt
   treasury: require('./eyehold-treasury.js').createTreasury({ file: path.join(WORKSPACES, 'eyehold-treasury.json'), now: () => new Date().toISOString() }),
   trader: require('./eyehold-trader.js').createTrader({ file: path.join(WORKSPACES, 'eyehold-trader.json') }),
   score: require('./eyehold-venture-score.js').createVentureScore({ file: path.join(WORKSPACES, 'eyehold-venture-score.json') }),
+  research: require('./eyehold-research.js').createResearch({ file: path.join(WORKSPACES, 'eyehold-research.json'), now: () => new Date().toISOString() }),
+  finance: eyeholdFinanceStore,
   etsy: require('./eyehold-etsy.js').etsyListingAdapter()
 });
 const eyeholdMarketHttp = require('./eyehold-market-http.js').createMarketHttp({
