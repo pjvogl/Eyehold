@@ -11004,6 +11004,13 @@ async function handleRemoteRevoke(req, res) {
   respondJson(res, 200, remoteSnapshot());
 }
 
+const eyeholdVentureHttp = require('./eyehold-venture-http.js').createVentureHttp({
+  ventures: require('./eyehold-ventures.js').createVentures({ file: path.join(WORKSPACES, 'eyehold-ventures.json'), now: () => new Date().toISOString() }),
+  treasury: require('./eyehold-treasury.js').createTreasury({ file: path.join(WORKSPACES, 'eyehold-treasury.json'), now: () => new Date().toISOString() }),
+  trader: require('./eyehold-trader.js').createTrader({ file: path.join(WORKSPACES, 'eyehold-trader.json') }),
+  score: require('./eyehold-venture-score.js').createVentureScore({ file: path.join(WORKSPACES, 'eyehold-venture-score.json') }),
+  etsy: require('./eyehold-etsy.js').etsyListingAdapter()
+});
 const eyeholdMarketHttp = require('./eyehold-market-http.js').createMarketHttp({
   file: path.join(WORKSPACES, 'eyehold-market.json'),
   finance: eyeholdFinanceStore,
@@ -11113,6 +11120,7 @@ const ROUTES = [
   { m: 'POST', exact: '/api/roster', h: handleRoster },
   { m: ['GET', 'POST'], qsplit: '/api/eyehold/review', h: (req,res) => eyeholdOwnerService.handle(req,res) },
   { m: ['GET', 'POST'], exact: '/api/eyehold/market', h: (req,res) => eyeholdMarketHttp.handle(req,res) },
+  { m: ['GET', 'POST'], exact: '/api/eyehold/ventures', h: (req,res) => eyeholdVentureHttp.handle(req,res) },
   { m: 'GET', exact: '/api/eyehold/crew', h: (req,res) => {
     const agents=Array.from(agentRoster,([agentId,row])=>({agentId,name:row.name,model:row.model,provider:row.provider}));
     res.writeHead(200, {'Content-Type':'application/json; charset=utf-8','Cache-Control':'no-store'});
