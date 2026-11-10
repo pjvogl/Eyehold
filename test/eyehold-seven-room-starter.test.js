@@ -10,6 +10,8 @@ assert(result.placed.length===6);
 assert.equal(d.props.filter(p=>p.t==='desk').length,7,'one actual workstation per department');
 assert(result.placed.every(p=>d.props.some(x=>x.id===p.deskId)),'every specialist room has a real desk');
 assert.equal(d.rooms[result.homeId].name,'The Eye - Command Keep');
+assert.equal(d.rooms[result.homeId].departmentId,'command');
+assert.deepEqual(result.placed.map(p=>d.rooms[p.id].departmentId).sort(),['finance','operations','opportunities','production','quality','strategy']);
 assert(d.props.some(p=>p.t==='desk'),'preserve original work desk');
 const WorldModel=require('../frontend/app/worldmodel.js');
 const resident=WorldModel.deserialize(d);
