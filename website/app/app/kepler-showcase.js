@@ -46,7 +46,7 @@
     if(++attempts>100){clearInterval(timer);return;}
     if(!document.querySelector('#screen-game.active')||typeof World==='undefined')return;
     const cinema=document.querySelector('.cam-cine');
-    if(cinema&&cinema.textContent.includes('CINEMA')){cinema.click();return;}
+    if(cinema&&cinema.textContent.includes('GAZE')){cinema.click();return;}
     if(frame(''))clearInterval(timer);
   },300);
 })();

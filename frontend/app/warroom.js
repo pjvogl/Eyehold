@@ -73,11 +73,11 @@
     const hud = $('#stage-wrap .cam-hud');
     if (hud && !hud.querySelector('.cam-cine')) {
       const b = document.createElement('button');
-      b.className = 'cam-cine'; b.textContent = '▣ CINEMA'; b.title = 'fill the frame with the station';
+      b.className = 'cam-cine'; b.textContent = '▣ GAZE'; b.title = 'fill the frame with the station';
       b.addEventListener('click', toggleCinema); hud.appendChild(b);
     }
     if (!$('#wr-cine-hint')) {
-      const hint = document.createElement('div'); hint.id = 'wr-cine-hint'; hint.textContent = 'CINEMA — press ESC to exit';
+      const hint = document.createElement('div'); hint.id = 'wr-cine-hint'; hint.textContent = 'GAZE — press ESC to exit';
       document.body.appendChild(hint);
     }
   }
@@ -85,7 +85,7 @@
     const g = $('#screen-game'); if (!g || !g.classList.contains('active')) return;
     const on = g.classList.toggle('cinema');
     const hint = $('#wr-cine-hint'); if (hint) hint.style.display = on ? 'block' : 'none';
-    const b = $('.cam-cine'); if (b) b.textContent = on ? '▣ EXIT' : '▣ CINEMA';
+    const b = $('.cam-cine'); if (b) b.textContent = on ? '▣ EXIT' : '▣ GAZE';
     sfx('click');
   }
   window.addEventListener('keydown', e => {

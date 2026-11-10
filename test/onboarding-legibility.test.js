@@ -79,7 +79,7 @@ const Glossary = require('../frontend/app/glossary.js');
   const appSrc = fs.readFileSync(path.join(root, 'frontend', 'app', 'app.js'), 'utf8');
   A.ok(/Workstreams\.reset\(\);[\s\S]{0,240}Tutorial\.reset\(\)/.test(appSrc),
     'the real new-Commander reset funnel clears tutorial ownership before entering the station');
-  A.ok(indexSrc.includes('agent setup in CREW › AGENTS') && indexSrc.includes('model in COMMS') && indexSrc.includes('SYSTEM › SETTINGS'),
+  A.ok(indexSrc.includes('agent setup in COMPANY › AGENTS') && indexSrc.includes('model in MISSIVES') && indexSrc.includes('SYSTEM › SETTINGS'),
     'Genesis routes editable setup to the real agent, model, and settings surfaces');
   A.eq(indexSrc.includes('everything here is re-editable later in the Commander Dossier'), false,
     'Genesis no longer sends agent configuration to the Commander Dossier');

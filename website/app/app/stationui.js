@@ -501,11 +501,11 @@ const StationUI = typeof document === 'undefined' ? {} : (() => {
     return false;
   }
   function pillFor(act) {
-    if (linkDown()) return ['LINK DOWN', 'down'];   // link gone → the pill can't honestly assert ONLINE
+    if (linkDown()) return ['DARK', 'down'];   // link gone → the pill can't honestly assert LIT
     if (!linkUp()) return ['STANDBY', 'standby'];   // bridge not yet proven up → STANDBY, never a premature ONLINE
     return act === 'task' ? ['WORKING', 'working']
       : act === 'talk' ? ['THINKING', 'thinking']
-      : ['ONLINE', ''];
+      : ['LIT', ''];
   }
 
   /* ============== FLOATING TERMINAL WINDOWS (ported v7 ui.js) ============== */
@@ -10017,7 +10017,7 @@ const StationUI = typeof document === 'undefined' ? {} : (() => {
     if (JS && JS.sync) { try { JS.sync(); } catch (_) {} }
     const j = JS && JS.status ? JS.status() : null;
     const journeyState = JS && JS.state ? JS.state() : null;
-    if (!j) return '<div class="gx-sec"><span class="gx-title">COMMANDER JOURNEY</span></div>'
+    if (!j) return '<div class="gx-sec"><span class="gx-title">WARDEN JOURNEY</span></div>'
       + '<div class="q-journey-card"><div class="sub dim">Progress is not available yet. It will appear when the station can load your records.</div></div>';
 
     const evo = j.evolution || { stage: 0, name: 'DRIFT', goalsReached: 0 };
@@ -10086,7 +10086,7 @@ const StationUI = typeof document === 'undefined' ? {} : (() => {
     const progression = j.progression;
     const achievements = progression && Array.isArray(progression.achievements) ? progression.achievements.slice(-5).reverse() : [];
     const proofLabel = (kind, authority) => authority === 'commander-confirmed' ? 'You confirmed' : kind === 'metric' ? 'You recorded' : 'StarNet recorded';
-    const growthHtml = progression ? '<div class="q-commander-growth"><div class="q-journey-title">COMMANDER LEVEL ' + progression.level + '</div>'
+    const growthHtml = progression ? '<div class="q-commander-growth"><div class="q-journey-title">WARDEN LEVEL ' + progression.level + '</div>'
       + '<div class="sub">' + progression.points + ' achievement points · ' + progression.pointsToNextLevel + ' to the next level</div>'
       + '<div class="sub dim">Confirmed goal activity and recorded metric checkpoints earn points across your goals. Confirming a completed goal earns 100 points. Setbacks never erase your history.</div>'
       + '<details class="q-growth-history"><summary>Recent achievements</summary>' + achievements.map(a => '<details class="sub q-achievement"><summary>◆ ' + esc(a.title || a.kind || 'Goal progress') + ' <span class="gx-tag">+' + (Number(a.points) || 0) + '</span></summary>'
@@ -10917,7 +10917,7 @@ const StationUI = typeof document === 'undefined' ? {} : (() => {
     // `wide` = wide width only). The old per-window pixel widths (460/540/560/620/640/760/1000) are
     // gone — they made eight windows read as eight unrelated apps. A window earns WIDE only by having
     // a rail, a card grid, or side-by-side columns; everything single-column is a PANEL.
-    commander:['YOU · COMMANDER DOSSIER',      buildCommander, { console: true, className: 'commander-console' }],   // focused profile, preferences, briefing, and record sections
+    commander:['YOU · WARDEN DOSSIER',      buildCommander, { console: true, className: 'commander-console' }],   // focused profile, preferences, briefing, and record sections
     // NAV CONDENSE 2 (2026-08-04): 'skills' is no longer a window key — the skill library/agent-
     // skills sections live in the ABILITIES (connectors) console via AbilityLanes, and per-agent
     // capabilities live in the dossier's SKILLS tab. openTerm keeps the old keys alive as aliases

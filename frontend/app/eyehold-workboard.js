@@ -62,8 +62,8 @@
     reviewPacket=null;confirm.checked=false;reviewStatus.textContent='Owner accepted this output. '+packet.agentId+' now has '+Number(result.totals?.[packet.agentId]||0)+' Crowns. These are productivity points, not currency.';
    }catch(e){if(reviewPacket===packet){approve.disabled=false;reviewStatus.textContent='Not accepted: '+e.message+'. Reopen the record if its evidence or goal changed.'}}
   });
-  const assign=document.createElement('button');assign.type='button';assign.textContent='ASSIGN WORK IN COMMS';assign.style.cssText='margin:0 8px 8px 0;background:#33272a;color:#f0d6a8;border:1px solid #806c4f;padding:6px 10px;cursor:pointer';
-  assign.addEventListener('click',()=>{board.hidden=true;toggle.setAttribute('aria-expanded','false');const target=document.querySelector('#chat-input, #chat-textarea, textarea[placeholder*=\"message\" i]');if(target){target.focus();status.textContent='Enter your assignment in COMMS. Nothing was sent automatically.';}else{status.textContent='Open COMMS to assign work; no job was started.';if(typeof StationUI!=='undefined'&&StationUI.openTerm)StationUI.openTerm('comms');}});
+  const assign=document.createElement('button');assign.type='button';assign.textContent='ASSIGN WORK IN MISSIVES';assign.style.cssText='margin:0 8px 8px 0;background:#33272a;color:#f0d6a8;border:1px solid #806c4f;padding:6px 10px;cursor:pointer';
+  assign.addEventListener('click',()=>{board.hidden=true;toggle.setAttribute('aria-expanded','false');const target=document.querySelector('#chat-input, #chat-textarea, textarea[placeholder*=\"message\" i]');if(target){target.focus();status.textContent='Enter your assignment in MISSIVES. Nothing was sent automatically.';}else{status.textContent='Open MISSIVES to assign work; no job was started.';if(typeof StationUI!=='undefined'&&StationUI.openTerm)StationUI.openTerm('comms');}});
   const departments=document.createElement('details');
   const deptHeading=document.createElement('summary');deptHeading.textContent='BUSINESS DEPARTMENTS — responsibilities and handoffs';
   departments.appendChild(deptHeading);

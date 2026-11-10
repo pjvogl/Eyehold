@@ -41,7 +41,7 @@ const App = (() => {
     const pill = el('status-pill');
     if (pill) { if (pill.textContent !== 'CONNECTING') pill.textContent = 'CONNECTING'; if (pill.className !== 'standby') pill.className = 'standby'; }
     const empty = document.querySelector('.cmsg-empty-line');
-    if (empty && empty.textContent !== 'COMMS connecting…') empty.textContent = 'COMMS connecting…';
+    if (empty && empty.textContent !== 'MISSIVES connecting…') empty.textContent = 'MISSIVES connecting…';
     const sig = el('sig'), bars = sig && sig.querySelector('b');
     if (sig && bars) { sig.classList.remove('down'); sig.classList.add('standby'); if (sig.childNodes[0].nodeValue !== 'CONNECTING ') sig.childNodes[0].nodeValue = 'CONNECTING '; if (bars.textContent !== '▃▃▃▃') bars.textContent = '▃▃▃▃'; }
     // Do not let our own corrective mutations recursively re-enter the observer and starve the
@@ -52,9 +52,9 @@ const App = (() => {
     const chat = el('chat-status');
     if (chat) { chat.textContent = 'station unreachable'; chat.className = 'status-down'; }
     const pill = el('status-pill');
-    if (pill) { pill.textContent = 'LINK DOWN'; pill.className = 'down'; }
+    if (pill) { pill.textContent = 'DARK'; pill.className = 'down'; }
     const empty = document.querySelector('.cmsg-empty-line');
-    if (empty) empty.textContent = 'COMMS unavailable — reconnecting to the station.';
+    if (empty) empty.textContent = 'MISSIVES unavailable — reconnecting to the station.';
     const sig = el('sig'), bars = sig && sig.querySelector('b');
     if (sig && bars) { sig.classList.remove('standby'); sig.classList.add('down'); sig.childNodes[0].nodeValue = 'LINK DOWN '; bars.textContent = '▁▁▁▁'; }
   }
@@ -75,7 +75,7 @@ const App = (() => {
         if (bridgeAuthorityObserver) { bridgeAuthorityObserver.disconnect(); bridgeAuthorityObserver = null; }
         try { if (typeof Topbar !== 'undefined' && Topbar._paintSig) Topbar._paintSig(); } catch (_) {}
         if (typeof Chat !== 'undefined' && Chat.status && !(Chat.isBusy && Chat.isBusy())) Chat.status('online');
-        const pill = el('status-pill'); if (pill) { pill.textContent = 'ONLINE'; pill.className = ''; }
+        const pill = el('status-pill'); if (pill) { pill.textContent = 'LIT'; pill.className = ''; }
         const empty = document.querySelector('.cmsg-empty-line');
         if (empty && agent) empty.textContent = 'What would you like to work on?';
         return;
