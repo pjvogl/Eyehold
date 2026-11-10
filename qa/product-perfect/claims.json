@@ -18,8 +18,8 @@
   "expectedClaimCount": 40,
   "releaseSurface": {
     "algorithm": "sha256",
-    "sourceCommit": "c1b57f505637d279f02bf64e36ce39a8058f7cd8",
-    "pathSetSha256": "b6936f4f1c2711051c6a141e4a9a2df780a60ebc56ff298234ab7908169015a3",
+    "sourceCommit": "455538e3a5f1a0cddcc4fa7d828c340ee31be8cb",
+    "pathSetSha256": "dd13c20e443f4a9744da2aeda42e5fb1aebe39e9a447df1606d8bf85c9eab800",
     "files": [
       {
         "path": "INSTALL.md",
@@ -512,14 +512,19 @@
         "sha256": "52df37fc8850d5d417d3fead3efb351e1521b76499ad634cf87ac5396ad9addb"
       },
       {
+        "path": "frontend/app/eyehold-market.js",
+        "bytes": 4737,
+        "sha256": "87cc22c3fae44ddfde3513096c890b541bc79ed4c66e3d66ab020156dee4691d"
+      },
+      {
         "path": "frontend/app/eyehold-native-loot.js",
         "bytes": 2878,
         "sha256": "2188c207f7754968f096cfdac1007ae357ce876624288edcd942d7468fd1c252"
       },
       {
         "path": "frontend/app/eyehold-roles.js",
-        "bytes": 4252,
-        "sha256": "c902b92bd24f2af65fbe70e848679f9b054ac3a12d67e28bb83a341a9033530e"
+        "bytes": 4545,
+        "sha256": "da6d9cc0e7b8afb8424e5b9caba5146b5013b0b81934f23759f9d7179c70d676"
       },
       {
         "path": "frontend/app/eyehold-room-loot.js",
@@ -1878,8 +1883,8 @@
       },
       {
         "path": "frontend/index.html",
-        "bytes": 100372,
-        "sha256": "865bdac0ebd8219473db990810a8c2e734af7e20bce9749072f9e607bf2fcf9a"
+        "bytes": 100418,
+        "sha256": "0b34b29be16c42dd8d86cf552c13b8b51ecbacac8efa409428f2229898baba67"
       },
       {
         "path": "frontend/js/arcade.js",
