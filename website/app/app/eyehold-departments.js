@@ -1,6 +1,7 @@
-/* Eyehold commercial division-of-labor catalog.
- * Roles/routes are operator-visible planning definitions, not live rooms,
- * identity grants, linked accounts, agent summons, or permission changes.
+/* Eyehold departments. These seven rooms are the live org chart.
+ * The seven-room station stamps the same ids. Authority limits still hold:
+ * Iron Host must bring any account, outreach, payment, listing, or trade
+ * to the owner. This file does not grant tools or open accounts.
  */
 'use strict';
 (function(root,factory){

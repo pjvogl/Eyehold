@@ -27,7 +27,14 @@
    if(!desk.ok)throw Error('desk rejected: '+desk.error);
    desks.push({roomId:room.id,deskId:desk.id,territory});
   });
-  return {doc:m.serialize(),desks};
+   const doc=m.serialize();
+   doc.rooms[home].departmentId='command';
+   const departmentFor={archive:'opportunities',foundry:'operations',forge:'production',moonleaf:'quality'};
+   for(const desk of desks){
+    const room=doc.rooms[desk.roomId];
+    room.departmentId=desk.territory==='astral'?(String(room.name).startsWith('Treasury')?'finance':'strategy'):departmentFor[desk.territory];
+   }
+   return {doc,desks};
  }
  function mount(){
   const board=document.getElementById('eyehold-workboard');if(!board||board.querySelector('[data-eye-layout]'))return;

@@ -16,6 +16,7 @@ assert(board.includes('CHECK LIVE CREW'));
 assert(board.includes('App.agents()'));
 assert(board.includes('station.serialize()'));
 assert(board.includes("p.agentId===agent.id"));
-assert(board.includes('room/agent activation not yet verified'));
+assert(board.includes('Live department'));
+assert(board.includes('CHECK LIVE CREW verifies the seated agent'));
 assert(!board.includes('fetch(\'/api/payments'));
 console.log('Eyehold department handoff catalog and truthful work-board display verified');

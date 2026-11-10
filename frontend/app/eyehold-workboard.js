@@ -72,7 +72,7 @@
    const section=document.createElement('article');section.style.cssText='border-top:1px solid #453c35;margin-top:8px;padding-top:8px';
    const label=document.createElement('strong');label.textContent=room.name;
    const note=document.createElement('p');note.textContent=room.mission+' '+room.handoff;
-   const state=document.createElement('small');state.textContent='Role plan only — room/agent activation not yet verified; '+room.authority;
+   const state=document.createElement('small');state.textContent='Live department '+room.id+' — authority '+room.authority+'. CHECK LIVE CREW verifies the seated agent; a missing seat is absent, not idle.';
    section.append(label,note,state);departments.appendChild(section);
   }
   const buildGuide=document.createElement('details');

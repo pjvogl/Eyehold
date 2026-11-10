@@ -2,6 +2,8 @@
 
 A Manager and a crew of specialists, each running a venture that can earn real money for the owner.
 
+The seven rooms on the work board are the company. Command Keep is the Manager. Raven Court is the Researcher. Star Sages rank. Iron Host holds every account, outreach, payment, listing, and trade until the owner clicks. Deepforge produces the Etsy shop, the digital service, and the trader's plan. Silver Bough reviews it before Iron Host may queue anything outward. Treasury Watch reads verified Stripe receipts and does not invent a balance. There is not a second org chart beside these rooms.
+
 The Manager picks the work: an Etsy shop of digital and printable products, freelance-style digital services, a trader, or a new venture the Manager proposes. Before that, the Manager asks the Researcher. The Researcher, Raven Court on the work board, does nothing but research. They return ranked briefs: expected revenue, upfront cost, risk, time to first dollar, and sources. The Manager accepts a brief and assigns it to a job agent. That agent can ask the Researcher for more, such as a trending niche, a price, a competitor, or the state of a market. The answer attaches to the venture. Signups are a bonus. The score that matters is verified profit.
 
 ## What you see
