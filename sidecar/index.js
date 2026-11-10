@@ -11004,6 +11004,13 @@ async function handleRemoteRevoke(req, res) {
   respondJson(res, 200, remoteSnapshot());
 }
 
+const eyeholdMarketHttp = require('./eyehold-market-http.js').createMarketHttp({
+  file: path.join(WORKSPACES, 'eyehold-market.json'),
+  finance: eyeholdFinanceStore,
+  now: () => new Date().toISOString(),
+  secret: () => process.env.STRIPE_SECRET_KEY || '',
+  fetchImpl: (...args) => fetch(...args)
+});
 const ROUTES = [
   { m: 'GET', qsplit: '/api/groups', h: handleGroups },
   { m: 'POST', exact: '/api/groups', h: handleGroups },
@@ -11105,6 +11112,7 @@ const ROUTES = [
   { m: 'POST', exact: '/api/channels/telegram/owner/revoke', h: handleTelegramOwnerRevoke },
   { m: 'POST', exact: '/api/roster', h: handleRoster },
   { m: ['GET', 'POST'], qsplit: '/api/eyehold/review', h: (req,res) => eyeholdOwnerService.handle(req,res) },
+  { m: ['GET', 'POST'], exact: '/api/eyehold/market', h: (req,res) => eyeholdMarketHttp.handle(req,res) },
   { m: 'GET', exact: '/api/eyehold/crew', h: (req,res) => {
     const agents=Array.from(agentRoster,([agentId,row])=>({agentId,name:row.name,model:row.model,provider:row.provider}));
     res.writeHead(200, {'Content-Type':'application/json; charset=utf-8','Cache-Control':'no-store'});

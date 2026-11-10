@@ -229,6 +229,9 @@ test/eyehold-billing-receipts.test.js
 test/eyehold-market.test.js
 test/eyehold-market-channels.test.js
 test/eyehold-market-publish.test.js
+test/eyehold-market-sales.test.js
+test/eyehold-market-http.test.js
+test/eyehold-market-ui.test.js
 test/eyehold-env.test.js
 test/eyehold-portal.test.mjs
 test/desktop-csp-inline-scan.test.js
