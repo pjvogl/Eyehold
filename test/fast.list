@@ -233,6 +233,7 @@ test/eyehold-market-sales.test.js
 test/eyehold-market-http.test.js
 test/eyehold-market-ui.test.js
 test/eyehold-ventures.test.js
+test/eyehold-treasury.test.js
 test/eyehold-env.test.js
 test/eyehold-portal.test.mjs
 test/desktop-csp-inline-scan.test.js
