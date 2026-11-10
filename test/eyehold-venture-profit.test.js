@@ -21,5 +21,16 @@ assert.equal(booked.crowns, 46);
 assert.equal(booked.practicePoints, 0);
 assert.equal(booked.treasury.earnedCents, 4600);
 assert.equal(booked.ladder.unlockedMilestonesUSD.length, 0);
+assert.equal(booked.researcherCrowns, 0);
+const shared = settleVentureProfit({
+  finance, treasury, score,
+  sale: { id: 'stripe:pi_shared', verified: true, livemode: false, currency: 'USD', cents: 2000, computeCents: 0 },
+  agentId: 'moonleaf', ventureId: 'etsy-shop',
+  research: { researcherId: 'raven', sharePercent: 20 },
+  confirmedReviewed: true
+});
+assert.equal(shared.netCents, 2000);
+assert.equal(score.board().find(item => item.agentId === 'raven').crowns, 4);
+assert.equal(score.board().find(item => item.agentId === 'moonleaf').crowns, 46 + 16);
 fs.rmSync(root, { recursive: true, force: true });
 console.log('Verified venture profit funds the ladder, the treasury, and Crowns');

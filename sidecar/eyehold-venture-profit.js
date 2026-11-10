@@ -4,7 +4,7 @@
  */
 'use strict';
 const { settleReviewedSale } = require('./eyehold-market-sales.js');
-function settleVentureProfit({ finance, treasury, score, sale, agentId, ventureId, otherCostCents = 0, confirmedReviewed = false }) {
+function settleVentureProfit({ finance, treasury, score, sale, agentId, ventureId, otherCostCents = 0, research = null, confirmedReviewed = false }) {
   if (confirmedReviewed !== true) throw new Error('Explicit local operator review required');
   if (!Number.isSafeInteger(otherCostCents) || otherCostCents < 0) throw new Error('other cost must be measured in cents');
   settleReviewedSale(finance, sale, { confirmedReviewed: true });
@@ -15,9 +15,27 @@ function settleVentureProfit({ finance, treasury, score, sale, agentId, ventureI
   }
   const net = sale.cents - sale.computeCents - otherCostCents;
   if (net > 0) treasury.creditEarned(net, { verified: true });
+  let researcherShare = 0;
+  if (research && net > 0) {
+    if (!Number.isInteger(research.sharePercent) || research.sharePercent < 1 || research.sharePercent > 50) throw new Error('research share must be 1 to 50 percent');
+    researcherShare = Math.floor(net * research.sharePercent / 100);
+  }
+  const workerNet = net - researcherShare;
   const scored = score.creditVerified({
-    agentId, ventureId, revenueCents: sale.cents, computeCents: sale.computeCents, otherCostCents
+    agentId, ventureId,
+    revenueCents: workerNet + sale.computeCents + otherCostCents,
+    computeCents: sale.computeCents,
+    otherCostCents
   });
-  return { ladder: finance.snapshot(), crowns: scored.crowns, netCents: scored.netCents, treasury: treasury.snapshot(), practicePoints: scored.practicePoints };
+  let researcher = null;
+  if (researcherShare > 0) {
+    researcher = score.creditVerified({
+      agentId: research.researcherId, ventureId, revenueCents: researcherShare, computeCents: 0, otherCostCents: 0
+    });
+  }
+  return {
+    ladder: finance.snapshot(), crowns: scored.crowns, researcherCrowns: researcher ? researcher.crowns : 0,
+    netCents: net, treasury: treasury.snapshot(), practicePoints: scored.practicePoints
+  };
 }
 module.exports = { settleVentureProfit };
