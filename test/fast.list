@@ -236,6 +236,7 @@ test/eyehold-ventures.test.js
 test/eyehold-treasury.test.js
 test/eyehold-venture-score.test.js
 test/eyehold-trader.test.js
+test/eyehold-etsy.test.js
 test/eyehold-env.test.js
 test/eyehold-portal.test.mjs
 test/desktop-csp-inline-scan.test.js
