@@ -240,6 +240,7 @@ test/eyehold-etsy.test.js
 test/eyehold-venture-profit.test.js
 test/eyehold-venture-http.test.js
 test/eyehold-venture-ui.test.js
+test/eyehold-research.test.js
 test/eyehold-env.test.js
 test/eyehold-portal.test.mjs
 test/desktop-csp-inline-scan.test.js
