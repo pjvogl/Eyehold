@@ -416,12 +416,11 @@ const sharedSpecialties = require('../shared/specialties.js');   // Class Loadou
 // the [ORCHESTRATION] teamNote never drift from the Recruitment Bay (single source of truth).
 const SPECIALIST_CLASSES = (sharedSpecialties.BUILTINS || []).map(s => ({ id: s.id, tagline: s.tagline || '' }));
 
-// ---- Skynet→StarNet env back-compat ------------------------------------------------------------
-// The project was renamed Skynet → StarNet; its env vars moved SKYNET_* → STARNET_*. ENV() reads the
-// NEW name first and falls back to the LEGACY one, so existing launch configs / shells / the desktop
-// shell keep working unchanged. Membership test (not truthiness) so a deliberately-empty STARNET_X
-// still wins over a set SKYNET_X — preserving each downstream var's exact empty-vs-unset semantics.
-function ENV(suffix) { const k = 'STARNET_' + suffix; return (k in process.env) ? process.env[k] : process.env['SKYNET_' + suffix]; }
+// ---- Skynet→StarNet→Eyehold env back-compat ----------------------------------------------------
+// ENV() reads EYEHOLD_* first, then STARNET_*, then SKYNET_*. Existing launch configs keep working.
+// Membership test (not truthiness) so a deliberately-empty EYEHOLD_X still wins over a set older name.
+const { readScopedEnv } = require('./eyehold-env.js');
+function ENV(suffix) { return readScopedEnv(suffix, process.env); }
 
 const PORT = Number(ENV('PORT') || process.env.PORT) || 8787;
 const API_TOKEN = String(ENV('API_TOKEN') || crypto.randomBytes(32).toString('hex'));
