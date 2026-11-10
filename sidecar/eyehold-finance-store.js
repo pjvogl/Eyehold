@@ -46,6 +46,20 @@ function createFinanceStore({file, now}){
   finally{fs.rmSync(temp,{force:true});}
   return snapshot();
  }
- return Object.freeze({snapshot,replaceReviewed});
+ function readEntries(){
+  let state;
+  try{state=JSON.parse(fs.readFileSync(file,'utf8'));}
+  catch(e){if(e.code==='ENOENT')return [];throw e;}
+  if(state.version!==1||!Array.isArray(state.receipts))throw Error('Invalid evidence store');
+  return state.receipts.map(entry=>{
+   if(typeof entry.bytes!=='string'||hash(entry.bytes)!==entry.sha256)throw Error('Financial evidence hash mismatch');
+   return entry.bytes;
+  });
+ }
+ function appendReviewed(receipts,{confirmedReviewed=false}={}){
+  if(confirmedReviewed!==true)throw Error('Explicit local operator review required');
+  return replaceReviewed(readEntries().concat(receipts),{confirmedReviewed:true});
+ }
+ return Object.freeze({snapshot,replaceReviewed,appendReviewed});
 }
 module.exports={createFinanceStore};
