@@ -52,18 +52,41 @@ function paintWall(w, h) {
   const px = buf(w, h), bay = Math.floor(w / 4);
   for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
     const bx = x % bay;
-    const course = Math.floor(y / 14);
-    const shift = (course & 1) ? Math.floor(bay / 6) : 0;
-    const mortar = (y % 14) < 2 || ((bx + shift) % Math.floor(bay / 3)) < 2;
-    const post = bx < 12 || bx >= bay - 12;
-    const beam = y < 18 || y >= h - 20;
+    const course = Math.floor(y / 36);
+    const shift = (course & 1) ? Math.floor(bay / 5) : 0;
+    const mortar = (y % 36) < 4 || ((bx + shift) % Math.floor(bay / 2)) < 4;
+    const post = bx < 28 || bx >= bay - 28;
+    const beam = y < 40 || y >= h - 48;
     const torchX = Math.abs(bx - Math.floor(bay / 2));
-    const torchY = y - Math.floor(h * 0.42);
-    let color = mortar ? C.mortar : (n32(Math.floor(x / 7), course) > 0.72 ? C.stone2 : C.stone);
-    if (post || beam) color = (bx + y) % 9 === 0 ? C.timber : C.timber2;
-    if (torchX < 5 && torchY > -8 && torchY < 28) color = torchY < 8 ? C.flame : C.ember;
-    if (torchX < 2 && torchY >= -18 && torchY < -8) color = C.gold;
+    const torchY = y - Math.floor(h * 0.38);
+    let color = mortar ? C.mortar : (n32(course, Math.floor((bx + shift) / 20)) > 0.62 ? C.stone2 : C.stone);
+    if (post || beam) color = ((bx + y) % 11) < 3 ? C.timber : C.timber2;
+    if (torchX < 18 && torchY > -10 && torchY < 70) color = torchY < 24 ? C.flame : C.ember;
+    if (torchX < 6 && torchY >= -36 && torchY < -10) color = C.gold;
     put(px, w, h, x, y, color);
+  }
+  return px;
+}
+function paintShell(w, h) {
+  const px = buf(w, h), period = 96;
+  for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
+    const lx = x % period, ly = y % period;
+    const course = Math.floor(ly / 24);
+    const shift = (course & 1) ? 20 : 0;
+    const mortar = ly % 24 < 3 || (lx + shift) % 32 < 3;
+    const beam = ly < 16 || ly > 80;
+    let color = mortar ? C.mortar : (n32(Math.floor(x / period), course) > 0.5 ? C.stone2 : C.stone);
+    if (beam) color = lx % 8 < 2 ? C.gold : C.timber;
+    put(px, w, h, x, y, color);
+  }
+  return px;
+}
+function paintCrown(w, h) {
+  const px = buf(w, h);
+  for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
+    const band = y > h * 0.2 && y < h * 0.75;
+    const stud = band && (x % 48) < 8 && Math.abs(y - h * 0.48) < 10;
+    put(px, w, h, x, y, stud ? C.gold : band ? C.timber : C.timber2);
   }
   return px;
 }
@@ -179,6 +202,13 @@ await writeRaw(floorRel, paintFloor(floorSize.w, floorSize.h), floorSize.w, floo
 const wallRel = 'frontend/assets/industrial/remaster/walls/panelled-v3.png';
 const wallSize = pngSize(join(root, wallRel));
 await writeRaw(wallRel, paintWall(wallSize.w, wallSize.h), wallSize.w, wallSize.h, 'keep-wall');
+for (const [rel, paint, role] of [
+  ['frontend/assets/industrial/remaster/shell-v2.png', paintShell, 'keep-shell'],
+  ['frontend/assets/industrial/remaster/crown.png', paintCrown, 'keep-crown']
+]) {
+  const size = pngSize(join(root, rel));
+  await writeRaw(rel, paint(size.w, size.h), size.w, size.h, role);
+}
 
 const replacements = new Map();
 for (const [name, kind] of Object.entries(KINDS)) {
