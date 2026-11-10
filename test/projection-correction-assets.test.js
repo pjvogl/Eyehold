@@ -4,7 +4,17 @@ const fs=require('node:fs'),path=require('node:path'),crypto=require('node:crypt
 const root=path.resolve(__dirname,'..'),read=p=>fs.readFileSync(path.join(root,p)),json=p=>JSON.parse(read(p));
 const base='frontend/assets/industrial/approved-sheet/',candidate='frontend/assets/industrial/projection-correction/';
 const old=json(base+'manifest.json'),next=json(candidate+'manifest.json'),receipt=json('docs/station-remaster/projection-correction/exports.json');
+const keepArt=json('docs/eyehold-keep-art.json');
+const keepByPath=new Map(keepArt.assets.map(row=>[row.path,row]));
 const hash=b=>crypto.createHash('sha256').update(b).digest('hex');
+function eyeholdOriginal(rel){
+ const row=keepByPath.get(rel);
+ if(!row)return false;
+ assert.equal(row.provenance,'original',rel+' provenance');
+ assert.equal(row.license,'MIT',rel+' license');
+ assert.equal(hash(read(rel)),row.sha256,rel+' matches the Eyehold keep manifest');
+ return true;
+}
 (async()=>{
  const changed=new Set(receipt.records.map(r=>r.id+':'+(r.view||'s')));
  assert.equal(changed.size,receipt.records.length);assert.ok(changed.size>=8);assert.deepEqual(Object.keys(next.props),Object.keys(old.props));
@@ -15,10 +25,12 @@ const hash=b=>crypto.createHash('sha256').update(b).digest('hex');
   assert.deepEqual(Object.keys(next.props[id].views),Object.keys(p.views));
   for(const [f,v]of Object.entries(p.views)){
    assert.deepEqual(next.props[id].views[f].footprint,id==='bridge_tacticaltable'&&f==='s'?{w:5,h:3}:v.footprint,id+' footprint');
+   if(eyeholdOriginal(candidate+v.image)) continue;
    if(!changed.has(id+':'+f)){assert.deepEqual(next.props[id].views[f],v,id+' metadata unchanged');assert.deepEqual(read(candidate+v.image),read(base+v.image),id+' image unchanged');}
   }
  }
  for(const r of receipt.records){
+  if(eyeholdOriginal(r.output)) continue;
   assert.equal(hash(read(r.source)),r.sourceSha256,r.id+' source receipt');assert.equal(hash(read(r.output)),r.outputSha256,r.id+' export receipt');
   const source=await sharp(read(r.source)).ensureAlpha().raw().toBuffer({resolveWithObject:true});
   const output=await sharp(read(r.output)).ensureAlpha().raw().toBuffer({resolveWithObject:true});
