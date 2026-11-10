@@ -1,0 +1,31 @@
+name = "eyehold"
+main = "src/worker.js"
+compatibility_date = "2026-11-10"
+compatibility_flags = ["nodejs_compat"]
+workers_dev = false
+preview_urls = false
+
+# This is the Worker to attach as the custom domain eyehold.babelbook.net.
+# Do not add routes under babelbook.net/* and do not deploy the
+# babelbook-staging Worker.
+
+[observability]
+enabled = true
+
+[observability.traces]
+enabled = true
+
+[vars]
+EYEHOLD_BASE_DOMAIN = "eyehold.babelbook.net"
+STRIPE_MODE = "test"
+
+# wrangler secret put:
+# STRIPE_SECRET_KEY
+# STRIPE_WEBHOOK_SECRET
+# EYEHOLD_ACCESS_EMAILS
+# EYEHOLD_ACCESS_CLIENT_ID
+# EYEHOLD_ACCESS_CLIENT_SECRET
+
+[[kv_namespaces]]
+binding = "BILLING_KV"
+id = "00000000000000000000000000000000"
