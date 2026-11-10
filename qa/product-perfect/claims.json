@@ -18,7 +18,7 @@
   "expectedClaimCount": 40,
   "releaseSurface": {
     "algorithm": "sha256",
-    "sourceCommit": "736fe945afd80aee42c4a46b154f70b8fed25a03",
+    "sourceCommit": "48e65d9b8ca619a7c0614e97cd43e1ca644d294d",
     "pathSetSha256": "cca67e57f660c92d4c8b3b69daf79759a44c4598e8c5258e8a140f8abc35969d",
     "files": [
       {
@@ -488,8 +488,8 @@
       },
       {
         "path": "frontend/app/eyehold-departments.js",
-        "bytes": 3215,
-        "sha256": "9181f9743f62df9f6bb1f1ff1fe73597bd34fdff1d1435e0e682a63b2e55a988"
+        "bytes": 3298,
+        "sha256": "c6f5e85be293879e8170191533ce74412685b68184e431c4e188ef1cb93b0fd2"
       },
       {
         "path": "frontend/app/eyehold-environments.js",
@@ -503,8 +503,8 @@
       },
       {
         "path": "frontend/app/eyehold-layout-install.js",
-        "bytes": 4451,
-        "sha256": "3fa4c532337d2021be81685f8ecc4db1a807918b4d273ea62ba44bfa619798cd"
+        "bytes": 4834,
+        "sha256": "2ff332f49aae571a29e5a49c6da6b2b60d457296b8d3fbcafae5d4de0e1fc850"
       },
       {
         "path": "frontend/app/eyehold-loot-preview.js",
@@ -558,8 +558,8 @@
       },
       {
         "path": "frontend/app/eyehold-workboard.js",
-        "bytes": 19036,
-        "sha256": "12586e56cb69229d256f20295c7c8ce02eed2017a9e4afa0900d35ca9148b56b"
+        "bytes": 19102,
+        "sha256": "fe53d5fb37f5a5f9ff9a7f779cd3978a32efbf1d1be7dc9c72d450027040c258"
       },
       {
         "path": "frontend/app/firstvalue.js",
