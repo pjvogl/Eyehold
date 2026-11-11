@@ -21,6 +21,9 @@ const A = require('./_assert.js');
 const P = require('../frontend/app/pipeline.js');
 const WM = require('../frontend/app/worldmodel.js');
 const LE = require('../frontend/app/lineedit.js');
+const PS = require('../frontend/app/propsprites.js');
+// Match the running station: flat rugs are floor paint, not obstacles.
+WM.setPropRules(t => PS.ruleFor(t));
 
 const fresh = () => WM.create(WM.starterDoc());
 const snapOf = st => JSON.stringify(st.toJSON ? st.toJSON() : { props: st.props(), belts: st.belts(), links: st.links() });

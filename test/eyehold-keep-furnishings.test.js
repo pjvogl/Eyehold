@@ -31,8 +31,8 @@ const FURNISHINGS = {
   eyehold_bookcase: { label: 'OAK BOOKCASE', w: 1, h: 2, blocks: true, n: 2 },
   eyehold_banner: { label: 'KEEP BANNER', w: 2, h: 1, blocks: false, n: 1 },
   eyehold_map: { label: 'REALM MAP', w: 2, h: 1, blocks: false, n: 1 },
-  eyehold_rug: { label: 'KEEP RUG', w: 4, h: 3, blocks: false, n: 1 },
-  eyehold_runner: { label: 'LONG RUG', w: 4, h: 2, blocks: false, n: 1 },
+  eyehold_rug: { label: 'KEEP RUG', w: 2, h: 2, blocks: false, n: 1 },
+  eyehold_runner: { label: 'LONG RUG', w: 3, h: 1, blocks: false, n: 1 },
   eyehold_scribe: { label: 'SCRIBE DESK', w: 2, h: 1, blocks: true, n: 1 },
   eyehold_chest: { label: 'BANDED CHEST', w: 1, h: 1, blocks: true, n: 2 },
   eyehold_candle: { label: 'TALLOW CANDLE', w: 1, h: 1, blocks: false, n: 4 }
