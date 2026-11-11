@@ -1,0 +1,148 @@
+{
+  "generator": "scripts/eyehold-keep-art.mjs",
+  "provenance": "original",
+  "license": "MIT",
+  "note": "Procedural pixel art for the seeded Eyehold room. Upstream sheets were not sampled. Crowns are not depicted as money.",
+  "assets": [
+    {
+      "path": "frontend/assets/industrial/remaster/floors/resin.png",
+      "role": "keep-floor",
+      "provenance": "original",
+      "license": "MIT",
+      "width": 512,
+      "height": 512,
+      "sha256": "d18908811d61c2dffa7a2a50977a6fd29d7cdcb11128e0a1a2b8cc93d8fb7d59",
+      "replaces": "d18908811d61c2dffa7a2a50977a6fd29d7cdcb11128e0a1a2b8cc93d8fb7d59"
+    },
+    {
+      "path": "frontend/assets/industrial/remaster/walls/panelled-v3.png",
+      "role": "keep-wall",
+      "provenance": "original",
+      "license": "MIT",
+      "width": 1408,
+      "height": 1117,
+      "sha256": "0dbcd59694318c919bc13c6032386d7ecf6fbe4c9776e99095a81b5ad2deb3d0",
+      "replaces": "1ca4495ee695acf98a93f6eb8a1f12be1e70da802b3a8b4214a98878d21b1fd4"
+    },
+    {
+      "path": "frontend/assets/industrial/remaster/shell-v2.png",
+      "role": "keep-shell",
+      "provenance": "original",
+      "license": "MIT",
+      "width": 1254,
+      "height": 1254,
+      "sha256": "c38d47caeb0c8ab66af21348453d175da744d57699cb736fdf9ec3721f74caab",
+      "replaces": "6b843495966bfb0cad80b248d0c323583cc6e4fb511cc81351af5566edc4c224"
+    },
+    {
+      "path": "frontend/assets/industrial/remaster/crown.png",
+      "role": "keep-crown",
+      "provenance": "original",
+      "license": "MIT",
+      "width": 1983,
+      "height": 793,
+      "sha256": "d495616c4bfca81f4e9052e25c3b113cd447684f5b0ee28ae5a5eb495aa577a3",
+      "replaces": "e44d3aa3703e06563a2d0ae4ad09b474dfee0089a27a80c158156d7b3fbc498e"
+    },
+    {
+      "path": "frontend/assets/industrial/projection-correction/desk.png",
+      "role": "keep-prop:desk",
+      "provenance": "original",
+      "license": "MIT",
+      "width": 1207,
+      "height": 804,
+      "sha256": "6ab27f01cb5ff96091fafac4325d4ead7d70df7de7609a26e11e224cc3d33864",
+      "replaces": "6ab27f01cb5ff96091fafac4325d4ead7d70df7de7609a26e11e224cc3d33864"
+    },
+    {
+      "path": "frontend/assets/industrial/projection-correction/desk-n.png",
+      "role": "keep-prop:desk-n",
+      "provenance": "original",
+      "license": "MIT",
+      "width": 597,
+      "height": 469,
+      "sha256": "7bf9ff6a2dcf44a59ca959b0eab22e638ef2115ec7b3005063f06576688d546a",
+      "replaces": "7bf9ff6a2dcf44a59ca959b0eab22e638ef2115ec7b3005063f06576688d546a"
+    },
+    {
+      "path": "frontend/assets/industrial/projection-correction/desk-e.png",
+      "role": "keep-prop:desk-e",
+      "provenance": "original",
+      "license": "MIT",
+      "width": 138,
+      "height": 190,
+      "sha256": "207b545cd9376760a7c374947021d69e39a41d4d01ab0e7c7edf6568f0b60255",
+      "replaces": "207b545cd9376760a7c374947021d69e39a41d4d01ab0e7c7edf6568f0b60255"
+    },
+    {
+      "path": "frontend/assets/industrial/projection-correction/desk-w.png",
+      "role": "keep-prop:desk-w",
+      "provenance": "original",
+      "license": "MIT",
+      "width": 128,
+      "height": 190,
+      "sha256": "d027cb4027b8f649e7c0c968688e8ea9178649a9b72287f7437b8a7ace409a45",
+      "replaces": "d027cb4027b8f649e7c0c968688e8ea9178649a9b72287f7437b8a7ace409a45"
+    },
+    {
+      "path": "frontend/assets/industrial/projection-correction/plant.png",
+      "role": "keep-prop:plant",
+      "provenance": "original",
+      "license": "MIT",
+      "width": 640,
+      "height": 1412,
+      "sha256": "dd84673b4318cd0dba40c5570d316d667df2820958c9fb32a5cb9ccf5eb1a417",
+      "replaces": "dd84673b4318cd0dba40c5570d316d667df2820958c9fb32a5cb9ccf5eb1a417"
+    },
+    {
+      "path": "frontend/assets/industrial/projection-correction/comms_dish.png",
+      "role": "keep-prop:banner",
+      "provenance": "original",
+      "license": "MIT",
+      "width": 777,
+      "height": 1039,
+      "sha256": "02b08f1df2aefe1f9dd13de76424f76269d06cfdf7bf02bcba935b72ea5a23e8",
+      "replaces": "02b08f1df2aefe1f9dd13de76424f76269d06cfdf7bf02bcba935b72ea5a23e8"
+    },
+    {
+      "path": "frontend/assets/industrial/projection-correction/war_intelcab.png",
+      "role": "keep-prop:bookshelf",
+      "provenance": "original",
+      "license": "MIT",
+      "width": 950,
+      "height": 930,
+      "sha256": "5bf12cfec361329e237cd0dc3a3016b5ac402a7286591137943719a201178c4d",
+      "replaces": "5bf12cfec361329e237cd0dc3a3016b5ac402a7286591137943719a201178c4d"
+    },
+    {
+      "path": "frontend/assets/industrial/projection-correction/gigs_servercart.png",
+      "role": "keep-prop:chest",
+      "provenance": "original",
+      "license": "MIT",
+      "width": 1071,
+      "height": 1004,
+      "sha256": "f7ff637dbc074d533c0a1deb62db9b0817b702e0dc02f5d4cb9afa8160ab79e0",
+      "replaces": "f7ff637dbc074d533c0a1deb62db9b0817b702e0dc02f5d4cb9afa8160ab79e0"
+    },
+    {
+      "path": "frontend/assets/industrial/projection-correction/workbench.png",
+      "role": "keep-prop:bench",
+      "provenance": "original",
+      "license": "MIT",
+      "width": 1515,
+      "height": 909,
+      "sha256": "78c53650c11876be8c37eb473dbd0423dc2cc7c1127dd8977ab64b1b9d1ffdfc",
+      "replaces": "78c53650c11876be8c37eb473dbd0423dc2cc7c1127dd8977ab64b1b9d1ffdfc"
+    },
+    {
+      "path": "frontend/assets/industrial/projection-correction/studio.png",
+      "role": "keep-prop:lectern",
+      "provenance": "original",
+      "license": "MIT",
+      "width": 1422,
+      "height": 856,
+      "sha256": "bef447dddcad6becdfc47fba05d906db0b6e4d8b3659a2438c489cfb1ef978c5",
+      "replaces": "bef447dddcad6becdfc47fba05d906db0b6e4d8b3659a2438c489cfb1ef978c5"
+    }
+  ]
+}

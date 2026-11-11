@@ -5,11 +5,12 @@
 'use strict';
 const path=require('node:path');
 const {createOutcomeAdapter}=require('./eyehold-outcome-adapter.js');
-function installCrownIntegration({workspaceDir,events,runs,acceptances,history,agentIds,now=Date.now}){
+function installCrownIntegration({workspaceDir,events,runs,acceptances,history,agentIds,now}){
  if(typeof workspaceDir!=='string'||!path.isAbsolute(workspaceDir))throw new TypeError('absolute workspace root required');
  if(!events||typeof events.on!=='function'||typeof events.removeListener!=='function')throw new TypeError('trusted internal event emitter required');
  if(!runs||typeof runs.get!=='function'||!acceptances||typeof acceptances.get!=='function')throw new TypeError('trusted run and acceptance stores required');
  if(!history||typeof history.forAgent!=='function'||typeof agentIds!=='function')throw new TypeError('trusted history and roster readers required');
+ if(typeof now!=='function')throw new TypeError('injected clock required');
  const ledger=path.join(workspaceDir,'.eyehold','crowns.v1.json');
  const adapter=createOutcomeAdapter({
   file:ledger,

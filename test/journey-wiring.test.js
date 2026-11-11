@@ -14,7 +14,7 @@ A.ok(index.indexOf('app/journey.js') < index.indexOf('app/journeystore.js'), 'pu
 A.ok(app.indexOf('JourneyStore.init') >= 0 && app.indexOf('JourneyStore.reset') >= 0, 'journey lifecycle initializes and clears for a new Commander');
 A.ok(goals.indexOf('JourneyStore.noteMilestone') >= 0, 'verified goal milestones fold into durable journey evidence');
 A.ok(host.indexOf("exact: '/api/journey'") >= 0 && host.indexOf('journeyStore.adaptationBlock(agentId)') >= 0, 'HTTP proof and per-agent adaptation are wired into the real host');
-A.ok(ui.indexOf('AGENT GROWTH') >= 0 && ui.indexOf('COMMANDER JOURNEY') >= 0 && ui.indexOf('STATION EVOLUTION') >= 0, 'the UI keeps all three progression tracks distinct');
+A.ok(ui.indexOf('AGENT GROWTH') >= 0 && ui.indexOf('WARDEN JOURNEY') >= 0 && ui.indexOf('STATION EVOLUTION') >= 0, 'the UI keeps all three progression tracks distinct');
 A.ok(ui.indexOf('STOP USING THIS') >= 0 && ui.indexOf('RESUME ADAPTATION') >= 0, 'adaptation receipts have Commander correction controls');
 A.ok(world.indexOf('PropSprites.setJourneyStage') >= 0 && props.indexOf('journeyStage') >= 0, 'distinct reached goals physically transform the trophy case crown');
 A.ok(xp.indexOf('SIZE_MULT') < 0 && ratings.indexOf('const verdictDelta = 3') >= 0, 'tool/spend size can no longer weight new XP verdicts upstream or downstream');

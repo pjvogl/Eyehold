@@ -1,0 +1,8 @@
+{
+  "baseDomain": "eyehold.babelbook.net",
+  "publisher": "Eyehold",
+  "appId": "net.babelbook.eyehold",
+  "desktopIdentifier": "ai.skynet.harness",
+  "updaterPath": "/updates/latest.json",
+  "releaseNotesPath": "/download"
+}

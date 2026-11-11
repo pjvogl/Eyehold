@@ -692,9 +692,10 @@ for (const c of T.catalog) {
   const size = r => { const R = r.rects[0]; return (R.x2 - R.x1 + 1) + 'x' + (R.y2 - R.y1 + 1); };
   const walks = (st, a, b) => {
     const g = st.projectGeometry(), ox = g.origin.tx, oy = g.origin.ty;
-    const free = r => { const R = r.rects[0]; for (let y = R.y1; y <= R.y2; y++) for (let x = R.x1; x <= R.x2; x++) if (g.walkable(x - ox, y - oy)) return [x - ox, y - oy]; return null; };
-    const p = free(a), q = free(b);
-    return !!(p && q && g.path(p[0], p[1], q[0], q[1]));
+    // A decorative pocket can be the first open tile. Connectivity is any open tile in each room.
+    const samples = r => { const R = r.rects[0], out = []; for (let y = R.y1; y <= R.y2 && out.length < 8; y++) for (let x = R.x1; x <= R.x2 && out.length < 8; x++) if (g.walkable(x - ox, y - oy)) out.push([x - ox, y - oy]); return out; };
+    const ps = samples(a), qs = samples(b);
+    return ps.some(p => qs.some(q => g.path(p[0], p[1], q[0], q[1])));
   };
   const touch = (p, q) => (p.x1 <= q.x2 && q.x1 <= p.x2 && (p.y2 + 1 === q.y1 || q.y2 + 1 === p.y1)) || (p.y1 <= q.y2 && q.y1 <= p.y2 && (p.x2 + 1 === q.x1 || q.x2 + 1 === p.x1));
   const mapRoom = (st, name) => SB.mapOf(st.serialize(), E).map.rooms.find(x => x.name === name);
@@ -1016,9 +1017,10 @@ for (const c of T.catalog) {
   const touch = (p, q) => (p.x1 <= q.x2 && q.x1 <= p.x2 && (p.y2 + 1 === q.y1 || q.y2 + 1 === p.y1)) || (p.y1 <= q.y2 && q.y1 <= p.y2 && (p.x2 + 1 === q.x1 || q.x2 + 1 === p.x1));
   const walks = (st, a, b) => {
     const g = st.projectGeometry(), ox = g.origin.tx, oy = g.origin.ty;
-    const free = r => { const R = r.rects[0]; for (let y = R.y1; y <= R.y2; y++) for (let x = R.x1; x <= R.x2; x++) if (g.walkable(x - ox, y - oy)) return [x - ox, y - oy]; return null; };
-    const p = free(a), q = free(b);
-    return !!(p && q && g.path(p[0], p[1], q[0], q[1]));
+    // A decorative pocket can be the first open tile. Connectivity is any open tile in each room.
+    const samples = r => { const R = r.rects[0], out = []; for (let y = R.y1; y <= R.y2 && out.length < 8; y++) for (let x = R.x1; x <= R.x2 && out.length < 8; x++) if (g.walkable(x - ox, y - oy)) out.push([x - ox, y - oy]); return out; };
+    const ps = samples(a), qs = samples(b);
+    return ps.some(p => qs.some(q => g.path(p[0], p[1], q[0], q[1])));
   };
   const size = r => { const R = r.rects[0]; return (R.x2 - R.x1 + 1) + 'x' + (R.y2 - R.y1 + 1); };
   const SIX = [{ style: 'lounge' }, { style: 'arcade' }, { style: 'library' }, { style: 'quarters' }, { style: 'garden' }, { name: 'Conveyor Hall', style: 'works', lines: [{ line: 'build_test' }, { line: 'research_line' }] }];

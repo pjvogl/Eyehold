@@ -416,12 +416,11 @@ const sharedSpecialties = require('../shared/specialties.js');   // Class Loadou
 // the [ORCHESTRATION] teamNote never drift from the Recruitment Bay (single source of truth).
 const SPECIALIST_CLASSES = (sharedSpecialties.BUILTINS || []).map(s => ({ id: s.id, tagline: s.tagline || '' }));
 
-// ---- Skynet→StarNet env back-compat ------------------------------------------------------------
-// The project was renamed Skynet → StarNet; its env vars moved SKYNET_* → STARNET_*. ENV() reads the
-// NEW name first and falls back to the LEGACY one, so existing launch configs / shells / the desktop
-// shell keep working unchanged. Membership test (not truthiness) so a deliberately-empty STARNET_X
-// still wins over a set SKYNET_X — preserving each downstream var's exact empty-vs-unset semantics.
-function ENV(suffix) { const k = 'STARNET_' + suffix; return (k in process.env) ? process.env[k] : process.env['SKYNET_' + suffix]; }
+// ---- Skynet→StarNet→Eyehold env back-compat ----------------------------------------------------
+// ENV() reads EYEHOLD_* first, then STARNET_*, then SKYNET_*. Existing launch configs keep working.
+// Membership test (not truthiness) so a deliberately-empty EYEHOLD_X still wins over a set older name.
+const { readScopedEnv } = require('./eyehold-env.js');
+function ENV(suffix) { return readScopedEnv(suffix, process.env); }
 
 const PORT = Number(ENV('PORT') || process.env.PORT) || 8787;
 const API_TOKEN = String(ENV('API_TOKEN') || crypto.randomBytes(32).toString('hex'));
@@ -822,8 +821,8 @@ const CREDITS_LOW_USD = (() => { const n = Number(ENV('CREDITS_LOW_USD')); retur
 // flipped in the same breath, as `CREDITS.live` in website/site.js — the site's buy buttons and the app's link
 // button have to tell the same story on the same day. An explicit STARNET_CLOUD_URL always wins, so operators
 // and this repo's own live tests can point at a local service without touching the flag.
-const CLOUD_LIVE = true;                                    // ← launch switch: flip WITH website/site.js CREDITS.live
-const CLOUD_URL_DEFAULT = 'https://account.starnetos.com';   // the deployed StarNet Cloud (see starnet-cloud)
+const CLOUD_LIVE = false;                                   // No Eyehold billing host. Do not flip until the owner deploys their own service and sets CREDITS.live together.
+const CLOUD_URL_DEFAULT = 'https://eyehold.babelbook.net';   // Eyehold billing host from eyehold.host.json. Unused while CLOUD_LIVE is false.
 const CLOUD_URL = String(ENV('CLOUD_URL') || (CLOUD_LIVE ? CLOUD_URL_DEFAULT : '')).trim();
 // The linked station's device token, injected by the DESKTOP from the OS keychain at spawn (keychain account
 // "credits:device"). It is a bearer credential that spends money, so the desktop adopts it out of
@@ -2756,7 +2755,7 @@ function engineCredentialError(provider, what) {
 // localStorage as a fast cache and writes through here on every persist; on boot it pulls the newer of the two.
 const saveStore = makeSaveStore({ fs, pathMod: path, root: WORKSPACES, clock: { now: () => Date.now() } });
 // Sibling of agent FS jails; local operator imports only. API is read-only and uses the existing token gate.
-const eyeholdFinanceStore = require('./eyehold-finance-store.js').createFinanceStore({file:path.join(WORKSPACES,'eyehold-finance.json')});
+const eyeholdFinanceStore = require('./eyehold-finance-store.js').createFinanceStore({file:path.join(WORKSPACES,'eyehold-finance.json'), now: () => new Date().toISOString()});
 
 /* ---- Cortex M-mem.5b: post-run reflection -> Keep/Edit/Discard turn-in ----
    After a substantive browser run COMPLETES, one cheap aux-model call (the same seam summarize() uses)
@@ -10877,7 +10876,7 @@ sse.add({
    self-hosted one, a test); STARNET_REMOTE_RELAY=off turns the relay off (hermetic tests, air-gapped installs).
    With no relay the desk says so plainly instead of pretending phones can connect. Nothing dials out unless the
    Commander switches Remote on. */
-const REMOTE_RELAY_LIVE = true;
+const REMOTE_RELAY_LIVE = false;
 const REMOTE_RELAY_DEFAULT = 'https://remote.starnetos.com';
 const REMOTE_RELAY_RAW = String(ENV('REMOTE_RELAY') || '').trim();
 const REMOTE_RELAY_URL = (/^(off|none|false|0)$/i.test(REMOTE_RELAY_RAW) ? '' : (REMOTE_RELAY_RAW || (REMOTE_RELAY_LIVE ? REMOTE_RELAY_DEFAULT : ''))).replace(/\/+$/, '');
@@ -11005,6 +11004,22 @@ async function handleRemoteRevoke(req, res) {
   respondJson(res, 200, remoteSnapshot());
 }
 
+const eyeholdVentureHttp = require('./eyehold-venture-http.js').createVentureHttp({
+  ventures: require('./eyehold-ventures.js').createVentures({ file: path.join(WORKSPACES, 'eyehold-ventures.json'), now: () => new Date().toISOString() }),
+  treasury: require('./eyehold-treasury.js').createTreasury({ file: path.join(WORKSPACES, 'eyehold-treasury.json'), now: () => new Date().toISOString() }),
+  trader: require('./eyehold-trader.js').createTrader({ file: path.join(WORKSPACES, 'eyehold-trader.json') }),
+  score: require('./eyehold-venture-score.js').createVentureScore({ file: path.join(WORKSPACES, 'eyehold-venture-score.json') }),
+  research: require('./eyehold-research.js').createResearch({ file: path.join(WORKSPACES, 'eyehold-research.json'), now: () => new Date().toISOString() }),
+  finance: eyeholdFinanceStore,
+  etsy: require('./eyehold-etsy.js').etsyListingAdapter()
+});
+const eyeholdMarketHttp = require('./eyehold-market-http.js').createMarketHttp({
+  file: path.join(WORKSPACES, 'eyehold-market.json'),
+  finance: eyeholdFinanceStore,
+  now: () => new Date().toISOString(),
+  secret: () => process.env.STRIPE_SECRET_KEY || '',
+  fetchImpl: (...args) => fetch(...args)
+});
 const ROUTES = [
   { m: 'GET', qsplit: '/api/groups', h: handleGroups },
   { m: 'POST', exact: '/api/groups', h: handleGroups },
@@ -11106,6 +11121,8 @@ const ROUTES = [
   { m: 'POST', exact: '/api/channels/telegram/owner/revoke', h: handleTelegramOwnerRevoke },
   { m: 'POST', exact: '/api/roster', h: handleRoster },
   { m: ['GET', 'POST'], qsplit: '/api/eyehold/review', h: (req,res) => eyeholdOwnerService.handle(req,res) },
+  { m: ['GET', 'POST'], exact: '/api/eyehold/market', h: (req,res) => eyeholdMarketHttp.handle(req,res) },
+  { m: ['GET', 'POST'], exact: '/api/eyehold/ventures', h: (req,res) => eyeholdVentureHttp.handle(req,res) },
   { m: 'GET', exact: '/api/eyehold/crew', h: (req,res) => {
     const agents=Array.from(agentRoster,([agentId,row])=>({agentId,name:row.name,model:row.model,provider:row.provider}));
     res.writeHead(200, {'Content-Type':'application/json; charset=utf-8','Cache-Control':'no-store'});

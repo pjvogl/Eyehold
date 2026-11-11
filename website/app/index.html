@@ -67,7 +67,7 @@
 <link rel="stylesheet" href="css/titlebar.css"><!-- custom window chrome (Windows desktop shell): themed titlebar + MIN/MAX/CLOSE; inert unless body.sn-chrome (titlebar.js) -->
 
 </head>
-<body class="theme-amber glass-demo">
+<body class="theme-realm glass-demo">
 
 <!-- ============ BOOT VEIL ============ -->
 <!-- The ONLY screen that ships class="active": a neutral phosphor holding-card shown during init()'s async
@@ -94,8 +94,9 @@
   <span class="cc-bracket sp-tl">┌</span><span class="cc-bracket sp-tr">┐</span>
   <span class="cc-bracket sp-bl">└</span><span class="cc-bracket sp-br">┘</span>
   <div class="sp-center">
+    <svg class="sp-eye" viewBox="0 0 64 40" width="128" height="80" aria-hidden="true"><path fill="#e6ac65" d="M2 20C16 4 48 4 62 20C48 36 16 36 2 20Z"/><circle cx="32" cy="20" r="6" fill="#1a1218"/><circle cx="34.5" cy="17.5" r="1.8" fill="#f0d7a8"/></svg>
     <div class="sp-logo" role="img" aria-label="The Eyehold" style="font-family:VT323,monospace;font-size:clamp(42px,7vw,92px);letter-spacing:.08em;color:#e6ac65;text-shadow:0 0 18px #bc5729;">THE EYEHOLD</div>
-    <div class="sp-tag">AI-AGENT HARNESS</div>
+    <div class="sp-tag">A REALM OF WORKING MINDS</div>
     <button id="sp-press" class="sp-press" type="button">▮ PRESS ANY KEY TO START</button>
   </div>
   <div class="sp-stamp"><span class="sp-rec">● LOCAL</span><span class="sp-sig">THE EYEHOLD · CONNECTIVITY PENDING</span></div>
@@ -372,7 +373,7 @@
 
     <div class="ov-foot">
       <div class="ov-foot-data">
-        <span class="ov-foot-cap">＋ later: agent setup in CREW › AGENTS · model in COMMS · providers, permissions &amp; appearance in SYSTEM › SETTINGS</span>
+        <span class="ov-foot-cap">＋ later: agent setup in COMPANY › AGENTS · model in MISSIVES · providers, permissions &amp; appearance in SYSTEM › SETTINGS</span>
         <!-- DATA PORTABILITY — RESTORE must stay reachable for first-run users now that the title screen is gone.
              Labeled RESTORE BACKUP (not IMPORT AGENT) so it can't be mistaken for the Recruitment Bay's
              Hermes/OpenClaw agent importer — this button only reads StarNet's own export file. EXPORT is
@@ -552,7 +553,7 @@
      var(--ph) per theme and stay crisp at any DPR / TEXT SIZE. The SVG is the master art's OWN
      letterforms traced out of its perceived-density field (dev/trace-logo.mjs), NOT a redraw; the
      title screen keeps the full-size master PNG, where the ASCII-digit texture actually reads. -->
-<div id="logo"><span role="img" aria-label="The Eyehold" style="font-family:VT323,monospace;letter-spacing:.05em;color:#e6ac65;font-size:28px">THE EYEHOLD</span></div>
+<div id="logo"><span role="img" aria-label="The Eyehold" style="font-family:VT323,monospace;letter-spacing:.05em;color:#e6ac65;font-size:28px">THE EYEHOLD</span><svg class="eyehold-sigil" viewBox="0 0 64 40" width="34" height="22" aria-hidden="true"><path fill="#e6ac65" d="M2 20C16 4 48 4 62 20C48 36 16 36 2 20Z"/><circle cx="32" cy="20" r="6" fill="#1a1218"/><circle cx="34.5" cy="17.5" r="1.8" fill="#f0d7a8"/></svg></div>
 
 <section id="screen-game" class="screen">
 
@@ -569,9 +570,9 @@
       <!-- INSTRUMENT CLUSTER (topbar.js) — one cockpit gauge group: STATION (level + XP sliver) ·
            the session-status instruments (UPLINK / ONLINE / save) moved up from
            #bottombar .bb-right with their ids intact so their existing writers keep working. -->
-      <div class="tb-stat station tb-inst" id="tb-station" title="Your Commander level grows through recorded progress toward your life goals. Open the quest log to see the achievements behind it.">
+        <div class="tb-stat station tb-inst" id="tb-station" title="Your Warden level grows through recorded progress toward your life goals. Open the quest log to see the achievements behind it.">
         <svg class="tb-station-mark" viewBox="0 0 24 28" aria-hidden="true"><path d="M12 2 22 8v12l-10 6-10-6V8Z"/><path d="m6 11 6-4 6 4M6 16l6-4 6 4M6 21l6-4 6 4"/></svg>
-        <span class="tb-lbl">COMMANDER</span>
+        <span class="tb-lbl">WARDEN</span>
         <b class="tb-val" id="gt-station">—</b>
         <span class="tb-xp" aria-hidden="true"><i class="tb-xp-fill"></i></span>
       </div>
@@ -580,7 +581,7 @@
         <button class="bb xs" id="automation-resume" hidden style="display:none" data-tip="Resume previously paused automation">RESUME AUTOMATION</button>
         <div class="tb-connection">
           <svg class="tb-link-mark" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 8v5M5 17v-4h14v4"/><rect x="9" y="2" width="6" height="6" rx="1"/><rect x="2" y="17" width="6" height="5" rx="1"/><rect x="16" y="17" width="6" height="5" rx="1"/></svg>
-          <div class="tb-link-copy"><span id="sig" title="local sidecar uplink">UPLINK <b aria-hidden="true">▂▄▆█</b></span><span id="status-pill">ONLINE</span></div>
+          <div class="tb-link-copy"><span id="sig" title="local beacon">BEACON <b aria-hidden="true">▂▄▆█</b></span><span id="status-pill">LIT</span></div>
           <span id="save-dot" title="autosave">●</span>
         </div>
       </div>
@@ -590,7 +591,7 @@
   <aside id="left">
     <!-- The head carried an "N AGENTS" count that #crew-sum already implied one panel lower
          ("0 WORKING / 2 IDLE" totals the same roster and says more). Dropped 2026-07-27 — one fact, one place. -->
-    <h3>CREW<span class="crew-h3-right"><button id="crew-search-toggle" class="crew-hide" type="button" title="Find an agent" aria-label="Find an agent" aria-expanded="false" aria-controls="crew-search-wrap">⌕</button><button id="crew-hide" class="crew-hide" type="button" title="Hide the crew rail" aria-label="Hide the crew rail" aria-expanded="true">◂</button></span></h3>
+    <h3>COMPANY<span class="crew-h3-right"><button id="crew-search-toggle" class="crew-hide" type="button" title="Find an agent" aria-label="Find an agent" aria-expanded="false" aria-controls="crew-search-wrap">⌕</button><button id="crew-hide" class="crew-hide" type="button" title="Hide the company rail" aria-label="Hide the company rail" aria-expanded="true">◂</button></span></h3>
     <div id="crew-search-wrap" class="crew-search-wrap" hidden>
       <input id="crew-search" type="search" placeholder="Find an agent…" aria-label="Find an agent by name" autocomplete="off" aria-controls="crew">
       <button id="crew-search-close" type="button" aria-label="Close agent search" title="Close agent search">✕</button>
@@ -601,9 +602,9 @@
     <!-- ROSTER SEAM (leftrail.js): drag the CREW/SESSIONS split. A zero-height flex anchor whose
          ::before covers the gap the eye reads as the seam — the flex flow places it exactly there,
          with no arithmetic against the strip above or the module below. -->
-    <div id="crew-vresizer" class="row-resizer" title="drag to resize CREW vs SESSIONS (double-click to reset)" role="separator" aria-orientation="horizontal" aria-label="Resize the crew roster"></div>
+    <div id="crew-vresizer" class="row-resizer" title="drag to resize COMPANY vs SESSIONS (double-click to reset)" role="separator" aria-orientation="horizontal" aria-label="Resize the company roster"></div>
     <div id="ws-wrap">
-      <div class="ws-head"><span class="ws-view" role="tablist" aria-label="rail view"><button id="ws-tab-sessions" class="ws-tab on" role="tab" aria-selected="true" title="your saved conversations">SESSIONS</button><button id="ws-tab-projects" class="ws-tab" role="tab" aria-selected="false" title="trusted project folders">PROJECTS</button></span><span class="ws-head-acts"><button id="ws-new" title="start a new COMMS session">+ NEW</button><button id="ws-addproject" title="bless a folder as a trusted project" hidden>+ ADD</button></span></div>
+      <div class="ws-head"><span class="ws-view" role="tablist" aria-label="rail view"><button id="ws-tab-sessions" class="ws-tab on" role="tab" aria-selected="true" title="your saved conversations">SESSIONS</button><button id="ws-tab-projects" class="ws-tab" role="tab" aria-selected="false" title="trusted project folders">PROJECTS</button></span><span class="ws-head-acts"><button id="ws-new" title="start a new MISSIVES session">+ NEW</button><button id="ws-addproject" title="bless a folder as a trusted project" hidden>+ ADD</button></span></div>
       <button id="ws-attention" class="ws-attention" type="button" aria-pressed="false" aria-controls="workstreams" hidden><span>Waiting for you</span><span id="ws-attention-count"></span><span id="ws-attention-clear" aria-hidden="true" hidden>✕</span></button>
       <!-- RAIL SEARCH (2026-07-17): the SESSION TOOLS window was retired — search lives ON the rail now
            (the one capability no other surface covered); per-session export moved into the row ⋯ menu.
@@ -640,8 +641,8 @@
   <div id="crew-resizer" class="crew-resizer" title="drag to resize the CREW rail (double-click to reset)" role="separator" aria-orientation="vertical" aria-label="Resize crew rail"><span class="col-resizer-grip"></span></div>
 
   <aside id="chat-panel">
-    <div id="comms-resizer" class="col-resizer" title="drag to resize COMMS" role="separator" aria-orientation="vertical" aria-label="Resize COMMS panel"><span class="col-resizer-grip"></span></div>
-    <h3><span id="comms-title">COMMS</span><span class="h3-right"><span class="dim" id="chat-status" role="status" aria-live="polite" aria-atomic="true">offline</span><span class="chat-elapsed" id="chat-elapsed" aria-hidden="true"></span><button id="comms-hud" type="button" hidden aria-label="Open the HUD" title="HUD: fold StarNet into a small panel that stays above your game or video (Ctrl+Shift+H)">HUD</button></span></h3>
+    <div id="comms-resizer" class="col-resizer" title="drag to resize MISSIVES" role="separator" aria-orientation="vertical" aria-label="Resize MISSIVES panel"><span class="col-resizer-grip"></span></div>
+    <h3><span id="comms-title">MISSIVES</span><span class="h3-right"><span class="dim" id="chat-status" role="status" aria-live="polite" aria-atomic="true">offline</span><span class="chat-elapsed" id="chat-elapsed" aria-hidden="true"></span><button id="comms-hud" type="button" hidden aria-label="Open the HUD" title="HUD: fold StarNet into a small panel that stays above your game or video (Ctrl+Shift+H)">HUD</button></span></h3>
     <!-- AGENT LINE (chat.js): pick which roster agent you're talking to + a truthful readout of that agent's
          current model. The <select> options + the model text are filled from the LIVE roster (App.agents),
          never hardcoded — the header is honest about who's on the line and what they run on. -->
@@ -708,7 +709,7 @@
         <div id="model-dock-list" class="model-dock-list scrolly" role="listbox" aria-label="Available models"></div>
         <div class="model-dock-foot">
           <button id="model-dock-refresh" type="button">REFRESH</button>
-          <a id="model-dock-subscription" href="https://www.starnetos.com/pricing" target="_blank" rel="noopener noreferrer" aria-label="StarNet subscription (opens in your browser)"><span>STARNET SUBSCRIPTION</span><span aria-hidden="true">↗</span></a>
+          <a id="model-dock-subscription" href="#billing-not-configured" aria-label="Eyehold billing is not configured"><span>BILLING NOT CONFIGURED</span></a>
         </div>
       </div>
       <button id="voice-toggle" class="voice-toggle" title="agent voice" aria-label="Agent voice" aria-pressed="true"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2.2 6.1h2.1L7.7 3.3v9.4L4.3 9.9H2.2z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="miter"/><g fill="none" stroke="currentColor" stroke-width="1.4"><path d="M10.3 6a3.2 3.2 0 0 1 0 4"/><path d="M12.4 4a6.2 6.2 0 0 1 0 8"/></g></svg></button>
@@ -732,7 +733,7 @@
          same Recruitment Bay in different modes — now a single #bb-recruit opens the bay once, and
          the class dossier offers BOTH verbs (summon new / deploy to current). -->
     <div class="bb-group" data-group="crew">
-      <button class="bb-grp" data-hint="crew" aria-haspopup="menu" aria-expanded="false" title="Your agents — dossiers, recruitment, and your own Commander file"><span class="bb-gi">☻</span>CREW<span id="bb-crew-stepin-badge" class="bb-grp-badge" aria-label="agents waiting for you in STEP-IN" hidden></span></button>
+      <button class="bb-grp" data-hint="crew" aria-haspopup="menu" aria-expanded="false" title="Your agents — dossiers, recruitment, and your own Commander file"><span class="bb-gi">☻</span>COMPANY<span id="bb-crew-stepin-badge" class="bb-grp-badge" aria-label="agents waiting for you in STEP-IN" hidden></span></button>
       <div class="bb-menu" role="menu">
         <button class="bb" data-term="agents"><span class="bb-i">◉</span><span class="bb-tx"><b>AGENTS</b><small>each crew member's dossier — config, memory, record</small></span></button>
         <button class="bb" id="bb-recruit" data-hint="recruit"><span class="bb-i">＋</span><span class="bb-tx"><b>RECRUIT</b><small>grow the crew — summon a class, or re-spec your agent</small></span></button>
@@ -807,7 +808,7 @@
 
   <!-- one-time coach teaching the new grouped-dock model; dismissed on first dock open / ✕ (navdock.js) -->
   <div id="nav-coach" class="nav-coach" hidden>
-    <span>Everything you run lives in these <b>4 docks</b> — click one to open it. Talk to your agent up in <b>COMMS ▸</b></span>
+    <span>Everything you run lives in these <b>4 docks</b> — click one to open it. Talk to your agent up in <b>MISSIVES ▸</b></span>
     <!-- systems.js: a fresh station's dock grows as it is used; a returning power user can have it all now -->
     <button id="nav-coach-all" class="nav-coach-x" data-tip="Bring every station system online in the dock now" hidden>SHOW EVERYTHING</button>
     <button id="nav-coach-x" class="nav-coach-x" aria-label="dismiss hint">GOT IT ✕</button>
@@ -1095,6 +1096,8 @@
 <script src="app/eyehold-departments.js"></script>
 <script src="app/eyehold-room-plan.js"></script>
 <script src="app/eyehold-workboard.js"></script>
+<script src="app/eyehold-market.js"></script>
+<script src="app/eyehold-ventures.js"></script>
 <script src="app/eyehold-room-loot.js"></script>
 <script src="app/eyehold-native-loot.js"></script>
 <script src="app/eyehold-loot-preview.js"></script>

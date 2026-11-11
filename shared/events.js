@@ -271,6 +271,12 @@
       remembered: bool, requestedAt: num, takenAt: any, endedAt: any, expiresAt: num
     }),
 
+    // ADDITIVE (Eyehold, 2026-11-09): a durable acceptance record was written.
+    // The payload names the record to re-read. It is not itself proof of payment or Crowns.
+    'deliverable.accepted': obj(['taskId', 'deliverableId'], { taskId: str, deliverableId: str }),
+    // ADDITIVE: a trusted productivity subscriber threw. Payload is the error value, not a receipt.
+    'eyehold.productivity.error': any,
+
     // ---- reserved (P3 mutation API) ----
     'worldChange': obj(['seq'], { seq: int, dirtyTiles: { type: 'array' } }),
 

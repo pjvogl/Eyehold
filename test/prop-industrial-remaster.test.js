@@ -26,7 +26,8 @@ let checked=0;
 for(const p of PS.CATALOG) {
   const original = paint(p,false), remaster = paint(p,true);
   A.ok(original.length>0 && remaster.length>0,p.id+': both modes paint');
-  A.ok(original!==remaster,p.id+': industrial material/construction reaches this prop');
+  // Eyehold keep props are original procedural art. They do not take the industrial material pass.
+  if (!p.id.startsWith('eyehold_')) A.ok(original!==remaster,p.id+': industrial material/construction reaches this prop');
   A.eq(paint(p,false),original,p.id+': returning to classic restores the exact paint');
   const base = {w:p.w,h:p.h};
   clean=true;A.eq(PS.footprintAt(p.id,0),base,p.id+': finish never resizes the footprint');

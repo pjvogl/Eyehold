@@ -143,11 +143,11 @@ const Topbar = (() => {
       if (held && !restarting && now - lastProbeAt >= PROBE_EVERY_MS) probeEngine();
       const door = held && canRestart() && !!engine && engine.state !== 'ok';
       setRecoverable(el, door || restarting);
-      el.childNodes[0].nodeValue = restarting ? 'RESTARTING… ' : door ? 'LINK DOWN · RESTART ' : 'LINK DOWN ';
+      el.childNodes[0].nodeValue = restarting ? 'RESTARTING… ' : door ? 'BEACON DARK · RESTART ' : 'BEACON DARK ';
       el.title = held ? downTip(canRestart()) : DOWN_TIP;
     } else {
       el.classList.remove('down', 'standby');
-      el.childNodes[0].nodeValue = 'UPLINK ';
+      el.childNodes[0].nodeValue = 'BEACON ';
       bars.textContent = SIG_UP;
       el.title = 'connected to StarNet’s background service — everything on screen is live';
     }

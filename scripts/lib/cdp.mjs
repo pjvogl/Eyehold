@@ -9,6 +9,7 @@
 //
 // Zero dependencies: Node 22 has global fetch + global WebSocket.
 import { spawn } from 'node:child_process';
+import { userInfo } from 'node:os';
 import { mkdirSync, writeFileSync, existsSync } from 'node:fs';
 import { join } from 'node:path';
 
@@ -16,6 +17,11 @@ export const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 const CHROME_CANDIDATES = [
   process.env.SKYNET_CHROME,
+  process.env.EYEHOLD_CHROME,
+  '/usr/local/bin/google-chrome',
+  '/usr/bin/google-chrome',
+  '/usr/bin/chromium',
+  '/usr/bin/chromium-browser',
   'C:/Users/andro/AppData/Local/ms-playwright/chromium_headless_shell-1228/chrome-headless-shell-win64/chrome-headless-shell.exe',
   'C:/Users/andro/AppData/Local/ms-playwright/chromium-1228/chrome-win64/chrome.exe',
   'C:/Program Files/Google/Chrome/Application/chrome.exe',
@@ -30,11 +36,11 @@ export function findChrome() {
 export function launchChrome({ cdpPort, win = '1440,900', profileDir }) {
   const chrome = findChrome();
   const proc = spawn(chrome, [
-    '--headless=new', '--disable-gpu', '--no-first-run', '--no-default-browser-check',
+    '--headless=new', '--no-sandbox', '--disable-dev-shm-usage', '--disable-gpu', '--no-first-run', '--no-default-browser-check',
     '--hide-scrollbars', '--mute-audio', `--remote-debugging-port=${cdpPort}`,
     `--window-size=${win}`, `--user-data-dir=${profileDir}`,
     'about:blank',
-  ], { stdio: 'ignore' });
+  ], { stdio: 'ignore', env: { ...process.env, HOME: userInfo().homedir } });
   return { proc, chrome };
 }
 

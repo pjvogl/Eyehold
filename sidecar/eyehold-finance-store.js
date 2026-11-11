@@ -13,7 +13,7 @@ function receipt(bytes){
  if(!r||typeof r.id!=='string'||!r.id.trim()||r.id.length>200||r.currency!=='USD'||!TYPES.includes(r.type)||!Number.isSafeInteger(r.cents)||r.cents<0)throw Error('Receipt must contain a unique id, USD currency, valid type and nonnegative integer cents');
  return r;
 }
-function createFinanceStore({file}){
+function createFinanceStore({file, now}){
  if(!path.isAbsolute(file))throw Error('Absolute host store path required');
  function snapshot(){
   let state;
@@ -39,13 +39,27 @@ function createFinanceStore({file}){
   // Validate arithmetic before replacing the last good state.
   reportBusinessProfit({records:entries.map(e=>{const r=receipt(e.bytes);return {type:r.type,cents:r.cents,verified:true,evidenceRef:e.sha256};})});
   if(entries.reduce((n,e)=>n+Buffer.byteLength(e.bytes),0)>8*1024*1024)throw Error('Receipt batch exceeds 8 MiB');
-  const state={version:1,reviewedBy:'local-operator',reviewedAt:new Date().toISOString(),receipts:entries};
+  const state={version:1,reviewedBy:'local-operator',reviewedAt:typeof now==='function'?now():'unspecified',receipts:entries};
   fs.mkdirSync(path.dirname(file),{recursive:true,mode:0o700});
   const temp=file+'.'+crypto.randomUUID()+'.tmp';
   try{fs.writeFileSync(temp,JSON.stringify(state)+'\n',{mode:0o600,flag:'wx'});fs.renameSync(temp,file);}
   finally{fs.rmSync(temp,{force:true});}
   return snapshot();
  }
- return Object.freeze({snapshot,replaceReviewed});
+ function readEntries(){
+  let state;
+  try{state=JSON.parse(fs.readFileSync(file,'utf8'));}
+  catch(e){if(e.code==='ENOENT')return [];throw e;}
+  if(state.version!==1||!Array.isArray(state.receipts))throw Error('Invalid evidence store');
+  return state.receipts.map(entry=>{
+   if(typeof entry.bytes!=='string'||hash(entry.bytes)!==entry.sha256)throw Error('Financial evidence hash mismatch');
+   return entry.bytes;
+  });
+ }
+ function appendReviewed(receipts,{confirmedReviewed=false}={}){
+  if(confirmedReviewed!==true)throw Error('Explicit local operator review required');
+  return replaceReviewed(readEntries().concat(receipts),{confirmedReviewed:true});
+ }
+ return Object.freeze({snapshot,replaceReviewed,appendReviewed});
 }
 module.exports={createFinanceStore};

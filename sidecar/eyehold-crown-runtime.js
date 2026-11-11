@@ -7,10 +7,11 @@
 const path=require('node:path');
 const {openAcceptanceStore}=require('./eyehold-acceptance-store.js');
 const {installCrownIntegration}=require('./eyehold-crown-integration.js');
-function createCrownRuntime({workspaceDir,events,getRun,verifyEvidence,getHistory,getAgentIds,now=Date.now}){
+function createCrownRuntime({workspaceDir,events,getRun,verifyEvidence,getHistory,getAgentIds,now}){
  if(typeof workspaceDir!=='string'||!path.isAbsolute(workspaceDir))throw new TypeError('absolute workspace required');
  if(typeof getRun!=='function'||typeof verifyEvidence!=='function'||typeof getHistory!=='function'||typeof getAgentIds!=='function')throw new TypeError('trusted host readers required');
  if(!events||typeof events.on!=='function'||typeof events.emit!=='function')throw new TypeError('trusted host emitter required');
+ if(typeof now!=='function')throw new TypeError('injected clock required');
  const acceptance=openAcceptanceStore({
   file:path.join(workspaceDir,'.eyehold','acceptances.v1.json'),
   getRun,verifyEvidence,events

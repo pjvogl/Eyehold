@@ -3,6 +3,7 @@
  */
 'use strict';
 const WorldModel=require('../frontend/app/worldmodel.js');
+const departments=require('../frontend/app/eyehold-departments.js');
 function buildEyeholdStation(){
  const station=WorldModel.create(WorldModel.starterDoc());
  const doc=station.serialize();
@@ -33,6 +34,17 @@ function buildEyeholdStation(){
   if(!workstation.ok)throw Error('workstation '+name+': '+workstation.error);
   placed.push({name,id:result.id,territory,deskId:workstation.id});
  });
- return {doc:station.serialize(),placed,homeId,corridorId:corridor.id};
+ const docLive=station.serialize();
+ docLive.rooms[homeId].departmentId='command';
+ const departmentFor={
+  archive:'opportunities', foundry:'operations', forge:'production', moonleaf:'quality'
+ };
+ for(const room of placed){
+  let departmentId=departmentFor[room.territory];
+  if(room.territory==='astral') departmentId=room.name.startsWith('Treasury')?'finance':'strategy';
+  if(!departments.get(departmentId)) throw Error('starter room is not a catalog department: '+room.name);
+  docLive.rooms[room.id].departmentId=departmentId;
+ }
+ return {doc:docLive,placed,homeId,corridorId:corridor.id};
 }
 module.exports={buildEyeholdStation};

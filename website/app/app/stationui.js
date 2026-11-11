@@ -63,7 +63,7 @@ const StationUI = typeof document === 'undefined' ? {} : (() => {
   const sfx = n => { try { if (typeof SFX === 'object' && SFX[n]) SFX[n](); } catch (_) {} };
 
   const KEY = 'starnet.station.v1';
-  const THEMES = [['amber', '#ffaa33'], ['green', '#3dff70'], ['blue', '#46c8ff'], ['purple', '#b46bff'], ['red', '#ff4136'], ['white', '#e8f0e8']];
+  const THEMES = [['realm', '#e6ac65'], ['amber', '#ffaa33'], ['green', '#3dff70'], ['blue', '#46c8ff'], ['purple', '#b46bff'], ['red', '#ff4136'], ['white', '#e8f0e8']];
 
   let present = [];          // agent objects currently on the station
   const runningAgents = new Map();   // agentId -> live-run COUNT (concurrent streams can share an agentId, e.g. 'agent')
@@ -111,7 +111,7 @@ const StationUI = typeof document === 'undefined' ? {} : (() => {
   // panelBright (−100…100, default 0) is the tube's BRIGHTNESS knob: above 0 it lifts the panel glass's black
   // level toward the phosphor colour (never toward white); below 0 it takes the panels DOWN toward true black
   // (Andrew 10-01: "it doesnt get dark enough"). 0 = the shipped look, untouched.
-  function defaults() { return { theme: 'amber', themeHue: 35, themeSat: 100, themeGlow: 100, panelBright: 0, roomLighting: 'low', textScale: 0, flicker: true, crtGlass: 'full', staticLevel: 100, sound: true, hints: true, backdrop: 'void', sessionRow: 'compact', keepComputerAwake: false, notifyPrefs: notifyDefaults() }; }
+  function defaults() { return { theme: 'realm', themeHue: 35, themeSat: 100, themeGlow: 100, panelBright: 0, roomLighting: 'low', textScale: 0, flicker: true, crtGlass: 'full', staticLevel: 100, sound: true, hints: true, backdrop: 'forest', sessionRow: 'compact', keepComputerAwake: false, notifyPrefs: notifyDefaults() }; }
   // Raise overall room exposure without changing the distribution of its lights.
   // Existing saves retain their chosen level; missing values start at LOW.
   const ROOM_LIGHTING_STEPS = [
@@ -259,7 +259,7 @@ const StationUI = typeof document === 'undefined' ? {} : (() => {
   // scale a preset's bloom without re-deriving its locked palette.
   const PRESET_GLOW = { amber: [0.5, 0.14], white: [0.35, 0.10] };
   // per-preset hue/sat so clicking a preset snaps the CUSTOM sliders to a matching start point.
-  const PRESET_HS = { amber: [35, 100], green: [136, 100], blue: [198, 100], purple: [270, 100], red: [3, 100], white: [120, 8] };
+  const PRESET_HS = { realm: [32, 72], amber: [35, 100], green: [136, 100], blue: [198, 100], purple: [270, 100], red: [3, 100], white: [120, 8] };
 
   /* ---------- settings → DOM ---------- */
   /* SCREEN FLICKER clock (#69): the station's 7s CRT flicker used to be an `infinite` CSS opacity animation on the
@@ -325,7 +325,7 @@ const StationUI = typeof document === 'undefined' ? {} : (() => {
   function applySettings() {
     const s = store.settings;
     applyRoomLighting(s.roomLighting);
-    document.body.classList.remove('theme-amber', 'theme-green', 'theme-blue', 'theme-purple', 'theme-red', 'theme-white', 'theme-custom');
+    document.body.classList.remove('theme-realm', 'theme-amber', 'theme-green', 'theme-blue', 'theme-purple', 'theme-red', 'theme-white', 'theme-custom');
     THEME_VARS.forEach(v => document.body.style.removeProperty(v));
     if (s.theme === 'custom') {
       document.body.classList.add('theme-custom');   // vars come from the inline derivation below (falls back to :root amber if JS ever misses)
@@ -501,11 +501,11 @@ const StationUI = typeof document === 'undefined' ? {} : (() => {
     return false;
   }
   function pillFor(act) {
-    if (linkDown()) return ['LINK DOWN', 'down'];   // link gone → the pill can't honestly assert ONLINE
+    if (linkDown()) return ['DARK', 'down'];   // link gone → the pill can't honestly assert LIT
     if (!linkUp()) return ['STANDBY', 'standby'];   // bridge not yet proven up → STANDBY, never a premature ONLINE
     return act === 'task' ? ['WORKING', 'working']
       : act === 'talk' ? ['THINKING', 'thinking']
-      : ['ONLINE', ''];
+      : ['LIT', ''];
   }
 
   /* ============== FLOATING TERMINAL WINDOWS (ported v7 ui.js) ============== */
@@ -7278,7 +7278,7 @@ const StationUI = typeof document === 'undefined' ? {} : (() => {
         .concat(SpaceBG.list())
         .concat(typeof Terrain === 'undefined' || !Terrain.list ? [] : Terrain.list())
         .map(b => {
-        const on = (s.backdrop || 'void') === b.id;
+        const on = (s.backdrop || 'forest') === b.id;
         return '<button class="set-bd' + (on ? ' sel' : '') + '" aria-pressed="' + (on ? 'true' : 'false') + '" data-bd="' + esc(b.id) + '" title="' + esc(b.blurb) + '">' +
           '<canvas class="set-bd-cv" width="112" height="63" aria-hidden="true"></canvas>' +
           '<span class="set-bd-name">' + esc(b.label) + '</span></button>';
@@ -7694,7 +7694,7 @@ const StationUI = typeof document === 'undefined' ? {} : (() => {
         step();
       };
       const syncBackdrop = () => bdChips.forEach(x => {
-        const on = x.dataset.bd === (s.backdrop || 'void');
+        const on = x.dataset.bd === (s.backdrop || 'forest');
         x.classList.toggle('sel', on);
         x.setAttribute('aria-pressed', on ? 'true' : 'false');
       });
@@ -10017,7 +10017,7 @@ const StationUI = typeof document === 'undefined' ? {} : (() => {
     if (JS && JS.sync) { try { JS.sync(); } catch (_) {} }
     const j = JS && JS.status ? JS.status() : null;
     const journeyState = JS && JS.state ? JS.state() : null;
-    if (!j) return '<div class="gx-sec"><span class="gx-title">COMMANDER JOURNEY</span></div>'
+    if (!j) return '<div class="gx-sec"><span class="gx-title">WARDEN JOURNEY</span></div>'
       + '<div class="q-journey-card"><div class="sub dim">Progress is not available yet. It will appear when the station can load your records.</div></div>';
 
     const evo = j.evolution || { stage: 0, name: 'DRIFT', goalsReached: 0 };
@@ -10086,7 +10086,7 @@ const StationUI = typeof document === 'undefined' ? {} : (() => {
     const progression = j.progression;
     const achievements = progression && Array.isArray(progression.achievements) ? progression.achievements.slice(-5).reverse() : [];
     const proofLabel = (kind, authority) => authority === 'commander-confirmed' ? 'You confirmed' : kind === 'metric' ? 'You recorded' : 'StarNet recorded';
-    const growthHtml = progression ? '<div class="q-commander-growth"><div class="q-journey-title">COMMANDER LEVEL ' + progression.level + '</div>'
+    const growthHtml = progression ? '<div class="q-commander-growth"><div class="q-journey-title">WARDEN LEVEL ' + progression.level + '</div>'
       + '<div class="sub">' + progression.points + ' achievement points · ' + progression.pointsToNextLevel + ' to the next level</div>'
       + '<div class="sub dim">Confirmed goal activity and recorded metric checkpoints earn points across your goals. Confirming a completed goal earns 100 points. Setbacks never erase your history.</div>'
       + '<details class="q-growth-history"><summary>Recent achievements</summary>' + achievements.map(a => '<details class="sub q-achievement"><summary>◆ ' + esc(a.title || a.kind || 'Goal progress') + ' <span class="gx-tag">+' + (Number(a.points) || 0) + '</span></summary>'
@@ -10917,7 +10917,7 @@ const StationUI = typeof document === 'undefined' ? {} : (() => {
     // `wide` = wide width only). The old per-window pixel widths (460/540/560/620/640/760/1000) are
     // gone — they made eight windows read as eight unrelated apps. A window earns WIDE only by having
     // a rail, a card grid, or side-by-side columns; everything single-column is a PANEL.
-    commander:['YOU · COMMANDER DOSSIER',      buildCommander, { console: true, className: 'commander-console' }],   // focused profile, preferences, briefing, and record sections
+    commander:['YOU · WARDEN DOSSIER',      buildCommander, { console: true, className: 'commander-console' }],   // focused profile, preferences, briefing, and record sections
     // NAV CONDENSE 2 (2026-08-04): 'skills' is no longer a window key — the skill library/agent-
     // skills sections live in the ABILITIES (connectors) console via AbilityLanes, and per-agent
     // capabilities live in the dossier's SKILLS tab. openTerm keeps the old keys alive as aliases

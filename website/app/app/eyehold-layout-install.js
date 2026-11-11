@@ -27,7 +27,14 @@
    if(!desk.ok)throw Error('desk rejected: '+desk.error);
    desks.push({roomId:room.id,deskId:desk.id,territory});
   });
-  return {doc:m.serialize(),desks};
+   const doc=m.serialize();
+   doc.rooms[home].departmentId='command';
+   const departmentFor={archive:'opportunities',foundry:'operations',forge:'production',moonleaf:'quality'};
+   for(const desk of desks){
+    const room=doc.rooms[desk.roomId];
+    room.departmentId=desk.territory==='astral'?(String(room.name).startsWith('Treasury')?'finance':'strategy'):departmentFor[desk.territory];
+   }
+   return {doc,desks};
  }
  function mount(){
   const board=document.getElementById('eyehold-workboard');if(!board||board.querySelector('[data-eye-layout]'))return;
@@ -38,7 +45,7 @@
   const result=document.createElement('p');result.setAttribute('role','status');
   section.append(note,button,result);
   const ref=board.querySelector('details');board.insertBefore(section,ref||board.firstChild);
-  button.addEventListener('click',()=>{
+  function installLayout(){
    try{
     if(typeof App==='undefined'||typeof App.station!=='function')throw Error('Launch the actual game first');
     const current=App.station();if(!current||typeof current.serialize!=='function'||typeof current.replaceLayout!=='function')throw Error('Station builder unavailable');
@@ -49,12 +56,16 @@
     const blob=new Blob([data],{type:'application/json'}),url=URL.createObjectURL(blob);
     const a=document.createElement('a');a.href=url;a.download='eyehold-station-backup.json';document.body.append(a);a.click();a.remove();
     setTimeout(()=>URL.revokeObjectURL(url),20000);
-    if(!window.confirm('Install a NEW seven-room layout into this one-room station? Your previous layout backup was downloaded. This replaces current room geometry but does not create agents or enable spending.')){result.textContent='No changes made.';return}
     const applied=current.replaceLayout(candidate.doc);if(!applied||!applied.ok)throw Error('Layout rejected: '+(applied&&applied.error||'unknown'));
     if(typeof App.persist==='function')App.persist();
-    result.textContent='Seven physical rooms installed in this station. Reload to verify persistence, then staff workstations using the existing crew tools.';
+    result.textContent='Seven physical rooms installed in this station. A backup was downloaded. Reload to verify persistence, then staff workstations using the existing crew tools.';
    }catch(e){result.textContent='Layout unchanged or installation incomplete: '+e.message}
-  });
+  }
+  if(typeof ArmConfirm!=='undefined'&&ArmConfirm.wire){
+   ArmConfirm.wire(button,{armedLabel:'SURE? REPLACE LAYOUT',restLabel:'BACK UP & INSTALL NEW LAYOUT',onConfirm:installLayout});
+  }else{
+   button.addEventListener('click',()=>{result.textContent='Confirm control unavailable. Layout unchanged.';});
+  }
  }
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mount,{once:true});else mount();
 })();

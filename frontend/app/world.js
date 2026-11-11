@@ -2331,7 +2331,7 @@ const World = (() => {
      Non-blocking props (bays, inbox/outbox chutes, filters, dropped decor) stay WALKABLE — bodies
      dock on bay tiles, airlocks are doors — but a body with prop awareness steps AROUND the
      machinery when any other route exists. Rugs and airlocks are meant to be crossed; skip them. */
-  const SOFT_CROSS = new Set(['rug', 'rug_small', 'rug_large', 'airlock']);
+  const SOFT_CROSS = new Set(['rug', 'rug_small', 'rug_large', 'eyehold_rug', 'eyehold_runner', 'airlock']);
   function beltUnion() {
     const s = new Set(blocked);
     const belts = (geo && geo.belts) || [];
@@ -7781,11 +7781,14 @@ const World = (() => {
       const assignedSpecialty = who === agent ? (who.specialtyId || null) : (who.eyeSpecialtyId || null);
       const verifiedFaction = typeof EyeholdAgentBinding !== 'undefined'
         ? EyeholdAgentBinding.resolve(assignedSpecialty, territory) : null;
-      const isEye = who === agent && territory === 'keep' && typeof EyeholdSprites !== 'undefined';
+      const isEye = who === agent && typeof EyeholdSprites !== 'undefined';
       const isFaction = !isEye && verifiedFaction && typeof EyeholdFactions !== 'undefined'
         && Object.prototype.hasOwnProperty.call(EyeholdFactions.sprites, verifiedFaction);
+      const factionId = isFaction ? verifiedFaction : 'wanderer';
+      const isWanderer = !isEye && !isFaction && typeof EyeholdFactions !== 'undefined'
+        && Object.prototype.hasOwnProperty.call(EyeholdFactions.sprites, 'wanderer');
       if (isEye) geom = EyeholdSprites.draw(ctx, who, now);
-      else if (isFaction) {
+      else if (isFaction || isWanderer) {
         // Only actual tracked backend run IDs, refreshed by run events/snapshot,
         // activate the work pose. Seated/idle agents never fake productivity.
         const aid = who === agent ? who.id : (who.agentId || who.id);
@@ -7793,7 +7796,7 @@ const World = (() => {
         const backendRunning = !!(liveRuns && liveRuns.size > 0);
         geom = EyeholdFactions.draw(ctx, Object.assign({}, who, {
           eyeBackendRunning: backendRunning
-        }), now, territory);
+        }), now, factionId);
       }
       if (!geom && typeof SPRITES !== 'undefined' && SPRITES.ready) geom = SPRITES.drawBody(ctx, who, now,
         bodyLight ? { reducedMotion: reduceMotion(), light: bodyLight,

@@ -35,7 +35,7 @@ const Dialogue = (() => {
   // seeded NOVA / VENOM / ULTRON tone), uppercased and clamped to the 18-char nameplate cap. Deterministic pool,
   // random pick — every silent awakening still gets a real name, never the generic placeholder.
   const CODENAMES = [
-    'NOVA', 'VESPER', 'ONYX', 'HALCYON', 'ORACLE', 'CIPHER', 'VANTA', 'ECHO',
+    'WREN', 'VESPER', 'ONYX', 'HALCYON', 'ORACLE', 'CIPHER', 'VANTA', 'ECHO',
     'WRAITH', 'SABLE', 'QUASAR', 'OBSIDIAN', 'PHANTOM', 'ZEPHYR', 'HELIX', 'RAVEN',
     'PROXIMA', 'ATLAS', 'SPECTER', 'CINDER', 'VECTOR', 'MERIDIAN', 'UMBRA', 'PULSAR',
   ];

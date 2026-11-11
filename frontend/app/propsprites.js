@@ -10727,6 +10727,107 @@ const PropSprites = (() => {
     F.seatchair(x,y,w,h,f);
   };
 
+  /* EYEHOLD KEEP FURNISHINGS. Original procedural pixel props for the seeded stone
+     room. They do not sample an upstream sheet, and none of them grant a capability.
+     Coordinates are the pixel box draw() already scaled from the catalog footprint. */
+  const EH = {
+    ink:'#1c1418', timber:'#704424', timber2:'#4e2e18', gold:'#e6ac65', ember:'#d6682a',
+    flame:'#f4dcaa', parchment:'#e8d6b0', cloth:'#70242e', leaf:'#2e5230', stone:'#4e4236',
+    stone2:'#3a322a', brass:'#ba8e46', coal:'#241610', water:'#2a4a62'
+  };
+  const ehFlick = (x) => (Math.floor(now / 160) + (x | 0)) & 1;
+  F.eyehold_hearth = (x, y, w, h) => {
+    const bob = ehFlick(x);
+    px(x + 1, y + h - 6, w - 2, 5, EH.stone);
+    px(x + 2, y + 8, 4, h - 14, EH.stone2);
+    px(x + w - 6, y + 8, 4, h - 14, EH.stone2);
+    px(x + 1, y + 5, w - 2, 4, EH.timber);
+    px(x + 3, y + 6, w - 6, 1, EH.gold);
+    px(x + 6, y + 12, w - 12, h - 18, EH.coal);
+    px(x + 8, y + 13 - bob, 3, 7 + bob, EH.ember);
+    px(x + Math.floor(w / 2) - 1, y + 11 - bob, 3, 9 + bob, EH.flame);
+    px(x + w - 11, y + 15, 3, 5, EH.ember);
+    px(x, y + h - 2, w, 2, EH.ink);
+  };
+  F.eyehold_bookcase = (x, y, w, h) => {
+    px(x, y, w, h, EH.timber2);
+    px(x + 1, y + 1, w - 2, h - 3, EH.ink);
+    for (let i = 0; i < 3; i++) {
+      const sy = y + 2 + i * 7;
+      px(x + 1, sy, w - 2, 2, EH.timber);
+      px(x + 2, sy + 2, 2, 4, EH.cloth);
+      px(x + 4, sy + 3, 2, 3, EH.leaf);
+      px(x + 6, sy + 2, 2, 4, EH.gold);
+      px(x + 8, sy + 3, 2, 3, EH.parchment);
+    }
+    px(x, y + h - 2, w, 2, EH.ink);
+  };
+  F.eyehold_banner = (x, y, w) => {
+    px(x + 1, y - 32, 3, 6, EH.brass);
+    px(x + w - 4, y - 32, 3, 6, EH.brass);
+    px(x + 2, y - 30, w - 4, 3, EH.timber);
+    px(x + 4, y - 27, w - 8, 30, EH.cloth);
+    px(x + 8, y - 20, 6, 6, EH.gold);
+    px(x + 10, y - 18, 2, 12, EH.gold);
+    px(x + 6, y - 6, 3, 5, EH.timber2);
+    px(x + w - 9, y - 4, 3, 5, EH.timber2);
+  };
+  F.eyehold_map = (x, y, w) => {
+    px(x + 2, y - 26, w - 4, 3, EH.timber);
+    px(x + 3, y - 23, w - 6, 28, EH.parchment);
+    px(x + 6, y - 18, 10, 1, EH.leaf);
+    px(x + 8, y - 15, 8, 1, EH.stone2);
+    px(x + 5, y - 12, 12, 1, EH.water);
+    px(x + 7, y - 9, 1, 6, EH.water);
+    px(x + 14, y - 10, 3, 3, EH.ember);
+    px(x + 4, y + 4, w - 8, 2, EH.brass);
+  };
+  F.eyehold_rug = (x, y, w, h) => {
+    px(x + 1, y + 1, w - 2, h - 2, EH.cloth);
+    px(x + 4, y + 4, w - 8, h - 8, EH.timber2);
+    px(x + 7, y + 7, w - 14, h - 14, EH.gold);
+    px(x + Math.floor(w / 2) - 3, y + Math.floor(h / 2) - 3, 6, 6, EH.ink);
+    px(x + 2, y + 2, w - 4, 2, EH.brass);
+    px(x + 2, y + h - 4, w - 4, 2, EH.brass);
+    px(x + 2, y + 2, 2, h - 4, EH.brass);
+    px(x + w - 4, y + 2, 2, h - 4, EH.brass);
+  };
+  F.eyehold_runner = (x, y, w, h) => {
+    px(x, y + 1, w, h - 2, EH.cloth);
+    px(x + 2, y + 3, w - 4, h - 6, EH.timber2);
+    px(x + 4, y + 4, 4, h - 8, EH.gold);
+    px(x + w - 8, y + 4, 4, h - 8, EH.gold);
+    px(x, y + 1, w, 2, EH.brass);
+    px(x, y + h - 3, w, 2, EH.brass);
+  };
+  F.eyehold_scribe = (x, y, w, h) => {
+    px(x + 1, y + h - 4, 3, 3, EH.timber2);
+    px(x + w - 4, y + h - 4, 3, 3, EH.timber2);
+    px(x, y + 1, w, 6, EH.timber);
+    px(x + 2, y + 2, w - 4, 2, EH.gold);
+    px(x + 3, y + 3, 8, 3, EH.parchment);
+    px(x + 4, y + 4, 6, 1, EH.ink);
+    px(x + w - 7, y, 3, 4, EH.brass);
+    px(x + w - 6, y - 2, 1, 3, EH.ink);
+  };
+  F.eyehold_chest = (x, y, w, h) => {
+    px(x + 1, y + 5, w - 2, h - 6, EH.timber);
+    px(x + 2, y + 2, w - 4, 5, EH.timber2);
+    px(x + 1, y + 6, w - 2, 2, EH.brass);
+    px(x + Math.floor(w / 2) - 1, y + 8, 3, 2, EH.gold);
+    px(x + 2, y + h - 3, 2, 2, EH.stone2);
+    px(x + w - 4, y + h - 3, 2, 2, EH.stone2);
+  };
+  F.eyehold_candle = (x, y) => {
+    const bob = ehFlick(x);
+    px(x + 4, y + 6, 4, 5, EH.parchment);
+    px(x + 3, y + 10, 6, 2, EH.brass);
+    px(x + 5, y + 5, 2, 2, EH.ink);
+    px(x + 4, y + 2 - bob, 4, 4, EH.ember);
+    px(x + 5, y + 1 - bob, 2, 3, EH.flame);
+    px(x + 5, y + 7, 2, 2, EH.gold);
+  };
+
   const CATALOG = [
     // Industrial construction kit: cosmetic furniture, never new capability grants.
     { id: "industrial_locker", label: "MODULAR LOCKER", cat: "storage", tier: "cosmetic", w: 2, h: 1, animated: false, blocks: true },
@@ -10970,6 +11071,16 @@ const PropSprites = (() => {
        planCouchSit + world.js SIDE_SEAT, which supply a real cushion anchor and a real occlusion order. */
     { id: "recliner", label: "RECLINER ‹ LEFT", cat: "lounge", tier: "cosmetic", w: 1, h: 1, animated: false, blocks: true, use: { kind: 'couch', sit: false, approach: 'west' } },
     { id: "recliner_r", label: "RECLINER RIGHT ›", cat: "lounge", tier: "cosmetic", w: 1, h: 1, animated: false, blocks: true, use: { kind: 'couch', sit: false, approach: 'east' } },
+    // Eyehold keep furnishings. Cosmetic only: the seeded workstation stays the one desk that grants compute.
+    { id: "eyehold_hearth", label: "STONE HEARTH", cat: "decor", tier: "cosmetic", w: 2, h: 2, animated: true, blocks: true },
+    { id: "eyehold_bookcase", label: "OAK BOOKCASE", cat: "decor", tier: "cosmetic", w: 1, h: 2, animated: false, blocks: true },
+    { id: "eyehold_banner", label: "KEEP BANNER", cat: "decor", tier: "cosmetic", w: 2, h: 1, animated: false, blocks: false, mount: "wall" },
+    { id: "eyehold_map", label: "REALM MAP", cat: "decor", tier: "cosmetic", w: 2, h: 1, animated: false, blocks: false },
+    { id: "eyehold_rug", label: "KEEP RUG", cat: "decor", tier: "cosmetic", w: 2, h: 2, animated: false, blocks: false, flat: true },
+    { id: "eyehold_runner", label: "LONG RUG", cat: "decor", tier: "cosmetic", w: 3, h: 1, animated: false, blocks: false, flat: true },
+    { id: "eyehold_scribe", label: "SCRIBE DESK", cat: "decor", tier: "cosmetic", w: 2, h: 1, animated: false, blocks: true },
+    { id: "eyehold_chest", label: "BANDED CHEST", cat: "decor", tier: "cosmetic", w: 1, h: 1, animated: false, blocks: true },
+    { id: "eyehold_candle", label: "TALLOW CANDLE", cat: "decor", tier: "cosmetic", w: 1, h: 1, animated: true, blocks: false, stack: true },
   ];
   const BY_ID = {};
   // The wider industrial art occupies three real tiles; picking, placement and
@@ -11722,6 +11833,8 @@ const PropSprites = (() => {
     treasury_token_furnace: { c: [255, 130, 50], r: 26, a: 0.16, m: 'fire', y: 0.45 }, goldcrate: { c: [255, 214, 120], r: 14, a: 0.06, m: 'steady', y: 0.4 },
     gigs_servercart: { c: [120, 255, 180], r: 14, a: 0.08, m: 'screen', y: 0.4 }, bridge_relaystack: { c: [120, 200, 255], r: 20, a: 0.10, m: 'screen', y: 0.3 },
     airlock: { c: [255, 90, 70], r: 18, a: 0.10, m: 'pulse', y: 0.5 }, steamvent: { c: [255, 170, 120], r: 12, a: 0.05, m: 'fire', y: 0.5 },
+    eyehold_hearth: { c: [255, 140, 60], r: 36, a: 0.22, m: 'fire', y: 0.45 },
+    eyehold_candle: { c: [255, 200, 120], r: 14, a: 0.16, m: 'fire', y: 0.25 },
   };
   /* the light a placed prop emits THIS frame, or null. `work` is the same lit flag `draw` receives. The
      modulation is deterministic on `now` + the prop's position, so two identical screens never flicker in

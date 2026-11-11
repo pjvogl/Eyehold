@@ -5,7 +5,7 @@ import assert from 'node:assert/strict';
 import { spawn, spawnSync } from 'node:child_process';
 import { readFileSync, mkdtempSync, rmSync } from 'node:fs';
 import { createServer } from 'node:net';
-import { tmpdir } from 'node:os';
+import { tmpdir, userInfo } from 'node:os';
 import { join, relative, resolve, isAbsolute } from 'node:path';
 import { findChrome, connectCDP, evalJS, sleep } from '../scripts/lib/cdp.mjs';
 
@@ -150,8 +150,8 @@ function probe(current, legacy) {
 let chrome, cdp, profile, failed = false;
 try {
   const port = await freePort(); profile = mkdtempSync(join(tmpdir(), 'starnet-connection-render-'));
-  chrome = spawn(findChrome(), ['--headless=new', '--disable-gpu', '--no-first-run', '--no-default-browser-check', '--mute-audio',
-    '--remote-debugging-port='+port, '--user-data-dir='+profile, 'about:blank'], { stdio: 'ignore', windowsHide: true });
+  chrome = spawn(findChrome(), ['--headless=new', '--no-sandbox', '--disable-dev-shm-usage', '--disable-gpu', '--no-first-run', '--no-default-browser-check', '--mute-audio',
+    '--remote-debugging-port='+port, '--user-data-dir='+profile, 'about:blank'], { stdio: 'ignore', windowsHide: true, env: { ...process.env, HOME: userInfo().homedir } });
   cdp = await connectCDP(port);
   const result = await evalJS(cdp, '(()=>{'+sharedSource+'\nconst current=(()=>{'+source+';return StationBake;})();\n'+
     'const legacy=(()=>{'+reference+';return StationBake;})();\nreturn ('+probe.toString()+')(current,legacy);})()');

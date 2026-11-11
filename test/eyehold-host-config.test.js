@@ -1,0 +1,36 @@
+'use strict';
+const assert = require('node:assert/strict');
+const fs = require('node:fs');
+const path = require('node:path');
+const root = path.join(__dirname, '..');
+const host = JSON.parse(fs.readFileSync(path.join(root, 'eyehold.host.json'), 'utf8'));
+const tauri = JSON.parse(fs.readFileSync(path.join(root, 'src-tauri/tauri.conf.json'), 'utf8'));
+const updates = fs.readFileSync(path.join(root, 'frontend/app/updates.js'), 'utf8');
+assert.equal(host.baseDomain, 'eyehold.babelbook.net');
+assert.equal(host.publisher, 'Eyehold');
+assert.equal(host.appId, 'net.babelbook.eyehold');
+assert.equal(host.desktopIdentifier, 'ai.skynet.harness');
+const origin = 'https://' + host.baseDomain;
+assert.deepEqual(tauri.plugins.updater.endpoints, [origin + host.updaterPath]);
+assert.equal(tauri.bundle.publisher, host.publisher);
+assert.equal(tauri.bundle.createUpdaterArtifacts, false);
+assert.match(updates, new RegExp("RELEASES_PAGE = '" + origin + host.releaseNotesPath + "'"));
+assert.match(updates, /EYEHOLD_UPDATES_ENABLED = false/);
+const sidecar = fs.readFileSync(path.join(root, 'sidecar/index.js'), 'utf8');
+const site = fs.readFileSync(path.join(root, 'website/site.js'), 'utf8');
+assert.match(sidecar, /const CLOUD_LIVE = false;/);
+assert.match(sidecar, new RegExp("const CLOUD_URL_DEFAULT = '" + origin + "'"));
+assert.match(site, /live: false/);
+assert.match(site, new RegExp("accountUrl: '" + origin + "'"));
+assert.doesNotMatch(host.baseDomain, /starnetos\.com|androoAGI|github\.com|babelbook-staging|^babelbook\.net$/);
+for (const rel of ['services/portal/wrangler.toml', 'services/billing/wrangler.toml']) {
+  const toml = fs.readFileSync(path.join(root, rel), 'utf8');
+  assert.match(toml, /name = "eyehold"/, rel);
+  assert.match(toml, /pattern = "eyehold\.babelbook\.net"/, rel);
+  assert.match(toml, /custom_domain = true/, rel);
+  assert.match(toml, /workers_dev = false/, rel);
+  assert.match(toml, /STRIPE_MODE = "test"/, rel);
+  assert.doesNotMatch(toml, /babelbook-staging|babelbook\.net\/\*|sk_live_|rk_live_|zone_name|zone_id/, rel);
+  assert.equal((toml.match(/^pattern = /gm) || []).length, 1, rel + ' declares one hostname');
+}
+console.log('Eyehold host config matches the updater and release notes URLs');

@@ -106,6 +106,14 @@
      body level (or below) — otherwise their var(--ph) bakes to the :root amber
      and the bezel "borders" stay amber no matter which theme is picked. */
 }
+body.theme-realm {
+  --ph: #e6ac65; --ph-bright: #f6e6c8; --ph-dim: #a67845; --ph-faint: #2a1c14;
+  --ink: #140e0a; --ph-glow: rgba(230, 172, 101, 0.45); --ph-glow2: rgba(230, 172, 101, 0.16);
+  --bg: #120e14; --panel: rgba(24, 16, 20, 0.94); --panel2: #1c1418; --warn: #f0c36a; --text: #f3dcc0;
+  --gold: #f2c14e; --ph-rgb: 230, 172, 101; --ph-bright-rgb: 246, 230, 200; --gold-rgb: 242, 193, 78;
+  --cam-grade: saturate(0.9) contrast(1.06) brightness(0.96);
+}
+.eyehold-sigil { display: inline-block; vertical-align: middle; margin-left: 8px; }
 body.theme-amber {
   --ph: #ffaa33; --ph-bright: #ffd9a3; --ph-dim: #b9791c; --ph-faint: #1e1404;
   --ink: #190f02; --ph-glow: rgba(255, 170, 51, 0.5); --ph-glow2: rgba(255,170,51,0.14);

@@ -1,0 +1,44 @@
+name = "eyehold"
+main = "src/worker.js"
+compatibility_date = "2026-11-10"
+compatibility_flags = ["nodejs_compat"]
+workers_dev = false
+preview_urls = false
+upload_source_maps = true
+
+# Eyehold's own Worker. The custom domain below is DECLARED and is not applied
+# until the owner runs `npx wrangler deploy` from this directory. Do not deploy
+# from this tree without that approval. Do not add any other hostname.
+[[routes]]
+pattern = "eyehold.babelbook.net"
+custom_domain = true
+
+[observability]
+enabled = true
+
+[observability.logs]
+enabled = true
+head_sampling_rate = 1
+
+[observability.traces]
+enabled = true
+head_sampling_rate = 0.01
+
+[vars]
+EYEHOLD_BASE_DOMAIN = "eyehold.babelbook.net"
+STRIPE_MODE = "test"
+
+# Names only. Values are set with `npx wrangler secret put` from this directory.
+# Never put key material in this file.
+[secrets]
+required = ["STRIPE_SECRET_KEY", "STRIPE_WEBHOOK_SECRET", "EYEHOLD_ACCESS_EMAILS"]
+
+# Optional, not required for the first login-gated deploy:
+# EYEHOLD_ACCESS_CLIENT_ID
+# EYEHOLD_ACCESS_CLIENT_SECRET
+
+# Placeholder. The owner creates a namespace in Eyehold's account and replaces
+# this id before deploy. The zeros are not a real namespace and have not been created.
+[[kv_namespaces]]
+binding = "BILLING_KV"
+id = "00000000000000000000000000000000"

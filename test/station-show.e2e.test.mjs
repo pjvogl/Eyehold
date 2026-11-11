@@ -125,9 +125,9 @@ try {
   check('tool_search reveals station_show', /station[._]show/.test(R[0] || ''), (R[0] || '').slice(0, 300));
   check('shown: MY WORK › DELIVERABLES', /^OPEN on the Commander's screen: MY WORK › DELIVERABLES/.test(R[1] || ''), (R[1] || '').slice(0, 200));
   check('shown: SETTINGS › SPENDING LIMITS', /^OPEN on the Commander's screen: SETTINGS › SPENDING LIMITS/.test(R[2] || ''), (R[2] || '').slice(0, 200));
-  check('shown: the hero\'s CONFIG (by name, any case)', new RegExp('^OPEN on the Commander\'s screen: CREW › AGENTS › CONFIG for ' + hero).test(R[3] || ''), (R[3] || '').slice(0, 200));
+  check('shown: the hero\'s CONFIG (by name, any case)', new RegExp('^OPEN on the Commander\'s screen: COMPANY › AGENTS › CONFIG for ' + hero).test(R[3] || ''), (R[3] || '').slice(0, 200));
   check('an agent that does not exist is refused with the real crew', /^REFUSED: no agent called "Nobody-Here" \(crew: /.test(R[4] || ''), (R[4] || '').slice(0, 200));
-  check('shown: the Recruitment Bay', /^OPEN on the Commander's screen: CREW › RECRUIT/.test(R[5] || ''), (R[5] || '').slice(0, 200));
+  check('shown: the Recruitment Bay', /^OPEN on the Commander's screen: COMPANY › RECRUIT/.test(R[5] || ''), (R[5] || '').slice(0, 200));
 
   // ---- the screen really shows it ----
   await sleep(600);

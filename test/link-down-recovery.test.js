@@ -94,7 +94,7 @@ const textReply = (status, text) => async () => ({ ok: status === 200, status, t
     const sigCls = new Set();
     const bars = { textContent: '' };
     const sig = {
-      title: '', childNodes: [{ nodeValue: 'UPLINK ' }], querySelector: () => bars,
+      title: '', childNodes: [{ nodeValue: 'BEACON ' }], querySelector: () => bars,
       classList: { add: c => sigCls.add(c), remove: (...c) => c.forEach(x => sigCls.delete(x)) },
       closest: () => box
     };
@@ -124,12 +124,12 @@ const textReply = (status, text) => async () => ({ ok: status === 200, status, t
   {
     const m = mountTopbar({ desktop: true, engine: { state: 'degraded', reason: DEGRADED } });
     m.T._paintSig();
-    A.eq(m.sig.childNodes[0].nodeValue, 'LINK DOWN ', 'a fresh drop paints the plain LINK DOWN');
+    A.eq(m.sig.childNodes[0].nodeValue, 'BEACON DARK ', 'a fresh drop paints BEACON DARK');
     A.ok(!m.cls.has('recoverable'), 'no restart door before the link has stayed down');
     m.advance(15000); m.T._paintSig(); await m.settle(); await m.settle();
     A.ok(m.sig.title.indexOf(DEGRADED) === 0, 'after 15s the tip carries the service\'s own reason verbatim: ' + m.sig.title);
     A.ok(/click to restart the station service/.test(m.sig.title), 'and, on the desktop, the way out');
-    A.eq(m.sig.childNodes[0].nodeValue, 'LINK DOWN · RESTART ', 'the label itself shows the door (a tip alone is undiscoverable)');
+    A.eq(m.sig.childNodes[0].nodeValue, 'BEACON DARK · RESTART ', 'the label itself shows the door (a tip alone is undiscoverable)');
     A.ok(m.cls.has('recoverable') && m.attrs.role === 'button', 'the connection box becomes a keyboard-reachable button');
     m.listeners.click[0](); m.listeners.click[0]();
     await m.settle(); await m.settle(); await m.settle();
@@ -139,7 +139,7 @@ const textReply = (status, text) => async () => ({ ok: status === 200, status, t
     m.setEngine({ state: 'ok', reason: '' });
     m.setLink({ bridged: true, down: false, paused: false }); m.T._paintSig();
     A.ok(!m.cls.has('recoverable') && !m.attrs.role, 'a recovered link drops the door');
-    A.eq(m.sig.childNodes[0].nodeValue, 'UPLINK ', 'and paints UPLINK');
+    A.eq(m.sig.childNodes[0].nodeValue, 'BEACON ', 'and paints BEACON');
   }
   {
     // a hung service: no reason came back, the door is still offered (the restart is not gated on a reason)

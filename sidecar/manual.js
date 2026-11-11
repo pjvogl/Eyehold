@@ -72,7 +72,7 @@ const NAV_REST =
   'CONNECTED SERVICES where any MCP server is attached by URL, SAVED API CONNECTIONS where an API key for any platform ' +
   'is pasted, listed or not, AGENT SKILLS), DISCOVER (CATALOG one-click connectors to vetted services, SKILL MARKET, ' +
   'SKILL LIBRARY), CREATE / ADVANCED (EXTENSIONS, the Commander\'s own hooks and plugins; SKILL EXCHANGE). Its search box matches platform names. ' +
-  'A single agent\'s live capability readout is the CAN DO list on its dossier\'s BRIEF tab (CREW › AGENTS).\n' +
+  'A single agent\'s live capability readout is the CAN DO list on its dossier\'s BRIEF tab (COMPANY › AGENTS).\n' +
   '- CONNECT › CHANNELS: connect Telegram, Discord, Slack, Matrix, or Signal so the Commander can ' +
   'message agents FROM those apps. This is the INBOUND direction and is NOT where a platform becomes ' +
   'an agent tool — that is ABILITIES.\n' +

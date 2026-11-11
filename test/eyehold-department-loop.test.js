@@ -1,0 +1,17 @@
+'use strict';
+const assert = require('node:assert/strict');
+const { route, requestResearch } = require('../sidecar/eyehold-department-loop.js');
+assert.equal(route({ fromDepartment: 'command', kind: 'assign' }).ok, true);
+assert.equal(requestResearch({ fromDepartment: 'command' }).to, 'opportunities');
+assert.equal(requestResearch({ fromDepartment: 'production', ventureId: 'etsy-shop' }).servedBy, 'Raven Court');
+assert.throws(() => requestResearch({ fromDepartment: 'quality', ventureId: 'etsy-shop' }), /Command Keep or a venture desk/);
+assert.equal(route({ fromDepartment: 'opportunities', kind: 'research' }).authority, 'research-only');
+assert.throws(() => route({ fromDepartment: 'opportunities', kind: 'listing', confirmed: true }), /Iron Host/);
+assert.throws(() => route({ fromDepartment: 'operations', kind: 'payment', confirmed: false }), /owner-confirmation-required/);
+assert.equal(route({ fromDepartment: 'operations', kind: 'trade', confirmed: true }).external, true);
+assert.equal(route({ fromDepartment: 'production', kind: 'produce' }).authority, 'bounded-execution');
+assert.equal(route({ fromDepartment: 'quality', kind: 'review' }).authority, 'review-only');
+assert.equal(route({ fromDepartment: 'strategy', kind: 'rank' }).ok, true);
+assert.throws(() => route({ fromDepartment: 'finance', kind: 'payment', confirmed: true }), /Iron Host/);
+assert.equal(route({ fromDepartment: 'finance', kind: 'read-profit' }).authority, 'read-only');
+console.log('Department loop keeps each room inside its catalog authority');

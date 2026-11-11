@@ -6,7 +6,7 @@ import assert from 'node:assert/strict';
 import { spawn } from 'node:child_process';
 import { readFileSync, mkdtempSync, rmSync } from 'node:fs';
 import { createServer } from 'node:net';
-import { tmpdir } from 'node:os';
+import { tmpdir, userInfo } from 'node:os';
 import { join, relative, resolve, isAbsolute } from 'node:path';
 import { findChrome, connectCDP, evalJS, sleep } from '../scripts/lib/cdp.mjs';
 
@@ -84,8 +84,8 @@ let chrome, cdp, profile, failed = false;
 try {
   const executable = findChrome(), port = await freePort();
   profile = mkdtempSync(join(tmpdir(), 'starnet-wall-receiver-'));
-  chrome = spawn(executable, ['--headless=new', '--no-first-run', '--no-default-browser-check', '--mute-audio',
-    `--remote-debugging-port=${port}`, `--user-data-dir=${profile}`, 'about:blank'], { stdio: 'ignore', windowsHide: true });
+  chrome = spawn(executable, ['--headless=new', '--no-sandbox', '--disable-dev-shm-usage', '--no-first-run', '--no-default-browser-check', '--mute-audio',
+    `--remote-debugging-port=${port}`, `--user-data-dir=${profile}`, 'about:blank'], { stdio: 'ignore', windowsHide: true, env: { ...process.env, HOME: userInfo().homedir } });
   cdp = await connectCDP(port);
   const result = await evalJS(cdp, '(' + probe.toString() + ')(' + JSON.stringify(source) + ')');
   const close = (actual, expected, label, tolerance = 2) => assert.ok(Math.abs(actual - expected) <= tolerance,

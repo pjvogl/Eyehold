@@ -14,6 +14,7 @@
     }
   },
   "bundle": {
+    "publisher": "Eyehold",
     "active": true,
     "targets": [
       "nsis"
@@ -67,7 +68,7 @@
   "plugins": {
     "updater": {
       "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IEZGN0UzMkRCMjIyMTNGOEMKUldTTVB5RWkyekorLzlDdS90THkxSTNlVk1CVlFaSVErY2lJVlNESDFtR1Uva2tlS1J6WDZCL1UK",
-      "endpoints": [],
+      "endpoints": ["https://eyehold.babelbook.net/updates/latest.json"],
       "windows": {
         "installMode": "passive"
       }
