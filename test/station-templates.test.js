@@ -122,7 +122,12 @@ for(const P of [legacySprites,remasterContext.module.exports])for(const item of 
     }
   }
   // Floor decals are walkable; they do not have a furniture interaction edge.
-  for(const p of doc.props.filter(p=>!P.spec(p.t).flat))assert.ok(g.path(origin[0],origin[1],p.x-g.origin.tx,p.y+p.h-g.origin.ty),item.id+': reachable front of '+p.t);
+  // A prop against the south wall has no floor south of it. Any open neighbor counts as reachable.
+  for(const p of doc.props.filter(p=>!P.spec(p.t).flat)){
+    const spots=[[p.x,p.y+p.h],[p.x-1,p.y],[p.x+p.w,p.y],[p.x,p.y-1],[p.x+p.w-1,p.y+p.h]];
+    const hit=spots.some(([x,y])=>g.walkable(x-g.origin.tx,y-g.origin.ty)&&g.path(origin[0],origin[1],x-g.origin.tx,y-g.origin.ty));
+    assert.ok(hit,item.id+': reachable front of '+p.t);
+  }
   const current=M.create(M.starterDoc());current.ensureWorkstation('agent');current.ensureWorkstation('crew');
   const before=current.serialize(),identity=before.meta.createdAt;
   // conveyor links phase B keeps the floor's links as built: a preset's links survive the id renumbering and the apply
