@@ -3685,7 +3685,24 @@ const WorldModel = (() => {
         { id: 'p' + doc._nid++, t: 'workbench', x: 3, y: 1, w: 2, h: 1, block: true },
         { id: 'p' + doc._nid++, t: 'studio', x: 14, y: 8, w: 2, h: 2, block: true },
         { id: 'p' + doc._nid++, t: 'plant', x: 0, y: 0, w: 1, h: 1, block: false },
-        { id: 'p' + doc._nid++, t: 'plant', x: 17, y: 0, w: 1, h: 1, block: false }
+        { id: 'p' + doc._nid++, t: 'plant', x: 17, y: 0, w: 1, h: 1, block: false },
+        // Original keep furnishings. The open band y=2..7 stays empty so workflow
+        // lines and the desk's south seat still have a clear walk. Rugs are flat.
+        // The scribe desk is not a workstation, so boot still adopts the one desk.
+        { id: 'p' + doc._nid++, t: 'eyehold_banner', x: 2, y: 0, w: 2, h: 1, block: false },
+        { id: 'p' + doc._nid++, t: 'eyehold_hearth', x: 5, y: 0, w: 2, h: 2, block: true },
+        { id: 'p' + doc._nid++, t: 'eyehold_candle', x: 7, y: 0, w: 1, h: 1, block: false },
+        { id: 'p' + doc._nid++, t: 'eyehold_candle', x: 9, y: 0, w: 1, h: 1, block: false },
+        { id: 'p' + doc._nid++, t: 'eyehold_map', x: 12, y: 0, w: 2, h: 1, block: false },
+        { id: 'p' + doc._nid++, t: 'eyehold_bookcase', x: 16, y: 0, w: 1, h: 2, block: true },
+        { id: 'p' + doc._nid++, t: 'eyehold_bookcase', x: 0, y: 8, w: 1, h: 2, block: true },
+        { id: 'p' + doc._nid++, t: 'eyehold_rug', x: 2, y: 8, w: 4, h: 3, block: false },
+        { id: 'p' + doc._nid++, t: 'eyehold_scribe', x: 10, y: 8, w: 2, h: 1, block: true },
+        { id: 'p' + doc._nid++, t: 'eyehold_runner', x: 6, y: 9, w: 4, h: 2, block: false },
+        { id: 'p' + doc._nid++, t: 'eyehold_chest', x: 0, y: 10, w: 1, h: 1, block: true },
+        { id: 'p' + doc._nid++, t: 'eyehold_chest', x: 17, y: 10, w: 1, h: 1, block: true },
+        { id: 'p' + doc._nid++, t: 'eyehold_candle', x: 12, y: 9, w: 1, h: 1, block: false },
+        { id: 'p' + doc._nid++, t: 'eyehold_candle', x: 1, y: 10, w: 1, h: 1, block: false }
       ];
       return doc;
     },

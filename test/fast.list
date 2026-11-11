@@ -1002,6 +1002,7 @@ test/skin-study-preview.test.js
 test/projection-prop-effects.test.js
 test/projection-load-geometry.test.js
 test/eyehold-keep-art.test.js
+test/eyehold-keep-furnishings.test.js
 dev/industrial-textures/prop-catalog-review.test.cjs
 test/projection-depth-rendering.test.js
 test/station-templates.test.js

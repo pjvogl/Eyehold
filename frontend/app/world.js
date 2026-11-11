@@ -2331,7 +2331,7 @@ const World = (() => {
      Non-blocking props (bays, inbox/outbox chutes, filters, dropped decor) stay WALKABLE — bodies
      dock on bay tiles, airlocks are doors — but a body with prop awareness steps AROUND the
      machinery when any other route exists. Rugs and airlocks are meant to be crossed; skip them. */
-  const SOFT_CROSS = new Set(['rug', 'rug_small', 'rug_large', 'airlock']);
+  const SOFT_CROSS = new Set(['rug', 'rug_small', 'rug_large', 'eyehold_rug', 'eyehold_runner', 'airlock']);
   function beltUnion() {
     const s = new Set(blocked);
     const belts = (geo && geo.belts) || [];
