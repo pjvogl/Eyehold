@@ -2,7 +2,7 @@
 
 Managed credits are a test-mode scaffold. `CREDITS.live` and `CLOUD_LIVE` stay false, so the app does not offer a purchase. Crowns stay non-transferable points and are not these credits.
 
-The host is `eyehold.babelbook.net`, from `eyehold.host.json`. The Worker is `services/billing`. Attach it as a custom domain on that host in Eyehold's own Cloudflare account. Do not add routes under `babelbook.net/*` and do not deploy or edit the babelbook-staging Worker.
+The host is `eyehold.babelbook.net`, from `eyehold.host.json`. The Worker is `services/portal` (the billing Wrangler file points at that same script). The custom domain is declared in both Wrangler files and is not attached until the owner follows `docs/DEPLOY.md`. Do not add routes under `babelbook.net/*` and do not deploy or edit the babelbook-staging Worker.
 
 ## Stripe
 
@@ -22,7 +22,7 @@ Checkout uses Checkout Sessions in `payment` mode and does not send `payment_met
 
 ## Durable storage
 
-The scaffold keeps the ledger in the isolate so the tests can run without a network. Before any real payment, replace `createMemoryLedger()` with the `BILLING_KV` binding and create a real namespace. The id in `wrangler.toml` is a placeholder.
+When `BILLING_KV` is bound, receipts and credit balances persist in that namespace. Tests and the local purchase script that omit the binding use an in-memory ledger. The id in both Wrangler files is still a placeholder of zeros. Create the namespace and replace the id before deploy, as `docs/DEPLOY.md` describes. Do not deploy with the placeholder.
 
 ## Not yet
 

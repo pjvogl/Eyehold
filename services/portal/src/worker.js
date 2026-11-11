@@ -1,5 +1,5 @@
 import { createMemoryLedger, safeEqual } from '../../billing/billing.mjs';
-import { allowedEmail, handleBilling, json } from '../../billing/src/worker.js';
+import { allowedEmail, handleBilling, json, ledgerFor } from '../../billing/src/worker.js';
 
 const ledger = createMemoryLedger();
 
@@ -48,7 +48,7 @@ export default {
     const url = new URL(request.url);
     if (!hostAllowed(url.hostname, env)) return json(404, { error: 'wrong-host' });
     if (url.pathname === '/healthz' || (url.pathname === '/billing/webhook' && request.method === 'POST')) {
-      return handleBilling(request, env, ledger);
+      return handleBilling(request, env, ledgerFor(env, ledger));
     }
     const email = allowedEmail(request, env);
     if (!email && !serviceToken(request, env)) return json(401, { error: 'access-email-required' });
@@ -56,7 +56,7 @@ export default {
       return new Response(page(email || 'service-token'), { headers: { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-store' } });
     }
     if (url.pathname === '/updates/latest.json' && request.method === 'GET') return json(200, feed());
-    const billed = await handleBilling(request, env, ledger);
+    const billed = await handleBilling(request, env, ledgerFor(env, ledger));
     return billed || json(404, { error: 'not-found' });
   }
 };

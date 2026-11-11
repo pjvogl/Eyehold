@@ -65,10 +65,25 @@ assert.equal(await ledger.getBalance(key), 1000);
 const unpaid = { ...paid, data: { object: { ...paid.data.object, id: 'cs_test_3', payment_status: 'unpaid' } } };
 assert.equal((await applyCheckoutEvent(ledger, unpaid)).ignored, true);
 assert.equal((await applyCheckoutEvent(ledger, { ...paid, livemode: true })).error, 'live-mode-rejected');
+const linkPaid = {
+  id: 'evt_link', livemode: false, type: 'checkout.session.completed',
+  data: { object: {
+    id: 'cs_test_link', mode: 'payment', payment_status: 'paid', currency: 'usd', amount_total: 900,
+    livemode: false, customer_email: email, payment_link: 'plink_test',
+    metadata: { listingId: 'listing_1' }
+  } }
+};
+const linked = await applyCheckoutEvent(ledger, linkPaid, { evidenceRef: 'sha256:' + 'ab'.repeat(32) });
+assert.equal(linked.duplicate, false);
+assert.equal(linked.receipt.credits, 0);
+assert.equal(linked.receipt.cents, 900);
+assert.equal(linked.receipt.accountKey, key);
+assert.equal(linked.receipt.evidenceRef.startsWith('sha256:'), true);
+assert.equal(await ledger.getBalance(key), 1000);
 const other = accountKey('other@eyehold.example');
 assert.equal(await ledger.getBalance(other), 0);
 const receipts = await ledger.listReceipts(key);
-assert.equal(receipts.length, 2);
+assert.equal(receipts.length, 3);
 assert.equal(receipts[0].currency, 'USD');
 assert.equal(receipts[0].type, 'revenue');
 assert.equal(receipts[0].cents, 500);

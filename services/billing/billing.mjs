@@ -32,6 +32,38 @@ export function createMemoryLedger() {
   };
 }
 
+async function readKvState(kv) {
+  const raw = await kv.get('ledger');
+  if (!raw) return { receipts: [], balances: {} };
+  const state = JSON.parse(raw);
+  if (!state || !Array.isArray(state.receipts) || !state.balances || typeof state.balances !== 'object') {
+    throw new Error('billing-ledger-unreadable');
+  }
+  return state;
+}
+
+export function createKvLedger(kv) {
+  return {
+    async getBalance(key) {
+      const state = await readKvState(kv);
+      return state.balances[key] || 0;
+    },
+    async listReceipts(key) {
+      const state = await readKvState(kv);
+      return state.receipts.filter(row => row.accountKey === key);
+    },
+    async addReceipt(receipt) {
+      const state = await readKvState(kv);
+      const prior = state.receipts.find(row => row.id === receipt.id);
+      if (prior) return { ok: true, duplicate: true, receipt: prior };
+      state.receipts.push(receipt);
+      state.balances[receipt.accountKey] = (state.balances[receipt.accountKey] || 0) + receipt.credits;
+      await kv.put('ledger', JSON.stringify(state));
+      return { ok: true, duplicate: false, receipt };
+    }
+  };
+}
+
 function randomSuffix() {
   const bytes = new Uint8Array(8);
   crypto.getRandomValues(bytes);
@@ -95,6 +127,15 @@ export function safeEqual(a, b) {
   for (let i = 0; i < a.length; i++) diff |= a.charCodeAt(i) ^ b.charCodeAt(i);
   return diff === 0;
 }
+export async function evidenceRefFor(payload) {
+  const digest = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(String(payload)));
+  return 'sha256:' + hex(digest);
+}
+
+function cleanEvidence(ref) {
+  return typeof ref === 'string' && /^sha256:[a-f0-9]{64}$/.test(ref) ? ref : null;
+}
+
 export async function verifyStripeSignature(payload, header, secret, now = Date.now()) {
   const parts = Object.fromEntries(String(header || '').split(',').map(part => part.split('=')));
   const timestamp = Number(parts.t);
@@ -107,31 +148,59 @@ export async function verifyStripeSignature(payload, header, secret, now = Date.
   return { ok: true };
 }
 
-export async function applyCheckoutEvent(ledger, event) {
+export async function applyCheckoutEvent(ledger, event, meta = {}) {
   if (!event || event.livemode) return { ok: false, error: 'live-mode-rejected' };
   if (event.type !== 'checkout.session.completed' && event.type !== 'checkout.session.async_payment_succeeded') {
     return { ok: true, ignored: true };
   }
   const session = event.data && event.data.object;
   if (!session || session.payment_status !== 'paid' || session.mode !== 'payment') return { ok: true, ignored: true };
-  const pack = PACKS[session.metadata && session.metadata.pack];
-  const key = session.metadata && session.metadata.accountKey;
-  if (!pack || !key) return { ok: false, error: 'incomplete-session' };
+  if (session.livemode) return { ok: false, error: 'live-mode-rejected' };
+  const evidenceRef = cleanEvidence(meta.evidenceRef);
   const cents = session.amount_total;
-  if (cents !== pack.cents || session.currency !== 'usd') return { ok: false, error: 'amount-mismatch' };
-  const receipt = {
-    id: 'stripe:' + session.id,
-    accountKey: key,
+  const pack = PACKS[session.metadata && session.metadata.pack];
+  const metaKey = session.metadata && session.metadata.accountKey;
+  const base = {
     email: String(session.customer_email || '').toLowerCase(),
-    cents,
     currency: 'USD',
     type: 'revenue',
-    credits: pack.credits,
     sessionId: session.id,
     livemode: false,
     verified: true
   };
-  return ledger.addReceipt(receipt);
+  if (evidenceRef) base.evidenceRef = evidenceRef;
+  if (pack) {
+    if (!metaKey) return { ok: false, error: 'incomplete-session' };
+    if (cents !== pack.cents || session.currency !== 'usd') return { ok: false, error: 'amount-mismatch' };
+    return ledger.addReceipt({
+      ...base,
+      id: 'stripe:' + session.id,
+      accountKey: metaKey,
+      cents,
+      credits: pack.credits
+    });
+  }
+  const listingId = session.metadata && typeof session.metadata.listingId === 'string' ? session.metadata.listingId : '';
+  const paymentLink = typeof session.payment_link === 'string' ? session.payment_link : '';
+  if (listingId || paymentLink) {
+    let key = typeof metaKey === 'string' ? metaKey : '';
+    if (!key && session.customer_email) {
+      try { key = accountKey(session.customer_email); } catch { key = ''; }
+    }
+    if (!key || !Number.isSafeInteger(cents) || cents < 0 || session.currency !== 'usd') {
+      return { ok: false, error: 'incomplete-session' };
+    }
+    return ledger.addReceipt({
+      ...base,
+      id: 'stripe:' + session.id,
+      accountKey: key,
+      cents,
+      credits: 0,
+      listingId: listingId || null,
+      paymentLink: paymentLink || null
+    });
+  }
+  return { ok: false, error: 'incomplete-session' };
 }
 
 export { PACKS };

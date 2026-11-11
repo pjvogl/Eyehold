@@ -4,26 +4,40 @@ compatibility_date = "2026-11-10"
 compatibility_flags = ["nodejs_compat"]
 workers_dev = false
 preview_urls = false
+upload_source_maps = true
 
-# Deploy this only as Eyehold's own Worker, then attach the custom domain
-# eyehold.babelbook.net. Do not add a route on babelbook.net/* and do not
-# deploy or retarget the babelbook-staging Worker.
+# Same Worker as services/portal (name "eyehold", same script). Deploying from
+# either directory updates that one Worker. The custom domain is DECLARED and
+# is not applied until the owner runs deploy. Do not add any other hostname.
+[[routes]]
+pattern = "eyehold.babelbook.net"
+custom_domain = true
 
 [observability]
 enabled = true
 
+[observability.logs]
+enabled = true
+head_sampling_rate = 1
+
 [observability.traces]
 enabled = true
+head_sampling_rate = 0.01
 
 [vars]
 EYEHOLD_BASE_DOMAIN = "eyehold.babelbook.net"
 STRIPE_MODE = "test"
 
-# Set with `wrangler secret put`, never in this file:
-# STRIPE_SECRET_KEY       rk_test_... preferred, sk_test_ accepted, live keys rejected
-# STRIPE_WEBHOOK_SECRET
-# EYEHOLD_ACCESS_EMAILS   comma-separated Cloudflare Access allowlist
+# Names only. Set from this directory with `npx wrangler secret put`.
+# STRIPE_SECRET_KEY accepts rk_test_ or sk_test_. Live keys are rejected at runtime.
+[secrets]
+required = ["STRIPE_SECRET_KEY", "STRIPE_WEBHOOK_SECRET", "EYEHOLD_ACCESS_EMAILS"]
 
+# Optional until the desktop updater needs a service token:
+# EYEHOLD_ACCESS_CLIENT_ID
+# EYEHOLD_ACCESS_CLIENT_SECRET
+
+# Placeholder. Replace with the namespace id from Eyehold's account before deploy.
 [[kv_namespaces]]
 binding = "BILLING_KV"
 id = "00000000000000000000000000000000"

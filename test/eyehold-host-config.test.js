@@ -23,4 +23,14 @@ assert.match(sidecar, new RegExp("const CLOUD_URL_DEFAULT = '" + origin + "'"));
 assert.match(site, /live: false/);
 assert.match(site, new RegExp("accountUrl: '" + origin + "'"));
 assert.doesNotMatch(host.baseDomain, /starnetos\.com|androoAGI|github\.com|babelbook-staging|^babelbook\.net$/);
+for (const rel of ['services/portal/wrangler.toml', 'services/billing/wrangler.toml']) {
+  const toml = fs.readFileSync(path.join(root, rel), 'utf8');
+  assert.match(toml, /name = "eyehold"/, rel);
+  assert.match(toml, /pattern = "eyehold\.babelbook\.net"/, rel);
+  assert.match(toml, /custom_domain = true/, rel);
+  assert.match(toml, /workers_dev = false/, rel);
+  assert.match(toml, /STRIPE_MODE = "test"/, rel);
+  assert.doesNotMatch(toml, /babelbook-staging|babelbook\.net\/\*|sk_live_|rk_live_|zone_name|zone_id/, rel);
+  assert.equal((toml.match(/^pattern = /gm) || []).length, 1, rel + ' declares one hostname');
+}
 console.log('Eyehold host config matches the updater and release notes URLs');

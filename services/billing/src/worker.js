@@ -1,4 +1,4 @@
-import { accountKey, applyCheckoutEvent, createCheckoutSession, createMemoryLedger, verifyStripeSignature } from '../billing.mjs';
+import { accountKey, applyCheckoutEvent, createCheckoutSession, createKvLedger, createMemoryLedger, evidenceRefFor, verifyStripeSignature } from '../billing.mjs';
 
 export function json(status, body) {
   return new Response(JSON.stringify(body), {
@@ -18,10 +18,25 @@ export async function handleBilling(request, env, ledger) {
   if (url.pathname === '/billing/webhook' && request.method === 'POST') {
     const payload = await request.text();
     const verified = await verifyStripeSignature(payload, request.headers.get('stripe-signature'), env.STRIPE_WEBHOOK_SECRET);
-    if (!verified.ok) return json(400, verified);
+    if (!verified.ok) {
+      console.error(JSON.stringify({ message: 'billing-webhook-rejected', error: verified.error || 'rejected' }));
+      return json(400, verified);
+    }
     let event;
-    try { event = JSON.parse(payload); } catch { return json(400, { error: 'invalid-json' }); }
-    return json(200, await applyCheckoutEvent(ledger, event));
+    try { event = JSON.parse(payload); } catch {
+      console.error(JSON.stringify({ message: 'billing-webhook-rejected', error: 'invalid-json' }));
+      return json(400, { error: 'invalid-json' });
+    }
+    const evidenceRef = await evidenceRefFor(payload);
+    const result = await applyCheckoutEvent(ledger, event, { evidenceRef });
+    console.log(JSON.stringify({
+      message: 'billing-webhook',
+      ok: result.ok !== false,
+      duplicate: !!result.duplicate,
+      ignored: !!result.ignored,
+      error: result.error || null
+    }));
+    return json(200, result);
   }
   const email = allowedEmail(request, env);
   if (!email) return json(401, { error: 'access-email-required' });
@@ -37,7 +52,7 @@ export async function handleBilling(request, env, ledger) {
     try { body = await request.json(); } catch { return json(400, { error: 'invalid-json' }); }
     const origin = 'https://' + (env.EYEHOLD_BASE_DOMAIN || 'eyehold.babelbook.net');
     try {
-      const session = await createCheckoutSession(fetch, {
+      const session = await createCheckoutSession(globalThis.fetch, {
         secret: env.STRIPE_SECRET_KEY,
         pack: body.pack,
         email,
@@ -54,9 +69,14 @@ export async function handleBilling(request, env, ledger) {
 }
 
 const memory = createMemoryLedger();
+export function ledgerFor(env, fallback = memory) {
+  const kv = env && env.BILLING_KV;
+  if (kv && typeof kv.get === 'function' && typeof kv.put === 'function') return createKvLedger(kv);
+  return fallback;
+}
 export default {
   async fetch(request, env) {
-    const handled = await handleBilling(request, env, memory);
+    const handled = await handleBilling(request, env, ledgerFor(env));
     return handled || json(404, { error: 'not-found' });
   }
 };

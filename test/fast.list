@@ -225,6 +225,7 @@ test/agent-color-escape.test.js
 test/tauri.hardening.test.js
 test/eyehold-host-config.test.js
 test/eyehold-billing.test.mjs
+scripts/eyehold-purchase-e2e.mjs
 test/eyehold-billing-receipts.test.js
 test/eyehold-market.test.js
 test/eyehold-market-channels.test.js

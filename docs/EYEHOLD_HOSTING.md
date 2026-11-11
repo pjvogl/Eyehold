@@ -1,6 +1,8 @@
 # Eyehold hosting
 
-The public host is `eyehold.babelbook.net`. It is a custom domain on Eyehold's own Cloudflare Worker, `services/portal`. `services/billing/wrangler.toml` points at the same script so a deploy from either directory is the same Worker, not a second one.
+The public host is `eyehold.babelbook.net`. It is a custom domain on Eyehold's own Cloudflare Worker, `services/portal`. `services/billing/wrangler.toml` points at the same script and the same Worker name, so a deploy from either directory is the same Worker, not a second one.
+
+Both Wrangler files declare `pattern = "eyehold.babelbook.net"` with `custom_domain = true`. That declaration is not applied until the owner runs deploy. The steps, and the ones that need approval, are in `docs/DEPLOY.md`.
 
 Do not add a route pattern on `babelbook.net/*`. Do not deploy, rename, or edit the babelbook-staging Worker. Requests whose host is not `eyehold.babelbook.net` are refused, except localhost during tests.
 
