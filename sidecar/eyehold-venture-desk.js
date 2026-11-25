@@ -34,18 +34,21 @@ function createVentureDesk({ file, now }) {
   function review({ id, approved }) {
     route({ fromDepartment: 'quality', kind: 'review' });
     const state = load();
-    const item = state.items.find(row => row.id === id && row.status === 'draft');
+    const item = state.items.find(row => row.id === id);
     if (!item) throw new Error('draft not found');
+    if (item.status === 'reviewed' && approved === true) return item;
+    if (item.status !== 'draft') throw new Error('draft not found');
     item.status = approved === true ? 'reviewed' : 'returned';
     save(state);
     return item;
   }
-  function queueOutward({ id, kind, confirmed }) {
+  function queueOutward({ id, kind, confirmed, reviewed }) {
     const state = load();
     const item = state.items.find(row => row.id === id);
+    if (item && item.status === 'queued-outward' && item.outward === kind) return item;
     if (!item || item.status !== 'reviewed') throw new Error('Silver Bough has not reviewed this');
     if (item.ventureId === 'trader' && kind !== 'trade') throw new Error('the trader only queues a trade');
-    route({ fromDepartment: 'operations', kind, confirmed });
+    route({ fromDepartment: 'operations', kind, confirmed, reviewed });
     item.status = 'queued-outward';
     item.outward = kind;
     save(state);

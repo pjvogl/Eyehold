@@ -5,7 +5,7 @@
  */
 'use strict';
 function usdReceipt(row) {
-  if (!row || row.verified !== true || row.livemode !== false || row.currency !== 'USD' || row.type !== 'revenue') return null;
+  if (!row || row.verified !== true || (row.livemode !== false && row.livemode !== true) || row.currency !== 'USD' || row.type !== 'revenue') return null;
   if (typeof row.id !== 'string' || !row.id.trim() || !Number.isSafeInteger(row.cents) || row.cents < 0) return null;
   return JSON.stringify({ id: row.id, currency: 'USD', type: 'revenue', cents: row.cents });
 }

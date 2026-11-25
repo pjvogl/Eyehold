@@ -11,12 +11,12 @@ function department(id) {
   if (!row) throw new Error('unknown department');
   return row;
 }
-function route({ fromDepartment, kind, confirmed }) {
+function route({ fromDepartment, kind, confirmed, reviewed }) {
   const row = department(fromDepartment);
   if (EXTERNAL.has(kind)) {
     if (row.id !== 'operations' || row.authority !== 'approval-required') throw new Error('only Iron Host may hold an outward action');
-    if (confirmed !== true) throw new Error('owner-confirmation-required');
-    return { ok: true, department: row.id, authority: row.authority, kind, external: true };
+    if (confirmed !== true && reviewed !== true) throw new Error('owner-confirmation-required');
+    return { ok: true, department: row.id, authority: row.authority, kind, external: true, releasedBy: confirmed === true ? 'owner' : 'review' };
   }
   if (kind === 'assign' && row.id !== 'command') throw new Error('only Command Keep assigns');
   if (kind === 'research' && row.id !== 'opportunities') throw new Error('only Raven Court serves research');

@@ -70,9 +70,7 @@ function createTreasury({ file, now }) {
     save(state);
     return spend;
   }
-  function approveSpend(id, { confirmed } = {}) {
-    if (confirmed !== true) throw new Error('owner-confirmation-required');
-    const state = load();
+  function spendQueued(state, id) {
     const spend = state.spends.find(item => item.id === id && item.status === 'queued');
     if (!spend) throw new Error('queued spend not found');
     const cap = state.caps.find(item => item.agentId === spend.agentId && item.ventureId === spend.ventureId);
@@ -83,6 +81,24 @@ function createTreasury({ file, now }) {
     state.spentCents += spend.cents;
     save(state);
     return { spend, treasury: snapshot(state) };
+  }
+  function approveSpend(id, { confirmed } = {}) {
+    if (confirmed !== true) throw new Error('owner-confirmation-required');
+    return spendQueued(load(), id);
+  }
+  function allocateFromEarnings({ agentId, ventureId, capCents }) {
+    if (!ID.test(String(agentId || '')) || !ID.test(String(ventureId || ''))) throw new Error('agent and venture required');
+    const cap = cents(capCents, 'cap');
+    const state = load();
+    if (cap > state.earnedCents) throw new Error('cap exceeds verified earnings');
+    const row = state.caps.find(item => item.agentId === agentId && item.ventureId === ventureId);
+    if (row) row.capCents = cap;
+    else state.caps.push({ agentId, ventureId, capCents: cap });
+    save(state);
+    return snapshot(state);
+  }
+  function releaseWithinCap(id) {
+    return spendQueued(load(), id);
   }
   function snapshot(state) {
     const current = state || load();
@@ -95,6 +111,6 @@ function createTreasury({ file, now }) {
       queue: current.spends.filter(item => item.status === 'queued')
     };
   }
-  return Object.freeze({ creditEarned, topUp, setCap, requestSpend, approveSpend, snapshot });
+  return Object.freeze({ creditEarned, topUp, setCap, requestSpend, approveSpend, allocateFromEarnings, releaseWithinCap, snapshot });
 }
 module.exports = { createTreasury };

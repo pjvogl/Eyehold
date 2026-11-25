@@ -18,6 +18,8 @@ const second = settleReviewedSale(store, { ...sale, id: 'stripe:pi_test_2', cent
 assert.equal(second.netProfitUSD, 13);
 assert.throws(() => settleReviewedSale(store, { ...sale, id: 'stripe:pi_test_3', computeCents: null }, { confirmedReviewed: true }), /not measured/);
 assert.equal(store.snapshot().netProfitUSD, 13);
-assert.throws(() => settleReviewedSale(store, { ...sale, livemode: true }, { confirmedReviewed: true }), /test-mode/);
+const live = settleReviewedSale(store, { ...sale, id: 'stripe:pi_live_1', livemode: true, cents: 300, computeCents: 0 }, { confirmedReviewed: true });
+assert.equal(live.netProfitUSD, 16);
+assert.throws(() => settleReviewedSale(store, { ...sale, id: 'stripe:pi_bad', livemode: null }, { confirmedReviewed: true }), /verified USD/);
 fs.rmSync(root, { recursive: true, force: true });
 console.log('Reviewed sales enter the ladder as revenue minus measured compute');

@@ -11,4 +11,13 @@ async function publishQueued(market, actionId, { confirmed, adapter, secret, fet
   const saved = market.markPublished(actionId, receipt);
   return { ok: true, ...saved };
 }
-module.exports = { publishQueued };
+async function publishReviewed(market, actionId, ctx = {}) {
+  if (ctx.reviewed !== true) return { ok: false, error: 'review-required', queue: market.queue() };
+  return publishQueued(market, actionId, {
+    confirmed: true,
+    adapter: ctx.adapter,
+    secret: ctx.secret,
+    fetchImpl: ctx.fetchImpl
+  });
+}
+module.exports = { publishQueued, publishReviewed };
