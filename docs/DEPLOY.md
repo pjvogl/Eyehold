@@ -1,48 +1,16 @@
 # Eyehold deploy runbook
 
-## Status (2026-11-25, TEST MODE)
+## Status (2026-11-25, LIVE MODE)
 
-Deployed with the owner's approval, Stripe still in test mode:
+Deployed with the owner's approval, Stripe live mode, Babelbook account `acct_1USmo1CPFTRsrZFZ`:
 
-- Worker `eyehold` (version 1, `4f9f8f94-c453-4640-a036-091ca8bb4731`), workers.dev and preview URLs off, in the Cloudflare account that owns the `babelbook.net` zone (the only account that can attach a custom domain on that zone). babelbook-staging was not changed.
-- Workers custom domain `eyehold.babelbook.net` (Cloudflare created its DNS record). No `babelbook.net/*` route.
+- Worker `eyehold` current version is 6, `bf1be549-2868-4138-b981-12930ba4bfc2` (2026-11-25, 6:32 PM ET). workers.dev and preview URLs are off. babelbook-staging was not changed. The custom domain `eyehold.babelbook.net` is unchanged. No other DNS or `babelbook.net/*` routes were added.
 - `BILLING_KV` = `eyehold-BILLING_KV` (`c59822282bcf4f1294f4522c7f07a026`).
-- Vars `STRIPE_MODE=test`, `EYEHOLD_BASE_DOMAIN`. Secret `EYEHOLD_ACCESS_EMAILS` set to the owner only.
-- Access app `eyehold` on `eyehold.babelbook.net`: allow the owner's email, one-time PIN login only. Access app `eyehold-stripe-webhook` on `eyehold.babelbook.net/billing/webhook`: bypass (the Worker accepts only POST there, and only with a valid Stripe signature). `/healthz` is behind Access too.
-- Stripe test webhook endpoint `we_1UfotGCPFTRsrZFZUR2k4FFB` ("Eyehold test") on the Babelbook Stripe account (`acct_1USmo1CPFTRsrZFZ`), url `https://eyehold.babelbook.net/billing/webhook`, events `checkout.session.completed` and `checkout.session.async_payment_succeeded`, livemode false. The Worker does not handle `checkout.session.async_payment_failed`, so that event was not added.
-- `STRIPE_SECRET_KEY` and `STRIPE_WEBHOOK_SECRET` are set on the Worker (test values only). Current version is 2, `eed2b202-0d6c-4e17-9bfd-13161f083e28` (2026-11-25, 5:48 PM ET). Other bindings are unchanged: `BILLING_KV`, `STRIPE_MODE=test`, `EYEHOLD_BASE_DOMAIN`, `EYEHOLD_ACCESS_EMAILS`.
-- A locally signed unpaid `checkout.session.completed` POST to `/billing/webhook` was accepted (`200`, `{ok:true, ignored:true}`). An unsigned POST is still `400 missing-signature`. `/billing/checkout` stays behind Access (unauthenticated POST is `302` to the Access login), so this environment cannot see whether a logged-in spark checkout would still error. A direct Stripe test-mode Checkout Session for the spark pack (`cs_test_a0lSxWSNkYJEBkwvcvOqFciAoxyeM8REOgjTBNDp8LB2bZ97UGXS1QVe6N`, `$5`, `livemode: false`, status `open`) was created only after passing `managed_payments[enabled]=false`. The checkout helper now sends `managed_payments[enabled]=false` on every Checkout Session, including the spark pack, so Managed Payments does not require a product tax code.
-
-## Prepared for live mode (2026-11-25, not deployed)
-
-Tulkas approved switching hosted billing to Stripe live mode. This commit does not deploy, and it does not call Stripe or Cloudflare. The Worker that is already running stays version 2 in test mode until the owner deploys this tree.
-
-In this tree:
-
-- Both Wrangler files set `STRIPE_MODE=live`. With that var, the Worker accepts `sk_live_` or `rk_live_` and `livemode: true` webhook events, and rejects test keys and test events. `STRIPE_MODE=test` keeps the previous guard unchanged.
-- `website/site.js` has `CREDITS.live` true. `sidecar/index.js` has `CLOUD_LIVE` true. The hosted site and the app offer the purchase UI.
-- `EYEHOLD_UPDATES_ENABLED` stays false. No signed installer is published.
-- Checkout still sends `managed_payments[enabled]=false`. Hard caps, signature checks, and replay protection are unchanged.
-
-The live deploy needs these Worker settings. Do not put secret values in git.
-
-| Kind | Name | Value |
-| --- | --- | --- |
-| var | `STRIPE_MODE` | `live` (already in both Wrangler files) |
-| var | `EYEHOLD_BASE_DOMAIN` | `eyehold.babelbook.net` |
-| binding | `BILLING_KV` | `c59822282bcf4f1294f4522c7f07a026` (`eyehold-BILLING_KV`) |
-| secret | `STRIPE_SECRET_KEY` | Live secret `sk_live_` or live restricted key `rk_live_`. A test key is rejected while `STRIPE_MODE=live`. |
-| secret | `STRIPE_WEBHOOK_SECRET` | Signing secret of a new **live** webhook endpoint. The test endpoint's secret will not verify live events. |
-| secret | `EYEHOLD_ACCESS_EMAILS` | Owner allowlist. Already set; leave it. |
-
-Create the live webhook in the Stripe live account, not the test endpoint `we_1UfotGCPFTRsrZFZUR2k4FFB`. URL `https://eyehold.babelbook.net/billing/webhook`. Subscribe to:
-
-- `checkout.session.completed`
-- `checkout.session.async_payment_succeeded`
-
-Do not subscribe `checkout.session.async_payment_failed`. The Worker does not handle that event.
-
-Replace the two Stripe secrets before or with the deploy. Until `STRIPE_SECRET_KEY` is a live key, checkout returns 503. Until `STRIPE_WEBHOOK_SECRET` is the live endpoint's signing secret, every live webhook is rejected.
+- Vars `STRIPE_MODE=live`, `EYEHOLD_BASE_DOMAIN`. Secret `EYEHOLD_ACCESS_EMAILS` remains the owner only. Access apps and the allowlist were not changed.
+- Live webhook endpoint `we_1Ufpg8CPFTRsrZFZy50zyi5L` ("Eyehold live") on the Babelbook Stripe account, url `https://eyehold.babelbook.net/billing/webhook`, events `checkout.session.completed` and `checkout.session.async_payment_succeeded`, livemode true. The test endpoint `we_1UfotGCPFTRsrZFZUR2k4FFB` was left in place and was not modified.
+- `STRIPE_SECRET_KEY` and `STRIPE_WEBHOOK_SECRET` on the Worker are the live key and the live endpoint's signing secret. Versions 4 and 5 were the secret uploads; version 6 is the live-mode code from `d33628c2`.
+- `website/site.js` has `CREDITS.live` true. `sidecar/index.js` has `CLOUD_LIVE` true. `EYEHOLD_UPDATES_ENABLED` stays false. No signed installer is published.
+- Verification on version 6: `GET /` returned `302` to the Access login. An unsigned `POST /billing/webhook` returned `400 missing-signature`. A locally signed unpaid `checkout.session.completed` event with `livemode: true` returned `200` `{ok:true, ignored:true}`. A live spark Checkout Session `cs_live_agPxjPXugKJZTiHqlw9ym2BK1hC7vANv5N1bo4YGxBtWpn2etHHlIOg6Bp` was created (`$5`, `livemode: true`, status `open`, unpaid) and expired immediately (`200`, status `expired`, still unpaid). No charge was made.
 
 The rest of this runbook is the original plan, kept for reference. Section 8 below is the live switch the owner approved.
 
