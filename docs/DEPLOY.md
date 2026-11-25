@@ -1,6 +1,17 @@
 # Eyehold deploy runbook
 
-Nothing in this runbook has been executed. The Worker is not deployed. DNS for `eyehold.babelbook.net` is not attached. Cloudflare Access is not configured. Stripe is not in live mode.
+## Status (2026-11-25, TEST MODE)
+
+Deployed with the owner's approval, Stripe still in test mode:
+
+- Worker `eyehold` (version 1, `4f9f8f94-c453-4640-a036-091ca8bb4731`), workers.dev and preview URLs off, in the Cloudflare account that owns the `babelbook.net` zone (the only account that can attach a custom domain on that zone). babelbook-staging was not changed.
+- Workers custom domain `eyehold.babelbook.net` (Cloudflare created its DNS record). No `babelbook.net/*` route.
+- `BILLING_KV` = `eyehold-BILLING_KV` (`c59822282bcf4f1294f4522c7f07a026`).
+- Vars `STRIPE_MODE=test`, `EYEHOLD_BASE_DOMAIN`. Secret `EYEHOLD_ACCESS_EMAILS` set to the owner only.
+- Access app `eyehold` on `eyehold.babelbook.net`: allow the owner's email, one-time PIN login only. Access app `eyehold-stripe-webhook` on `eyehold.babelbook.net/billing/webhook`: bypass (the Worker accepts only POST there, and only with a valid Stripe signature). `/healthz` is behind Access too.
+- NOT set yet: `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, Stripe test webhook endpoint. Until they are set, checkout returns 503 and every webhook is rejected.
+
+The rest of this runbook is the original plan, kept for reference.
 
 The public host is `eyehold.babelbook.net` on Eyehold's own Worker, named `eyehold`. `services/portal` and `services/billing` are that same Worker: both Wrangler files use `name = "eyehold"` and the portal script. Do not create a second Worker. Do not add a route on `babelbook.net/*`. Do not deploy, rename, or edit the babelbook-staging Worker. Do not point this Worker at Babelbook's Supabase project.
 

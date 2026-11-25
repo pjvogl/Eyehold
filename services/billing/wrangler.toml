@@ -7,8 +7,9 @@ preview_urls = false
 upload_source_maps = true
 
 # Same Worker as services/portal (name "eyehold", same script). Deploying from
-# either directory updates that one Worker. The custom domain is DECLARED and
-# is not applied until the owner runs deploy. Do not add any other hostname.
+# either directory updates that one Worker.
+# Deployed in TEST MODE 2026-11-25 with eyehold.babelbook.net attached as a
+# Workers custom domain, behind Cloudflare Access. Do not add any other hostname.
 [[routes]]
 pattern = "eyehold.babelbook.net"
 custom_domain = true
@@ -37,7 +38,7 @@ required = ["STRIPE_SECRET_KEY", "STRIPE_WEBHOOK_SECRET", "EYEHOLD_ACCESS_EMAILS
 # EYEHOLD_ACCESS_CLIENT_ID
 # EYEHOLD_ACCESS_CLIENT_SECRET
 
-# Placeholder. Replace with the namespace id from Eyehold's account before deploy.
+# Eyehold billing ledger, namespace "eyehold-BILLING_KV", created 2026-11-25.
 [[kv_namespaces]]
 binding = "BILLING_KV"
-id = "00000000000000000000000000000000"
+id = "c59822282bcf4f1294f4522c7f07a026"
