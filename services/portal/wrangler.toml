@@ -7,8 +7,8 @@ preview_urls = false
 upload_source_maps = true
 
 # Eyehold's own Worker.
-# Deployed in TEST MODE 2026-11-25 with eyehold.babelbook.net attached as a
-# Workers custom domain, behind Cloudflare Access. Do not add any other hostname.
+# Hosted billing is prepared for LIVE mode. STRIPE_MODE=live accepts only a live
+# secret or live restricted key, and livemode=true events. Do not add any other hostname.
 [[routes]]
 pattern = "eyehold.babelbook.net"
 custom_domain = true
@@ -26,7 +26,7 @@ head_sampling_rate = 0.01
 
 [vars]
 EYEHOLD_BASE_DOMAIN = "eyehold.babelbook.net"
-STRIPE_MODE = "test"
+STRIPE_MODE = "live"
 
 # Names only. Values are set with `npx wrangler secret put` from this directory.
 # Never put key material in this file.

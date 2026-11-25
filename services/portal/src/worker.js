@@ -14,7 +14,10 @@ function serviceToken(request, env) {
   return safeEqual(id, env.EYEHOLD_ACCESS_CLIENT_ID) && safeEqual(secret, env.EYEHOLD_ACCESS_CLIENT_SECRET);
 }
 function esc(s) { return String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
-function page(email) {
+function page(email, live) {
+  const credits = live
+    ? 'Managed credits are separate from Crowns. A signed-in member can buy the spark or hearth pack. Auto-update stays off.'
+    : 'Managed credits are separate from Crowns. Purchases stay off while this host is in test mode.';
   return `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>The Eyehold</title>
 <style>
 body{margin:0;background:#140e16;color:#e6ac65;font-family:ui-monospace,monospace}
@@ -31,7 +34,7 @@ a{color:#e6ac65}
 <h2>Updates</h2>
 <p>The feed at <a href="/updates/latest.json">/updates/latest.json</a> lists no platforms yet.</p>
 <h2>Credits</h2>
-<p>Managed credits are separate from Crowns. Purchases stay off until this host is deployed and the live flags are switched on by the owner.</p>
+<p>${credits}</p>
 </main></body></html>`;
 }
 function feed() {
@@ -53,7 +56,8 @@ export default {
     const email = allowedEmail(request, env);
     if (!email && !serviceToken(request, env)) return json(401, { error: 'access-email-required' });
     if (url.pathname === '/' || url.pathname === '/download') {
-      return new Response(page(email || 'service-token'), { headers: { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-store' } });
+      const live = env && env.STRIPE_MODE === 'live';
+      return new Response(page(email || 'service-token', live), { headers: { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-store' } });
     }
     if (url.pathname === '/updates/latest.json' && request.method === 'GET') return json(200, feed());
     const billed = await handleBilling(request, env, ledgerFor(env, ledger));

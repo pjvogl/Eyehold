@@ -21,11 +21,10 @@
 
   var RELEASES_REPO = '';
 
-  // StarNet Credits (managed plans). The billing service is a separate host; until it is
-  // deployed `live:false` keeps every buy button honest — no button on this site may imply
-  // a purchase we cannot actually take. Flip `live` to true once the service answers.
+  // StarNet Credits (managed plans). The owner approved Eyehold live billing.
+  // Buy buttons point at the Eyehold account host. Auto-update stays off elsewhere.
   var CREDITS = {
-    live: false,
+    live: true,
     accountUrl: 'https://eyehold.babelbook.net'
   };
   (function wireCredits(){

@@ -17,8 +17,8 @@ This fork's visible product name is Eyehold. The strings below still say StarNet
 
 ## Stopped in this milestone
 
-- Managed-credit linking is off (`CLOUD_LIVE` is false). The app does not offer the upstream account.
-- Website buy buttons are off (`CREDITS.live` is false) and the account URL is empty.
+- Managed-credit linking is on (`CLOUD_LIVE` is true) and points at `https://eyehold.babelbook.net`.
+- Website buy buttons are on (`CREDITS.live` is true) and use that same account URL. Auto-update stays off.
 - The site does not call `api.github.com` for `androoAGI/starnet-releases`. Download buttons stay on this site.
 - The phone relay does not dial `remote.starnetos.com` unless `EYEHOLD_REMOTE_RELAY` is set (`REMOTE_RELAY_LIVE` is false).
 - Tauri updater endpoints were already empty. They stay empty.

@@ -24,4 +24,4 @@ Another channel can be added later by implementing `publish(listing, ctx)` and r
 
 A reviewed sale writes two USD receipts: the payment as `revenue`, and the run's measured compute as `model-cost`. The profit ladder in `sidecar/eyehold-finance-truth.js` is revenue minus those costs, toward $1,000,000, then $10,000,000, then $100,000,000. If compute was not measured, the sale is refused rather than booked as free. Crowns are not awarded by a sale and are not dollars.
 
-This is not a bank reconciliation. `CREDITS.live` and `CLOUD_LIVE` stay false. No installer or worker is deployed from this tree, and no real Stripe key belongs in the repo.
+This is not a bank reconciliation. `CREDITS.live` and `CLOUD_LIVE` are true for the hosted credit purchase. Payment-link drafts still reject live keys until that adapter is switched. No real Stripe key belongs in the repo. `EYEHOLD_UPDATES_ENABLED` stays false.

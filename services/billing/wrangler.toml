@@ -8,8 +8,8 @@ upload_source_maps = true
 
 # Same Worker as services/portal (name "eyehold", same script). Deploying from
 # either directory updates that one Worker.
-# Deployed in TEST MODE 2026-11-25 with eyehold.babelbook.net attached as a
-# Workers custom domain, behind Cloudflare Access. Do not add any other hostname.
+# Hosted billing is prepared for LIVE mode. STRIPE_MODE=live accepts only a live
+# secret or live restricted key, and livemode=true events. Do not add any other hostname.
 [[routes]]
 pattern = "eyehold.babelbook.net"
 custom_domain = true
@@ -27,10 +27,11 @@ head_sampling_rate = 0.01
 
 [vars]
 EYEHOLD_BASE_DOMAIN = "eyehold.babelbook.net"
-STRIPE_MODE = "test"
+STRIPE_MODE = "live"
 
 # Names only. Set from this directory with `npx wrangler secret put`.
-# STRIPE_SECRET_KEY accepts rk_test_ or sk_test_. Live keys are rejected at runtime.
+# With STRIPE_MODE=live, STRIPE_SECRET_KEY must be a live secret or live restricted key.
+# Test keys are rejected at runtime in that mode.
 [secrets]
 required = ["STRIPE_SECRET_KEY", "STRIPE_WEBHOOK_SECRET", "EYEHOLD_ACCESS_EMAILS"]
 

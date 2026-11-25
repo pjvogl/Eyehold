@@ -18,9 +18,9 @@ assert.match(updates, new RegExp("RELEASES_PAGE = '" + origin + host.releaseNote
 assert.match(updates, /EYEHOLD_UPDATES_ENABLED = false/);
 const sidecar = fs.readFileSync(path.join(root, 'sidecar/index.js'), 'utf8');
 const site = fs.readFileSync(path.join(root, 'website/site.js'), 'utf8');
-assert.match(sidecar, /const CLOUD_LIVE = false;/);
+assert.match(sidecar, /const CLOUD_LIVE = true;/);
 assert.match(sidecar, new RegExp("const CLOUD_URL_DEFAULT = '" + origin + "'"));
-assert.match(site, /live: false/);
+assert.match(site, /var CREDITS = \{\s*live: true,/);
 assert.match(site, new RegExp("accountUrl: '" + origin + "'"));
 assert.doesNotMatch(host.baseDomain, /starnetos\.com|androoAGI|github\.com|babelbook-staging|^babelbook\.net$/);
 for (const rel of ['services/portal/wrangler.toml', 'services/billing/wrangler.toml']) {
@@ -29,7 +29,7 @@ for (const rel of ['services/portal/wrangler.toml', 'services/billing/wrangler.t
   assert.match(toml, /pattern = "eyehold\.babelbook\.net"/, rel);
   assert.match(toml, /custom_domain = true/, rel);
   assert.match(toml, /workers_dev = false/, rel);
-  assert.match(toml, /STRIPE_MODE = "test"/, rel);
+  assert.match(toml, /STRIPE_MODE = "live"/, rel);
   assert.doesNotMatch(toml, /babelbook-staging|babelbook\.net\/\*|sk_live_|rk_live_|zone_name|zone_id/, rel);
   assert.equal((toml.match(/^pattern = /gm) || []).length, 1, rel + ' declares one hostname');
 }

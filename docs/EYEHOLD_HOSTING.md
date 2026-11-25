@@ -26,10 +26,10 @@ Each allowlisted email has its own credit balance. The ledger key is `email:` pl
 | --- | --- |
 | `/` and `/download` | Allowlisted email. Fantasy landing page. No installer is offered. |
 | `/updates/latest.json` | Allowlisted email or a future Access service token. Empty platform map. |
-| `/billing/checkout`, `/billing/balance`, `/billing/receipts` | Allowlisted email. Test-mode Stripe only. |
-| `/billing/webhook` | Stripe signature. |
-| `/healthz` | Public. Reports `billingLive: false`. |
+| `/billing/checkout`, `/billing/balance`, `/billing/receipts` | Allowlisted email. Live Stripe when `STRIPE_MODE=live`; test Stripe when `STRIPE_MODE=test`. |
+| `/billing/webhook` | Stripe signature. The event's `livemode` must match `STRIPE_MODE`. |
+| `/healthz` | Public. Reports `billingLive` and `mode` from `STRIPE_MODE`. |
 
 ## Still manual
 
-Generate the updater signing key as described in `docs/EYEHOLD_PUBLISHER.md`. Create a real KV namespace before taking a payment. Leave `CREDITS.live` and `CLOUD_LIVE` false until a sandbox webhook has been seen on this host.
+Generate the updater signing key as described in `docs/EYEHOLD_PUBLISHER.md`. `BILLING_KV` is `c59822282bcf4f1294f4522c7f07a026`. `CREDITS.live` and `CLOUD_LIVE` are true. `EYEHOLD_UPDATES_ENABLED` stays false. The live secret and live webhook signing secret still have to be set before the live deploy in `docs/DEPLOY.md`.

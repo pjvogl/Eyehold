@@ -1,4 +1,4 @@
-import { accountKey, applyCheckoutEvent, createCheckoutSession, createKvLedger, createMemoryLedger, evidenceRefFor, verifyStripeSignature } from '../billing.mjs';
+import { accountKey, applyCheckoutEvent, createCheckoutSession, createKvLedger, createMemoryLedger, evidenceRefFor, stripeMode, verifyStripeSignature } from '../billing.mjs';
 
 export function json(status, body) {
   return new Response(JSON.stringify(body), {
@@ -12,9 +12,12 @@ export function allowedEmail(request, env) {
   if (!email || !allow.includes(email)) return '';
   return email;
 }
+const KEY_ERRORS = new Set(['test-key-required', 'live-key-rejected', 'live-key-required', 'test-key-rejected']);
+
 export async function handleBilling(request, env, ledger) {
   const url = new URL(request.url);
-  if (url.pathname === '/healthz') return json(200, { ok: true, service: 'eyehold', billingLive: false, mode: 'test' });
+  const mode = stripeMode(env && env.STRIPE_MODE);
+  if (url.pathname === '/healthz') return json(200, { ok: true, service: 'eyehold', billingLive: mode === 'live', mode });
   if (url.pathname === '/billing/webhook' && request.method === 'POST') {
     const payload = await request.text();
     const verified = await verifyStripeSignature(payload, request.headers.get('stripe-signature'), env.STRIPE_WEBHOOK_SECRET);
@@ -28,7 +31,7 @@ export async function handleBilling(request, env, ledger) {
       return json(400, { error: 'invalid-json' });
     }
     const evidenceRef = await evidenceRefFor(payload);
-    const result = await applyCheckoutEvent(ledger, event, { evidenceRef });
+    const result = await applyCheckoutEvent(ledger, event, { evidenceRef, mode });
     console.log(JSON.stringify({
       message: 'billing-webhook',
       ok: result.ok !== false,
@@ -57,11 +60,12 @@ export async function handleBilling(request, env, ledger) {
         pack: body.pack,
         email,
         successUrl: origin + '/billing/return',
-        cancelUrl: origin + '/billing/cancel'
+        cancelUrl: origin + '/billing/cancel',
+        mode
       });
       return json(200, session);
     } catch (error) {
-      const status = error.message === 'test-key-required' || error.message === 'live-key-rejected' ? 503 : 400;
+      const status = KEY_ERRORS.has(error.message) ? 503 : 400;
       return json(status, { error: error.message });
     }
   }

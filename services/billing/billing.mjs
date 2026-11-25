@@ -1,4 +1,6 @@
-/* Eyehold managed-credit billing. Test mode only.
+/* Eyehold managed-credit billing.
+ * STRIPE_MODE=test accepts only test keys and livemode:false events.
+ * STRIPE_MODE=live accepts only live keys and livemode:true events.
  * Stripe calls go through the injected fetch. No secret belongs in this file.
  * Crowns are not credits and credits are not dollars. A paid Checkout session
  * records a USD receipt and a separate credit balance for that account.
@@ -88,7 +90,7 @@ export function checkoutForm({ pack, email, successUrl, cancelUrl }) {
   body.set('line_items[0][price_data][unit_amount]', String(item.cents));
   body.set('line_items[0][price_data][product_data][name]', item.name);
   // This Stripe account has Managed Payments on. Leaving it enabled requires a
-  // product tax code, and spark Checkout Session creation fails. Test mode turns it off.
+  // product tax code, and Checkout Session creation fails. Both modes turn it off.
   body.set('managed_payments[enabled]', 'false');
   body.set('integration_identifier', 'eyehold_checkout_' + randomSuffix());
   const encoded = body.toString();
@@ -96,15 +98,31 @@ export function checkoutForm({ pack, email, successUrl, cancelUrl }) {
   return encoded;
 }
 
-export function assertTestKey(secret) {
+export function stripeMode(value) {
+  return value === 'live' ? 'live' : 'test';
+}
+
+export function assertStripeKey(secret, mode) {
   const key = String(secret || '');
-  if (key.startsWith('sk_live_') || key.startsWith('rk_live_')) throw new Error('live-key-rejected');
-  if (!key.startsWith('sk_test_') && !key.startsWith('rk_test_')) throw new Error('test-key-required');
+  const liveKey = key.startsWith('sk_live_') || key.startsWith('rk_live_');
+  const testKey = key.startsWith('sk_test_') || key.startsWith('rk_test_');
+  if (stripeMode(mode) === 'live') {
+    if (testKey) throw new Error('test-key-rejected');
+    if (!liveKey) throw new Error('live-key-required');
+    return key;
+  }
+  if (liveKey) throw new Error('live-key-rejected');
+  if (!testKey) throw new Error('test-key-required');
   return key;
 }
 
-export async function createCheckoutSession(fetchImpl, { secret, pack, email, successUrl, cancelUrl }) {
-  const key = assertTestKey(secret);
+export function assertTestKey(secret) {
+  return assertStripeKey(secret, 'test');
+}
+
+export async function createCheckoutSession(fetchImpl, { secret, pack, email, successUrl, cancelUrl, mode }) {
+  const selected = stripeMode(mode);
+  const key = assertStripeKey(secret, selected);
   const form = checkoutForm({ pack, email, successUrl, cancelUrl });
   const response = await fetchImpl('https://api.stripe.com/v1/checkout/sessions', {
     method: 'POST',
@@ -117,7 +135,9 @@ export async function createCheckoutSession(fetchImpl, { secret, pack, email, su
   });
   const payload = await response.json();
   if (!response.ok) throw new Error(payload && payload.error && payload.error.message || 'stripe-checkout-failed');
-  if (payload.livemode) throw new Error('live-session-rejected');
+  if (selected === 'live') {
+    if (!payload.livemode) throw new Error('test-session-rejected');
+  } else if (payload.livemode) throw new Error('live-session-rejected');
   return { id: payload.id, url: payload.url };
 }
 
@@ -152,13 +172,18 @@ export async function verifyStripeSignature(payload, header, secret, now = Date.
 }
 
 export async function applyCheckoutEvent(ledger, event, meta = {}) {
-  if (!event || event.livemode) return { ok: false, error: 'live-mode-rejected' };
+  const selected = stripeMode(meta.mode);
+  if (!event || (selected === 'live' ? !event.livemode : event.livemode)) {
+    return { ok: false, error: selected === 'live' ? 'test-mode-rejected' : 'live-mode-rejected' };
+  }
   if (event.type !== 'checkout.session.completed' && event.type !== 'checkout.session.async_payment_succeeded') {
     return { ok: true, ignored: true };
   }
   const session = event.data && event.data.object;
   if (!session || session.payment_status !== 'paid' || session.mode !== 'payment') return { ok: true, ignored: true };
-  if (session.livemode) return { ok: false, error: 'live-mode-rejected' };
+  if (selected === 'live' ? !session.livemode : session.livemode) {
+    return { ok: false, error: selected === 'live' ? 'test-mode-rejected' : 'live-mode-rejected' };
+  }
   const evidenceRef = cleanEvidence(meta.evidenceRef);
   const cents = session.amount_total;
   const pack = PACKS[session.metadata && session.metadata.pack];
@@ -168,7 +193,7 @@ export async function applyCheckoutEvent(ledger, event, meta = {}) {
     currency: 'USD',
     type: 'revenue',
     sessionId: session.id,
-    livemode: false,
+    livemode: selected === 'live',
     verified: true
   };
   if (evidenceRef) base.evidenceRef = evidenceRef;
