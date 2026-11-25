@@ -9,7 +9,8 @@ Deployed with the owner's approval, Stripe still in test mode:
 - `BILLING_KV` = `eyehold-BILLING_KV` (`c59822282bcf4f1294f4522c7f07a026`).
 - Vars `STRIPE_MODE=test`, `EYEHOLD_BASE_DOMAIN`. Secret `EYEHOLD_ACCESS_EMAILS` set to the owner only.
 - Access app `eyehold` on `eyehold.babelbook.net`: allow the owner's email, one-time PIN login only. Access app `eyehold-stripe-webhook` on `eyehold.babelbook.net/billing/webhook`: bypass (the Worker accepts only POST there, and only with a valid Stripe signature). `/healthz` is behind Access too.
-- NOT set yet: `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, Stripe test webhook endpoint. Until they are set, checkout returns 503 and every webhook is rejected.
+- Stripe test webhook endpoint `we_1UfotGCPFTRsrZFZUR2k4FFB` ("Eyehold test") on the Babelbook Stripe account (`acct_1USmo1CPFTRsrZFZ`), url `https://eyehold.babelbook.net/billing/webhook`, events `checkout.session.completed` and `checkout.session.async_payment_succeeded`, livemode false. The Worker does not handle `checkout.session.async_payment_failed`, so that event was not added.
+- NOT set yet on the Worker: `STRIPE_SECRET_KEY` and `STRIPE_WEBHOOK_SECRET`. The test key was confirmed (`sk_test_`, `GET /v1/balance` livemode false) and the webhook signing secret was captured at creation, but this environment could not upload secret values through the Cloudflare connector. Until those two secrets are set, checkout returns 503 and every webhook is rejected. Worker version remains 1.
 
 The rest of this runbook is the original plan, kept for reference.
 
