@@ -16,6 +16,7 @@ const form = checkoutForm({
   cancelUrl: 'https://eyehold.babelbook.net/billing/cancel'
 });
 assert.equal(form.includes('payment_method_types'), false);
+assert.match(form, /managed_payments%5Benabled%5D=false/);
 assert.match(form, /mode=payment/);
 assert.match(form, /currency%5D=usd/);
 assert.match(form, /unit_amount%5D=500/);
@@ -31,6 +32,7 @@ assert.equal(session.id, 'cs_test_1');
 assert.equal(calls[0].url, 'https://api.stripe.com/v1/checkout/sessions');
 assert.match(calls[0].init.headers.Authorization, /^Bearer rk_test_/);
 assert.equal(calls[0].init.headers['Stripe-Version'], '2026-09-30.endive');
+assert.match(calls[0].init.body, /managed_payments%5Benabled%5D=false/);
 await assert.rejects(createCheckoutSession(async () => { throw new Error('unused'); }, {
   secret: 'sk_live_nope', pack: 'spark', email, successUrl: 'https://eyehold.example/a', cancelUrl: 'https://eyehold.example/b'
 }), /live-key-rejected/);

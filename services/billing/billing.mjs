@@ -87,6 +87,9 @@ export function checkoutForm({ pack, email, successUrl, cancelUrl }) {
   body.set('line_items[0][price_data][currency]', 'usd');
   body.set('line_items[0][price_data][unit_amount]', String(item.cents));
   body.set('line_items[0][price_data][product_data][name]', item.name);
+  // This Stripe account has Managed Payments on. Leaving it enabled requires a
+  // product tax code, and spark Checkout Session creation fails. Test mode turns it off.
+  body.set('managed_payments[enabled]', 'false');
   body.set('integration_identifier', 'eyehold_checkout_' + randomSuffix());
   const encoded = body.toString();
   if (encoded.includes('payment_method_types')) throw new Error('payment-method-types-forbidden');

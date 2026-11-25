@@ -44,6 +44,7 @@ async function mockStripe(url, init) {
   assert.equal(String(init.body || '').includes('payment_method_types'), false);
   stripeCalls.push(href);
   if (href.endsWith('/v1/checkout/sessions')) {
+    assert.match(String(init.body || ''), /managed_payments%5Benabled%5D=false/);
     return { ok: true, json: async () => ({ id: 'cs_test_e2e_checkout', url: 'https://checkout.stripe.test/c/cs_test_e2e_checkout', livemode: false }) };
   }
   if (href.endsWith('/v1/products')) return { ok: true, json: async () => ({ id: 'prod_test_e2e', livemode: false }) };

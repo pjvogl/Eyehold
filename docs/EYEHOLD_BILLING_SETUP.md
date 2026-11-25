@@ -14,7 +14,7 @@ Use a Stripe sandbox for this integration, not the shared live account. Prefer a
 4. `npx wrangler secret put STRIPE_WEBHOOK_SECRET` with that endpoint's signing secret.
 5. Exempt only `POST /billing/webhook` from Cloudflare Access. Stripe cannot present an Access login. The signature check is the authentication for that path. Every other billing path requires an allowlisted Access email.
 
-Checkout uses Checkout Sessions in `payment` mode and does not send `payment_method_types`. Fulfillment happens in the webhook, and only when `payment_status` is `paid`. A replayed session does not add credits twice.
+Checkout uses Checkout Sessions in `payment` mode and does not send `payment_method_types`. It sends `managed_payments[enabled]=false` because this Stripe account has Managed Payments on, which otherwise requires a product tax code. Fulfillment happens in the webhook, and only when `payment_status` is `paid`. A replayed session does not add credits twice.
 
 ## Access and accounts
 
