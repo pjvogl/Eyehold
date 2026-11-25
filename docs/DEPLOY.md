@@ -14,6 +14,22 @@ Deployed with the owner's approval, Stripe live mode, Babelbook account `acct_1U
 
 The rest of this runbook is the original plan, kept for reference. Section 8 below is the live switch the owner approved.
 
+## Agent readiness
+
+The station can walk a venture from research to a reviewed listing, a verified receipt, Crowns, and a capped reinvestment without an owner click. A local run of that loop used a mock Stripe and made no charge. These accounts are still required before an agent can do the real-world step. None of these values belong in git.
+
+| What the agent is trying to do | What is missing | Where it plugs in |
+| --- | --- | --- |
+| Ask a model for research, a draft, or a quality check | An AI model API key for the station that runs the agents. The hosted Worker does not call a model. The cycle calls whatever `tools.briefs`, `tools.findings`, `tools.produce`, and `tools.review` the station passes in. | `sidecar/eyehold-cycle.js` tool arguments. The station's existing provider key is the credential. There is no model key on the Worker. |
+| Search the live web for sources | A search or research API key, if the model is not allowed to browse. Without it, briefs only exist when the tool returns sources. The cycle does not invent citations. | The same `tools.briefs` and `tools.findings` functions. |
+| Create a Stripe Payment Link in live mode | Already set on the Worker: `STRIPE_SECRET_KEY` (live) and `STRIPE_WEBHOOK_SECRET` (live endpoint `we_1Ufpg8CPFTRsrZFZy50zyi5L`). The station cycle needs that same live key in memory when it publishes. It sends `managed_payments[enabled]=false`. A test key is rejected in live mode. | `stripePaymentLinkAdapter({ mode: 'live' })` in `sidecar/eyehold-market-channels.js`, called with `stripe.secret` from `sidecar/eyehold-cycle.js`. Webhook events remain `checkout.session.completed` and `checkout.session.async_payment_succeeded`. |
+| List on Etsy | An Etsy app, a keystring, and the shop's OAuth token. `ETSY_API_KEY` is read and then refused. The adapter does not call Etsy. | `sidecar/eyehold-etsy.js`, `etsyListingAdapter`. The cycle records `etsy: not-connected` and still uses the Stripe link for the sale. |
+| Send email or a customer message | A mailbox and a sending provider. No venture tool is allowed to message a customer. `contactCustomer` is rejected. | A future mail tool would be added to `sidecar/eyehold-tools.js` for a venture and called from the cycle. There is no hook that sends mail today. |
+| Trade with real money | A brokerage account and API key. Do not add one for this loop. Paper fills stay paper, graduation still waits for the owner, and `liveOrder` throws. | `sidecar/eyehold-trader.js`, `createBrokerAdapter`. Practice points only. Crowns stay off this path. |
+| Spend more than the team has earned | Nothing to connect. The owner can still top up by hand. Agent reinvestment cannot exceed verified earnings or the venture cap. | `allocateFromEarnings` and `releaseWithinCap` in `sidecar/eyehold-treasury.js`. |
+
+Restart persistence is the cycle file plus the research, venture, desk, market, treasury, score, and finance files. Three failures on the same step stop that run instead of looping forever.
+
 The public host is `eyehold.babelbook.net` on Eyehold's own Worker, named `eyehold`. `services/portal` and `services/billing` are that same Worker: both Wrangler files use `name = "eyehold"` and the portal script. Do not create a second Worker. Do not add a route on `babelbook.net/*`. Do not deploy, rename, or edit the babelbook-staging Worker. Do not point this Worker at Babelbook's Supabase project.
 
 Auth for v1 is a Cloudflare Access email allowlist. The Worker reads `Cf-Access-Authenticated-User-Email` and compares it to `EYEHOLD_ACCESS_EMAILS`. A later Eyehold Supabase project can replace the account key. Babelbook's users are not that project.

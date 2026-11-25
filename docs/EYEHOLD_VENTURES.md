@@ -16,13 +16,13 @@ Paper trading and other simulations do not earn Crowns. Those results show up as
 
 Upfront costs come out of money the team has already earned: listing fees, tools, ads, trading capital. The owner can top up the treasury by hand. Each agent has a budget and a hard cap. If the cash is not there, the spend does not happen.
 
-Nothing goes out on its own. A listing, a payment link, a trade, a spend, or a message to a customer waits in the queue until the owner clicks.
+A reviewed listing can go out as a Stripe Payment Link without another click. A real trade does not. A customer message does not. A spend that is over the cap or over verified earnings does not. The owner can still stop a queued action.
 
 ## The channels
 
 The trader starts on paper. Fills are simulated. Position size and losses are capped. Moving a trader onto a small real budget takes the owner's approval and a paper record that is actually ahead. No broker is connected, and no broker key is stored.
 
-Etsy listings have an adapter for the Etsy Open API. It is not connected. A key in the environment would not make it call Etsy in this build. Stripe Payment Links are the sales channel that can run, in test mode, and only after the owner presses the button.
+Etsy listings have an adapter for the Etsy Open API. It is not connected. A key in the environment does not make it call Etsy. Stripe Payment Links can be created after Silver Bough reviews the draft. Live mode accepts a live key and rejects a test key. The owner button still works. Paper trading is not a payment link.
 
 ## The ladder
 
