@@ -2,7 +2,7 @@
    a sender the channel never admitted (2026-09-25, sec-owner-gates).
 
    The relay HMAC proves the operator's relay sent a body; it never proved WHO on the platform wrote it (one
-   station-wide secret, no per-user scope). /api/channels/webhook/<channel> used to spread the body straight
+   keep-wide secret, no per-user scope). /api/channels/webhook/<channel> used to spread the body straight
    into hub.onInbound: a relay-claimed stranger skipped the owner-only DM gate, a relay-claimed owner id minted
    owner authority, and body fields like `directReply` were obeyed. Boots the REAL sidecar with a fake Telegram
    Bot API + fake provider, pairs the owner through the real local pairing route, then drives signed webhooks:

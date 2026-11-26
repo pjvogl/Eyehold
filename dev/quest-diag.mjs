@@ -4,7 +4,7 @@
    anything we measure the real thing: how many times the panel's DOM is rebuilt while it just sits open,
    what fires those rebuilds, and how many quest-related fetches go out per second.
 
-   Instrumentation is added AT RUNTIME (never in shipped source): we wrap StationUI.rerender and window.fetch
+   Instrumentation is added AT RUNTIME (never in shipped source): we wrap KeepUI.rerender and window.fetch
    inside the page, open the QUEST LOG, sit still for a measured window, then report counts.
 
    Usage:  node dev/seed-deliverables.js         (one shell)
@@ -25,8 +25,8 @@ const WATCH_MS = Number(process.env.QUEST_WATCH_MS || 12000);
 // Wrap rerender + fetch. Record WHO called rerender (a trimmed stack) so a render storm names its source.
 const INSTRUMENT = `(() => {
   window.__qd = { renders: [], fetches: [], stacks: {} };
-  const origRerender = StationUI.rerender;
-  StationUI.rerender = function (key) {
+  const origRerender = KeepUI.rerender;
+  KeepUI.rerender = function (key) {
     if (key === 'quests') {
       const st = (new Error().stack || '').split('\\n').slice(2, 5).map(s => s.trim().replace(/^at /, '')).join(' <- ');
       window.__qd.renders.push({ t: Date.now(), st });
@@ -44,7 +44,7 @@ const INSTRUMENT = `(() => {
 })()`;
 
 const OPEN = `(async () => {
-  StationUI.openTerm('quests');
+  KeepUI.openTerm('quests');
   await new Promise(r => setTimeout(r, 2000));
   const win = [...document.querySelectorAll('.term')].find(t => /QUEST LOG/.test(t.textContent));
   if (!win) return JSON.stringify({ ok: false, why: 'quest window not found' });
@@ -86,10 +86,10 @@ const SWEEP = `(async () => {
   const h1 = getComputedStyle(win).height;
   // 1) a DATA poke must not blink: clear any prior crossfade class, poke as data, class must stay absent.
   body.classList.remove('swap-in');
-  StationUI.rerender('quests', false);
+  KeepUI.rerender('quests', false);
   await new Promise(r => setTimeout(r, 150));
   const dataPokeBlinks = body.classList.contains('swap-in');
-  StationUI.rerender('quests');   // a user-driven swap still fades (the default is unchanged)
+  KeepUI.rerender('quests');   // a user-driven swap still fades (the default is unchanged)
   await new Promise(r => setTimeout(r, 150));
   const userSwapFades = body.classList.contains('swap-in');
   // 2) content change must not resize/re-centre the steady shell.
@@ -109,7 +109,7 @@ const SWEEP = `(async () => {
 const STAGE_WORK_QUEST = `(async () => {
   if (typeof WorkQuestStore === 'undefined' || !WorkQuestStore.accept) return JSON.stringify({ ok: false, why: 'WorkQuestStore absent' });
   const id = WorkQuestStore.accept({ title: 'Draft the launch announcement', build: { kind: 'freeform' } });
-  StationUI.rerender('quests');
+  KeepUI.rerender('quests');
   await new Promise(r => setTimeout(r, 700));
   return JSON.stringify({ ok: !!id, id, cards: document.querySelectorAll('.q-open .q-card').length,
     startBtns: document.querySelectorAll('.q-actions .q-go[data-dest="session"]').length });
@@ -127,7 +127,7 @@ const START_QUEST = `(async () => {
   const composer = document.getElementById('chat-input');
   const afterOne = Workstreams.list().length;
   // click it again (re-open the log first — opening a session may cover it)
-  StationUI.openTerm('quests');
+  KeepUI.openTerm('quests');
   await new Promise(r => setTimeout(r, 900));
   const b2 = document.querySelector('.q-actions .q-go[data-dest="session"]');
   if (b2) { b2.click(); await new Promise(r => setTimeout(r, 900)); }

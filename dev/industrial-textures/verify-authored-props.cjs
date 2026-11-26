@@ -74,7 +74,7 @@ const cyan=d=>{let n=0;for(let i=0;i<d.length;i+=4)if(d[i+3]>200)n+=Math.max(0,M
    if(v.mode==='scanner')same(render(false,100,{work:true}),render(false,2300,{work:true}),'unrelated work cannot scan an empty conveyor');
    if(v.mode==='water'){
     same(render(false,1050),active,'water is independent of occupancy');
-    assert.equal(art.emitter(id),null,'water is not a workstation display');
+    assert.equal(art.emitter(id),null,'water is not a workkeep display');
    }
    if(v.mode==='pool'||v.motion.trigger==='work')same(render(false,100),render(false,2300),id+' does not invent use');
   }else if(v.mode==='machine'){
@@ -118,8 +118,8 @@ const cyan=d=>{let n=0;for(let i=0;i<d.length;i+=4)if(d[i+3]>200)n+=Math.max(0,M
  const output=path.join(root,'dev/.scratch-workspace/props-v3');fs.mkdirSync(output,{recursive:true});
  fs.writeFileSync(path.join(output,'console-states.png'),sheet.toBuffer('image/png'));
  // Review contact sheets use the public game painter at one fixed scale. They
- // are labelled fixture renders, not saved-station screenshots or backend work.
- const cadet=new Image();cadet.src=fs.readFileSync(path.join(root,'frontend/assets/sprites/station_minion/rot_south.png'));
+ // are labelled fixture renders, not saved-keep screenshots or backend work.
+ const cadet=new Image();cadet.src=fs.readFileSync(path.join(root,'frontend/assets/sprites/keep_minion/rot_south.png'));
  const measure=createCanvas(cadet.width,cadet.height);measure.getContext('2d').drawImage(cadet,0,0);const md=rgba(measure);let foot=0;
  for(let i=3;i<md.length;i+=4)if(md[i]>50)foot=Math.max(foot,Math.floor(i/4/cadet.width)+1);
  const ids=Object.keys(manifest.props);

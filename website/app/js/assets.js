@@ -144,7 +144,7 @@ const SPRITES = (() => {
       for (const f of side) { const g = bandGap(f); if (g && g > widest) widest = g; }
       // a real stride has to open the feet WIDER than standing; below that there is no swing to read
       if (idle && widest && widest - idle >= 3) {
-        // Remove the stationary boot width: only the extra separation represents leg travel.
+        // Remove the keepary boot width: only the extra separation represents leg travel.
         // The old ceiling forced every approved skin back to the same short, hurried cycle.
         const measured = 2 * (widest - idle) * sc;
         out = isReviewSet(set)
@@ -208,7 +208,7 @@ const SPRITES = (() => {
      authored emissive spill, such as ULTRON's red pool, stays part of the skin's presentation.
      Direction points FROM the body TOWARD the source in world axes. Quantize small changes before
      caching at native sprite resolution, shared across agents. No scene readback or canvas filter.
-     TWO TIERS (2026-10-07, "laggy" on a 26-agent station): a fixed 128-frame LRU was smaller than one second
+     TWO TIERS (2026-10-07, "laggy" on a 26-agent keep): a fixed 128-frame LRU was smaller than one second
      of a big crew — a WALKING body crosses a colour/strength/sector step ~5x a second and every walk frame is
      a different master, so each (frame, light) pair was drawn exactly once: ~230 fresh canvases a second,
      each a new GPU texture, and every one of them evicted a sitting body's frame so that rebuilt too.
@@ -670,8 +670,8 @@ const SPRITES = (() => {
     // SPRITE rises, the shadow pool remains on the deck under the stool where light actually lands.
     // Gated on the RESOLVED track actually being a sit pose: a set with no sit frames (minionchar,
     // 2026-08-10) falls back to rot/stand, and lifting a STANDING body onto the pad reads as levitation.
-    const workstationLift = isReviewSet(set) && b.sitting && !b.seated && (b.working || b.goal === 'work') ? 7 : 0;
-    const seatLift = b.sitting && /\.(sit|type)\./.test(key) ? (b.seatLift || workstationLift) : 0;
+    const workkeepLift = isReviewSet(set) && b.sitting && !b.seated && (b.working || b.goal === 'work') ? 7 : 0;
+    const seatLift = b.sitting && /\.(sit|type)\./.test(key) ? (b.seatLift || workkeepLift) : 0;
     // perched: anchor by THIS sit frame's own bottom padding (getTrackPad), not the standing footPad —
     // sets whose sit master carries extra empty rows below the tucked legs (skeleton) otherwise float.
     // Walking masters have slightly different packing below their boots. A set-wide idle
@@ -713,7 +713,7 @@ const SPRITES = (() => {
     if (!b.noShadow) {
       const lift = Math.max(0, -bob);           // bob is +down; a negative bob has raised the body
       if (set === 'ultron') {
-        // the station leader's menacing red spill — a wider, slower pulse beneath his own pool
+        // the keep leader's menacing red spill — a wider, slower pulse beneath his own pool
         groundShadow(ctx, b.px, b.py, shR * 1.55, { lift, color: '#ff4a3d', alpha: reduced ? 0.55 : 0.55 + 0.25 * Math.sin(nowMs / 400) });
       }
       // a perched body adds its seatLift to the shadow's lift: the pool tightens + fades the higher the

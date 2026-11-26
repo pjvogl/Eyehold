@@ -68,37 +68,37 @@ function fakeFetch() { return async () => ({ ok: true, status: 200, async json()
   A.ok(/notifyAutonomous/.test(dcStatusBody), 'status surfaces the shared autonomous-ping opt-in (parity with Telegram)');
 
   // ---------- 2. FRONTEND source-guard: the Messaging Discord card mirrors the Telegram card ----------
-  const station = fs.readFileSync(path.join(__dirname, '..', 'frontend', 'app', 'windows', 'messaging.js'), 'utf8');
+  const keep = fs.readFileSync(path.join(__dirname, '..', 'frontend', 'app', 'windows', 'messaging.js'), 'utf8');
 
   // Telegram card intact (additive-only): its masked token field + its catalog entry that generates tg-connect
-  A.ok(/id="tg-token"/.test(station) && /pre: 'tg'/.test(station), 'Telegram card preserved (not regressed)');
+  A.ok(/id="tg-token"/.test(keep) && /pre: 'tg'/.test(keep), 'Telegram card preserved (not regressed)');
 
   // the Discord card (now a channel-catalog entry): header, masked token field, generated connect/disconnect/
   // status/msg elements (ids come from the entry's `pre: 'dc'`), and the ONE shared autonomous-ping opt-in.
-  A.ok(/title: 'DISCORD'/.test(station), 'DISCORD card present in the channel catalog');
-  A.ok(/id="dc-token"[^>]*type="password"/.test(station), 'Discord token field is masked (type=password), matching Telegram');
-  A.ok(/pre: 'dc'/.test(station), 'Discord catalog entry generates its dc-connect/dc-disconnect/dc-status/dc-msg controls');
-  A.ok(/'-connect'/.test(station) && /'-disconnect'/.test(station) && /'-status'/.test(station) && /'-msg'/.test(station), 'the catalog renderer generates connect/disconnect/status/msg elements per card');
-  A.ok(/id="ch-notify"/.test(station), 'the ONE shared autonomous-ping opt-in present (replaces per-card toggles)');
+  A.ok(/title: 'DISCORD'/.test(keep), 'DISCORD card present in the channel catalog');
+  A.ok(/id="dc-token"[^>]*type="password"/.test(keep), 'Discord token field is masked (type=password), matching Telegram');
+  A.ok(/pre: 'dc'/.test(keep), 'Discord catalog entry generates its dc-connect/dc-disconnect/dc-status/dc-msg controls');
+  A.ok(/'-connect'/.test(keep) && /'-disconnect'/.test(keep) && /'-status'/.test(keep) && /'-msg'/.test(keep), 'the catalog renderer generates connect/disconnect/status/msg elements per card');
+  A.ok(/id="ch-notify"/.test(keep), 'the ONE shared autonomous-ping opt-in present (replaces per-card toggles)');
 
   // the cards talk to the real endpoints through the generic builder + the bulk status poll
-  A.ok(/'\/api\/channels\/' \+ c\.id \+ '\/connect'/.test(station), 'card CONNECT hits /api/channels/<id>/connect');
-  A.ok(/'\/api\/channels\/' \+ c\.id \+ '\/disconnect'/.test(station), 'card DISCONNECT hits /api/channels/<id>/disconnect');
-  A.ok(/\/api\/channels\/status/.test(station), 'the panel paints from the bulk status endpoint');
+  A.ok(/'\/api\/channels\/' \+ c\.id \+ '\/connect'/.test(keep), 'card CONNECT hits /api/channels/<id>/connect');
+  A.ok(/'\/api\/channels\/' \+ c\.id \+ '\/disconnect'/.test(keep), 'card DISCONNECT hits /api/channels/<id>/disconnect');
+  A.ok(/\/api\/channels\/status/.test(keep), 'the panel paints from the bulk status endpoint');
 
   // beginner help: a one-line pointer to where the bot token comes from
-  A.ok(/Developer Portal/.test(station), 'inline help points at the Discord Developer Portal for the bot token');
-  A.ok(/MESSAGE CONTENT INTENT/.test(station), 'inline help flags the message-content intent gotcha');
+  A.ok(/Developer Portal/.test(keep), 'inline help points at the Discord Developer Portal for the bot token');
+  A.ok(/MESSAGE CONTENT INTENT/.test(keep), 'inline help flags the message-content intent gotcha');
 
   // P2-E: the "send-only" disclosure is GONE — Discord is now full-duplex, and the card must claim two-way honestly.
-  A.ok(!/Send-only for now/.test(station), 'the "Send-only for now" disclaimer was removed (Discord now receives)');
-  A.ok(!/don\\?'t reach the agent yet/.test(station), 'the "replies don\'t reach the agent yet" line was removed');
-  A.ok(/DM your Discord bot to talk to your agent/.test(station), 'the Discord card now advertises two-way chat (truthful full-duplex)');
+  A.ok(!/Send-only for now/.test(keep), 'the "Send-only for now" disclaimer was removed (Discord now receives)');
+  A.ok(!/don\\?'t reach the agent yet/.test(keep), 'the "replies don\'t reach the agent yet" line was removed');
+  A.ok(/DM your Discord bot to talk to your agent/.test(keep), 'the Discord card now advertises two-way chat (truthful full-duplex)');
   // the status line reflects that receive works when connected (generic '● CONNECTED — <verb>' + discord's verb).
-  A.ok(/CONNECTED — ' \+ c\.verb/.test(station) && /verb: 'receiving'/.test(station), 'the connected status says it is receiving (not just sending)');
+  A.ok(/CONNECTED — ' \+ c\.verb/.test(keep) && /verb: 'receiving'/.test(keep), 'the connected status says it is receiving (not just sending)');
 
   // keep-saved-when-blank contract (reconnect without re-pasting), same as Telegram
-  A.ok(/paste your Discord bot token first/.test(station), 'first-time setup requires a token; a saved token allows blank reconnect');
+  A.ok(/paste your Discord bot token first/.test(keep), 'first-time setup requires a token; a saved token allows blank reconnect');
 
   // ---------- 3. BEHAVIOUR: the real registry's discord descriptor is startable + clean without a gateway ----------
   {

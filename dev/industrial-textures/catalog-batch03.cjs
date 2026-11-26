@@ -3,7 +3,7 @@ const fs=require('node:fs'),path=require('node:path'),crypto=require('node:crypt
 const root=path.resolve(__dirname,'../..'),base='frontend/assets/industrial/batch03';
 async function main(){
  const read=p=>JSON.parse(fs.readFileSync(path.join(root,p)));
- const original=read('frontend/assets/industrial/batch02/catalog.json'),claims=read('docs/station-remaster/batch03/claims.json'),structure=read('dev/industrial-textures/prop-structure-manifest.json').props,items=[];
+ const original=read('frontend/assets/industrial/batch02/catalog.json'),claims=read('docs/keep-remaster/batch03/claims.json'),structure=read('dev/industrial-textures/prop-structure-manifest.json').props,items=[];
  const candidates=original.items.map(a=>({...a,previousImage:a.image,kind:'repaint',section:a.lane}));
  for(const g of claims.newSections)for(const id of g.ids){const s=structure[id],v=s.views.s||Object.values(s.views)[0];candidates.push({id,label:s.label,lane:g.lane,group:g.label,section:g.section,kind:'new',bounds:v.bounds,previousImage:null});}
  for(const a of candidates){const lane=[a.lane,'coordinator','storage','crew','utility','habitat','control'].find(l=>fs.existsSync(path.join(root,base,l,a.id+'.png')));if(!lane)continue;

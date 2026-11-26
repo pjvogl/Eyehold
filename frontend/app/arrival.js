@@ -1,5 +1,5 @@
 /* The Arrival — bounded cinematic presentation, never task or model-loading telemetry.
-   A pure timeline and deterministic canvas renderer shared by the station and replay preview. */
+   A pure timeline and deterministic canvas renderer shared by the keep and replay preview. */
 'use strict';
 const Arrival = (() => {
   const DURATION = 24000;
@@ -129,7 +129,7 @@ const Arrival = (() => {
         ctx.beginPath();ctx.ellipse(x,y+2*s,r,r*.3,0,0,6.283);ctx.stroke();
       }
     }
-    // Residual point lights fade while the station's own lighting takes over.
+    // Residual point lights fade while the keep's own lighting takes over.
     ctx.globalCompositeOperation='screen';ctx.fillStyle=color;
     for(let i=0;i<18;i++) {
       const a=i/18*6.283,r=24*s;

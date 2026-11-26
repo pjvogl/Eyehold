@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 /* dev/rotshot.mjs — one prop per ROW, one FACING per column, in situ.
  *
- * Same doctrine as catshot.mjs: never judge prop art on a neutral field. This bakes a REAL station
- * through the shipped StationBake, places each requested prop four times (r = 0..3) over the deck,
+ * Same doctrine as catshot.mjs: never judge prop art on a neutral field. This bakes a REAL keep
+ * through the shipped KeepBake, places each requested prop four times (r = 0..3) over the deck,
  * draws them in world.js order (base -> props y-sorted -> lightmap) and upscales by an INTEGER
  * factor with smoothing off, so what you see is the game's own camera scale, magnified.
  *
@@ -91,7 +91,7 @@ const SHEET = `(() => {
   if (!first) return { error: 'nothing placed: ' + skipped.join('; ') };
 
   const geo = st.projectGeometry();
-  const bk = StationBake.bake(geo);
+  const bk = KeepBake.bake(geo);
   const T = geo.TILE;
   const ox = geo.props[0].x - first.x, oy = geo.props[0].y - first.y;
 
@@ -165,7 +165,7 @@ async function main() {
     // wait on the MODULES, never on readiness: waitDevReady reloads the page while it waits, so an
     // eval landing in that window sees no globals at all ("PropSprites is not defined").
     for (let i = 0; i < 40; i++) {
-      if (await evalJS(cdp, `['PropSprites','WorldModel','StationBake'].every(k => { try { return typeof eval(k) === 'object'; } catch { return false; } })`)) break;
+      if (await evalJS(cdp, `['PropSprites','WorldModel','KeepBake'].every(k => { try { return typeof eval(k) === 'object'; } catch { return false; } })`)) break;
       await sleep(500);
     }
 

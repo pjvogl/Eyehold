@@ -72,12 +72,12 @@ LAYER 2  ▸ JUST-IN-TIME HINTS   (contextual, fires once on first touch)
 
 LAYER 3  ▸ FIELD MANUAL + BRIEFING   (always available, never forced)
             A reopenable codex of every prop/mechanic + a soft, dismissible
-            "First Steps" checklist (this IS the planned Station Briefing).
+            "First Steps" checklist (this IS the planned Keep Briefing).
 ```
 
 Mapping to what exists: Layer 1 hooks the end of `Onboarding.start()`; Layer 2 hooks the
 event bus (`U.bus`) + button handlers; Layer 3 reuses the floating-panel pattern from
-`frontend/app/stationui.js`.
+`frontend/app/keepui.js`.
 
 ---
 
@@ -121,7 +121,7 @@ deterministic** command that exercises the real spine for a fraction of a cent.
 > Chip: `▸ run "echo skynet is live" and confirm it worked`
 
 **Beat 3 — the walk** (camera follows, agent paths to desk):
-> *"watch. i'm not answering from here — i'm walking to my station. that desk is where i
+> *"watch. i'm not answering from here — i'm walking to my keep. that desk is where i
 > actually run code. everything past this point is real, on your machine."*
 
 **Beat 4 — consent** (approval hotspot spotlit):
@@ -140,7 +140,7 @@ deterministic** command that exercises the real spine for a fraction of a cent.
 **Beat 7 — honesty** (crew rail spotlit):
 > *"one thing, because i won't lie to you: right now it's just me. the others in that list
 > are echoes — placeholders for minds you haven't recruited yet. when you do, each one takes
-> a station of its own. for now, i'm the whole crew."*
+> a keep of its own. for now, i'm the whole crew."*
 
 **Beat 8 — handoff:**
 > *"that's the loop: ask, i work, i prove it, you stay in control. the rest — wiring belts,
@@ -178,15 +178,15 @@ surface. Dismiss on click; set a flag so it never repeats.
 ## 6. Layer 3 — Field Manual + "First Steps" briefing
 
 > **STATUS: SHIPPED** on `agent/tutorial` (`2dfe287`), gate green, verified live. Field Manual =
-> a native bottom-bar `📖 MANUAL` term (`StationUI.toggleTerm` via a `BUILDERS` delegate) with five
+> a native bottom-bar `📖 MANUAL` term (`KeepUI.toggleTerm` via a `BUILDERS` delegate) with five
 > tabs (First Steps · The Loop · Gear · Wiring · Growth), every entry tagged **REAL**/**FOR SHOW**
-> from the live `CAP_PROP_MAP` + conveyor contract. Station Briefing = a dismissible in-game
+> from the live `CAP_PROP_MAP` + conveyor contract. Keep Briefing = a dismissible in-game
 > first-steps checklist (6 real objectives, no gating), ticked by the coachmark hooks + bus events,
 > auto-completing and reopenable from the Manual. Wired with no bus emits.
 >
 > **REVIEW-CONVERGED / RELEASE-READY.** Two adversarial multi-agent review rounds (each finding
 > independently verified): round 1 found 17 (3 major — incl. the headline honesty defect: the First
-> Command demoed `shell.exec`, which is unreachable in the default station, so it would have *claimed*
+> Command demoed `shell.exec`, which is unreachable in the default keep, so it would have *claimed*
 > output it never ran → switched to a real `fs.write`+`fs.read` that genuinely runs with consent);
 > round 2 **converged with 0 material findings** and re-verified the fix is load-bearing. All
 > minor/nits cleaned up. 5 commits: `77ab0d1 99c8bb0 2dfe287 46e27f4 8e3c4fa`. Gate green throughout.
@@ -200,7 +200,7 @@ pattern). Sections mirror the prop catalog, each with the *real* one-liner **and
 live — power-user concepts that shouldn't crowd the first 90 seconds. Source content from
 the prop inventory in §9.
 
-**"First Steps" briefing** — a small, dismissible checklist. **This is the planned Station
+**"First Steps" briefing** — a small, dismissible checklist. **This is the planned Keep
 Briefing** (personalization P3 s3). Soft objectives, **no gating**:
 - ☐ Give your agent its first command
 - ☐ Approve (or deny) a tool request
@@ -235,11 +235,11 @@ Stack: vanilla JS, IIFE modules, 2D canvas + DOM overlays — no framework. Tuto
 **New files**
 - `frontend/app/tutorial.js` — `Tutorial` IIFE: `step()`, `coachmark(anchor, text, opts)`,
   `firstCommand()`, flag management. Mirrors the `Onboarding` module shape.
-- `frontend/app/fieldmanual.js` — the codex panel (or fold into `stationui.js`).
+- `frontend/app/fieldmanual.js` — the codex panel (or fold into `keepui.js`).
 - CSS in `frontend/css/app.css`: `.tut-bubble`, `.tut-spotlight`
   (`box-shadow: 0 0 0 9999px rgba(0,0,0,.7)` cutout trick).
 
-**State** — extend the existing `skynet.station.v1` blob in `stationui.js`:
+**State** — extend the existing `skynet.keep.v1` blob in `keepui.js`:
 ```js
 tutorial: {
   firstCommandDone: false,
@@ -303,7 +303,7 @@ an agent **only when in that agent's bay room**:
 
 | Phase | Deliverable | Gate |
 |---|---|---|
-| **P0 — scaffold** | `tutorial.js` module, state in stationui, spotlight CSS, SKIP-ALL | renders over canvas, persists flags |
+| **P0 — scaffold** | `tutorial.js` module, state in keepui, spotlight CSS, SKIP-ALL | renders over canvas, persists flags |
 | **P1 — First Command (MVP)** | Full Layer 1 beat sheet wired to the real `echo`+`verify` task | a fresh agent walks a new user through one real loop end-to-end |
 | **P2 — coachmarks** ✅ | Layer 2 catalog (5), fired on first-touch, once each — SHIPPED `99c8bb0` | each fires once, never repeats |
 | **P3 — Field Manual + Briefing** ✅ | codex panel + dismissible checklist — SHIPPED `2dfe287` | reopenable; checklist ticks off real events |
@@ -319,7 +319,7 @@ an agent **only when in that agent's bay room**:
   Its SPEND/YIELD/SLAG/CACHE HUD — and especially **SlagLog's plain-English post-mortems** —
   are themselves a teaching mechanic. Still unmerged (`287b28b`). Without it, "reading the
   floor" is limited to the merged context gauge + spend chip.
-- **Station Briefing** (personalization P3 s3) IS the Layer 3 checklist — build as one thing.
+- **Keep Briefing** (personalization P3 s3) IS the Layer 3 checklist — build as one thing.
 - **Awakening reuse** — `SFX`, `AU`, `World.camPushIn`, `Chat.typeLine` from `onboarding.js`
   carry the tutorial's production value for nearly free.
 
@@ -352,5 +352,5 @@ an agent **only when in that agent's bay room**:
 | Conveyor sim (real work-item lifecycle) | `frontend/app/conveyor.js` |
 | XP / Level / Confidence engine + store | `frontend/app/xp.js`, `frontend/app/xpstore.js` |
 | Floor economy HUD + slag diagnoses (unmerged) | `frontend/app/floorstats.js`, `slaglog.js` (`agent/legible-floor`) |
-| UI state persistence / floating panels | `frontend/app/stationui.js` |
+| UI state persistence / floating panels | `frontend/app/keepui.js` |
 | Real execution spine | `sidecar/tools/builtin/shell.js`, `verify.js`, `sidecar/checkpoint.js` |

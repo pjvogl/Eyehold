@@ -209,7 +209,7 @@ const toolNames = body => (body.tools || []).map(t => t.function.name);
     A.ok(toolNames(b1).filter(n => n.indexOf('mcp__small__') === 0).length === 3, 'below threshold: all 3 connector tools advertised');
     A.ok(systemOf(b1).indexOf('Connector tools not loaded yet') < 0, 'below threshold: no index line');
 
-    // Same station with connector deferral switched OFF (both axes 0): the first request must be identical.
+    // Same keep with connector deferral switched OFF (both axes 0): the first request must be identical.
     await fixture.restart({ SKYNET_CONNECTOR_DEFER_BYTES: '0', SKYNET_CONNECTOR_DEFER_TOOLS: '0', EYEHOLD_CONNECTOR_DEFER_BYTES: '0', EYEHOLD_CONNECTOR_DEFER_TOOLS: '0' });
     A.ok(await connectorsUp(['small']), 'the small connector is back after restart');
     const off = await run('plain');

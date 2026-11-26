@@ -74,7 +74,7 @@
   color: var(--ph-dim); opacity: 0.85; line-height: 1; white-space: nowrap; }
 .wg-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--ok);
   box-shadow: 0 0 4px var(--ok); animation: wg-breathe 2.4s ease-in-out infinite; }
-/* AGENT-FED provenance: gold dot + "who · when" — the station asserts the reporter, never the figure */
+/* AGENT-FED provenance: gold dot + "who · when" — the keep asserts the reporter, never the figure */
 .wg-dot-fed { background: var(--gold); box-shadow: 0 0 4px var(--gold); animation: none; }
 .wg-fed .wg-src { color: var(--ph-dim); max-width: 150px; overflow: hidden; text-overflow: ellipsis; }
 
@@ -84,7 +84,7 @@
 .wg[data-empty="1"] .wg-val { color: var(--ph-dim); text-shadow: none; }   /* honest "—" sits quiet */
 
 /* TONE — an agent-declared semantic tint (whitelisted ok|warn|bad at sanitize). Colours the
-   figure and the progress fill only; the instrument body stays in the station grade. */
+   figure and the progress fill only; the instrument body stays in the keep grade. */
 .wg[data-tone="ok"]   .wg-val { color: var(--ok);   text-shadow: 0 0 8px var(--ok); }
 .wg[data-tone="warn"] .wg-val { color: var(--warn); text-shadow: 0 0 8px var(--warn); }
 .wg[data-tone="bad"]  .wg-val { color: var(--bad);  text-shadow: 0 0 8px var(--bad); }

@@ -10,7 +10,7 @@
    dead no matter who owns that PID now). That second rule exists because of a real dead-end: PIDs restart at
    boot, so after a crash + reboot the stamped PID almost always belongs to some unrelated live process and
    the kill(0) probe alone reported "busy" forever — every sidecar spawn exited before listening and the
-   desktop sat on STATION DATA UNREACHABLE with no way out (2026-08-22 macOS report). A malformed lock (a
+   desktop sat on KEEP DATA UNREACHABLE with no way out (2026-08-22 macOS report). A malformed lock (a
    crash mid-write leaves an empty/torn file) is reclaimable by the same rule when its mtime predates boot.
    Within one boot, PID reuse can still cause a safe false-busy, never an unsafe double-writer.
 

@@ -1,11 +1,11 @@
-/* EYEHOLD — windows/messaging.js : the CHANNELS (messaging platforms) window (extracted verbatim from stationui.js).
-   Loads AFTER stationui.js (see index.html) and registers itself via StationUI.registerWindow;
-   the only stationui internals it touches are the enumerated StationUI.h helper surface
+/* EYEHOLD — windows/messaging.js : the CHANNELS (messaging platforms) window (extracted verbatim from keepui.js).
+   Loads AFTER keepui.js (see index.html) and registers itself via KeepUI.registerWindow;
+   the only keepui internals it touches are the enumerated KeepUI.h helper surface
    (sfx/notify/openTerm/mountConsole and the live present view). */
 'use strict';
 (() => {
-  if (typeof StationUI === 'undefined' || !StationUI.registerWindow) return;
-  const H = StationUI.h;
+  if (typeof KeepUI === 'undefined' || !KeepUI.registerWindow) return;
+  const H = KeepUI.h;
   const sfx = H.sfx, notify = H.notify, openTerm = H.openTerm;
   const mountConsole = H.mountConsole;
 
@@ -188,7 +188,7 @@
         '<span class="ch-optin-t">Send completed-work updates</span>' +
         '<span class="ch-optin-d dim">When autonomous work produces a result, notify me on every connected channel.</span></span>' +
         '<input type="checkbox" id="ch-notify"></label><div id="ch-notify-msg" class="msg"></div></div>' +
-      '<p class="ch-headless"><b>Keep Eyehold running.</b> You can close this window. Messages sent while the station app is fully off are not processed; you receive an "I was offline" note instead.</p>';
+      '<p class="ch-headless"><b>Keep Eyehold running.</b> You can close this window. Messages sent while the keep app is fully off are not processed; you receive an "I was offline" note instead.</p>';
     function cardHtml(c) {
       return '<div class="ch-card" id="ch-card-' + c.id + '" style="--accent:' + c.accent + '">' +
           '<div class="ch-head">' +
@@ -222,7 +222,7 @@
             '</div>') +
         '</div>';
     }
-    // Real platform marks share the station theme and stay decorative beside the text labels.
+    // Real platform marks share the keep theme and stay decorative beside the text labels.
     mountConsole(body, 'messaging', [
       { id: 'overview', label: 'OVERVIEW', build: (pane) => { pane.innerHTML = overviewHtml; } }
     ].concat(CHANNEL_CATALOG.map(c => ({
@@ -818,5 +818,5 @@
     refreshAll();
   }
 
-  StationUI.registerWindow('messaging', 'CHANNELS', buildMessaging, { console: true, className: 'channels-console' });   // console mode = the wide SETTINGS-style two-pane window; the className scopes the no-glyph rail; dock label = window title (it's Telegram/external channels, not COMMS)
+  KeepUI.registerWindow('messaging', 'CHANNELS', buildMessaging, { console: true, className: 'channels-console' });   // console mode = the wide SETTINGS-style two-pane window; the className scopes the no-glyph rail; dock label = window title (it's Telegram/external channels, not COMMS)
 })();

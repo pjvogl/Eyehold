@@ -1,6 +1,6 @@
 'use strict';
-// Only the isolated art-preview station uses this composition. Customer saves
-// keep their own rooms, placements and workstation assignments.
+// Only the isolated art-preview keep uses this composition. Customer saves
+// keep their own rooms, placements and workkeep assignments.
 module.exports = function commandDeck() {
   return [
     { id: 'p33', t: 'bridge_deckperimeter', x: 5, y: 5, w: 12, h: 8, block: false },

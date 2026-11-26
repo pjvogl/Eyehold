@@ -21,7 +21,7 @@ const CDP_PORT = Number(process.env.SKYNET_CDP_PORT || 9381);
 const URL = `http://127.0.0.1:${PORT}/`;
 
 const PROBE = `(() => {
-  const SB = StationBake, OX = 40, OY = 40;
+  const SB = KeepBake, OX = 40, OY = 40;
   // the L: a hallway down x6..7 / y0..9, and one east along x8..18 / y8..9. Corner at tile (8,8).
   const V = [6, 0, 7, 9], H = [8, 8, 18, 9];
   const put = (st, r) => {

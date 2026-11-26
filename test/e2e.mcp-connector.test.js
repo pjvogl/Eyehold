@@ -88,7 +88,7 @@ function startMockOpenRouter() {
           const toolResults = msgs.filter(m => m && m.role === 'tool').length;
           const hasToolResult = toolResults > 0;
           const hasMcpTool = (parsed.tools || []).some(t => t && t.function && t.function.name === 'mcp__demo__lookup');
-          const hasInspectTool = (parsed.tools || []).some(t => t && t.function && t.function.name === 'station_inspect');
+          const hasInspectTool = (parsed.tools || []).some(t => t && t.function && t.function.name === 'keep_inspect');
           const wantsInspect = msgs.some(m => m && m.role === 'user' && String(m.content || '').indexOf('SELF_INSPECT') >= 0);
           const messageContent = m => typeof (m && m.content) === 'string' ? m.content : JSON.stringify((m && m.content) || '');
           const hasInspectResult = msgs.some(m => m && m.role === 'tool' && /\"schemaVersion\":1/.test(messageContent(m)) && /\"scheduler\":/.test(messageContent(m)));
@@ -99,7 +99,7 @@ function startMockOpenRouter() {
 
           res.writeHead(200, { 'Content-Type': 'text/event-stream', 'Cache-Control': 'no-cache' });
           if (wantsInspect && hasInspectTool && !hasInspectResult) {
-            res.write('data: ' + JSON.stringify({ choices: [{ delta: { tool_calls: [{ index: 0, id: 'station_inspect_1', type: 'function', function: { name: 'station_inspect', arguments: '{}' } }] } }] }) + '\n\n');
+            res.write('data: ' + JSON.stringify({ choices: [{ delta: { tool_calls: [{ index: 0, id: 'keep_inspect_1', type: 'function', function: { name: 'keep_inspect', arguments: '{}' } }] } }] }) + '\n\n');
             res.write('data: ' + JSON.stringify({ choices: [{ finish_reason: 'tool_calls', delta: {} }], usage: { prompt_tokens: 8, completion_tokens: 4, total_tokens: 12 } }) + '\n\n');
           } else if (wantsInspect && hasInspectResult) {
             res.write('data: ' + JSON.stringify({ choices: [{ delta: { content: 'Harness snapshot checked.' } }] }) + '\n\n');
@@ -343,13 +343,13 @@ async function readNdjson(res) {
     await (await fetch(B + '/api/connectors/remove', { method: 'POST', headers, body: JSON.stringify({ id: 'demo-edit' }) })).text();
 
     // HARNESS SELF-KNOWLEDGE: plant all three mutable sources, then make a REAL /api/run call the
-    // always-present station.inspect tool. The returned bytes must agree with the same live stores the
+    // always-present keep.inspect tool. The returned bytes must agree with the same live stores the
     // APIs above use — not a prompt summary or scripted fixture inside the tool.
     const cronCreate = await fetch(B + '/api/cron', {
       method: 'POST', headers,
-      body: JSON.stringify({ name: 'Inspect proof', prompt: 'report station health', schedule: 'every 1h', agentId: 'mcp-agent', model: 'test/model', provider: 'openrouter' })
+      body: JSON.stringify({ name: 'Inspect proof', prompt: 'report keep health', schedule: 'every 1h', agentId: 'mcp-agent', model: 'test/model', provider: 'openrouter' })
     });
-    A.eq(cronCreate.status, 200, 'planted one real routine for station.inspect');
+    A.eq(cronCreate.status, 200, 'planted one real routine for keep.inspect');
     const failedRun = await fetch(B + '/api/run', {
       method: 'POST', headers,
       body: JSON.stringify({ key: 'sk-or-v1-mcp-fake', model: 'test/no-tools', agentId: 'inspect-agent', streamId: 'inspect-fail', isTask: true, messages: [{ role: 'user', content: 'plant one diagnostic failure' }] })
@@ -366,15 +366,15 @@ async function readNdjson(res) {
       .flatMap(r => (r.tools || []).map(t => t && t.function && t.function.name).filter(Boolean));
     const inspectTrace = llm.requests.filter(r => (r.messages || []).some(m => m && m.role === 'user' && String(m.content || '').indexOf('SELF_INSPECT') >= 0))
       .map(r => (r.messages || []).map(m => ({ role: m.role, name: m.name || '', calls: (m.tool_calls || []).map(c => c && c.function && c.function.name), content: String(m.content || '').slice(0, 120) })));
-    A.ok(!!inspectRequest, 'the model received station.inspect and called it through the real wire-name boundary (advertised: ' + inspectAdvertised.join(',') + '; trace: ' + JSON.stringify(inspectTrace) + ')');
-    A.ok(llm.requests.some(r => (r.tools || []).some(t => t && t.function && t.function.name === 'station_inspect')),
-      'station.inspect is advertised under its provider-legal wire name');
+    A.ok(!!inspectRequest, 'the model received keep.inspect and called it through the real wire-name boundary (advertised: ' + inspectAdvertised.join(',') + '; trace: ' + JSON.stringify(inspectTrace) + ')');
+    A.ok(llm.requests.some(r => (r.tools || []).some(t => t && t.function && t.function.name === 'keep_inspect')),
+      'keep.inspect is advertised under its provider-legal wire name');
     const inspectToolMessage = ((inspectRequest && inspectRequest.messages) || []).find(m => m && m.role === 'tool' && /\"scheduler\":/.test(String(m.content || '')));
     const inspectSnapshot = JSON.parse((inspectToolMessage && inspectToolMessage.content) || '{}');
     A.eq(inspectSnapshot.scheduler.status, 'confirmed', 'scheduler section is confirmed');
-    A.eq(inspectSnapshot.scheduler.data.jobCount, 1, 'station.inspect saw the planted real routine');
-    A.ok(inspectSnapshot.connectors.data.connected.some(c => c.id === 'demo' && c.state === 'up'), 'station.inspect saw the planted live MCP connector');
-    A.ok(inspectSnapshot.diagnostics.data.errorCount >= 1, 'station.inspect saw the planted recorded provider error');
+    A.eq(inspectSnapshot.scheduler.data.jobCount, 1, 'keep.inspect saw the planted real routine');
+    A.ok(inspectSnapshot.connectors.data.connected.some(c => c.id === 'demo' && c.state === 'up'), 'keep.inspect saw the planted live MCP connector');
+    A.ok(inspectSnapshot.diagnostics.data.errorCount >= 1, 'keep.inspect saw the planted recorded provider error');
     A.ok(inspectSnapshot.diagnostics.data.recentErrors.some(e => /does not support tool calls/.test(e.message)), 'the planted error detail reached the bounded diagnostic tail');
     A.eq(inspectSnapshot.build.status, 'confirmed', 'the exact build section is confirmed from the version authority');
     A.eq(inspectSnapshot.runtime.data.agentId, 'inspect-agent', 'the snapshot identifies the live inspecting agent');

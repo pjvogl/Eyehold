@@ -1,4 +1,4 @@
-/* test/userprops.test.js — player-made props, station side: linking gate, cloud error mapping, the paid-prop-
+/* test/userprops.test.js — player-made props, keep side: linking gate, cloud error mapping, the paid-prop-
    is-never-lost pending ledger (incl. across a restart), validation of what the cloud returns before anything
    reaches disk, idempotent landing, and the id jail. The cloud is a fake fetch; timers are manual. */
 'use strict';
@@ -56,7 +56,7 @@ function make(dir, cloud, cfg = { url: 'https://cloud.test/', token: 'snd_tok' }
       const cloud = fakeCloud();
       const { up } = make(pdir, cloud, { url: '', token: '' });
       const r = await up.start('a lamp');
-      A.eq([r.ok, r.code], [false, 'not_linked'], 'an unlinked station is told to link, not charged');
+      A.eq([r.ok, r.code], [false, 'not_linked'], 'an unlinked keep is told to link, not charged');
       A.eq(cloud.state.calls.length, 0, 'no cloud call when unlinked');
       A.eq((await up.start('   ')).code, 'empty', 'an empty noun is rejected locally');
     }
@@ -105,7 +105,7 @@ function make(dir, cloud, cfg = { url: 'https://cloud.test/', token: 'snd_tok' }
       first.stop();
       Object.assign(cloud.state.jobs.get(r.job.id), { status: 'done', costUsd: 0.3, result: RESULT({ label: 'GLOBE ON A STAND', noun: 'a globe on a stand' }) });
       const second = make(pdir, cloud).up;
-      A.eq(second.activeJobs().map((j) => j.id), [r.job.id], 'a restarted station still knows the paid job');
+      A.eq(second.activeJobs().map((j) => j.id), [r.job.id], 'a restarted keep still knows the paid job');
       await second.pollOnce();
       A.ok(second.list().some((p) => p.label === 'GLOBE ON A STAND'), 'and lands it');
     }

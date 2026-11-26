@@ -10,7 +10,7 @@
    PURE (no IO, no clock): normalizeInput checks and bounds what the panel sent (the job, the result, what each step was told and
    what it produced), buildPrompt writes the ONE model prompt, parseFixes reads the model's JSON back and keeps only fixes that
    name a step of THIS line and actually change something. The caller (index.js handleRoutingFixSuggest) makes the one billed
-   model call on the station's default model and books its spend. */
+   model call on the keep's default model and books its spend. */
 'use strict';
 (function (root, factory) {
   const api = factory();

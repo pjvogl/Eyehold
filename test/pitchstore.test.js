@@ -99,7 +99,7 @@ readyState = { ready: false, reasons: ['no-direction'] };
 A.eq(PitchStore._decide({ reason: 'done', agentId: 'agent' }), { go: false, reason: 'not-ready:no-direction' }, 'a shut readiness gate structurally blocks the pitch (with the honest reason)');
 const savedUS = global.UnderstandingStore;
 global.UnderstandingStore = undefined;
-A.eq(PitchStore._decide({ reason: 'done', agentId: 'agent' }).reason, 'not-ready:no-readiness-read', 'no readiness read = FAIL-CLOSED (a station that cannot prove readiness never advises)');
+A.eq(PitchStore._decide({ reason: 'done', agentId: 'agent' }).reason, 'not-ready:no-readiness-read', 'no readiness read = FAIL-CLOSED (a keep that cannot prove readiness never advises)');
 global.UnderstandingStore = savedUS;
 readyState = { ready: true, reasons: [] };
 

@@ -43,7 +43,7 @@
       }
     },
     {
-      "id": "station_minion",
+      "id": "keep_minion",
       "characterId": "972949f9-36c2-406d-b582-44e52845534d",
       "rotations": {
         "south": "https://backblaze.pixellab.ai/file/pixellab-characters/1ff7d2cf-cfe6-44f9-9533-9eea41eb05cb/972949f9-36c2-406d-b582-44e52845534d/rotations/south.png?t=1789363546",

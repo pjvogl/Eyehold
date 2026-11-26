@@ -12,7 +12,7 @@
      4. QUESTS LEAD THE PANEL — quests, then goal settings and bookkeeping; kind badges name the source;
         the window is a steady-height shell so a data poke cannot re-centre it mid-read.
 
-   stationui.js is browser-flow — like outbox-window.test.js we lock its invariants by reading the
+   keepui.js is browser-flow — like outbox-window.test.js we lock its invariants by reading the
    shipped source. quests.js IS pure and node-loadable, so its contract is asserted by execution. */
 'use strict';
 const A = require('./_assert.js');
@@ -20,7 +20,7 @@ const fs = require('fs');
 const path = require('path');
 
 const read = f => fs.readFileSync(path.join(__dirname, '..', f), 'utf8');
-const station = read('frontend/app/stationui.js');
+const keep = read('frontend/app/keepui.js');
 const journey = read('frontend/app/journeystore.js');
 const refresh = read('frontend/app/questrefreshstore.js');
 const css = read('frontend/css/app.css');
@@ -31,7 +31,7 @@ const motion = read('frontend/css/motion.css');
 const draftVm = require('vm');
 const draftRenders = [];
 const draftContext = draftVm.createContext({ rerender: (key, swap) => draftRenders.push({key,swap}), notify: () => {} });
-draftVm.runInContext(station.slice(station.indexOf('  function questJourneyFields('), station.indexOf('  function buildQuests(')), draftContext);
+draftVm.runInContext(keep.slice(keep.indexOf('  function questJourneyFields('), keep.indexOf('  function buildQuests(')), draftContext);
 const submittedField = { id: 'saved', value: 'My reflection', dataset: { dirty: '1' } };
 const savedSnapshot = draftContext.questJourneyFields([submittedField]);
 const freshField = { ...submittedField, dataset: { dirty: '1' } };
@@ -58,7 +58,7 @@ const renderVm = require('vm');
 let returnBrief = { goal: null, completedGoal: null };
 const returnCtx = renderVm.createContext({ GoalStore: { briefing: () => returnBrief },
   esc: s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'), qrRel: () => 'recently' });
-renderVm.runInContext(station.slice(station.indexOf('  function questBriefingHtml()'), station.indexOf('  function questTrackHtml(')), returnCtx);
+renderVm.runInContext(keep.slice(keep.indexOf('  function questBriefingHtml()'), keep.indexOf('  function questTrackHtml(')), returnCtx);
 A.ok(returnCtx.questBriefingHtml().includes('EXPLORE WITH MY CREW'), 'an undefined ambition has a usable exploration entry');
 returnBrief.completedGoal = { text: 'My finished project', outcomeEvidence: '<script>unsafe</script>' };
 const chapter = returnCtx.questBriefingHtml();
@@ -74,58 +74,58 @@ A.ok(returnCtx.questBriefingHtml().includes('REVIEW MY OUTCOME'), 'finished plan
 A.ok(/function signatureOf/.test(journey) && /JSON\.stringify\(journey\)/.test(journey), 'journeystore compares a serialized signature (identity never holds for polled JSON — the 4s repaint bug)');
 A.ok(/sig === lastSig/.test(journey), 'an unchanged journey (same signature, new object) repaints NOTHING');
 A.eq((journey.match(/lastSig = null/g) || []).length >= 2, true, 'BOTH reset paths clear the signature (a re-init must not suppress the first repaint)');
-A.ok(/function rerender\(key, swap\)/.test(station), 'StationUI.rerender accepts the data-poke form (swap=false → no body crossfade)');
+A.ok(/function rerender\(key, swap\)/.test(keep), 'KeepUI.rerender accepts the data-poke form (swap=false → no body crossfade)');
 // 2026-10-07 QUEST LOG lag: buildQuests resyncs every quest store, and a store poking rerender('quests') mid-build
 // recursed through the synchronous rerender ~1,600 frames deep. A poke during a build is owed ONE follow-up paint.
 {
-  const rb = (station.match(/let building = false, owed = false;\s*w\._render = \(swap\) => \{[\s\S]*?\n    \};/) || [''])[0];
+  const rb = (keep.match(/let building = false, owed = false;\s*w\._render = \(swap\) => \{[\s\S]*?\n    \};/) || [''])[0];
   A.ok(/if \(building\) \{ owed = true; return; \}/.test(rb), 'a rerender landing while the window is still building never re-enters the builder');
   A.ok(/paint\(swap\);\s*if \(owed\) \{ owed = false; paint\(false\); \}/.test(rb), 'a poke owed mid-build gets exactly one follow-up data paint');
   A.ok(/finally \{ building = false; owed = false; \}/.test(rb), 'a builder that throws can never wedge the window in "building"');
 }
-for (const f of ['goalstore', 'journeystore', 'maintqueststore', 'stationqueststore', 'workqueststore', 'queststatestore', 'questledgerstore', 'questrefreshstore']) {
+for (const f of ['goalstore', 'journeystore', 'maintqueststore', 'keepqueststore', 'workqueststore', 'queststatestore', 'questledgerstore', 'questrefreshstore']) {
   const src = read('frontend/app/' + f + '.js');
-  A.ok(!/StationUI\.rerender\('quests'\)(?!, )/.test(src.replace(/StationUI\.rerender\('quests', false\)/g, '')), f + ': every background poke is a DATA poke (rerender(\'quests\', false)) — no crossfade blink from a poll');
+  A.ok(!/KeepUI\.rerender\('quests'\)(?!, )/.test(src.replace(/KeepUI\.rerender\('quests', false\)/g, '')), f + ': every background poke is a DATA poke (rerender(\'quests\', false)) — no crossfade blink from a poll');
 }
 
 /* ---- 2. refresh follows its cycle to the end, boundedly ---- */
 A.ok(/SETTLE_MAX_MS/.test(refresh) && /SETTLE_POLL_MS/.test(refresh), 'the settle-watch is BOUNDED (poll cadence + hard ceiling — never an unbounded spinner)');
 A.ok(/if \(out\.started\) watchSettle\(\)/.test(refresh), 'a started refresh is FOLLOWED (watchSettle), not guessed at');
 A.ok(/finally \{ watching = false; poke\(\); \}/.test(refresh), 'the watch pokes on give-up too — the button always comes back');
-const buildFn = station.slice(station.indexOf('function buildQuests'), station.indexOf('function journeyHtml'));
+const buildFn = keep.slice(keep.indexOf('function buildQuests'), keep.indexOf('function journeyHtml'));
 A.ok(!/setTimeout\([^)]*rerender\('quests'\)/.test(buildFn), 'the panel carries NO blind re-render timer (the stuck-REFRESHING… bug)');
-A.ok(/the station had nothing it could honestly ground/.test(station), 'a rejected cycle reads in plain language (the engine wording rides the tooltip)');
+A.ok(/the keep had nothing it could honestly ground/.test(keep), 'a rejected cycle reads in plain language (the engine wording rides the tooltip)');
 
 /* ---- 3. a quest starts in its own session ---- */
-const stationFns = station.slice(station.indexOf('function questGoDest'), station.indexOf('function buildQuests'));
-A.ok(/return 'session'/.test(station) && !/GO ▸ task board/.test(station), 'work/ledger quests route to their OWN session — the TASK BOARD misroute is dead');
-A.ok(/function questOpenSession/.test(station) && /\.find\(s => s && !s\.archived && s\.title === title\)/.test(station), 'START QUEST is idempotent by title (a second click returns to the same conversation)');
-A.ok(/Chat\.prefill\(/.test(station.slice(station.indexOf('function questOpenSession'), station.indexOf('function questSessionTitle') + 4000)), 'a quest the Commander performs, a revisit, or a busy COMMS keeps the PREFILL path');
-{ const qos = station.slice(station.indexOf('function questOpenSession'), station.indexOf('function questOpenSession') + 3000);
+const keepFns = keep.slice(keep.indexOf('function questGoDest'), keep.indexOf('function buildQuests'));
+A.ok(/return 'session'/.test(keep) && !/GO ▸ task board/.test(keep), 'work/ledger quests route to their OWN session — the TASK BOARD misroute is dead');
+A.ok(/function questOpenSession/.test(keep) && /\.find\(s => s && !s\.archived && s\.title === title\)/.test(keep), 'START QUEST is idempotent by title (a second click returns to the same conversation)');
+A.ok(/Chat\.prefill\(/.test(keep.slice(keep.indexOf('function questOpenSession'), keep.indexOf('function questSessionTitle') + 4000)), 'a quest the Commander performs, a revisit, or a busy COMMS keeps the PREFILL path');
+{ const qos = keep.slice(keep.indexOf('function questOpenSession'), keep.indexOf('function questOpenSession') + 3000);
   A.ok(/const startsWork = !existing && q\.executionMode === 'agent' && Chat\.send && !\(Chat\.isBusy && Chat\.isBusy\(\)\)/.test(qos), 'START QUEST sends only for an AGENT quest, only into its brand-new session, only when COMMS is free'); }
-A.ok(/q\.agentId && String\(q\.agentId\)/.test(station), 'a ledger quest binds its OWN agent; agent-less kinds fall to the hero');
-A.ok(/q\.id === 'st:crew'/.test(stationFns) && /return 'recruit'/.test(stationFns), 'the recruit quest routes to Recruitment Bay, never Refit');
-A.ok(/App\.openSummonBay/.test(station.slice(station.indexOf("body.querySelectorAll('.q-go')"), station.indexOf("body.querySelectorAll('.q-attest-yes')"))), 'the recruit destination opens the real Recruitment Bay surface');
-A.ok(/case 'prop':[\s\S]{0,120}return 'refit'/.test(stationFns), 'a capability contract routes to the placement surface');
-A.ok(/case 'fact':|case 'attest':/.test(stationFns), 'fact and attest ledger contracts have a real action destination');
+A.ok(/q\.agentId && String\(q\.agentId\)/.test(keep), 'a ledger quest binds its OWN agent; agent-less kinds fall to the hero');
+A.ok(/q\.id === 'st:crew'/.test(keepFns) && /return 'recruit'/.test(keepFns), 'the recruit quest routes to Recruitment Bay, never Refit');
+A.ok(/App\.openSummonBay/.test(keep.slice(keep.indexOf("body.querySelectorAll('.q-go')"), keep.indexOf("body.querySelectorAll('.q-attest-yes')"))), 'the recruit destination opens the real Recruitment Bay surface');
+A.ok(/case 'prop':[\s\S]{0,120}return 'refit'/.test(keepFns), 'a capability contract routes to the placement surface');
+A.ok(/case 'fact':|case 'attest':/.test(keepFns), 'fact and attest ledger contracts have a real action destination');
 
 /* ---- 4. quests lead the panel; the shell holds steady ---- */
-const renderStart = station.indexOf("body.innerHTML = '<div class=\"gx gx-quests\">");
-const render = station.slice(renderStart, station.indexOf("const journeyFail", renderStart));
+const renderStart = keep.indexOf("body.innerHTML = '<div class=\"gx gx-quests\">");
+const render = keep.slice(renderStart, keep.indexOf("const journeyFail", renderStart));
 const orderOk = render.indexOf('journalHtml') < render.indexOf('questRefreshHtml()') && render.indexOf('questRefreshHtml()') < render.indexOf('journeyHtml()');
 A.ok(orderOk, 'panel order: quests → goal settings → bookkeeping (the briefing and action lead the window)');
-A.ok(/QUEST_KIND_TAG/.test(station) && /FOR YOU/.test(station), 'cards carry a kind badge naming which real source minted them');
-A.ok(/className: 'quests-win'/.test(station), 'the window declares the steady-height shell class');
+A.ok(/QUEST_KIND_TAG/.test(keep) && /FOR YOU/.test(keep), 'cards carry a kind badge naming which real source minted them');
+A.ok(/className: 'quests-win'/.test(keep), 'the window declares the steady-height shell class');
 A.ok(/\.term\.quests-win \{ --con-h:/.test(css), 'quests-win RESTATES --con-h (declared only on .term.console — an undefined var would silently fall back to content-fit)');
 A.ok(/\.gx-quests \.q-grid \{ grid-template-columns: repeat\(auto-fill/.test(motion), 'the quest grid follows the window width at its CANONICAL rule in motion.css (app.css copies are silent no-ops)');
 A.ok(/align-items: stretch/.test(motion), 'cards in a row share a height — one action baseline per row');
 
 /* ---- 5. THE GOAL TRACK — the active goal drawn as a path, before refresh controls ---- */
-A.ok(/function questTrackHtml/.test(station), 'the goal track has its own renderer');
-const trackFn = station.slice(station.indexOf('function questTrackHtml'), station.indexOf('function QSS_CELEBRATING'));
+A.ok(/function questTrackHtml/.test(keep), 'the goal track has its own renderer');
+const trackFn = keep.slice(keep.indexOf('function questTrackHtml'), keep.indexOf('function QSS_CELEBRATING'));
 A.ok(render.indexOf('questTrackHtml(arcs)') >= 0 && render.indexOf('questTrackHtml(arcs)') < render.indexOf('questRefreshHtml()'),
   'the track leads goal settings, before the refresh controls');
-A.ok(/const isArc = q =>/.test(station) && /const rest = qs\.filter\(q => !isArc\(q\)\)/.test(station),
+A.ok(/const isArc = q =>/.test(keep) && /const rest = qs\.filter\(q => !isArc\(q\)\)/.test(keep),
   'arc quests are MOVED out of the card grid — the path is never printed twice');
 /* the ordering bug this test exists for: Quests.build() returns open.concat(done), so a COMPLETED
    milestone jumps to the end of the array. A path rendered in that order shows step 1 after step 4. */
@@ -153,7 +153,7 @@ A.ok(/evo\.goalsReached/.test(trackFn) && /' reached<\/b>'/.test(trackFn),
 A.ok(/SET THE NEXT GOAL/.test(trackFn), 'after a goal is reached the door invites the NEXT one');
 A.ok(/q-track-reached-band/.test(trackFn) && /\.q-track-reached-band/.test(css), 'the finished band keeps the gold rail it earned');
 A.ok(/\.q-track \{/.test(css) && /\.q-node-now \.q-node-dot/.test(css), 'the track ships its CSS layer');
-A.ok(/const milestones = rest\.filter/.test(station) && /<details class="q-milestones\b[^"]*"><summary>/.test(station), 'lifetime milestones live in a collapsed shelf instead of inflating the current OPEN list');
+A.ok(/const milestones = rest\.filter/.test(keep) && /<details class="q-milestones\b[^"]*"><summary>/.test(keep), 'lifetime milestones live in a collapsed shelf instead of inflating the current OPEN list');
 /* the payoff: what the path cashes out in. The stage NAME must come from the engine, never a copy of the
    ladder in the frontend — and it must not read as an unlock, because evolution grants nothing. */
 A.ok(/evo\.next/.test(trackFn) && !/DRIFT|VECTOR|ORBIT|CONSTELLATION|DEEP FIELD/.test(trackFn),
@@ -175,13 +175,13 @@ const built = Quests.build({ dossierDims: dims });
 const descs = built.filter(q => q.kind === 'dossier').map(q => q.desc);
 A.eq(descs.length, 4, 'one quest per dossier dimension');
 A.eq(new Set(descs.slice(0, 3)).size, 3, 'known dimensions carry DISTINCT explanations (nine identical sentences read as one wall)');
-A.ok(/every agent on the station will know this about you/.test(descs[3]), 'an unknown dimension keeps the honest generic line rather than an invented claim');
+A.ok(/every agent on the keep will know this about you/.test(descs[3]), 'an unknown dimension keeps the honest generic line rather than an invented claim');
 
 /* Execute the production journal renderer and its actual selection callbacks. The shell only models
    the two button collections; business state still comes through the real renderer's QuestStore seam. */
 const vm = require('node:vm');
 let questRows = [
-  { id: 'st:crew', kind: 'station', title: 'Recruit a specialist', desc: 'Bring another mind aboard.', reward: 'A larger crew', status: 'open' },
+  { id: 'st:crew', kind: 'keep', title: 'Recruit a specialist', desc: 'Bring another mind aboard.', reward: 'A larger crew', status: 'open' },
   { id: 'ds:stack', kind: 'dossier', title: 'Your <tools>', desc: 'Share your tools.', reward: 'Better context', status: 'open' }
 ];
 let rendered = '', buttons = {}, focused = '', detailNodes = [];
@@ -219,13 +219,13 @@ const body = {
 };
 const ctx = vm.createContext({ body, QuestStore: { view: () => ({ quests: questRows }) },
   esc: s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'),
-  QUEST_KIND_TAG: { station: 'STATION', dossier: 'ABOUT YOU' }, GO_LABEL: {},
+  QUEST_KIND_TAG: { keep: 'KEEP', dossier: 'ABOUT YOU' }, GO_LABEL: {},
   questGoDest: () => null, questCompletesWhen: () => 'the recorded condition is met', workshopGrantOn: () => false,
   questBriefingHtml: () => '', questTrackHtml: () => '', lifeGoalsHtml: () => '', journeyChaptersHtml: () => '', questRefreshHtml: () => '', journeyHtml: () => '',
-  systemsHtml: () => '', wireSystems: () => {}, stationPrestigeHtml: () => '', consoleSection: {},   // STATION SYSTEMS + prestige blocks + deep-link view (front doors)
+  systemsHtml: () => '', wireSystems: () => {}, keepPrestigeHtml: () => '', consoleSection: {},   // KEEP SYSTEMS + prestige blocks + deep-link view (front doors)
   rerender: () => ctx.buildQuests(body)
 });
-const journalSource = station.slice(station.indexOf('  function buildQuests(body)'), station.indexOf('    // COMMANDER JOURNEY writes')) + '\n}';
+const journalSource = keep.slice(keep.indexOf('  function buildQuests(body)'), keep.indexOf('    // COMMANDER JOURNEY writes')) + '\n}';
 vm.runInContext(journalSource, ctx);
 ctx.buildQuests(body);
 A.eq(body.dataset.questView, 'available', 'available quests lead on first open');
@@ -256,7 +256,7 @@ list.scrollTop = 120;
 ctx.buildQuests(body);
 A.eq(body.dataset.questSelected, 'ds:stack', 'background data pokes retain the selected quest');
 A.eq(list.scrollTop, 120, 'background data pokes retain the mission-list scroll');
-buttons['.q-filter'].find(b => b.dataset.category === 'station').click();
+buttons['.q-filter'].find(b => b.dataset.category === 'keep').click();
 A.eq(body.dataset.questSelected, 'st:crew', 'category changes choose a quest in that category');
 A.eq(buttons['.q-mission'].length, 1, 'category filters exclude unrelated quests');
 buttons['.q-filter'].find(b => b.dataset.category === 'missions').click();
@@ -283,7 +283,7 @@ A.ok(rendered.includes('First quest evidence'), 'returning to a quest restores i
 ctx.JourneyStore = { status: () => ({ progression: { level: 7 } }) };
 ctx.buildQuests(body);
 A.ok(rendered.includes('<strong>7</strong><span>Commander'), 'journal level reads Commander progression, not crew XP or a fabricated score');
-vm.runInContext(station.slice(station.indexOf('  function windowDirty(w)'), station.indexOf('  function requestCloseTerm')), ctx);
+vm.runInContext(keep.slice(keep.indexOf('  function windowDirty(w)'), keep.indexOf('  function requestCloseTerm')), ctx);
 const draftWindow = { querySelector: selector => selector === '.term-body' ? body : null };
 body._questDrafts.set('q:first', { evidence: 'Unsaved result', dirty: true });
 A.eq(ctx.windowDirty(draftWindow), true, 'a draft in another mission still triggers the existing unsaved-close guard');
@@ -291,7 +291,7 @@ body._questDrafts.set('q:first', { evidence: '', dirty: false });
 A.eq(ctx.windowDirty(draftWindow), false, 'recorded or clean cached fields do not block closing');
 A.eq(ctx.windowDirty({ querySelector: s => s === '.quests-content input[data-dirty="1"]' ? {} : null }), true, 'an unfinished journey input also protects the window from closing');
 // Mixed-goal snapshots must not present every metric as belonging to the current focus.
-vm.runInContext(station.slice(station.indexOf('  function journeyHtml()'), station.indexOf('  function lifeGoalsHtml()')), ctx);
+vm.runInContext(keep.slice(keep.indexOf('  function journeyHtml()'), keep.indexOf('  function lifeGoalsHtml()')), ctx);
 let journeySnapshot = {
   activeGoal: { id: 'g1', text: 'Learn <piano>', done: 1, total: 3, next: 'Practice' },
   goals: [{ id: 'g2', text: 'Change careers' }],

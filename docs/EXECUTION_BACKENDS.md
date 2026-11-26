@@ -2,7 +2,7 @@
 
 Eyehold's workbench tools run through a per-agent execution router. Tools ask the router to execute for an
 agent; that agent's execution profile selects the host shell or isolated sandbox on the next command. The
-legacy `STATION GEAR` profile follows the boot default for backward compatibility.
+legacy `KEEP GEAR` profile follows the boot default for backward compatibility.
 
 ## Current Backends
 
@@ -79,7 +79,7 @@ wrong local tree.
 
 ## Runtime Status
 
-The sidecar exposes the station default and per-agent routing at:
+The sidecar exposes the keep default and per-agent routing at:
 
 ```text
 GET /api/execution
@@ -90,10 +90,10 @@ POST /api/execution/sync
 POST /api/execution/cleanup
 ```
 
-The responses name the station default, each agent's routed backend, workspace mapping, background support,
+The responses name the keep default, each agent's routed backend, workspace mapping, background support,
 persistence contract, and safe-cell controls. Docker availability is `unknown` before its first real probe,
 `ready` after a successful probe, and `unavailable` with the bounded failure reason after a failed probe.
-Profile changes are live for the next command and do not require a station restart.
+Profile changes are live for the next command and do not require a keep restart.
 
 ## Local stdio MCP
 

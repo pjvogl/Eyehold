@@ -4,7 +4,7 @@ const source=process.argv[2];if(!source)throw Error('Pass the source worktree');
 const root=path.resolve(__dirname,'..'),read=p=>fs.readFileSync(path.join(source,p),'utf8');
 const catalog=JSON.parse(read('frontend/agent-demo/catalog.json'));
 const manifest=JSON.parse(read('frontend/agent-demo/manifest.json'));
-const sets=new Set(catalog.skins.filter(s=>s.readyForStation).map(s=>s.renderSet));
+const sets=new Set(catalog.skins.filter(s=>s.readyForKeep).map(s=>s.renderSet));
 const sprites=Object.fromEntries(Object.entries(manifest.sprites).filter(([k])=>sets.has(k.split('.')[0])));
 let count=0;for(const p of new Set(Object.values(sprites).flat())){
  const rel=path.normalize(path.join('frontend/assets/sprites',p));

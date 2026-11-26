@@ -2,12 +2,12 @@
    (frontend/app/queststatestore.js). Verifies the G1a celebration + anti-nag contract end to end:
      • resume baseline is silent (no celebration storm on init, even for already-done quests);
      • an open→done edge celebrates EXACTLY ONCE — one SFX.quest sting, one COMMS broadcast,
-       one quest-log rerender, a bounded row flourish, and NO StationUI.notify (notification diet,
+       one quest-log rerender, a bounded row flourish, and NO KeepUI.notify (notification diet,
        2026-08-18: the bell is reserved for things that need the Commander) — and repeat syncs stay silent;
      • dismissal takes only for dossier quests, hides the quest, stops the curiosity nudge for that
        dimension, and SURVIVES A RELOAD (self-persisted localStorage key);
      • THE LAW: quests never mint XP and the store never emits on U.bus — both locked with tripwire stubs
-       that throw if touched. Plus source-level locks on the stationui/app wiring (browser-flow files). */
+       that throw if touched. Plus source-level locks on the keepui/app wiring (browser-flow files). */
 'use strict';
 const A = require('./_assert.js');
 const fs = require('fs');
@@ -28,7 +28,7 @@ global.QuestStore = { view: () => ({ meter: null, quests, summary: { open: 0, do
 let stings = 0;
 global.SFX = { quest: () => { stings++; }, level: () => { throw new Error('quest completion must use the quest sting, not the level-up fanfare'); } };
 const toasts = [], rerenders = [], casts = [];
-global.StationUI = { notify: (t, c) => toasts.push({ t: String(t), c }), rerender: k => rerenders.push(k) };
+global.KeepUI = { notify: (t, c) => toasts.push({ t: String(t), c }), rerender: k => rerenders.push(k) };
 global.Chat = { broadcast: (t, o) => casts.push({ t: String(t), o }) };
 
 // THE LAW tripwires: a quest completing must never mint XP and the store must never emit on the bus.
@@ -40,7 +40,7 @@ const waved = [];
 global.CuriosityStore = { markDismissed: d => waved.push(d) };
 
 const { QuestStateStore } = require('../frontend/app/queststatestore.js');
-const dq = (key, status) => ({ id: 'dim:' + key, kind: 'dossier', status, title: 'Tell the station your ' + key, reward: 'sharper agents' });
+const dq = (key, status) => ({ id: 'dim:' + key, kind: 'dossier', status, title: 'Tell the keep your ' + key, reward: 'sharper agents' });
 const mq = (id, status) => ({ id: 'ms:' + id, kind: 'milestone', status, title: id.toUpperCase(), reward: 'recognition' });
 
 /* ---------- resume baseline: already-done quests are backfilled silently ---------- */
@@ -75,7 +75,7 @@ A.eq(toasts.length, 0, '…and still no toast, ever');
 /* ---------- dismissal: dossier only, hides, stops the curiosity nudge ---------- */
 quests = [dq('goals', 'done'), mq('first_light', 'done'), dq('stack', 'open')];
 QuestStateStore.sync();
-// GB-24 — dismiss everywhere: milestones/station are now QuestState-owned dismissible; the SuggestStore-owned
+// GB-24 — dismiss everywhere: milestones/keep are now QuestState-owned dismissible; the SuggestStore-owned
 // idea (and the coupled goal-arc rows) stay non-dismissible. We assert the refusal on the idea kind so
 // ms:first_light is left untouched for the visibility check below.
 A.eq(QuestStateStore.dismissible({ id: 'idea', kind: 'idea', status: 'open', title: 'X', reward: 'r' }), false, 'the SuggestStore-owned idea quest is not dismissible here');
@@ -105,14 +105,14 @@ A.eq(QuestStateStore.sync(), [], 'a reset store degrades to no-ops until the nex
 QuestStateStore.init();
 A.eq(QuestStateStore.isDismissed('dim:stack'), false, 'after reset+init, no prior Commander history remains');
 
-/* ---------- source-level locks: the browser wiring (stationui/app/index.html are not node-loadable) ---------- */
-const stSrc = fs.readFileSync(path.join(__dirname, '../frontend/app/stationui.js'), 'utf8');
+/* ---------- source-level locks: the browser wiring (keepui/app/index.html are not node-loadable) ---------- */
+const stSrc = fs.readFileSync(path.join(__dirname, '../frontend/app/keepui.js'), 'utf8');
 A.ok(/\b(QuestStateStore|QSS)\.visible\(/.test(stSrc), 'buildQuests filters the projection through QuestStateStore.visible (dismissed never re-renders)');
-A.ok(/QuestStateStore\.sync\(\)/.test(stSrc), 'the station keeps the quest memory synced (completion detection is driven, not render-only)');
+A.ok(/QuestStateStore\.sync\(\)/.test(stSrc), 'the keep keeps the quest memory synced (completion detection is driven, not render-only)');
 A.ok(/q-dismiss/.test(stSrc), 'the quest log offers a dismiss affordance');
 A.ok(/\b(QuestStateStore|QSS)\.dismiss\(/.test(stSrc), '…that routes through QuestStateStore.dismiss (kind-gated by the engine)');
 A.ok(/isCelebrating/.test(stSrc) && /q-celebrate/.test(stSrc), 'a freshly-completed row renders the gold q-celebrate flourish');
-A.ok(/typeof QuestStateStore\s*[!=]==\s*'undefined'/.test(stSrc), 'stationui guards on the store being present (degrades, never throws)');
+A.ok(/typeof QuestStateStore\s*[!=]==\s*'undefined'/.test(stSrc), 'keepui guards on the store being present (degrades, never throws)');
 
 const appSrc = fs.readFileSync(path.join(__dirname, '../frontend/app/app.js'), 'utf8');
 A.ok(/QuestStateStore\.init\(\)/.test(appSrc), 'app.js initializes the quest memory on enterGame');

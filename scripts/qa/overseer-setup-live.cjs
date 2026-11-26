@@ -6,7 +6,7 @@ const { chromium } = require(process.env.EYEHOLD_PLAYWRIGHT_MODULE || 'playwrigh
   try {
     const page = await browser.newPage({ viewport: { width: 1280, height: 800 } });
     page.on('pageerror', error => receipt.errors.push(error.message));
-    // Exercise the first-run router against an explicitly empty save, without changing the seeded station.
+    // Exercise the first-run router against an explicitly empty save, without changing the seeded keep.
     await page.route('**/api/save?*', route => route.fulfill({ json: { ok: true, save: null } }));
     let connections = 0, rejectConnection = false;
     await page.route('**/api/credits?*', route => route.fulfill({json:{configured:false}}));
@@ -197,7 +197,7 @@ const { chromium } = require(process.env.EYEHOLD_PLAYWRIGHT_MODULE || 'playwrigh
     assert(await recoveryPage.locator('.ov-setup-nav').isHidden());
     assert(await recoveryPage.locator('#ov-brain').isVisible());
     assert((await recoveryPage.locator('#btn-wake').textContent()).includes('RESUME'));
-    receipt.checks.push('Real saved-station boot routes to RESUME with preserved identity and connection directly visible');
+    receipt.checks.push('Real saved-keep boot routes to RESUME with preserved identity and connection directly visible');
     assert.deepEqual(receipt.errors, []);
     receipt.pass = true;
   } catch (error) { receipt.pass = false; receipt.failure = error.stack; process.exitCode = 1; }

@@ -4,7 +4,7 @@ const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const vm = require('node:vm');
 const ArmConfirm = require('../frontend/app/armconfirm.js');
-const source = fs.readFileSync(require.resolve('../frontend/app/stationui.js'), 'utf8');
+const source = fs.readFileSync(require.resolve('../frontend/app/keepui.js'), 'utf8');
 const start = source.indexOf('  let _creditsLinkPoll =');
 const end = source.indexOf('  // BUDGET panel', start);
 assert.ok(start >= 0 && end > start);
@@ -96,8 +96,8 @@ function fixture({ native, get, post } = {}) {
     get: async route => route === '/api/credits' ? (unlinked ? { configured: false } : linked) : { available: true, cloud: true },
     post: async () => { unlinked = true; return { ok: true, j: { ok: true, unlinked: true } }; }
   });
-  await success.read(); await success.unlink(); assert.match(success.host.innerHTML, /Unlinking this station/);
-  await success.read(); assert.match(success.host.innerHTML, /Unlinking this station/, 'repaint preserves pending status');
+  await success.read(); await success.unlink(); assert.match(success.host.innerHTML, /Unlinking this keep/);
+  await success.read(); assert.match(success.host.innerHTML, /Unlinking this keep/, 'repaint preserves pending status');
   resolveNative(); await flush(); assert.ok(success.host.querySelector('#credits-link'));
   assert.ok(success.calls.includes('refresh') && success.calls.includes('provider'));
 

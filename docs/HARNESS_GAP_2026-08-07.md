@@ -9,7 +9,7 @@ work and thousands of newer Hermes commits changed both sides of the comparison.
 
 Eyehold is no longer missing a Hermes-class core agent loop. Its tool surface, compaction and provider
 recovery, approvals, durable schedules, background delegation, local/Docker/SSH execution, skills authoring,
-checkpoints, and station recovery are credible peer capabilities. The remaining risk is
+checkpoints, and keep recovery are credible peer capabilities. The remaining risk is
 concentrated in **failure recovery, operability, extension lifecycle, and cross-surface continuity**.
 
 Do not claim “100% Hermes parity” for 0.10 until gates G0-G4 below are proven in the shipped application.
@@ -63,7 +63,7 @@ shipped behavior a peer capability.
 
 The repair candidate removes only the desktop-wide environment pin. Ordinary agent browsing remains explicitly
 headless and synthetic-input-only, arbitrary shell commands remain unable to open visible windows or inject input,
-and `browser.login` remains the narrow, two-consent attended exception on the persistent station profile.
+and `browser.login` remains the narrow, two-consent attended exception on the persistent keep profile.
 
 This row turns GREEN only when the exact installed Windows candidate passes the natural-language journey: ask
 Eyehold to open LinkedIn for sign-in; approve the attended window; observe a normal visible browser at the requested
@@ -191,7 +191,7 @@ shipped-app claim before merge.
 - Background named/ephemeral delegation with concurrency limits, durable registry, status/cost, interrupt, stale
   marking, and resume-by-restart.
 - Session search, rename, pin, archive, delete, Markdown/JSON export, durable transcript, checkpoint/rewind,
-  authorized project roots, and complete-station recovery bundles.
+  authorized project roots, and complete-keep recovery bundles.
 - Persistent per-agent Docker environments, local/SSH routing, project discovery/grants, idle cleanup,
   interactive PTY, and non-deleting sync. Attended browser-login is excluded pending the P0 installed receipt.
 - Skills creation/editing/curation, progressive loading, multi-file local packages, exact-byte risk gates, and

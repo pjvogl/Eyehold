@@ -3,7 +3,7 @@
 //
 // The world canvas is drawn at a fractional uiZoom, so measuring a screenshot measures a
 // RESAMPLE, not the art (the "never judge pixel art at a non-integer scale" law). This bakes a
-// station offscreen at 1:1 through the shipped StationBake and reads pixels back, so every number
+// keep offscreen at 1:1 through the shipped KeepBake and reads pixels back, so every number
 // below is the actual baked+lit tone the player sees.
 //
 // Composites over MAGENTA on purpose: anything painted outside the hull is invisible against a
@@ -25,10 +25,10 @@ const MULTI = process.env.SKYNET_PROBE_MULTI === '1';
 
 const PROBE = `(() => {
   const st = WorldModel.create(WorldModel.defaultDoc());
-  /* MULTI-ROOM: rooms STACKED VERTICALLY on purpose. A single-room station can never make two
+  /* MULTI-ROOM: rooms STACKED VERTICALLY on purpose. A single-room keep can never make two
      chamfers share a bake COLUMN, and any per-column bookkeeping that is keyed globally instead of
      per-corner only misbehaves when they do — which is why the one-room leak check read 0 while the
-     real station leaked. Any future corner work must be leak-checked on this shape, not the seed. */
+     real keep leaked. Any future corner work must be leak-checked on this shape, not the seed. */
   if (${MULTI}) {
     st.addRoom({ kind: 'lab',     rects: [{ x1: 2,  y1: 14, x2: 15, y2: 24 }] });
     st.addRoom({ kind: 'bridge',  rects: [{ x1: 21, y1: 0,  x2: 34, y2: 9  }] });
@@ -43,7 +43,7 @@ const PROBE = `(() => {
     st.placeHallway({ rects: [{ x1: 24, y1: 10, x2: 26, y2: 14 }] });
   }
   const geo = st.projectGeometry();
-  const bk = StationBake.bake(geo);
+  const bk = KeepBake.bake(geo);
   const W = bk.W, H = bk.H, T = geo.TILE;
   const cv = document.createElement('canvas'); cv.width = W; cv.height = H;
   const g = cv.getContext('2d'); g.imageSmoothingEnabled = false;
@@ -53,7 +53,7 @@ const PROBE = `(() => {
   const lum = (x, y) => { const i = ((y * W + x) << 2); return Math.round(0.299*px[i] + 0.587*px[i+1] + 0.114*px[i+2]); };
   const isMagenta = (x, y) => { const i = ((y * W + x) << 2); return px[i] > 200 && px[i+1] < 60 && px[i+2] > 200; };
 
-  // the one room in a fresh station, in bake-pixel coords (origin-relative)
+  // the one room in a fresh keep, in bake-pixel coords (origin-relative)
   const r = geo.allRects[0];
   const x1 = r.x1 * T, y1 = r.y1 * T, x2 = (r.x2 + 1) * T, y2 = (r.y2 + 1) * T;
   const midY = ((y1 + y2) / 2) | 0, midX = ((x1 + x2) / 2) | 0;
@@ -227,7 +227,7 @@ await cdp.send('Page.navigate', { url: URL });
    "crashed" with `ReferenceError: WorldModel is not defined`: the page simply had not finished
    loading and the eval ran against a bare document. Fail loudly instead of blaming scoping. */
 if (!(await waitDevReady(cdp, evalJS, { url: URL }))) {
-  console.error('wallprobe: dev harness never became ready (WorldModel/StationBake not on the page) — re-run.');
+  console.error('wallprobe: dev harness never became ready (WorldModel/KeepBake not on the page) — re-run.');
   try { proc.kill(); } catch {}
   try { side.kill(); } catch {}
   process.exit(2);

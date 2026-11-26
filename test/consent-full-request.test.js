@@ -64,7 +64,7 @@ test('the desk card: a glance line in the phrase, the whole request in INSPECT',
 test('cards the sidecar words itself, and a short bare value, get no panel; file changes keep theirs', () => {
   assert.equal(card.consentInspect({ tool: 'fs.read', argsSummary: 'notes.md' }), null);
   assert.equal(card.consentInspect({ tool: 'path.trust', argsSummary: 'C:\\proj' }), null);
-  assert.equal(card.consentInspect({ tool: 'station.control', argsSummary: 'turn the music off' }), null);
+  assert.equal(card.consentInspect({ tool: 'keep.control', argsSummary: 'turn the music off' }), null);
   assert.equal(card.consentInspect({ tool: 'brief.ask', argsSummary: '{"question":"q"}' }), null);
   assert.match(card.consentInspect({ tool: 'fs.write', argsSummary: '{\n  "path": "a"\n}' }).label, /Inspect proposed change/);
   assert.equal(card.consentInspect({ tool: 'routine.create', argsSummary: '{"prompt":"check mail"}' }).text, 'check mail');

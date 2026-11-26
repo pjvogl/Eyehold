@@ -1,13 +1,13 @@
 'use strict';
 const fs=require('fs'),sharp=require('sharp'),crypto=require('crypto');
-const read=p=>JSON.parse(fs.readFileSync(p)),sha=p=>crypto.createHash('sha256').update(fs.readFileSync(p)).digest('hex'),out='docs/station-remaster/batch03/coordinator/';
+const read=p=>JSON.parse(fs.readFileSync(p)),sha=p=>crypto.createHash('sha256').update(fs.readFileSync(p)).digest('hex'),out='docs/keep-remaster/batch03/coordinator/';
 const rect=(x,y,w,h)=>[[x,y],[x+w,y],[x+w,y+h],[x,y+h]];
 const line={studio:3043,bigscreen:678,holotable:863,screens:941,ticker:4014,wartable:4336,bridge_tacscreen:6903,bridge_dispatch_pylon:7042,bridge_orderqueue:7102,war_pivotpanel:8447,war_threatcore:8597,rug:5513,rug_small:5574,rug_large:5637,arc_floorlight:9053,arc_ladder:9084,cablerun:1717,hazardpad:1751,steamvent:10501};
-const control=read('docs/station-remaster/batch03/control/anchors.json').records,habitat=read('docs/station-remaster/batch03/habitat/anchors.json');
+const control=read('docs/keep-remaster/batch03/control/anchors.json').records,habitat=read('docs/keep-remaster/batch03/habitat/anchors.json');
 const configs={
 studio:{mode:'pulse',keys:['preview'],colour:[255,106,213],trigger:'fired',kind:'media-result',behavior:'900ms result pulse on the media preview from real tool completion; red on failure.',extra:{failureColour:[255,92,92],durationMs:900},requirements:['Preserve image/voice capability grant and per-instance pulseProp result; no success loop on a timer.','Optional faint preview under f.work remains magenta; result pulse must override failure correctly.']},
 bigscreen:{mode:'screen',keys:['screen'],colour:[70,185,200],kind:'waveform',behavior:'Decorative low-gain phosphor waveform and refresh band while idle, increased brightness/amplitude with f.work.'},
-holotable:{mode:'projection',keys:['projectionSurface'],colour:[120,200,255],kind:'station-hologram',behavior:'A translucent station wireframe and orbiting blip above the emitter well; ambient low intensity and f.work gain.',requirements:['Requires new projection layer with frame expansion above emitter. A flat screen pulse does not preserve the hologram.']},
+holotable:{mode:'projection',keys:['projectionSurface'],colour:[120,200,255],kind:'keep-hologram',behavior:'A translucent keep wireframe and orbiting blip above the emitter well; ambient low intensity and f.work gain.',requirements:['Requires new projection layer with frame expansion above emitter. A flat screen pulse does not preserve the hologram.']},
 screens:{mode:'screen',keys:['upper','lower'],colour:[70,185,200],kind:'diagnostics',behavior:'Two distinct decorative displays: upper status bars and lower waveform/diagnostics; idle low gain, f.work brighter.'},
 ticker:{mode:'screen',keys:['tickerBand'],colour:[232,185,98],kind:'dot-matrix-crawl',behavior:'Horizontal dot-matrix crawl clipped to the new letterbox. Decorative glyphs only; no fabricated market values or real task claims.'},
 wartable:{mode:'screen',keys:['planningSurface'],colour:[210,98,123],kind:'tactical-map',behavior:'Thin map grid, sweep and sparse plotted contacts on the felt inset. Cosmetic map, with f.work increasing gain; never a fabricated actual threat report.'},

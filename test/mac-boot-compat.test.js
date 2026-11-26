@@ -7,7 +7,7 @@ const path = require('node:path');
 const { pathToFileURL } = require('node:url');
 const os = require('node:os');
 const util = fs.readFileSync('frontend/js/util.js', 'utf8');
-for (const entry of ['frontend/index.html', 'frontend/agent-station-demo.html']) {
+for (const entry of ['frontend/index.html', 'frontend/agent-keep-demo.html']) {
   const html = fs.readFileSync(entry, 'utf8');
   assert.match(html, /<script src="\/shared\/specialties.js"><\/script>/, entry);
   assert.ok(html.indexOf('src="/shared/specialties.js"') < html.indexOf('src="app/specialties.js"'), entry + ' catalog loads before its consumer');

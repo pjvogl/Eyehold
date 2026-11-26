@@ -1,5 +1,5 @@
 /* node test/routing.b5.test.js — Phase B5: per-bay capability isolation. The router builds a resolveTools
-   station from the posted plan's bay objects, so a bay-routed agent's tools are EXACTLY what the floor placed
+   keep from the posted plan's bay objects, so a bay-routed agent's tools are EXACTLY what the floor placed
    in that bay's room. Proves the router→resolveTools wiring; the projection itself is covered by capgate.test. */
 'use strict';
 const A = require('./_assert.js');
@@ -15,16 +15,16 @@ function planWith(objects) {
     props: [{ id: 'i', t: 'intake', x: 0, y: 0, w: 1, h: 1 }, { id: 'b', t: 'bay', x: 4, y: 0, w: 2, h: 2, agentId: 'coder' }]
   };
   const plan = Pipeline.compileRoutingPlan(geo);
-  plan.bays[0].objects = objects;   // the capability objectTypes world.js attaches from station.bayObjects
+  plan.bays[0].objects = objects;   // the capability objectTypes world.js attaches from keep.bayObjects
   return plan;
 }
 
-// a workstation + a cabinet in the bay room -> compute + fs.*
+// a workkeep + a cabinet in the bay room -> compute + fs.*
 {
   const r = makeRouter();
   A.ok(r.setPlan(planWith(['computer', 'cabinet'])).ok, 'a deployable plan with bay caps is stored');
-  const st = r.stationFor('coder');
-  A.ok(st && st.rooms.bay.objects.length === 2, 'stationFor builds the bay station from the plan objects');
+  const st = r.keepFor('coder');
+  A.ok(st && st.rooms.bay.objects.length === 2, 'keepFor builds the bay keep from the plan objects');
   A.eq(st.agents.coder.room, 'bay', 'the agent is assigned to its bay room');
   const res = resolveTools('coder', st);
   A.ok(res.hasCompute, 'a computer in the bay room grants compute');
@@ -32,13 +32,13 @@ function planWith(objects) {
 }
 
 /* CAPABILITY SURVIVES A BROKEN BELT GRAPH (2026-07-26 audit). A blocking routing error used to null the stored
-   plan outright, so stationFor() returned null and the caller fell back to the DEFAULT OFFICE — quietly WIDENING
+   plan outright, so keepFor() returned null and the caller fell back to the DEFAULT OFFICE — quietly WIDENING
    a bay-bound agent's reach while the world still painted "NO COMPUTE" over its bay. Routing must still refuse;
    the bay's room objects are a fact about the placed floor and must not move. */
 {
   const r = makeRouter();
   r.setPlan(planWith(['computer', 'cabinet']));
-  A.ok(r.stationFor('coder'), 'baseline: a deployable plan isolates the bay');
+  A.ok(r.keepFor('coder'), 'baseline: a deployable plan isolates the bay');
 
   const broken = planWith([]);                                        // an UNEQUIPPED bay...
   broken.errors.push({ code: 'CYCLE', tile: { x: 9, y: 9 } });        // ...on a floor with a real blocker
@@ -46,20 +46,20 @@ function planWith(objects) {
   A.ok(!res.ok && res.codes.indexOf('CYCLE') >= 0, 'a cyclic plan is still REFUSED for routing');
   A.eq(r.resolveTarget({ tag: 'anything' }), null, '...and dispatch falls back (no routed target)');
 
-  const st = r.stationFor('coder');
-  A.ok(st, 'but the bay still projects a station — capability does not ride on belt validity');
+  const st = r.keepFor('coder');
+  A.ok(st, 'but the bay still projects a keep — capability does not ride on belt validity');
   A.eq(st.rooms.bay.objects.length, 0, 'the unequipped bay stays unequipped');
   A.ok(!resolveTools('coder', st).hasCompute, 'a broken floor can never UPGRADE an agent to the default office');
 
   r.clearPlan();
-  A.eq(r.stationFor('coder'), null, 'clearing the floor clears the capability view too');
+  A.eq(r.keepFor('coder'), null, 'clearing the floor clears the capability view too');
 }
 
-// a workstation but NO cabinet -> compute, but no fs
+// a workkeep but NO cabinet -> compute, but no fs
 {
   const r = makeRouter();
   r.setPlan(planWith(['computer']));
-  const res = resolveTools('coder', r.stationFor('coder'));
+  const res = resolveTools('coder', r.keepFor('coder'));
   A.ok(res.hasCompute, 'compute present');
   A.eq(res.tools.filter(t => t.indexOf('fs.') === 0).length, 0, 'no cabinet in the bay room -> no fs tools');
 }
@@ -68,7 +68,7 @@ function planWith(objects) {
 {
   const r = makeRouter();
   r.setPlan(planWith([]));
-  const res = resolveTools('coder', r.stationFor('coder'));
+  const res = resolveTools('coder', r.keepFor('coder'));
   A.ok(!res.hasCompute, 'an unequipped bay grants NO compute');
   A.eq(res.tools.length, 0, 'an unequipped bay grants no tools');
 }
@@ -77,14 +77,14 @@ function planWith(objects) {
 {
   const r = makeRouter();
   r.setPlan(planWith(['computer']));
-  A.eq(r.stationFor('someone-else'), null, 'stationFor for a non-bay agent is null (office default applies)');
-  A.ok(r.stationFor('coder') !== null, 'stationFor for the bay-bound agent is non-null');
+  A.eq(r.keepFor('someone-else'), null, 'keepFor for a non-bay agent is null (office default applies)');
+  A.ok(r.keepFor('coder') !== null, 'keepFor for the bay-bound agent is non-null');
 }
 
 // no posted plan -> null (routed-mode off; the office default applies everywhere)
-A.eq(makeRouter().stationFor('coder'), null, 'no posted plan -> stationFor null');
+A.eq(makeRouter().keepFor('coder'), null, 'no posted plan -> keepFor null');
 
-// sidecar station authority: when the router has accepted a Station document, bay grants are derived from
+// sidecar keep authority: when the router has accepted a Keep document, bay grants are derived from
 // that document and forged capability objects embedded in a legacy posted RoutingPlan are ignored.
 {
   const stDoc = WM.defaultDoc();
@@ -94,31 +94,31 @@ A.eq(makeRouter().stationFor('coder'), null, 'no posted plan -> stationFor null'
   stDoc.props.push({ id: 'conn1', t: 'connector_portal', x: 12, y: 1, w: 1, h: 1, connectorId: 'github' });
   stDoc._nid = 4;
   const r = makeRouter();
-  A.ok(r.setStation(stDoc).ok, 'a valid Station document is accepted by the sidecar router');
+  A.ok(r.setKeep(stDoc).ok, 'a valid Keep document is accepted by the sidecar router');
   A.ok(r.setPlan(planWith(['computer', 'cabinet', 'workbench'])).ok, 'legacy routing plan with forged grants is still deployable');
-  const resolved = resolveTools('coder', r.stationFor('coder'));
-  A.ok(resolved.hasCompute, 'sidecar-derived station grants the real dedicated workstation');
-  A.ok(resolved.tools.indexOf('web_search') >= 0, 'sidecar-derived station grants the real room dish');
+  const resolved = resolveTools('coder', r.keepFor('coder'));
+  A.ok(resolved.hasCompute, 'sidecar-derived keep grants the real dedicated workkeep');
+  A.ok(resolved.tools.indexOf('web_search') >= 0, 'sidecar-derived keep grants the real room dish');
   A.eq(resolved.tools.filter(t => t.indexOf('fs.') === 0).length, 0, 'forged plan cabinet grants no fs tools');
   A.eq(resolved.tools.indexOf('shell.exec'), -1, 'forged plan workbench grants no shell tool');
-  const conn = r.stationFor('coder').rooms.bay.objects.find(o => o.objectType === 'connector');
-  A.ok(conn && conn.connectorId === 'github', 'sidecar-derived station preserves bound connector portal identity');
+  const conn = r.keepFor('coder').rooms.bay.objects.find(o => o.objectType === 'connector');
+  A.ok(conn && conn.connectorId === 'github', 'sidecar-derived keep preserves bound connector portal identity');
 }
 
-// setStation is transactional: an invalid Station update is refused and leaves the last-good station active.
+// setKeep is transactional: an invalid Keep update is refused and leaves the last-good keep active.
 {
   const stDoc = WM.defaultDoc();
   stDoc.props.push({ id: 'bay1', t: 'bay', x: 4, y: 1, w: 2, h: 2, agentId: 'coder' });
   stDoc.props.push({ id: 'pc1', t: 'console', x: 7, y: 1, w: 2, h: 1, agentId: 'coder' });
   const r = makeRouter();
-  A.ok(r.setStation(stDoc).ok, 'valid Station document installs as last-good');
-  A.ok(!r.setStation({ schema: 'eyehold.station', version: 1, rooms: {}, order: [], props: [] }).ok, 'invalid empty Station document is refused');
+  A.ok(r.setKeep(stDoc).ok, 'valid Keep document installs as last-good');
+  A.ok(!r.setKeep({ schema: 'eyehold.keep', version: 1, rooms: {}, order: [], props: [] }).ok, 'invalid empty Keep document is refused');
   r.setPlan(planWith(['cabinet']));
-  A.ok(resolveTools('coder', r.stationFor('coder')).hasCompute, 'last-good station stays active after invalid update');
+  A.ok(resolveTools('coder', r.keepFor('coder')).hasCompute, 'last-good keep stays active after invalid update');
 }
 
-// sidecar station authority also owns routing: once a Station document is installed, resolveTarget follows the
-// server-derived Station geometry instead of a forged legacy RoutingPlan posted by the renderer.
+// sidecar keep authority also owns routing: once a Keep document is installed, resolveTarget follows the
+// server-derived Keep geometry instead of a forged legacy RoutingPlan posted by the renderer.
 {
   const stDoc = WM.defaultDoc();
   stDoc.props.push({ id: 'intake1', t: 'intake', x: 0, y: 0, w: 1, h: 1 });
@@ -130,12 +130,12 @@ A.eq(makeRouter().stationFor('coder'), null, 'no posted plan -> stationFor null'
     props: [{ id: 'i', t: 'intake', x: 0, y: 0, w: 1, h: 1 }, { id: 'b', t: 'bay', x: 4, y: 0, w: 2, h: 2, agentId: 'fake' }]
   });
   const r = makeRouter();
-  A.ok(r.setStation(stDoc).ok, 'authoritative Station with deployable routing is accepted');
+  A.ok(r.setKeep(stDoc).ok, 'authoritative Keep with deployable routing is accepted');
   A.ok(r.setPlan(forged).ok, 'forged legacy RoutingPlan is still syntactically deployable');
-  A.eq(r.resolveTarget({}), 'real', 'server-derived Station routing overrides the forged legacy RoutingPlan');
+  A.eq(r.resolveTarget({}), 'real', 'server-derived Keep routing overrides the forged legacy RoutingPlan');
 }
 
-// non-deployable Station routing updates are transactional: the last-good Station-derived routing plan stays active.
+// non-deployable Keep routing updates are transactional: the last-good Keep-derived routing plan stays active.
 {
   const good = WM.defaultDoc();
   good.props.push({ id: 'intake1', t: 'intake', x: 0, y: 0, w: 1, h: 1 });
@@ -153,38 +153,38 @@ A.eq(makeRouter().stationFor('coder'), null, 'no posted plan -> stationFor null'
   A.ok(Pipeline.compileRoutingPlan(WM.deserialize(bad).projectGeometry()).errors.some(e => e.code === 'CYCLE'),
     'the bad fixture is non-deployable for a REAL reason (CYCLE)');
   const r = makeRouter();
-  A.ok(r.setStation(good).ok, 'good Station routing installs first');
-  A.ok(!r.setStation(bad).ok, 'non-deployable Station routing update is refused');
-  A.eq(r.resolveTarget({}), 'real', 'last-good Station routing survives the refused update');
+  A.ok(r.setKeep(good).ok, 'good Keep routing installs first');
+  A.ok(!r.setKeep(bad).ok, 'non-deployable Keep routing update is refused');
+  A.eq(r.resolveTarget({}), 'real', 'last-good Keep routing survives the refused update');
 
   /* refusal must NOT depend on install order (latent bug, fixed 2026-08-04): the old guard was
-     `!v.routingOk && stationPlan`, so the SAME cyclic doc refused above was ACCEPTED when it was the
-     FIRST install (no stationPlan yet) — claiming ok while arming no routing. A fresh router must
+     `!v.routingOk && keepPlan`, so the SAME cyclic doc refused above was ACCEPTED when it was the
+     FIRST install (no keepPlan yet) — claiming ok while arming no routing. A fresh router must
      refuse it identically. */
   const first = makeRouter();
-  const res = first.setStation(bad);
-  A.ok(!res.ok, 'a non-deployable Station is refused on FIRST install too (no prior station required)');
+  const res = first.setKeep(bad);
+  A.ok(!res.ok, 'a non-deployable Keep is refused on FIRST install too (no prior keep required)');
   A.ok(Array.isArray(res.codes) && res.codes.indexOf('CYCLE') >= 0, 'the first-install refusal names the real blocker (CYCLE)');
-  A.eq(first.getStation(), null, 'the refused first install stores no station document');
+  A.eq(first.getKeep(), null, 'the refused first install stores no keep document');
   A.eq(first.resolveTarget({}), null, '...and arms no routing (dispatch falls back)');
 }
 
-// a connector portal carries a per-instance binding: stationFor passes the rich object through verbatim, so the
+// a connector portal carries a per-instance binding: keepFor passes the rich object through verbatim, so the
 // connector manager can project THAT server's tools. resolveTools yields no STATIC grant for it (dynamic at run).
 {
   const r = makeRouter();
   r.setPlan(planWith(['computer', { objectType: 'connector', connectorId: 'github' }]));
-  const st = r.stationFor('coder');
+  const st = r.keepFor('coder');
   const objs = st.rooms.bay.objects;
-  A.eq(objs.length, 2, 'stationFor keeps both the string cap and the connector object');
+  A.eq(objs.length, 2, 'keepFor keeps both the string cap and the connector object');
   const conn = objs.find(o => o.objectType === 'connector');
   A.ok(conn && conn.connectorId === 'github', 'the connector object passes through with its connectorId intact');
   A.ok(!!conn.instanceId, 'every room object still gets an instanceId');
   const res = resolveTools('coder', st);
-  A.ok(res.hasCompute, 'the workstation still grants compute alongside the connector');
+  A.ok(res.hasCompute, 'the workkeep still grants compute alongside the connector');
   // the computer contributes the quest.update freebie (QUEST V2 §B) and the todo taskplan freebie (2026-08-17);
   // the CONNECTOR itself adds no static tool (its MCP tools are projected dynamically at run time).
-  A.eq(res.tools.slice().sort(), ['app.check', 'app.create', 'app.publish', 'app.read', 'app.schedule', 'app.write', 'code.run', 'deliverable_note', 'manual.read', 'quest.update', 'routine.notepad', 'station.inspect', 'station.show', 'todo', 'tool.search'], 'a connector adds NO static tool beyond the computer primitives (its MCP tools project dynamically at run time)');
+  A.eq(res.tools.slice().sort(), ['app.check', 'app.create', 'app.publish', 'app.read', 'app.schedule', 'app.write', 'code.run', 'deliverable_note', 'manual.read', 'quest.update', 'routine.notepad', 'keep.inspect', 'keep.show', 'todo', 'tool.search'], 'a connector adds NO static tool beyond the computer primitives (its MCP tools project dynamically at run time)');
 }
 
 // the router round-robins SPLITTER dispatch across both bound agents (stateful, matches the engine's spread)

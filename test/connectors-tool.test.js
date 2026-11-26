@@ -93,7 +93,7 @@ function toolWith(over) {
     connectors: fakeManager([]), serviceKeys: fakeKeys([]),
     connectorCatalog: fakeMcpCatalog(MCP_ENTRIES), keysCatalog: fakeKeysCatalog(KEY_PLATFORMS)
   }).listTool.run({});
-  A.eq(emptySummary.summary, 'connected:0 keys:0 available:5', 'an empty station summarises as ZERO, never as the one "(none yet)" line it printed');
+  A.eq(emptySummary.summary, 'connected:0 keys:0 available:5', 'an empty keep summarises as ZERO, never as the one "(none yet)" line it printed');
 
   /* ---- scope + query narrowing ---- */
   const onlyAvail = await tool.run({ scope: 'available' });

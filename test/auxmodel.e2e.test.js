@@ -84,7 +84,7 @@ function startMock(opts) {
           if (rec.main) {
             // compaction arm: first main call returns ONE tool call so the run has a second turn to fold before
             if ((opts && opts.toolTurn) && !messages.some(m => m && m.role === 'tool')) {
-              sse(res, [{ tool_calls: [{ index: 0, id: 'inspect_once', type: 'function', function: { name: 'station_inspect', arguments: '{}' } }] }],
+              sse(res, [{ tool_calls: [{ index: 0, id: 'inspect_once', type: 'function', function: { name: 'keep_inspect', arguments: '{}' } }] }],
                 { prompt_tokens: 8, completion_tokens: 2, total_tokens: 10 }, 'tool_calls');
               return;
             }

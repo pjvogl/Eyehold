@@ -169,15 +169,15 @@
       "domain": "frontend runtime"
     },
     {
-      "file": "frontend/app/stationbake.js",
+      "file": "frontend/app/keepbake.js",
       "domain": "frontend runtime"
     },
     {
-      "file": "frontend/app/stationcommands.js",
+      "file": "frontend/app/keepcommands.js",
       "domain": "frontend runtime"
     },
     {
-      "file": "frontend/app/stationui.js",
+      "file": "frontend/app/keepui.js",
       "domain": "frontend runtime"
     },
     {
@@ -649,7 +649,7 @@
       "domain": "backend runtime"
     },
     {
-      "file": "sidecar/tools/builtin/station.js",
+      "file": "sidecar/tools/builtin/keep.js",
       "domain": "backend runtime"
     },
     {
@@ -845,23 +845,23 @@
       "domain": "regression tests"
     },
     {
-      "file": "test/station-commands.test.js",
+      "file": "test/keep-commands.test.js",
       "domain": "regression tests"
     },
     {
-      "file": "test/station-tools.test.js",
+      "file": "test/keep-tools.test.js",
       "domain": "regression tests"
     },
     {
-      "file": "test/stationbake.chunk.test.js",
+      "file": "test/keepbake.chunk.test.js",
       "domain": "regression tests"
     },
     {
-      "file": "test/stationbake.connections.test.mjs",
+      "file": "test/keepbake.connections.test.mjs",
       "domain": "regression tests"
     },
     {
-      "file": "test/stationbake.materials.test.js",
+      "file": "test/keepbake.materials.test.js",
       "domain": "regression tests"
     },
     {
@@ -1005,15 +1005,15 @@
       "domain": "generated website mirror"
     },
     {
-      "file": "website/app/app/stationbake.js",
+      "file": "website/app/app/keepbake.js",
       "domain": "generated website mirror"
     },
     {
-      "file": "website/app/app/stationcommands.js",
+      "file": "website/app/app/keepcommands.js",
       "domain": "generated website mirror"
     },
     {
-      "file": "website/app/app/stationui.js",
+      "file": "website/app/app/keepui.js",
       "domain": "generated website mirror"
     },
     {

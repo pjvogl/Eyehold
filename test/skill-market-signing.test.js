@@ -27,7 +27,7 @@ A.throws(() => signing.verify(Buffer.concat([bytes, Buffer.from(' ')]), sig, key
 A.throws(() => signing.verify(bytes, sig), /does not trust/, 'a signature from a key the app does not ship fails');
 A.throws(() => signing.verify(bytes, '', keys), /missing or unreadable/, 'no signature fails');
 A.throws(() => signing.verify(bytes, JSON.stringify({ format: 'starnet-signature/v1', alg: 'rsa', keyId: 'test-market', sig: 'x' }), keys), /missing or unreadable/, 'another algorithm is not accepted');
-A.throws(() => signing.sign(bytes, signing.generateKeyPair().privateKeyPem, keys), /not one the app trusts/, 'the build refuses to sign with a key no station would trust');
+A.throws(() => signing.sign(bytes, signing.generateKeyPair().privateKeyPem, keys), /not one the app trusts/, 'the build refuses to sign with a key no keep would trust');
 const rsa = crypto.generateKeyPairSync('rsa', { modulusLength: 2048 }).privateKey.export({ format: 'pem', type: 'pkcs8' });
 A.throws(() => signing.sign(bytes, rsa, keys), /must be Ed25519/, 'only Ed25519 keys sign');
 

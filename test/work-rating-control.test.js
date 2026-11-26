@@ -7,13 +7,13 @@ function node(){return {children:[],disabled:false,setAttribute(){},appendChild(
 (async()=>{
  const notices=[],host=node();let calls=0,settled=0;
  const context={document:{createElement:node},localStorage:{getItem:()=> '1'},name:'NOVA',WORKRATE_COACH_KEY:'rating-test',setTimeout:()=>0,
-   runMeta:()=>null,runWork:new Map(),StationUI:{notify:(message)=>notices.push(message)},
-   rateWork:async()=>++calls===1?{ok:false,error:'Station changed — reload the app before rating this work.'}:{ok:true,applied:true},verdictFollowupBeat:()=>{},recommendPass:()=>{}};
+   runMeta:()=>null,runWork:new Map(),KeepUI:{notify:(message)=>notices.push(message)},
+   rateWork:async()=>++calls===1?{ok:false,error:'Keep changed — reload the app before rating this work.'}:{ok:true,applied:true},verdictFollowupBeat:()=>{},recommendPass:()=>{}};
  vm.createContext(context);vm.runInContext(A.fnBody(source,'function workRateControl('),context);
  context.workRateControl(host,'agent','same-run',()=>settled++);
  const buttons=host.children.find(n=>n.className==='consent-btns').children;
  await buttons[0].onclick();
- A.eq(notices[0],'Station changed — reload the app before rating this work.','the real control displays the reason instead of replacing it with a generic toast');
+ A.eq(notices[0],'Keep changed — reload the app before rating this work.','the real control displays the reason instead of replacing it with a generic toast');
  A.ok(buttons.every(b=>!b.disabled),'failed ratings keep all three verdict buttons enabled for retry');
  A.eq(settled,0,'a rejection does not settle or collect the work');
  await buttons[0].onclick();

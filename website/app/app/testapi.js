@@ -8,7 +8,7 @@
    screenshot. This exposes the live substrate so scripts/audit (P2) can AUTO-ASSERT, over CDP:
      • Tier A/B/C floor behavior — bodies()/hero()/crew() give each body's tile, zone, glance, goal,
        moving flag + target tile, so "idle stays in its zone", "awareness is gaze-only (no body walks
-       toward another)", and "a summoned agent walks to ITS OWN workstation" become PASS/FAIL.
+       toward another)", and "a summoned agent walks to ITS OWN workkeep" become PASS/FAIL.
      • Truthful telemetry (the no-app-lies mandate) — a FROZEN U.bus event log + INDEPENDENT reducers
        (the same pure folds the app uses: FloorStats / Xp / CtxGauge) so every on-screen number can be
        checked to equal a reduction over the real agent.* events, not a free-floating counter.
@@ -97,9 +97,9 @@
   }
   function displayedHud() {
     const txt = (id) => { const el = document.getElementById(id); return el ? (el.textContent || '').trim() : null; };
-    const s = txt('gt-station');
+    const s = txt('gt-keep');
     return {
-      station: { text: s, value: parseNum(s) },     // STATION, e.g. "Lv 3"
+      keep: { text: s, value: parseNum(s) },     // KEEP, e.g. "Lv 3"
     };
   }
   const captureBaseline = () => { if (!baseline) baseline = displayedHud(); return baseline; };
@@ -125,9 +125,9 @@
     const known = Number.isFinite(level);
     const commander = { level: known ? level : null, source: known ? (stale ? 'saved' : 'current') : 'unavailable' };
     const expectedText = known ? 'Lv ' + level + (stale ? ' · saved' : '') : '—';
-    checks.push({ metric: 'stationLevel', displayed: displayed.station.value,
+    checks.push({ metric: 'keepLevel', displayed: displayed.keep.value,
       expected: commander.level, mode: 'eq', expectedText, source: commander.source,
-      ok: displayed.station.value === commander.level && displayed.station.text === expectedText });
+      ok: displayed.keep.value === commander.level && displayed.keep.text === expectedText });
     return { displayed, baseline: base, commander, reduced: { totals, floor, xp, ctx: ctx() }, checks, allOk: checks.every((c) => c.ok) };
   }
 

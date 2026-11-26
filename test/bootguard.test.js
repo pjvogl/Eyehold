@@ -15,7 +15,7 @@ const ROOT = path.join(__dirname, '..');
 const SRC = fs.readFileSync(path.join(ROOT, 'frontend', 'app', 'bootguard.js'), 'utf8');
 const INDEX = fs.readFileSync(path.join(ROOT, 'frontend', 'index.html'), 'utf8');
 
-const CRITICAL = ['U', 'Harness', 'Save', 'CloudSave', 'World', 'StationUI', 'Chat', 'Channels', 'Personas', 'Onboarding', 'Tutorial', 'App', 'Topbar'];
+const CRITICAL = ['U', 'Harness', 'Save', 'CloudSave', 'World', 'KeepUI', 'Chat', 'Channels', 'Personas', 'Onboarding', 'Tutorial', 'App', 'Topbar'];
 
 function fakeEl(tag) {
   const el = { tagName: tag.toUpperCase(), children: [], style: {}, attrs: {}, textContent: '', className: '', id: '' };
@@ -98,14 +98,14 @@ A.ok(!/bootguard\.js"[^>]*\bdefer\b/.test(INDEX), 'bootguard is NOT deferred —
   const b = t.banner();
   A.ok(b, 'a missing World global renders the fatal banner');
   const txt = b ? textOf(b) : '';
-  A.ok(txt.includes('STATION FAILED TO BOOT'), 'banner carries the fatal heading');
+  A.ok(txt.includes('KEEP FAILED TO BOOT'), 'banner carries the fatal heading');
   A.ok(txt.includes('World — app/world.js'), 'banner names the missing module and the file that defines it');
   A.ok(txt.includes('boot check:     FAILED'), 'the embedded report says FAILED');
   A.ok(b && b.attrs.role === 'alert', 'banner is an aria alert');
   const buttons = [];
   (function walk(el) { if (el.tagName === 'BUTTON') buttons.push(el); el.children.forEach(walk); })(b);
   A.eq(buttons.map(x => x.textContent), ['⧉ COPY DIAGNOSTICS', '⟳ RELOAD'], 'banner offers COPY DIAGNOSTICS + RELOAD');
-  A.ok(buttons.every(x => /\bbtn(-xl)?\b/.test(x.className)), 'both controls wear station button skins (no white HTML controls)');
+  A.ok(buttons.every(x => /\bbtn(-xl)?\b/.test(x.className)), 'both controls wear keep button skins (no white HTML controls)');
   buttons[1].onclick();
   A.eq(t.sandbox.__reloaded, 1, 'RELOAD reloads the page');
   t.ready();
@@ -126,7 +126,7 @@ A.ok(!/bootguard\.js"[^>]*\bdefer\b/.test(INDEX), 'bootguard is NOT deferred —
   const t = boot(allGlobals());
   t.fire('error', { target: Object.assign(fakeEl('script'), { src: 'http://127.0.0.1:8787/shared/specialties.js' }) });
   t.ready();
-  A.ok(t.banner(), 'a failed shared station dependency is still fatal');
+  A.ok(t.banner(), 'a failed shared keep dependency is still fatal');
   A.ok(textOf(t.banner()).includes('script did not load — shared/specialties.js'), 'the shared dependency is named');
 }
 
@@ -210,13 +210,13 @@ function retryable(t, opts) {
   A.ok(t.banner(), 'an app/ script failure is fatal at once');
 }
 
-/* ---- 5. hosting-injected scripts are not station modules and cannot take the app down ---- */
+/* ---- 5. hosting-injected scripts are not keep modules and cannot take the app down ---- */
 {
   const t = boot(allGlobals());
   t.fire('error', { target: Object.assign(fakeEl('script'), { src: 'http://127.0.0.1:9220/beacon.min.js/v31ed6d6f95cf4e85b04c19e7a9bdbcba1788362987495' }) });
   t.ready();
   A.eq(t.banner(), null, 'a blocked hosting analytics beacon does not render the fatal banner');
-  A.eq(t.guard.state().scriptFailures, 0, 'the hosting beacon is not counted as a station script failure');
+  A.eq(t.guard.state().scriptFailures, 0, 'the hosting beacon is not counted as a keep script failure');
   A.eq(t.guard.summaryLine(), 'none recorded since page load', 'the ignored hosting script does not poison diagnostics');
 }
 

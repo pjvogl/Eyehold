@@ -82,7 +82,7 @@ async function mockServer(kind, redirectTo) {
     const stdioRow = exported.body.sections.connectors.find(c => c.id === 'stdio-secret');
     A.ok(stdioRow.args.every(x => x === '<redacted>'), 'live export carries only positional argument markers');
     r = await fixture.json('POST', '/api/config/import', { envelope: { eyeholdExport: 1, sections: { connectors: [stdioRow] } } });
-    A.eq(r.status, 200, 'same-station stdio backup reimports');
+    A.eq(r.status, 200, 'same-keep stdio backup reimports');
     A.eq(r.body.secretsNeeded.some(x => x.id === 'stdio-secret'), false, 'matching local stdio secrets resolve without a false re-entry claim');
     const stateFile = require('node:path').join(fixture.workspace, 'connectors', 'state.json');
     let diskStdio = JSON.parse(require('node:fs').readFileSync(stateFile, 'utf8')).configs.find(c => c.id === 'stdio-secret');
@@ -130,7 +130,7 @@ async function mockServer(kind, redirectTo) {
     const fortyRow = fortyBackup.body.sections.connectors.find(c => c.id === 'stdio-forty');
     A.eq(fortyRow.args.length, 40, 'export preserves all 40 supported argument positions');
     r = await fixture.json('POST', '/api/config/import', { envelope: { eyeholdExport: 1, sections: { connectors: [fortyRow] } } });
-    A.eq(r.status, 200, '40-argument same-station backup imports');
+    A.eq(r.status, 200, '40-argument same-keep backup imports');
     const diskForty = JSON.parse(fs.readFileSync(stateFile, 'utf8')).configs.find(c => c.id === 'stdio-forty');
     A.eq(diskForty.args, forty, 'all 40 arguments round-trip without truncation');
 

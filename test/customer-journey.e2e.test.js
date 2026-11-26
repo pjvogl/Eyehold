@@ -98,7 +98,7 @@ test('customer journey: connect, select, tool, output, restart and repeat on all
     fs.mkdirSync(path.join(fixture.workspace, 'codex'), { recursive: true });
     fs.writeFileSync(path.join(fixture.workspace, 'codex', 'tokens.json'), JSON.stringify({ access_token: jwt, refresh_token: 'fixture', token_type: 'Bearer' }));
     await fixture.start();
-    const agents = providers.map(provider => ({ agentId: aid(provider), name: provider, system: 'Inspect the station then answer.', provider, model: modelFor(provider) }));
+    const agents = providers.map(provider => ({ agentId: aid(provider), name: provider, system: 'Inspect the keep then answer.', provider, model: modelFor(provider) }));
     assert.equal((await fixture.json('POST', '/api/roster', { agents, updatedAt: Date.now() })).status, 200);
     await fixture.json('POST', '/api/cron/arm', { enabled: false });
     const jobs = {};

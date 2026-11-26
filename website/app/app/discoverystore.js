@@ -1,6 +1,6 @@
 /* EYEHOLD — discoverystore.js : the browser's read of ENVIRONMENT DISCOVERY (sidecar/discovery.js's shelf).
 
-   The station's first organ that finds work the Commander never typed: the sidecar scans the BLESSED project
+   The keep's first organ that finds work the Commander never typed: the sidecar scans the BLESSED project
    roots on a slow tick and stages findings whose citations are the repo's own lines. This store is the thin
    wire the bay reads — same discipline as its siblings (recledger/prospectstore):
      · FAIL-OPEN EVERYWHERE: no route, a 500, a hung request → findings() answers [] and the bay simply has no

@@ -1,19 +1,19 @@
 /* frontend/app/pluginhost.js — PLUGIN WINDOWS (plugin extensions phase 1, 2026-09-29).
 
    An approved plugin's `screens` (plugin.json) become real Eyehold windows. Each one is registered through the
-   ordinary window registry (StationUI.registerWindow), so it opens, drags, docks, minimizes and rises in as a glass
-   sheet exactly like CONNECTORS or the TASK BOARD — the station's chrome, the plugin's content.
+   ordinary window registry (KeepUI.registerWindow), so it opens, drags, docks, minimizes and rises in as a glass
+   sheet exactly like CONNECTORS or the TASK BOARD — the keep's chrome, the plugin's content.
 
    The content is a SANDBOXED FRAME served by the sidecar's /plugin-ui/ route with an opaque origin: it cannot read
    this page, its token, or the API. What it may ask for, it asks HERE, over postMessage, and this host answers only
    for the plugin that owns that frame — the frame never gets to say which plugin it is (we match the message's
    source window against frames we created). Everything the plugin draws stays inside its window body; the title
    bar, the PLUGIN plate and every approval stay host-drawn, so a plugin can never pass its content off as the
-   station's own telemetry.
+   keep's own telemetry.
 
-   Theme: the host pushes the station's LIVE computed tokens into each frame (eyehold-kit.js applies them) when a
+   Theme: the host pushes the keep's LIVE computed tokens into each frame (eyehold-kit.js applies them) when a
    frame says hello and whenever <body>'s theme class or inline theme vars change — a custom hue repaints every
-   plugin window in the same frame as the station.
+   plugin window in the same frame as the keep.
 
    Exposes window.PluginHost = { refresh, open, placeTerminal, terminalOf, list, _test } */
 (function (root) {
@@ -31,7 +31,7 @@
   const toastLog = new Map();   // plugin id -> [times]
   const linkLog = new Map();    // plugin id -> [times] (ui.link)
   // The tokens a plugin page is kept in step with. The rgb triplets matter most: every kit recipe derives its
-  // translucent glass from them, exactly as the station's own glass does.
+  // translucent glass from them, exactly as the keep's own glass does.
   const THEME_VARS = ['--ph', '--ph-bright', '--ph-dim', '--ph-faint', '--ink', '--bg', '--panel', '--panel2', '--text',
     '--gold', '--ph-rgb', '--ph-bright-rgb', '--gold-rgb', '--ok', '--ok-rgb', '--bad', '--bad-rgb', '--warn',
     '--gd-edge', '--gd-light', '--gd-face', '--gd-hover', '--gd-shadow', '--t-fast', '--t-med', '--ease-soft'];
@@ -43,7 +43,7 @@
   let lastError = '';
 
   // DRAFT previews (phase 4): a crew-written plugin shown before it is installed. Same window, same sandbox, a DRAFT
-  // plate, a THROWAWAY in-memory store (a draft never writes to the station) and no backend (its code never runs).
+  // plate, a THROWAWAY in-memory store (a draft never writes to the keep) and no backend (its code never runs).
   const DRAFT_PREFIX = 'plugindraft.';
   // APPS (frontend/app/apps.js owns the APPS window): an app is a network-less page the crew writes, its data, and an
   // optional schedule. Same frame, bridge and kit as a plugin window; an APP plate; a host-drawn bar underneath
@@ -52,7 +52,7 @@
   const draftStores = new Map();   // draft id -> Map(key -> JSON text)
   const plainTitle = (s) => String(s == null ? '' : s).replace(/[&<>"'`\u0000-\u001f\u007f]/g, '').trim().slice(0, 40) || 'PLUGIN';
   const keyOf = (pluginId, screenId, draft) => (draft ? DRAFT_PREFIX : KEY_PREFIX) + pluginId + '.' + screenId;
-  const UI = () => (typeof StationUI !== 'undefined' ? StationUI : null);
+  const UI = () => (typeof KeepUI !== 'undefined' ? KeepUI : null);
   const zoom = () => { try { return (typeof U !== 'undefined' && U.uiZoom) ? U.uiZoom() : 1; } catch (_) { return 1; } };
 
   function themeVars() {
@@ -96,11 +96,11 @@
     recent.push(t); toastLog.set(entry.plugin.id, recent);
     const msg = entry.plugin.name + ': ' + String(text || '').slice(0, 280);
     const cls = kind === 'bad' ? 'bad' : (kind === 'warn' ? 'warn' : 'good');
-    // transient: shown, never written into the station's notification history (a plugin cannot push the
+    // transient: shown, never written into the keep's notification history (a plugin cannot push the
     // Commander's real approvals out of the bell)
     if (ui && ui.notify) ui.notify(msg, cls, 'general', { transient: true });
   }
-  // The station refused a call for this plugin (turned off, edited, removed): learn the new state so its windows
+  // The keep refused a call for this plugin (turned off, edited, removed): learn the new state so its windows
   // say so, instead of a page that keeps running old code under the PLUGIN plate.
   function refusedRefresh(status) { if (status === 409 || status === 410) refresh().catch(() => {}); }
 
@@ -126,7 +126,7 @@
       body: JSON.stringify({ id: entry.plugin.id, op, key: a && a.key, value: a && a.value })
     });
     const j = await r.json().catch(() => ({}));
-    if (!r.ok || !j.ok) { refusedRefresh(r.status); throw new Error((j && j.error) || ('the station refused (' + r.status + ')')); }
+    if (!r.ok || !j.ok) { refusedRefresh(r.status); throw new Error((j && j.error) || ('the keep refused (' + r.status + ')')); }
     return j.value;
   }
 
@@ -151,7 +151,7 @@
         body: JSON.stringify({ id: entry.plugin.id, fn: String((a && a.fn) || ''), args: a && a.args })
       });
       const j = await r.json().catch(() => ({}));
-      if (!r.ok || !j.ok) { refusedRefresh(r.status); throw new Error((j && j.error) || ('the station refused (' + r.status + ')')); }
+      if (!r.ok || !j.ok) { refusedRefresh(r.status); throw new Error((j && j.error) || ('the keep refused (' + r.status + ')')); }
       return j.value;
     },
     'ui.toast': (entry, a) => { toastFor(entry, a && a.text, a && a.kind); return null; },
@@ -172,7 +172,7 @@
     },
     'ui.close': (entry) => { const ui = UI(); if (ui && ui.closeTerm) ui.closeTerm(entry.key); return null; },
     'ui.link': (entry, a) => {
-      // a crew-written DRAFT preview may never carry anything out of the station (index.js draft rule), and an
+      // a crew-written DRAFT preview may never carry anything out of the keep (index.js draft rule), and an
       // https link it opens on load could carry whatever the agent embedded in it: drafts open no links (sweep 2026-10-01)
       if (entry.draft) throw new Error('a draft preview cannot open links — approve the plugin first');
       let u;
@@ -206,11 +206,11 @@
 
   // ---- the window builder -----------------------------------------------------------------------------------------
   /* A FRAME THAT LEAVES. Under site isolation (the desktop's WebView2, and Chrome by default) a sandboxed frame that
-     navigates ITSELF is not stopped by the station page's frame-src — measured 2026-09-30: an app page's
+     navigates ITSELF is not stopped by the keep page's frame-src — measured 2026-09-30: an app page's
      `location.href = 'https://…'` reached the site on the desktop. Every page we serve carries the kit, and the kit's
      first act is a 'hello' with the frame's nonce; a page that loads in the frame WITHOUT saying hello is not ours.
      It is thrown out and the plugin/app put back on its LATEST version (a stale page — the code changed while the
-     window was open — is the station's no-script 410 page, which also never says hello; a refresh first fixes that
+     window was open — is the keep's no-script 410 page, which also never says hello; a refresh first fixes that
      case). A second time within 15 s leaves the window stopped and says so, neutrally: the host cannot tell an
      escape from a page that will not load, so it accuses nothing.
      Honest limits: the one request that loaded the foreign page has already been made — what a frame can reach is
@@ -252,7 +252,7 @@
     const def = screens.get(key);
     const existing = frameFor(body);
     // IDEMPOTENT: the window manager re-runs builders on re-render; a live plugin must never be reloaded (and lose
-    // its state) because the station repainted. Same plugin code → keep the running frame.
+    // its state) because the keep repainted. Same plugin code → keep the running frame.
     if (existing && def && existing.dataset.digest === def.plugin.digest) return;
     if (existing) forget(existing);
     // An APP keeps its bar across a reload: the crew rewrites the page while the Commander is typing the next change.
@@ -292,7 +292,7 @@
       : (def.app ? (ApiTicket.appUrl ? ApiTicket.appUrl(def.plugin.id, def.plugin.digest, def.screen.entry) : '')
         : def.draft ? (ApiTicket.draftUrl ? ApiTicket.draftUrl(def.plugin.id, def.plugin.digest, def.screen.entry) : '')
         : (ApiTicket.pluginUrl ? ApiTicket.pluginUrl(def.plugin.id, def.plugin.digest, def.screen.entry) : ''));
-    if (!url) { body.innerHTML = '<div class="plugin-gone">The station could not open this window (no session).</div>'; return; }
+    if (!url) { body.innerHTML = '<div class="plugin-gone">The keep could not open this window (no session).</div>'; return; }
     const iframe = document.createElement('iframe');
     iframe.className = 'plugin-frame';
     iframe.setAttribute('sandbox', (def.draft || def.app) ? DRAFT_SANDBOX : SANDBOX);
@@ -351,7 +351,7 @@
     return true;
   }
 
-  /* preview({ id, digest, screen, name, screens }) — the station bridge verb 'plugin.preview' (the crew's
+  /* preview({ id, digest, screen, name, screens }) — the keep bridge verb 'plugin.preview' (the crew's
      plugin.preview tool). Registers every screen of the draft at THIS digest and opens (or reloads) the one asked
      for; a later preview of an edited draft re-renders the open window onto the new code. */
   function preview(a) {
@@ -360,7 +360,7 @@
     const list = Array.isArray(a && a.screens) ? a.screens : [];
     if (!/^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$/.test(id) || !/^[0-9a-f]{64}$/.test(digest) || !list.length) throw new Error('that draft has no window to preview');
     const ui = UI();
-    if (!ui || !ui.registerWindow || !ui.openTerm) throw new Error('the station windows are not ready');
+    if (!ui || !ui.registerWindow || !ui.openTerm) throw new Error('the keep windows are not ready');
     const plugin = { id, name: String((a && a.name) || id).slice(0, 60), version: 'draft', digest };
     for (const s of list) {
       if (!s || !s.id || !s.entry) continue;
@@ -393,19 +393,19 @@
     return true;
   }
 
-  /* A plugin with TOOLS needs a body in the station (object = capability): its PLUGIN TERMINAL. Installing places one
+  /* A plugin with TOOLS needs a body in the keep (object = capability): its PLUGIN TERMINAL. Installing places one
      in the lead's room (Andrew 2026-09-29) — a real prop through the world model's ordinary placement rules, saved
      like any REFIT edit, idempotent (an existing terminal for the plugin is reused, never duplicated). */
-  function station() { try { return (typeof App !== 'undefined' && App.station) ? App.station() : null; } catch (_) { return null; } }
+  function keep() { try { return (typeof App !== 'undefined' && App.keep) ? App.keep() : null; } catch (_) { return null; } }
   function terminalOf(pluginId) {
-    const st = station();
+    const st = keep();
     const doc = st && st.serialize ? st.serialize() : null;
     const p = doc && Array.isArray(doc.props) ? doc.props.find((x) => x && x.t === 'plugin_terminal' && x.pluginId === pluginId) : null;
     return p ? { id: p.id, x: p.x, y: p.y } : null;
   }
   function placeTerminal(pluginId) {
-    const st = station();
-    if (!st || typeof st.placePluginTerminal !== 'function') return { ok: false, error: 'NO_STATION', msg: 'the station floor is not loaded' };
+    const st = keep();
+    if (!st || typeof st.placePluginTerminal !== 'function') return { ok: false, error: 'NO_KEEP', msg: 'the keep floor is not loaded' };
     const r = st.placePluginTerminal(pluginId, 'agent');
     if (r && r.ok && !r.existing) { try { if (typeof App !== 'undefined' && App.persist) App.persist(); } catch (_) {} }
     return r;

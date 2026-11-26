@@ -1,4 +1,4 @@
-/* node test/managed-model-93.test.js — GitHub #93: a LINKED Eyehold Managed station read "GPT-5.5 — Not Available",
+/* node test/managed-model-93.test.js — GitHub #93: a LINKED Eyehold Managed keep read "GPT-5.5 — Not Available",
    "no model selected", EYEHOLD MANAGED greyed in the per-agent picker, and CHOOSE MODEL flashed shut. Three chained
    bugs, each locked here by executing the REAL frontend code:
      1. a bare 'gpt-5.5' (the default a managed setup saved, borrowed from the openrouter list) is mapped to the ONE
@@ -141,8 +141,8 @@ module.exports = (async () => {
     try {
       const rows = await t.dock.catalog({ force: true });
       const managed = rows.filter(m => m.provider === 'eyehold');
-      if (linked) A.ok(managed.some(m => m.id === 'openai/gpt-5.5'), 'a linked station offers EYEHOLD MANAGED rows in the per-agent picker even when the focused agent runs elsewhere');
-      else A.eq(managed.length, 0, 'an unlinked station shows no EYEHOLD MANAGED rows (providerEnabled gates it)');
+      if (linked) A.ok(managed.some(m => m.id === 'openai/gpt-5.5'), 'a linked keep offers EYEHOLD MANAGED rows in the per-agent picker even when the focused agent runs elsewhere');
+      else A.eq(managed.length, 0, 'an unlinked keep shows no EYEHOLD MANAGED rows (providerEnabled gates it)');
     } finally { t.restore(); }
   }
 
@@ -177,7 +177,7 @@ module.exports = (async () => {
       const H = vm.runInNewContext(src, ctx);
       await H.init();
       A.ok(fetched.some(u => String(u).indexOf('/api/credits') === 0), label + ': boot probes /api/credits');
-      A.eq(H.configured('eyehold'), true, label + ': a linked station stays configured for EYEHOLD after a desktop boot');
+      A.eq(H.configured('eyehold'), true, label + ': a linked keep stays configured for EYEHOLD after a desktop boot');
       A.eq(H.configured('anthropic'), keychain, label + ': the keychain answer still lands for key providers');
     }
   }

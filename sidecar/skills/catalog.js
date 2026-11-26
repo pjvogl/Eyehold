@@ -2,7 +2,7 @@
 
    Distinct from sidecar/skillstore.js (the agent's OWN runtime-saved procedures). These ship WITH StarNet as
    curated markdown recipes (ported pure-prompt skills). Each declares `requires` = the capability OBJECTS it
-   needs (cabinet / dish / workbench / studio / ...) so a recipe is AVAILABLE only to an agent whose workstation
+   needs (cabinet / dish / workbench / studio / ...) so a recipe is AVAILABLE only to an agent whose workkeep
    actually has those objects placed -- the object=capability moat extended from raw tools to know-how. Enabled
    recipes an agent can support are indexed in THAT run's system prompt with the full body one skill.view call
    away (composeIndex; the bodies stay inline via compose() on a run without skill.view), so a skill is REAL
@@ -204,7 +204,7 @@
 
   function asSet(v) { return v instanceof Set ? v : new Set(v || []); }
 
-  // availability = the agent's workstation has EVERY object this recipe needs (object = capability). [] => always.
+  // availability = the agent's workkeep has EVERY object this recipe needs (object = capability). [] => always.
   function isAvailable(skill, placedTypes) {
     const have = asSet(placedTypes);
     return (skill.requires || []).every(t => have.has(t));
@@ -224,7 +224,7 @@
     return isEnabled(skill, overrides);
   }
 
-  // catalog for the UI/API: each skill plus its enabled/available flags for a given workstation.
+  // catalog for the UI/API: each skill plus its enabled/available flags for a given workkeep.
   function catalog(skills, opts) {
     opts = opts || {};
     const placed = asSet(opts.placedTypes);
@@ -272,7 +272,7 @@
     }
     if (!parts.length) return '';
     const head = '\n\n## INSTALLED SKILLS\n'
-      + 'Your Commander enabled these ready-made skill recipes and your workstation supports them. '
+      + 'Your Commander enabled these ready-made skill recipes and your workkeep supports them. '
       + 'When a task matches one, FOLLOW its recipe instead of improvising.\n\n';
     const tail = omitted ? ('\n\n(' + omitted + ' more enabled skill' + (omitted > 1 ? 's were' : ' was')
       + ' omitted here to keep the prompt lean.)') : '';
@@ -321,7 +321,7 @@
       lines.push(line); used += line.length;
     }
     const head = '\n\n## INSTALLED SKILLS\n'
-      + 'Your Commander enabled these ready-made skill recipes and your workstation supports them. '
+      + 'Your Commander enabled these ready-made skill recipes and your workkeep supports them. '
       + 'When a task matches one, FOLLOW its recipe instead of improvising.\n'
       + 'This is an INDEX, not the recipes. Before following one, load its full text with skill.view using the name in '
       + 'brackets (e.g. skill.view {"name": "' + viewName(offered[0]) + '"}); never work from the one-line summary alone.\n\n';

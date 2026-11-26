@@ -134,7 +134,7 @@ const text = v => JSON.stringify(v);
   // ---- 1. THE AUDIT PROBE: a run ended 'error' at the tool boundary; two runs later the call is mid-history ----
   {
     const history = [
-      { role: 'system', content: 'You are a station agent.' },
+      { role: 'system', content: 'You are a keep agent.' },
       { role: 'user', content: 'task one: read the config' },
       { role: 'assistant', content: '', tool_calls: [call('call_X', 'fs_read', { path: 'config.json' })] },
       // (the run ended 'error' here — no result was ever persisted)

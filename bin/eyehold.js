@@ -1,14 +1,14 @@
 #!/usr/bin/env node
 /* bin/eyehold.js — Eyehold from a terminal: `eyehold -p "…"` runs one real agent task headlessly.
 
-   The desktop app is the station; this is the same station driven without the UI. Every decision lives in the
+   The desktop app is the keep; this is the same keep driven without the UI. Every decision lives in the
    pure core (./lib/cli-core.js); this file owns the ambient I/O only: argv/env, loopback sockets, the OS port
    lookup for the desktop's sidecar, spawning a sidecar when none is running, stdout/stderr, exit codes.
 
-   ── HOW A RUN FINDS ITS STATION ─────────────────────────────────────────────────────────────────────────────
-   1. --port / EYEHOLD_PORT → that station, or an error (never a spawn beside a station the operator named).
+   ── HOW A RUN FINDS ITS KEEP ─────────────────────────────────────────────────────────────────────────────
+   1. --port / EYEHOLD_PORT → that keep, or an error (never a spawn beside a keep the operator named).
    2. the default port (8787, `npm start`).
-   3. the DESKTOP app's station: its workspace owner file names the sidecar pid; the OS says which loopback
+   3. the DESKTOP app's keep: its workspace owner file names the sidecar pid; the OS says which loopback
       port that pid listens on (netstat/lsof; the shell's startup.log as a fallback). The per-launch API token
       is read from the served page exactly the way the browser gets it.
    4. nothing reachable → boot a sidecar of our own against the default workspace (bootstrapping a full-power
@@ -17,7 +17,7 @@
 
    ── WHAT THE TERMINAL IS ALLOWED TO SAY ─────────────────────────────────────────────────────────────────────
    stdout carries the agent's real streamed text (or, with --json, one receipt object); stderr carries tool
-   calls, consent decisions and notes. The exit code is the station's own agent.run.end reason; a stream that
+   calls, consent decisions and notes. The exit code is the keep's own agent.run.end reason; a stream that
    dies without one exits 1. Nothing here invents a "done". */
 'use strict';
 
@@ -33,7 +33,7 @@ const core = require('./lib/cli-core.js');
 
 const REPO = path.resolve(__dirname, '..');
 const SIDECAR = path.join(REPO, 'sidecar', 'index.js');
-const DESKTOP_IDENTIFIER = 'ai.skynet.harness';   // Tauri identifier — app_data_dir()/workspaces is the desktop station
+const DESKTOP_IDENTIFIER = 'ai.skynet.harness';   // Tauri identifier — app_data_dir()/workspaces is the desktop keep
 const CANCEL_GRACE_MS = 5000;
 
 function log() { try { process.stderr.write(Array.prototype.join.call(arguments, ' ') + '\n'); } catch (_) {} }
@@ -47,7 +47,7 @@ function desktopAppDataDir(env, platform) {
   return path.join(e.XDG_DATA_HOME || path.join(home, '.local', 'share'), DESKTOP_IDENTIFIER);
 }
 function desktopWorkspaces(env, platform) { return path.join(desktopAppDataDir(env, platform), 'workspaces'); }
-// the bare sidecar's own default (sidecar/index.js defaultWorkspaces) — an `npm start` station lives here
+// the bare sidecar's own default (sidecar/index.js defaultWorkspaces) — an `npm start` keep lives here
 function bareWorkspaces(env, platform) {
   const e = env || process.env, p = platform || process.platform;
   const home = os.homedir() || '.';
@@ -59,15 +59,15 @@ function bareWorkspaces(env, platform) {
   return neu;
 }
 function exists(p) { try { return fs.existsSync(p); } catch (_) { return false; } }
-function hasStation(ws) { return exists(path.join(ws, 'agent.save.json')) || exists(path.join(ws, 'agent.roster.json')); }
+function hasKeep(ws) { return exists(path.join(ws, 'agent.save.json')) || exists(path.join(ws, 'agent.roster.json')); }
 
-// The workspace a SPAWNED station runs against: the operator's pick, else the desktop station if one exists,
-// else a bare `npm start` station if one exists, else the desktop location (so a later desktop install finds it).
+// The workspace a SPAWNED keep runs against: the operator's pick, else the desktop keep if one exists,
+// else a bare `npm start` keep if one exists, else the desktop location (so a later desktop install finds it).
 function defaultWorkspace(opts) {
   if (opts.workspace) return path.resolve(opts.workspace);
   const d = desktopWorkspaces(), b = bareWorkspaces();
-  if (hasStation(d)) return d;
-  if (hasStation(b)) return b;
+  if (hasKeep(d)) return d;
+  if (hasKeep(b)) return b;
   return d;
 }
 
@@ -88,7 +88,7 @@ function listeningPortOf(pid) {
   } catch (_) { return 0; }
 }
 /* What the desktop app's workspace proves: { workspace, ownerPid, ownerAlive, port }. The owner file is the
-   sidecar's own fail-closed claim (sidecar/workspace-owner.js); a live pid + its listening port is a station
+   sidecar's own fail-closed claim (sidecar/workspace-owner.js); a live pid + its listening port is a keep
    we can attach to. Read-only — nothing here writes into the desktop's workspace. */
 function discoverDesktop(ws) {
   const out = { workspace: ws, ownerPid: 0, ownerAlive: false, port: 0, source: '' };
@@ -189,12 +189,12 @@ async function spawnSidecar(ws, env, onLine) {
   client.setToken(token);
   const deadline = Date.now() + 45000;
   while (Date.now() < deadline) {
-    if (exited) throw new Error('the station exited during boot (code ' + exited.code + ')\n' + tail.join('\n'));
+    if (exited) throw new Error('the keep exited during boot (code ' + exited.code + ')\n' + tail.join('\n'));
     if (await client.health(1000)) return { child, client, port, tail: () => tail.slice() };
     await sleep(200);
   }
   try { child.kill(); } catch (_) {}
-  throw new Error('the station did not become healthy within 45s\n' + tail.join('\n'));
+  throw new Error('the keep did not become healthy within 45s\n' + tail.join('\n'));
 }
 /* The sidecar's gracefulShutdown has a HARD 3s deadline (sidecar/index.js). Every wait here outlasts it by 0.5s, so
    the graceful path is never cut off by our own escalation. */
@@ -217,7 +217,7 @@ async function stopChild(child, ws, timing) {
     if (alive()) { try { child.kill('SIGKILL'); } catch (_) {}; await Promise.race([gone, sleep(t.killMs)]); }
   }
   /* Windows has no SIGTERM: the sidecar is terminated outright and never runs its exit hook, so ITS owner claim
-     stays behind. The station reclaims a dead-pid claim on the next boot anyway; we simply do that bookkeeping
+     stays behind. The keep reclaims a dead-pid claim on the next boot anyway; we simply do that bookkeeping
      now for the ONE process we provably owned — the claim's pid must be our child's, or it is left alone. */
   if (ws) {
     const lock = path.join(ws, '.eyehold-workspace-owner.json');
@@ -232,9 +232,9 @@ async function stopChild(child, ws, timing) {
 function loadRegistry() { try { return require(path.join(REPO, 'sidecar', 'providers', 'registry.js')); } catch (_) { return null; } }
 
 /* Write the roster + save the desktop's onboarding would have produced (core.bootstrapDocs). Refuses to touch a
-   workspace that already holds a station. Returns { wrote, provider, model, reason }. */
+   workspace that already holds a keep. Returns { wrote, provider, model, reason }. */
 function bootstrapWorkspace(ws, opts, env) {
-  if (hasStation(ws)) return { wrote: false, reason: 'workspace already holds a station' };
+  if (hasKeep(ws)) return { wrote: false, reason: 'workspace already holds a keep' };
   const reg = loadRegistry();
   const profiles = reg ? reg.listProviderProfiles() : [];
   const inferred = core.inferProvider({
@@ -278,7 +278,7 @@ async function answerConsent(client, runId, p, opts) {
   }
   const r = await client.request('POST', '/api/consent', { runId, promptId: p.promptId, decision });
   const okd = r.ok && r.json && r.json.ok;
-  log((decision === 'deny' ? '✗ denied ' : '✓ allowed ') + label + (okd ? '' : ' (the station did not acknowledge the decision)') + (decision === 'deny' && !opts.yes && !process.stdin.isTTY ? '  [non-interactive: pass --yes to approve]' : ''));
+  log((decision === 'deny' ? '✗ denied ' : '✓ allowed ') + label + (okd ? '' : ' (the keep did not acknowledge the decision)') + (decision === 'deny' && !opts.yes && !process.stdin.isTTY ? '  [non-interactive: pass --yes to approve]' : ''));
   return decision;
 }
 
@@ -297,7 +297,7 @@ function streamRun(client, body, handlers) {
         if (res.statusCode !== 200) {
           const chunks = [];
           res.on('data', d => chunks.push(d));
-          res.on('end', () => finish(reject, new Error('the station refused the run (HTTP ' + res.statusCode + '): ' + Buffer.concat(chunks).toString('utf8').slice(0, 300))));
+          res.on('end', () => finish(reject, new Error('the keep refused the run (HTTP ' + res.statusCode + '): ' + Buffer.concat(chunks).toString('utf8').slice(0, 300))));
           return;
         }
         res.setEncoding('utf8');
@@ -321,12 +321,12 @@ function streamRun(client, body, handlers) {
   });
 }
 
-async function runCommand(opts, station) {
-  const { client, mode } = station;
+async function runCommand(opts, keep) {
+  const { client, mode } = keep;
   const rt = await client.request('GET', '/api/runtime/agent');
-  if (!rt.ok || rt.status !== 200 || !rt.json) throw stationError('could not read the station roster (' + (rt.error || 'HTTP ' + rt.status) + ')');
+  if (!rt.ok || rt.status !== 200 || !rt.json) throw keepError('could not read the keep roster (' + (rt.error || 'HTTP ' + rt.status) + ')');
   const sel = core.pickAgent(rt.json, { agent: opts.agent, model: opts.model, provider: opts.provider });
-  if (!sel.ok) throw stationError(sel.error);
+  if (!sel.ok) throw keepError(sel.error);
   const cwd = opts.cwd ? path.resolve(opts.cwd) : '';
   const body = core.buildRunBody(sel, opts.prompt, { cwd });
   const tracker = core.makeRunTracker();
@@ -374,7 +374,7 @@ async function runCommand(opts, station) {
   if (opts.json) {
     process.stdout.write(JSON.stringify(core.jsonResult(summary, {
       agentId: sel.agentId, agentName: sel.name, model: sel.model, provider: sel.provider,
-      baseUrl: client.base, mode, workspace: station.workspace || null, version: String(rt.json.version || ''),
+      baseUrl: client.base, mode, workspace: keep.workspace || null, version: String(rt.json.version || ''),
       startedAt, endedAt
     })) + '\n');
   } else {
@@ -388,8 +388,8 @@ async function runCommand(opts, station) {
 }
 
 // ---- status / doctor ---------------------------------------------------------------------------
-async function statusCommand(opts, station) {
-  const { client, mode } = station;
+async function statusCommand(opts, keep) {
+  const { client, mode } = keep;
   const [ver, rt, prov, dir] = await Promise.all([
     client.request('GET', '/api/version'), client.request('GET', '/api/runtime/agent'),
     client.request('GET', '/api/providers'), client.request('GET', '/api/workspace/dir?agent=' + encodeURIComponent(core.DEFAULT_AGENT_ID))
@@ -397,8 +397,8 @@ async function statusCommand(opts, station) {
   const v = (ver.ok && ver.json) || {};
   const r = (rt.ok && rt.json) || {};
   const configured = (prov.ok && prov.json && Array.isArray(prov.json.providers)) ? prov.json.providers.filter(p => p && p.configured).map(p => p.id) : [];
-  const wsFromStation = (dir.ok && dir.status === 200 && dir.json && dir.json.dir) ? path.dirname(String(dir.json.dir)) : '';
-  const workspace = station.workspace || wsFromStation || '';
+  const wsFromKeep = (dir.ok && dir.status === 200 && dir.json && dir.json.dir) ? path.dirname(String(dir.json.dir)) : '';
+  const workspace = keep.workspace || wsFromKeep || '';
   const out = {
     reachable: true, baseUrl: client.base, mode,
     version: { harness: v.harness || '', app: v.app || '', node: v.node || '' },
@@ -409,26 +409,26 @@ async function statusCommand(opts, station) {
   };
   if (opts.json) { process.stdout.write(JSON.stringify(out) + '\n'); return 0; }
   process.stdout.write([
-    'station    ' + out.baseUrl + ' (' + mode + ')',
+    'keep    ' + out.baseUrl + ' (' + mode + ')',
     'version    harness ' + (out.version.harness || '?') + (out.version.app ? ' · app ' + out.version.app : '') + ' · node ' + out.version.node,
-    'workspace  ' + (out.workspace || 'not disclosed by the station'),
+    'workspace  ' + (out.workspace || 'not disclosed by the keep'),
     'providers  ' + (out.providers.length ? out.providers.join(', ') : 'none configured') + (out.keychain ? ' (keys in the OS keychain)' : ''),
     'agents     ' + (out.agents.length ? out.agents.map(a => a.agentId + '=' + a.name + ' [' + (a.provider || '?') + '/' + (a.model || 'no model') + ']').join('\n           ') : 'none')
   ].join('\n') + '\n');
   return 0;
 }
-async function doctorCommand(opts, station) {
-  const r = await station.client.request('GET', '/api/diagnostics');
-  if (!r.ok || r.status !== 200 || !r.json) throw stationError('diagnostics unavailable (' + (r.error || 'HTTP ' + r.status) + ')');
+async function doctorCommand(opts, keep) {
+  const r = await keep.client.request('GET', '/api/diagnostics');
+  if (!r.ok || r.status !== 200 || !r.json) throw keepError('diagnostics unavailable (' + (r.error || 'HTTP ' + r.status) + ')');
   if (opts.json) process.stdout.write(JSON.stringify(r.json.report || r.json) + '\n');
   else process.stdout.write(String(r.json.text || JSON.stringify(r.json, null, 2)) + '\n');
   return 0;
 }
 
-// ---- station resolution ------------------------------------------------------------------------
-function stationError(msg) { const e = new Error(msg); e.exitCode = core.EXIT.STATION; return e; }
+// ---- keep resolution ------------------------------------------------------------------------
+function keepError(msg) { const e = new Error(msg); e.exitCode = core.EXIT.KEEP; return e; }
 
-async function resolveStation(opts, env) {
+async function resolveKeep(opts, env) {
   const host = opts.host || '127.0.0.1';
   const candidates = [];
   if (opts.port) candidates.push({ source: 'flag', port: opts.port });
@@ -443,24 +443,24 @@ async function resolveStation(opts, env) {
       c.client = client;
     }
   }
-  const choice = core.chooseStation({ candidates, desktop, workspaceOverride: !!opts.workspace, noSpawn: opts.noSpawn, forceSpawn: opts.spawn });
-  if (choice.mode === 'refuse') throw stationError(choice.reason);
+  const choice = core.chooseKeep({ candidates, desktop, workspaceOverride: !!opts.workspace, noSpawn: opts.noSpawn, forceSpawn: opts.spawn });
+  if (choice.mode === 'refuse') throw keepError(choice.reason);
   if (choice.mode === 'attach') {
     const c = candidates.find(x => x.port === choice.port);
     const client = c.client;
     if (opts.token) client.setToken(opts.token);
     else await client.discoverToken();
-    if (!client.token()) throw stationError('a station answers at ' + client.base + ' but its API token could not be read — pass --token');
+    if (!client.token()) throw keepError('a keep answers at ' + client.base + ' but its API token could not be read — pass --token');
     const probe = await client.request('GET', '/api/version', null, { timeoutMs: 5000 });
-    if (probe.ok && (probe.status === 401 || probe.status === 403)) throw stationError('the station at ' + client.base + ' rejected the API token');
+    if (probe.ok && (probe.status === 401 || probe.status === 403)) throw keepError('the keep at ' + client.base + ' rejected the API token');
     return { mode: 'attached', client, workspace: (choice.source === 'desktop' && desktop.ownerAlive) ? desktopWs : '', child: null };
   }
   // spawn
   const ws = defaultWorkspace(opts);
-  if (path.resolve(ws) === path.resolve(desktopWs) && desktop.ownerAlive) throw stationError('the desktop app owns ' + ws + ' (pid ' + desktop.ownerPid + '); refusing to boot a second station on it');
+  if (path.resolve(ws) === path.resolve(desktopWs) && desktop.ownerAlive) throw keepError('the desktop app owns ' + ws + ' (pid ' + desktop.ownerPid + '); refusing to boot a second keep on it');
   const boot = bootstrapWorkspace(ws, opts, env);
   if (boot.wrote) log('· bootstrapped ' + ws + ' — agent ' + opts.name + ' (full power)' + (boot.provider ? ' · provider ' + boot.provider + ' from ' + boot.providerSource : ' · no provider credential found in the environment') + (boot.model ? ' · model ' + boot.model : ' · no model (pass --model or set EYEHOLD_DEFAULT_MODEL)'));
-  log('· booting a station on ' + ws);
+  log('· booting a keep on ' + ws);
   const sp = await spawnSidecar(ws, env, null);
   return { mode: 'spawned', client: sp.client, workspace: ws, child: sp.child };
 }
@@ -488,21 +488,21 @@ async function main() {
     return 0;
   }
 
-  let station = null;
+  let keep = null;
   try {
-    if (opts.cmd === 'status' || opts.cmd === 'doctor') opts.noSpawn = true;   // a question never boots a station
-    station = await resolveStation(opts, process.env);
-    if (opts.cmd === 'status') return await statusCommand(opts, station);
-    if (opts.cmd === 'doctor') return await doctorCommand(opts, station);
-    return await runCommand(opts, station);
+    if (opts.cmd === 'status' || opts.cmd === 'doctor') opts.noSpawn = true;   // a question never boots a keep
+    keep = await resolveKeep(opts, process.env);
+    if (opts.cmd === 'status') return await statusCommand(opts, keep);
+    if (opts.cmd === 'doctor') return await doctorCommand(opts, keep);
+    return await runCommand(opts, keep);
   } catch (e) {
     const code = (e && e.exitCode) || core.EXIT.RUN_FAILED;
     if (opts.json) process.stdout.write(JSON.stringify({ ok: false, reason: 'error', proven: false, exitCode: code, error: String((e && e.message) || e) }) + '\n');
     log('eyehold: ' + String((e && e.message) || e));
-    if (opts.cmd === 'status' && code === core.EXIT.STATION && !opts.json) log('(no station reachable — run `eyehold -p "…"` to boot one, or start the desktop app)');
+    if (opts.cmd === 'status' && code === core.EXIT.KEEP && !opts.json) log('(no keep reachable — run `eyehold -p "…"` to boot one, or start the desktop app)');
     return code;
   } finally {
-    if (station && station.child) await stopChild(station.child, station.workspace);
+    if (keep && keep.child) await stopChild(keep.child, keep.workspace);
   }
 }
 
@@ -511,4 +511,4 @@ if (require.main === module) {
     e => { log('eyehold: ' + ((e && e.stack) || e)); process.exit(core.EXIT.RUN_FAILED); });
 }
 
-module.exports = { desktopWorkspaces, bareWorkspaces, defaultWorkspace, discoverDesktop, makeClient, bootstrapWorkspace, resolveStation, stopChild, STOP_GRACE_MS, SIDECAR_SHUTDOWN_DEADLINE_MS, _core: core };
+module.exports = { desktopWorkspaces, bareWorkspaces, defaultWorkspace, discoverDesktop, makeClient, bootstrapWorkspace, resolveKeep, stopChild, STOP_GRACE_MS, SIDECAR_SHUTDOWN_DEADLINE_MS, _core: core };

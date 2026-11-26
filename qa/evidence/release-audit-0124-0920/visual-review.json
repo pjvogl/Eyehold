@@ -4,7 +4,7 @@
   "captureFix": "wait for healthy SSE and two paints before freezing world",
   "originalFlagged": 15,
   "threshold": 1.5,
-  "review": "All 15 original flagged frames visually inspected. Intended responsive COMMS width narrows the station and panel viewport. No observed panel overflow or exceptions. Healthy-frame floor, agent dossier, automation and settings re-inspected after capture correction. Exact captured signatures adopted; no new unreviewed capture used for blessing.",
+  "review": "All 15 original flagged frames visually inspected. Intended responsive COMMS width narrows the keep and panel viewport. No observed panel overflow or exceptions. Healthy-frame floor, agent dossier, automation and settings re-inspected after capture correction. Exact captured signatures adopted; no new unreviewed capture used for blessing.",
   "frames": [
     {
       "name": "ingame",
@@ -43,7 +43,7 @@
       "sha256": "07d6926b76237159a962dd190153648475a1a671b007eb46551c6b59e343b764"
     },
     {
-      "name": "build-station",
+      "name": "build-keep",
       "sha256": "8f104ce550872857584ae09ade3872c03a848c396f73c0e486c1896830c0f872"
     },
     {

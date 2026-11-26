@@ -25,7 +25,7 @@ Do not close a customer report based only on a related merged fix or a passing m
 | `c2a6c3c8` missing ONCE routine | Affected job ID and sanitized create/list/restart diagnostics |
 | `e5d4b743` Google sign-in | Eyehold-owned Google Desktop OAuth registration, approval, real consent and installed acceptance |
 | `eaaa3ec8` Mac paid onboarding | Exact signed Apple Silicon installer, link/unlink/relink and keychain/restart proof |
-| `72af29f4` funded station zero warning | Affected account's authoritative balance compared with banner after refresh/restart |
+| `72af29f4` funded keep zero warning | Affected account's authoritative balance compared with banner after refresh/restart |
 | `fd9c4b4d` managed Sonnet HTTP 400 | Fresh sanitized correlation and deployed-route trace for the affected installed request |
 | `8a553481` Mac microphone | Signed Mac allow/deny/reset/restart and real Speak/Hands-Free capture |
 | `9256a771` blank viewport | Affected installer/GPU/display reproduction and 20-minute diagnostic capture |
@@ -35,11 +35,11 @@ also required by `qa:ready`. Local checks are recorded below as they finish. A d
 that skips because another Guardian is active does not count as a green cycle.
 
 The integration checkout's machine-local QA ledger separately retains three older P1
-findings: `f373c745` (ABILITIES layout settlement timeout), `8f99d28c` (journey station-level
-read was null) and `c30a3a14` (audit station-level read was null). Current repeated capture
+findings: `f373c745` (ABILITIES layout settlement timeout), `8f99d28c` (journey keep-level
+read was null) and `c30a3a14` (audit keep-level read was null). Current repeated capture
 and journey checks pass; this alone does not prove the original intermittent causes were
 repaired. They remained open at that checkpoint; continued preparation below resolves
-the two station-level detector findings. The fresh release worktree has a separate empty finding
+the two keep-level detector findings. The fresh release worktree has a separate empty finding
 directory, so its zero ledger count must not be presented as the integration ledger's count.
 
 The live repository-secret inventory on 2026-09-06 also confirms that
@@ -69,7 +69,7 @@ host, so a deployed relay trace could not be obtained.
 - Public updater host: all configured platform URLs reachable and pinned to 0.10.13.
 - Fast gate: `run-fast-tests: OK — 726 step(s) green`.
 - Visual comparison: ten frames differed from the pre-merge baseline. Inspected all ten
-  retained PNGs against the merged changes (station, recruitment, recipes, journal,
+  retained PNGs against the merged changes (keep, recruitment, recipes, journal,
   commander, automation, build intro, manual, updates, notifications); updated only their
   signatures. A second full capture passed all 16 frames at the unchanged 1.5 threshold.
 - Short source stability: PASS over 6.01 minutes, 18 successful runs / zero failures,
@@ -107,9 +107,9 @@ behavior, real-account recovery, or the absence of every possible defect.
 
 ## Proposed user-facing notes (not yet published)
 
-Eyehold 0.11.0 brings a refreshed station and a clearer way to work with your crew.
+Eyehold 0.11.0 brings a refreshed keep and a clearer way to work with your crew.
 
-- Refined station materials, room lighting, wall and doorway depth, and space backdrops.
+- Refined keep materials, room lighting, wall and doorway depth, and space backdrops.
 - Updated dock menus, recruitment gallery, quest journal, and compact connected-app widgets.
 - Multi-agent conversations, a more responsive Add agents picker, and clearer task-context questions.
 - Session suggestions grounded in your work and goals, with more relevant starter prompts.
@@ -164,7 +164,7 @@ The initial full gate correctly rejected the changed committed HUD fingerprint; 
 reviewed release-surface record was refreshed at `979099385`. No claim of
 release readiness or customer recovery follows from this QA repair.
 
-The two station-level QA findings have a reproduced detector cause and a source repair.
+The two keep-level QA findings have a reproduced detector cause and a source repair.
 The ABILITIES layout timeout remains unresolved: successful reruns do not establish its
 historical cause. All eight customer P1 records and the Google activation requirement
 remain open pending their specific acceptance evidence.

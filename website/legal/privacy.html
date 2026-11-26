@@ -15,7 +15,7 @@
 <header class="topbar" id="topbar">
   <a class="brand" href="../index.html" aria-label="Eyehold home"><img src="../assets/eyehold-logo-small.png" alt="Eyehold" width="355" height="60"></a>
   <nav class="topnav" aria-label="Site">
-    <a href="../index.html#station">Product</a>
+    <a href="../index.html#keep">Product</a>
     <a href="../docs/index.html">Docs</a>
     <a href="../market.html">Skills</a>
     <a href="../pricing.html" data-pricing-link>Pricing</a>
@@ -49,7 +49,7 @@ not aspirations.</p>
   none are present. The desktop app does make the automatic update-manifest request described
   below; that request carries no user data or app identifier. This stays true whether or not you
   buy credits — buying credits adds a billing account, not tracking.</li>
-<li><strong>Your saved station data lives on your machine</strong>, under your OS user's app-data directory.
+<li><strong>Your saved keep data lives on your machine</strong>, under your OS user's app-data directory.
   Content used in agent work can also be sent to your selected model provider and connected services,
   as described below. Local storage paths are —
   Windows: <code>%APPDATA%\ai.skynet.harness\workspaces\</code>; macOS:
@@ -162,7 +162,7 @@ a model provider. Delete those separately using the relevant app or provider con
 <code>https://starnetos.com/.well-known/starnet-skills.json</code>, and when you install a skill it downloads that
 skill's files from <code>https://eyehold.com/skills/</code>. These are plain <code>GET</code>s for static files:
 <strong>no user data, no identifier and no telemetry are sent.</strong> While at least one skill you installed from the
-market is on this station, the app also re-reads the small list of skills the market has pulled
+market is on this keep, the app also re-reads the small list of skills the market has pulled
 (<code>https://starnetos.com/.well-known/starnet-skills-revoked.json</code>) shortly after it starts and every few minutes,
 so a skill found to be unsafe is switched off; with no market skills installed, nothing is fetched in the
 background. Every catalog and pulled list is checked against Eyehold's signature before it is used.</p>
@@ -247,7 +247,7 @@ always under the service name <code>ai.skynet.harness</code>.</p>
 <td><strong>Plaintext</strong> JSON on disk</td>
 </tr>
 <tr>
-<td>Station state (widgets, sub-agents, routing, quests, XP)</td>
+<td>Keep state (widgets, sub-agents, routing, quests, XP)</td>
 <td>various <code>*.json</code></td>
 <td><strong>Plaintext</strong> JSON on disk</td>
 </tr>
@@ -293,7 +293,7 @@ applies to you, and the app behaves exactly as described above.</p>
 become true:</p>
 <ul>
 <li><strong>What we hold.</strong> Your email address, your credit balance and the ledger of grants and charges
-  behind it, an identifier for each station you link, and the customer/subscription identifiers our
+  behind it, an identifier for each keep you link, and the customer/subscription identifiers our
   payment processor gives us. That's the list.</li>
 <li><strong>Card details never reach us.</strong> Checkout runs on <strong>Stripe</strong>, in your browser. Eyehold never
   sees, receives, or stores a card number — the app has no payment form at all.</li>
@@ -337,7 +337,7 @@ seeded demo save; anything you do in it stays in your browser's local storage an
 </div>
 
 <footer class="footer">
-  <div class="footer-line">EYEHOLD &middot; a living station of AI agents, doing real work in the dark</div>
+  <div class="footer-line">EYEHOLD &middot; a living keep of AI agents, doing real work in the dark</div>
   <div class="footer-links">
     <a href="../index.html">HOME</a>
     <a href="https://github.com/pjvogl/Eyehold" target="_blank" rel="noopener">GITHUB</a>

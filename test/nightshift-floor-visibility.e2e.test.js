@@ -1,9 +1,9 @@
 /* node test/nightshift-floor-visibility.e2e.test.js — real sidecar proof that a SELF-INITIATED night-shift
-   beat is VISIBLE on the station floor while it runs (2026-07-18 fix).
+   beat is VISIBLE on the keep floor while it runs (2026-07-18 fix).
 
    The escape this pins: the beat's broadcast opt-in (added 2026-07-14) reached only the ACT path —
    the reason-only runs (propose/do/critique, the DEFAULT-leash path) went through nightshiftChat with a
-   local sink and no SSE tee, so the station showed an idle wandering agent while the harness provably
+   local sink and no SSE tee, so the keep showed an idle wandering agent while the harness provably
    worked, then a surprise "drafted while you were away" toast. The crate was just as wrong: placed AFTER
    the draft landed, keyed to a runId no run.end ever settles (queue depth leaked +1 per draft forever).
 
@@ -85,7 +85,7 @@ async function readNdjson(res) {
   return events;
 }
 
-// attach the REAL SSE bridge (the exact stream the station HUD consumes) and accumulate parsed events.
+// attach the REAL SSE bridge (the exact stream the keep HUD consumes) and accumulate parsed events.
 function attachSse(B, token) {
   const ac = new AbortController();
   const events = [];
@@ -114,7 +114,7 @@ function hotBeliefs(now) {
       goals: b('ship the Eyehold beta to 100 users'),
       pain: b('manual release notes eat my fridays'),
       stack: b('node and a pixel-art canvas'),
-      ambition: b('a living agent station people watch')
+      ambition: b('a living agent keep people watch')
     }
   };
 }
@@ -148,7 +148,7 @@ function hotBeliefs(now) {
 
     // ── 1. the run lifecycle reached the floor: agent.run.start with trigger 'nightshift' over REAL SSE.
     //      (world.js binds the work pose to any non-'directive' trigger — this event is what sends the body
-    //      to its workstation; before the fix ZERO nightshift run.start events reached SSE on this path.)
+    //      to its workkeep; before the fix ZERO nightshift run.start events reached SSE on this path.)
     const starts = ev.filter(e => e.name === 'agent.run.start' && e.payload && e.payload.trigger === 'nightshift');
     A.ok(starts.length >= 1, "agent.run.start{trigger:'nightshift'} teed to SSE (" + starts.length + ' seen) — the floor can pose the body');
 

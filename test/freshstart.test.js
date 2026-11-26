@@ -16,7 +16,7 @@ function storage(seed) {
 
 (async () => {
   const store = storage({
-    'eyehold.save': 'station',
+    'eyehold.save': 'keep',
     'eyehold.dev.pullFault': 'unreachable',
     'skynet.save': 'legacy',
     'eyehold_arcade_hi': '9',
@@ -27,7 +27,7 @@ function storage(seed) {
   const result = await FreshStart.resetDesktop({
     async invoke(command) {
       A.eq(command, 'eyehold_start_fresh', 'uses the native path that works without sidecar HTTP');
-      sawCacheBeforeNative = store.getItem('eyehold.save') === 'station';
+      sawCacheBeforeNative = store.getItem('eyehold.save') === 'keep';
       return { ok: true, listening: true, quarantine: 'safe-copy' };
     }
   }, store);
@@ -53,7 +53,7 @@ function storage(seed) {
   const incomplete = await FreshStart.resetDesktop({
     async invoke() { return { ok: true, listening: true, quarantine: 'safe-copy', browserDataCleared: false }; }
   }, blocked);
-  A.eq(incomplete.browserDataCleared, false, 'native and renderer clear failure is reported instead of claiming a fresh station');
+  A.eq(incomplete.browserDataCleared, false, 'native and renderer clear failure is reported instead of claiming a fresh keep');
   A.ok(incomplete.browserClearError.includes('storage locked'), 'the truthful browser-clear failure reaches the gate');
 
   let unlocked = false, present = true;
@@ -64,13 +64,13 @@ function storage(seed) {
   };
   let nativeResets = 0;
   const firstTry = await FreshStart.resetDesktop({
-    async invoke() { nativeResets++; return { ok: true, listening: true, quarantine: 'original-station', browserDataCleared: false }; }
+    async invoke() { nativeResets++; return { ok: true, listening: true, quarantine: 'original-keep', browserDataCleared: false }; }
   }, transient);
   A.eq(firstTry.browserDataCleared, false, 'precondition: the first browser clear is blocked after preservation');
   unlocked = true;
   const retried = FreshStart.retryBrowserClear(firstTry, transient);
   A.eq(retried.browserDataCleared, true, 'a later browser-only retry can finish the reset');
-  A.eq(retried.quarantine, 'original-station', 'the retry keeps the exact original-station preservation receipt');
+  A.eq(retried.quarantine, 'original-keep', 'the retry keeps the exact original-keep preservation receipt');
   A.eq(nativeResets, 1, 'browser-clear retry never quarantines the clean generation a second time');
 
   const nativeProof = await FreshStart.resetDesktop({

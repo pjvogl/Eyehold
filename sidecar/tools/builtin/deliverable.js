@@ -69,7 +69,7 @@
         + 'kind: doc | data | page | patch | image | files. '
         + 'main: the path of the one file that IS the deliverable, if one of them is. '
         + 'Describe the work — do not judge it. Whether the run succeeded, what it cost, who worked on it and '
-        + 'which files exist are recorded by the station from the run itself; anything you say about those is ignored.',
+        + 'which files exist are recorded by the keep from the run itself; anything you say about those is ignored.',
       schema: { type: 'object', required: ['title'], properties: {
         title: { type: 'string' },
         summary: { type: 'string' },
@@ -87,7 +87,7 @@
         return {
           content: 'Recorded for the Deliverables library: "' + note.title + '" (' + note.kind + ').'
             + (note.summary ? ' Description: ' + note.summary : ' No description given.')
-            + ' The station will attach the real file list, status, cost and crew from this run.',
+            + ' The keep will attach the real file list, status, cost and crew from this run.',
           summary: note.title
         };
       }

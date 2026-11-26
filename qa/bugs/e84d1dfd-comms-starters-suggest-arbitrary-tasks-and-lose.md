@@ -24,7 +24,7 @@ Empty COMMS repeatedly offers an arbitrary Morning Brief, a tour, and a vague in
 
 ## Repro
 
-1. Open an empty COMMS session on a fresh station: the first catalog recipe appears without user intent.
+1. Open an empty COMMS session on a fresh keep: the first catalog recipe appears without user intent.
 2. With an existing titled conversation, open a new session and choose its next-step suggestion: only the title is sent into the new conversation.
 
 ## Evidence

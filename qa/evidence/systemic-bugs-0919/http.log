@@ -36,7 +36,7 @@ connector-oauth-refresh-race.e2e.test: OK (5 assertions)
 github-device.http: real routes, cancellation, durable tokens, restart and public secret redaction passed
 workspace-owner.e2e.test: OK (9 assertions)
 workspace-lineage.http.test: OK (29 assertions)
-lineage-stationless-halt.http.test: OK (10 assertions)
+lineage-keepless-halt.http.test: OK (10 assertions)
 update-preparation.http.test: OK (9 assertions)
 codex-status.e2e.test: OK (13 assertions)
 oauth-status.e2e.test: OK (26 assertions)
@@ -165,7 +165,7 @@ casual-response-safety.e2e: PASS (lead/worker, hosted/local caps, context, task 
 routes-coverage.http.test: OK (94 assertions)
 atlas-events.emit.e2e: OK (14 assertions)
 openai-compat.e2e: OK (36 assertions)
-station-recovery.e2e.test: OK (23 assertions)
+keep-recovery.e2e.test: OK (23 assertions)
 TAP version 13
 # Subtest: unlink wins over an unfinished pairing response and survives restart
 ok 1 - unlink wins over an unfinished pairing response and survives restart
@@ -195,8 +195,8 @@ not ok 4 - funded link diagnostics survive restart without exposing account or t
   error: |-
     sidecar exited before readiness (exit=73, signal=null)
     sidecar output:
-    [recovery] auto station recovery SKIPPED: target workspace is a scratch root (C:\Users\andro\AppData\Local\Temp\paid-link-receipt-8grcMN is under C:\Users\andro\AppData\Local\Temp); a real station is never ingested into a temp workspace. Explicit recovery (request file / CLI restore) is unaffected.
-    [recovery] auto recovery skipped (AUTO_RECOVERY_TARGET_IS_SCRATCH): this workspace is a scratch/temp root, so no real station was ingested.
+    [recovery] auto keep recovery SKIPPED: target workspace is a scratch root (C:\Users\andro\AppData\Local\Temp\paid-link-receipt-8grcMN is under C:\Users\andro\AppData\Local\Temp); a real keep is never ingested into a temp workspace. Explicit recovery (request file / CLI restore) is unaffected.
+    [recovery] auto recovery skipped (AUTO_RECOVERY_TARGET_IS_SCRATCH): this workspace is a scratch/temp root, so no real keep was ingested.
     ✗ Eyehold refused to open this workspace because another process may own it.
       workspace: C:\Users\andro\AppData\Local\Temp\paid-link-receipt-8grcMN
       holder PID: 41356

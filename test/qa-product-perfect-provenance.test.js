@@ -47,8 +47,8 @@ const A = require('./_assert.js');
 
   const verified = externallyVerifyOfficialEvidence(evidence, () => ({
     ok: true,
-    authority: 'release-attestation-verifier',
-    verificationId: 'attestation-123',
+    authority: 'release-attekeep-verifier',
+    verificationId: 'attekeep-123',
   }));
   A.eq(verified.ok, true, 'an external verifier can mint bounded official authority');
   A.eq(classifyProvenance(Object.assign({}, clean, { verifiedOfficialEvidence: verified.capability })).kind,

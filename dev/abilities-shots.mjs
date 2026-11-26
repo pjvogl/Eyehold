@@ -23,7 +23,7 @@ const ONLY = (process.argv.find(a => a.startsWith('--only=')) || '').split('=')[
   || (process.argv.includes('--only') ? process.argv[process.argv.indexOf('--only') + 1] : null);
 
 // Every section the console registers. The lane sections (skill library / agent skills) are pushed
-// by stationui.js at build time, so they are driven by rail label rather than a hardcoded id.
+// by keepui.js at build time, so they are driven by rail label rather than a hardcoded id.
 const TABS = ['toolsets', 'catalog', 'keys', 'mcp', 'extensions'];
 
 // Click the REAL rail button — never call selectSection directly. The rail click is what a
@@ -56,7 +56,7 @@ async function main() {
     await evalJS(cdp, `(() => { if (document.body) document.body.classList.add('no-flicker');
       if (typeof World !== 'undefined' && World.stop) { World.stop(); return 'frozen'; } return 'no-world'; })()`);
 
-    await evalJS(cdp, `StationUI.openTerm('connectors')`);
+    await evalJS(cdp, `KeepUI.openTerm('connectors')`);
     await sleep(1800);   // the panes fetch /api/toolsets, /api/connectors/catalog, /api/servicekeys
 
     for (const id of TABS) {
@@ -181,10 +181,10 @@ async function main() {
         const titleOf = () => { const t = document.querySelector('#terms .term:last-child .term-title, #terms .term:last-child .tt-label');
           return t ? t.textContent.trim() : '(none)'; };
         const openKeys = () => Object.keys(window.__ABIL_OPEN__ || {});
-        StationUI.openTerm('connectors');
+        KeepUI.openTerm('connectors');
         document.querySelector('.ab-route[data-ab-term="messaging"]').click();
         r.channels = { termCount: document.querySelectorAll('#terms .term').length, title: titleOf() };
-        StationUI.openTerm('connectors');
+        KeepUI.openTerm('connectors');
         document.querySelector('.ab-route[data-ab-term="settings"]').click();
         r.settings = { termCount: document.querySelectorAll('#terms .term').length, title: titleOf(),
           // the section arg must land the settings rail ON providers, not just open the window
@@ -194,7 +194,7 @@ async function main() {
       console.log('CROSS-WINDOW PROBE', JSON.stringify(crossProbe));
 
       // ---- KEYS pick-a-platform: the cards were re-gridded, so re-prove a click still PREFILLS.
-      await evalJS(cdp, `StationUI.openTerm('connectors')`);
+      await evalJS(cdp, `KeepUI.openTerm('connectors')`);
       await sleep(500);
       const pickProbe = await evalJS(cdp, `(() => {
         document.querySelector('#con-tab-connectors-keys').click();
@@ -216,7 +216,7 @@ async function main() {
     if (!ONLY) {
       // measure with the CATALOG pane actually VISIBLE — a hidden pane's grid never reflows, and the
       // first #terms .term is not necessarily this console.
-      await evalJS(cdp, `StationUI.openTerm('connectors')`);
+      await evalJS(cdp, `KeepUI.openTerm('connectors')`);
       await sleep(400);
       await evalJS(cdp, `document.querySelector('#con-tab-connectors-catalog').click()`);
       await sleep(400);
@@ -239,7 +239,7 @@ async function main() {
       })()`);
       console.log('REFLOW PROBE', JSON.stringify(reflow));
 
-      // ---- the INSTALLED card state (.cc-on / .added). Nothing is connected on a seeded station and
+      // ---- the INSTALLED card state (.cc-on / .added). Nothing is connected on a seeded keep and
       //      a real connect needs the public internet, so this is a CSS-ONLY check of the two states.
       // ⛔ `.cc-card` now TRANSITIONS border-color (depth pass), so a computed read taken in the same
       //    tick returns the START colour and the state reads as broken. Every read below is taken
@@ -280,7 +280,7 @@ async function main() {
       console.log('INSTALLED-STATE PROBE (css only)', JSON.stringify(stateProbe));
 
       // ---- the other theme: every new rule uses theme vars, so green must repaint with no literals.
-      await evalJS(cdp, `StationUI.setTheme('green')`);
+      await evalJS(cdp, `KeepUI.setTheme('green')`);
       await sleep(700);
       console.log('shot', await capture(cdp, OUT, 'abilities-green-theme'));
       const themeProbe = await evalJS(cdp, `(() => {
@@ -288,18 +288,18 @@ async function main() {
         return { routeTitle: q('.ab-route-title'), filterActive: q('.cc-filter.active'), more: q('.ts-more') };
       })()`);
       console.log('GREEN THEME PROBE', JSON.stringify(themeProbe));
-      await evalJS(cdp, `StationUI.setTheme('amber')`);
+      await evalJS(cdp, `KeepUI.setTheme('amber')`);
       await sleep(500);
     }
 
     // ---- A REAL CONNECT, end to end. Everything above is layout + wiring; this is the only probe that
     //      proves the installed path. Clicks a genuine no-setup catalog card, waits for the sidecar to
     //      really connect, then asserts the card flips to the installed state AND that the "connected"
-    //      filter — which reported 0 on a cold station — now finds it. Runs against the throwaway seeded
-    //      workspace this script creates, never the Commander's real station. Needs public internet;
+    //      filter — which reported 0 on a cold keep — now finds it. Runs against the throwaway seeded
+    //      workspace this script creates, never the Commander's real keep. Needs public internet;
     //      reports SKIPPED-OFFLINE rather than failing, so a boxed run stays honest.
     if (!ONLY || ONLY === 'connect') {
-      await evalJS(cdp, `StationUI.openTerm('connectors')`);
+      await evalJS(cdp, `KeepUI.openTerm('connectors')`);
       await sleep(400);
       await evalJS(cdp, `document.querySelector('#con-tab-connectors-catalog').click()`);
       await sleep(500);

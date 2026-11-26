@@ -26,7 +26,7 @@
 ## Priority stack — why this order
 
 The product thesis (memory `eyehold-product-thesis`, `eyehold-gtm-and-marketplace`) says the
-moat is: beginners reach real value fast, the station is watchable/spectacular, and the
+moat is: beginners reach real value fast, the keep is watchable/spectacular, and the
 pride loop runs on REAL work. The harness core is solid and beats the reference harness on the moat axes.
 What's between Eyehold and users right now, in order: (0) trunk must be green, (1) shipped
 builds can't update — distribution is broken, (2) the growth engine (spectacle/shareability)
@@ -86,9 +86,9 @@ in-place-swap recipe). macOS build explicitly deferred until Windows distributio
 
 ### P2.1 — Postcard export  ·  STATUS: ✅ DONE 2026-07-03 (trunk `26669c4`) — ⎙ postcard button on the recap card (never claims the beat slot); in-page canvas composite of live #stage + VT323/phosphor overlay → PNG; every number a fold of real telemetry (Xp.compute + PrideStore), unprovable stats omitted (notably: NO per-run XP delta — XP only mints from user feedback, not run events); live-verified via scripts/verify-postcard.mjs; 42-assertion honesty test in test:fast
 The GTM thesis says watchability = growth. Zero shareable surface exists today. Slice 1:
-a **postcard** — one keypress/button on a completed run captures a styled frame (station
+a **postcard** — one keypress/button on a completed run captures a styled frame (keep
 scene + run summary + trophy/XP delta) to PNG the user can drag anywhere. Reuse the capture
-substrate the QA station already built (memory `self-test-station-charter`: cameras/capture
+substrate the QA keep already built (memory `self-test-keep-charter`: cameras/capture
 merged — do NOT rebuild), and the CRT window-chrome card language (memory `ui-premium-polish`).
 Laws: canvas text VT323, honest data only (real run stats, never mocked), desk-only-specialist
 prop rules untouched. Acceptance: a real run produces a postcard PNG whose numbers match the

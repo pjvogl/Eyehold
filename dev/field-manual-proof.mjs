@@ -1,4 +1,4 @@
-// Real seeded station: chapter navigation, destinations, keyboard focus and responsive layout.
+// Real seeded keep: chapter navigation, destinations, keyboard focus and responsive layout.
 import assert from 'node:assert/strict';
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
@@ -16,7 +16,7 @@ try {
   const diag = collectDiagnostics(cdp);
   await cdp.send('Runtime.enable'); await cdp.send('Page.enable');
   await cdp.send('Page.navigate', { url });
-  assert(await waitDevReady(cdp, evalJS, { url }), 'station did not enter game');
+  assert(await waitDevReady(cdp, evalJS, { url }), 'keep did not enter game');
   const ev = expression => evalJS(cdp, expression);
   const click = async selector => { await ev(`document.querySelector(${JSON.stringify(selector)}).click()`); await sleep(500); };
   const open = async () => {
@@ -58,7 +58,7 @@ try {
     if (target === 'comms') assert(await ev(`document.activeElement.id === 'chat-input' && !!document.activeElement.offsetWidth`));
     else {
       assert(await ev(`Array.from(document.querySelectorAll('.term')).some(w => w.offsetWidth && w.querySelector('.term-title')?.textContent === ${JSON.stringify(titles[target])})`), 'destination visible: ' + target);
-      await ev(`StationUI.closeTerm('${target}')`); await sleep(500);
+      await ev(`KeepUI.closeTerm('${target}')`); await sleep(500);
     }
     receipt.destinations.push(target);
     await open();

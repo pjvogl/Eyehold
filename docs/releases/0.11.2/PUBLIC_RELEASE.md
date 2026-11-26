@@ -42,7 +42,7 @@ Original receipts and their SHA-256 manifest are retained in `qa/evidence/0.11.2
 
 | Check | Result and receipt |
 | --- | --- |
-| Signed release train | [34639855021](https://github.com/Eyehold/eyehold/actions/runs/34639855021) passed: fast 771, customer journeys, signed Windows and both notarized Mac builds, installed Intel launch and legacy station recovery, draft assembly. |
+| Signed release train | [34639855021](https://github.com/Eyehold/eyehold/actions/runs/34639855021) passed: fast 771, customer journeys, signed Windows and both notarized Mac builds, installed Intel launch and legacy keep recovery, draft assembly. |
 | Exact draft clean install | [34642893710](https://github.com/Eyehold/eyehold/actions/runs/34642893710) passed on the final Windows installer. |
 | Exact draft lifecycle | [34642921798](https://github.com/Eyehold/eyehold/actions/runs/34642921798) passed idle-close, close-to-tray and updater-smoke. |
 | Previous public installer upgrades | Original train receipt passes 0.11.0 and 0.11.1 manual installer upgrades, populated state preservation, missing-old-uninstaller recovery and future uninstall behavior. |

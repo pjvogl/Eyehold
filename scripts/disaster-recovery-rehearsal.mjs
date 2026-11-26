@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Deterministic, disposable whole-station disaster-recovery rehearsal and evidence generator.
+// Deterministic, disposable whole-keep disaster-recovery rehearsal and evidence generator.
 
 import fs from 'node:fs';
 import os from 'node:os';
@@ -8,7 +8,7 @@ import crypto from 'node:crypto';
 import { createRequire } from 'node:module';
 import { fileURLToPath } from 'node:url';
 const require = createRequire(import.meta.url);
-const Recovery = require('../sidecar/station-recovery.js');
+const Recovery = require('../sidecar/keep-recovery.js');
 const Save = require('../frontend/app/save.js');
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
@@ -37,14 +37,14 @@ function assert(v, m) { if (!v) throw new Error(m); }
 function seed(root, mutation, taskDone = false) {
   ensure(root);
   write(root, 'agent.roster.json', { version: 1, agents: [{ agentId: 'agent', name: 'NOVA' }, { agentId: 'scribe', name: 'SCRIBE' }] });
-  write(root, 'agent.save.json', { version: 1, agentId: 'agent', updatedAt: mutation, savedAt: mutation, doc: { schema: 'eyehold.save', version: Save.CURRENT, updatedAt: mutation, agent: { id: 'agent', name: 'NOVA' }, station: { rooms: [{ id: 'command' }, { id: 'lab' }], props: [{ id: 'terminal', roomId: 'command' }, { id: 'bench', roomId: 'lab' }] }, workstreams: [{ id: 'general', title: 'General', messages: [{ role: 'user', content: 'complete station rehearsal' }] }] } });
+  write(root, 'agent.save.json', { version: 1, agentId: 'agent', updatedAt: mutation, savedAt: mutation, doc: { schema: 'eyehold.save', version: Save.CURRENT, updatedAt: mutation, agent: { id: 'agent', name: 'NOVA' }, keep: { rooms: [{ id: 'command' }, { id: 'lab' }], props: [{ id: 'terminal', roomId: 'command' }, { id: 'bench', roomId: 'lab' }] }, workstreams: [{ id: 'general', title: 'General', messages: [{ role: 'user', content: 'complete keep rehearsal' }] }] } });
   write(root, 'channels/agent.history.json', { version: 1, messages: [{ role: 'user', content: 'preserved channel conversation', ts: mutation }] });
   write(root, 'agent.notebook.json', { entries: [{ id: 'memory-1', title: 'Memory', body: 'preserve me' }] });
   write(root, '_commander.dossier.json', { block: 'Commander memory and preferences' });
   write(root, 'cron.jobs.json', { jobs: [{ id: 'routine-1', schedule: '0 9 * * *', prompt: 'morning report' }] });
   write(root, 'loops.json', { loops: [{ id: 'loop-1', objective: 'continue until verified', state: 'active' }] });
   write(root, 'agent.todo.json', { items: [{ id: 'task-1', text: 'complete rehearsal', done: taskDone }] });
-  write(root, '_station.quests.json', { quests: [{ id: 'quest-1', title: 'Recover station', state: 'open' }] });
+  write(root, '_keep.quests.json', { quests: [{ id: 'quest-1', title: 'Recover keep', state: 'open' }] });
   write(root, 'projects.json', { projects: [{ id: 'project-1', root: 'C:/Projects/demo', blessed: true }] });
   write(root, 'agent.deliverables.json', { records: [{ id: 'deliverable-1', path: 'agent/workshop/run-1/report.md', state: 'kept' }] });
   write(root, 'agent/workshop/run-1/report.md', '# Verified deliverable\nmutation=' + mutation + '\n');
@@ -53,7 +53,7 @@ function seed(root, mutation, taskDone = false) {
     meta: { 'path:C:/Projects/demo': { grantedAt: mutation, source: 'rehearsal' } },
   });
   write(root, 'connectors/state.json', { version: 2, configs: [{ id: 'notion', transport: 'http', url: 'https://mcp.example/api?token=DO_NOT_EXPORT', headers: { Authorization: 'Bearer DO_NOT_EXPORT', 'X-Safe': 'yes' }, oauth: true }], oauth: { byId: { notion: { accessToken: 'DO_NOT_EXPORT', refreshToken: 'DO_NOT_EXPORT' } }, clients: {} } });
-  write(root, 'channels/secrets.json', { telegram: { enabled: true, botName: 'station-bot', token: 'DO_NOT_EXPORT' } });
+  write(root, 'channels/secrets.json', { telegram: { enabled: true, botName: 'keep-bot', token: 'DO_NOT_EXPORT' } });
   write(root, '.secrets/spotify.json', { accessToken: 'DO_NOT_EXPORT' });
   write(root, 'proc-ledger.json', { procs: [{ pid: 999 }] });
   write(root, '.recovery-mutation.json', { lastCompletedMutation: mutation });
@@ -61,23 +61,23 @@ function seed(root, mutation, taskDone = false) {
 
 ensure(out); ensure(backupDir); seed(source, 100, false);
 const browser100 = {
-  'eyehold.save': JSON.stringify({ schema: 'eyehold.save', version: Save.CURRENT, updatedAt: 100, agent: { id: 'agent', name: 'NOVA' }, station: { rooms: ['command', 'lab'], props: ['terminal', 'bench'] } }),
-  'eyehold.station.v1': JSON.stringify({ selectedRoom: 'command', camera: { x: 3, y: 4 } }),
+  'eyehold.save': JSON.stringify({ schema: 'eyehold.save', version: Save.CURRENT, updatedAt: 100, agent: { id: 'agent', name: 'NOVA' }, keep: { rooms: ['command', 'lab'], props: ['terminal', 'bench'] } }),
+  'eyehold.keep.v1': JSON.stringify({ selectedRoom: 'command', camera: { x: 3, y: 4 } }),
   'eyehold.queststate.v1': JSON.stringify({ seen: ['quest-1'] }),
   'eyehold.byok.key': 'DO_NOT_EXPORT'
 };
 let bundle100, backup100, cleanReceipt, cleanFingerprint, cleanTarget, cleanBrowser;
 
-record('dr.1-capture', 'Capture complete quiescent station', () => {
+record('dr.1-capture', 'Capture complete quiescent keep', () => {
   bundle100 = Recovery.capture({ workspaceRoot: source, browserStore: browser100, now: 1000, appVersion: '0.9.0-rehearsal', lastCompletedMutation: 100 });
   assert(bundle100.report.complete, 'required category missing');
   assert(JSON.stringify(bundle100).indexOf('DO_NOT_EXPORT') < 0, 'credential leaked into bundle');
-  backup100 = path.join(backupDir, 'station-mutation-100.eyehold-recovery.json');
+  backup100 = path.join(backupDir, 'keep-mutation-100.eyehold-recovery.json');
   const receipt = Recovery.writeBundleAtomic({ bundle: bundle100, file: backup100, nonce: 'm100' });
   return { receipt, requirements: bundle100.report.requirements, recoveryPoint: bundle100.recoveryPoint, reauthentication: bundle100.report.reauthentication, skipped: bundle100.report.skipped };
 });
 
-record('dr.2-clean-profile', 'Restore complete station onto clean machine/profile', () => {
+record('dr.2-clean-profile', 'Restore complete keep onto clean machine/profile', () => {
   cleanTarget = path.join(scratch, 'clean-machine', 'workspaces');
   cleanBrowser = {};
   cleanReceipt = Recovery.restore({ bundle: Recovery.readBundle(backup100), targetRoot: cleanTarget, browserSink: cleanBrowser, nonce: 'clean' });
@@ -135,9 +135,9 @@ record('dr.6-disk-full', 'Disk-full backup preserves previous verified recovery 
 });
 
 let bundle101;
-record('dr.7-previous-version-rollback', 'Rollback to previous station version retains replaced generation', () => {
+record('dr.7-previous-version-rollback', 'Rollback to previous keep version retains replaced generation', () => {
   seed(source, 101, true);
-  const browser101 = Object.assign({}, browser100, { 'eyehold.station.v1': JSON.stringify({ selectedRoom: 'lab', camera: { x: 9, y: 9 } }) });
+  const browser101 = Object.assign({}, browser100, { 'eyehold.keep.v1': JSON.stringify({ selectedRoom: 'lab', camera: { x: 9, y: 9 } }) });
   bundle101 = Recovery.capture({ workspaceRoot: source, browserStore: browser101, now: 2000, appVersion: '0.9.1-rehearsal', lastCompletedMutation: 101 });
   const target = path.join(scratch, 'rollback-machine', 'workspaces');
   const browser = {};
@@ -146,7 +146,7 @@ record('dr.7-previous-version-rollback', 'Rollback to previous station version r
   assert(receipt.rollback && fs.existsSync(receipt.rollback), 'replaced generation not retained');
   assert(read(target, '.recovery-mutation.json').includes('100'), 'older generation not active');
   assert(read(receipt.rollback, '.recovery-mutation.json').includes('101'), 'newer generation not retained');
-  return { activeMutation: 100, retainedMutation: 101, rollbackGeneration: receipt.rollback, browserStateRolledBack: browser['eyehold.station.v1'] === browser100['eyehold.station.v1'] };
+  return { activeMutation: 100, retainedMutation: 101, rollbackGeneration: receipt.rollback, browserStateRolledBack: browser['eyehold.keep.v1'] === browser100['eyehold.keep.v1'] };
 });
 
 record('dr.8-recovery-point', 'Measure completed-mutation loss from last successful recovery point', () => {
@@ -162,7 +162,7 @@ const status = {
   schema: 'eyehold.disaster-recovery-rehearsal.v1',
   generatedAt: new Date().toISOString(),
   verdict: failed.length ? 'red' : 'green',
-  completeStationRestored: !failed.length,
+  completeKeepRestored: !failed.length,
   counts: { pass: scenarios.length - failed.length, fail: failed.length },
   requiredCategories: Recovery.REQUIRED_CATEGORIES,
   scenarios,
@@ -180,7 +180,7 @@ fs.writeFileSync(path.join(out, 'disaster-recovery-status.json'), JSON.stringify
 const md = [
   '# Eyehold Disaster-Recovery Rehearsal', '',
   '- Verdict: **' + status.verdict.toUpperCase() + '**',
-  '- Complete station restored: **' + String(status.completeStationRestored) + '**',
+  '- Complete keep restored: **' + String(status.completeKeepRestored) + '**',
   '- Scenarios: **' + status.counts.pass + '/' + scenarios.length + ' pass**',
   '- Recovery point: mutation **' + (status.rpo?.lastDurableRecoveryMutation ?? '?') + '**; damage after **' + (status.rpo?.damageAfterMutation ?? '?') + '**; completed mutations lost **' + (status.rpo?.observedCompletedMutationsLost ?? '?') + '**',
   '', '| Scenario | Status |', '| --- | --- |',

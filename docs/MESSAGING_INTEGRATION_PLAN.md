@@ -16,7 +16,7 @@ The Telegram-first MVP is **implemented and green** (26 test files + 2 lints). L
 | C2 | Telegram concrete adapter + Bot API `fetch` transport (long-poll `getUpdates`/`sendMessage`) | `sidecar/channels/telegram.js`, `telegram.transport.js` + `test/channels.telegram.test.js` |
 | C3 | `channel.inbound` / `channel.delivery` / `channel.connect` event rungs | `shared/events.js` + `test/contract.test.js` |
 | C4 | `runOnce` extracted from `handleRun` (behavior-preserving) + save-safe per-chat history/chatmap store | `sidecar/index.js`, `sidecar/channels/store.js` + `test/channels.store.test.js` |
-| C5 | hub bridge (inbound→runOnce→chunked reply, autonomous, one-run-per-chat) + connect/disconnect/status endpoints + secrets-at-rest + **in-app Messaging panel** | `sidecar/channels/hub.js`, `sidecar/index.js`, `frontend/index.html`, `frontend/app/stationui.js` + `test/channels.hub.test.js` |
+| C5 | hub bridge (inbound→runOnce→chunked reply, autonomous, one-run-per-chat) + connect/disconnect/status endpoints + secrets-at-rest + **in-app Messaging panel** | `sidecar/channels/hub.js`, `sidecar/index.js`, `frontend/index.html`, `frontend/app/keepui.js` + `test/channels.hub.test.js` |
 
 **Delta vs. the plan below (§3.5):** the bot token is **not** an env var — it is entered in a **MESSAGING tab in the bottom bar** (token from Telegram's @BotFather). On connect, the browser hands the sidecar `{ token, key, model }` (the app's existing OpenRouter key+model); the sidecar persists them in a **protected sibling file** `WORKSPACES/channels/secrets.json` (outside the fs jail, never on the bus, never returned by `/status`) so polling survives a restart with no browser open. New endpoints: `POST /api/channels/telegram/connect|disconnect`, `GET …/status`. Env (`SKYNET_TELEGRAM_TOKEN` + `SKYNET_OPENROUTER_KEY` + `SKYNET_DEFAULT_MODEL`) remains a headless-deploy fallback. **C6 SHIPPED 2026-07-24** — interactive consent over a Telegram inline keyboard, plus the multiple-choice keyboard §3 had left in the mine. Per-chat opt-in via `/approvals` (**default OFF**, so an un-opted chat still default-denies a headless write and continues, exactly as described below). Live-proven on real Telegram: the run paused at `fs.write`, the keyboard rendered, the tap resumed it, and the file landed on disk. Contrary to the §3 note, **no `shared/events.js` rung was needed** — `brief.ask` already is the clarify tool, and a tap re-enters as an ordinary inbound message carrying the option's own text. See `MESSAGING_POLISH_BACKLOG.md` for the full status block.
 
@@ -122,7 +122,7 @@ InboundMessage = { chatId: string, chatType: 'dm'|'group', userId: string, userN
 **Decision: call the in-process run host directly — NOT a `/api/run` HTTP loopback.**
 
 Justification:
-- `handleRun` is reachable in-process; the loop is fully injected/pure (`loop.js:99`) and `index.js` already constructs every dependency (registry, tools, station, broker, provider, cost). A loopback POST would (a) re-serialize the body, (b) lose the in-process `emit` sink (forcing NDJSON re-parsing the adapter would only re-concatenate), (c) need a second port/auth story, and (d) duplicate the abort wiring. the reference harness itself calls the runner **in-process** (`adapter.handle_message → _message_handler` is a direct `await`, `base.py:4184`), not over HTTP — the loopback would be a Node-ism with no the reference harness analogue and net negative.
+- `handleRun` is reachable in-process; the loop is fully injected/pure (`loop.js:99`) and `index.js` already constructs every dependency (registry, tools, keep, broker, provider, cost). A loopback POST would (a) re-serialize the body, (b) lose the in-process `emit` sink (forcing NDJSON re-parsing the adapter would only re-concatenate), (c) need a second port/auth story, and (d) duplicate the abort wiring. the reference harness itself calls the runner **in-process** (`adapter.handle_message → _message_handler` is a direct `await`, `base.py:4184`), not over HTTP — the loopback would be a Node-ism with no the reference harness analogue and net negative.
 - The **smallest honest** refactor: extract the *core* of `handleRun` (everything from "tools registered fresh" through `runAgentLoop`, `index.js:185-281`) into a reusable `runOnce({ key, model, system, messages, agentId, isTask, emit, signal })` that both the HTTP route **and** the hub call. The HTTP route keeps its NDJSON `emit` sink (`index.js:156`); the hub passes an **in-process `emit`** that feeds the reply-assembler (3.3) and is still validated by `makeEmitter` (so messaging runs get the same frozen-event guarantees). This is the one structural change; it is byte-identical for the existing browser path (the route's behavior is unchanged — it now calls the shared `runOnce`).
 
 **What the bridge must supply to `runOnce` / the existing `handleRun` body** (the exact fields `index.js:138` destructures):
@@ -133,7 +133,7 @@ Justification:
 - `agentId` — the deterministic chat→agentId mapping (3.4), validated against `/^[A-Za-z0-9_-]{1,40}$/`.
 - `isTask` — the hub's task-vs-talk decision (mirror `chat.js`'s `Classify.isTaskDirective`, ported as a pure helper or a simple heuristic for MVP). Tools only run when `isTask=true`; the `supportsTools` pre-check (`index.js:221`) still applies.
 
-The bridge reuses `runOnce`'s existing station/tools/broker/provider/cost assembly **verbatim** — the messaging run is "just another caller of `handleRun`," exactly as the dossier's gen-seam claim states.
+The bridge reuses `runOnce`'s existing keep/tools/broker/provider/cost assembly **verbatim** — the messaging run is "just another caller of `handleRun`," exactly as the dossier's gen-seam claim states.
 
 ### 3.3 The RUN → REPLY path
 
@@ -200,7 +200,7 @@ A messaging inbound and its delivery are genuinely new cross-boundary signals; `
                         { channel:str, state:{enum:['up','down','error']}, detail:str })
 ```
 
-- `channel.inbound` — emitted by the hub when a message is admitted and mapped to an agent (the trigger-source telemetry that `agent.run.start.trigger` only *labels*). Drives the station HUD "incoming DM" cue.
+- `channel.inbound` — emitted by the hub when a message is admitted and mapped to an agent (the trigger-source telemetry that `agent.run.start.trigger` only *labels*). Drives the keep HUD "incoming DM" cue.
 - `channel.delivery` — emitted after the reply is sent (chunk count, ok/why) so the HUD/log shows outbound delivery and failures.
 - `channel.connect` — adapter health (poll up / network down / fatal token error), the in-memory health-state analogue of the reference harness's runtime status file (dossier `drop`: "replace with in-memory health state").
 

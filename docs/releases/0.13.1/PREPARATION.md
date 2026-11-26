@@ -51,5 +51,5 @@ found about 20 overstatements, all corrected before the claims re-lock.
   window saved revision 6 to the sidecar at 19:44:39Z and was closed; the inspection relaunch's WebView2 local copy
   still held revision 5, so its next save was correctly refused as a conflict (recovery file kept, nothing lost). No
   save-path code changed since v0.13.0. Re-run 37229609433 GREEN (lifecycle + public-updater-canary). The close-timing
-  race is pre-existing and filed as a follow-up; a user who hits it sees the "Another window saved newer station
+  race is pre-existing and filed as a follow-up; a user who hits it sees the "Another window saved newer keep
   changes" notice with download / reload keys.

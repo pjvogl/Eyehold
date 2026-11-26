@@ -1,8 +1,8 @@
 /* EYEHOLD — trophies.js : the PURE trophy-surface projection (Game session, Phase G3b / Layer 6).
 
-   The TROPHY CASE prop opens a surface that makes the station's REAL achievements permanent and visible.
-   This engine folds the honest signals the station already tracks into a render-agnostic shape:
-     • earned MILESTONES + completed QUESTS (dossier / station-arc / capability-gap fix-its) — every quest
+   The TROPHY CASE prop opens a surface that makes the keep's REAL achievements permanent and visible.
+   This engine folds the honest signals the keep already tracks into a render-agnostic shape:
+     • earned MILESTONES + completed QUESTS (dossier / keep-arc / capability-gap fix-its) — every quest
        whose real thing genuinely happened. The date comes from the durable QuestState memory (completedAt),
        NEVER invented: a completion with no knowable date renders "date unknown", never 1969.
      • the LIVING TOOLS shelf — Commander-saved seeds with their lifetime reuse counts (fed by the G3b

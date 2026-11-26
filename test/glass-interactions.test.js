@@ -79,8 +79,8 @@ assert.equal(reads,0);
 console.log('glass-motion: interrupted close, rapid restore/minimize, completion order, reduced motion, and exit layout guards passed');
 
 // Re-minimizing during the dock chip's exit must leave an enabled replacement.
-const stationSrc=fs.readFileSync('frontend/app/stationui.js','utf8');
-const chipStart=stationSrc.indexOf('  function addChip('),chipEnd=stationSrc.indexOf('  function isMinimized(',chipStart);
+const keepSrc=fs.readFileSync('frontend/app/keepui.js','utf8');
+const chipStart=keepSrc.indexOf('  function addChip('),chipEnd=keepSrc.indexOf('  function isMinimized(',chipStart);
 const chips=[],timers=[];
 function chipStub(){
   const classes=new Set(['term-chip']);
@@ -93,7 +93,7 @@ function chipStub(){
 const strip={querySelector:()=>chips[0],appendChild:c=>chips.push(c)};
 const chipContext={ensureStrip:()=>strip,termStrip:()=>strip,chipTitle:()=> 'SETTINGS',
   CSS:{escape:v=>v},mkEl:chipStub,esc:v=>v,syncStripVisibility(){},setTimeout:f=>timers.push(f)};
-vm.createContext(chipContext);vm.runInContext(stationSrc.slice(chipStart,chipEnd),chipContext);
+vm.createContext(chipContext);vm.runInContext(keepSrc.slice(chipStart,chipEnd),chipContext);
 chipContext.addChip('settings');
 chipContext.removeChip('settings');
 chipContext.addChip('settings');
@@ -105,8 +105,8 @@ console.log('glass-motion: rapid dock-chip replacement passed');
 
 
 // Escape leaves a field without losing the dialog's keyboard boundary or its draft.
-const keyStart=stationSrc.indexOf("    w.addEventListener('keydown', ev => {");
-const keyEnd=stationSrc.indexOf('    /* BACKGROUND-POKE FORM PRESERVATION',keyStart);
+const keyStart=keepSrc.indexOf("    w.addEventListener('keydown', ev => {");
+const keyEnd=keepSrc.indexOf('    /* BACKGROUND-POKE FORM PRESERVATION',keyStart);
 assert(keyStart >= 0 && keyEnd > keyStart);
 let keyHandler, closeRequests=0;
 const field={value:'unsaved draft',matches:()=>true};
@@ -117,7 +117,7 @@ const dialog={
   focus:()=>{doc.activeElement=dialog;},
   matches:()=>false
 };
-vm.runInNewContext(stationSrc.slice(keyStart,keyEnd),{w:dialog,document:doc,key:'settings',
+vm.runInNewContext(keepSrc.slice(keyStart,keyEnd),{w:dialog,document:doc,key:'settings',
   requestCloseTerm:()=>{closeRequests++;},termFocusables:()=>[]});
 const escape=()=>keyHandler({key:'Escape',preventDefault(){},stopPropagation(){}});
 escape();
@@ -134,27 +134,27 @@ for(const [search,expected] of [['',true],['?glass=1',true],['?glass=0',false],[
   vm.runInNewContext(boot,{URLSearchParams,location:{search},document:{body:{classList:{
     toggle:(name,value)=>{assert.equal(name,'glass-demo');enabled=value;}
   }}}});
-  assert.equal(enabled,expected,search || 'ordinary station URL');
+  assert.equal(enabled,expected,search || 'ordinary keep URL');
 }
 const html=fs.readFileSync('frontend/index.html','utf8');
 assert(html.indexOf('css/glass-demo.css') < html.indexOf('</head>'));
 assert(html.indexOf('css/glass-comms.css') < html.indexOf('</head>'));
 assert(html.includes('<body class="theme-realm glass-demo">'),'default glass precedes first paint');
 assert(html.indexOf('app/glass-boot.js') > html.indexOf('app/bootguard.js'),'boot diagnostics are installed before any other script');
-assert(html.indexOf('app/glass-boot.js') < html.indexOf('app/app.js'),'fallback resolves before the station initializes');
+assert(html.indexOf('app/glass-boot.js') < html.indexOf('app/app.js'),'fallback resolves before the keep initializes');
 assert(!src.includes('document.head.append(css)'),'material sheets cannot arrive after interface initialization');
 assert(!src.includes("badge.textContent = 'GLASS DEMO'"),'default UI does not claim to be a preview');
 console.log('glass-interactions: guarded Escape, default activation, fallback, and initial material load passed');
 
 // Recreate a window and the settings store to exercise persisted normal/maximized state.
-const preferenceStart = stationSrc.indexOf('    w._readDockState =');
-const preferenceEnd = stationSrc.indexOf('    w._minimize =', preferenceStart);
+const preferenceStart = keepSrc.indexOf('    w._readDockState =');
+const preferenceEnd = keepSrc.indexOf('    w._minimize =', preferenceStart);
 assert(preferenceStart >= 0 && preferenceEnd > preferenceStart);
 let savedPreferences = {};
 function reopenDock(key) {
   const context = { w: {}, key, store: JSON.parse(JSON.stringify(savedPreferences)),
     save() { savedPreferences = JSON.parse(JSON.stringify(context.store)); } };
-  vm.createContext(context); vm.runInContext(stationSrc.slice(preferenceStart, preferenceEnd), context);
+  vm.createContext(context); vm.runInContext(keepSrc.slice(preferenceStart, preferenceEnd), context);
   return context.w;
 }
 let settingsWindow = reopenDock('settings');

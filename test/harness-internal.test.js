@@ -50,14 +50,14 @@ A.ok(src.includes('getKey(provider)') || /const\s+getKey\s*=\s*provider\s*=>/.te
    listModels() proxies a LIVE external OpenRouter /models fetch; awaiting it inline on the auto-resume path
    strands boot on #screen-connect forever when that upstream is slow/blocked (the seeded SKYNET_DEV shoot
    regression). The catalog is cosmetic for resume, so the auto-resume branch must fire it in the BACKGROUND
-   (fire-and-forget) and enter the station immediately — and every catalog fetch must be timeout-bounded so
+   (fire-and-forget) and enter the keep immediately — and every catalog fetch must be timeout-bounded so
    listModels() always settles. If a future refactor re-introduces an inline `await Harness.listModels()` on
    the enter-the-game path, these assertions fail. */
 
 // (a) the auto-resume branch decides eligibility, then enters WITHOUT awaiting the catalog — listModels() is
 //     kicked in the background (not `await`ed) right before resumeInto(). This is the exact shape of the fix.
 A.ok(/const\s+canResume\s*=[\s\S]{0,400}if\s*\(\s*canResume\s*\)\s*\{[\s\S]{0,260}Harness\.listModels\(\)[\s\S]{0,200}resumeInto\(saved\)/.test(app),
-  'auto-resume enters the station and warms the catalog in the background (no inline await before the floor)');
+  'auto-resume enters the keep and warms the catalog in the background (no inline await before the floor)');
 // the background warm must NOT be awaited (that would re-introduce the hang). Assert the resume branch has no
 // `await Harness.listModels()` — the awaited call only survives on the RESUME-connect recovery path below it.
 {
@@ -187,7 +187,7 @@ A.ok(/\+ taskDoctrineNote/.test(sidecar), 'the task doctrine is actually wired i
   // the legacy wrapper still returns a plain array, so every existing caller is untouched.
   A.ok(/async function agentSkills\(agentId, opts\) \{\s*return \(await agentSkillsRead\(agentId, opts\)\)\.skills;/.test(src), 'agentSkills() still returns a bare array, delegating to the read');
   // and the counter surface reads through the outcome-preserving one.
-  const ui = fs.readFileSync(path.join(__dirname, '../frontend/app/stationui.js'), 'utf8');
+  const ui = fs.readFileSync(path.join(__dirname, '../frontend/app/keepui.js'), 'utf8');
   A.ok(/Harness\.agentSkillsRead\(agentId/.test(ui), 'the PRACTICE meter reads through agentSkillsRead');
   A.ok(/if \(!r \|\| !r\.ok\) return fail\('could not read the skillbase'\)/.test(ui), 'a failed read renders UNREAD, never a 0');
   A.ok(/if \(!now \|\| now\.id !== agentId\) return;/.test(ui), 'a late read never paints a different agent’s dossier');

@@ -120,7 +120,7 @@ async function journey() {
     assert.equal(stale.status,409);assert.match((await records())[0].body,/monochrome/);
     assert.equal((await pending()).length,1,'failed correction stays available for review');
     await json('POST','/api/memory/turnin',{agentId:'agent',runId:p.runId,id:p.id,verdict:'discard'});
-    phase='stop';proof.stop=await run('Inspect the station and report the result','stop');
+    phase='stop';proof.stop=await run('Inspect the keep and report the result','stop');
     assert.equal(proof.stop.find(e=>e.name==='agent.run.end').payload.reason,'error');
     assert.ok(proof.stop.some(e=>e.name==='agent.run.error'&&/incomplete/.test(e.payload.message)));
     phase='claim';proof.claim=await run('Save my reply preference','claim');

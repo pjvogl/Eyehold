@@ -2,7 +2,7 @@
 // Offline packaging only. Retained source RGBA bytes are never painted or rescaled.
 const fs=require('node:fs'),crypto=require('node:crypto');
 let sharp;try{sharp=require('sharp');}catch(_){sharp=require('C:/Users/andro/gen-trees/industrial-textures-0912/node_modules/sharp');}
-const root='frontend/assets/industrial/catalog-utility-rest-4',docs='docs/station-remaster/catalog-utility-rest-4';
+const root='frontend/assets/industrial/catalog-utility-rest-4',docs='docs/keep-remaster/catalog-utility-rest-4';
 const sha=b=>crypto.createHash('sha256').update(b).digest('hex');
 const items=[
  ['treasury_coinsorter',40,125,610,360],['treasury_pnl_holo',750,270,365,210],['treasury_token_furnace',1235,30,240,465],

@@ -1,6 +1,6 @@
 'use strict';
 // Mechanical atlas cropping and connected opaque matte removal only.
-// All artwork is authored by imagegen from docs/station-remaster/bridge-reference.png.
+// All artwork is authored by imagegen from docs/keep-remaster/bridge-reference.png.
 const fs=require('fs'),path=require('path'),sharp=require('sharp');
 const root=path.resolve(__dirname,'../..');
 const src=process.argv[2];
@@ -35,7 +35,7 @@ async function prop(file,name) {
  await sharp(atlas).extract({left:x,top:y,width:right-x,height:bottom-y}).png().toFile(path.join(out,'walls',walls[i]+'.png'));}
  await sharp(path.join(src,'exec-d7e729e1-c11a-4bd6-ab20-800973a698a1.png')).resize({width:1024}).png().toFile(path.join(out,'walls/bulkhead.png'));
  await sharp(path.join(src,'exec-f147e2cf-df83-4eef-a4ac-208d356594ed.png')).resize(1024,1024).png().toFile(path.join(out,'shell.png'));
- await prop('exec-f9d0e55c-2e45-4308-9465-c9924a9ea0c7.png','workstation-e');
- await prop('exec-d5ab323a-c96a-4b8c-b9a1-f42ac9f47c45.png','workstation-n');
- await prop('exec-4ce14e96-2e0d-4257-a2e8-03b66500001b.png','workstation-compact-n');
+ await prop('exec-f9d0e55c-2e45-4308-9465-c9924a9ea0c7.png','workkeep-e');
+ await prop('exec-d5ab323a-c96a-4b8c-b9a1-f42ac9f47c45.png','workkeep-n');
+ await prop('exec-4ce14e96-2e0d-4257-a2e8-03b66500001b.png','workkeep-compact-n');
 })();

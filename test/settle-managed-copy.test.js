@@ -6,7 +6,7 @@
    fake DOM nodes (the same harness shape as test/budget-authority-ui.test.js). */
 'use strict';
 const assert = require('node:assert/strict'), fs = require('node:fs'), vm = require('node:vm'), path = require('node:path');
-const text = fs.readFileSync(path.join(__dirname, '..', 'frontend/app/stationui.js'), 'utf8');
+const text = fs.readFileSync(path.join(__dirname, '..', 'frontend/app/keepui.js'), 'utf8');
 const code = text.slice(text.indexOf('  const BG_KEYS ='), text.indexOf('  // MODELS panel'));
 const tick = () => new Promise(r => setImmediate(r));
 const harness = (status) => {
@@ -30,8 +30,8 @@ const harness = (status) => {
   const [managedRow, byokRow] = node('#budget-unsettled').children;
   assert.ok(managedRow && byokRow, 'one row per interrupted run');
   // the Eyehold-credit row points at the in-app STORE's RECENT ACTIVITY (review 2026-10-08): it lists each charge with
-  // its run id, on a linked station AND on an operator (env) station — the account web page has no run ids, and an
-  // operator station's charges are not on account.eyehold.com at all
+  // its run id, on a linked keep AND on an operator (env) keep — the account web page has no run ids, and an
+  // operator keep's charges are not on account.eyehold.com at all
   const mTip = managedRow.attrs['data-tip'];
   assert.match(mTip, /Eyehold credits/, 'the managed row says it ran on Eyehold credits: ' + mTip);
   assert.match(mTip, /SETTINGS → AI & MODELS › STORE › RECENT ACTIVITY/, 'and where its charge is: ' + mTip);

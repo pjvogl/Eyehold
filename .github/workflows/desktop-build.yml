@@ -98,7 +98,7 @@ jobs:
 
       - run: npm ci
 
-      - name: Verify v0.8.5 station recovery on Intel macOS
+      - name: Verify v0.8.5 keep recovery on Intel macOS
         if: runner.os == 'macOS' && matrix.target == 'darwin-x64'
         shell: bash
         run: |
@@ -296,8 +296,8 @@ jobs:
           path: notarization-input/**/*.dmg
 
   # Build/finalize prove bytes and trust. This proves the user journey on Intel hardware:
-  # install the DMG, ask Finder to open it, recover a v0.9.0 manual-sidecar station,
-  # quit, relaunch, and read the same station again.
+  # install the DMG, ask Finder to open it, recover a v0.9.0 manual-sidecar keep,
+  # quit, relaunch, and read the same keep again.
   intel-macos-installed-acceptance:
     needs: [build, notarize-macos]
     if: ${{ !cancelled() }}
@@ -311,7 +311,7 @@ jobs:
           name: eyehold-darwin-x64
           path: intel-distributable
 
-      - name: Install, Finder-launch, and recover v0.9.0 station
+      - name: Install, Finder-launch, and recover v0.9.0 keep
         shell: bash
         env:
           EYEHOLD_REQUIRE_NOTARIZED: ${{ inputs.require_signed_mac }}

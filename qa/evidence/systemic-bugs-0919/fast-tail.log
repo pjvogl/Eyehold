@@ -74,7 +74,7 @@ industrialtextures: OK (398 public-contract assertions; synthetic canvas assets,
 world-texture-ready: OK (69 assertions)
 qa-claims-blob-batch: OK (25 assertions)
 qa-claims-search-batch: binary scope, Unicode folding, exact locators, immutable caching and read failures PASS
-workstation-screen-state: OK (538 assertions)
+workkeep-screen-state: OK (538 assertions)
 prop-remaster-contract: OK (726 assertions)
 authored prop content: OK (104 assertions)
 authored-prop-motion.test: OK (57 assertions)
@@ -89,7 +89,7 @@ PASS projection effects: 160 types/184 views, image bindings, source hashes, idl
 PASS: 184 runtime alpha crops match source hashes and every nontransparent pixel.
 {"types":160,"supportedDirections":208,"roomsChecked":76,"mountedCases":38,"savedState":"untouched"}
 PASS: overview filtering, close detail, stable alpha, cache invalidation, silhouette foot contact and open leg gaps.
-station-templates: seven layouts, classic/remastered catalogs, approved home, cozy and creative conveyor routing, clear entrances, prop access, ownership, undo/redo and persistence PASS
+keep-templates: seven layouts, classic/remastered catalogs, approved home, cozy and creative conveyor routing, clear entrances, prop access, ownership, undo/redo and persistence PASS
 PASS: pack-scoped physical resize, saved centre/contact, freed tiles, undo/redo, reload, custom saves and alpha picking.
 PASS: selection follows visible alpha, translated/mounted art, cached measurement and unavailable-art fallback.
 PASS: legacy multi-room save retains room, placement, routing and agent assignment metadata with an idempotent remaster load.
@@ -101,7 +101,7 @@ industrial-shells: loader, shells, floors and walls, paint, relief, cache, failu
 refit-bake-reuse: same-save handoff, invalidation, entry/reopen and cold fallback PASS
 hallway-traffic: OK (27 assertions)
 cloudsave timeout: stalled headers/body, abort, late acknowledgement and retry PASS
-station-autosave: edits, undo/redo, presets, coalescing, reentry and storage failure PASS
+keep-autosave: edits, undo/redo, presets, coalescing, reentry and storage failure PASS
 [failopen] durable-store.unreadable (x1): injected EACCES
 [failopen] durable-store.unreadable (x2): injected EACCES
 [failopen] durable-store.unreadable (x3): injected EACCES

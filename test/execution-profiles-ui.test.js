@@ -2,7 +2,7 @@
 const A = require('./_assert.js');
 const fs = require('fs');
 const path = require('path');
-const ui = fs.readFileSync(path.join(__dirname, '..', 'frontend', 'app', 'stationui.js'), 'utf8');
+const ui = fs.readFileSync(path.join(__dirname, '..', 'frontend', 'app', 'keepui.js'), 'utf8');
 const app = fs.readFileSync(path.join(__dirname, '..', 'frontend', 'app', 'app.js'), 'utf8');
 const html = fs.readFileSync(path.join(__dirname, '..', 'frontend', 'index.html'), 'utf8');
 const css = fs.readFileSync(path.join(__dirname, '..', 'frontend', 'css', 'app.css'), 'utf8');
@@ -12,7 +12,7 @@ A.ok(/id="ag-execution-chips"/.test(ui) && /setExecutionProfile/.test(ui), 'doss
 A.ok(/id="perm-crew"/.test(ui) && /data-perm-profile/.test(ui), 'Settings offers per-agent execution profiles too');
 A.ok(/ROUTES NEXT COMMAND TO <b>/.test(ui) && /AVAILABILITY <b>/.test(ui), 'dossier shows the per-agent routed backend and readiness truth');
 A.ok(/routes next command to/.test(ui) && /availability/.test(ui), 'Settings shows the per-agent runtime selected for the next command');
-A.ok(!/backend change requires a station restart/.test(ui), 'profile selection is not falsely described as a boot-only setting');
+A.ok(!/backend change requires a keep restart/.test(ui), 'profile selection is not falsely described as a boot-only setting');
 A.ok(/never grants real mouse, keyboard, or screen control/.test(ui), 'profile card names the separate desktop lease');
 A.ok(/FULL POWER/.test(ui) && /whole local computer/.test(ui), 'approval copy names the host-wide authority honestly');
 A.ok(/protected files, arbitrary commands, visible apps/.test(ui), 'Settings states the concrete Full Power reach');

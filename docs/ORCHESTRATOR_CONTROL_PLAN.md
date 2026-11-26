@@ -37,7 +37,7 @@ Branch is rebased onto trunk (absorbed the COMMS interrupt/inline-media work) an
 
 - **M5 — Equip-visual.** Show the summoned worker's capability props on its floor (object=capability truth).
   Touches `world.js`/`worldmodel.js` — the repo's most contended files (summon-fixes / world-game /
-  workstation-ui are live there). **Coordinate with that lane; do not duplicate.**
+  workkeep-ui are live there). **Coordinate with that lane; do not duplicate.**
 
 ## Coordination
 

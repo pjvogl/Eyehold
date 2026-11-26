@@ -81,21 +81,21 @@ function startMock() {
     if (w.doc) {
       w.doc.updatedAt = now;
       if (w.doc.agent) w.doc.agent.model = 'test/model';
-      // the golden fixture carries NO station (it is built at first boot: spawn room + desk only), so a
-      // freshly seeded station has no DISH and every web_* call is WITHHELD before it can reach web.js.
-      // Pre-seed the exact station shape the app builds at first boot — verbatim from a real first-boot
+      // the golden fixture carries NO keep (it is built at first boot: spawn room + desk only), so a
+      // freshly seeded keep has no DISH and every web_* call is WITHHELD before it can reach web.js.
+      // Pre-seed the exact keep shape the app builds at first boot — verbatim from a real first-boot
       // save — plus one dish, so the web capability is genuinely granted (object = capability).
       // ⛔ the prop TYPE is `comms_dish` (2x2) — worldmodel maps comms_dish→'dish' CAPABILITY; a prop
-      // with unknown type `t:'dish'` makes the whole seeded station fail load and get rebuilt bare.
+      // with unknown type `t:'dish'` makes the whole seeded keep fail load and get rebuilt bare.
       // (If pre-seeding ever regresses again, the fallback is the REAL flow from the page console:
       // `Build.open(); Build.__test__.placeCapProp('comms_dish'); Build.close();` — dev-gated.)
-      const st = w.doc.station;
+      const st = w.doc.keep;
       if (st && Array.isArray(st.props)) {
         if (!st.props.some(p => p && p.t === 'comms_dish')) st.props.push({ id: 'p' + (++st._nid), t: 'comms_dish', x: 3, y: 3, w: 2, h: 2 });
       } else {
-        w.doc.station = {
-          schema: 'eyehold.station', version: 1, _nid: 4,
-          meta: { name: 'EYEHOLD STATION', createdAt: 0, tier: 0, spawnRoomId: 'r1', trunkRoomId: 'r1' },
+        w.doc.keep = {
+          schema: 'eyehold.keep', version: 1, _nid: 4,
+          meta: { name: 'EYEHOLD KEEP', createdAt: 0, tier: 0, spawnRoomId: 'r1', trunkRoomId: 'r1' },
           rooms: { r1: { id: 'r1', kind: 'hab', name: 'HAB-01', rects: [{ x1: 0, y1: 0, x2: 17, y2: 10 }], floorStyle: 'hull', floorMat: null, wallStyle: null, wallMat: null, tier: 0, floorPaint: {} } },
           order: ['r1'],
           props: [

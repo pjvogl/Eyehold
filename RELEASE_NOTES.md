@@ -1,8 +1,8 @@
 # Eyehold v0.13.2
 
-**Before you update:** if the in-app update from 0.13.1 stops with "Update paused - no verified recovery point was created", download the full installer from the releases page and run it over the top (your station is kept). If agents are working, choose WAIT FOR AGENTS, not INSTALL ANYWAY. macOS 10.15 Catalina is no longer supported: Eyehold needs macOS 11+ with Safari 16.4+.
+**Before you update:** if the in-app update from 0.13.1 stops with "Update paused - no verified recovery point was created", download the full installer from the releases page and run it over the top (your keep is kept). If agents are working, choose WAIT FOR AGENTS, not INSTALL ANYWAY. macOS 10.15 Catalina is no longer supported: Eyehold needs macOS 11+ with Safari 16.4+.
 
-A large repair update: credits and spending tell the truth, in-app updates are safer, routines get their keys and tools back, the station runs lighter, and your agents can now drive Eyehold for you.
+A large repair update: credits and spending tell the truth, in-app updates are safer, routines get their keys and tools back, the keep runs lighter, and your agents can now drive Eyehold for you.
 
 ## Behavior changes
 
@@ -32,13 +32,13 @@ A large repair update: credits and spending tell the truth, in-app updates are s
 - **Eyehold Managed models:** a saved model like gpt-5.5 is matched to the managed catalog instead of being wiped to "not available", and CHOOSE MODEL no longer opens and instantly closes.
 - **Interrupted runs can be settled.** SPENDING LIMITS lists each one: enter its charge and SETTLE, or COUNT AS its per-run limit. It no longer refuses runs that have a limit set with "Spend history is unavailable"; a graceful Quit books stopped runs' spend.
 - **Spend stops point at SETTINGS › SPENDING LIMITS,** and SAVE LIMITS saves only the limits you changed.
-- **LINK DOWN says why** the station service is gone and, on desktop, offers a restart. Pairing failures name which side failed.
+- **LINK DOWN says why** the keep service is gone and, on desktop, offers a restart. Pairing failures name which side failed.
 
 ### Providers & models
 
 - **Claude Opus 5.5, Sonnet 5.5 and Fable 5.1 conversations no longer fail with "Invalid signature in thinking block"** on the Anthropic provider (#73, #94), and Sonnet 5.5 with thinking OFF works. Haiku 5.5 history edits and 5.5 price estimates are corrected.
 - **Claude Code agents can see images,** and reuse their cached prompt across runs (#68).
-- **Gemini** no longer refuses every request with a station-planning tool attached.
+- **Gemini** no longer refuses every request with a keep-planning tool attached.
 - **Mistral, OpenRouter and other OpenAI-compatible providers** no longer reject runs over extra message fields.
 - **Groq** retries a badly formed tool call instead of ending the run.
 - **ChatGPT:** an expired sign-in shows ⏼ RECONNECT on its card (#92).
@@ -52,16 +52,16 @@ A large repair update: credits and spending tell the truth, in-app updates are s
 - **Workflows with no WORKING FOLDER** tell the agent its files stay private and how to save into a trusted project (#60, #81).
 - **Delegated images and voice files** land in the trusted project, so the lead and the next Conveyor stage can read them, and a worker in ASK mode is told why it has no shell (#77, #88).
 
-### Station browser & web
+### Keep browser & web
 
-- **The station browser heals itself.** An orphaned browser is cleaned up, a held profile falls back to a fresh temporary one, and RESET STATION BROWSER is named when needed (#61).
+- **The keep browser heals itself.** An orphaned browser is cleaned up, a held profile falls back to a fresh temporary one, and RESET KEEP BROWSER is named when needed (#61).
 - **Clearer failures:** failed loads, tunnel refusals, TLS errors and unreachable search engines name the real cause and host.
 - **Tabs behave:** new-tab links open in the same tab, a closed first tab no longer strands the browser, and clicks and typing never land on a different tab.
 - **One-site requests keep the browser,** and a page quoting an error is no longer read as a dead host.
 
-### Station & UI
+### Keep & UI
 
-- **Faster, lighter station.** The world draws at 30 fps focused and 5 fps in the background, and conveyors, lighting and the session rail cost far less (#69).
+- **Faster, lighter keep.** The world draws at 30 fps focused and 5 fps in the background, and conveyors, lighting and the session rail cost far less (#69).
 - **QUEST LOG no longer freezes the app.**
 - **Window text is selectable,** and OPEN THE FULL CONVERSATION opens a workflow's session (#87).
 - **Hover hints work on touchscreen laptops** driven by a mouse.
@@ -88,4 +88,4 @@ A large repair update: credits and spending tell the truth, in-app updates are s
 - **DELIVERABLES** uses the new glass look.
 - **macOS 11 Big Sur** is now the minimum (with Safari 16.4+, which macOS 13.3+ has built in).
 
-Thanks to @bonjurroughs for prompt caching and hover hint fixes, and to @xLagerFeuer for the station status idea.
+Thanks to @bonjurroughs for prompt caching and hover hint fixes, and to @xLagerFeuer for the keep status idea.

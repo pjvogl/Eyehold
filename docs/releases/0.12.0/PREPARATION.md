@@ -8,7 +8,7 @@ Follow-through source fixes, fresh intake (including new #18), live receipts and
 
 - [scope.json](scope.json): 178 commits since the public tag, including 44 non-merge commits touching product code/assets; all 66 classified customer/owner records and recent unmerged branch observations. These are overlapping scopes, not 178 user-facing features.
 - [BUG_DISPOSITION.md](BUG_DISPOSITION.md): the seven still-open reports, four source-fixed reports added since the tag, and the evidence needed to close each gap.
-- [ACCEPTANCE.md](ACCEPTANCE.md): a concrete combined-build, saved-station, installer and release checklist.
+- [ACCEPTANCE.md](ACCEPTANCE.md): a concrete combined-build, saved-keep, installer and release checklist.
 - [RELEASE_NOTES_DRAFT.md](RELEASE_NOTES_DRAFT.md): proposed public language grounded in merged source, with unfinished overhaul additions explicitly held.
 - Two previously unregistered public reports are now durable records: #14 Telegram delegation and #17 local-model conversation latency. The generated bug index includes them. No public issue was changed and no customer message was sent.
 - Preparation checks passed: fast gate 783/783, customer campaign 34/34, focused prompt checks 30 assertions, register validation and document hygiene. These are baseline results; final combined-build acceptance remains owed.
@@ -38,7 +38,7 @@ Guardian's 00:26 UTC cycle passed fast, HTTP, adversarial, screenshot capture an
 
 | Area | Baseline contains | Final acceptance owed |
 | --- | --- | --- |
-| Station appearance | Industrial default materials, command bridge, shell/floor choices, initial station-minion skin | The final prop, skin, lighting, starter-station and Build combination |
+| Keep appearance | Industrial default materials, command bridge, shell/floor choices, initial keep-minion skin | The final prop, skin, lighting, starter-keep and Build combination |
 | Personal progress | Intent-led onboarding, arrival, personal journeys/goals and outcome reviews | Fresh-user path and migration of existing goals/progress |
 | Everyday use | Compact bubbles, transcript ordering, secondary panel repairs, XP/rating recovery | Combined UI at normal/enlarged scale and after restart |
 | Reliability | Browser card discovery, account recovery controls, task/session lifecycle repairs, smaller greeting prompts and Ollama output bound | Exact reported entry points and candidate installer behavior |
@@ -47,7 +47,7 @@ Recent leading overhaul tips observed through Git, without opening another agent
 
 | Branch | Observed tip | Work visible in commits |
 | --- | --- | --- |
-| `agent/station-default-0915` | `1f87ef828` | Furnished presets, starter composition, Build browsing and onboarding/tour changes |
+| `agent/keep-default-0915` | `1f87ef828` | Furnished presets, starter composition, Build browsing and onboarding/tour changes |
 | `agent/prop-coordination-0914` | `708cb4f63` | Remastered props/structural art, seated geometry, labels and animated skin integration |
 | `agent/sprite-reimagine-0914` | `bcba24697` | Skin motion sets, grounded strides, cardinal facing and movement cadence |
 
@@ -64,6 +64,6 @@ The ordinary 12-hour source and 48-hour installed acceptance requirements remain
 
 ## Scope limits
 
-The fresh external census covers all GitHub issues updated since September 11, including closed issues. #15 is a feature request (station templates/community gallery/AI building), not a bug closure requirement; furnished presets do not establish a community gallery or AI station builder. Prior support reports are represented through sanitized tracked records. No fresh private-mailbox read was available in this session, so this is not a complete census of unseen support email. Re-read GitHub and the support inbox before freeze and again before publication.
+The fresh external census covers all GitHub issues updated since September 11, including closed issues. #15 is a feature request (keep templates/community gallery/AI building), not a bug closure requirement; furnished presets do not establish a community gallery or AI keep builder. Prior support reports are represented through sanitized tracked records. No fresh private-mailbox read was available in this session, so this is not a complete census of unseen support email. Re-read GitHub and the support inbox before freeze and again before publication.
 
 The running seeded baseline was inspected at `http://127.0.0.1:9276`: UPLINK became ONLINE, the live feed connected, and WORK → QUESTS opened the Now/Goals/Progress/History panel. This proves only baseline startup/navigation. No final overhaul, paid provider, physical Mac, user account or installed upgrade was exercised by that UI check. Validation details are in [VALIDATION.md](VALIDATION.md).

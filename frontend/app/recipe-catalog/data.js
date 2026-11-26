@@ -5,7 +5,7 @@
    NO logic here — pure data.
 
    Content contract: every record clears THE RECIPE BAR documented in core.js (earns its tap / drives
-   the station / lands somewhere / compounds when recurring), in the same imperative harness voice.
+   the keep / lands somewhere / compounds when recurring), in the same imperative harness voice.
 
    ══ THE DATA LINE (this module's extra bar — it is the whole reason these recipes are worth a tap) ══
    Every directive here must REFUSE TO SILENTLY GUESS. A row that cannot be parsed, a join that does

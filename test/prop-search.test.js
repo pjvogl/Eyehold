@@ -56,7 +56,7 @@ const loungeIds = ids('lounge');
 for (const id of ['couch', 'bookshelf', 'beanbag', 'pinball']) {
   A.ok(loungeIds.indexOf(id) >= 0, '"lounge" returns the whole lounge shelf (' + id + ')');
 }
-A.ok(ids('workstations').indexOf('desk') >= 0, 'the DISPLAY label ("WORKSTATIONS") is searchable');
+A.ok(ids('workkeeps').indexOf('desk') >= 0, 'the DISPLAY label ("WORKKEEPS") is searchable');
 
 /* ---- the TIER is searchable by key AND by the words printed on the tab ---- */
 const functional = C.filter(c => c.tier === 'functional');
@@ -77,7 +77,7 @@ A.ok(ids('live tools').length > 0, 'a two-word grant ("LIVE TOOLS") is searchabl
 /* ---- `desc` is searchable, but ALWAYS ranks below every name match ---- */
 const withDesc = C.filter(c => c.desc);
 A.ok(withDesc.length > 0, 'some props carry a desc (' + withDesc.length + ')');
-const assign = match('assign');   // appears only in WORKSTATION descs, never in a label/id/cat
+const assign = match('assign');   // appears only in WORKKEEP descs, never in a label/id/cat
 A.ok(assign.length > 0, 'a word that lives only in a desc still finds its props');
 const nameHit = c => PropSearch.haystack(c, OPTS).indexOf('bar') >= 0;
 const bars = match('bar');
@@ -90,7 +90,7 @@ A.eq(String(desks[0].label).toLowerCase().indexOf('desk'), 0, 'a label-prefix ma
 
 /* ---- opts is optional, and a bare function is still read as catLabel (callers stay simple) ---- */
 A.ok(PropSearch.matchProps(C, 'mug').some(c => c.id === 'mug'), 'the matcher works with no opts at all');
-A.ok(PropSearch.matchProps(C, 'workstations', x => CAT_LABEL[x]).some(c => c.id === 'desk'),
+A.ok(PropSearch.matchProps(C, 'workkeeps', x => CAT_LABEL[x]).some(c => c.id === 'desk'),
   'a bare function third arg is read as catLabel');
 
 /* ================= THE LAWS — these must hold for props that do not exist yet ================= */

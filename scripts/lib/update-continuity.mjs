@@ -42,13 +42,13 @@ export function adoptAssignedSuitColors(before, after) {
   return out;
 }
 
-// The station save's schema 1 → 2 step (0.13, frontend/app/worldmodel.js STATION_VERSION): the version number moves
+// The keep save's schema 1 → 2 step (0.13, frontend/app/worldmodel.js KEEP_VERSION): the version number moves
 // to 2 and a save with no workflow links gains an EMPTY links list. A copy of `before` that takes exactly that step;
-// a station that lost or gained props, or gained real links, still fails the comparison.
-export function adoptStationSchemaV2(before, after) {
+// a keep that lost or gained props, or gained real links, still fails the comparison.
+export function adoptKeepSchemaV2(before, after) {
   const out = structuredClone(before);
   for (const key of ['local', 'durable']) {
-    const prior = out && out[key] && out[key].station, next = after && after[key] && after[key].station;
+    const prior = out && out[key] && out[key].keep, next = after && after[key] && after[key].keep;
     if (!prior || !next || typeof prior !== 'object' || typeof next !== 'object') continue;
     if (prior.version !== 1 || next.version !== 2) continue;
     prior.version = 2;
@@ -77,7 +77,7 @@ export function populatedFixture(nonce, updatedAt = Date.now()) {
       { id: 'agent', name: 'CANARY NOVA', provider: 'openrouter', model: 'anthropic/claude-sonnet-4.6', reasoningEffort: 'none' },
       { id: 'scout', name: 'CANARY SCOUT', provider: 'openrouter', model: 'anthropic/claude-sonnet-4.6', reasoningEffort: 'none' }
     ],
-    station: { floor: 'grid', props: [{ id: 'canary-desk', kind: 'desk', x: 3, y: 4, agentId: 'scout' }] },
+    keep: { floor: 'grid', props: [{ id: 'canary-desk', kind: 'desk', x: 3, y: 4, agentId: 'scout' }] },
     workstreams: [{ id: 'canary-work', title: 'Update continuity', lane: 'active', history: [{ role: 'user', content: 'preserve-' + nonce }] }],
     activeId: 'canary-work', generalId: 'canary-work',
     usage: { tokens: 321, cost: 0.0123, calls: 2 }
@@ -90,7 +90,7 @@ function projectSave(save) {
     schema: save.schema, version: save.version,
     agent: save.agent,
     agents: save.agents,
-    station: save.station,
+    keep: save.keep,
     workstreams: save.workstreams,
     activeId: save.activeId,
     generalId: save.generalId,

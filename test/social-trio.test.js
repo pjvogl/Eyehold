@@ -86,13 +86,13 @@ for (let t = 0; t < SLOT * 8; t += 10) {
 // ---- RATE: the three non-obvious governors, pinned ----
 // (a) the silent kinds must NOT spend the conversation budget
 A.ok(/SOCIAL_QUIET_CD_MIN\s*=\s*(\d+),\s*SOCIAL_QUIET_CD_MAX\s*=\s*(\d+)/.test(src), 'a separate QUIET lane exists for the non-talking beats');
-const conv = src.match(/SOCIAL_STATION_CD_MIN\s*=\s*(\d+),\s*SOCIAL_STATION_CD_MAX\s*=\s*(\d+)/);
+const conv = src.match(/SOCIAL_KEEP_CD_MIN\s*=\s*(\d+),\s*SOCIAL_KEEP_CD_MAX\s*=\s*(\d+)/);
 const quiet = src.match(/SOCIAL_QUIET_CD_MIN\s*=\s*(\d+),\s*SOCIAL_QUIET_CD_MAX\s*=\s*(\d+)/);
 A.ok(Number(quiet[2]) < Number(conv[1]), 'the quiet lane is strictly shorter than the conversation lane (a silent beat cannot gate a talk)');
 A.ok(/function isTalkKind\(kind\) \{ return kind === 'huddle' \|\| kind === 'border'; \}/.test(src), 'one predicate decides which kinds are conversations');
 A.ok(/armSocialBudget\(now, kind\)/.test(src), 'the coordinator tells the budget WHICH kind fired');
 A.ok(/armSocialBudget\(now, 'watch'\)/.test(src) && /armSocialBudget\(now, 'follow'\)/.test(src), 'both one-sided fire sites declare themselves quiet');
-A.ok(/isTalkKind\(kind\)\s*\?\s*U\.irnd\(SOCIAL_STATION_CD_MIN, SOCIAL_STATION_CD_MAX\)/.test(src.replace(/\s+/g, ' ')), 'only a talking kind draws the conversation cooldown');
+A.ok(/isTalkKind\(kind\)\s*\?\s*U\.irnd\(SOCIAL_KEEP_CD_MIN, SOCIAL_KEEP_CD_MAX\)/.test(src.replace(/\s+/g, ' ')), 'only a talking kind draws the conversation cooldown');
 
 // (b) the talking kinds are SELECTED first — a working neighbour must not pre-empt a conversation
 const sel = src.slice(src.indexOf('function maybeSocial('), src.indexOf('function planHuddle('));
@@ -103,7 +103,7 @@ A.ok(iBorder < iWatch && iBorder < iFollow, 'BORDER (the other conversation) is 
 
 // (c) the candidate radius must exceed the old value that was smaller than a desk gap
 A.ok(Number((src.match(/SOCIAL_NEAR_RADIUS\s*=\s*(\d+)/) || [])[1]) >= 8, 'the neighbour radius reaches past an adjacent desk');
-// and the hold is long enough that a human looking at the station can actually watch it happen
+// and the hold is long enough that a human looking at the keep can actually watch it happen
 const hold = src.match(/SOCIAL_HOLD_MIN\s*=\s*(\d+),\s*SOCIAL_HOLD_MAX\s*=\s*(\d+)/);
 A.ok(Number(hold[1]) >= 8000, 'a conversation holds long enough to be noticed (not the old 3s blink)');
 A.ok(Number((src.match(/SOCIAL_HARD_MS\s*=\s*(\d+)/) || [])[1]) > Number(hold[2]),

@@ -40,7 +40,7 @@ const SAVES = {
     xp: 0, level: 1, lifetimeXp: 0, confidence: 50, samples: 0,
     counters: { runs: 1, tasksDone: 1 }, milestones: ['first_light'], run: { id: null, usedMemory: false }
   },
-  'unlucky (a misconfigured station: every run 404d)': {
+  'unlucky (a misconfigured keep: every run 404d)': {
     xp: 0, level: 1, lifetimeXp: 0, confidence: 50, samples: 0,
     counters: { runs: 12, tasksDone: 0 }, milestones: [], run: { id: null, usedMemory: false }
   },
@@ -137,7 +137,7 @@ for (const [what, save] of Object.entries(ODD)) {
 /* 8. THE ROSTER CREDENTIAL (S3) IS EARNED-ONLY ON LEGACY SAVES TOO — an updating Commander's specialists must
       not suddenly be described to the lead by a rating nobody gave them. */
 A.eq(Xp.credential(SAVES['brand new']).text, '', 'a new agent publishes no credential to the dispatch briefing');
-A.eq(Xp.credential(SAVES['unlucky (a misconfigured station: every run 404d)']).text, '', 'an agent whose every run failed publishes nothing — never a rank');
+A.eq(Xp.credential(SAVES['unlucky (a misconfigured keep: every run 404d)']).text, '', 'an agent whose every run failed publishes nothing — never a rank');
 A.eq(Xp.credential(SAVES['mid-game user']).text, '5+ tasks shipped', 'a legacy mid-game agent publishes only the tier its record proves — no finish rate it has no counters for');
 
 A.report('xp-upgrade.test');

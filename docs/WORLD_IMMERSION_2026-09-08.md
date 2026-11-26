@@ -1,16 +1,16 @@
 # Approved foundation: world immersion
 
-The owner approved the restored station preview at localhost:9207 and requested a major
+The owner approved the restored keep preview at localhost:9207 and requested a major
 improvement in depth, lighting, immersion and characters while retaining its pixel style.
 The separate New Horizon experiment remains removed. This work continues the approved
-station in agent/world-next-0907; it does not restart the rejected art direction.
+keep in agent/world-next-0907; it does not restart the rejected art direction.
 
 Scope: existing deck and wall identities gain dimensional pixel details, actual fixtures
 gain penumbra and restrained atmospheric light, and existing crew sprites respond to the
 same current-frame light with foot-anchored idle breathing. Geometry, saved layout,
 navigation, work signals and furniture pose tracks remain authoritative.
 
-Acceptance: compare normal and cinema views in the running saved station, inspect crew
+Acceptance: compare normal and cinema views in the running saved keep, inspect crew
 at close range, measure rendering costs, exercise reduced motion and canvas recovery,
 and run the full fast gate after mirroring the frontend. Unit tests alone do not establish
 visual quality. Capture artifacts live in .uishots-immersion-before/after locally.
@@ -19,7 +19,7 @@ Live checkpoint: the combined material, fixture and crew pass opened with all th
 existing crew and 44 props, an online event connection, 42 actual light sources and
 zero dropped sources. The browser reported no uncaught exceptions. Reduced-motion
 emulation reached the production preference branch. REFIT opened and closed; clearing
-the cached station artwork triggered one successful watchdog recovery. Reloading kept
+the cached keep artwork triggered one successful watchdog recovery. Reloading kept
 the exact saved rooms/props/belts and routing/capability signature (7bd65e5f prefix).
 
 The CRT pass now uses less additive fade, chromatic separation and grain so the existing
@@ -58,7 +58,7 @@ A .28 edge-detail pass runs before CRT grain/scanlines, on both GPU and CPU path
 quiet gradients and clamps each result to existing neighboring colors to avoid halos.
 Channel separation is zero at the new default; fixture gain moves only from .82 to .79.
 The normal live sample measured 17.8 ms median rendering against the new turn's 18.3 ms
-baseline, with no exceptions. Forced GPU loss kept the actual station lit on the CPU path.
+baseline, with no exceptions. Forced GPU loss kept the actual keep lit on the CPU path.
 An independent real-WebGL check matched GPU/CPU output within 1/255 across 33 cases and
 13,635 color-channel comparisons, including curve off/on, borders, colors and quiet fields.
 
@@ -92,7 +92,7 @@ screen details, with fade/bloom both zero in the running renderer.
 
 Clear-finish verification: all 738 fast steps passed. Actual Canvas sampling matched the
 density curve within one color value, kept black exactly [0,0,0], preserved pixel positions,
-and confirmed film-off identity plus static reduced-motion grain. The live station rendered
+and confirmed film-off identity plus static reduced-motion grain. The live keep rendered
 without exceptions through both WebGL and forced context-loss CPU fallback.
 
 Final art-direction choice after the owner delegated the look: compared the current,

@@ -8,7 +8,7 @@ const SkinStudy=(()=>{
   const response=await fetch('assets/skin-study-0914/runtime-motion.json');if(!response.ok)throw Error('Skin study manifest missing');
   const data=await response.json();
   Object.assign(man.sprites,data.sprites);
-  for(const skin of data.skins.filter(s=>s.readyForStation)){const set=skin.renderSet;bySet[set]=skin;sets.push(set);DATA.SKINS[set]={name:skin.name,set,scale:data.standingHeight/skin.sourceStandingHeight,sourceStandingHeight:skin.sourceStandingHeight};}
+  for(const skin of data.skins.filter(s=>s.readyForKeep)){const set=skin.renderSet;bySet[set]=skin;sets.push(set);DATA.SKINS[set]={name:skin.name,set,scale:data.standingHeight/skin.sourceStandingHeight,sourceStandingHeight:skin.sourceStandingHeight};}
   const panel=document.createElement('aside');panel.id='skin-study-preview';panel.style.cssText='position:fixed;z-index:99999;top:58px;left:16px;padding:8px 12px;background:#091214e8;border:1px solid #746546;color:#d7c89d;font:12px VT323,monospace;max-width:calc(100vw - 32px)';
   const label=document.createElement('label');label.textContent=sets.length+' skins · animated preview ';
   const picker=document.createElement('select');picker.setAttribute('aria-label','Preview agent skin');picker.style.cssText='background:#172124;color:#ded5b6;border:1px solid #746546;padding:4px';

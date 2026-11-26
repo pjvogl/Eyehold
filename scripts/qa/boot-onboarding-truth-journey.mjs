@@ -1,5 +1,5 @@
 // Live PL-03/PL-08 adversarial journey. Uses the repository's sanctioned CDP harness.
-// Run against a seeded station for reload mode, and a fresh onboard sidecar for custom mode:
+// Run against a seeded keep for reload mode, and a fresh onboard sidecar for custom mode:
 //   EYEHOLD_URL=http://127.0.0.1:9132 node scripts/qa/boot-onboarding-truth-journey.mjs reload
 //   EYEHOLD_URL=http://127.0.0.1:9133 node scripts/qa/boot-onboarding-truth-journey.mjs custom
 import { mkdtempSync, rmSync } from 'node:fs';
@@ -28,7 +28,7 @@ try {
   const diag = collectDiagnostics(cdp);
   await cdp.send('Page.navigate', { url });
   if (mode === 'reload') {
-    await waitFor(`!!document.querySelector('#screen-game.active') && typeof World==='object'`, 'seeded station');
+    await waitFor(`!!document.querySelector('#screen-game.active') && typeof World==='object'`, 'seeded keep');
     for (let n=1;n<=10;n++) {
       await cdp.send('Page.reload', { ignoreCache: true }); await sleep(120);
       await waitFor(`document.readyState==='complete' && !!document.querySelector('#screen-game.active') && typeof World==='object'`, 'reload '+n);

@@ -9,7 +9,7 @@
         clears it. (This is the persisted truth the UI toggle must reach.)
      2. THE UI→ROUTE WIRE — source-locked: #ag-workshop-on calls access.config.setWorkshop, and app.setAgentWorkshop
         POSTs /api/workshop/grant, resolving off the REAL route result and REVERTING the local flag when the
-        station did not record it (truthful telemetry — the toggle never asserts a grant the harness didn't store).
+        keep did not record it (truthful telemetry — the toggle never asserts a grant the harness didn't store).
 
    HONESTLY OUT OF SCOPE: the away-loop DISPATCH half (a background cron/driver that reads the grant and fires a
    workshop shift) is not driven by any DOM sweep and is not exercised here — it stays covered by the away-driver
@@ -51,12 +51,12 @@ const writeDurable = ({ fs }, file, data) => { fs.writeFileSync(file, data); };
 
   /* ---- 2. THE UI→ROUTE WIRE (source-lock) ---- */
   const app = f => fs.readFileSync(path.join(__dirname, '..', 'frontend', 'app', f), 'utf8');
-  const ui = app('stationui.js'), appjs = app('app.js');
+  const ui = app('keepui.js'), appjs = app('app.js');
 
   A.ok(/id="ag-workshop-on"/.test(ui), 'the dossier renders the #ag-workshop-on away-workshop checkbox');
   A.ok(/aria-label="Build things while I am away"/.test(ui), 'the toggle carries an accessible name');
   A.ok(/#ag-workshop-on/.test(ui) && /access\.config\.setWorkshop\(/.test(ui), 'flipping the toggle calls access.config.setWorkshop');
-  // truthful telemetry: the checkbox reverts if the station did not record the grant
+  // truthful telemetry: the checkbox reverts if the keep did not record the grant
   A.ok(/setWorkshop\(a && a\.id, next\)\)\.then\(ok =>/.test(ui) || /setWorkshop\([\s\S]{0,60}\)\)\.then\(ok =>/.test(ui), 'the toggle resolves off the REAL setWorkshop result (does not assume success)');
 
   const wm = /function setAgentWorkshop\(agentId, enabled\)\s*\{([\s\S]*?)\n  \}/.exec(appjs);
@@ -65,7 +65,7 @@ const writeDurable = ({ fs }, file, data) => { fs.writeFileSync(file, data); };
   A.ok(/a\.workshop = on/.test(wBody), 'setAgentWorkshop writes the local away-workshop flag');
   A.ok(/\/api\/workshop\/grant/.test(wBody) && /method: 'POST'/.test(wBody), 'setAgentWorkshop records the grant via POST /api/workshop/grant (the server AUTHORITY)');
   A.ok(/agentId: a\.id, on: on/.test(wBody), 'the grant POST carries the agentId + on flag');
-  A.ok(/if \(!ok\)[\s\S]{0,80}a\.workshop = !on/.test(wBody), 'a grant the station did NOT record reverts the local flag (truthful telemetry)');
+  A.ok(/if \(!ok\)[\s\S]{0,80}a\.workshop = !on/.test(wBody), 'a grant the keep did NOT record reverts the local flag (truthful telemetry)');
   A.ok(/pushRoster\(\)/.test(wBody) && /persist\(\)/.test(wBody), 'the grant updates the away-driver dossier (pushRoster) and persists');
   A.ok(/setWorkshop:\s*setAgentWorkshop/.test(appjs), 'setAgentWorkshop is exposed on access.config.setWorkshop');
 

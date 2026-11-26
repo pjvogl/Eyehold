@@ -81,7 +81,7 @@ const feedbackRecs = async () => ((await api('/api/memory/records?agent=agent'))
     A.ok(r2.prompt.indexOf('Commander\'s own verdicts on past work') >= 0, 'under the taste header');
     A.ok(r2.prompt.indexOf('[user-confirmed reference] Preference') >= 0, 'marked as the Commander\'s confirmed preference');
 
-    // 3b. station-wide: a DIFFERENT agent's next run carries the Commander's correction too (no foreign note id)
+    // 3b. keep-wide: a DIFFERENT agent's next run carries the Commander's correction too (no foreign note id)
     const rs = await run('Compose a short poem about autumn leaves.', 'scribe');
     A.ok(rs.prompt.indexOf('way too long, give me 3 bullet points max') >= 0, 'another agent\'s run carries the correction (taste is about the Commander)');
     A.ok(!/\[note_\d+\] \[user-confirmed reference\] Preference — DISLIKED/.test(rs.prompt), 'the foreign record shows no note id in the other agent\'s prompt');

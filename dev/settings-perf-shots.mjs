@@ -8,7 +8,7 @@
  * background timers AND never fires requestAnimationFrame, so the chunked swatch painter can only
  * be observed here, in a compositing browser.
  *
- * WHAT WAS WRONG (measured on trunk b6e890c5c, 1280x720, seeded station):
+ * WHAT WAS WRONG (measured on trunk b6e890c5c, 1280x720, seeded keep):
  *   - buildSettings painted all six BACKDROP swatches with the REAL world renderer, inline, on
  *     every build of the panel. Per chip: moon 400ms, forest 150ms, nursery 54ms, ocean 26ms,
  *     city 14ms, void 9ms ≈ 600ms of blocked main thread. openTerm('settings') = 501ms, and
@@ -56,7 +56,7 @@ function portFree(port) {
 async function main() {
   for (const [label, port] of [['sidecar', PORT], ['CDP', CDP_PORT]]) {
     if (!(await portFree(port))) {
-      throw new Error(`port ${port} (${label}) is already in use — another agent's station is probably there.\n` +
+      throw new Error(`port ${port} (${label}) is already in use — another agent's keep is probably there.\n` +
         `  Re-run with a free pair, e.g. SKYNET_SHOT_PORT=<free> SKYNET_CDP_PORT=<free+1> node dev/settings-perf-shots.mjs`);
     }
   }
@@ -67,10 +67,10 @@ async function main() {
   try {
     if (!(await waitUp(URL))) throw new Error('sidecar never came up on ' + URL);
     // Second belt: prove the served bundle is THIS worktree's build before believing any measurement.
-    const marker = await (await fetch(URL + 'app/stationui.js')).text();
+    const marker = await (await fetch(URL + 'app/keepui.js')).text();
     if (!marker.includes('paintBackdropSwatches')) {
       throw new Error('the app served on ' + URL + ' is not this worktree\'s build (no lazy swatch painter) — ' +
-        'refusing to measure a station this harness did not boot');
+        'refusing to measure a keep this harness did not boot');
     }
     chrome = launchChrome({ cdpPort: CDP_PORT, profileDir: join(scratch, 'chrome') });
     await sleep(1200);
@@ -90,7 +90,7 @@ async function main() {
     console.log('\n— OPENING SETTINGS —');
     const opened = await evalJS(cdp, `(() => {
       const t0 = performance.now();
-      StationUI.openTerm('settings', 'providers');
+      KeepUI.openTerm('settings', 'providers');
       const openMs = +(performance.now() - t0).toFixed(1);
       const win = document.querySelector('.term.console');
       void win.offsetHeight;                       // flush layout into the measurement
@@ -168,7 +168,7 @@ async function main() {
     console.log('\n— REPAINT COST AFTER THE CACHE IS WARM —');
     const warm = await evalJS(cdp, `(() => {
       const rr = [];
-      for (let i = 0; i < 3; i++) { const t = performance.now(); StationUI.rerender('settings'); rr.push(+(performance.now() - t).toFixed(1)); }
+      for (let i = 0; i < 3; i++) { const t = performance.now(); KeepUI.rerender('settings'); rr.push(+(performance.now() - t).toFixed(1)); }
       const win = document.querySelector('.term.console');
       const chips = [...win.querySelectorAll('#set-backdrop [data-bd]')];
       const direct = chips.map(b => {
@@ -187,7 +187,7 @@ async function main() {
     check('a warm swatch repaint of all six costs under 20ms (was ~600ms)', warm.sampleTotal < 20, warm.sampleTotal + 'ms');
 
     /* ── 4b. THE OTHER THING A USER DRAGS ───────────────────────────────────────────────────────
-       Reported, not asserted at a tight bound: the APPEARANCE sliders recolour the whole station
+       Reported, not asserted at a tight bound: the APPEARANCE sliders recolour the whole keep
        per input tick (applySettings), which is a real cost this lane did not touch. Printing it
        keeps the next person from re-discovering it as "settings is still laggy". */
     const slider = await evalJS(cdp, `(() => {
@@ -232,7 +232,7 @@ async function main() {
        — so drive that instead of pretending it is a tab set. */
     for (const key of ['agents', 'connectors', 'messaging', 'automation', 'deliverables']) {
       const r = await evalJS(cdp, `(async () => {
-        StationUI.openTerm(${JSON.stringify(key)});
+        KeepUI.openTerm(${JSON.stringify(key)});
         await new Promise(r => setTimeout(r, 900));
         const wins = [...document.querySelectorAll('.term.console')];
         const win = wins[wins.length - 1];
@@ -252,7 +252,7 @@ async function main() {
             // still record the shell it opened at — this is the one window whose explicit
             // dlv-win height rule this change removed, so "it kept the shell" must be measured.
             const h = win.offsetHeight;
-            StationUI.closeTerm(${JSON.stringify(key)});
+            KeepUI.closeTerm(${JSON.stringify(key)});
             return { key: ${JSON.stringify(key)}, noToggle: true, openedAt: h };
           }
           hs.push(win.offsetHeight);
@@ -261,12 +261,12 @@ async function main() {
         const scroller = win.querySelector('.con-pane') || win.querySelector('.term-body');
         const out = { key: ${JSON.stringify(key)}, mode, steps: hs.length, heights: [...new Set(hs)],
                       fill: scroller ? Math.round(100 * scroller.scrollHeight / win.offsetHeight) : null };
-        StationUI.closeTerm(${JSON.stringify(key)});
+        KeepUI.closeTerm(${JSON.stringify(key)});
         return out;
       })()`);
       if (r.missing) { check(key + ' console opened', false, 'no .term.console found'); continue; }
       if (r.noToggle) {
-        console.log('   ' + key.padEnd(13) + 'opened at ' + r.openedAt + 'px · no card/drawer on a seeded station, so the drawer sweep is skipped');
+        console.log('   ' + key.padEnd(13) + 'opened at ' + r.openedAt + 'px · no card/drawer on a seeded keep, so the drawer sweep is skipped');
         check(key + ' opens at the shared console shell height', r.openedAt === shellH, r.openedAt + 'px vs ' + shellH + 'px');
         continue;
       }

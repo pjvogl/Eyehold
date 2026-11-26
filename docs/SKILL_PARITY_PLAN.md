@@ -29,7 +29,7 @@ Three real problems:
    (The gate is the object=capability law — KEEP it; the fix is making the consequence
    legible, not removing the gate.)
 3. **Library is thin.** 9 bundled recipes vs the reference harness's full `skills/<category>/` tree.
-   Plus the AGENT SKILLS search box in stationui.js (~1345) has no handler.
+   Plus the AGENT SKILLS search box in keepui.js (~1345) has no handler.
 
 ## Build lanes
 

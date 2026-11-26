@@ -19,7 +19,7 @@
       { capId: 'compute', tool: 'model.chat', scope: 'execute', requiresConsent: false, network: true },
       // QUEST V2 §B: quest.update rides the `computer` object — the ONE object in BOTH the interactive baseline
       // (compute-only) office AND fullOffice, so EVERY task surface gets it (the interactive surface has no placed
-      // notebook, which is why granting this under `notebook` left the tool ABSENT while the STATION QUESTS prompt
+      // notebook, which is why granting this under `notebook` left the tool ABSENT while the KEEP QUESTS prompt
       // commanded its use — a truthful-telemetry break). A quest is the agent's OWN standing objective: knowing and
       // updating it is part of being able to think at all — the same freebie class as compute — with no outward
       // mutation until the Commander confirms an attest. capId is 'quest', NOT 'compute': resolve.js treats a
@@ -50,29 +50,29 @@
       { capId: 'toolsearch', tool: 'tool.search', scope: 'read', requiresConsent: false, network: false },
       // execute + consent: see the SECURITY STOPGAP note in tools/builtin/code.js (vm child is not an isolation boundary)
       { capId: 'code', tool: 'code.run', scope: 'execute', requiresConsent: true, network: false },
-      // HARNESS SELF-KNOWLEDGE: reading the station's own secret-free status is part of being able to
+      // HARNESS SELF-KNOWLEDGE: reading the keep's own secret-free status is part of being able to
       // operate at all, not a power the Commander should have to unlock with a DISH, CABINET or WORKBENCH.
       // A distinct capId is required because `compute` is the non-callable model gate in resolve.js.
-      { capId: 'stationinfo', tool: 'station.inspect', scope: 'read', requiresConsent: false, network: false },
+      { capId: 'keepinfo', tool: 'keep.inspect', scope: 'read', requiresConsent: false, network: false },
       // The operator manual's REFERENCE sections (navigation / props / troubleshooting), served on demand so the
       // interactive prompt carries only their table of contents (sidecar/manual.js). Same self-knowledge class as
-      // station.inspect and the same always-present object, so the prompt's "call manual.read" can never name a
+      // keep.inspect and the same always-present object, so the prompt's "call manual.read" can never name a
       // tool the run lacks. A constant text lookup: no IO, no network, no consent.
-      { capId: 'stationinfo', tool: 'manual.read', scope: 'read', requiresConsent: false, network: false },
-      // SHOWING the station (2026-10-04): station.show opens a Eyehold window/tab on the Commander's screen (frontend/app/places.js).
+      { capId: 'keepinfo', tool: 'manual.read', scope: 'read', requiresConsent: false, network: false },
+      // SHOWING the keep (2026-10-04): keep.show opens a Eyehold window/tab on the Commander's screen (frontend/app/places.js).
       // Read scope + no consent: it changes only what they LOOK at (no harness state), so neither an approval card nor the Task
       // Brief gate stands between "show me" and the window; the page obeys only the run they are watching. Deferred: found by
       // tool_search "show open window" (the manual's navigation section names it), so it costs no prompt bytes.
-      { capId: 'stationinfo', tool: 'station.show', scope: 'read', requiresConsent: false, network: false, deferred: true },
-      // Host-scoped scheduled scratchpad: the computer is present on every runnable station, while the tool
+      { capId: 'keepinfo', tool: 'keep.show', scope: 'read', requiresConsent: false, network: false, deferred: true },
+      // Host-scoped scheduled scratchpad: the computer is present on every runnable keep, while the tool
       // itself refuses any run without a host-minted cronJobId. This does not grant general notebook access.
       { capId: 'routinescratch', tool: 'routine.notepad', scope: 'write', requiresConsent: false, network: false },
       // TASK PLAN: the agent's in-session todo list — MOVED here from `notebook` (memory) 2026-08-17. Tracking
       // your own multi-step plan is part of being able to think at all, the same freebie class as quest.update
       // directly above and for the same mechanical reason: `computer` is the ONE object in BOTH the
-      // compute-only interactive office and fullOffice, so a station without a placed NOTEBOOK no longer
+      // compute-only interactive office and fullOffice, so a keep without a placed NOTEBOOK no longer
       // silently has NO task-list mechanism (and loop.js's post-compaction todo re-injection was dead on
-      // exactly those stations). capId is 'taskplan', NOT 'compute' (resolve.js treats a 'compute' grant as
+      // exactly those keeps). capId is 'taskplan', NOT 'compute' (resolve.js treats a 'compute' grant as
       // the COMPUTE GATE and never emits it as a callable tool — the trap quest.update documents). No
       // TOOLSETS_META row (never a toggleable family), no capsummary CAPS row (never advertised or nagged).
       // The plan itself still persists through the notebook STORE — this grant is about tool AVAILABILITY,
@@ -94,7 +94,7 @@
       { capId: 'memory', tool: 'notebook.write', scope: 'write', requiresConsent: false, network: false },   // private sandboxed memory — no consent gate (see notebook.js)
       { capId: 'memory', tool: 'notebook.read', scope: 'read', requiresConsent: false, network: false },
       { capId: 'memory', tool: 'notebook.feedback', scope: 'write', requiresConsent: false, network: false }, // rate a recalled memory helpful/unhelpful — trust nudge only (see notebook.js)
-      // `todo` was MOVED to the `computer` object (above, capId 'taskplan') 2026-08-17 — a station without a
+      // `todo` was MOVED to the `computer` object (above, capId 'taskplan') 2026-08-17 — a keep without a
       // placed notebook had no task-list mechanism at all, silently. See the note there.
       { capId: 'memory', tool: 'recall_conversation', scope: 'read', requiresConsent: false, network: false }, // H1.3: search your own past dialogue (transcriptstore) — read-only, no consent (see recall.js)
       { capId: 'memory', tool: 'skill.write', scope: 'write', requiresConsent: false, network: false },        // H4: save/edit a reusable procedure (see skills.js)
@@ -125,7 +125,7 @@
       { capId: 'web', tool: 'web_request', scope: 'execute', requiresConsent: true, network: true },
       // The INTEGRATION readout that keeps web_request honest: which connectors/keys are live, and which vetted
       // ones the Commander could add but has not. Rides `dish` because web_request is the route a key is actually
-      // spent through — a station with no dish has no reach to advertise. Local read, no network, no consent, no
+      // spent through — a keep with no dish has no reach to advertise. Local read, no network, no consent, no
       // secret (names and env-var names only). NOT deferred: it is the cure for not knowing what exists, so it
       // cannot itself be a tool the agent must already suspect exists to find. (see tools/builtin/connectors.js)
       { capId: 'web', tool: 'connectors.list', scope: 'read', requiresConsent: false, network: false },
@@ -150,13 +150,13 @@
          which is also the moment a human is around to answer its consent card. */
       { capId: 'web', tool: 'browser.attach', scope: 'execute', requiresConsent: true, network: true, deferred: true },
       { capId: 'web', tool: 'browser.detach', scope: 'execute', requiresConsent: false, network: true, deferred: true },
-      /* #61: the supported recovery for a wedged station browser (ends only Eyehold's own orphaned browser on the
-         station profile). Deferred: a repair move, found through tool.search when a browser error names it. */
+      /* #61: the supported recovery for a wedged keep browser (ends only Eyehold's own orphaned browser on the
+         keep profile). Deferred: a repair move, found through tool.search when a browser error names it. */
       { capId: 'web', tool: 'browser.reset', scope: 'execute', requiresConsent: false, network: true, deferred: true },
       /* Deferred, same reasoning as attach: specialist moves, not the ordinary browse loop. pdf is a
          READ (render what is already on screen into the jail); intercept/emulate reshape only the
-         STATION browser and both refuse in attached mode (ownership — the Commander's own Chrome is
-         not the station's to reconfigure). */
+         KEEP browser and both refuse in attached mode (ownership — the Commander's own Chrome is
+         not the keep's to reconfigure). */
       { capId: 'web', tool: 'browser.pdf', scope: 'read', requiresConsent: false, network: true, deferred: true },
       { capId: 'web', tool: 'browser.intercept', scope: 'execute', requiresConsent: false, network: true, deferred: true },
       { capId: 'web', tool: 'browser.emulate', scope: 'execute', requiresConsent: false, network: true, deferred: true },
@@ -190,7 +190,7 @@
       { capId: 'web', tool: 'browser.screenshot', scope: 'read', requiresConsent: false, network: true },
       { capId: 'web', tool: 'browser.network', scope: 'read', requiresConsent: false, network: true, deferred: true },
       { capId: 'web', tool: 'browser.inspect', scope: 'read', requiresConsent: false, network: true, deferred: true },
-      // Page eval is consent-gated AND refused outright on the signed-in station profile (see browser.js).
+      // Page eval is consent-gated AND refused outright on the signed-in keep profile (see browser.js).
       { capId: 'web', tool: 'browser.eval', scope: 'execute', requiresConsent: true, network: true, deferred: true },
       { capId: 'web', tool: 'browser.tabs', scope: 'read', requiresConsent: false, network: true, deferred: true },
       { capId: 'web', tool: 'browser.tab_select', scope: 'execute', requiresConsent: false, network: true, deferred: true },
@@ -202,7 +202,7 @@
       // Real-screen desktop.open is not an ordinary run capability. The implementation remains
       // registered inertly for a future separate attended host channel, never a placed dish.
       // ---- COMMS: OUTBOUND messaging reach (see tools/builtin/comms.js) ----
-      // The dish is the station's antenna: it already means "this agent can reach OUT past the station walls".
+      // The dish is the keep's antenna: it already means "this agent can reach OUT past the keep walls".
       // Fetching a page and transmitting a message are the same physical claim on that prop, so outbound
       // messaging hangs here rather than on a new object type. It is its OWN capId — NOT 'web' — precisely so a
       // Commander who wants search-and-browse without letting an agent message people can switch COMMS off
@@ -281,10 +281,10 @@
       { capId: 'orchestrator', tool: 'routine.create', scope: 'write', requiresConsent: true, network: false },
       // routine.manage — edit/pause/resume/delete/queue-a-fire on an EXISTING routine. Consent-gated for the
       // same reason create is: an edit is the same surface as a create (a clean routine can be patched into a
-      // standing payload), and pausing or deleting changes what the station does unattended. One action-shaped
+      // standing payload), and pausing or deleting changes what the keep does unattended. One action-shaped
       // tool rather than five verbs, because every schema here is re-sent on every turn (see the tool file).
       { capId: 'orchestrator', tool: 'routine.manage', scope: 'write', requiresConsent: true, network: false },
-      // SESSIONS (2026-07-30): the lead's session verbs over the station bridge — list/create/focus a
+      // SESSIONS (2026-07-30): the lead's session verbs over the keep bridge — list/create/focus a
       // workstream by the name the Commander says, completing "make a session called X and have them work
       // in it" (team.dispatch's `session` targets one; these are how it comes to exist). No consent: a
       // session spends nothing and is reversible, and every unresolvable name REFUSES rather than guessing.
@@ -296,9 +296,9 @@
       // "what did the researcher do?" answered from assumption and denied real finished work (2026-07-30).
       { capId: 'orchestrator', tool: 'session.peek', scope: 'read', requiresConsent: false, network: false },
       { capId: 'orchestrator', tool: 'session.focus', scope: 'write', requiresConsent: false, network: false },
-      // station.status: the page's station-wide snapshot (busy / awaiting approval per session), read-only (#55). Deferred:
+      // keep.status: the page's keep-wide snapshot (busy / awaiting approval per session), read-only (#55). Deferred:
       // the tool budget is spent, so it costs every run one name in the deferred index, not a schema (tool_search "status").
-      { capId: 'orchestrator', tool: 'station.status', scope: 'read', requiresConsent: false, network: false, deferred: true },
+      { capId: 'orchestrator', tool: 'keep.status', scope: 'read', requiresConsent: false, network: false, deferred: true },
       // TASK BOARD: cards are the page's canonical kind:'task' Workstreams and are persisted through the same
       // agent save the board renders. Creation is reversible and spends nothing; management is consent-gated
       // because its action set includes shipping, archiving, reassignment, and deletion.
@@ -307,26 +307,26 @@
       { capId: 'orchestrator', tool: 'task.manage', scope: 'write', requiresConsent: true, network: false },
       { capId: 'orchestrator', tool: 'team.config', scope: 'read', requiresConsent: false, network: false },
       { capId: 'orchestrator', tool: 'team.configure', scope: 'write', requiresConsent: true, network: false },
-      // station.layout: the floor as the Workflow panel reads it (lines, steps, briefs, starts, blockers). Read-only.
-      { capId: 'orchestrator', tool: 'station.layout', scope: 'read', requiresConsent: false, network: false },
-      // the station builder (2026-09-29): plan a ready-made line on a copy (changes nothing), then build exactly that
+      // keep.layout: the floor as the Workflow panel reads it (lines, steps, briefs, starts, blockers). Read-only.
+      { capId: 'orchestrator', tool: 'keep.layout', scope: 'read', requiresConsent: false, network: false },
+      // the keep builder (2026-09-29): plan a ready-made line on a copy (changes nothing), then build exactly that
       // plan behind the approval card (one undo, add-only)
-      /* THE STATION BUILDER: deferred — found by tool_search "station builder" (the lead's note names it), each result
+      /* THE KEEP BUILDER: deferred — found by tool_search "keep builder" (the lead's note names it), each result
          revealing the next tool. A floor change is a specialist job the Commander asks for, not a headline every run needs. */
-      { capId: 'orchestrator', tool: 'station.map', scope: 'read', requiresConsent: false, network: false, deferred: true },
-      { capId: 'orchestrator', tool: 'station.plan', scope: 'read', requiresConsent: false, network: false, deferred: true },
-      { capId: 'orchestrator', tool: 'station.build', scope: 'write', requiresConsent: true, network: false, deferred: true },
+      { capId: 'orchestrator', tool: 'keep.map', scope: 'read', requiresConsent: false, network: false, deferred: true },
+      { capId: 'orchestrator', tool: 'keep.plan', scope: 'read', requiresConsent: false, network: false, deferred: true },
+      { capId: 'orchestrator', tool: 'keep.build', scope: 'write', requiresConsent: true, network: false, deferred: true },
       // MAKE A PROP (2026-10-01): a new piece drawn by Eyehold's prop maker, paid with Eyehold credits (consent, the card names the price)
-      { capId: 'orchestrator', tool: 'station.make_prop', scope: 'write', requiresConsent: true, network: true, deferred: true },
-      { capId: 'orchestrator', tool: 'station.test_line', scope: 'write', requiresConsent: true, network: true, deferred: true },
-      { capId: 'orchestrator', tool: 'station.start_line', scope: 'write', requiresConsent: true, network: false, deferred: true },
-      /* STATION CONTROL (2026-10-02): the Commander's settings, read and changed from chat — the crew's model/approval/reach/
+      { capId: 'orchestrator', tool: 'keep.make_prop', scope: 'write', requiresConsent: true, network: true, deferred: true },
+      { capId: 'orchestrator', tool: 'keep.test_line', scope: 'write', requiresConsent: true, network: true, deferred: true },
+      { capId: 'orchestrator', tool: 'keep.start_line', scope: 'write', requiresConsent: true, network: false, deferred: true },
+      /* KEEP CONTROL (2026-10-02): the Commander's settings, read and changed from chat — the crew's model/approval/reach/
          personality/name/skin, sessions, the look, spending, autonomy, memory, connectors, skills, apps, projects. Deferred
          (found by tool_search "settings"): a settings change is something the Commander asks for, not a headline every run
-         needs. station.power holds only the escalations, in its own consent class, refused on unattended runs. */
-      { capId: 'orchestrator', tool: 'station.settings', scope: 'read', requiresConsent: false, network: false, deferred: true },
-      { capId: 'orchestrator', tool: 'station.control', scope: 'write', requiresConsent: true, network: false, deferred: true },
-      { capId: 'orchestrator', tool: 'station.power', scope: 'write', requiresConsent: true, network: false, deferred: true },
+         needs. keep.power holds only the escalations, in its own consent class, refused on unattended runs. */
+      { capId: 'orchestrator', tool: 'keep.settings', scope: 'read', requiresConsent: false, network: false, deferred: true },
+      { capId: 'orchestrator', tool: 'keep.control', scope: 'write', requiresConsent: true, network: false, deferred: true },
+      { capId: 'orchestrator', tool: 'keep.power', scope: 'write', requiresConsent: true, network: false, deferred: true },
       // LOOPS: standing objective iteration through loops.json. Both mutations require consent because they
       // create or alter future autonomous work. Model tools never accept the host-run check command.
       { capId: 'orchestrator', tool: 'loop.list', scope: 'read', requiresConsent: false, network: false },
@@ -340,7 +340,7 @@
       { capId: 'studio', tool: 'image_generate', scope: 'write', requiresConsent: true, network: true },
       { capId: 'studio', tool: 'image_analyze', scope: 'read', requiresConsent: false, network: true },
       // voice_generate SPEAKS to a file — the studio's third skill. Consent-gated for the same reason
-      // image_generate is: it writes into the workspace. It rides the station's existing TTS ladder (the keyed
+      // image_generate is: it writes into the workspace. It rides the keep's existing TTS ladder (the keyed
       // neural chain, then the free keyless Edge floor), so it needs no studio-specific credential — but it
       // does reach the network on the keyed legs. (see tools/builtin/voice.js)
       { capId: 'studio', tool: 'voice_generate', scope: 'write', requiresConsent: true, network: true },

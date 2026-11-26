@@ -2,7 +2,7 @@
 
    This is the missing CONSUMER of the autonomy posture. Slices 1–2 shipped the dial (autonomy.js) and cron
    self-initiation (autojobs.js), but nothing read the posture to actually drive idle behaviour — so the dial had
-   no effect on the floor. This engine closes that: when the Commander goes idle, it decides what the station
+   no effect on the floor. This engine closes that: when the Commander goes idle, it decides what the keep
    should do on its own, GATED by the dial AND by how well it actually knows the Commander.
 
    THE DECISION (pure + deterministic; the live clock, the dossier reads, and the curiosity hand-off live in the
@@ -19,7 +19,7 @@
    context first (the flywheel: when it doesn't know enough to act, it acts to know more).
 
    THE GOVERNING RULE — ceiling vs earned: the dial is the ceiling the Commander PERMITS; the tier is the level the
-   station has EARNED; it operates at the LOWER of the two and names which is BINDING (legibility — "you set me
+   keep has EARNED; it operates at the LOWER of the two and names which is BINDING (legibility — "you set me
    free, but i'm still learning you, so here's a question instead of a guess"). WAIT means nothing, ever.
 
    PURE + node-testable, mirroring autonomy.js / autojobs.js / pitch.js: an `Autopilot` global in the browser,
@@ -61,14 +61,14 @@
     return mx;
   }
 
-  // ACTIVITY-AS-GROUNDING (NS-2): with the context pack, a "cold dossier" no longer means the station can do
+  // ACTIVITY-AS-GROUNDING (NS-2): with the context pack, a "cold dossier" no longer means the keep can do
   // nothing. If the Commander has been visibly working — enough recent USER-INITIATED runs (real evidence of what
-  // he's doing) — the station has honest grounding to act on that work even before the six dossier dims are filled.
+  // he's doing) — the keep has honest grounding to act on that work even before the six dossier dims are filled.
   // These bars are deliberately CONSERVATIVE (activity must be substantial, not a single stray run) and the grant is
   // capped at HOT so heavy activity can license real acting, exactly as a full dossier does. It is a SEPARATE path,
   // never a discount on the dossier bars — a thin-activity night still falls back to the dossier tier.
-  const ACTIVITY_WARM_MIN = 2;      // ≥ this many recent user runs → the station has enough to usefully PROPOSE
-  const ACTIVITY_HOT_MIN = 4;       // ≥ this many recent user runs → the station has EARNED the right to ACT on it
+  const ACTIVITY_WARM_MIN = 2;      // ≥ this many recent user runs → the keep has enough to usefully PROPOSE
+  const ACTIVITY_HOT_MIN = 4;       // ≥ this many recent user runs → the keep has EARNED the right to ACT on it
 
   // READINESS — derive the confidence tier, purely. TWO grounding paths, take the HIGHER:
   //   (a) DOSSIER — a dim is USABLE iff known AND its freshest belief is not stale (recency gates acting). An undated
@@ -119,7 +119,7 @@
 
   // THE DECISION. Returns { go, mode:'act'|'earn'|'none', reason, binding } — binding names what holds ACT back
   // (for the honest "still learning you" line), or null when nothing does. Order: WAIT short-circuits to nothing;
-  // an active (non-idle) station does nothing; otherwise it ACTS only when the dial permits acting AND the tier is
+  // an active (non-idle) keep does nothing; otherwise it ACTS only when the dial permits acting AND the tier is
   // hot AND there's daily budget — else it EARNS context, naming the limiting axis.
   //   enabled        — posture initiative ≥ propose (AutonomyStore.summary().enabled)
   //   actsUnattended — posture initiative ≥ leash    (AutonomyStore.summary().actsUnattended) → the dial permits acting
@@ -147,7 +147,7 @@
      candidates, then do the chosen one; everything structural is here): eligibility → a candidate directive →
      a strict parse with the GROUNDING VETO → deterministic score-and-pick-best with a CONFIDENCE GATE → a do
      directive → a tolerant deliverable parse. Anti-slop is the whole game: a candidate that doesn't cite something
-     the station actually knows never exists, and if nothing clears the confidence bar the station does NOTHING
+     the keep actually knows never exists, and if nothing clears the confidence bar the keep does NOTHING
      (idle-doing-nothing beats shipping slop). Only score-based selection lets a future LEARN loop re-weight per
      user — the uncopyable moat — so selection is a score, with a FIXED tie-break for predictability. */
 
@@ -172,7 +172,7 @@
   // which archetypes can even be proposed, given which dims are USABLE grounding (from readiness().usableDims). When
   // the grounding is ACTIVITY rather than the dossier (NS-2: opts.activityGrounded), the per-dim gate does not apply
   // — the candidate grounds on a real recent run/chat line, not a dossier dim, and the grounding VETO (over the
-  // activity evidence pool) still enforces honesty. So an activity-grounded station may propose ANY archetype; the
+  // activity evidence pool) still enforces honesty. So an activity-grounded keep may propose ANY archetype; the
   // veto, not the dim map, is what keeps it honest. Default (no flag) is unchanged: dossier-dim eligibility.
   function eligibleArchetypes(usableDims, opts) {
     opts = opts || {};
@@ -190,7 +190,7 @@
     }
     return out;
   }
-  // is `grounds` actually anchored in something the station knows? True iff it substring-matches a belief (either
+  // is `grounds` actually anchored in something the keep knows? True iff it substring-matches a belief (either
   // direction, normalized) OR shares ≥1 significant token with one. Catches invented grounding (zero overlap) while
   // tolerating paraphrase. beliefTexts = a flat array of belief strings.
   function grounded(grounds, beliefTexts) {
@@ -641,7 +641,7 @@
     lines.push(planOnlyFieldFor(ctx.initiative));
     lines.push('    "summary": "<2-3 SHORT plain sentences a busy person absorbs in ten seconds: what it IS and what it does for them. NEVER an inventory — no inline lists of categories, failure modes, or counts, and no sentence over ~25 words; the deliverable itself holds the detail>",');
     lines.push('    "files": [{ "path": "<relative to ' + dir + '>", "bytes": <number> }],');
-    lines.push('    "howToUse": "<ONE short sentence — at most the single run command. The station gives the Commander an Open link and a one-click Implement action (a patch is applied for them), so NEVER write multi-step setup or git instructions here>",');
+    lines.push('    "howToUse": "<ONE short sentence — at most the single run command. The keep gives the Commander an Open link and a one-click Implement action (a patch is applied for them), so NEVER write multi-step setup or git instructions here>",');
     lines.push('    "notVerified": ["<up to 5 items, each ONE short check written FOR the Commander — a concrete thing THEY can do in a minute. NEVER your run diagnostics: no tool budgets, byte counts, or what this shift could not execute — turn every limitation into the check it implies>"] }');
     lines.push('- The manifest MUST list the real files you wrote (paths relative to "' + dir + '/"). A shift with no manifest is discarded.');
     return lines.join('\n');

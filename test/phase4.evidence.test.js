@@ -64,7 +64,7 @@ try {
         ledgerPreserved: true,
         artifactsPreserved: true,
         memoryPreserved: true,
-        stationStatePreserved: true,
+        keepStatePreserved: true,
         notes: 'ok'
       },
       failureRecovery: {

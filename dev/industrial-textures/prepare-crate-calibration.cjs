@@ -18,5 +18,5 @@ if(!source)throw Error('Pass the selected built-in imagegen PNG.');
  await sharp(data,{raw:{width:w,height:h,channels:4}}).extract(crop).png().toFile(path.join(out,'crate.png'));
  const metadata={source:path.basename(source),sourceDimensions:[w,h],crop,opaquePixels:opaque,subjectRgbChanges:0,
   nativeBody:{width:26,height:21,contactHeight:22,footprint:[24,12]},fit:'Uniform scale limited to width+2 and height+10; bottom at footprint ground edge. No bitmap rotation.'};
- fs.writeFileSync(path.join(root,'docs/station-remaster/CRATE-CALIBRATION.json'),JSON.stringify(metadata,null,2)+'\n');console.log(metadata);
+ fs.writeFileSync(path.join(root,'docs/keep-remaster/CRATE-CALIBRATION.json'),JSON.stringify(metadata,null,2)+'\n');console.log(metadata);
 })().catch(e=>{console.error(e);process.exitCode=1;});

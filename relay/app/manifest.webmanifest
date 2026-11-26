@@ -1,7 +1,7 @@
 {
   "name": "Eyehold Remote",
   "short_name": "Eyehold",
-  "description": "Your Eyehold station, from your phone.",
+  "description": "Your Eyehold keep, from your phone.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",

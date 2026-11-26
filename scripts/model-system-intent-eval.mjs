@@ -7,7 +7,7 @@
 import { createRequire } from 'node:module';
 const require = createRequire(import.meta.url);
 const { makeOpenRouterProvider } = require('../sidecar/providers/openrouter.js');
-const { makeStationTools } = require('../sidecar/tools/builtin/station.js');
+const { makeKeepTools } = require('../sidecar/tools/builtin/keep.js');
 const { makeRoutineTools } = require('../sidecar/tools/builtin/routines.js');
 const { makeLoopTools } = require('../sidecar/tools/builtin/loops.js');
 
@@ -19,11 +19,11 @@ if (!key) {
   process.exit(2);
 }
 
-const station = makeStationTools({});
+const keep = makeKeepTools({});
 const routines = makeRoutineTools({ providerIds: () => ['openrouter'] });
 const loops = makeLoopTools({});
 const actual = [
-  station.taskListTool, station.taskCreateTool, station.taskManageTool,
+  keep.taskListTool, keep.taskCreateTool, keep.taskManageTool,
   loops.listTool, loops.createTool, loops.manageTool,
   routines.listTool, routines.createTool, routines.manageTool
 ];

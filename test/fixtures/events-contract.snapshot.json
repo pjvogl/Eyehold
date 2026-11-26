@@ -686,7 +686,7 @@
       "truncated"
     ]
   },
-  "station.command": {
+  "keep.command": {
     "required": [
       "id",
       "verb"

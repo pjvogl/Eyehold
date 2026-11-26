@@ -62,7 +62,7 @@
 - **Auth correct everywhere.** No-token / wrong-token / query-token-on-header-route all → `403 forbidden token`, no leak. `/api/file` accepts `?token=` for GET/HEAD only. SSE token path validated. Exempt routes reachable by design.
 - **No secret leaks.** `/api/config/export` and `/api/diagnostics` grepped clean for keys/tokens/Bearer/username.
 - **Chat rendering is XSS-safe** — escape-then-linkify, regex only matches `https?://` and escapes both href and text; no `javascript:` injection ([chat.js:262](frontend/app/chat.js:262)).
-- **Budget caps validation is solid** — negative/non-numeric → inline `"perRun: enter a number ≥ 0 (leave blank or 0 for no cap)"`, focuses the bad field, blocks the save ([stationui.js:2218](frontend/app/stationui.js:2218)).
+- **Budget caps validation is solid** — negative/non-numeric → inline `"perRun: enter a number ≥ 0 (leave blank or 0 for no cap)"`, focuses the bad field, blocks the save ([keepui.js:2218](frontend/app/keepui.js:2218)).
 - **Workstream handling is solid** — General is delete/archive-protected ([app.js:2256](frontend/app/app.js:2256)); Delete is a two-click armed confirm within 4s ([app.js:2271](frontend/app/app.js:2271)); empty rename cancels.
 - **Empty/whitespace chat send is blocked** ([chat.js:366](frontend/app/chat.js:366)).
 - **Persistence works** — 3 summoned agents + their workstreams survived a reload; the selector correctly listed all 3 afterward.

@@ -1,4 +1,4 @@
-/* node test/qa-janitor.test.js — the Self-Testing Station's hygiene sweep (lane Q4),
+/* node test/qa-janitor.test.js — the Self-Testing Keep's hygiene sweep (lane Q4),
    fed a SYNTHETIC git+fs io (zero real git, zero disk). Asserts the classification logic:
    removable-worktree (merged + clean), stranded-branch (unmerged + idle > N days), root
    litter (untracked binary artifacts), dead-doc-ref precision (conservative filed/info

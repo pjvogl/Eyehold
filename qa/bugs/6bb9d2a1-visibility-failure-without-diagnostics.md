@@ -24,7 +24,7 @@ A customer reports being unable to see usable Eyehold content. The message conta
 
 ## Repro
 
-Exact reproduction is unavailable. Capture the screen, entry point, Eyehold version, display scaling and Boot Guard or native diagnostics without resetting the station.
+Exact reproduction is unavailable. Capture the screen, entry point, Eyehold version, display scaling and Boot Guard or native diagnostics without resetting the keep.
 
 ## Evidence
 

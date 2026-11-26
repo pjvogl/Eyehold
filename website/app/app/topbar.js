@@ -7,7 +7,7 @@
      - COMMANDER level   — read from JourneyStore's server-owned progression snapshot.
                              Crew XP cannot write this headline or celebrate its level.
      - UPLINK / ONLINE / save — their markup was moved up from #bottombar .bb-right with ids
-                             intact, so main.js save() and stationui.js tick()/flashSave() keep
+                             intact, so main.js save() and keepui.js tick()/flashSave() keep
                              writing them with zero changes here.
 
    It NEVER emits a bus event and never mutates another module's state — the frozen
@@ -24,25 +24,25 @@ const Topbar = (() => {
     try {
       const j = typeof JourneyStore !== 'undefined' && JourneyStore.status ? JourneyStore.status() : null;
       const g = j && j.progression;
-      const label = document.getElementById('gt-station');
+      const label = document.getElementById('gt-keep');
       if (!g || !Number.isFinite(g.level)) {
         if (label) label.textContent = '—'; lastCommanderLevel = null;
-        const emptyFill = $('#tb-station .tb-xp-fill'); if (emptyFill) emptyFill.style.width = '0%';
+        const emptyFill = $('#tb-keep .tb-xp-fill'); if (emptyFill) emptyFill.style.width = '0%';
         return;
       }
       const stale = JourneyStore.state && JourneyStore.state().stale;
       if (label) label.textContent = 'Lv ' + g.level + (stale ? ' · saved' : '');
       if (lastCommanderLevel != null && g.level > lastCommanderLevel) {
-        const chip = document.getElementById('tb-station');
+        const chip = document.getElementById('tb-keep');
         if (chip) { chip.classList.remove('lvup'); void chip.offsetWidth; chip.classList.add('lvup'); }
         if (typeof SFX !== 'undefined' && SFX.level) SFX.level();
       }
       lastCommanderLevel = g.level;
-      const fill = $('#tb-station .tb-xp-fill');
+      const fill = $('#tb-keep .tb-xp-fill');
       if (fill && g.nextLevelAt > g.levelStartsAt) {
         const pct = Math.max(0, Math.min(100, Math.round(100 * (g.points - g.levelStartsAt) / (g.nextLevelAt - g.levelStartsAt))));
         fill.style.width = pct + '%';
-        const xp = $('#tb-station .tb-xp');
+        const xp = $('#tb-keep .tb-xp');
         if (xp) xp.title = 'COMMANDER Lv ' + g.level + ' — ' + g.points + ' achievement points; ' + g.pointsToNextLevel + ' to the next level';
       }
     } catch (_) { /* honest no-op: leave the sliver where it is */ }
@@ -84,7 +84,7 @@ const Topbar = (() => {
     if (!engine) return DOWN_TIP;
     if (engine.state === 'ok') return 'lost the live link to Eyehold’s background service — the service itself is answering, so this window is reconnecting on its own';
     const what = engine.reason || (engine.state === 'silent' ? 'Eyehold’s background service isn’t answering (it may be stuck)' : 'Eyehold’s background service isn’t running');
-    return what + (desktop ? ' — click to restart the station service' : BROWSER_STEP);
+    return what + (desktop ? ' — click to restart the keep service' : BROWSER_STEP);
   }
   function connectionBox(el) { return (el && el.closest && el.closest('.tb-connection')) || el; }
   function setRecoverable(el, on) {
@@ -93,25 +93,25 @@ const Topbar = (() => {
     const box = connectionBox(el);
     if (!box) return;
     box.classList.toggle('recoverable', on);
-    if (on) { box.setAttribute('role', 'button'); box.tabIndex = 0; box.setAttribute('aria-label', 'LINK DOWN — restart the station service'); }
+    if (on) { box.setAttribute('role', 'button'); box.tabIndex = 0; box.setAttribute('aria-label', 'LINK DOWN — restart the keep service'); }
     else { box.removeAttribute('role'); box.removeAttribute('tabindex'); box.removeAttribute('aria-label'); }
   }
-  function notifyUser(text, cls) { try { if (typeof StationUI !== 'undefined' && StationUI.notify) StationUI.notify(text, cls); } catch (_) {} }
+  function notifyUser(text, cls) { try { if (typeof KeepUI !== 'undefined' && KeepUI.notify) KeepUI.notify(text, cls); } catch (_) {} }
   async function restartFromChip() {
     const ls = linkNow();
     if (!recoverable || restarting || !ls || !ls.down || typeof Harness === 'undefined' || !Harness.restartEngine) return;
     restarting = true;
-    notifyUser('restarting the station service…', 'warn');
+    notifyUser('restarting the keep service…', 'warn');
     let ok = false;
     try { ok = await Harness.restartEngine(); } catch (_) { ok = false; }
-    if (!ok) notifyUser('the station service could not be restarted — quit Eyehold fully (tray → Quit) and open it again. Your save is untouched.', 'warn');
+    if (!ok) notifyUser('the keep service could not be restarted — quit Eyehold fully (tray → Quit) and open it again. Your save is untouched.', 'warn');
     else {
       // A respawn that comes straight back degraded (a workspace owned by another process, a crash at boot) is not
       // healed: say what the service now says instead of claiming success.
       let after = null;
       try { after = await Harness.engineState(); } catch (_) { after = null; }
-      if (after && after.state === 'degraded' && after.reason) notifyUser('restarted, but the station service still reports: ' + after.reason, 'warn');
-      else notifyUser('station service restarted — reconnecting…', 'good');
+      if (after && after.state === 'degraded' && after.reason) notifyUser('restarted, but the keep service still reports: ' + after.reason, 'warn');
+      else notifyUser('keep service restarted — reconnecting…', 'good');
     }
     // give the bridge a full escalation window to reconnect before the door is offered again
     downSince = Date.now(); engine = null; lastProbeAt = 0; restarting = false;
@@ -158,10 +158,10 @@ const Topbar = (() => {
     wired = true;
 
     // ONE PROGRESS DOOR: the COMMANDER gauge opens QUESTS › Progress (its tooltip always promised the quest log)
-    const chip = document.getElementById('tb-station');
+    const chip = document.getElementById('tb-keep');
     if (chip) {
       chip.setAttribute('role', 'button'); chip.tabIndex = 0; chip.style.cursor = 'pointer';
-      const go = () => { if (typeof StationUI !== 'undefined' && StationUI.openTerm) StationUI.openTerm('quests', 'progress'); };
+      const go = () => { if (typeof KeepUI !== 'undefined' && KeepUI.openTerm) KeepUI.openTerm('quests', 'progress'); };
       chip.addEventListener('click', go);
       chip.addEventListener('keydown', ev => { if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); go(); } });
     }
@@ -178,7 +178,7 @@ const Topbar = (() => {
     paintSig();
 
     if (typeof U !== 'undefined' && U.bus) {
-      // the same real outcomes xpstore.js grows the station on — repaint the sliver after it folds.
+      // the same real outcomes xpstore.js grows the keep on — repaint the sliver after it folds.
       for (const n of ['agent.run.end', 'agent.tool_result', 'memory.feedback', 'workitem.delivered', 'channel.delivery']) {
         U.bus.on(n, () => { try { paintXp(); } catch (_) {} });
       }

@@ -1,10 +1,10 @@
 /* node test/nightshift-grant.e2e.test.js — real sidecar proof for the DIAL-IS-THE-CONSENT fix (2026-07-13).
 
    THE BUG: at dial initiative:'free' reach:'sandbox' (buildsUnattended) with no away-workshop grant, every
-   night-shift beat silently degraded to a reason-only draft — "dial at max, station never builds". The fix:
+   night-shift beat silently degraded to a reason-only draft — "dial at max, keep never builds". The fix:
    POST /api/autonomy/posture records the night-shift agent's grant through the SAME workshopStore authority,
    never overriding an explicit per-agent decision, and GET /api/nightshift/status names the build-vs-draft
-   mode + the readiness detail so a degraded/cold station SAYS so.
+   mode + the readiness detail so a degraded/cold keep SAYS so.
 
    Proves, against the ACTUAL sidecar (no model calls needed — these are pure consent/telemetry routes):
      · a build-capable dial write AUTO-GRANTS the undecided default agent (disk-provable, restart-safe);

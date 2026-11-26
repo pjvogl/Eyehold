@@ -3,7 +3,7 @@
 
    This is what makes Eyehold reachable FROM AN EDITOR. An ACP client (Zed, Neovim, any ACP-speaking editor)
    spawns this process and talks JSON-RPC 2.0 over stdin/stdout; it drives real Eyehold agent runs against the
-   running station, streams the answer and every tool call back into the editor's UI, and hands the station's
+   running keep, streams the answer and every tool call back into the editor's UI, and hands the keep's
    consent prompts to the editor as native approve/reject cards.
 
    Register it with the client, e.g.:
@@ -19,7 +19,7 @@
      - correlates the core's OUTBOUND requests (session/request_permission) with the client's responses.
 
    ONE SIDECAR OWNER PER WORKSPACE is a hard invariant, so nothing here reads or writes a store file. If the
-   station is not running, every method answers with a structured "start Eyehold" error — never a fabricated one.
+   keep is not running, every method answers with a structured "start Eyehold" error — never a fabricated one.
 
    ── WHY IT RIDES /api/run AND NOT /v1 ───────────────────────────────────────────────────────────────────────
    The OpenAI-compatible surface (/v1) can run an agent, but its wire only carries text: an editor integration
@@ -29,9 +29,9 @@
 
    ── CAPABILITIES AN EDITOR SESSION GETS ─────────────────────────────────────────────────────────────────────
    A coding session is granted the coding office: computer, cabinet (files), workbench (shell + verify), dish
-   (web/browser), notebook (memory). Every mutation still walks the station's full consent ladder — which is
+   (web/browser), notebook (memory). Every mutation still walks the keep's full consent ladder — which is
    exactly what surfaces in the editor as an approve/reject card. The session's cwd rides as `projectRoot`, so
-   the station's folder-trust prompt asks the editor to bless the folder the first time a file tool touches it. */
+   the keep's folder-trust prompt asks the editor to bless the folder the first time a file tool touches it. */
 'use strict';
 
 const http = require('http');
@@ -62,17 +62,17 @@ const BASE_LABEL = 'http://' + CFG.host + ':' + CFG.port;
 function log() { try { process.stderr.write('[acp] ' + Array.prototype.join.call(arguments, ' ') + '\n'); } catch (_) {} }
 
 // ---- token discovery: explicit wins; else scrape the served page once (browser-identical) ------
-// ⛔ THE STATION'S API TOKEN IS PER-LAUNCH, SO A SCRAPED ONE GOES STALE (same defect as sidecar/mcp/serve.js).
+// ⛔ THE KEEP'S API TOKEN IS PER-LAUNCH, SO A SCRAPED ONE GOES STALE (same defect as sidecar/mcp/serve.js).
 // An editor spawns this agent once and keeps it for the whole editing session, while Eyehold is a desktop app the
 // Commander closes and reopens — every launch mints a NEW token. A token cached for the process lifetime meant the
-// first station restart broke every prompt until the editor itself was restarted. An EXPLICIT token (--token= /
+// first keep restart broke every prompt until the editor itself was restarted. An EXPLICIT token (--token= /
 // env) is the operator's choice and is never invalidated.
 const TOKEN_IS_EXPLICIT = !!CFG.token;
 let cachedToken = CFG.token || '';
 let tokenPromise = null;
 function invalidateToken(why) {
   if (TOKEN_IS_EXPLICIT || !cachedToken) return false;
-  log('token rejected (' + why + ') — re-discovering; the station was probably restarted');
+  log('token rejected (' + why + ') — re-discovering; the keep was probably restarted');
   cachedToken = '';
   return true;
 }
@@ -124,7 +124,7 @@ function rawRequest(method, path, body, withToken, token) {
 async function callSidecar(method, path, body) {
   const token = await discoverToken();
   const res = await rawRequest(method, path, body == null ? null : body, true, token);
-  // ONE re-auth retry on a rejected token: the station restarted and minted a new one (see invalidateToken).
+  // ONE re-auth retry on a rejected token: the keep restarted and minted a new one (see invalidateToken).
   if (res && res.ok && (res.status === 401 || res.status === 403) && invalidateToken('HTTP ' + res.status)) {
     const fresh = await discoverToken();
     if (fresh && fresh !== token) return rawRequest(method, path, body == null ? null : body, true, fresh);
@@ -136,7 +136,7 @@ async function callSidecar(method, path, body) {
 
    /api/run needs an explicit model (the browser always knows which one the Commander picked), so the model +
    provider come from GET /api/runtime/agent — the sidecar's OWN headless resolution, never a guess here. A
-   station with no key or no model configured is reported as such rather than producing a bare 400.
+   keep with no key or no model configured is reported as such rather than producing a bare 400.
 
    The run is cancellable: `onCancel` hands the core a closure that POSTs /api/cancel, which is what
    session/cancel needs (an ACP client's Esc). */
@@ -147,19 +147,19 @@ function openRun(opts) {
       if (!token) return reject(new Error('Eyehold is not running (or its API token could not be read) at ' + BASE_LABEL + ' — start Eyehold and try again'));
 
       let info = await rawRequest('GET', '/api/runtime/agent', null, true, token);
-      // A rejected token means the station restarted. Re-scrape the live one and retry ONCE, rather than telling
+      // A rejected token means the keep restarted. Re-scrape the live one and retry ONCE, rather than telling
       // the Commander to restart their editor — closing and reopening Eyehold should not cost them that.
       if (info.ok && (info.status === 401 || info.status === 403) && invalidateToken('HTTP ' + info.status)) {
         const fresh = await discoverToken();
         if (fresh && fresh !== token) { token = fresh; info = await rawRequest('GET', '/api/runtime/agent', null, true, token); }
       }
       if (!info.ok) return reject(new Error('Eyehold is not reachable at ' + BASE_LABEL + ': ' + (info.error || 'connection failed')));
-      if (info.status === 401 || info.status === 403) return reject(new Error('Eyehold rejected this bridge\'s API token — restart the editor so it re-reads the station token'));
+      if (info.status === 401 || info.status === 403) return reject(new Error('Eyehold rejected this bridge\'s API token — restart the editor so it re-reads the keep token'));
       const rt = info.json || {};
       if (!rt.configured) {
         return reject(new Error('Eyehold has no runnable model configured'
           + (rt.model ? '' : ' (no default model set)')
-          + ' — open the station and set a provider key + model first'));
+          + ' — open the keep and set a provider key + model first'));
       }
 
       const body = {
@@ -175,7 +175,7 @@ function openRun(opts) {
           { objectType: 'workbench' }, { objectType: 'dish' }, { objectType: 'notebook' }
         ]
       };
-      // the editor's cwd is the project scope. The station injects the folder line only while that root holds a
+      // the editor's cwd is the project scope. The keep injects the folder line only while that root holds a
       // standing path grant, and its folder-trust prompt rides the same permission channel — so the FIRST file
       // tool asks the editor to bless it, and nothing here asserts access the grant layer cannot prove.
       if (o.cwd) body.projectRoot = String(o.cwd);
@@ -227,7 +227,7 @@ function openRun(opts) {
           /* A stream that ENDS WITHOUT agent.run.end did not finish. Reporting 'done' there would tell the
              editor the turn completed successfully — the exact class of lie this project forbids.
              But 'error' is equally wrong for a DELIBERATE cancel: it made the core append "the run failed
-             inside Eyehold — check the station log", so pressing Esc told the user their work had crashed.
+             inside Eyehold — check the keep log", so pressing Esc told the user their work had crashed.
              So the fallback splits on intent: cancelled if the user asked, error only if it really dropped. */
           const settleReason = () => (sawEnd ? reason : (cancelRequested ? 'cancelled' : 'error'));
           const done = () => { if (graceTimer) { clearTimeout(graceTimer); graceTimer = null; } finish(resolve, { reason: settleReason() }); };
@@ -247,11 +247,11 @@ function openRun(opts) {
         finish(reject, new Error('Eyehold run stream failed: ' + ((e && e.message) || e)));
       });
       if (typeof o.onCancel === 'function') {
-        /* GRACEFUL FIRST. POST /api/cancel is the stop the station understands: it aborts the run's controller,
+        /* GRACEFUL FIRST. POST /api/cancel is the stop the keep understands: it aborts the run's controller,
            which emits agent.run.end{reason:'cancelled'} and closes the stream properly — so spend stops AND the
            editor gets the real terminal reason. Destroying the socket immediately (the first cut) raced ahead of
            that every time, so the turn always settled as a failure. The destroy is now only a FALLBACK, in case
-           the station never settles; leaving it out entirely would risk a socket held open forever. */
+           the keep never settles; leaving it out entirely would risk a socket held open forever. */
         o.onCancel(() => {
           if (cancelRequested) return;
           cancelRequested = true;
@@ -267,7 +267,7 @@ function openRun(opts) {
 }
 
 /* How long a cancelled run gets to settle itself through POST /api/cancel before the socket is destroyed as a
-   fallback. Long enough for the station to abort the loop and emit agent.run.end{reason:'cancelled'} (which is
+   fallback. Long enough for the keep to abort the loop and emit agent.run.end{reason:'cancelled'} (which is
    what makes the editor show a real cancel), short enough that a wedged stream is not held forever. */
 const CANCEL_GRACE_MS = 5000;
 

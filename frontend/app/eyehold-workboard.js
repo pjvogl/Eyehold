@@ -1,6 +1,6 @@
 /* Eyehold operator's live work board.
  * Actual sidecar run history and explicit owner review; never simulates work.
- * The station/world animation remains handled by the original runtime.
+ * The keep/world animation remains handled by the original runtime.
  */
 'use strict';
 (function(){
@@ -49,7 +49,7 @@
     reviewGoal.textContent='Goal: '+packet.goal.text+(packet.goal.next?' · Next: '+packet.goal.next:'');
     review.hidden=false;reviewPacket=packet;detailBody.textContent=packet.output;
     approve.disabled=packet.accepted===true;
-    reviewStatus.textContent=packet.accepted?'Already accepted by the owner. No duplicate award is available.':'Use the separate key provisioned locally by the station owner. The key is not saved in the page.';
+    reviewStatus.textContent=packet.accepted?'Already accepted by the owner. No duplicate award is available.':'Use the separate key provisioned locally by the keep owner. The key is not saved in the page.';
    }catch{if(generation===reviewGeneration){review.hidden=false;approve.disabled=true;reviewStatus.textContent='Owner review is unavailable. Reopen this record to retry.'}}
   }
   review.addEventListener('submit',async event=>{
@@ -63,7 +63,7 @@
    }catch(e){if(reviewPacket===packet){approve.disabled=false;reviewStatus.textContent='Not accepted: '+e.message+'. Reopen the record if its evidence or goal changed.'}}
   });
   const assign=document.createElement('button');assign.type='button';assign.textContent='ASSIGN WORK IN MISSIVES';assign.style.cssText='margin:0 8px 8px 0;background:#33272a;color:#f0d6a8;border:1px solid #806c4f;padding:6px 10px;cursor:pointer';
-  assign.addEventListener('click',()=>{board.hidden=true;toggle.setAttribute('aria-expanded','false');const target=document.querySelector('#chat-input, #chat-textarea, textarea[placeholder*=\"message\" i]');if(target){target.focus();status.textContent='Enter your assignment in MISSIVES. Nothing was sent automatically.';}else{status.textContent='Open MISSIVES to assign work; no job was started.';if(typeof StationUI!=='undefined'&&StationUI.openTerm)StationUI.openTerm('comms');}});
+  assign.addEventListener('click',()=>{board.hidden=true;toggle.setAttribute('aria-expanded','false');const target=document.querySelector('#chat-input, #chat-textarea, textarea[placeholder*=\"message\" i]');if(target){target.focus();status.textContent='Enter your assignment in MISSIVES. Nothing was sent automatically.';}else{status.textContent='Open MISSIVES to assign work; no job was started.';if(typeof KeepUI!=='undefined'&&KeepUI.openTerm)KeepUI.openTerm('comms');}});
   const departments=document.createElement('details');
   const deptHeading=document.createElement('summary');deptHeading.textContent='BUSINESS DEPARTMENTS — responsibilities and handoffs';
   departments.appendChild(deptHeading);
@@ -92,12 +92,12 @@
   const crewCheck=document.createElement('button');crewCheck.type='button';crewCheck.textContent='CHECK LIVE CREW';crewCheck.style.cssText='margin:8px 0;background:#33272a;color:#f0d6a8;border:1px solid #806c4f;padding:6px 10px;cursor:pointer';
   departments.appendChild(crewCheck);
   crewCheck.addEventListener('click',async()=>{
-   coverage.textContent='Checking actual roster and workstation assignments…';
+   coverage.textContent='Checking actual roster and workkeep assignments…';
    try{
-    if(typeof App==='undefined'||typeof App.agents!=='function'||typeof App.station!=='function')throw Error('game not yet initialized');
-    const agents=App.agents(),station=App.station();
-    if(!station||typeof station.serialize!=='function')throw Error('station document missing');
-    const doc=station.serialize(),rooms=Object.values(doc.rooms||{}).filter(r=>r.kind!=='corridor');
+    if(typeof App==='undefined'||typeof App.agents!=='function'||typeof App.keep!=='function')throw Error('game not yet initialized');
+    const agents=App.agents(),keep=App.keep();
+    if(!keep||typeof keep.serialize!=='function')throw Error('keep document missing');
+    const doc=keep.serialize(),rooms=Object.values(doc.rooms||{}).filter(r=>r.kind!=='corridor');
     const expected=[
      ['RAVEN COURT','Raven Court','eyehold-archive'],
      ['STAR SAGES','Star Sages','eyehold-astral'],
@@ -113,7 +113,7 @@
     });
     const hero=agents.find(a=>a.id==='agent');
     const command=hero&&rooms.some(r=>r.eyeTerritory==='keep');
-    coverage.textContent=(matched.length+(command?1:0))+' of 7 departments have a real agent and a suitable room; '+matched.length+' specialist workstations verified. A room presence alone does not prove model activity.';
+    coverage.textContent=(matched.length+(command?1:0))+' of 7 departments have a real agent and a suitable room; '+matched.length+' specialist workkeeps verified. A room presence alone does not prove model activity.';
    }catch(e){coverage.textContent='Cannot verify staffing: '+e.message}
   });
   const teamTask=document.createElement('button');teamTask.type='button';teamTask.textContent='PREPARE RAVEN → DEEPFORGE TASK';

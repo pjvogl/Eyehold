@@ -11,7 +11,7 @@
        key = sha256( scope + '\n' + replayFingerprint(toolName, canonicalArgs) )
    and a later call with the SAME key inside the same scope is NOT re-sent: the host returns the recorded result,
    plainly labelled as an idempotent replay, so the model sees what already happened and carries on. Scope is the
-   WORK ITEM, never the whole station:
+   WORK ITEM, never the whole keep:
        'cron:<jobId>:<scheduledFor>'  — one scheduled tick (a retry/resume of that tick dedupes; the next tick does not)
        'run:<sourceRunId>'            — a crash-resumed run shares its source run's scope
        'run:<runId>'                  — otherwise the run itself (in-run repeats)

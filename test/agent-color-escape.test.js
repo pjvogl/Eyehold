@@ -1,7 +1,7 @@
 /* node test/agent-color-escape.test.js — a saved agent suit colour can never break out of a style attribute
    (2026-09-23 security audit).
 
-   A shared "station backup" is written verbatim into localStorage and rehydrated into the roster; the crew
+   A shared "keep backup" is written verbatim into localStorage and rehydrated into the roster; the crew
    dossier, agent list and camera ticker concatenated `color` straight into style="color:…". A crafted colour
    such as `x" onmouseover="…` ran script in the app origin (which holds the API token). Two layers now:
    rehydrateRoster only accepts a hex colour, and every sink escapes. */
@@ -38,7 +38,7 @@ const app = p => fs.readFileSync(path.join(__dirname, '..', 'frontend', 'app', p
 
 // ---- 2. every style="color:…" sink escapes the value ----
 {
-  const ui = app('stationui.js');
+  const ui = app('keepui.js');
   A.ok(!/style="color:' \+ a\.color \+/.test(ui), 'crew dossier name/rename never concatenates a raw colour');
   A.ok(!/style="color:' \+ x\.color \+/.test(ui), 'agent list dot never concatenates a raw colour');
   A.ok(/aria-label="Rename agent" style="color:' \+ esc\(a\.color\)/.test(ui), 'rename input escapes the colour');
@@ -47,7 +47,7 @@ const app = p => fs.readFileSync(path.join(__dirname, '..', 'frontend', 'app', p
   const world = app('world.js');
   A.ok(/style="color:' \+ esc\(suit\)/.test(world), 'camera ticker escapes the suit colour');
   const raw = [];
-  for (const f of ['stationui.js', 'world.js', 'app.js']) {
+  for (const f of ['keepui.js', 'world.js', 'app.js']) {
     app(f).split('\n').forEach((l, i) => { if (/style="color:' \+ [a-z]+\.color \+/.test(l)) raw.push(f + ':' + (i + 1)); });
   }
   A.eq(raw, [], 'no remaining raw agent-colour sink in the roster surfaces');

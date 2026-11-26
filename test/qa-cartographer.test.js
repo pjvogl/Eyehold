@@ -1,6 +1,6 @@
-/* node test/qa-cartographer.test.js — the Station Atlas MAPPER's pure core (the perfection-loop
+/* node test/qa-cartographer.test.js — the Keep Atlas MAPPER's pure core (the perfection-loop
    machine's script half), fed a controllable clock + a fake injected git (zero disk, zero browser,
-   zero real git). Asserts the station law made mechanical:
+   zero real git). Asserts the keep law made mechanical:
      (a) sweep merge classification — new element -> skeleton (correct id/area/status), existing ->
          lastSeen refreshed + session-owned fields UNTOUCHED, vanished (of a swept kind) -> missing:true
          + a dead-entry finding routed to the ledger-ready findings list.
@@ -235,13 +235,13 @@ const fullEntry = (over) => Object.assign({
 // ---- (d3) props are harvested from the real catalog contract, never a copied inventory ----
 {
   const catalog = [
-    { id: 'desk', label: 'DESK', cat: 'workstation', tier: 'functional', w: 2, h: 1 },
+    { id: 'desk', label: 'DESK', cat: 'workkeep', tier: 'functional', w: 2, h: 1 },
     { id: 'rug', label: 'RUG', cat: 'decor', tier: 'cosmetic', w: 4, h: 3 }
   ];
   const rows = enumerateProps(catalog, id => id === 'desk' || id === 'rug');
   A.eq(rows.map(row => row.id), ['prop/desk', 'prop/rug'], 'catalog IDs become stable prop Atlas IDs');
   A.eq(rows[0].area, 'props', 'harvested props land in the props authority shard');
-  A.ok(/functional\/workstation/.test(rows[0].name), 'harvested name carries truthful tier/category metadata');
+  A.ok(/functional\/workkeep/.test(rows[0].name), 'harvested name carries truthful tier/category metadata');
   A.throws(() => enumerateProps([], () => true), 'empty catalog blocks enumeration');
   A.throws(() => enumerateProps(catalog.concat(catalog[0]), () => true), 'duplicate prop IDs block enumeration');
   A.throws(() => enumerateProps([
@@ -311,7 +311,7 @@ const fullEntry = (over) => Object.assign({
   A.eq(areaOfState('sys-settings'), 'system', 'sys-* -> system');
   A.eq(areaOfState('crew-recruit'), 'crew', 'crew-* -> crew');
   A.eq(areaOfState('work-tasks'), 'work', 'work-* -> work');
-  A.eq(areaOfState('build-station'), 'build', 'build-* -> build');
+  A.eq(areaOfState('build-keep'), 'build', 'build-* -> build');
   A.ok(AREAS.includes('commands') && AREAS.includes('routes') && AREAS.includes('events') && AREAS.includes('props'), 'the static areas are in the taxonomy');
   A.ok(STATUSES.length === 4 && STATUSES[0] === 'unmapped' && STATUSES[3] === 'perfected', 'the status lifecycle is unmapped..perfected');
 }

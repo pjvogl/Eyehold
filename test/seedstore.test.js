@@ -31,7 +31,7 @@ global.Recipes = {
 const chat = { nudges: [], nudge(t, o, cb) { this.nudges.push({ t, o, cb }); } };
 global.Chat = chat;
 let notes = [];
-global.StationUI = { notify: (m) => notes.push(m) };
+global.KeepUI = { notify: (m) => notes.push(m) };
 
 const { SeedStore } = require('../frontend/app/seedstore.js');
 function clearFakes() { chat.nudges = []; saved = []; minted = []; dismissed = []; proposed = []; notes = []; }

@@ -6,7 +6,7 @@ Last full reconciliation: **2026-08-03** (grounded against the Phase 0–8 clean
 ## What this is
 
 **Eyehold** — a real, local-first AI-agent harness wrapped in a living pixel-art space
-station, shipped as a downloadable desktop app. You create agents, build the station, and
+keep, shipped as a downloadable desktop app. You create agents, build the keep, and
 the layout IS the org: rooms = capability scopes, placed props = real tool grants
 (**object = capability**), conveyor items = real work. The core product law is **truthful
 telemetry**: the UI never asserts anything the harness can't prove.
@@ -44,7 +44,7 @@ npm start  →  node sidecar/index.js  (ONE process, port 8787)
               ├─ run-execution-state.js / domain-store.js
               │                       explicit per-run bookkeeping + normalized singleton persistence
               ├─ providers/           anthropic, openrouter, openai-compat, codex(OAuth), gemini
-              ├─ capability/          station layout → tool allowlist (object=capability)
+              ├─ capability/          keep layout → tool allowlist (object=capability)
               ├─ tools/ (14)          web/browser/computer/fs/shell/notebook/recall/skills/…
               ├─ channels/            telegram, discord, SSE hub, keychain-split secrets
               ├─ mcp/                 MCP connector manager + curated catalog + OAuth 2.1
@@ -52,7 +52,7 @@ npm start  →  node sidecar/index.js  (ONE process, port 8787)
               └─ *-store.js (10+)     atomic fsync-rename persistence per subsystem
 
 frontend/  (no build step; index.html loads ~80 app/*.js modules in order)
-              ├─ app/world.js (~5.6k) canvas station renderer — hero agent + crew[] bodies
+              ├─ app/world.js (~5.6k) canvas keep renderer — hero agent + crew[] bodies
               ├─ app/app.js           U.bus wiring, roster, run state (frontend OWNS roster)
               ├─ app/chat.js          COMMS window + streaming; recommendPass() = the ONE post-run beat
               ├─ app/recommend.js     THE RECOMMENDATION SPINE — pure one-voice arbiter over every
@@ -139,7 +139,7 @@ lanes per day; grep trunk before acting on any doc claim, including this file's.
 **Living (keep current, safe to trust after grep-check):**
 this file + `DECISIONS.md` / `MISTAKES.md` / `NEXT.md` (plus the untracked local
 `CLAUDE.md` / `AGENTS.md` / `.claude/skills/*` maintainer tooling),
-`qa/{STATUS,KNOWN_ISSUES,QA_STATION}.md`, `docs/RELEASE_RUNBOOK.md`,
+`qa/{STATUS,KNOWN_ISSUES,QA_KEEP}.md`, `docs/RELEASE_RUNBOOK.md`,
 `INSTALL.md`, `PRIVACY.md`, `TERMS.md`, `NOTICE.md`, `loops/*.md` (QA crew directives),
 `scripts/VISUAL_AUDITOR.md`, `CODE_MAP.md` (rebuilt 2026-07-06).
 

@@ -43,7 +43,7 @@
           "soft": false
         },
         {
-          "name": "J1.0-board-open::topbar/stationLevel",
+          "name": "J1.0-board-open::topbar/keepLevel",
           "pass": true,
           "detail": "displayed=1 eq expected=1",
           "soft": false
@@ -97,7 +97,7 @@
           "soft": false
         },
         {
-          "name": "J1.1-after-plain-chat::topbar/stationLevel",
+          "name": "J1.1-after-plain-chat::topbar/keepLevel",
           "pass": true,
           "detail": "displayed=1 eq expected=1",
           "soft": false
@@ -157,7 +157,7 @@
           "soft": false
         },
         {
-          "name": "J1.2-run-live::topbar/stationLevel",
+          "name": "J1.2-run-live::topbar/keepLevel",
           "pass": true,
           "detail": "displayed=1 eq expected=1",
           "soft": false
@@ -223,7 +223,7 @@
           "soft": false
         },
         {
-          "name": "J1.3-run-done::topbar/stationLevel",
+          "name": "J1.3-run-done::topbar/keepLevel",
           "pass": true,
           "detail": "displayed=1 eq expected=1",
           "soft": false
@@ -331,7 +331,7 @@
           "soft": false
         },
         {
-          "name": "J2.stop::topbar/stationLevel",
+          "name": "J2.stop::topbar/keepLevel",
           "pass": true,
           "detail": "displayed=1 eq expected=1",
           "soft": false
@@ -439,7 +439,7 @@
           "soft": false
         },
         {
-          "name": "J2.panel-close::topbar/stationLevel",
+          "name": "J2.panel-close::topbar/keepLevel",
           "pass": true,
           "detail": "displayed=1 eq expected=1",
           "soft": false
@@ -529,7 +529,7 @@
           "soft": false
         },
         {
-          "name": "J2.reload-after::topbar/stationLevel",
+          "name": "J2.reload-after::topbar/keepLevel",
           "pass": true,
           "detail": "displayed=1 eq expected=1",
           "soft": false
@@ -595,7 +595,7 @@
           "soft": false
         },
         {
-          "name": "J3.mid-toggle::topbar/stationLevel",
+          "name": "J3.mid-toggle::topbar/keepLevel",
           "pass": true,
           "detail": "displayed=1 eq expected=1",
           "soft": false
@@ -649,7 +649,7 @@
           "soft": false
         },
         {
-          "name": "J3.settled::topbar/stationLevel",
+          "name": "J3.settled::topbar/keepLevel",
           "pass": true,
           "detail": "displayed=1 eq expected=1",
           "soft": false

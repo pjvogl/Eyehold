@@ -1,6 +1,6 @@
-# Complete station disaster recovery
+# Complete keep disaster recovery
 
-Eyehold's complete-station recovery bundle is an offline, verified recovery point. It is different from the in-app station-configuration export: it captures every non-ephemeral file under `WORKSPACES`, plus an optional browser-state export, and verifies every payload before it changes a destination.
+Eyehold's complete-keep recovery bundle is an offline, verified recovery point. It is different from the in-app keep-configuration export: it captures every non-ephemeral file under `WORKSPACES`, plus an optional browser-state export, and verifies every payload before it changes a destination.
 
 ## What it preserves
 
@@ -10,17 +10,17 @@ Credentials and machine authority are deliberately not portable. The bundle pres
 
 ## Create a recovery point
 
-1. On Eyehold's RESUME/reconnect screen, choose **EXPORT AGENT** to download the browser-owned `eyehold.*` state. Keep this file beside the station recovery bundle. This step is optional only when browser-local state is not needed; the durable sidecar save is still captured from `WORKSPACES`.
+1. On Eyehold's RESUME/reconnect screen, choose **EXPORT AGENT** to download the browser-owned `eyehold.*` state. Keep this file beside the keep recovery bundle. This step is optional only when browser-local state is not needed; the durable sidecar save is still captured from `WORKSPACES`.
 2. Quit Eyehold completely. On the desktop build, confirm the tray process has exited. Do not capture while the sidecar is accepting mutations.
 3. Locate the active `WORKSPACES` directory. A source/dev launch defaults to `%LOCALAPPDATA%\Eyehold\workspaces` on Windows and `$XDG_DATA_HOME/Eyehold/workspaces` (or `~/.local/share/Eyehold/workspaces`) on other sidecar platforms. A packaged desktop launch prints the exact path on its `startup ... workspaces=...` diagnostic line. A legacy install may still use its existing `Skynet/workspaces` directory in place.
 4. From a Eyehold source checkout, create and inspect the bundle:
 
 ```powershell
-npm run recovery:backup -- --workspace "C:\path\to\workspaces" --output "D:\Backups\station.eyehold-recovery.json" --browser-state "D:\Backups\eyehold-agent.json" --app-version "0.8.5" --mutation "operator-2026-08-04T09:20Z"
-npm run recovery:inspect -- --bundle "D:\Backups\station.eyehold-recovery.json"
+npm run recovery:backup -- --workspace "C:\path\to\workspaces" --output "D:\Backups\keep.eyehold-recovery.json" --browser-state "D:\Backups\eyehold-agent.json" --app-version "0.8.5" --mutation "operator-2026-08-04T09:20Z"
+npm run recovery:inspect -- --bundle "D:\Backups\keep.eyehold-recovery.json"
 ```
 
-Only an `ok: true` result is a recovery point. Copy the bundle to storage that is not on the station's disk.
+Only an `ok: true` result is a recovery point. Copy the bundle to storage that is not on the keep's disk.
 
 ## Restore onto a clean machine or profile
 
@@ -29,25 +29,25 @@ Only an `ok: true` result is a recovery point. Copy the bundle to storage that i
 3. Restore and generate the browser import:
 
 ```powershell
-npm run recovery:restore -- --bundle "D:\Backups\station.eyehold-recovery.json" --target "C:\Users\new-user\AppData\Local\Eyehold\workspaces" --browser-output "D:\Backups\eyehold-browser-restore.json"
+npm run recovery:restore -- --bundle "D:\Backups\keep.eyehold-recovery.json" --target "C:\Users\new-user\AppData\Local\Eyehold\workspaces" --browser-output "D:\Backups\eyehold-browser-restore.json"
 ```
 
 4. Point Eyehold at the restored `WORKSPACES` directory and launch it. If browser-owned records were captured, choose **RESTORE BACKUP** and import `eyehold-browser-restore.json`.
 5. Work through every row in `receipt.reauthentication`: sign back into providers/connectors/channels, re-enter service keys, and reauthorize or relocate project folders. A restored project reference is shown as revoked until that authorization succeeds.
 
-## Roll back to a previous station version
+## Roll back to a previous keep version
 
 Stop Eyehold, then restore the older verified bundle with `--replace-existing`:
 
 ```powershell
-npm run recovery:restore -- --bundle "D:\Backups\station-previous.eyehold-recovery.json" --target "C:\Users\me\AppData\Local\Eyehold\workspaces" --replace-existing
+npm run recovery:restore -- --bundle "D:\Backups\keep-previous.eyehold-recovery.json" --target "C:\Users\me\AppData\Local\Eyehold\workspaces" --replace-existing
 ```
 
 The replaced directory is retained beside the target as `workspaces.rollback-<recovery-point>`. Restore stages and verifies the incoming generation before activation; if activation fails, it moves the old generation back.
 
 ## Recovery-point objective
 
-A successful stopped/quiescent snapshot guarantees zero completed mutations lost through its barrier. The rehearsal then applies exactly one completed mutation after that barrier, damages the station, and measures exactly one lost mutation after restore. This demonstrates the requested one-mutation objective for explicit snapshots.
+A successful stopped/quiescent snapshot guarantees zero completed mutations lost through its barrier. The rehearsal then applies exactly one completed mutation after that barrier, damages the keep, and measures exactly one lost mutation after restore. This demonstrates the requested one-mutation objective for explicit snapshots.
 
 Eyehold does not yet claim an automatic continuous-backup RPO. Mutations completed after the latest explicit recovery point remain at risk until another recovery point is created.
 

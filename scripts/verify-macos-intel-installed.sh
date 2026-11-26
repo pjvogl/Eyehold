@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Installed Intel macOS acceptance: exercise the same Finder/LaunchServices path a user takes,
-# then prove a v0.9.0 manual-sidecar station is recovered into the desktop shelf and survives restart.
+# then prove a v0.9.0 manual-sidecar keep is recovered into the desktop shelf and survives restart.
 set -euo pipefail
 
 dmg=${1:?usage: verify-macos-intel-installed.sh <Eyehold_x64.dmg> [receipt.json]}
@@ -106,7 +106,7 @@ quit_cleanly() {
 
 launch_with_finder
 
-[ -f "$desktop/agent.save.json" ] || fail "desktop shelf did not receive the v0.9.0 station save"
+[ -f "$desktop/agent.save.json" ] || fail "desktop shelf did not receive the v0.9.0 keep save"
 [ -f "$desktop/.migrated" ] || fail "desktop shelf has no completed migration marker"
 [ -f "$desktop/.migration-receipt.json" ] || fail "desktop shelf has no validated migration receipt"
 cmp "$legacy/recovery-canary.txt" "$desktop/recovery-canary.txt" || fail "full workspace canary did not survive migration"

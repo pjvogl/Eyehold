@@ -1,4 +1,4 @@
-/* Station market outbox. Bots may propose a sellable deliverable.
+/* Keep market outbox. Bots may propose a sellable deliverable.
  * Proposing never calls a payment provider. Publish and customer contact
  * stay queued until the owner executes that one action.
  */

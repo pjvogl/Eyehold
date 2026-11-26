@@ -2,7 +2,7 @@
 
    Browser localStorage is the FRAGILE store. A cache wipe, a different browser, or a different
    machine loses the agent the user built up — identity, XP/level/confidence, personalization
-   (dossier docs + persona), workstreams (chat history) and the station layout all live in
+   (dossier docs + persona), workstreams (chat history) and the keep layout all live in
    localStorage under the `eyehold.*` keys. This module is the safety net: one click bundles the
    nonsecret eyehold.* records plus a read-only snapshot of the agent's backend memory (notebook) into a
    downloadable file, and import restores the local half on any browser. Back-compat: a backup
@@ -178,7 +178,7 @@ const Backup = (() => {
       if (posture && typeof AutonomyStore !== 'undefined' && AutonomyStore.importState) {
         try {
           const result = await AutonomyStore.importState(JSON.parse(posture));
-          if (!result.ok) return { ok: false, error: 'Backup partly restored; autonomy was not confirmed. ' + (result.error || 'Try again when the station is connected.') };
+          if (!result.ok) return { ok: false, error: 'Backup partly restored; autonomy was not confirmed. ' + (result.error || 'Try again when the keep is connected.') };
         } catch (_) { return { ok: false, error: 'Backup partly restored; its autonomy setting could not be restored.' }; }
       }
     }

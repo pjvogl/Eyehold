@@ -1,6 +1,6 @@
 /* node test/browser.pie.test.js — browser.pdf / browser.intercept / browser.emulate.
 
-   Three specialist moves on the station browser:
+   Three specialist moves on the keep browser:
      · pdf       — render the CURRENT document into the agent's jailed workspace (whole page, kind:'file').
      · intercept — block heavy resource types (Fetch.enable patterns) for cheap text-first browsing.
      · emulate   — device/UA/locale/timezone overrides for responsive and localization checks.
@@ -9,7 +9,7 @@
      · a PDF lands in the SAME jail as screenshots, content-addressed, and emits a deliverable — or the
        tool says plainly that there was no workspace / the render failed; it never fabricates a file.
      · intercept/emulate are REFUSED while attached to the Commander's own Chrome (ownership: their real
-       browser is not the station's to reconfigure); pdf still works there (it is a read).
+       browser is not the keep's to reconfigure); pdf still works there (it is a read).
      · a Fetch.requestPaused reply goes to the SESSION THE EVENT CAME FROM — answering on the active
        session would leave a background tab's paused request hanging and wedge its load.
      · an unknown intercept kind fails loudly on ANY driver; it is never silently dropped. */
@@ -58,9 +58,9 @@ const PDF_B64 = Buffer.from('%PDF-1.4\n% fake').toString('base64');
     A.eq(pdf.scope, 'read', 'pdf is a READ — it renders what is already on screen');
     A.eq(pdf.requiresConsent, false, 'pdf costs no prompt, same as screenshot');
     A.eq(icp.scope, 'execute', 'intercept mutates browser state: execute scope');
-    A.eq(icp.requiresConsent, false, 'intercept is station-browser-only, no prompt (attach mode refuses it outright)');
+    A.eq(icp.requiresConsent, false, 'intercept is keep-browser-only, no prompt (attach mode refuses it outright)');
     A.eq(emu.scope, 'execute', 'emulate mutates browser state: execute scope');
-    A.eq(emu.requiresConsent, false, 'emulate is station-browser-only, no prompt (attach mode refuses it outright)');
+    A.eq(emu.requiresConsent, false, 'emulate is keep-browser-only, no prompt (attach mode refuses it outright)');
     for (const t of [pdf, icp, emu]) A.eq(t.capability, 'web', t.name + ' rides the web capability');
   }
 
@@ -208,7 +208,7 @@ const PDF_B64 = Buffer.from('%PDF-1.4\n% fake').toString('base64');
 
     const resetMark = sent.length;
     await d.emulate(null);
-    A.ok(sent.slice(resetMark).some(m => m.method === 'Emulation.setDeviceMetricsOverride' && m.params.width === 1440 && m.params.screenWidth === 1440), 'reset restores the coherent station screen metrics');
+    A.ok(sent.slice(resetMark).some(m => m.method === 'Emulation.setDeviceMetricsOverride' && m.params.width === 1440 && m.params.screenWidth === 1440), 'reset restores the coherent keep screen metrics');
     A.ok(sent.some(m => m.method === 'Emulation.setTimezoneOverride' && m.params.timezoneId === ''), 'reset clears the timezone');
 
     // pdf over the wire: printBackground always, and the data comes back decoded by the tool layer.

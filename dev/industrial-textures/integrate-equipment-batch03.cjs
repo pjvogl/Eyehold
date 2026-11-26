@@ -26,7 +26,7 @@ const corrections={bookshelf:'storage',industrial_bench:'crew',monstera:'utility
   fs.copyFileSync(from,at(runtime+id+'.png'));manifest.props[id]={views:{s:v}};
  }
  fs.writeFileSync(mp,JSON.stringify(manifest,null,2)+'\n');
- const cp=at('docs/station-remaster/props-v3/coverage.json'),coverage=JSON.parse(fs.readFileSync(cp));
+ const cp=at('docs/keep-remaster/props-v3/coverage.json'),coverage=JSON.parse(fs.readFileSync(cp));
  for(const row of coverage.props)if(manifest.props[row.id])Object.assign(row,{status:'new-design-awaiting-review',views:Object.keys(manifest.props[row.id].views)});
  coverage.newDesigns=coverage.props.filter(p=>p.status==='new-design-awaiting-review').length;
  coverage.remainingFullRedesign=coverage.catalog-coverage.approved-coverage.newDesigns;

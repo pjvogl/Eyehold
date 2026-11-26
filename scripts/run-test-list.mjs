@@ -33,13 +33,13 @@ export function runList(options) {
   }
   for (let index = 0; index < steps.length; index++) {
     const step = steps[index];
-    // HERMETIC PROFILE (2026-08-20): the sidecar's boot-time station auto-recovery scans the real
-    // per-user app-data roots for a lost station, and a test's fresh temp workspace looks exactly
-    // like one — so on a machine with an installed Eyehold station, test-booted sidecars ingested
-    // the user's REAL station into their temp workspaces (schema-stamp and sidecar.http broke the
+    // HERMETIC PROFILE (2026-08-20): the sidecar's boot-time keep auto-recovery scans the real
+    // per-user app-data roots for a lost keep, and a test's fresh temp workspace looks exactly
+    // like one — so on a machine with an installed Eyehold keep, test-booted sidecars ingested
+    // the user's REAL keep into their temp workspaces (schema-stamp and sidecar.http broke the
     // day the desktop app was first installed on the dev box). Every step gets its own empty
     // scratch profile so no spawned sidecar can see, or touch, real user data — and no step can
-    // plant a station a later step would recover. (test/helpers/sidecar-fixture.js applies the
+    // plant a keep a later step would recover. (test/helpers/sidecar-fixture.js applies the
     // same isolation for directly-invoked fixture tests.)
     const profile = mkdtempSync(join(tmpdir(), 'eyehold-gate-profile-'));
     const hermetic = { APPDATA: profile, LOCALAPPDATA: profile, XDG_DATA_HOME: profile };

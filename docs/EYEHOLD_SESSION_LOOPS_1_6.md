@@ -27,7 +27,7 @@
 ## Dependency graph
 
 ```
-S1 sidecar station authority
+S1 sidecar keep authority
   -> S2 org validator / PipelineEdge enforcement
   -> S6 builder scale final integration
 
@@ -45,19 +45,19 @@ Sessions may run continuously by looping through SELECT -> BUILD -> VERIFY -> SY
 until DONE, BLOCKED, or HELD. A HELD session wakes after every trunk merge and retries
 its sync/board check.
 
-## Session 1 - Sidecar-owned Station authority
+## Session 1 - Sidecar-owned Keep authority
 
-**Goal.** Move the station authority boundary to the sidecar so routing and capability
-grants are derived server-side from a validated Station document, not trusted from
+**Goal.** Move the keep authority boundary to the sidecar so routing and capability
+grants are derived server-side from a validated Keep document, not trusted from
 renderer-posted `placed` objects or bay object lists.
 
-**Worktree / branch.** `C:\Users\<you>\gen-trees\station-authority-gap1` on
-`agent/station-authority-gap1`.
+**Worktree / branch.** `C:\Users\<you>\gen-trees\keep-authority-gap1` on
+`agent/keep-authority-gap1`.
 
 **Owned files.**
-- `sidecar/station-store.js` or `sidecar/station/*.js`
+- `sidecar/keep-store.js` or `sidecar/keep/*.js`
 - `sidecar/routing/router.js`
-- `test/station-authority.test.js`, `test/routing.b5.test.js`
+- `test/keep-authority.test.js`, `test/routing.b5.test.js`
 - Narrow integration hooks in `sidecar/index.js`
 - Narrow client changes in `frontend/app/world.js`, `frontend/app/harness.js`, and
   `frontend/app/app.js` only after the sidecar API is tested
@@ -72,28 +72,28 @@ renderer-posted `placed` objects or bay object lists.
 
 **Loop.**
 1. SELECT the next trust-boundary item:
-   `router.setStation` -> `/api/station` -> transactional last-good station ->
+   `router.setKeep` -> `/api/keep` -> transactional last-good keep ->
    router derives plan -> interactive run ignores forged `placed`.
 2. Write a failing test first for the selected item.
 3. Implement the smallest server-side slice.
 4. Verify forged client payloads cannot grant web/files/shell/connector tools, and
-   forged legacy `/api/routing` plans cannot override an authoritative station.
+   forged legacy `/api/routing` plans cannot override an authoritative keep.
 5. Run `npm run test:fast`; run `npm run test:http` once the HTTP surface changes.
 6. Live-smoke a refit edit and a COMMS run.
 7. Sync, mark `READY`, wait for orchestrator merge, then select the next item.
 
 **Done condition.**
-- Sidecar can load, persist, validate, and derive from `SaveDoc.station`.
-- Routing plan and bay capability objects are derived by the sidecar from the Station.
+- Sidecar can load, persist, validate, and derive from `SaveDoc.keep`.
+- Routing plan and bay capability objects are derived by the sidecar from the Keep.
 - Interactive `/api/run` no longer trusts `body.placed` for grant authority.
-- Forged station/routing/capability HTTP tests fail closed.
-- Invalid/non-deployable station updates are transactional and leave the last-good
+- Forged keep/routing/capability HTTP tests fail closed.
+- Invalid/non-deployable keep updates are transactional and leave the last-good
   routing state active.
 - Existing builder/refit UX still works live.
 
 ## Session 2 - Org validator and door-gated workflow graph
 
-**Goal.** Make the station layout a validated multi-agent org graph: every agent has
+**Goal.** Make the keep layout a validated multi-agent org graph: every agent has
 one legal anchor, every grant resolves to a placed object, and handoff edges are
 runnable only when the door/path graph permits them.
 
@@ -101,7 +101,7 @@ runnable only when the door/path graph permits them.
 `agent/org-graph-gap2`.
 
 **Owned files.**
-- `frontend/app/orgvalidator.js` or `sidecar/station/org-validator.js`
+- `frontend/app/orgvalidator.js` or `sidecar/keep/org-validator.js`
 - `frontend/app/pipeline.js`
 - `test/org-validator.test.js`, `test/pipeline.test.js`, `test/worldmodel.test.js`
 - Later integration in `sidecar/routing/router.js` after S1 lands
@@ -121,7 +121,7 @@ runnable only when the door/path graph permits them.
 4. Implement validator result shape `{ok, errors, warnings, graph}`.
 5. Add one integration assertion to routing/worldmodel tests.
 6. Run `npm run test:fast`.
-7. After S1 lands, wire validator into sidecar station acceptance and routing acceptance.
+7. After S1 lands, wire validator into sidecar keep acceptance and routing acceptance.
 8. Repeat until every invalid AgentOrg snapshot is refused before runtime.
 
 **Done condition.**
@@ -172,7 +172,7 @@ installer/security checks, and release smoke.
 - `npm run desktop:build` succeeds on a machine with Rust/Cargo.
 - Packaged app boots its bundled sidecar and reaches healthy state.
 - Updater manifest generation is tested.
-- Release smoke covers boot -> onboard/key -> station load -> real or replay run ->
+- Release smoke covers boot -> onboard/key -> keep load -> real or replay run ->
   screenshot/zero console errors.
 - Manifest generation rejects bad SemVer, non-HTTPS URLs, empty signatures, and emits
   valid `latest.json`.
@@ -195,7 +195,7 @@ existing truthful ledger, budget caps, or key ownership model.
 - Narrow route hooks in `sidecar/index.js`
 - `test/sidecar.http.test.js`, `test/e2e.run.test.js`
 - Frontend provider/HUD files only after backend invariants pass:
-  `frontend/app/harness.js`, `frontend/app/app.js`, `frontend/app/stationui.js`,
+  `frontend/app/harness.js`, `frontend/app/app.js`, `frontend/app/keepui.js`,
   `frontend/app/safety.js`
 
 **Avoid / coordinate.**
@@ -264,14 +264,14 @@ turns are refunded, and delegated loops cannot quietly burn the lead's full budg
 
 ## Session 6 - Builder scale and visual release baseline
 
-**Goal.** Make the mutable builder scale beyond small stations: chunked/incremental bake,
+**Goal.** Make the mutable builder scale beyond small keeps: chunked/incremental bake,
 bounded canvas memory, and repeatable visual release baselines.
 
 **Worktree / branch.** `C:\Users\<you>\gen-trees\gap6-builder-bake` on
 `agent/gap6-builder-bake`.
 
 **Owned files.**
-- `frontend/app/stationbake.js`
+- `frontend/app/keepbake.js`
 - `frontend/app/build.js`
 - `frontend/app/world.js` only for narrow cache integration
 - `frontend/app/worldmodel.js` only for dirty-rect metadata if needed
@@ -279,11 +279,11 @@ bounded canvas memory, and repeatable visual release baselines.
 - `scripts/golden.mjs`, `scripts/shoot.mjs`, `scripts/audit.mjs`
 - `scripts/lib/states.mjs` and `scripts/goldens.json` only for deliberate visual
   baseline additions
-- `test/worldmodel.test.js`, new `test/stationbake.chunk.test.js`
+- `test/worldmodel.test.js`, new `test/keepbake.chunk.test.js`
 - `package.json` only to add the new chunk test to `test:fast`
 
 **Avoid / coordinate.**
-- Wait for S1/S2 before changing station authority or org semantics.
+- Wait for S1/S2 before changing keep authority or org semantics.
 - Coordinate before touching `world.js`; it is a hot file.
 - Do not introduce new gameplay claims; this is performance/release proof, not UX copy.
 
@@ -291,18 +291,18 @@ bounded canvas memory, and repeatable visual release baselines.
 1. SELECT one scale slice: dirty rect precision, bakeRegion seam, chunk store, visible
    chunk culling, LRU eviction, golden baseline.
 2. Write a headless or pixel/golden test where possible.
-3. Implement with unchanged visuals for the seed station.
+3. Implement with unchanged visuals for the seed keep.
 4. Run `npm run test:fast`, `npm run shoot`, `npm run golden`.
 5. Live-smoke REFIT edit on desktop and mobile viewport sizes.
-6. Repeat until large-station edits rebake only touched chunks and visuals remain stable.
+6. Repeat until large-keep edits rebake only touched chunks and visuals remain stable.
 
 **Done condition.**
-- Editing one prop/room marks exact dirty chunks and does not rebake the whole station.
+- Editing one prop/room marks exact dirty chunks and does not rebake the whole keep.
 - Bounds/origin changes may reset chunk metadata, but must not allocate a full-world
   `baseCv`/`lightCv`.
-- A large synthetic station renders with bounded canvas count and no visible seams.
+- A large synthetic keep renders with bounded canvas count and no visible seams.
 - Golden visual baseline exists and blocks regressions for release.
-- Seed-station chunk composite matches the monolithic bake within established visual
+- Seed-keep chunk composite matches the monolithic bake within established visual
   tolerance.
 
 ## Worktree creation commands
@@ -311,7 +311,7 @@ Run these from PowerShell. Use the `-ExecutionPolicy Bypass` wrapper because thi
 machine blocks local `.ps1` execution by default.
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File C:\Users\<you>\gen-trees\new-agent-tree.ps1 station-authority-gap1
+powershell -ExecutionPolicy Bypass -File C:\Users\<you>\gen-trees\new-agent-tree.ps1 keep-authority-gap1
 powershell -ExecutionPolicy Bypass -File C:\Users\<you>\gen-trees\new-agent-tree.ps1 org-graph-gap2
 powershell -ExecutionPolicy Bypass -File C:\Users\<you>\gen-trees\new-agent-tree.ps1 eyehold-release-gate
 powershell -ExecutionPolicy Bypass -File C:\Users\<you>\gen-trees\new-agent-tree.ps1 managed-credits
@@ -325,7 +325,7 @@ Each implementation session writes only its own status file. The central status 
 below is owned by the orchestrator and is updated only when branches are merged,
 blocked, or explicitly accepted.
 
-- Session 1: `docs/session-status/session-1-station-authority.md`
+- Session 1: `docs/session-status/session-1-keep-authority.md`
 - Session 2: `docs/session-status/session-2-org-graph.md`
 - Session 3: `docs/session-status/session-3-release-gate.md`
 - Session 4: `docs/session-status/session-4-managed-credits.md`
@@ -363,7 +363,7 @@ session's done condition.
 
 | Session | Branch | Status | Current gate | Notes |
 |---|---|---|---|---|
-| 1 Sidecar Station Authority | `agent/station-authority-gap1` | TODO | none | Highest-priority authority boundary |
+| 1 Sidecar Keep Authority | `agent/keep-authority-gap1` | TODO | none | Highest-priority authority boundary |
 | 2 Org Validator / PipelineEdge | `agent/org-graph-gap2` | TODO | waits on S1 for sidecar integration | Can build pure validator first |
 | 3 Desktop Release | `agent/eyehold-release-gate` | WATCH | waits on active Tauri hardening lanes | Rust toolchain may block final build |
 | 4 Managed Billing | `agent/managed-credits` | TODO | none | Keep BYOK isolated; managed fails closed |

@@ -67,5 +67,5 @@ Expected values to be strictly equal:
 
 true !== false
 
-new station lockdown must reject ambiguous replies
+new keep lockdown must reject ambiguous replies
 permissions authority: 46/72 checks passed

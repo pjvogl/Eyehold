@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 /* scripts/qa/closer.mjs — the RED→GREEN CLOSER (lane Q8).
  *
- * WHY THIS EXISTS: the Self-Testing Station detects beautifully and repairs nothing. Every
- * path in qa/QA_STATION.md terminates at "route it to a human lane" — the Guardian files a
+ * WHY THIS EXISTS: the Self-Testing Keep detects beautifully and repairs nothing. Every
+ * path in qa/QA_KEEP.md terminates at "route it to a human lane" — the Guardian files a
  * finding, the Overseer notifies, and then Andrew fixes it. The Closer is the missing EDGE:
  * a red finding goes in, a PROVEN patch comes out. It is the only crew member that produces
  * a fix, so it is held to a harder standard than the detectors: it must be structurally

@@ -27,7 +27,7 @@ the single authority `require()`d by both the frontend sim and the sidecar route
 - `frontend/app/pipeline.js` is **zero-dep UMD**, pure (no RNG/wall-clock/mutation), lint-determinism-scanned.
   The sidecar `require()`s it. One compiler, two consumers, no drift.
 - **Routing ⊥ capability:** a BAY's `agentId` = WHO runs; its room's objects = WHAT tools (via the UNCHANGED
-  `resolveTools`). B5 wires the per-bay station; until then routed runs keep the hardcoded office.
+  `resolveTools`). B5 wires the per-bay keep; until then routed runs keep the hardcoded office.
 - **Belt gates only the autonomous (Telegram) path, never browser chat.** Routed-mode is opt-in; `resolveTarget`
   → null ALWAYS falls back to today's resolution. Real work never stalls.
 - **CYCLE is a HARD error** (a loop = infinite paid runOnce); the router refuses to store a cyclic plan.
@@ -57,11 +57,11 @@ the single authority `require()`d by both the frontend sim and the sidecar route
 | `662625e` | **B4b** | **Visible crew.** `agent` stays the HERO (untouched). `crew[]` = light static bodies, one per bound bay (`syncCrewFromPlan` in rederive). `drawAgent/drawFallback/drawBubble` take an optional `who` (hero path byte-identical, gated `who===agent`). `onWorkitemDeliver` routes a delivered box to its bound body via `resolveTarget` + lights the bay (`bayLit`); else the hero, as before. Verified: instrumented frame drew hero+2 crew. |
 | `bac4388` | **B4b.2** | **Junctions carry config.** Found projectGeometry dropped a placed filter/merger's `routes/def/bufferSize` (B0 only carried `agentId`) → real filters were inert. Now carried additively in addProp/projectGeometry/migrate (sanitized E/W/N/S, bufferSize≥2) + `configureJunction(propId,cfg)` setter. A placed filter floor now compiles DEPLOYABLE. worldmodel.test 136. |
 | `a30b798` | **B4c** | **Bay authoring + cost-safety ghosts.** build.js `openBayPicker` (reuses the refit-guide modal): place/click a BAY → assign an agent (roster from `opts.agents()` + free-text) → `assignPropAgent`. `rebake()` runs `compileRoutingPlan`; `drawRoutingValidation` paints pulsing RED markers (NO BELT/UNREACHABLE/LOOP!/NO DEFAULT/DUP AGENT) + AMBER (NO AGENT) on the floor before any paid run. A clean no-bay floor shows nothing. |
-| `43d3379` | **B4d** | **Roster → picker (minimal).** app.js `Build.init` now passes `agents:()=>[the app agent]` so the picker lists real agents. The bay→agent binding persists via `station.serialize` (prop.agentId round-trips) — no save-schema change needed. The full `{agents,activeAgentId}` multi-agent app registry (multiple real agents, per-agent chat) is a SEPARATE, larger workstream beyond conveyor routing — deliberately out of scope here. |
+| `43d3379` | **B4d** | **Roster → picker (minimal).** app.js `Build.init` now passes `agents:()=>[the app agent]` so the picker lists real agents. The bay→agent binding persists via `keep.serialize` (prop.agentId round-trips) — no save-schema change needed. The full `{agents,activeAgentId}` multi-agent app registry (multiple real agents, per-agent chat) is a SEPARATE, larger workstream beyond conveyor routing — deliberately out of scope here. |
 
 **B3 + B4 (a/b/b.2/c/d) DONE + committed on agent/workpipe-b, all `npm run test:fast` green (30 files; classify 65, conveyor 50, pipeline 29, worldmodel 136). NOT merged.** The "connect agents to conveyors" vision is functional end-to-end: author bays + filters in REFIT → work sorts by content to the right bay → that agent appears + lights up → the sidecar dispatches the run there → unroutable floors flagged before spend.
 
-| `3a38c54` | **B5** | **Per-bay capability isolation.** worldmodel `CAP_PROP_MAP` (prop→objectType: workstation=compute, cabinet=files, dish=web, server=memory) + `bayObjects(agentId)`. world.js enriches each plan bay with its room's cap-objects (POST dedupe keys on caps too). router `stationFor(agentId)` builds the resolveTools station from those, or null (→ office default). `runOnce` gains optional `o.station`; the hub passes `resolveStation(agentId)` for autonomous bay runs. An UNEQUIPPED bay grants no compute (cost-safe) → build.js shows an amber NO COMPUTE marker. +routing.b5.test (12) + worldmodel 141. |
+| `3a38c54` | **B5** | **Per-bay capability isolation.** worldmodel `CAP_PROP_MAP` (prop→objectType: workkeep=compute, cabinet=files, dish=web, server=memory) + `bayObjects(agentId)`. world.js enriches each plan bay with its room's cap-objects (POST dedupe keys on caps too). router `keepFor(agentId)` builds the resolveTools keep from those, or null (→ office default). `runOnce` gains optional `o.keep`; the hub passes `resolveKeep(agentId)` for autonomous bay runs. An UNEQUIPPED bay grants no compute (cost-safe) → build.js shows an amber NO COMPUTE marker. +routing.b5.test (12) + worldmodel 141. |
 
 **PHASE B COMPLETE (B0–B5) + committed on agent/workpipe-b, all `npm run test:fast` green (31 files). NOT merged.** Routing ⊥ capability, both driven by the one placed floor: the bay binding picks WHO runs; the bay room's objects pick WHAT tools (via the unchanged resolveTools); a FILTER sorts work by content; cost-safety ghosts (unroutable + NO COMPUTE) warn before any spend.
 
@@ -83,8 +83,8 @@ world.js is not headless; verify via that preview: `preview_eval` to compile a s
 continuously-animating canvas). Drive real work via the awakening (which calls `connectChannelBridge`).
 
 ## NEXT — B5 (per-bay capability) + merge
-- `sidecar/routing/router.js` `route()` builds the per-bay `station` from the delivered bay's room objects
-  (`agentRoomId`→room's placed objects) and passes it to `runOnce` (which gains an OPTIONAL `station` param;
+- `sidecar/routing/router.js` `route()` builds the per-bay `keep` from the delivered bay's room objects
+  (`agentRoomId`→room's placed objects) and passes it to `runOnce` (which gains an OPTIONAL `keep` param;
   absent = today's hardcoded office). `resolveTools` reused verbatim. `test/capgate.test.js`: a bay-room with a
   cabinet grants fs.*, without one grants none.
 - Then `sync-agent-tree.ps1 workpipe-b` (rebase onto trunk), `npm run test:fast` green, `git merge

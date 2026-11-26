@@ -24,14 +24,14 @@
   const nodeCrypto = require('node:crypto');
   const { note: envFailNote } = require('./failopen.js');
   const { trackChild } = require('./procledger.js');   // F2: foreground receipts for the boot orphan sweep
-  const { stationChildEnv } = require('./child-env.js');   // the shared station-secret strip (audit 2026-09-25 #13)
-  const { assertWorkspaceId } = require('./workspace-reserved.js');   // station-owned dirs are never agent jails
+  const { keepChildEnv } = require('./child-env.js');   // the shared keep-secret strip (audit 2026-09-25 #13)
+  const { assertWorkspaceId } = require('./workspace-reserved.js');   // keep-owned dirs are never agent jails
   const WIN = (typeof process !== 'undefined' && process.platform) === 'win32';
   const DEFAULT_DOCKER_IMAGE = 'node:20-bookworm';
 
   function safeAgentId(id) {
     if (!AID_RE.test(id || '')) throw new Error('bad agentId');
-    // WORKSPACES/<id> is this agent's jail on every backend; a station-owned directory name is never one.
+    // WORKSPACES/<id> is this agent's jail on every backend; a keep-owned directory name is never one.
     return assertWorkspaceId(id);
   }
   function clamp(n, lo, hi) {
@@ -66,10 +66,10 @@
   const SECRET_ENV_NAME_RE = /(?:^|_)(?:TOKEN|KEY|SECRET|PASSWORD|PASS|AUTH|BEARER|COOKIE|CREDENTIAL)(?:_|$)|(?:APIKEY|ACCESSTOKEN|ACCESSKEY|SECRETKEY|AUTHTOKEN|APITOKEN|PRIVATEKEY|PASSWD)|(?:^|_)PAT(?:_|$)/i;
   const INTERNAL_ENV_NAME_RE = /^(?:EYEHOLD|SKYNET)_/i;
   const EXECUTION_HOOK_ENV_RE = /^(?:NODE_OPTIONS|NODE_PATH|npm_config_script_shell|COMSPEC)$/i;
-  /* Agent-driven commands: the shared station-secret strip (child-env.js — Eyehold's own names, the service-key
+  /* Agent-driven commands: the shared keep-secret strip (child-env.js — Eyehold's own names, the service-key
      names the sidecar exported, any held secret VALUE), then every secret-SHAPED name on top. */
   function sanitizeChildEnv(base) {
-    const src = stationChildEnv(base || {});
+    const src = keepChildEnv(base || {});
     const out = {};
     for (const k of Object.keys(src)) {
       if (SECRET_ENV_NAME_RE.test(k) || INTERNAL_ENV_NAME_RE.test(k) || EXECUTION_HOOK_ENV_RE.test(k)) continue;
@@ -805,7 +805,7 @@
     const clock = deps.clock || { now: function () { return 0; } };
     const cfg = deps.config || {};
     const targetFn = typeof deps.sshConfig === 'function' ? deps.sshConfig : function () { return null; };
-    const agentIdsFn = typeof deps.sshAgentIds === 'function' ? deps.sshAgentIds : function () { return []; };   // agents with a configured target (station-wide reap)
+    const agentIdsFn = typeof deps.sshAgentIds === 'function' ? deps.sshAgentIds : function () { return []; };   // agents with a configured target (keep-wide reap)
     const serviceEnvFn = typeof deps.serviceEnv === 'function' ? deps.serviceEnv : null;
     const states = new Map();
     const sessions = new Map();
@@ -1191,7 +1191,7 @@
     }
     function killAllForAgent(agentId) {
       const aid = safeAgentId(agentId || 'agent');
-      // no owner-configured target = no remote root this station could have started a job under: nothing to reap
+      // no owner-configured target = no remote root this keep could have started a job under: nothing to reap
       let row = null;
       try { row = target(aid); } catch (_) { return Promise.resolve(0); }
       return enqueue(aid, async function () {
@@ -1201,7 +1201,7 @@
         const m = /EYEHOLD_KILLED\t(\d+)/.exec(String(result.out || '')); return m ? Number(m[1]) : 0;
       });
     }
-    // Station-wide (no agentId: E-STOP / Quit / shutdown): remote jobs are per agent (per-agent target +
+    // Keep-wide (no agentId: E-STOP / Quit / shutdown): remote jobs are per agent (per-agent target +
     // remoteRoot) and restart-persistent, so reap under EVERY agent with a configured target — not the
     // current profile (a job outlives a profile switch or a Full Power reroute). Never rejects: one
     // unreachable host is noted and counted 0, it must not become a process-level unhandledRejection.

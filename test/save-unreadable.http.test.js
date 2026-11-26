@@ -16,7 +16,7 @@ const { SidecarFixture } = require('./helpers/sidecar-fixture.js');
     const bytes = fs.readFileSync(primary, 'utf8');
     fs.writeFileSync(control, JSON.stringify({ file: 'audit.save.json' }));
     const locked = await fixture.json('GET', '/api/save?agent=audit');
-    assert.equal(locked.status, 503, 'unreadable existing save must not be a successful empty station');
+    assert.equal(locked.status, 503, 'unreadable existing save must not be a successful empty keep');
     assert.equal(locked.body.unreadable, true);
     assert.equal((await fixture.json('POST', '/api/save', { ...doc, updatedAt: 200 })).body.ok, false);
     assert.equal(fs.readFileSync(primary, 'utf8'), bytes, 'primary retained byte for byte');
@@ -35,7 +35,7 @@ const { SidecarFixture } = require('./helpers/sidecar-fixture.js');
     const recovered = await fixture.json('GET', '/api/save?agent=audit');
     assert.equal(recovered.body.save.agent.name, 'RETAIN ME');
     assert.equal(recovered.body.recovery.kind, 'recovered', 'missing-main backup recovery is disclosed');
-    assert.equal((await fixture.json('GET', '/api/save?agent=new')).body.save, null, 'genuinely new station remains empty');
+    assert.equal((await fixture.json('GET', '/api/save?agent=new')).body.save, null, 'genuinely new keep remains empty');
     console.log('save unreadable HTTP: primary/backup faults, refused writes, byte preservation, restart and recovery disclosure PASS');
   } finally { await fixture.dispose(); }
 })().catch(error => { console.error(error); process.exitCode = 1; });

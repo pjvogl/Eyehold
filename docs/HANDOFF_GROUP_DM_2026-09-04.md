@@ -24,7 +24,7 @@ Do not reintroduce the control panel or move it behind another menu.
 - Use the actual normal COMMS composer (`#chat-inputrow` / `#chat-input`), Send,
   attachment staging and Stop. There is no second group composer.
 - Add agents opens Eyehold's real terminal window, using
-  `StationUI.toggleTerm('group-agents', 'ADD AGENTS', ...)`. Keep it under `#terms`
+  `KeepUI.toggleTerm('group-agents', 'ADD AGENTS', ...)`. Keep it under `#terms`
   so the existing CRT layer applies. The earlier body-mounted popup looked wrong.
 - Picker: search, clickable agent rows, selected count, ADD and Cancel. No checkbox,
   enable button, default-responder dropdown, session-title form or advanced settings.

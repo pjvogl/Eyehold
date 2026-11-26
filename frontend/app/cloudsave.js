@@ -35,7 +35,7 @@ const CloudSave = (() => {
   let warnedStale = false;             // ONE console warn per failing↔healthy transition, never per attempt
   // EL-11 FIX 1: the sidecar REFUSES writes when the workspace was stamped by a NEWER Eyehold — as an HTTP 200
   // body { ok:false, degraded:true }. That refusal gets its OWN persistent state (the save-dot renders it and
-  // stationui explains it); it is NOT a transient network failure and must never stamp health OK.
+  // keepui explains it); it is NOT a transient network failure and must never stamp health OK.
   let degraded = false;
   // EL-11 FIX 2/3: the persisted quarantine/recovery marker the sidecar returned on the last pull (GET /api/save
   // carries `recovery`). The boot path reads it via recoveryNotice() and acks it after showing the honest notice.
@@ -65,7 +65,7 @@ const CloudSave = (() => {
   // intact 200KB save). Distinct object, never a real save envelope.
   function unknownSentinel(reason) { return { __saveUnknown: true, reason: String(reason || 'unreachable') }; }
 
-  // NOTE: no `keepalive` here — browsers cap a keepalive body at 64KB, and a save with workstreams + station
+  // NOTE: no `keepalive` here — browsers cap a keepalive body at 64KB, and a save with workstreams + keep
   // can exceed that. The normal debounced flush is a plain fetch; the unload path uses sendBeacon instead.
   function postNow(doc) {
     const controller = new AbortController();
@@ -237,7 +237,7 @@ const CloudSave = (() => {
           }
           return null;
         }
-        lastPullOutcome = 'unreachable'; // status alone cannot prove a readable or empty station
+        lastPullOutcome = 'unreachable'; // status alone cannot prove a readable or empty keep
         return r.json();
       })
       .then(j => {
@@ -285,7 +285,7 @@ const CloudSave = (() => {
     revision = num(remote._saveRevision);
     // The unload beacon may land after the old page can receive its ACK. On reload the
     // cache is still dirty, but an identical durable payload proves that exact edit landed.
-    // Ignore only transport metadata; any changed station, roster, or conversation still
+    // Ignore only transport metadata; any changed keep, roster, or conversation still
     // takes the conflict-preserving path below.
     const content = d => JSON.stringify({ ...d, updatedAt: undefined, _saveRevision: undefined, _saveClient: undefined, _saveDirty: undefined });
     if (isSave(local) && local._saveDirty && content(local) === content(remote)) {

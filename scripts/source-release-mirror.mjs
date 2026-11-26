@@ -111,7 +111,7 @@ export function buildMirrorPlan(rawRelease, options = {}) {
     '|---|---|',
     ...installers.map(asset => `| **${platformLabel(asset.name)}** | [${asset.name}](${asset.downloadUrl}) |`),
     '',
-    'These downloads are mirrored byte-for-byte from the validated Eyehold distribution release. Already running Eyehold? Update from inside the app; your crew, sessions, keys, and station remain in place.',
+    'These downloads are mirrored byte-for-byte from the validated Eyehold distribution release. Already running Eyehold? Update from inside the app; your crew, sessions, keys, and keep remain in place.',
     '',
     '---',
     '',

@@ -9,7 +9,7 @@ const path = require('path');
 
 const index = fs.readFileSync(path.join(__dirname, '..', 'frontend', 'index.html'), 'utf8');
 const app = fs.readFileSync(path.join(__dirname, '..', 'frontend', 'app', 'app.js'), 'utf8');
-const stationui = fs.readFileSync(path.join(__dirname, '..', 'frontend', 'app', 'stationui.js'), 'utf8');
+const keepui = fs.readFileSync(path.join(__dirname, '..', 'frontend', 'app', 'keepui.js'), 'utf8');
 const host = fs.readFileSync(path.join(__dirname, '..', 'sidecar', 'index.js'), 'utf8');
 const link = fs.readFileSync(path.join(__dirname, '..', 'sidecar', 'credits-link.js'), 'utf8');
 
@@ -94,16 +94,16 @@ ok(/seq !== _eyeholdStatusSeq[\s\S]{0,180}answered: false/.test(app),
   'an out-of-order creator balance response becomes unknown instead of repainting a stale zero');
 ok(/snap\.authStatus === 'invalid'[\s\S]{0,400}link_token_rejected/.test(host),
   'a newly confirmed token rejected by balance authority is never reported or adopted as linked');
-ok(/refreshCreditsProvider\(\)[\s\S]{0,220}\/api\/credits\?history=0/.test(stationui),
+ok(/refreshCreditsProvider\(\)[\s\S]{0,220}\/api\/credits\?history=0/.test(keepui),
   'the provider card reads the bounded summary path rather than waiting on credit history');
-ok(/function publishCreditsConfigured\(configured\)[\s\S]{0,300}setDesktopConfigured\('eyehold',\s*!!configured\)[\s\S]{0,200}ModelDock\.reflect/.test(stationui),
+ok(/function publishCreditsConfigured\(configured\)[\s\S]{0,300}setDesktopConfigured\('eyehold',\s*!!configured\)[\s\S]{0,200}ModelDock\.reflect/.test(keepui),
   'Settings publishes a definitive managed-link answer to the same cache and model dock COMMS reads');
-ok(/if \(j && j\.configured\) \{[\s\S]{0,100}publishCreditsConfigured\(true\)/.test(stationui)
-  && /if \(!\(j && j\.unavailable\)\) publishCreditsConfigured\(false\)/.test(stationui),
+ok(/if \(j && j\.configured\) \{[\s\S]{0,100}publishCreditsConfigured\(true\)/.test(keepui)
+  && /if \(!\(j && j\.unavailable\)\) publishCreditsConfigured\(false\)/.test(keepui),
   'linked and definitive-unlinked answers converge the COMMS cache while temporary outages preserve it');
-ok((stationui.match(/\.then\(\(\) => refreshCreditsProvider\(\)\)\s*\.then\(\(\) => \{ (?:_creditsUnlinkPending = false; )?scheduleSettingsRepaint\(\); wireCredits\(body\); \}\)/g) || []).length === 2,
+ok((keepui.match(/\.then\(\(\) => refreshCreditsProvider\(\)\)\s*\.then\(\(\) => \{ (?:_creditsUnlinkPending = false; )?scheduleSettingsRepaint\(\); wireCredits\(body\); \}\)/g) || []).length === 2,
   'link and unlink repaint the provider card after the Store and COMMS truth converges');
-ok(/_creditsLinkPollBusy/.test(stationui) && /generation !== _creditsLinkGeneration/.test(stationui),
+ok(/_creditsLinkPollBusy/.test(keepui) && /generation !== _creditsLinkGeneration/.test(keepui),
   'the STORE pairing flow is also single-flight and ignores stale link responses');
 ok(/managed credit\|Managed credits/.test(app), 'a billing refusal from the wire preflight is named as billing, not as "model didn’t answer"');
 // the preflight reads Harness.chat's refusal string — otherwise every up-front refusal collapses to
@@ -126,7 +126,7 @@ ok(/stopEyeholdBalancePoll\(\)/.test(app), 'the empty-wallet balance poll has a 
   const unanswered = refusalOf({}).message;
   const outOf = refusalOf({ exhausted: true }).message;
   const held = refusalOf({ exhausted: true, balanceUsd: 0, held: { runs: 1, usd: 4, counted: true } }).message;
-  ok(/refused this station's link/.test(refusedLink) && /did not answer/.test(unanswered) && /^Out of managed credit/.test(outOf) && /^Managed credits are held/.test(held),
+  ok(/refused this keep's link/.test(refusedLink) && /did not answer/.test(unanswered) && /^Out of managed credit/.test(outOf) && /^Managed credits are held/.test(held),
     'the sidecar still emits the refused-link, unanswered, out-of-credit and held refusals');
   // preflightWire collapses whitespace and keeps 160 chars: the WAKE screen only ever sees that much
   const wake = (why, prov) => {
@@ -137,7 +137,7 @@ ok(/stopEyeholdBalancePoll\(\)/.test(app), 'the empty-wallet balance poll has a 
   for (const prov of ['eyehold', 'openai']) {
     const w = wake(refusedLink, prov);
     ok(w.r === false && w.refreshed === 1, 'a refused link bounces WAKE and repaints the link state (' + prov + ')');
-    ok(/no longer accepts this station’s link/.test(w.text) && /credits are safe/.test(w.text), 'a refused link names the refused link (' + prov + ')');
+    ok(/no longer accepts this keep’s link/.test(w.text) && /credits are safe/.test(w.text), 'a refused link names the refused link (' + prov + ')');
     ok(!/try WAKE again in a moment|couldn’t read your credit balance|no credits|ADD CREDITS/.test(w.text), 'a refused link is never "retry" or "out of credits" (' + prov + ')');
   }
   ok(/CONNECT EYEHOLD ACCOUNT/.test(wake(refusedLink, 'eyehold').text) && /id="btn-eyehold-link" class="btn">CONNECT EYEHOLD ACCOUNT/.test(index),
@@ -145,7 +145,7 @@ ok(/stopEyeholdBalancePoll\(\)/.test(app), 'the empty-wallet balance poll has a 
   ok(!/CONNECT EYEHOLD ACCOUNT/.test(wake(refusedLink, 'openai').text), 'another provider pick is never pointed at a EYEHOLD button it is not showing');
   ok(/couldn’t read your credit balance/.test(wake(unanswered, 'eyehold').text), 'an unanswered balance check still says the balance could not be read');
   ok(/no credits/.test(wake(outOf, 'eyehold').text), 'only a reported empty wallet says ADD CREDITS');
-  // a balance HELD by this station's own running Eyehold runs (audit B11) is neither empty nor unreadable
+  // a balance HELD by this keep's own running Eyehold runs (audit B11) is neither empty nor unreadable
   for (const prov of ['eyehold', 'openai']) {
     const w = wake(held, prov);
     ok(w.r === false && w.refreshed === 1, 'a held balance bounces WAKE and repaints the balance (' + prov + ')');
@@ -165,12 +165,12 @@ ok(/snap\.authStatus === 'invalid'[\s\S]{0,300}configured:\s*false[\s\S]{0,200}r
   'a cloud-rejected linked device is reported as unconfigured with an explicit revoked reason');
 ok(/const revoked = !CREDITS_URL[\s\S]{0,240}snap\.authStatus === 'invalid'/.test(host) &&
    /available = creditsLink\.configured\(\) && \(!credits\.configured\(\) \|\| revoked\)/.test(host),
-  'remote revocation re-opens the normal LINK STATION flow without a manual local unlink');
+  'remote revocation re-opens the normal LINK KEEP flow without a manual local unlink');
 ok(/previous link was removed from your account/.test(app),
   'genesis names the removed link and tells the Commander to reconnect credits');
-ok(/lk\.reason === 'link_revoked'[\s\S]{0,220}previous link was removed from your account/.test(stationui),
+ok(/lk\.reason === 'link_revoked'[\s\S]{0,220}previous link was removed from your account/.test(keepui),
   'Settings renders the same relink recovery from backend truth');
-ok(/LINK SAVED · SERVICE UNAVAILABLE/.test(stationui) && /link saved on this station, but Eyehold could not verify it/.test(app),
+ok(/LINK SAVED · SERVICE UNAVAILABLE/.test(keepui) && /link saved on this keep, but Eyehold could not verify it/.test(app),
   'temporary cloud failure is presented separately and never overclaimed as LINKED');
 
 console.log('genesis-eyehold-link.test.js OK -', n, 'assertions');

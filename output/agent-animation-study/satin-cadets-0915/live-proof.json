@@ -1,6 +1,6 @@
 {
-  "url": "http://127.0.0.1:18814/agent-station-demo.html?propSet=projection",
-  "method": "CUA browser inspection of the running seeded station; screenshots and rendered data-motion attributes",
+  "url": "http://127.0.0.1:18814/agent-keep-demo.html?propSet=projection",
+  "method": "CUA browser inspection of the running seeded keep; screenshots and rendered data-motion attributes",
   "standingHeight": 19,
   "allCadetColorsLoaded": true,
   "browserErrors": [],

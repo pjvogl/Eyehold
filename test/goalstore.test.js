@@ -356,18 +356,18 @@ const { GoalStore } = require('../frontend/app/goalstore.js');
   GoalStore.init({ now: () => clock, getSystem: () => '', launchDirective: t => launches.push(t) });
   A.ok(GoalStore._state().offeredOrder.length <= 100, 'the FIFO cap round-trips through hydrate');
 
-  /* ---- source-locks: the chat.js/stationui glue actually drives the tested seams (idiom of study.test §3) ---- */
+  /* ---- source-locks: the chat.js/keepui glue actually drives the tested seams (idiom of study.test §3) ---- */
   const fs = require('fs');
   const path = require('path');
   const chatSrc = fs.readFileSync(path.join(__dirname, '../frontend/app/chat.js'), 'utf8');
-  const uiSrc = fs.readFileSync(path.join(__dirname, '../frontend/app/stationui.js'), 'utf8');
+  const uiSrc = fs.readFileSync(path.join(__dirname, '../frontend/app/keepui.js'), 'utf8');
   const iArc = chatSrc.indexOf('async function offerArc');
   A.ok(iArc > 0, 'chat.js defines offerArc');
   const arcBody = chatSrc.slice(iArc, iArc + 4200);
   A.ok(/handoff:\s*\(\) => turninQueue\.length > 0 \? 'memory' : null/.test(arcBody), 'offerArc hands the shared slot to a queued memory deck on resolve');
   A.ok(/if \(turninQueue\.length && !activeTurnin\) showNextTurnin\(\);/.test(arcBody), 'offerArc DRAINS the queued memory deck in its finally (fix 1: never a stranded invisible deck)');
   A.ok(/Goals\.resolveConfirmChoice/.test(arcBody), 'offerArc routes the choice through the PURE resolver (fix 3 lives in tested code)');
-  A.ok(/q\.isNext && !q\.inFlight/.test(uiSrc), 'stationui renders Accept only for a NOT-in-flight front step (fix 2 render state)');
+  A.ok(/q\.isNext && !q\.inFlight/.test(uiSrc), 'keepui renders Accept only for a NOT-in-flight front step (fix 2 render state)');
 
   const flexible = await GoalStore.createGoal('Reclaim my evenings', 'My weekly report runs reliably', ['Map the repeated work', 'Draft a report template', 'Test the automation']);
   A.ok(flexible.ok, 'create a user-authored goal');
@@ -479,7 +479,7 @@ const { GoalStore } = require('../frontend/app/goalstore.js');
   /* ============ USER-STUDY LOOP: onboarding plans the mission it just confirmed ============ */
   GoalStore.reset();
   global.Harness.chat = async () => ({ text: '1. Shortlist three features\n2. Prototype the best one\n3. Ship it to five users', error: false });
-  goalsBeliefs = [{ id: 'cd_first', text: 'Wants the station to: tidy my inbox' }, { id: 'cd_mission', text: 'Help choose and build useful features' }];
+  goalsBeliefs = [{ id: 'cd_first', text: 'Wants the keep to: tidy my inbox' }, { id: 'cd_mission', text: 'Help choose and build useful features' }];
   const target = goalsBeliefs[1];
   const targeted = await GoalStore.proposeDecomposition(target);
   A.eq(targeted && targeted.belief.id, 'cd_mission', 'a targeted draft plans exactly the named belief, not the first goals belief');

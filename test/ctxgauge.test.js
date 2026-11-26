@@ -68,7 +68,7 @@ A.ok(compute(64000.7, 128000).used === 64000, 'fractional used floored');
    difference between a real prompt_tokens and this estimate of the same array. A drift between the two
    copies is not a rounding nit — it becomes a systematic bias in every projection the gauge shows. ---- */
 const SAMPLE = [
-  { role: 'system', content: 'you are a helpful station agent' },
+  { role: 'system', content: 'you are a helpful keep agent' },
   { role: 'user', content: 'x'.repeat(4000) },
   { role: 'assistant', content: 'ok', tool_calls: [{ function: { name: 'fs.write', arguments: JSON.stringify({ path: 'a.txt', body: 'y'.repeat(9000) }) } }] },
   { role: 'user', content: '' }

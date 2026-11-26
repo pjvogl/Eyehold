@@ -151,7 +151,7 @@ body :is(.gc-nm,.gc-person,.wh-destination,.ov-vchip,.ov-field input,.cc-field i
   font-size: var(--sn-type-control) !important;
 }
 body .gc-picker :is(.gc-help,.gc-empty,.gc-error) { font-size: var(--sn-type-control) !important; line-height: 1.45; }
-body :is(#station-tip,.hint-card,.wr-add-label) { font-size: var(--sn-type-meta) !important; line-height: 1.35; }
+body :is(#keep-tip,.hint-card,.wr-add-label) { font-size: var(--sn-type-meta) !important; line-height: 1.35; }
 /* Camera text stays a restrained overlay, without adding a bar over the picture. */
 body #stage-wrap :is(.cam-label,.cam-rec,.cam-feed,.cam-mode,.cam-cine) {
   font-size: var(--sn-type-meta) !important; letter-spacing: .5px; opacity: .9;

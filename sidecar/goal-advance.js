@@ -7,7 +7,7 @@
    again, and the progress bar never moved. This module closes that loop with two pure reads:
 
      · slateFinished(goal, quests) — every quest planned for the CURRENT step is resolved (none open) and at
-       least one of them was actually completed by its contract. That is the step's evidence: the station
+       least one of them was actually completed by its contract. That is the step's evidence: the keep
        planned the step as a set of verifiable quests and every one of them is settled. A slate that was only
        dismissed proves nothing and never advances.
      · overlay(goal, doneKeys) — fold the durable journey's recorded milestone completions onto the mirrored

@@ -46,7 +46,7 @@ function world(opts) {
     agentExists: opts.agentExists,
     precheck: opts.precheck,
     defaultModel: 'test-model',
-    persona: 'STATION PERSONA',
+    persona: 'KEEP PERSONA',
     harvest: opts.harvest,
     projectLine: opts.projectLine,
     context: opts.context,
@@ -96,7 +96,7 @@ function world(opts) {
     A.eq(o.trigger, 'loop', 'tagged with the loop trigger, distinct from schedule/nightshift');
     A.eq(o.streamId, 'loop-l1', 'iterations of one loop share one durable stream');
     A.eq(o.model, 'test-model', 'the host default model is used when the loop pins none');
-    A.eq(o.system, 'STATION PERSONA', 'the autonomous persona is the system prompt');
+    A.eq(o.system, 'KEEP PERSONA', 'the autonomous persona is the system prompt');
     A.ok(/find bugs/.test(o.messages[0].content), 'the objective is the directive');
 
     // a second tick while in flight must NOT double-fire
@@ -257,7 +257,7 @@ function world(opts) {
   // ---- 7. gates that must cost nothing --------------------------------------------------------------------
   {
     const w = world({ halted: true }); w.seed({});
-    A.eq(w.tick(T0).fired, 0, 'the station E-STOP blocks every loop');
+    A.eq(w.tick(T0).fired, 0, 'the keep E-STOP blocks every loop');
     A.eq(w.calls.length, 0, 'with zero spend');
 
     const w2 = world({ agentBusy: true }); w2.seed({});
@@ -343,18 +343,18 @@ function world(opts) {
     w.tick(T0);
     const sys = w.calls[0].system;
     A.ok(/PROJECT FOLDER: C:\/proj\/cart/.test(sys), 'the project folder is injected into the system prompt');
-    A.ok(/STATION PERSONA/.test(sys), 'and it is APPENDED to the persona, never replacing it');
+    A.ok(/KEEP PERSONA/.test(sys), 'and it is APPENDED to the persona, never replacing it');
 
     // a loop with no folder must inject nothing — never assert access we cannot prove
     const w2 = world({ projectLine: (l) => l.workdir ? '\n\nPROJECT FOLDER: ' + l.workdir : '' });
     w2.seed({});
     w2.tick(T0);
-    A.eq(w2.calls[0].system, 'STATION PERSONA', 'a folderless loop gets the bare persona, no phantom anchor');
+    A.eq(w2.calls[0].system, 'KEEP PERSONA', 'a folderless loop gets the bare persona, no phantom anchor');
 
     // and with no projectLine dep wired at all the driver still runs (older hosts)
     const w3 = world(); w3.seed({ workdir: 'C:/proj' });
     w3.tick(T0);
-    A.eq(w3.calls[0].system, 'STATION PERSONA', 'the dep is optional');
+    A.eq(w3.calls[0].system, 'KEEP PERSONA', 'the dep is optional');
   }
 
   /* ---- 13. THE PROJECT SNAPSHOT: anchor the agent, and NEVER converge on a project we could not read ------
@@ -401,7 +401,7 @@ function world(opts) {
     A.eq(w4.loop().state, 'paused', 'three blind passes park the loop');
     A.ok(/could not read the project folder/.test(w4.loop().stopReason || ''), 'with the real reason on the record');
 
-    // (e) a THROW between context and launch (projectLine/stationFor/buildMessages) SETTLES the iteration.
+    // (e) a THROW between context and launch (projectLine/keepFor/buildMessages) SETTLES the iteration.
     // The old catch only deleted the in-memory lease: the persisted fireClaim read in-flight for the full
     // staleMs, the iteration row stayed 'running' forever, and the tracked run kept the agent posed at its
     // desk — then reconcileBoot paused the loop for an iteration that never launched.

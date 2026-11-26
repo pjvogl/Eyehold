@@ -3,7 +3,7 @@
    Why (2026-09-03 audit): the fail-loud policy (process-fault.js) exits(1) on an uncaught exception and the
    desktop shell's guardian (src-tauri spawn_guardian) respawns the sidecar. A DETERMINISTIC throw at boot
    (corrupt store, bad env, stale workspace-owner claim → exit 73) therefore became an infinite exit/respawn loop
-   and the user only ever saw "station unreachable". A process cannot know it is looping from inside one life —
+   and the user only ever saw "keep unreachable". A process cannot know it is looping from inside one life —
    it needs a small ledger that outlives it. This module keeps that ledger under the WORKSPACES root:
 
      <WORKSPACES>/.crash-ledger.json   → { version: 1, entries: [{ ts, code, summary }, …] }   (newest last)

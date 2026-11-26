@@ -99,7 +99,7 @@ const openCtx = () => ({ canRun: () => true, canUse: () => ({ ok: true }), agent
     A.eq(seq.find(e => e.name === 'agent.run.error').payload.transient, true, 'the prompt failure remains classified as transient');
   }
 
-  // (2a-exhausted-chain) an OVERLOADED provider with NO failover chain (every single-provider station,
+  // (2a-exhausted-chain) an OVERLOADED provider with NO failover chain (every single-provider keep,
   //     e.g. ChatGPT-login codex) gets the same-provider retries the A2 comment always promised. This was
   //     the field failure behind "servers overloaded" runs dying at ~2s: retryable+shouldFallback with an
   //     empty chain hit neither the failover branch nor the retry branch and went straight to fatal.

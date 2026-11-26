@@ -1,8 +1,8 @@
 /* Eyehold Remote service worker.
-   1. Caches the app SHELL only (these few static files) so the app opens instantly and says "station offline"
-      honestly when there is no signal. It never caches anything from the station: that all travels sealed over
+   1. Caches the app SHELL only (these few static files) so the app opens instantly and says "keep offline"
+      honestly when there is no signal. It never caches anything from the keep: that all travels sealed over
       the WebSocket, which a service worker does not touch.
-   2. Shows the station's push notifications. The station encrypts each one to this phone (RFC 8291); the browser
+   2. Shows the keep's push notifications. The keep encrypts each one to this phone (RFC 8291); the browser
       decrypts it before it arrives here. A tap opens the app on the right screen. */
 'use strict';
 const CACHE = 'eyehold-remote-%SHELL%';   // the relay writes in a fingerprint of the shell's exact bytes

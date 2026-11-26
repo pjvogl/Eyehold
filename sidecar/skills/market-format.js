@@ -11,9 +11,9 @@
    Market packages are TEXT ONLY (UTF-8, no NUL bytes): SKILL.md, an optional LICENSE/NOTICE at the root and
    optional references/ files in plain text formats (marketFileAllowed — the build and the app apply the same rule).
 
-   The index also carries a `serial` (bumped by every build that changes it; a station never accepts a lower serial
+   The index also carries a `serial` (bumped by every build that changes it; a keep never accepts a lower serial
    than one it has already seen) and `revoked`, the skills the market has pulled. The pulled list is published on
-   its own too (starnet-skill-revocations/v1, a few hundred bytes) so stations with market skills installed can
+   its own too (starnet-skill-revocations/v1, a few hundred bytes) so keeps with market skills installed can
    check it often. Both documents are signed (skills/market-signing.js). Pure: no network, no clock. */
 'use strict';
 
@@ -157,7 +157,7 @@ function catalogDocument(entries, opts) {
   const sorted = entries.slice().sort((a, b) => (SHELVES.indexOf(a.shelf) - SHELVES.indexOf(b.shelf)) || a.name.localeCompare(b.name) || a.slug.localeCompare(b.slug));
   return { format: FORMAT, name: MARKET_NAME, serial: opts.serial || 1, skills: sorted, revoked: readRevoked(opts.revoked) };
 }
-// revocationDocument({ serial, revoked }) -> the standalone pulled-skills list stations check between catalog reads
+// revocationDocument({ serial, revoked }) -> the standalone pulled-skills list keeps check between catalog reads
 function revocationDocument(opts) {
   opts = opts || {};
   return { format: REVOKED_FORMAT, serial: opts.serial || 1, revoked: readRevoked(opts.revoked) };

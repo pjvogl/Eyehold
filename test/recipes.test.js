@@ -552,7 +552,7 @@ A.eq(evilImport.recipe.params[0].type, 'text', 'an imported one-option choice de
 R.removeCustom(typed.id); R.removeCustom(degraded.id); R.removeCustom(tImp.recipe.id); R.removeCustom(evilImport.recipe.id);
 
 /* ================= GOAL MATCHING IS WORD-WISE, NOT SUBSTRING =================
-   The FOR-YOU row's goal term is the ONLY live signal on a cold station, so a sloppy match decides the whole
+   The FOR-YOU row's goal term is the ONLY live signal on a cold keep, so a sloppy match decides the whole
    shelf. `hay.indexOf(word)` made "for" match perFORmance and "the" match oTHEr; a real goals belief scored 42
    of 50 catalog recipes above zero and filled the row with unrelated cards. Word-wise matching + a stoplist +
    dropping the internal tag keys from the haystack is what keeps the row explainable. */
@@ -567,7 +567,7 @@ A.eq(R.goalKeywordScore({ name: 'X', tagline: '', blurb: '', tags: { general: 1 
 A.eq(R.goalKeywordHits(gr, 'memory and time').join(','), 'memory,time', 'the matched keywords are reported in goal order');
 A.eq(R.goalKeywordHits(gr, 'MEMORY').join(','), 'memory', 'matching is case-insensitive');
 // the whole-catalog effect: a vague, real-world goals belief must not light up most of the library.
-const vague = 'Be the always-ready dev test agent for Eyehold — a fully-onboarded general assistant a developer can talk to the instant the station boots.';
+const vague = 'Be the always-ready dev test agent for Eyehold — a fully-onboarded general assistant a developer can talk to the instant the keep boots.';
 const lit = R.builtins().filter(r => R.goalKeywordScore(r, vague) > 0).length;
 A.ok(lit <= 10, 'a vague goal lights up at most a handful of the catalog, not most of it: got ' + lit + '/' + R.builtins().length);
 

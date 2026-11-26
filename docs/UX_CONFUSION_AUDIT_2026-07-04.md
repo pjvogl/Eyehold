@@ -100,11 +100,11 @@ card; expand verification with the command list; folder-picker (Tauri dialog) fo
 - **Quest dismissal = stop forever** (workquests.js:13) with no confirm. One misclick nukes a
   build plan permanently.
 - **Prospect dismiss (✕) denylists the fingerprint silently** (marketplace.js:1001-1004) — no
-  confirm, no undo, and the station will never draft it again.
+  confirm, no undo, and the keep will never draft it again.
 - **"SKIP VERSION" on updates** persists forever (updates.js:225-234) and can hide a critical
   patch.
 - Contrast: key removal and workshop discard already have the 2-step arm/confirm ritual
-  (stationui.js:1990, chat.js:1375). The pattern exists — apply it to the other three.
+  (keepui.js:1990, chat.js:1375). The pattern exists — apply it to the other three.
 
 ### Theme 6: The system's shape is invisible
 
@@ -118,7 +118,7 @@ Beginners can operate each one and still never see the growth path
 ### Theme 7: Shipped-broken trust items
 
 - **`SUPPORT_EMAIL = 'ANDREW_SUPPORT_EMAIL'`** (diagnostics.js:24) renders the literal
-  placeholder string in Settings copy (stationui.js:2613) and in the copy-success toast. A
+  placeholder string in Settings copy (keepui.js:2613) and in the copy-success toast. A
   user preparing a bug report is told to email `ANDREW_SUPPORT_EMAIL`. **Verified on trunk
   today. Ship blocker for public release.**
 
@@ -159,7 +159,7 @@ Beginners can operate each one and still never see the growth path
 2. **Cold-start with no key strands the user in the model picker** (HIGH).
    "no models found — add a provider key in Settings" (modelpicker.js:81) with no link.
 3. **The dossier speaks internal dialect** (MED). CLEARANCE/EFFORT/FOCUS/STANDING ORDERS with
-   no hints; "DRAWS ON STATION GEAR … not on station — add in REFIT" never says whether
+   no hints; "DRAWS ON KEEP GEAR … not on keep — add in REFIT" never says whether
    missing gear blocks summon (it doesn't). marketplace.js:534-542, 628-631.
 4. **Custom class builder is buried** (MED) at the bottom of YOUR SPECIALISTS
    (marketplace.js:393-397); kit checkboxes (DISH/CABINET/…) carry no capability descriptions
@@ -193,15 +193,15 @@ Beginners can operate each one and still never see the growth path
 
 ### D. Settings / keys / models / budget
 
-1. **Support email placeholder** (SHIP BLOCKER). diagnostics.js:24 → stationui.js:2613.
+1. **Support email placeholder** (SHIP BLOCKER). diagnostics.js:24 → keepui.js:2613.
 2. **Budget spend readout has no per-scope breakdown** (MED). Users can't see "$22 of $100
    today" per scope/agent; budget.js already computes `scopes{usd,cap,frac}` — render it as
-   bars. stationui.js:2524.
+   bars. keepui.js:2524.
 3. **Model names are raw slugs** (MED). "claude-opus-4-1" with no human label or fast/smart
    badge anywhere (modeldock.js:6-25, modelpicker.js:77). One label map fixes picker, dossier,
    fallback chain at once.
 4. **Env-var overrides silently beat saved settings** (MED). The UI admits it in one line
-   (stationui.js:2591-2592) but a user whose saved cap is being overridden gets no indication
+   (keepui.js:2591-2592) but a user whose saved cap is being overridden gets no indication
    on the field itself.
 5. **Voice settings are scattered across three surfaces** (MED). Speaker toggle
    (localStorage), hands-free (COMMS), per-persona ttsStyle/voice/speed (dossier only;
@@ -209,7 +209,7 @@ Beginners can operate each one and still never see the growth path
 6. **Import's "secretsNeeded" has no re-entry UI** (MED). configexport.js:143-187 returns the
    list; nothing renders it as "re-enter these keys" prompts.
 7. **Provider cards show "○ NO KEY" but key entry lives elsewhere** (LOW). Inline expandable
-   key input on the card would remove a hunt. stationui.js:1873-1954.
+   key input on the card would remove a hunt. keepui.js:1873-1954.
 8. **Keychain storage is invisible** (LOW). After save, one confirmation line ("stored in your
    OS keychain") would buy trust cheaply.
 9. **Disabled effort levels are unexplained** (LOW). Codex omits some tiers
@@ -221,7 +221,7 @@ Beginners can operate each one and still never see the growth path
 2. **No execution visibility for routines** (MED). No "last ran / next run / what it produced"
    surface; cadence labels ("every morning") never state a time or timezone (cron.js:44).
 3. **Locked skills don't say how to unlock** (MED). "● ON · needs CABINET + DISH"
-   (stationui.js:1530-1581) with no what/where/how. Link each gear badge to its unlock path.
+   (keepui.js:1530-1581) with no what/where/how. Link each gear badge to its unlock path.
 4. **Autonomy dial jargon + invisible earn path** (MED). Initiative/Reach/Pace are live-apply
    dials with no impact preview ("at this posture the agent will: …"); "earned autonomy"
    offers exist but users never learn what earns trust (autonomystore.js:22).
@@ -301,7 +301,7 @@ Beginners can operate each one and still never see the growth path
 
 - Grounded in trunk code by six parallel read-only audits; **no code was changed**.
 - Re-verified by direct grep on trunk today: `ANDREW_SUPPORT_EMAIL` placeholder
-  (diagnostics.js:24, rendered at stationui.js:2613), the REFIT/"OWN PC" post-summon copy
+  (diagnostics.js:24, rendered at keepui.js:2613), the REFIT/"OWN PC" post-summon copy
   (app.js:605), and the capdenied→SKILLS copy (friendlyerror.js:46).
 - Not verified live in-app this session (no free preview slots); line numbers are from today's
   trunk reads. Individual findings should be re-grepped before building fixes, per doctrine —

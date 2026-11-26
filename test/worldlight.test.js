@@ -5,7 +5,7 @@ const Light = require('../frontend/app/worldlight.js');
 
 // Two enclosed 3x3 rooms. Their common wall has one actual passable threshold;
 // closing it models projectGeometry's sealed airlock (canStep is the authority).
-function station(open) {
+function keep(open) {
   const COLS = 8, ROWS = 5, zoneGrid = new Array(COLS * ROWS).fill(null);
   for (let y = 1; y <= 3; y++) for (let x = 1; x <= 6; x++) zoneGrid[y * COLS + x] = x <= 3 ? 'left' : 'right';
   return { COLS, ROWS, TILE: 12, W: 96, H: 60, zoneGrid,
@@ -14,7 +14,7 @@ function station(open) {
       (open && y === 2 && ny === 2 && Math.abs(x - nx) === 1) };
 }
 
-const open = Light.buildSegments(station(true)), closed = Light.buildSegments(station(false));
+const open = Light.buildSegments(keep(true)), closed = Light.buildSegments(keep(false));
 const source = { x: 30, y: 30, r: 90, a: 0.8, c: [255, 190, 100] };
 A.eq(open.length, 6, 'long exterior walls merge; only the two jambs split the common wall');
 A.eq(closed.length, 5, 'closing the threshold produces one continuous internal wall');
@@ -121,7 +121,7 @@ function canvasFactory(w, h) {
   surfaces.push(canvas); return canvas;
 }
 const engine = Light.create({ canvasFactory }), output = canvasFactory(96, 60).getContext('2d');
-engine.setGeometry(station(true));
+engine.setGeometry(keep(true));
 const frame = { fixtures: [{ x: 30, y: 30, r: 50, rgb: '255,192,104' }], lights: [source], ambient: 0.82 };
 const beforePrepare = allocations;
 A.ok(engine.prepare(frame), 'current frame can be prepared before any composite pass');
@@ -152,10 +152,10 @@ A.ok(Math.abs(engine.stats().ambient - 0.58) < 0.00001, 'high room brightness ma
 engine.render(output, { lights: [], fixtures: [], ambient: 0.82 });
 A.ok(Math.abs(engine.stats().ambient - 0.70) < 0.00001, 'low room brightness remains darker without crushing to the old .82');
 
-engine.setGeometry(station(false)); engine.render(output, { lights: [source] });
+engine.setGeometry(keep(false)); engine.render(output, { lights: [source] });
 A.eq(engine.sample(65, 30).strength, 0, 'geometry invalidation closes light paths as soon as a door seals');
 engine.configure({ quality: 'low' });
-const huge = Object.assign(station(true), { W: 12000, H: 8000 });
+const huge = Object.assign(keep(true), { W: 12000, H: 8000 });
 engine.setGeometry(huge);
 A.ok(engine.stats().resolution < 0.1, 'large worlds reduce map resolution to respect the pixel budget');
 A.ok(engine.stats().cacheBytes <= 600000 * 16 + 100000, 'large-world map allocation stays bounded');
@@ -164,7 +164,7 @@ A.eq(engine.stats().sources, 0, 'dispose releases source state');
 A.eq(engine.stats().cachedStamps, 0, 'dispose releases the light stamp cache');
 A.eq(engine.render(output, frame), false, 'disposed engines do not draw');
 
-const recovery = Light.create({ canvasFactory }); recovery.setGeometry(station(true));
+const recovery = Light.create({ canvasFactory }); recovery.setGeometry(keep(true));
 const lostMap = surfaces[surfaces.length - 4]; recovery.render(output, frame);
 let prevented = false;
 lostMap.getContext('2d').lost = true;
@@ -185,12 +185,12 @@ recovery.dispose();
 
 const chunkEngine = Light.create({ canvasFactory }), chunkA = canvasFactory(48, 60), chunkB = canvasFactory(48, 60);
 const floorA = canvasFactory(48, 60), floorB = canvasFactory(48, 60);
-chunkEngine.setGeometry(station(true), { surfaceChunks: [
+chunkEngine.setGeometry(keep(true), { surfaceChunks: [
   { baseCv: chunkA, interiorCv: floorA, x: 0, y: 0, w: 48, h: 60 },
   { baseCv: chunkB, interiorCv: floorB, x: 48, y: 0, w: 48, h: 60 }
 ] });
 const beforeChunk = draws.length;
-A.ok(chunkEngine.render(output, frame), 'REFIT can illuminate chunked station geometry without a whole-station mask');
+A.ok(chunkEngine.render(output, frame), 'REFIT can illuminate chunked keep geometry without a whole-keep mask');
 const chunkDraws = draws.slice(beforeChunk);
 A.ok(chunkDraws.some(d => d[0] === chunkA && d[1] === 0) && chunkDraws.some(d => d[0] === chunkB && d[1] === 48),
   'architecture silhouette retains each chunk world offset');
@@ -201,7 +201,7 @@ chunkEngine.render(output, Object.assign({}, frame, { lights: [Object.assign({},
 A.ok(chunkEngine.stats().visibilityBuilds > chunkBuilds, 'changing the planar origin invalidates a cached light polygon');
 chunkEngine.dispose();
 
-const atmosphere = Light.create({ canvasFactory }); atmosphere.setGeometry(station(true));
+const atmosphere = Light.create({ canvasFactory }); atmosphere.setGeometry(keep(true));
 atmosphere.render(output, { fixtures: [{ x: 30, y: 30, r: 18, rgb: '255,192,104' }] });
 const motes = () => fills.filter(f => f.context === output && f.args[2] === 1 && f.args[3] === 1);
 const moteStart = motes().length;
@@ -222,7 +222,7 @@ atmosphere.drawAtmosphere(output, { now: 0, dust: 2, reducedMotion: true });
 A.eq(motes().length, beforeReduced, 'reduced motion suppresses motes even with positive dust gain');
 atmosphere.dispose();
 
-const shafts = Light.create({ canvasFactory }); shafts.setGeometry(station(true));
+const shafts = Light.create({ canvasFactory }); shafts.setGeometry(keep(true));
 shafts.render(output, { fixtures: [housedSource], reducedMotion: true });
 A.eq(shafts.stats().shafts, 1, 'only the explicitly supplied physical fixture produces a shaft');
 A.eq(shafts.stats().beamBuilds, 1, 'static housing shaft has its own cached visibility-masked stamp');
@@ -242,7 +242,7 @@ shafts.configure({ shafts: 0 }); shafts.render(output);
 A.eq(shafts.stats().shafts, 0, 'shaft gain can be disabled without changing accepted ambient or fixture pools');
 shafts.dispose();
 
-const sampler = Light.create({ canvasFactory, sampleCacheLimit: 3 }); sampler.setGeometry(station(true));
+const sampler = Light.create({ canvasFactory, sampleCacheLimit: 3 }); sampler.setGeometry(keep(true));
 const sampleSource = Object.assign({}, source, { a: 0.6, softness: 0 });
 const sampleFrame = { lights: [sampleSource] };
 sampler.prepare(sampleFrame);
@@ -263,7 +263,7 @@ A.eq(sampler.stats().sampleCacheMisses, 2, 'subpixel positions remain exact rath
 sampler.sample(36, 30); sampler.sample(35, 30); sampler.sample(37, 30);
 A.eq(sampler.stats().sampleCacheSize, 3, 'continuous movement cannot exceed the configured sample budget');
 A.eq(sampler.stats().sampleCacheEvictions, 1, 'least-recently-used samples are evicted at the budget');
-A.ok(sampler.sample(35, 30) === firstSample, 'recent stationary furniture survives moving-body cache pressure');
+A.ok(sampler.sample(35, 30) === firstSample, 'recent keepary furniture survives moving-body cache pressure');
 const beforeEvicted = sampler.stats().sampleCacheMisses;
 sampler.sample(35.000000001, 30);
 A.eq(sampler.stats().sampleCacheMisses, beforeEvicted + 1, 'an evicted moving position is evaluated again when revisited');
@@ -275,12 +275,12 @@ A.eq(sampler.stats().sampleCacheMisses, beforeEvicted + 1, 'an evicted moving po
   const flick = k => ({ fixtures: [{ x: 30, y: 30, r: 50, rgb: '255,192,104', softness: 1.2 }],
     lights: [Object.assign({}, source, { a: 0.5 + 0.01 * k, softness: 2 }), { x: 70, y: 28, r: 40, a: 0.4 + 0.02 * k, c: [90, 170, 255], softness: 1, originX: 66, originY: 24 }] });
   const points = [[35, 30], [65, 30], [52, 24], [40.5, 17.25], [72, 40], [20, 44], [58.125, 31]];
-  const warm = Light.create({ canvasFactory }); warm.setGeometry(station(true));
+  const warm = Light.create({ canvasFactory }); warm.setGeometry(keep(true));
   let same = 0;
   for (let k = 0; k < 6; k++) {
     warm.prepare(flick(k));
     for (const [x, y] of points) {
-      const cold = Light.create({ canvasFactory }); cold.setGeometry(station(true)); cold.prepare(flick(k));
+      const cold = Light.create({ canvasFactory }); cold.setGeometry(keep(true)); cold.prepare(flick(k));
       if (pick(warm.sample(x, y)) === pick(cold.sample(x, y))) same++;
       cold.dispose();
     }
@@ -288,8 +288,8 @@ A.eq(sampler.stats().sampleCacheMisses, beforeEvicted + 1, 'an evicted moving po
   A.eq(same, 6 * points.length, 'remembered occlusion: every flickering-frame sample equals a cold engine\'s exactly');
   A.eq(warm.stats().sampleCacheInvalidations >= 6, true, 'each power change still cleared the samples themselves');
   warm.prepare(flick(0)); A.ok(warm.sample(65, 30).strength > 0, 'the open threshold passes light (warm caches)');
-  warm.setGeometry(station(false)); warm.prepare(flick(0));
-  const sealed = Light.create({ canvasFactory }); sealed.setGeometry(station(false)); sealed.prepare(flick(0));
+  warm.setGeometry(keep(false)); warm.prepare(flick(0));
+  const sealed = Light.create({ canvasFactory }); sealed.setGeometry(keep(false)); sealed.prepare(flick(0));
   A.eq(pick(warm.sample(65, 30)), pick(sealed.sample(65, 30)), 'a new wall set starts the occlusion caches over: the sealed door matches a cold engine');
   warm.dispose(); sealed.dispose();
 }
@@ -317,7 +317,7 @@ A.eq(sampler.stats().sampleCacheSize, 0, 'configuration revision immediately cle
 sampler.prepare(sampleFrame);
 A.ok(Math.abs(sampler.sample(35, 30).strength - firstSample.strength * 0.5) < 0.000001,
   'configured emission changes are reflected in newly prepared samples');
-sampler.sample(65, 30); sampler.setGeometry(station(false));
+sampler.sample(65, 30); sampler.setGeometry(keep(false));
 A.eq(sampler.stats().sampleCacheSize, 0, 'geometry reset invalidates samples from the previously open doorway');
 sampler.prepare(sampleFrame);
 A.eq(sampler.sample(65, 30).strength, 0, 'a sealed door never reuses illumination cached through the old opening');
@@ -337,13 +337,13 @@ A.eq(sampler.stats().sampleCacheSize, 0, 'dispose releases all sample descriptor
 // KEY buffer (2026-09-22): the one pass that puts light ON a surface. It must be
 // absent unless asked for, composite as overlay between the dark film and the glow,
 // and keep its stamps tighter than the cut that made room for it.
-const keyed = Light.create({ canvasFactory }); keyed.setGeometry(station(true));
+const keyed = Light.create({ canvasFactory }); keyed.setGeometry(keep(true));
 const keyFrame = { fixtures: [{ x: 30, y: 30, r: 50, rgb: '255,192,104' }], lights: [source], ambient: 0.82 };
 const ops = [], keyOut = Object.assign(canvasFactory(96, 60).getContext('2d'), {
   drawImage(img) { ops.push({ op: this.globalCompositeOperation, img }); } });
 keyed.render(keyOut, keyFrame);
 A.eq(keyed.stats().key, false, 'the key buffer is not allocated unless configured');
-A.eq(ops.filter(o => o.op === 'overlay').length, 0, 'an unkeyed station composites exactly as before');
+A.eq(ops.filter(o => o.op === 'overlay').length, 0, 'an unkeyed keep composites exactly as before');
 const plainSurfaces = surfaces.length, plainStamps = keyed.stats().cachedStamps;
 keyed.configure({ key: 1.5, keyReach: 0.5, shadeCool: 0.1 }); ops.length = 0;
 keyed.render(keyOut, keyFrame);

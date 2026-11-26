@@ -7,16 +7,16 @@
    back to its own resolution, so real work never stalls. */
 'use strict';
 const Pipeline = require('../../frontend/app/pipeline.js');
-const { makeStationStore } = require('../station-store.js');
+const { makeKeepStore } = require('../keep-store.js');
 const { healPlan } = require('./planlines.js');
 
 function makeRouter(o) {
   o = o || {};
   let plan = null;
   let capsPlan = null;   // last WELL-FORMED posted plan, deployable or not — the CAPABILITY view only (see setPlan)
-  let stationPlan = null;
+  let keepPlan = null;
   let rr = {};   // per-SPLITTER-tile round-robin counter so dispatch spreads work across lanes (matches the engine)
-  const stationStore = o.stationStore || makeStationStore();
+  const keepStore = o.keepStore || makeKeepStore();
 
   // store a posted plan. null/empty clears it (no routing floor). A plan with BLOCKING errors is refused.
   function setPlan(p) {
@@ -51,31 +51,31 @@ function makeRouter(o) {
     return { ok: true, hash: p.hash || null, bays: (p.bays || []).length };
   }
   function clearPlan() { plan = null; capsPlan = null; rr = {}; }
-  function activePlan() { return stationPlan || plan; }
+  function activePlan() { return keepPlan || plan; }
   function getPlan() { return activePlan(); }
   function hasPlan() { return !!activePlan(); }
-  function setStation(stationDoc) {
-    const v = stationStore.validateStationDoc(stationDoc);
+  function setKeep(keepDoc) {
+    const v = keepStore.validateKeepDoc(keepDoc);
     if (!v.ok) return { ok: false, error: v.error };
-    // a non-deployable station (cycle/orphan/dead bay) is refused UNCONDITIONALLY. The old guard
-    // (`!v.routingOk && stationPlan`) made validation order-dependent: a FIRST install of a cyclic
-    // station slipped through and claimed ok while arming no routing — the same doc refused a moment
-    // later if any station was already installed. Refusal must not depend on install order (2026-08-04).
+    // a non-deployable keep (cycle/orphan/dead bay) is refused UNCONDITIONALLY. The old guard
+    // (`!v.routingOk && keepPlan`) made validation order-dependent: a FIRST install of a cyclic
+    // keep slipped through and claimed ok while arming no routing — the same doc refused a moment
+    // later if any keep was already installed. Refusal must not depend on install order (2026-08-04).
     if (!v.routingOk) {
       return {
         ok: false,
-        error: 'station routing plan has blocking errors',
+        error: 'keep routing plan has blocking errors',
         codes: v.routingPlan.errors.filter(e => !e.warn).map(e => e.code)
       };
     }
-    const r = stationStore.setStation(stationDoc);
+    const r = keepStore.setKeep(keepDoc);
     if (!r.ok) return r;
-    stationPlan = r.routingOk ? r.routingPlan : null;
+    keepPlan = r.routingOk ? r.routingPlan : null;
     rr = {};
     return r;
   }
-  function clearStation() { stationPlan = null; return stationStore.clearStation(); }
-  function getStation() { return stationStore.getStation(); }
+  function clearKeep() { keepPlan = null; return keepStore.clearKeep(); }
+  function getKeep() { return keepStore.getKeep(); }
   // the agentId a work-item routes to, or null (caller falls back to its default resolution — never stalls).
   // The picker advances a per-splitter-tile counter, so successive work-items spread across the splitter's lanes
   // (a FILTER stays deterministic by tag and ignores it) — dispatch load-balances instead of always lane 0.
@@ -119,12 +119,12 @@ function makeRouter(o) {
      dock is simply THE dock, so every pre-dock caller answers exactly as before. A dockId the plan does
      not know (a stale id after a floor edit) falls back to the entry dock rather than to nothing. */
   function dockOf(agentId, dockId) {
-    const p = stationPlan || plan || capsPlan;
+    const p = keepPlan || plan || capsPlan;
     return p ? Pipeline.dockOf(p, agentId, dockId) : null;
   }
   function entryDockOf(agentId) { const p = activePlan(); return p ? Pipeline.entryDockOf(p, agentId) : null; }
-  function docksOf(agentId) { const p = stationPlan || plan || capsPlan; return p ? Pipeline.docksOf(p, agentId) : []; }
-  function agentOfDock(dockId) { const p = stationPlan || plan || capsPlan; return p ? Pipeline.agentOfDock(p, dockId) : null; }
+  function docksOf(agentId) { const p = keepPlan || plan || capsPlan; return p ? Pipeline.docksOf(p, agentId) : []; }
+  function agentOfDock(dockId) { const p = keepPlan || plan || capsPlan; return p ? Pipeline.agentOfDock(p, dockId) : null; }
   function lineOfDock(dockId) { const p = activePlan(); return p ? Pipeline.lineOfDock(p, dockId) : null; }
   /* dockRef(ref, lineId?) -> { agentId, dockId } | null. `ref` is a dockId OR an agentId (the step-through test's
      startAt, a routine's FIRES AT). An agentId reads its entry dock — or, when a line is named and the entry dock
@@ -172,20 +172,20 @@ function makeRouter(o) {
     return Pipeline.lineOriginOf(p, agentId);
   }
 
-  /* Phase B5 — per-bay capability isolation. The resolveTools-shaped station for a BAY-bound agent, built from
+  /* Phase B5 — per-bay capability isolation. The resolveTools-shaped keep for a BAY-bound agent, built from
      the objects the floor placed in that bay's room (carried on the posted plan). null for any agent WITHOUT a
      bay (the caller then uses its own default office), so only bay-routed work is isolated; everything else is
      unchanged. PURE room objects — no baseline — so an UNEQUIPPED bay grants no compute and can't spend (the
      compute gate stays shut; cost-safe), exactly mirroring resolveTools' projection of the placed floor. */
-  function stationFor(agentId, dockId) {
-    // the CAPABILITY view: an authoritative station wins, else the last well-formed posted plan — deployable
+  function keepFor(agentId, dockId) {
+    // the CAPABILITY view: an authoritative keep wins, else the last well-formed posted plan — deployable
     // or not (a broken belt graph must not widen an agent's reach; see the setPlan note).
-    const p = stationPlan || plan || capsPlan;
+    const p = keepPlan || plan || capsPlan;
     if (!p || !agentId) return null;
     // a bay isolates its agent whether or not a belt is hooked to it: `bays` = belt-hooked dispatch targets,
     // `dockBays` = EVERY bound bay (a lone dock is a complete build — 2026-07-05 sense pass). Older plans
     // without dockBays behave exactly as before.
-    /* STATION ISOLATION, PER DOCK (multi-bay, 2026-09-22 — Andrew's ruling). An agent crewing several bays
+    /* KEEP ISOLATION, PER DOCK (multi-bay, 2026-09-22 — Andrew's ruling). An agent crewing several bays
        gets the room of the dock THIS run is at (dockId, else its entry dock) — never the union of its bays'
        rooms. A deskful agent still gets its desk room on every hop: the floor computes each dock record's
        `objects` through worldmodel.bayObjects(agentId, dockId), which prefers the desk room (remote-bay
@@ -194,7 +194,7 @@ function makeRouter(o) {
     const bay = (want && ((p.bays || []).find(b => b.propId === want && b.agentId === agentId) || (p.dockBays || []).find(b => b.propId === want && b.agentId === agentId)))
       || (p.bays || []).find(b => b.agentId === agentId) || (p.dockBays || []).find(b => b.agentId === agentId);
     if (!bay) return null;
-    const authoritative = stationStore.hasStation() ? stationStore.bayObjects(agentId, bay.propId) : null;
+    const authoritative = keepStore.hasKeep() ? keepStore.bayObjects(agentId, bay.propId) : null;
     const objs = Array.isArray(authoritative) ? authoritative : (Array.isArray(bay.objects) ? bay.objects : []);
     // each entry is EITHER a bare objectType string (the generic caps: 'computer'/'dish'/…) OR a rich object
     // { objectType, … } carrying per-instance data — e.g. a connector portal's { objectType:'connector',
@@ -209,11 +209,11 @@ function makeRouter(o) {
 
   /* THE STANDING BRIEF (step editor, 2026-08-05): the Commander's job brief for the dock this agent crews,
      or null. PROMPT TEXT ONLY — it is injected into run prompts (hub entry runs, chain handoffs) and must
-     never influence resolveTarget/chainNext (routing) or stationFor (capability). Same plan precedence as
-     stationFor: a brief is a fact about the PLACED floor, true whether or not the belts compile — so it
-     reads the capability view (stationPlan || plan || capsPlan), and a broken belt graph can't strip it. */
+     never influence resolveTarget/chainNext (routing) or keepFor (capability). Same plan precedence as
+     keepFor: a brief is a fact about the PLACED floor, true whether or not the belts compile — so it
+     reads the capability view (keepPlan || plan || capsPlan), and a broken belt graph can't strip it. */
   function stageBrief(agentId, dockId) {
-    const p = stationPlan || plan || capsPlan;
+    const p = keepPlan || plan || capsPlan;
     if (!p || !agentId) return null;
     // PER DOCK (multi-bay): the brief of the bay THIS run is at — writer@C is told bay C's job, never bay A's
     const want = dockOf(agentId, dockId);
@@ -236,7 +236,7 @@ function makeRouter(o) {
      brief: a limit is a fact about the PLACED floor, true whether or not the belts compile. Policy only —
      it bounds how far/how much a line runs, never which agent runs (chainNext alone decides that). */
   function lineLimits(lineId) {
-    const p = stationPlan || plan || capsPlan;
+    const p = keepPlan || plan || capsPlan;
     return p ? Pipeline.lineLimitsOf(p, lineId) : null;
   }
 
@@ -321,7 +321,7 @@ function makeRouter(o) {
     return !!(rec && rec.outbox && !rec.deadEnd);
   }
 
-  return { setPlan, clearPlan, getPlan, hasPlan, setStation, clearStation, getStation, resolveTarget, lineOfAgent, lineOriginFor, lineLimits, chainNext, chainStep, chainPeek, fanSiblings, loopGateAfter, chainShipsToOutbox, stationFor, stageBrief,
+  return { setPlan, clearPlan, getPlan, hasPlan, setKeep, clearKeep, getKeep, resolveTarget, lineOfAgent, lineOriginFor, lineLimits, chainNext, chainStep, chainPeek, fanSiblings, loopGateAfter, chainShipsToOutbox, keepFor, stageBrief,
     // the DOCK key (multi-bay agents, 2026-09-22)
     resolveDock, dockOf, dockRef, entryDockOf, docksOf, agentOfDock, lineOfDock, chainNextDock, chainStepDock, chainPeekDock, fanSiblingsDock };
 }

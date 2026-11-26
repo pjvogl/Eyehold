@@ -6,7 +6,7 @@
 const A = require('./_assert.js');
 const { withDossier } = require('../sidecar/dossierinject.js');
 
-const PERSONA = 'You are an autonomous EYEHOLD station agent running a SCHEDULED routine.';
+const PERSONA = 'You are an autonomous EYEHOLD keep agent running a SCHEDULED routine.';
 const BLOCK = 'WHAT YOU KNOW ABOUT YOUR COMMANDER:\n- Stack & tools: TypeScript';
 
 /* ---------- append ---------- */

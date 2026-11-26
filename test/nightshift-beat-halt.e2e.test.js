@@ -92,7 +92,7 @@ function hotBeliefs(now) {
       goals: b('ship the Eyehold beta to 100 users'),
       pain: b('manual release notes eat my fridays'),
       stack: b('node and a pixel-art canvas'),
-      ambition: b('a living agent station people watch')
+      ambition: b('a living agent keep people watch')
     }
   };
 }

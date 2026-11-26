@@ -28,7 +28,7 @@ Andrew's release direction:
 
 ### What is already strong
 
-- The static station surface grants 94 tools across compute, memory, files, web,
+- The static keep surface grants 94 tools across compute, memory, files, web,
   terminal, orchestration, media, and Spotify, plus dynamic MCP tools.
 - The provider catalog has 17 profiles. Channel adapters exist for Telegram,
   Discord, Slack, Matrix, and Signal.
@@ -226,7 +226,7 @@ the underlying model work succeeded.
 - disk-full/short-write simulation;
 - full-agent export and restore;
 - project grant, revoke, forget, and restart;
-- update over a populated real station;
+- update over a populated real keep;
 - 10,000+ transcript rows with repeated restart/search/compaction.
 
 ## 1.5 Repeat bar
@@ -291,7 +291,7 @@ Hermes has made performance a product feature. Eyehold needs its own measured ba
 
 ## 3.1 Measurements
 
-- cold boot to interactive station;
+- cold boot to interactive keep;
 - send to first visible token;
 - send to first tool activity;
 - send to verified useful artifact;
@@ -331,7 +331,7 @@ This is the surviving high-value portion of the earlier v0.9 plan.
 
 ## 4.2 Deploy the glossary
 
-- Every first use of a station noun on a beginner-reachable surface has a working
+- Every first use of a keep noun on a beginner-reachable surface has a working
   explanation.
 - Add the missing everyday terms: agent, session, project, specialist, provider,
   key, effort, voice, focus, deliverable, intake, and outbox.
@@ -356,7 +356,7 @@ must independently:
 
 - understand what Eyehold is before supplying credentials;
 - connect a provider;
-- create or enter a station;
+- create or enter a keep;
 - complete one real task and open its result in under ten minutes;
 - recover from one planted failure;
 - find help or diagnostics without being told where it is.

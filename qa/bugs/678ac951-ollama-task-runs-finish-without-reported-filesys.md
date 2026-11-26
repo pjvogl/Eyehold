@@ -24,11 +24,11 @@ On Eyehold 0.12.3 Windows, llama3.1:8b and qwen3:8b reportedly finish file creat
 
 ## Repro
 
-Reproduce the exact station and model with a sanitized tool-definition/request capture; compare normal interactive, task-promoted, delegated and direct adapter paths. Separate prose resembling a function call from actual structured tool_calls.
+Reproduce the exact keep and model with a sanitized tool-definition/request capture; compare normal interactive, task-promoted, delegated and direct adapter paths. Separate prose resembling a function call from actual structured tool_calls.
 
 ## Evidence
 
-Fresh read of GitHub issue #20 on 2026-09-19. sidecar/providers/openai-compatible.js forwards req.tools and parses structured calls; sidecar/index.js checks tool capability only when explicitly false. test/provider.openai-compatible.test.js covers structured chunks and refuses silent tool removal. test/casual-response-safety.e2e.test.js proves real Ollama-profile task promotion emits tools to a controlled endpoint. Neither substitutes for the affected model/station.
+Fresh read of GitHub issue #20 on 2026-09-19. sidecar/providers/openai-compatible.js forwards req.tools and parses structured calls; sidecar/index.js checks tool capability only when explicitly false. test/provider.openai-compatible.test.js covers structured chunks and refuses silent tool removal. test/casual-response-safety.e2e.test.js proves real Ollama-profile task promotion emits tools to a controlled endpoint. Neither substitutes for the affected model/keep.
 
 ## Verdict
 
@@ -38,7 +38,7 @@ Open: no affected wire capture or actual Ollama models available. Do not force e
 
 Reproduced on a real Ollama 0.34.4 (RTX 5060 Ti 16 GB) with qwen3:8b: the Eyehold task request (~98 KB, 86 tool schemas) went to /v1/chat/completions, Ollama ran the model at its server default window (context_length 4096 in /api/ps: the default is 4k under 24 GB VRAM) and reported prompt_tokens 2050. The model saw only the tail of the tool list and answered "I cannot create files ... the available tools only support scheduling routines"; the run ended done with no tool call. The /v1 endpoint ignores options.num_ctx, a top-level num_ctx, and a native preload (it reloads the model back to 4096).
 
-Fix 0e25b955f: Ollama chat rides the native /api/chat with options.num_ctx sized to the request (ladder 8k..64k, capped by the model window from /api/show) and truncate:false, so an under-estimate is refused with the exact count and resent once. Live after the fix: prompt_eval_count 20969 at num_ctx 32768, qwen3:8b calls fs_write, and a fresh station driven through the real genesis UI (OLLAMA -> qwen3:8b -> first task) wrote agent/hello.txt with the requested text (context gauge 22k / 41k).
+Fix 0e25b955f: Ollama chat rides the native /api/chat with options.num_ctx sized to the request (ladder 8k..64k, capped by the model window from /api/show) and truncate:false, so an under-estimate is refused with the exact count and resent once. Live after the fix: prompt_eval_count 20969 at num_ctx 32768, qwen3:8b calls fs_write, and a fresh keep driven through the real genesis UI (OLLAMA -> qwen3:8b -> first task) wrote agent/hello.txt with the requested text (context gauge 22k / 41k).
 
 Residual, not a Eyehold defect: llama3.1:8b's Ollama chat template renders the tool list only when the last message is from the user, so after its first tool result the model is sent ~6k tokens with no tools and starts writing calls as text. qwen3:8b does not have this limit.
 

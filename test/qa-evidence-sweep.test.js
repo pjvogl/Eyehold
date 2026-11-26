@@ -1,4 +1,4 @@
-/* node test/qa-evidence-sweep.test.js — the Self-Testing Station's EVIDENCE RETENTION sweep (lane GB-27).
+/* node test/qa-evidence-sweep.test.js — the Self-Testing Keep's EVIDENCE RETENTION sweep (lane GB-27).
    Exercises the REAL fs path against a throwaway FIXTURE tree built under os.tmpdir(): fake families
    (guardian/beginner/crew), real mtimes set via utimesSync, real qa/findings/*.json. Asserts the
    retention policy EXACTLY: expired-unprotected deleted, newest-5-per-family kept, evidence-referenced

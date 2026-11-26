@@ -48,7 +48,7 @@ function boot(port, env, attemptsLeft) {
   fs.writeFileSync(path.join(agentDir, 'site', '.git', 'config'), '[core]');
   fs.writeFileSync(path.join(agentDir, 'notes.md'), '# private notes');
   fs.writeFileSync(path.join(agentDir, 'root.html'), '<p>root page</p>');
-  // the scratch HOME/APPDATA keep this sidecar off the real station entirely
+  // the scratch HOME/APPDATA keep this sidecar off the real keep entirely
   const env = { SKYNET_WORKSPACES: ws, SKYNET_DEV: '1', HOME: scratch, USERPROFILE: scratch, APPDATA: scratch, LOCALAPPDATA: scratch,
     SKYNET_OPENROUTER_KEY: 'sk-or-v1-view-fake', SKYNET_DEFAULT_MODEL: 'test/model' };
   const booted = await boot(9010 + (process.pid % 30), env, 20);

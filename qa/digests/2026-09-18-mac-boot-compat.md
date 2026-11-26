@@ -57,7 +57,7 @@ The source repair is committed in the isolated lane. No trunk merge was performe
 
 The preceding unmerged disposition describes the initial repair. The owner subsequently requested a sweep and merge. Current trunk `882897d52` was merged into this lane in `d076beb3c`; the sole conflict was the generated bug index, regenerated from the combined records. No source conflict was resolved by dropping either lane's changes.
 
-Sweep commit `7e8d8ee98` also fixes the sibling `agent-station-demo.html` entry (and generated website mirror), which still had the old engine-hosted catalog loader. Desktop dry-run now checks the catalog, rejects missing boot data before touching output, and counts the authoritative catalog exactly once even when replacing a stale source copy. Its predicted and real output both report 13,864 files / 284.4 MB. Tests verify both entry points' parser order, deadline helper order, missing-source rejection, preservation of prior output, and stale-copy replacement.
+Sweep commit `7e8d8ee98` also fixes the sibling `agent-keep-demo.html` entry (and generated website mirror), which still had the old engine-hosted catalog loader. Desktop dry-run now checks the catalog, rejects missing boot data before touching output, and counts the authoritative catalog exactly once even when replacing a stale source copy. Its predicted and real output both report 13,864 files / 284.4 MB. Tests verify both entry points' parser order, deadline helper order, missing-source rejection, preservation of prior output, and stale-copy replacement.
 
 Fresh live combined-code proof at 21:34 UTC:
 

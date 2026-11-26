@@ -5,7 +5,7 @@
 > then re-lock the claims surface as its own commit. Regenerate the delta with:
 > `git log --oneline --first-parent v0.6.8..feat/harness-backend`
 
-The station stops being a place where one agent answers, and becomes a place where a line of
+The keep stops being a place where one agent answers, and becomes a place where a line of
 them does the work — reachable from your editor, able to message out, and able to run your own
 code at fixed moments. Along the way it stopped borrowing the operating system's furniture.
 
@@ -31,8 +31,8 @@ every dock downstream was scenery.
 
 ## Eyehold is reachable from your editor, and can message out
 
-- **An editor can drive the station.** Eyehold now speaks the **Agent Client Protocol**, so Zed,
-  Neovim or any ACP client runs real station work — live tool list, file locations, and native
+- **An editor can drive the keep.** Eyehold now speaks the **Agent Client Protocol**, so Zed,
+  Neovim or any ACP client runs real keep work — live tool list, file locations, and native
   approve/reject cards wired to the actual consent gate, not a copy of it. `npm run acp:serve`;
   see `docs/ACP_EDITORS.md`.
 - **An agent can send, not just receive.** A placed DISH gains a `comms` toolset — an agent can
@@ -55,7 +55,7 @@ left it.
   uncommitted work you had open before the loop started is never folded into a commit a later
   rejection would revert.
 
-## Your own code, running inside the station
+## Your own code, running inside the keep
 
 - **Hooks and plugins.** Two front doors — shell hooks and scoped JS plugins — onto one spine of
   nine events, each fired by a real call site. Written, approved, revoked and deleted from
@@ -70,44 +70,44 @@ left it.
   guard refuses to overwrite a file that changed under the agent. Large outputs park instead of
   blowing the context. DOCX, XLSX and notebooks are readable.
 
-## The station reads as a place
+## The keep reads as a place
 
 - **A room has four walls, not one.** Only the back wall was ever lit along its top, so the sides
-  read as a floor edge and the station looked like it cut off. The lit crown runs the whole way
+  read as a floor edge and the keep looked like it cut off. The lit crown runs the whole way
   round now — the same ladder of contact seam, face, under-seam, crown and outer edge on every
-  side — so a room reads as enclosed at any zoom, in one room or a station full of them.
+  side — so a room reads as enclosed at any zoom, in one room or a keep full of them.
 - **The corners hold that ring.** A top corner is the bottom corner lifted: one profile, no notch
   where curve meets straight, no waist where the ring narrows, and no stray shadow left in the
-  void when a station has more than one room.
+  void when a keep has more than one room.
 - **Crew stand in a shadow, not on a line.** The contact shadow under a body was a flat 9×2 bar.
   It's a soft foreshortened pool now that breathes with the idle bob and tightens when an agent
   sits down.
 - **The CRT opens up.** The tube's aperture went from 50% to 68% of the panel and became a dial
   you can set — the feed had been painting nearly a quarter of the screen black inside the canvas
   itself, which no window resize could reclaim.
-- **Props you look down at.** The camera looks down at the station, but the bed, the lockers and
+- **Props you look down at.** The camera looks down at the keep, but the bed, the lockers and
   the three tables were drawn as if you were standing in front of them. Redrawn top-down. The
   crate and the bar were redrawn too, and props now sit **on** a table's surface rather than
   beside it.
 
 ## Nothing in Eyehold is painted by your operating system
 
-The station is one surface. Anywhere the browser or the OS still drew its own furniture inside
+The keep is one surface. Anywhere the browser or the OS still drew its own furniture inside
 it — a grey button, a system font, a yellow tooltip bubble — the illusion broke.
 
 - **The control floor.** Every button, dropdown, checkbox, slider and scrollbar is drawn in the
-  station's own style on every platform, and the sweep that proved it is now a test — so a
+  keep's own style on every platform, and the sweep that proved it is now a test — so a
   control that arrives white and Arial fails the gate instead of shipping.
-- **Every input speaks in the station's font.**
+- **Every input speaks in the keep's font.**
 - **Dialogs and tooltips are ours.** The OS tooltip bubble that appeared a second after your
   cursor stopped is gone; Eyehold draws its own, immediately, in the same register as the panel.
 - **PAINT became SURFACE**, and its palette was rebuilt — the deck-and-wall picker in REFIT had
-  been raw HTML buttons sitting inside a pixel-art station.
+  been raw HTML buttons sitting inside a pixel-art keep.
 - **See a skin before you choose it.** The dossier's CONFIG › SKIN shows a live preview of the
   crew member wearing it, instead of asking you to pick a name and find out afterwards.
 - **The COMMS rail reclaims its dead space**, and the transcript stopped repeating itself.
 
-## COMMS sounds like the station again
+## COMMS sounds like the keep again
 
 When the new sound pack landed, only 10 of its 36 cues were mapped. The ones left on the old
 synth included the tick under *every* revealed line — roughly twenty times a second — which is
@@ -119,12 +119,12 @@ why the surface still sounded like the old board no matter what else changed.
 - The composer stopped clipping its own placeholder, so the slash-command hint is readable.
 - A run you stop says **RUN STOPPED** once, instead of echoing its own headline back at you.
 
-## The station remembers, and shows its working
+## The keep remembers, and shows its working
 
 - **Memory forms on every real run**, not only the one you happened to be watching. Work done by
   a routine, a channel or a delegated worker leaves the same trace as work done in front of you.
 - **A belief says where it came from.** Memory Core shows the run a belief formed in, and
-  separates what the station is confident about from what still needs you — so a wrong belief is
+  separates what the keep is confident about from what still needs you — so a wrong belief is
   something you can find and correct rather than argue with.
 - **Recall reaches every workstream.** `recall_conversation` saw only the open one; it searches
   across them now, which is what makes "what did we decide about X" answerable weeks later.
@@ -145,7 +145,7 @@ why the surface still sounded like the old board no matter what else changed.
 ## Fixes
 
 - **"Full access" means something again — in three places.** Granting a connector's tool full
-  access was discarded, so the station asked the same permission on every call. Full access to a
+  access was discarded, so the keep asked the same permission on every call. Full access to a
   folder dropped a grade on the way in, so five reads inside one folder cost five clicks
   (measured: five cards became one). And a permission grade is no longer silently lost when the
   service backing it fails — authority is preserved rather than downgraded.
@@ -168,7 +168,7 @@ why the surface still sounded like the old board no matter what else changed.
   docked in one read as empty, while that same agent's Telegram runs were being handed the full
   toolset the whole time. The readout now asks the same question the runs do.
 - **The context gauge finally measures something.** The bottom-bar CTX readout sat at `—` with ten
-  hollow cells forever. The station kept one model catalog shared across every provider, and it
+  hollow cells forever. The keep kept one model catalog shared across every provider, and it
   warms all ~17 of them at once — so whichever provider answered last, usually an unconfigured one
   with an empty list, wiped the catalog belonging to the one you were actually using. The window
   size for your live model then read as zero, so the gauge had nothing to divide by. Catalogs are
@@ -182,7 +182,7 @@ why the surface still sounded like the old board no matter what else changed.
 
 - Windows installers are code-signed (CN=Eyehold), continuing from v0.6.5.
 - **Windows: update from inside Eyehold.** It installs over your existing copy — your crew,
-  sessions, keys and station stay exactly where they are.
+  sessions, keys and keep stay exactly where they are.
 - **macOS: in-app updating works from v0.6.8 onward** — the mac updater legs
   (`Eyehold_darwin-arm64.app.tar.gz` / `-x64`, plus their `.sig`s) are published alongside the
   DMGs, so INSTALL UPDATE resolves instead of 404ing.

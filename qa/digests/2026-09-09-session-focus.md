@@ -9,7 +9,7 @@ Live seeded Chrome proof passed before integration and again after inbox/routing
 Validation receipts:
 - Full repair candidate: fast 734/734, HTTP 106/106, customer journeys 33/33, exit 0.
 - Synced candidate 0d99faf75: complete npm run test:fast 734/734 and npm run test:http 107/107, both exit 0; repeated live proof passed.
-- Later independent image-intent sync 33f726cae: image-task 55, image-task e2e 63, browser 306, station-tools 67, station-commands 135, claims ledger 64 assertions and session-focus-safety all passed. These are incremental checks, not a new full-gate invocation on that later tree.
+- Later independent image-intent sync 33f726cae: image-task 55, image-task e2e 63, browser 306, keep-tools 67, keep-commands 135, claims ledger 64 assertions and session-focus-safety all passed. These are incremental checks, not a new full-gate invocation on that later tree.
 - Bug register validates: 87 records. Diff/syntax checks passed. No shared contract or credential migration changes.
 
 The unchanged loop/git fixture initially failed under load, then passed alone and in both full HTTP reruns. No unrelated loop fixture change was made.

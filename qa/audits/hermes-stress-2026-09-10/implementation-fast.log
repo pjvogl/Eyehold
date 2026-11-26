@@ -19,7 +19,7 @@ clock-rng.test: OK (14 assertions)
 context.test: OK (180 assertions)
 runtimeinfo: OK (15 assertions)
 harness-snapshot: OK (23 assertions)
-station-inspect: OK (12 assertions)
+keep-inspect: OK (12 assertions)
 [failopen] aux.test.envelope (x1): aux pass died sk-or-v1-abcdef0123456789abcdef0123456789
 [failopen] aux.test.envelope (x2): again
 [failopen] maint.test.loop (x1): once
@@ -199,7 +199,7 @@ concurrency.test: OK (65 assertions)
 workspace-lease.test: OK (27 assertions)
 workspace-owner.test: OK (34 assertions)
 workspace-safety.test: OK (12 assertions)
-[recovery] auto station recovery SKIPPED: target workspace is a scratch root (C:\Users\andro\AppData\Local\Temp\eyehold-fake-real-home-dUISTp\ci-scratch-E35Yb6\ws is under C:\Users\andro\AppData\Local\Temp\eyehold-fake-real-home-dUISTp\ci-scratch-E35Yb6); a real station is never ingested into a temp workspace. Explicit recovery (request file / CLI restore) is unaffected.
+[recovery] auto keep recovery SKIPPED: target workspace is a scratch root (C:\Users\andro\AppData\Local\Temp\eyehold-fake-real-home-dUISTp\ci-scratch-E35Yb6\ws is under C:\Users\andro\AppData\Local\Temp\eyehold-fake-real-home-dUISTp\ci-scratch-E35Yb6); a real keep is never ingested into a temp workspace. Explicit recovery (request file / CLI restore) is unaffected.
 workspace-recovery.test: OK (66 assertions)
 workspace-lineage.test: OK (86 assertions)
 agent-lifecycle: OK (45 assertions)
@@ -523,7 +523,7 @@ ok 7 - related fix prose cannot promote an unresolved customer report in reconci
     P1 onboarding  Mac paid onboarding becomes unreachable after reload and relink
     P1 providers   Compatible API hides partial run failures and limits
     P1 providers   Compatible API retries dispatch duplicate agent runs
-    P1 providers   Funded working station still displays a zero-credit warning
+    P1 providers   Funded working keep still displays a zero-credit warning
     P1 providers   Managed Sonnet request still returns an uncorrelated HTTP 400
     P1 providers   Saved equipment omitted from interactive tool projection and toolset diagnostics
     P1 sessions    COMMS loses report tables list hierarchy quotes and named links
@@ -613,7 +613,7 @@ onboard-fresh-launcher.test: OK (4 assertions)
 codex-configured.test: OK (12 assertions)
 tests: OK (28 assertions)
 PASS isolated seeded sidecar starts
-PASS seeded station reaches the live floor
+PASS seeded keep reaches the live floor
 PASS camera begins on a lit WebGL frame :: {"path":"webgl","ready":true,"failed":false,"lost":false,"frameSum":94}
 PASS WEBGL_lose_context is available and invoked :: {"ok":true}
 PASS same page abandons WebGL for the CPU warp :: {"path":"cpu","ready":false,"failed":true,"lost":true,"frameSum":93}
@@ -657,8 +657,8 @@ quests.test: OK (45 assertions)
 queststore.test: OK (21 assertions)
 queststate.test: OK (63 assertions)
 queststatestore.test: OK (43 assertions)
-stationquests.test: OK (42 assertions)
-stationqueststore.test: OK (41 assertions)
+keepquests.test: OK (42 assertions)
+keepqueststore.test: OK (41 assertions)
 workquests.test: OK (34 assertions)
 workqueststore.test: OK (42 assertions)
 maintquests.test: OK (40 assertions)
@@ -800,8 +800,8 @@ ok 7 - optional readback/blit failure never poisons the authoritative prop conte
   duration_ms: 5.7507
   type: 'test'
   ...
-# Subtest: cached silhouette lighting leaves real workstation heat and progress content live on every draw
-ok 8 - cached silhouette lighting leaves real workstation heat and progress content live on every draw
+# Subtest: cached silhouette lighting leaves real workkeep heat and progress content live on every draw
+ok 8 - cached silhouette lighting leaves real workkeep heat and progress content live on every draw
   ---
   duration_ms: 8.4674
   type: 'test'
@@ -924,7 +924,7 @@ worldmodel: OK (514 assertions)
   1196 paths, 1631 diagonal segments, 7.6x waypoint compression, 0 wall violations
 path-smoothing: OK (22 assertions)
 run-truth.test: OK (18 assertions)
-station-authority: OK (9 assertions)
+keep-authority: OK (9 assertions)
 zones.test: OK (119 assertions)
 idle-life-regressions.test: OK (56 assertions)
 social-border.test: OK (25 assertions)
@@ -932,7 +932,7 @@ social-trio.test: OK (2779 assertions)
 sightline.test: OK (52 assertions)
 agent-affinity.test: OK (28 assertions)
 agent-affinity-weight.test: OK (21 assertions)
-station-gathering.test: OK (73 assertions)
+keep-gathering.test: OK (73 assertions)
 crew-containment.test: OK (23 assertions)
 prop-awareness.test: OK (9 assertions)
 chat-stare-throttle.test: OK (24 assertions)
@@ -940,11 +940,11 @@ talk-turn.test: OK (23 assertions)
 glyph-speech.test: OK (26604 assertions)
 g1bprops.test: OK (43 assertions)
 g3btrophy.test: OK (24 assertions)
-stationbake.chunk: OK (108 assertions)
-stationbake.materials: OK (155 assertions)
-stationbake.seam: OK (52 assertions)
-stationbake.connections: 408 real Canvas assertions passed; {"TRANSFER":20,"mirrored-palettes":20,"same-zone-right-L":10,"same-zone-left-L":10,"same-zone-T":20,"closed-left":10,"jammed-right":10,"disconnected":0,"no-side-crown-above":0,"chamfer-is-not-a-side-crown":0,"chunk-boundary":20,"chunk-boundary incremental":20}
-stationbake.hull: OK (187 assertions)
+keepbake.chunk: OK (108 assertions)
+keepbake.materials: OK (155 assertions)
+keepbake.seam: OK (52 assertions)
+keepbake.connections: 408 real Canvas assertions passed; {"TRANSFER":20,"mirrored-palettes":20,"same-zone-right-L":10,"same-zone-left-L":10,"same-zone-T":20,"closed-left":10,"jammed-right":10,"disconnected":0,"no-side-crown-above":0,"chamfer-is-not-a-side-crown":0,"chunk-boundary":20,"chunk-boundary incremental":20}
+keepbake.hull: OK (187 assertions)
 canvas-loss-recovery: OK (44 assertions)
 stage-context-loss: OK (35 assertions)
 conveyor: OK (100 assertions)
@@ -1058,7 +1058,7 @@ personalization-authority-wiring.test: OK (6 assertions)
 sprite-loading.test: OK (14 assertions)
 textsize-screen-space.test: OK (95 assertions)
 mobile-control-reachability.test: OK (26 assertions)
-station-tooltip.test: OK (443 assertions)
+keep-tooltip.test: OK (443 assertions)
 toast-live-region.test.js OK — 7 assertions
 toast-seat.test: OK (25 assertions)
 channels.discord-wire: OK (40 assertions)
@@ -1105,13 +1105,13 @@ sprite-detached-prop.test: OK (3 assertions)
 lint-gate-can-fail: 747 asserting gate step(s) can all turn the gate red; OK
 lint-emits: scanned 502 file(s), 192 literal emit(s); OK
 lint-determinism: scanned 299 file(s); OK
-station-bridge.test.js: ok
-station-commands.test: OK (135 assertions)
-station-tools.test: OK (67 assertions)
+keep-bridge.test.js: ok
+keep-commands.test: OK (135 assertions)
+keep-tools.test: OK (67 assertions)
 code-mode.test: OK (27 assertions)
 output-artifacts.test: OK (16 assertions)
-station-recovery.test: OK (72 assertions)
-station-recovery-cli.test: OK (20 assertions)
+keep-recovery.test: OK (72 assertions)
+keep-recovery-cli.test: OK (20 assertions)
 execution-profiles.test: OK (34 assertions)
 execution-settings.test: OK (14 assertions)
 execution-router.test: OK (56 assertions)

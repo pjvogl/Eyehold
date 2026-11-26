@@ -1,5 +1,5 @@
 /* node test/deskscreen.test.js — DESK SCREEN (frontend/app/deskscreen.js): the per-agent run fold behind the card
-   that opens when you click an agent's workstation. Pure — bus events in, read-outs out.
+   that opens when you click an agent's workkeep. Pure — bus events in, read-outs out.
 
    Laws under test:
      • a run is WORKING only once agent.run.start (or a real tool step) proves it; tokens alone never open one

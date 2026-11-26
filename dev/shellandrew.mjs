@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// dev/shellandrew.mjs — ANDREW'S EXACT SAVED STATION, on a MAGENTA backdrop.
+// dev/shellandrew.mjs — ANDREW'S EXACT SAVED KEEP, on a MAGENTA backdrop.
 //
 // The nine rooms verbatim from %LOCALAPPDATA%\Eyehold\workspaces\agent.save.json. Magenta behind the
 // bake so any pixel the shell fails to paint screams instead of hiding against the starfield —
@@ -49,13 +49,13 @@ const PROBE = `(() => {
   for (const [name, clad] of CLADS) {
     const { st, by } = build();
     for (const k in clad) if (by[k]) st.setHull(by[k], { mat: clad[k][0], style: clad[k][1] });
-    const geo = st.projectGeometry(), T = geo.TILE, bk = StationBake.bake(geo);
+    const geo = st.projectGeometry(), T = geo.TILE, bk = KeepBake.bake(geo);
     // MAGENTA backdrop: anything the shell fails to paint shows as magenta
     const o = mk(bk.W, bk.H);
     o.g.fillStyle = '#c0146e'; o.g.fillRect(0, 0, bk.W, bk.H);
-    StationBake.drawBase(o.g, bk, 0, 0); StationBake.drawLight(o.g, bk, 0, 0);
+    KeepBake.drawBase(o.g, bk, 0, 0); KeepBake.drawLight(o.g, bk, 0, 0);
     // count unpainted pixels in the skirt rows under every footprint
-    const base = mk(bk.W, bk.H); StationBake.drawBase(base.g, bk, 0, 0);
+    const base = mk(bk.W, bk.H); KeepBake.drawBase(base.g, bk, 0, 0);
     const d = base.g.getImageData(0, 0, bk.W, bk.H).data;
     let holes = 0;
     for (const r of geo.allRects) {

@@ -16,7 +16,7 @@
 <header class="topbar" id="topbar">
   <a class="brand" href="../index.html" aria-label="Eyehold home"><img src="../assets/eyehold-logo-small.png" alt="Eyehold" width="355" height="60"></a>
   <nav class="topnav" aria-label="Site">
-    <a href="../index.html#station">Product</a>
+    <a href="../index.html#keep">Product</a>
     <a href="index.html" class="on">Docs</a>
     <a href="../market.html">Skills</a>
     <a href="../pricing.html" data-pricing-link>Pricing</a>
@@ -45,8 +45,8 @@
     <a href="providers.html">Models &amp; providers</a>
     </details>
     <details class="side-group">
-    <summary class="side-title">Station &amp; agents</summary>
-    <a href="station.html">Station &amp; capabilities</a>
+    <summary class="side-title">Keep &amp; agents</summary>
+    <a href="keep.html">Keep &amp; capabilities</a>
     <a href="guides/crew.html">Set up your crew</a>
     <a href="agents.html">Agents, teams &amp; voice</a>
     <a href="guides/goals.html">Goals, quests &amp; XP</a>
@@ -102,32 +102,32 @@ verifies every update against a key baked into the app. This is independent of A
 Developer ID signing, and notarization. The build contract is not installed-update evidence;
 report a failed update and use the matching current release installer when necessary.</p>
 
-<h2 id="the-station-browser-will-not-load-pages">The station browser will not load pages</h2>
+<h2 id="the-keep-browser-will-not-load-pages">The keep browser will not load pages</h2>
 <p>If every page fails, agents report proxy or connection errors, or a new browser "exits before it
 can be controlled", an earlier Eyehold session may have left its browser running. Open
-<b>Settings &rarr; BROWSER &rarr; RESET STATION BROWSER</b>. It closes the station browser, ends any copy
-an earlier Eyehold session left running on the station profile, and clears that profile's stale
+<b>Settings &rarr; BROWSER &rarr; RESET KEEP BROWSER</b>. It closes the keep browser, ends any copy
+an earlier Eyehold session left running on the keep profile, and clears that profile's stale
 locks. It never touches your own Chrome, and your saved sign-ins are kept. Agents can do the same
 thing themselves with the <code>browser.reset</code> tool. Eyehold also does this check on its own
-before it starts the station browser.</p>
+before it starts the keep browser.</p>
 <p>If an agent is using the browser at that moment, stop the run first. If the reset reports a
 process it could not end, quit Eyehold from the tray and restart your computer.</p>
 
 <h2 id="erase-everything-and-start-over">Erase everything and start over</h2>
-<p>Uninstalling removes only the program. Your station lives in a separate folder for your user
+<p>Uninstalling removes only the program. Your keep lives in a separate folder for your user
 account, so a reinstall picks it right back up. To really start from scratch, open
 <b>Settings &rarr; APP &amp; BACKUP &rarr; ERASE EVERYTHING</b>, type <code>ERASE</code>, and click twice.
 Eyehold stops, deletes everything it keeps on this computer, and restarts at first run. When it
 finishes it lists exactly what it removed, and anything it could not remove.</p>
-<p>It deletes your station, agents, chats, memory, routines and settings, saved browser sign-ins,
+<p>It deletes your keep, agents, chats, memory, routines and settings, saved browser sign-ins,
 files agents saved inside Eyehold, logs, the voice-model download, the keys and tokens Eyehold saved
 in your system keychain, and the app window's own stored data. It also turns off Launch at login.</p>
 <p>It does <b>not</b> touch project folders you let agents work in, files exported to
 <code>Eyehold deliverables</code>, your Downloads folder, your Eyehold account and its credits (this
 computer is just unlinked from it), or the Eyehold app itself. Export a backup first
-(<b>EXPORT STATION</b>, same page) if you might want any of it back.</p>
-<p>Want a clean station but keep the old one on disk? Use <b>START FRESH</b> on the recovery screen
-instead: it moves the old station to a quarantine folder rather than deleting it.</p>
+(<b>EXPORT KEEP</b>, same page) if you might want any of it back.</p>
+<p>Want a clean keep but keep the old one on disk? Use <b>START FRESH</b> on the recovery screen
+instead: it moves the old keep to a quarantine folder rather than deleting it.</p>
 
 <h2 id="where-eyehold-keeps-your-data">Where Eyehold keeps your data</h2>
 <p>Quit Eyehold first (tray icon &rarr; Quit), or it will recreate files while you delete them. Then
@@ -135,7 +135,7 @@ remove these by hand if you cannot use ERASE EVERYTHING:</p>
 <ul>
 <li><b>Windows</b>
   <ul>
-  <li>Station data: <code>%APPDATA%\ai.skynet.harness\</code></li>
+  <li>Keep data: <code>%APPDATA%\ai.skynet.harness\</code></li>
   <li>App window storage: <code>%LOCALAPPDATA%\ai.skynet.harness\</code></li>
   <li>Program and voice-model download: <code>%LOCALAPPDATA%\Eyehold\</code> (uninstall first; delete
   what is left)</li>
@@ -144,7 +144,7 @@ remove these by hand if you cannot use ERASE EVERYTHING:</p>
   </ul></li>
 <li><b>macOS</b>
   <ul>
-  <li>Station data: <code>~/Library/Application Support/ai.skynet.harness/</code></li>
+  <li>Keep data: <code>~/Library/Application Support/ai.skynet.harness/</code></li>
   <li>Voice-model download: <code>~/Library/Application Support/Eyehold/</code></li>
   <li>App window storage: <code>~/Library/WebKit/ai.skynet.harness/</code>,
   <code>~/Library/Caches/ai.skynet.harness/</code> and <code>~/Library/HTTPStorages/ai.skynet.harness/</code>
@@ -164,7 +164,7 @@ paste a <code>%APPDATA%</code> path into the File Explorer address bar.</p>
 <li><b>Windows:</b> Settings &rarr; Apps &rarr; Installed apps.</li>
 <li><b>macOS:</b> quit Eyehold, drag it from Applications to the Trash.</li>
 </ul>
-<p>Uninstalling keeps your station data. To remove that too, run
+<p>Uninstalling keeps your keep data. To remove that too, run
 <a href="#erase-everything-and-start-over">ERASE EVERYTHING</a> before you uninstall, or delete the
 folders listed in <a href="#where-eyehold-keeps-your-data">Where Eyehold keeps your data</a>.</p>
 
@@ -195,7 +195,7 @@ thing than have you assume it's supposed to be that way.</p>
 </div>
 
 <footer class="footer">
-  <div class="footer-line">EYEHOLD &middot; a living station of AI agents, doing real work in the dark</div>
+  <div class="footer-line">EYEHOLD &middot; a living keep of AI agents, doing real work in the dark</div>
   <div class="footer-links">
     <a href="../index.html">HOME</a>
     <a href="https://github.com/pjvogl/Eyehold" target="_blank" rel="noopener">GITHUB</a>

@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /* sidecar/mcp/serve.js — the Eyehold MCP messaging-bridge server (stdio composition root).
 
-   Launched by an MCP client to OBSERVE and MESSAGE a running Eyehold station:
+   Launched by an MCP client to OBSERVE and MESSAGE a running Eyehold keep:
      { "mcpServers": { "eyehold": { "command": "npm", "args": ["run", "-s", "mcp:serve"] } } }
 
    This is the ambient I/O edge for the pure core in bridge-core.js. It:
@@ -45,20 +45,20 @@ const BASE_LABEL = 'http://' + CFG.host + ':' + CFG.port;
 function log() { try { process.stderr.write('[mcp:serve] ' + Array.prototype.join.call(arguments, ' ') + '\n'); } catch (_) {} }
 
 // ---- token discovery: explicit wins; else scrape the served page once (browser-identical) ------
-// ⛔ THE STATION'S API TOKEN IS PER-LAUNCH, SO A SCRAPED ONE GOES STALE. Eyehold is a desktop app: the
+// ⛔ THE KEEP'S API TOKEN IS PER-LAUNCH, SO A SCRAPED ONE GOES STALE. Eyehold is a desktop app: the
 // Commander closes and reopens it constantly, and every launch mints a NEW token. This bridge is started once
 // by the MCP client and lives for that client's whole session, so a token cached for the process lifetime meant
-// the FIRST station restart killed every tool ("/api/... returned HTTP 401") and the SSE feed (a silent
+// the FIRST keep restart killed every tool ("/api/... returned HTTP 401") and the SSE feed (a silent
 // reconnect loop re-presenting the same dead token) until the user knew to restart their MCP client — which
 // nothing on either side tells them to do. An explicitly supplied token (--token= / env) is the operator's
 // choice and is never invalidated: re-scraping would silently override what they configured.
 const TOKEN_IS_EXPLICIT = !!CFG.token;
 let cachedToken = CFG.token || '';
 let tokenPromise = null;
-// Drop a scraped token that the station has stopped honouring, so the next call re-scrapes the live one.
+// Drop a scraped token that the keep has stopped honouring, so the next call re-scrapes the live one.
 function invalidateToken(why) {
   if (TOKEN_IS_EXPLICIT || !cachedToken) return false;
-  log('token rejected (' + why + ') — re-discovering; the station was probably restarted');
+  log('token rejected (' + why + ') — re-discovering; the keep was probably restarted');
   cachedToken = '';
   return true;
 }
@@ -109,7 +109,7 @@ function rawRequest(method, path, body, withToken, token) {
 async function callSidecar(method, path, body) {
   const token = await discoverToken();
   const res = await rawRequest(method, path, body == null ? null : body, true, token);
-  // ONE re-auth retry on a rejected token: the station restarted and minted a new one (see invalidateToken).
+  // ONE re-auth retry on a rejected token: the keep restarted and minted a new one (see invalidateToken).
   // Bounded to a single extra round-trip, and only when the token was scraped and actually changed — a genuine
   // 401 (no token available at all) still surfaces to the caller as the honest HTTP status it is.
   if (res && res.ok && (res.status === 401 || res.status === 403) && invalidateToken('HTTP ' + res.status)) {
@@ -138,7 +138,7 @@ async function startSse() {
   const path = '/api/channels/events';
   try {
     req = http.request({ host: CFG.host, port: CFG.port, method: 'GET', path: path, headers: { 'Origin': BASE_LABEL, 'Accept': 'text/event-stream', 'x-eyehold-token': token } }, res => {
-      // A 401/403 here means the token this feed presented is dead (station restarted): drop it so the reconnect
+      // A 401/403 here means the token this feed presented is dead (keep restarted): drop it so the reconnect
       // re-scrapes, instead of re-presenting the same rejected token every 3s forever.
       if (res.statusCode !== 200) { log('SSE feed status', res.statusCode); if (res.statusCode === 401 || res.statusCode === 403) invalidateToken('SSE ' + res.statusCode); res.resume(); sseActive = false; scheduleSseReconnect(); return; }
       res.setEncoding('utf8');

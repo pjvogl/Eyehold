@@ -127,7 +127,7 @@
         "sha256": "40f05dab6e6e2d7cc6050ad28dc09dcbd666f15b64c8adab7989c73494e6029a"
       },
       {
-        "path": "frontend/agent-demo/stationbake.js",
+        "path": "frontend/agent-demo/keepbake.js",
         "bytes": 355760,
         "sha256": "3311c4c72b72f4e4e9e07c52445cebd1509cedfa7700fe36129d9f87eb6b3965"
       },
@@ -152,7 +152,7 @@
         "sha256": "cdf6d67716c1113525501973e7df1a145b9bde0db64c139c9e0dbeb51f7eac09"
       },
       {
-        "path": "frontend/agent-station-demo.html",
+        "path": "frontend/agent-keep-demo.html",
         "bytes": 86404,
         "sha256": "49ac09cc3f0e913897c8e4e5f0ef56cc9a3a88d15b90d38d629bd7e88cc69111"
       },
@@ -1222,37 +1222,37 @@
         "sha256": "0aea7735f276c8eb7bfa9d0912ce1d6a01997da731535d1bf827404ba2f089a2"
       },
       {
-        "path": "frontend/app/stationbake.js",
+        "path": "frontend/app/keepbake.js",
         "bytes": 364519,
         "sha256": "15e8c2c5dddc92ddb2f8515cf6e0526f7752d443539a24006aeed208bab4dacb"
       },
       {
-        "path": "frontend/app/stationbuilder.js",
+        "path": "frontend/app/keepbuilder.js",
         "bytes": 333607,
         "sha256": "e24664c749945e9726c746fb5ed3a6c284146c0a126e4705f77808e380a32d35"
       },
       {
-        "path": "frontend/app/stationcommands.js",
+        "path": "frontend/app/keepcommands.js",
         "bytes": 83444,
         "sha256": "9200d94aa55db2148fe8b1fc2a9fccaaaf6e7da095cf3ff3c61437d40360fbdd"
       },
       {
-        "path": "frontend/app/stationquests.js",
+        "path": "frontend/app/keepquests.js",
         "bytes": 9507,
         "sha256": "cd8a9a25fac20e82c2b1b35622629a99f7fef94aca39d7233d0f88a7bcdb841a"
       },
       {
-        "path": "frontend/app/stationqueststore.js",
+        "path": "frontend/app/keepqueststore.js",
         "bytes": 12386,
         "sha256": "fa8ee601a363fa905a6d8d8bb57ad0dcc1a854fa68ca50b7ddd2ced6e352acd9"
       },
       {
-        "path": "frontend/app/stationtemplates.js",
+        "path": "frontend/app/keeptemplates.js",
         "bytes": 22495,
         "sha256": "b61dd21b3237d746a970d729f7b466862f1f5e17c5d8bf772d6e2b4bcf131d1d"
       },
       {
-        "path": "frontend/app/stationui.js",
+        "path": "frontend/app/keepui.js",
         "bytes": 847477,
         "sha256": "7e195e29daa38fd7b38276d9933ea4a5d75d56bc716924634dbb3087dd6a954c"
       },
@@ -2070,12 +2070,12 @@
       "authorityChecks": [
         {
           "kind": "contains",
-          "path": "frontend/app/stationui.js",
+          "path": "frontend/app/keepui.js",
           "needle": "{ id: 'ollama'"
         },
         {
           "kind": "contains",
-          "path": "frontend/app/stationui.js",
+          "path": "frontend/app/keepui.js",
           "needle": "{ id: 'custom'"
         }
       ],
@@ -2097,7 +2097,7 @@
       "claim": "A custom or Ollama base URL can be edited after onboarding.",
       "surfaceLocators": [
         {
-          "path": "frontend/app/stationui.js",
+          "path": "frontend/app/keepui.js",
           "needle": "any /v1 base URL"
         }
       ],
@@ -2109,7 +2109,7 @@
         },
         {
           "kind": "absent",
-          "path": "frontend/app/stationui.js",
+          "path": "frontend/app/keepui.js",
           "needles": [
             "Harness.setBaseUrl("
           ]
@@ -2172,7 +2172,7 @@
         },
         {
           "path": "frontend/app/overseer.js",
-          "needle": "StationCommands.reconcile"
+          "needle": "KeepCommands.reconcile"
         }
       ],
       "authorityChecks": [
@@ -2340,13 +2340,13 @@
         {
           "kind": "contains",
           "path": "frontend/app/app.js",
-          "needle": "station-wide shared gear"
+          "needle": "keep-wide shared gear"
         }
       ],
       "verdict": "PARTIAL",
       "disposition": "NARROW",
       "ownerWave": "W4",
-      "qualification": "Object grants are real, but most gear is explicitly station-shared rather than room-team scoped.",
+      "qualification": "Object grants are real, but most gear is explicitly keep-shared rather than room-team scoped.",
       "liveProofRequired": true,
       "liveProof": "PENDING",
       "refsChecked": [
@@ -2391,7 +2391,7 @@
     {
       "id": "layout-is-workflow",
       "domain": "capabilities",
-      "claim": "The drawn station layout is the workflow agents execute.",
+      "claim": "The drawn keep layout is the workflow agents execute.",
       "surfaceLocators": [
         {
           "path": "README.md",
@@ -2428,7 +2428,7 @@
       "claim": "Approval behavior follows effective access: ASK respects standing grants; Full Power has no Eyehold approval prompts.",
       "surfaceLocators": [
         {
-          "path": "frontend/app/stationui.js",
+          "path": "frontend/app/keepui.js",
           "needle": "ASK respects the selected reach profile and pauses before risky calls."
         }
       ],
@@ -2564,7 +2564,7 @@
       "claim": "One coherent visible ledger unifies tasks, deliverables, routines, and past work.",
       "surfaceLocators": [
         {
-          "path": "frontend/app/stationui.js",
+          "path": "frontend/app/keepui.js",
           "needle": "{ id: 'deliverables', k: 'deliverables', label: 'DELIVERABLES'"
         }
       ],
@@ -2635,7 +2635,7 @@
       "surfaceLocators": [
         {
           "path": "docs/RELEASE_NOTES_v1.0.0_DRAFT.md",
-          "needle": "**Night shift**: leave the station and it works"
+          "needle": "**Night shift**: leave the keep and it works"
         }
       ],
       "authorityChecks": [
@@ -2744,10 +2744,10 @@
     {
       "id": "learning-improves-over-time",
       "domain": "autonomy",
-      "claim": "The station learns from use and measurably gets better over time.",
+      "claim": "The keep learns from use and measurably gets better over time.",
       "surfaceLocators": [
         {
-          "path": "frontend/app/stationui.js",
+          "path": "frontend/app/keepui.js",
           "needle": "Reusable procedures this agent created or learned"
         }
       ],
@@ -2856,7 +2856,7 @@
         "visible": false,
         "check": {
           "kind": "absent",
-          "path": "frontend/app/stationui.js",
+          "path": "frontend/app/keepui.js",
           "needles": [
             "SLACK (EXPERIMENTAL)",
             "MATRIX (EXPERIMENTAL)",
@@ -2979,7 +2979,7 @@
         "visible": false,
         "check": {
           "kind": "absent",
-          "path": "frontend/app/stationui.js",
+          "path": "frontend/app/keepui.js",
           "needles": [
             "MCP CONNECTORS (EXPERIMENTAL)"
           ]
@@ -3109,7 +3109,7 @@
         },
         {
           "kind": "contains",
-          "path": "frontend/app/stationui.js",
+          "path": "frontend/app/keepui.js",
           "needle": "function maskKey"
         }
       ],
@@ -3150,7 +3150,7 @@
       "verdict": "PARTIAL",
       "disposition": "COMPLETE",
       "ownerWave": "W3",
-      "qualification": "Protected sidecar stores are hardened, while browser station state still uses localStorage and full recovery proof is incomplete.",
+      "qualification": "Protected sidecar stores are hardened, while browser keep state still uses localStorage and full recovery proof is incomplete.",
       "liveProofRequired": true,
       "liveProof": "PENDING",
       "refsChecked": [
@@ -3165,8 +3165,8 @@
       "claim": "Settings exposes a secret-free full backup/export and restore.",
       "surfaceLocators": [
         {
-          "path": "frontend/app/stationui.js",
-          "needle": "STATION BACKUP"
+          "path": "frontend/app/keepui.js",
+          "needle": "KEEP BACKUP"
         }
       ],
       "authorityChecks": [
@@ -3184,7 +3184,7 @@
       "verdict": "PARTIAL",
       "disposition": "COMPLETE",
       "ownerWave": "W3",
-      "qualification": "The full engine exists but Settings reaches only the smaller station backup surface.",
+      "qualification": "The full engine exists but Settings reaches only the smaller keep backup surface.",
       "liveProofRequired": true,
       "liveProof": "PENDING",
       "refsChecked": [
@@ -3279,7 +3279,7 @@
         },
         {
           "kind": "contains",
-          "path": "frontend/app/stationui.js",
+          "path": "frontend/app/keepui.js",
           "needle": "Limits apply to recorded agent spending."
         }
       ],
@@ -3708,7 +3708,7 @@
       "verdict": "PARTIAL",
       "disposition": "COMPLETE",
       "ownerWave": "W3",
-      "qualification": "Backup.exportAll exists, but the Settings control is the smaller station backup.",
+      "qualification": "Backup.exportAll exists, but the Settings control is the smaller keep backup.",
       "authorityChecks": [
         {
           "kind": "contains",
@@ -3717,7 +3717,7 @@
         },
         {
           "kind": "absent",
-          "path": "frontend/app/stationui.js",
+          "path": "frontend/app/keepui.js",
           "needles": [
             "Backup.exportAll("
           ]
@@ -3745,7 +3745,7 @@
         },
         {
           "kind": "absent",
-          "path": "frontend/app/stationui.js",
+          "path": "frontend/app/keepui.js",
           "needles": [
             "Harness.setBaseUrl("
           ]
@@ -3790,7 +3790,7 @@
       "verdict": "SHIPPED",
       "disposition": "NARROW",
       "ownerWave": "W5",
-      "qualification": "Wave 4D (7f3af0be) ships the supervised background lifecycle: window-close keeps the station only when armed work requires it, surfaced in the tray; Quit drains and stops; autostart opt-in. Six interactive installed-exe proofs pending (tracked in docs/NEXT.md).",
+      "qualification": "Wave 4D (7f3af0be) ships the supervised background lifecycle: window-close keeps the keep only when armed work requires it, surfaced in the tray; Quit drains and stops; autostart opt-in. Six interactive installed-exe proofs pending (tracked in docs/NEXT.md).",
       "authorityChecks": [
         {
           "kind": "contains",

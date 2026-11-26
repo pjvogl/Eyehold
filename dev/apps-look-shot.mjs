@@ -1,5 +1,5 @@
-// APPS — the look, beside the real station (2026-09-30).
-//   node dev/apps-look-shot.mjs [port]      against a RUNNING station → .worldshots/apps-look/*.png + computed styles
+// APPS — the look, beside the real keep (2026-09-30).
+//   node dev/apps-look-shot.mjs [port]      against a RUNNING keep → .worldshots/apps-look/*.png + computed styles
 // Andrew: "its not supposed to be pitch black … we have a new AESTHETIC". Shoots the APPS window (the NEW APP form
 // and the list) and an app window with its bar, and prints the computed background of every APPS field next to the
 // real COMMS composer, so "matches the glass" is measured, not eyeballed.
@@ -36,11 +36,11 @@ try {
   await run("document.querySelector('[data-app-example=\"0\"]').click(), true");
   await sleep(200);
   await capture(cdp, out, '01b-apps-window-chip');
-  // the station's own glass keys for comparison: the Build Library's
+  // the keep's own glass keys for comparison: the Build Library's
   const keyOf = (sel) => `(() => { const b = document.querySelector(${JSON.stringify(sel)}); if (!b) return null; const c = getComputedStyle(b), r = b.getBoundingClientRect(); return { h: Math.round(r.height), radius: c.borderTopLeftRadius, font: c.fontSize, bg: c.backgroundImage.slice(0, 60) }; })()`;
   const keys = { build: await run(keyOf('#app-create')), chip: await run(keyOf('[data-app-example]')), row: await run(keyOf('.term.apps-win [data-app-open]')) };
   console.log('KEYS ' + JSON.stringify(keys));
-  check('the APPS keys are the station glass key: 8px radius, at least 34px tall, 16px label', ['build', 'chip'].every((k) => keys[k] && keys[k].radius === '8px' && keys[k].h >= 34 && keys[k].font === '16px'));
+  check('the APPS keys are the keep glass key: 8px radius, at least 34px tall, 16px label', ['build', 'chip'].every((k) => keys[k] && keys[k].radius === '8px' && keys[k].h >= 34 && keys[k].font === '16px'));
   const styles = await run(`(() => {
     const isBlack = ${BLACK};
     const pick = (el) => { if (!el) return null; const cs = getComputedStyle(el); return { bg: cs.backgroundColor + ' ' + cs.backgroundImage, border: cs.borderTopColor, shadow: cs.textShadow }; };
@@ -53,7 +53,7 @@ try {
   check('no APPS field, button or row is painted black', !['name', 'what', 'build', 'chip', 'row'].some((k) => styles.black[k]));
   check('the fields carry no CRT glow', !/px/.test(String(styles.name && styles.name.shadow)) || /none/.test(String(styles.name.shadow)));
   // the APPS dock menu, open
-  await run("(window.StationUI || {}).closeTerm && StationUI.closeTerm('apps'), true");
+  await run("(window.KeepUI || {}).closeTerm && KeepUI.closeTerm('apps'), true");
   await run("document.querySelector('#bottombar .bb-group[data-group=\"apps\"] .bb-grp').click(), true");
   await sleep(500);
   const menu = await run(`(() => { const items = Array.from(document.querySelectorAll('#bottombar .bb-group[data-group="apps"] .bb-menu .bb')); const rects = items.map(i => i.getBoundingClientRect()); let overlap = false; for (let i = 1; i < rects.length; i++) if (rects[i].top < rects[i - 1].bottom - 0.5) overlap = true; const clipped = items.some(i => Array.from(i.querySelectorAll('.bb-tx > *')).some(t => t.getBoundingClientRect().bottom > i.getBoundingClientRect().bottom + 0.5)); return { n: items.length, overlap, clipped, svg: items.every(i => !!i.querySelector('.bb-i svg')) }; })()`);
@@ -65,7 +65,7 @@ try {
   // an app window with its bar
   const first = await run(`(AppsUI.list()[0] || {}).id || ''`);
   if (first) {
-    await run(`(window.StationUI || {}).closeTerm && StationUI.closeTerm('apps'), true`);
+    await run(`(window.KeepUI || {}).closeTerm && KeepUI.closeTerm('apps'), true`);
     await run(`PluginHost.openApp(AppsUI.list()[0]), true`);
     await until(`!!document.querySelector('.term.plugin-app-win .app-bar')`, 8000);
     await sleep(3000);

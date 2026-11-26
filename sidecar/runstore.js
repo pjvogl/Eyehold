@@ -23,13 +23,13 @@
    lack it and still parse/list fine (fail-open — proven in runstore.test.js).
 
    Roster-honesty P1.2 (ADDITIVE): `identityFallback` — TRUE when the run's agentId was missing from the roster so
-   the run executed on the station-persona/default-model FALLBACK rather than the named specialist. An honest
+   the run executed on the keep-persona/default-model FALLBACK rather than the named specialist. An honest
    durable marker (never impersonate silently). Defaults false; old rows lack it and parse fine.
 
    Deliverable organization (ADDITIVE): `projectRoot` — the blessed project folder this run was scoped to, so the
    work a run PRODUCES can be filed under the thing the Commander was working ON. Same additive-provenance shape as
    `recipeId`: old rows lack it and default ''. The caller records it ONLY when the root is still a standing path
-   grant — an unblessed/revoked root files nothing, because the station must never assert a project relationship the
+   grant — an unblessed/revoked root files nothing, because the keep must never assert a project relationship the
    grant layer can't prove.
 
    INTERRUPTED RUNS (ADDITIVE, 2026-09-22): a run whose process died mid-flight never reached run end, so it left no
@@ -212,7 +212,7 @@
   // generous headroom (~3x) and splice the oldest off when the in-process mirror grows past it. On-disk history
   // stays complete (the append-only log + its rotated segment); only the RAM mirror is bounded so a 24/7 process
   // can't grow it without limit. Disk boot-load is already bounded (readBoundedJsonl), so this matches behavior:
-  // the whole-station insights fold already reads only the most-recent bounded window, never lifetime history.
+  // the whole-keep insights fold already reads only the most-recent bounded window, never lifetime history.
   const RAM_ROWS_MAX = 10000;       // matches the browser progression catch-up's bounded replay horizon
 
   function makeRunStore(opts) {
@@ -269,7 +269,7 @@
         unmetered: !!e.unmetered,    // G6.2: subscription usage is counted, not summed as $0 spend
         artifacts: artifactList(e.artifacts),   // work-visibility: what the run PRODUCED (additive; [] default)
         toolsOk: num(e.toolsOk),                // crate-honesty (additive): successful tool results — proven work, not just talk. Old rows default 0.
-        identityFallback: !!e.identityFallback, // P1.2 (additive): TRUE when this run's agentId was MISSING from the roster and it ran on the station-persona/default-model fallback — an honest marker that it was NOT the named specialist. Old rows lack it and default false.
+        identityFallback: !!e.identityFallback, // P1.2 (additive): TRUE when this run's agentId was MISSING from the roster and it ran on the keep-persona/default-model fallback — an honest marker that it was NOT the named specialist. Old rows lack it and default false.
         internal: !!e.internal,                 // progression catch-up excludes harness self-talk from agent work
         surface: e.surface === 'interactive' || e.surface === 'autonomous' ? e.surface : '',
         clarifying: !!e.clarifying,             // additive outcome truth; `reason` remains the execution terminal
@@ -344,7 +344,7 @@
       const beforeRunId = o.beforeRunId == null ? '' : str(o.beforeRunId);
       const since = num(o.since);
       const through = num(o.through);
-      // one workstream's rows (a trigger fire / a sample reads back ITS runs — never the station's global newest N)
+      // one workstream's rows (a trigger fire / a sample reads back ITS runs — never the keep's global newest N)
       const wantStream = o.streamId == null ? null : str(o.streamId);
       const out = [];
       let afterCursor = !beforeRunId;

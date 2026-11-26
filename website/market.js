@@ -1,6 +1,6 @@
 /* website/market.js — the public Skill Market page (market.html).
 
-   Reads the SAME catalog every StarNet station installs from (/.well-known/starnet-skills.json, built and signed by
+   Reads the SAME catalog every StarNet keep installs from (/.well-known/starnet-skills.json, built and signed by
    scripts/build-skill-catalog.mjs) and lists it: StarNet Originals first, then credited community picks. "Read the
    skill" fetches that skill's published SKILL.md. Same-origin requests only (the site's CSP allows nothing else),
    and everything that comes from the catalog is inserted as text, never as HTML. No tracking, no storage. */
@@ -11,7 +11,7 @@
   // the app's own gear names (REFIT palette labels, the same ones the in-app SKILL LIBRARY and market show)
   var GEAR = { cabinet: 'INTEL CAB', dish: 'DISH', workbench: 'WORKBENCH', notebook: 'NOTEBOOK', studio: 'STUDIO', orchestrator: 'ORCHESTRATOR', computer: 'COMPUTER' };
   var SHELVES = [
-    { id: 'originals', title: 'STARNET ORIGINALS', note: 'Written and tested by StarNet for your station\'s gear and tools.' },
+    { id: 'originals', title: 'STARNET ORIGINALS', note: 'Written and tested by StarNet for your keep\'s gear and tools.' },
     { id: 'community', title: 'COMMUNITY', note: 'Skills by other authors, each credited: open-source picks adapted for StarNet, and skills StarNet users shared, read by a person before they were published.' }
   ];
   var shelf = 'all';
@@ -138,7 +138,7 @@
     var originals = skills.filter(function (s) { return s.shelf === 'originals'; }).length;
     var shared = skills.filter(function (s) { return s.shelf !== 'originals' && s.uploaded === true; }).length;
     var picks = skills.length - originals - shared;
-    if (count) count.textContent = skills.length + ' skills: ' + originals + ' StarNet Originals, written for your station\'s gear, ' +
+    if (count) count.textContent = skills.length + ' skills: ' + originals + ' StarNet Originals, written for your keep\'s gear, ' +
       (shared ? picks + ' credited picks from the open-source community, and ' + shared + ' shared by StarNet users.' : 'and ' + picks + ' credited picks from the open-source community.');
     status.textContent = '';
     status.hidden = true;

@@ -56,15 +56,15 @@ const DEFERRED = ['page.screenshot', 'page.upload'];
         { capId: 'web', tool: 'page.upload', scope: 'execute', requiresConsent: false, network: true, deferred: true }
       ]
     };
-    const station = { rooms: { r: { id: 'r', objects: [{ objectType: 'computer' }, { objectType: 'dish' }] } }, agents: { a: { id: 'a', room: 'r' } } };
-    const r = resolveTools('a', station, CAP);
+    const keep = { rooms: { r: { id: 'r', objects: [{ objectType: 'computer' }, { objectType: 'dish' }] } }, agents: { a: { id: 'a', room: 'r' } } };
+    const r = resolveTools('a', keep, CAP);
     A.eq(r.tools.slice().sort(), ['page.open', 'page.screenshot', 'page.upload', 'tool.search'], 'every granted tool is still in `tools` — the gate reads this');
     A.eq(r.deferred.slice().sort(), ['page.screenshot', 'page.upload'], 'deferred names are reported separately');
     A.eq(r.hasCompute, true, 'the compute gate is unaffected');
     A.eq(r.approvalRules['page.upload'].scope, 'execute', 'a deferred tool keeps its full policy triple');
 
     // The kill-switch still wins over deferral: a disabled family grants nothing to find.
-    const off = resolveTools('a', station, CAP, { disabledCaps: new Set(['web']) });
+    const off = resolveTools('a', keep, CAP, { disabledCaps: new Set(['web']) });
     A.eq(off.tools, ['tool.search'], 'a switched-off toolset grants nothing, deferred or not');
     A.eq(off.deferred, [], 'and therefore has nothing to search for');
 

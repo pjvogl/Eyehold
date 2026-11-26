@@ -89,8 +89,8 @@ try {
   fs.unlinkSync(control);
   if (fixed) {
     await evalJS(cdp, "document.getElementById('btn-unreachable-retry').click()");
-    result.retryResumedStation = await waitDevReady(cdp, evalJS, { url: fixture.baseUrl });
-    assert.equal(result.retryResumedStation, true);
+    result.retryResumedKeep = await waitDevReady(cdp, evalJS, { url: fixture.baseUrl });
+    assert.equal(result.retryResumedKeep, true);
     // A readable remote cannot be adopted if the cache write itself fails. Keep a truthful
     // recovery state and preserve the actual browser cache (prototype injection, restored).
     result.cacheAdoption = await evalJS(cdp, `(async()=>{

@@ -17,7 +17,7 @@ const { makeNotebookTools } = require('../sidecar/tools/builtin/notebook.js');
 const { redact, rank } = require('../sidecar/context.js');
 
 function memStore() { const m = {}; return { get: k => m[k], set: (k, v) => { m[k] = v; } }; }
-function station(objs) {
+function keep(objs) {
   return {
     rooms: { quarters: { id: 'quarters', objects: objs.map((t, i) => ({ instanceId: 'q' + i, objectType: t })) } },
     agents: { ag: { id: 'ag', room: 'quarters' } }
@@ -267,7 +267,7 @@ const dcall = (name, args) => ({ id: 'c', name, args, argsRaw: JSON.stringify(ar
     const provider = makeReplayProvider(exitFixture());
     const reg = makeRegistry();
     makeNotebookTools({ store, clock: makeClock(0) }).register(reg);
-    const resolved = resolveTools('ag', station(['computer', 'notebook']));
+    const resolved = resolveTools('ag', keep(['computer', 'notebook']));
     const capCtx = makeCapCtx(resolved, { emit, consent: async () => ({ allow: true }) });
     const run = runAgentLoop({
       messages: [{ role: 'user', content: 'remember that you just came online' }], provider, emit,
@@ -315,7 +315,7 @@ const dcall = (name, args) => ({ id: 'c', name, args, argsRaw: JSON.stringify(ar
     ] });
     const reg = makeRegistry();
     makeNotebookTools({ store, clock: makeClock(0) }).register(reg);
-    const resolved = resolveTools('ag', station(['computer'])); // notebook reclaimed; computer still present
+    const resolved = resolveTools('ag', keep(['computer'])); // notebook reclaimed; computer still present
     A.ok(!canAgentUse(resolved, 'notebook.write').ok, 'notebook.write dropped after reclaim');
     const res = await runAgentLoop({
       messages: [{ role: 'user', content: 'note this' }], provider, emit, cost: makeCostEngine({ priceOf: provider.priceOf }),

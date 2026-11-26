@@ -8,7 +8,7 @@ const vm = require('node:vm');
 let journey = null, stale = true, label = { textContent: '—' };
 const ctx = vm.createContext({
   window: { __EYEHOLD_DEV__: true }, console: { log() {} }, setTimeout() {},
-  document: { getElementById: id => id === 'gt-station' ? label : null },
+  document: { getElementById: id => id === 'gt-keep' ? label : null },
   U: { bus: { emit() {} } },
   JourneyStore: { status: () => journey, state: () => ({ stale }) },
   Xp: { fresh: () => ({}), compute: () => ({ level: 77 }) }

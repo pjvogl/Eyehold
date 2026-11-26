@@ -5,12 +5,12 @@
    captures what the model is told. Proves, at the live seams:
      1. the catalog lists our originals as BUILT IN (bundled text == published version) and a market-only
         original as available
-     2. install lands the skill in the station SKILL LIBRARY, switched on
+     2. install lands the skill in the keep SKILL LIBRARY, switched on
      3. the next run's system prompt indexes it (library:<slug>) — installed means the model is told
      4. it survives a sidecar restart
      5. a download whose bytes differ from the catalog is refused and nothing installs
      6. a catalog changed under its signature is refused whole; nothing installs from it
-     7. THE KILL SWITCH: the market publishes a newer signed pulled list naming the installed skill; the station's own
+     7. THE KILL SWITCH: the market publishes a newer signed pulled list naming the installed skill; the keep's own
         background check (no request from the test) switches it off — out of the library, out of the next run's
         prompt, PULLED with the reason — and re-installing it is refused
      8. replaying the older catalog after that is refused and cannot bring the skill back
@@ -133,7 +133,7 @@ function startMock() {
       EYEHOLD_TEST_MARKET_REVOKE: TARGET, EYEHOLD_TEST_MARKET_KEY: der, SKYNET_SKILL_MARKET_PULL_MS: '1000',
       EYEHOLD_SKILL_MARKET_KEYS: JSON.stringify([{ id: 'test-market', publicKey: key.publicKey }])
     });
-    // no market request from the test: only the station's own background check can find the pull
+    // no market request from the test: only the keep's own background check can find the pull
     const t0 = Date.now(); let off = false;
     while (Date.now() - t0 < 15000) { if (!(await library()).some(s => s.slug === TARGET)) { off = true; break; } await sleep(250); }
     A.ok(off, 'the background check switched the pulled skill off by itself (' + (Date.now() - t0) + ' ms after boot)');
@@ -148,7 +148,7 @@ function startMock() {
     // ---- 8. a replayed older catalog can't bring it back ----
     await fixture.restart({ SKYNET_SKILL_MARKET_PULL_MS: '1000' });   // the fixture serves the original, older serial again
     m = await market();
-    A.ok(m.ok === false && /older than one this station already saw/.test(m.error || ''), 'the older catalog is refused: ' + m.error);
+    A.ok(m.ok === false && /older than one this keep already saw/.test(m.error || ''), 'the older catalog is refused: ' + m.error);
     await sleep(2500);   // two background checks against the older pulled list
     A.ok(!(await library()).some(s => s.slug === TARGET), 'and the skill stays off');
 

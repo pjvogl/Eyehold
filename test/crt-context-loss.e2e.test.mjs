@@ -63,7 +63,7 @@ try {
   await cdp.send('Page.enable'); await cdp.send('Runtime.enable');
   const diagnostics = collectDiagnostics(cdp);
   await cdp.send('Page.navigate', { url: appUrl });
-  check('seeded station reaches the live floor', await waitDevReady(cdp, evalJS, { url: appUrl }));
+  check('seeded keep reaches the live floor', await waitDevReady(cdp, evalJS, { url: appUrl }));
 
   let before = null;
   for (let i = 0; i < 50; i++) {
@@ -101,7 +101,7 @@ try {
   if (resolvedRoot.startsWith(tmpdir().replace(/\\/g, '/') + '/') && /eyehold-crt-loss-/.test(resolvedRoot)) {
     // Chrome's children can hold chrome_debug.log for seconds after the parent exits on a loaded
     // Windows box (2s was not enough under a full gate) — the same transient-lock window
-    // stationbake.connections.test.mjs allows, and it still fails if the lock never lifts.
+    // keepbake.connections.test.mjs allows, and it still fails if the lock never lifts.
     for (let attempt = 0; attempt < 50; attempt++) {
       try { rmSync(root, { recursive: true, force: true }); break; }
       catch (error) { if (!['EBUSY', 'EPERM', 'ENOTEMPTY'].includes(error.code) || attempt === 49) throw error; await sleep(200); }

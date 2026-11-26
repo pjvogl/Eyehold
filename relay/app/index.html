@@ -16,11 +16,11 @@
 </head>
 <body>
 <div id="deck">
-  <!-- SETUP: shown until this phone is paired with a station -->
+  <!-- SETUP: shown until this phone is paired with a keep -->
   <section id="setup" class="setup" hidden>
     <div class="brand"><span class="brand-mark">EYEHOLD</span><span class="brand-sub">REMOTE</span></div>
     <div id="setup-pairing" class="glass pad" hidden>
-      <p>Pairing with your station…</p>
+      <p>Pairing with your keep…</p>
       <p class="hint">Check that this code matches the one on your desktop:</p>
       <div class="fp" id="setup-fp">—</div>
       <div class="err-line" id="setup-err" hidden></div>
@@ -38,7 +38,7 @@
       <div class="btns"><button class="btn quiet" id="install-here" type="button">Use it in Safari instead</button></div>
     </div>
     <div id="setup-howto" class="glass pad">
-      <p>Your station runs on your computer. This phone reaches it from anywhere.</p>
+      <p>Your keep runs on your computer. This phone reaches it from anywhere.</p>
       <div class="btns fill"><button class="btn go" id="setup-paste" type="button">Paste pairing link</button></div>
       <p class="hint">No link yet? On your desktop open <b>SETTINGS → DEVICES</b>, switch Remote on, press <b>PAIR A PHONE</b> and scan the code with your camera.</p>
       <details class="manual"><summary>Type or paste it yourself</summary>
@@ -52,7 +52,7 @@
   <header class="bar" id="bar" hidden>
     <button class="icon-btn" id="back" type="button" hidden aria-label="Back"></button>
     <span class="bar-well" id="bar-well" hidden></span>
-    <span class="bar-text"><span class="bar-title" id="bar-title">STATION</span><span class="bar-sub" id="bar-sub" hidden></span></span>
+    <span class="bar-text"><span class="bar-title" id="bar-title">KEEP</span><span class="bar-sub" id="bar-sub" hidden></span></span>
     <span class="lamp" id="lamp" role="status"><i></i><span>CONNECTING</span></span>
     <button class="icon-btn" id="gear" type="button" aria-label="Settings"></button>
   </header>
@@ -65,13 +65,13 @@
     </div>
   </div>
   <nav class="tabs" id="tabs" role="tablist" hidden>
-    <button class="tab" role="tab" type="button" data-tab="station" aria-selected="true"><span class="tab-ico" data-ico="station"></span><span>Station</span><span class="n" id="n-needs" hidden></span></button>
+    <button class="tab" role="tab" type="button" data-tab="keep" aria-selected="true"><span class="tab-ico" data-ico="keep"></span><span>Keep</span><span class="n" id="n-needs" hidden></span></button>
     <button class="tab" role="tab" type="button" data-tab="sessions" aria-selected="false"><span class="tab-ico" data-ico="sessions"></span><span>Sessions</span></button>
     
   </nav>
 </div>
 
-<!-- the agent picker: a sheet that rises from the bottom, like every station window -->
+<!-- the agent picker: a sheet that rises from the bottom, like every keep window -->
 <div class="scrim" id="sheet-scrim" hidden></div>
 <section class="sheet" id="sheet" hidden aria-label="Choose an agent">
   <div class="sheet-grip"></div>
@@ -79,8 +79,8 @@
   <div class="sheet-body" id="sheet-body"></div>
 </section>
 
-<!-- the station, full screen: pinch to zoom, drag to look around -->
-<section class="viewer" id="viewer" hidden aria-label="Station view">
+<!-- the keep, full screen: pinch to zoom, drag to look around -->
+<section class="viewer" id="viewer" hidden aria-label="Keep view">
   <div class="viewer-stage" id="viewer-stage"></div>
   <div class="viewer-top">
     <span class="chip" id="viewer-stamp"></span>

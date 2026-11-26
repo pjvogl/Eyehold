@@ -165,7 +165,7 @@ function twoStagePlan() {
     const out = await api('/api/routing/triggers', 'POST', { kind: 'folder', lineId, config: { path: outside } });
     A.ok(out.status === 400 && out.j.code === 'outside', 'a folder outside home + projects is refused: ' + JSON.stringify(out.j));
     const wsFolder = await api('/api/routing/triggers', 'POST', { kind: 'folder', lineId, config: { path: ws } });
-    A.ok(wsFolder.status === 400, 'the station data folder is refused: ' + JSON.stringify(wsFolder.j));
+    A.ok(wsFolder.status === 400, 'the keep data folder is refused: ' + JSON.stringify(wsFolder.j));
     const g0 = await api('/api/routing/triggers');
     A.ok(g0.j.ok && g0.j.email && g0.j.email.available === false && g0.j.kinds.indexOf('email') < 0, 'the listing says email is not available (and offers folder + webhook only)');
 

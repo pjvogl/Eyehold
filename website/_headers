@@ -18,7 +18,7 @@
 # Skill Market (scripts/build-skill-catalog.mjs): the catalog index changes when a skill ships, so caches
 # refresh it within 5 minutes; a /skills/<slug>/<version>/ folder is never rewritten once published. The
 # pulled-skills list is the kill switch, so it refreshes within a minute. Each signature (.sig) keeps the same
-# lifetime as its document: a station verifies the pair together.
+# lifetime as its document: a keep verifies the pair together.
 /.well-known/eyehold-skills.json
   Cache-Control: public, max-age=300
   Content-Type: application/json; charset=utf-8

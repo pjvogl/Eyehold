@@ -39,7 +39,7 @@ const OPEN_REFIT = `(() => {
 })()`;
 
 const CLEAR_FLOOR = `(() => {
-  const st = Build.__test__.station();
+  const st = Build.__test__.keep();
   for (const b of st.belts()) st.removeBelt(b.x, b.y);
   const WF = { intake:1, bay:1, outbox:1, filter:1, splitter:1, merger:1 };
   for (const p of st.props().slice()) if (WF[p.t]) st.removeProp(p.id);
@@ -47,7 +47,7 @@ const CLEAR_FLOOR = `(() => {
 })()`;
 
 const findSpot = (bpId) => `(() => {
-  const st = Build.__test__.station();
+  const st = Build.__test__.keep();
   const b = st.bounds();
   for (let ty = b.minTy - 2; ty <= b.maxTy + 2; ty++)
     for (let tx = b.minTx - 2; tx <= b.maxTx + 2; tx++)
@@ -98,7 +98,7 @@ async function main() {
 
     // default text size (the shelf harness's known zoom trap) — pin + reload
     await evalJS(cdp, `(() => {
-      const KEY = 'eyehold.station.v1';
+      const KEY = 'eyehold.keep.v1';
       const r = JSON.parse(localStorage.getItem(KEY) || '{"v":1}');
       r.settings = Object.assign({}, r.settings, { textScale: 100 });
       localStorage.setItem(KEY, JSON.stringify(r));
@@ -127,7 +127,7 @@ async function main() {
     if (!spot) throw new Error('no stampable spot for sorting_office');
     const bp = { cx: spot.tx + 4, cy: spot.ty + 2 };   // 9×5 blueprint → its center tile
     const stamped = await evalJS(cdp, `(() => {
-      const st = Build.__test__.station();
+      const st = Build.__test__.keep();
       const before = st.props().length;
       const cv = document.querySelector('.refit-canvas');
       const ev = Build.__test__._tileEvent([${bp.cx}, ${bp.cy}], 0);
@@ -195,12 +195,12 @@ async function main() {
     console.log('ESC DESELECT:', escProof);
     const esc = JSON.parse(escProof);
     if (esc.armed !== 'prop' || esc.after !== 'select') throw new Error('ESC did not drop prop→select: ' + escProof);
-    const before = await evalJS(cdp, `Build.__test__.station().props().length`);
+    const before = await evalJS(cdp, `Build.__test__.keep().props().length`);
     await evalJS(cdp, clickTile(eng.x, eng.y + 1));          // click the ENGINEER bay in select mode
     await sleep(500);
     const inspectProof = await evalJS(cdp, `JSON.stringify({
       stepCardOpen: !!document.querySelector('.refit-step-card'),
-      props: Build.__test__.station().props().length
+      props: Build.__test__.keep().props().length
     })`);
     console.log('INSPECT ON CLICK:', inspectProof, '(props before:', before + ')');
     const ins = JSON.parse(inspectProof);

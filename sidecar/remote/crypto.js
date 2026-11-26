@@ -1,21 +1,21 @@
-/* sidecar/remote/crypto.js — the sealed channel between a paired phone and this station.
+/* sidecar/remote/crypto.js — the sealed channel between a paired phone and this keep.
 
-   Everything a phone and the station say to each other is sealed HERE, end to end. A relay (or anything
+   Everything a phone and the keep say to each other is sealed HERE, end to end. A relay (or anything
    else in the middle) only ever carries { seq, iv, ct } blobs it cannot open. Pure node:crypto, no deps,
    and deliberately built from primitives every phone browser has in WebCrypto (P-256 ECDH, HKDF-SHA256,
    AES-256-GCM), so the phone side is the same few calls with no library either.
 
    KEYS
-     · The station has one static P-256 key pair (made once, kept in .secrets/remote.json).
-     · Each paired phone has its own static P-256 key pair (made on the phone at pairing; the station keeps
+     · The keep has one static P-256 key pair (made once, kept in .secrets/remote.json).
+     · Each paired phone has its own static P-256 key pair (made on the phone at pairing; the keep keeps
        only its public half).
      · Each CONNECTION adds a fresh ephemeral key pair on both sides plus a random nonce from each side.
 
    HANDSHAKE (one round trip, KK-shaped)
-     phone  -> station : hello   { v, deviceId, eph: phoneEphPub, nonce: nP }
-     station-> phone   : welcome { v, eph: stationEphPub, nonce: nS }
+     phone  -> keep : hello   { v, deviceId, eph: phoneEphPub, nonce: nP }
+     keep-> phone   : welcome { v, eph: keepEphPub, nonce: nS }
      ikm  = ECDH(eS, eP) || ECDH(sS, sP)                (ephemeral-ephemeral || static-static)
-     salt = SHA-256("eyehold-remote/1" || stationPub || phonePub || ephS || ephP || nP || nS)
+     salt = SHA-256("eyehold-remote/1" || keepPub || phonePub || ephS || ephP || nP || nS)
      keys = HKDF(ikm, salt, "p2s") and HKDF(ikm, salt, "s2p")    one AES-256-GCM key per direction
    Only a holder of BOTH static keys can derive the static-static term, so a middle box that swaps the
    ephemerals derives nothing useful; the ephemeral term gives forward secrecy if a static key leaks later.
@@ -69,20 +69,20 @@ function ecdh(privateKey, publicRaw) {
 
 function newNonce() { return b64u(crypto.randomBytes(16)); }
 
-/* Derive the two directional session keys. `side` is 'station' or 'phone'; both sides call this with
+/* Derive the two directional session keys. `side` is 'keep' or 'phone'; both sides call this with
    their own private keys and the other side's publics and get byte-identical { p2s, s2p }. */
 function deriveSessionKeys(o) {
   const side = o.side;
-  if (side !== 'station' && side !== 'phone') throw new Error('side must be station or phone');
+  if (side !== 'keep' && side !== 'phone') throw new Error('side must be keep or phone');
   const ee = ecdh(o.myEphPrivate, o.peerEphPublic);
   const ss = ecdh(o.myStaticPrivate, o.peerStaticPublic);
-  const stationPub = side === 'station' ? o.myStaticPublic : o.peerStaticPublic;
+  const keepPub = side === 'keep' ? o.myStaticPublic : o.peerStaticPublic;
   const phonePub = side === 'phone' ? o.myStaticPublic : o.peerStaticPublic;
-  const ephS = side === 'station' ? o.myEphPublic : o.peerEphPublic;
+  const ephS = side === 'keep' ? o.myEphPublic : o.peerEphPublic;
   const ephP = side === 'phone' ? o.myEphPublic : o.peerEphPublic;
   const salt = crypto.createHash('sha256').update(Buffer.concat([
-    Buffer.from(LABEL), unb64u(stationPub), unb64u(phonePub), unb64u(ephS), unb64u(ephP),
-    unb64u(o.phoneNonce), unb64u(o.stationNonce)
+    Buffer.from(LABEL), unb64u(keepPub), unb64u(phonePub), unb64u(ephS), unb64u(ephP),
+    unb64u(o.phoneNonce), unb64u(o.keepNonce)
   ])).digest();
   const ikm = Buffer.concat([ee, ss]);
   const key = (info) => Buffer.from(crypto.hkdfSync('sha256', ikm, salt, Buffer.from(info), 32));

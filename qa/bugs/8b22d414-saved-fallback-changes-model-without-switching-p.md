@@ -33,7 +33,7 @@ Reported sequence: select Codex as primary, save OpenRouter model `z-ai/glm-5.3-
 
 [GitHub #12](https://github.com/Eyehold/eyehold/issues/12), read September 11, 2026; open with no comments or recovery confirmation. Reported source starts `58dc520de`.
 
-Current-source anchors: `frontend/app/stationui.js:5411` populates the fallback picker from the OpenRouter catalog and saves model strings; `sidecar/fallbackchain.js` validates string entries. `sidecar/index.js:16167` assembles model fallbacks using `fallbackModels.map(m => ({ provider, model: m }))`, retaining the primary provider instance. Explicit per-run provider fallbacks are a separate path and do not establish that Settings routes correctly.
+Current-source anchors: `frontend/app/keepui.js:5411` populates the fallback picker from the OpenRouter catalog and saves model strings; `sidecar/fallbackchain.js` validates string entries. `sidecar/index.js:16167` assembles model fallbacks using `fallbackModels.map(m => ({ provider, model: m }))`, retaining the primary provider instance. Explicit per-run provider fallbacks are a separate path and do not establish that Settings routes correctly.
 
 ## Verdict
 
@@ -41,7 +41,7 @@ Source fixed in 44c6b4952. Saved catalog fallbacks now use OpenRouter's endpoint
 
 ## Installed verification
 
-Private signed build `6e729e4cb2ca151f2ca7f280d500c86393bf0046`, workflow 34569801784, passed this scenario using the installed Node runtime and source-matched installed sidecar. The executable SHA-256 is `28bca2f1196426eec6f4afaefa5a2f5b67cbafd3b354078e889c9d262ee87366`. Controlled provider/MCP endpoints and isolated stations were used; no customer account was contacted. Exact logs and receipts: `qa/evidence/0.11.2-issues-12-13/installer-verification.json`.
+Private signed build `6e729e4cb2ca151f2ca7f280d500c86393bf0046`, workflow 34569801784, passed this scenario using the installed Node runtime and source-matched installed sidecar. The executable SHA-256 is `28bca2f1196426eec6f4afaefa5a2f5b67cbafd3b354078e889c9d262ee87366`. Controlled provider/MCP endpoints and isolated keeps were used; no customer account was contacted. Exact logs and receipts: `qa/evidence/0.11.2-issues-12-13/installer-verification.json`.
 
 ## Regression
 

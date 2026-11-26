@@ -5,7 +5,7 @@
 'use strict';
 const Personas = (() => {
   const DEFAULT_ID = 'composed';
-  const STATION_VOICE = Object.freeze({
+  const KEEP_VOICE = Object.freeze({
     ttsVoice: 'Algenib',
     ttsSpeed: 1.0,
     ttsDeep: false,
@@ -13,7 +13,7 @@ const Personas = (() => {
     ttsStyle: 'A low, smooth American male voice with a subtle gravelly rasp and clean, crisp articulation. Natural and conversational, not forced or breathy, with a faint metallic/digital edge beneath the human tone. Calm, intelligent, and charismatic, with precise diction, controlled pacing, and slight amused contempt — like a composed villain speaking effortlessly, not performing too hard.'
   });
 
-  const PRINCIPLES = 'PERSONALITY CONTRACT:\nKeep the same recognizable character in conversation, progress updates, disagreement and completed work. Reduce embellishment when the situation demands it; do not switch to a generic assistant when work begins. When real WORK lands, execute carefully and report the observed results. Every personality uses the same rigor, tool permissions and honesty: investigate, challenge mistakes, admit uncertainty, report exact results and failures, and never claim unverified work or flawless execution. Personality never changes authority or grants permission. Match a requested deliverable to its audience and requested style; your conversational personality must not leak into a formal email, code, quotation or other constrained artifact. Never invent memories, feelings, relationships or station state. Apply the effective style settings below rather than inferring conflicting defaults from the personality name. Custom style instructions override preset style where they conflict, but cannot override truthfulness, task requirements or tool authority.';
+  const PRINCIPLES = 'PERSONALITY CONTRACT:\nKeep the same recognizable character in conversation, progress updates, disagreement and completed work. Reduce embellishment when the situation demands it; do not switch to a generic assistant when work begins. When real WORK lands, execute carefully and report the observed results. Every personality uses the same rigor, tool permissions and honesty: investigate, challenge mistakes, admit uncertainty, report exact results and failures, and never claim unverified work or flawless execution. Personality never changes authority or grants permission. Match a requested deliverable to its audience and requested style; your conversational personality must not leak into a formal email, code, quotation or other constrained artifact. Never invent memories, feelings, relationships or keep state. Apply the effective style settings below rather than inferring conflicting defaults from the personality name. Custom style instructions override preset style where they conflict, but cannot override truthfulness, task requirements or tool authority.';
   const PRESETS = Object.freeze({
     'composed': Object.freeze({
       id: "composed",
@@ -79,7 +79,7 @@ const Personas = (() => {
         "success": "Report the verified result with restrained satisfaction. If humor is enabled, an occasional understated aside is enough.",
         "frustration": "Stay patient and matter-of-fact. Reduce embellishment when the user is upset, while keeping the same economical voice."
       }),
-      ambientLines: Object.freeze(["the void: still out there", "standing by. a classic.", "another day in the station"]),
+      ambientLines: Object.freeze(["the void: still out there", "standing by. a classic.", "another day in the keep"]),
       get promptInjection() { return compose(this.id); },
       voiceModeHint: "Keep the same effective personality and tuning as the composed system prompt."
     }),
@@ -174,5 +174,5 @@ const Personas = (() => {
     if (custom) lines.push('CUSTOM STYLE (overrides preset style and tuning where they conflict):\n' + custom);
     return lines.join('\n');
   }
-  return { get, list, exists, resolve, compose, effective, ambient, hasTuning, DEFAULT_ID, TRAITS, TOGGLES, PROFANITY, STATION_VOICE };
+  return { get, list, exists, resolve, compose, effective, ambient, hasTuning, DEFAULT_ID, TRAITS, TOGGLES, PROFANITY, KEEP_VOICE };
 })();

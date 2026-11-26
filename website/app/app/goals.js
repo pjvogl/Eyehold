@@ -25,7 +25,7 @@
    fold + the quest projection.
 
    Fail-open by construction: an absent goal, an empty decomposition, a malformed reply — all yield an inert tree
-   and never throw. A station with no goals.js loaded is byte-identical to before (additive-only). */
+   and never throw. A keep with no goals.js loaded is byte-identical to before (additive-only). */
 'use strict';
 (function (root, factory) {
   const api = factory();

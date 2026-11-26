@@ -41,21 +41,21 @@ const CHECK = process.argv.includes('--check');
 // Files that live ONLY in the embed. Never deleted, never taken from frontend/.
 const WEBSITE_ONLY = new Set(['demo-boot.js', 'demo.css']);
 
-// The public preview must start from the same composition as new desktop stations.
+// The public preview must start from the same composition as new desktop keeps.
 // Embed a deterministic document before browser stores boot; never maintain a second layout.
 const require = createRequire(import.meta.url);
 const starter = require('../frontend/app/worldmodel.js').starterDoc();
 starter.meta.createdAt = 0;
 const demoPath = join(DEST, 'demo-boot.js');
 const demoSource = readFileSync(demoPath, 'utf8');
-const stationAnchor = /  var DEMO_STATION = .*; \/\/ GENERATED STARTER/;
-if (!stationAnchor.test(demoSource)) throw new Error('Missing generated starter anchor in demo-boot.js');
+const keepAnchor = /  var DEMO_KEEP = .*; \/\/ GENERATED STARTER/;
+if (!keepAnchor.test(demoSource)) throw new Error('Missing generated starter anchor in demo-boot.js');
 const starterJson = JSON.stringify(starter);
 const starterRevision = 'starter-' + createHash('sha256').update(starterJson).digest('hex').slice(0, 16);
 const revisionAnchor = /  var DEMO_REV = '[^']+';/;
 if (!revisionAnchor.test(demoSource)) throw new Error('Missing demo revision anchor');
-const expectedDemo = demoSource.replace(stationAnchor,
-  '  var DEMO_STATION = ' + starterJson + '; // GENERATED STARTER')
+const expectedDemo = demoSource.replace(keepAnchor,
+  '  var DEMO_KEEP = ' + starterJson + '; // GENERATED STARTER')
   .replace(revisionAnchor, "  var DEMO_REV = '" + starterRevision + "';");
 if (expectedDemo !== demoSource) {
   if (CHECK) { console.error('website-app-sync: starter layout is stale; run npm run sync:website'); process.exit(1); }

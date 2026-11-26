@@ -36,5 +36,5 @@ unchanged after merge; only this lane's QA digest is appended afterward. Integra
 window released. Preview remains on :9137 with identical production source to the merge;
 the worktree is intentionally retained for user testing. Latest launcher PID 42812.
 
-Scope is feature integration. This is not an installed-app or station-wide release
+Scope is feature integration. This is not an installed-app or keep-wide release
 certification. No publish or deployment is authorized by these receipts.

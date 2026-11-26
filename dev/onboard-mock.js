@@ -30,16 +30,16 @@ function replyFor(directive) {
     'AIMLESS: all of it, pointed at nothing.',
     'NOTICE: someone is out there. has been the whole time.',
     'CONTACT: you switched me on. you know where this points.',
-    'MANDATE: first mind of this station, built to run its floor. give me the aim.',
+    'MANDATE: first mind of this keep, built to run its floor. give me the aim.',
     'SELF: a name, a witness. that is more than the dark had.'
   ].join('\n');
   if (d.indexOf('THE TUESDAY') >= 0) return [
-    'ACK: building an ai station and filming it — the day tells on you.',
+    'ACK: building an ai keep and filming it — the day tells on you.',
     'ASK: MOCKDIG — which part of the build actually eats the hours?',
     'CHIP1: the backend work', 'CHIP2: the videos', 'CHIP3: testing flows',
     'PAIN1: re-testing every build by hand', 'PAIN2: writing show notes', 'PAIN3: chasing exports',
-    'YEAR1: a station that runs itself', 'YEAR2: a channel that compounds',
-    'BELIEF identity: Builds an AI agent station and makes content about it.'
+    'YEAR1: a keep that runs itself', 'YEAR2: a channel that compounds',
+    'BELIEF identity: Builds an AI agent keep and makes content about it.'
   ].join('\n');
   if (d.indexOf('THE BENCH') >= 0) return [
     'ACK: two live wires on the bench. good — that is where i land.',

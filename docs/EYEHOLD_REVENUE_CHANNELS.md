@@ -1,6 +1,6 @@
 # Eyehold revenue channels
 
-The station can draft things a customer could buy. The owner decides what leaves the station. User accounts are separate from this. A signup does not create a sale.
+The keep can draft things a customer could buy. The owner decides what leaves the keep. User accounts are separate from this. A signup does not create a sale.
 
 ## What a bot may do
 

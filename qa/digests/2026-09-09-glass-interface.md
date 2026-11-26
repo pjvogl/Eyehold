@@ -23,7 +23,7 @@ Glass styles load before first paint and the body starts with the glass material
 - Separate real-sidecar journeys cover task lifecycle, stop, panel close, reload during work, rapid sends/toggles, deliverable opening and slash dispatch: 139/139 assertions, no soft failures.
 - Behavioral audit: 47/47 assertions, including a real paused permission request, the session lamp's `Approval needed` state, approval click and run resumption. The local controlled provider is deterministic; no paid model request was made.
 - Fresh-user UI flow: 6/6 steps passed in 122395 ms. It reaches the first-command model boundary; it does not claim an authenticated first deliverable.
-- The user's open seeded preview at `http://127.0.0.1:9199/` still renders, with no inspected browser warnings/errors. Existing theme, draft and station data are preserved.
+- The user's open seeded preview at `http://127.0.0.1:9199/` still renders, with no inspected browser warnings/errors. Existing theme, draft and keep data are preserved.
 
 ## Gates
 

@@ -87,7 +87,7 @@ async function drainNdjson(res) { await res.text(); }   // consume the Run Now s
     // an empty ledger is 200 {entries:[]} (a genuinely-empty log, not an error).
     const empty = await fetch(B + '/api/autonomy/ledger', { headers });
     A.eq(empty.status, 200, 'ledger route responds 200 before any decision');
-    A.eq((await empty.json()).entries.length, 0, 'a fresh station has an empty autonomy ledger');
+    A.eq((await empty.json()).entries.length, 0, 'a fresh keep has an empty autonomy ledger');
 
     const create = await fetch(B + '/api/cron', {
       method: 'POST', headers,

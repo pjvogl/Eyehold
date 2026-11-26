@@ -118,7 +118,7 @@ A.eq(PS.facings('longtable'), [0, 3], 'LONG TABLE offers ONE turn');
 A.eq(PS.footprintAt('longtable', 3), { w: 1, h: 3 }, 'a turned 3x1 table really is 1x3');
 A.eq(PS.footprintAt('chair', 3), { w: 1, h: 1 }, 'a turned chair keeps its box');
 A.eq(PS.facings('stool'), [0], 'the STOOL is round — it offers no turn at all');
-A.eq(PS.facings('desk'), [0], 'a WORKSTATION never turns (its front is load-bearing)');
+A.eq(PS.facings('desk'), [0], 'a WORKKEEP never turns (its front is load-bearing)');
 /* the COUCH deliberately does NOT turn: a west-facing sofa view was authored in an earlier lane and
    is not part of what shipped here, so the couch keeps trunk's behaviour and offers south only. */
 A.eq(PS.facings('couch'), [0], 'the COUCH offers no turn (its turned view is not part of this lane)');
@@ -211,43 +211,43 @@ const remasterPS = {
   nextFacing: (id, r, dir) => id === 'desk' ? ((r + dir) & 3) : PS.nextFacing(id, r, dir)
 };
 const boxFor = new Function('PS', 'propSpec', boxSource + '; return propBox;')(() => remasterPS, id => remasterPS.spec(id));
-function builderTurn(station, id, dir = 1) {
+function builderTurn(keep, id, dir = 1) {
   let result;
   const noop = () => {};
-  const turn = new Function('station', 'orientEv', 'orientTarget', 'canTurn', 'nextFace', 'propBox',
+  const turn = new Function('keep', 'orientEv', 'orientTarget', 'canTurn', 'nextFace', 'propBox',
     'pushFlash', 'feedback', 'sfx', 'flashTip', 'propLabel', 'FACE_WORD', turnSource + ';return turnUnderCursor;')(
-    station, () => ({ clientX: 0, clientY: 0 }), () => station.propById(id), remasterPS.canRotate,
+    keep, () => ({ clientX: 0, clientY: 0 }), () => keep.propById(id), remasterPS.canRotate,
     remasterPS.nextFacing, boxFor, noop, res => { result = res; }, noop, noop, t => t, ['south', 'west', 'north', 'east']);
   turn(dir); return result;
 }
-const savedStation = WM.create(WM.defaultDoc());
-savedStation.rooms()[0].rects = [{ x1: 0, y1: 0, x2: 12, y2: 10 }];
-const compact = savedStation.addProp({ t: 'desk', x: 1, y: 1, w: 2, h: 1, block: true });
-const neighbour = savedStation.addProp({ t: 'stool', x: 3, y: 1, w: 1, h: 1, block: true });
+const savedKeep = WM.create(WM.defaultDoc());
+savedKeep.rooms()[0].rects = [{ x1: 0, y1: 0, x2: 12, y2: 10 }];
+const compact = savedKeep.addProp({ t: 'desk', x: 1, y: 1, w: 2, h: 1, block: true });
+const neighbour = savedKeep.addProp({ t: 'stool', x: 3, y: 1, w: 1, h: 1, block: true });
 A.ok(compact.ok && neighbour.ok, 'compact saved desk has a real blocking prop beside its exact footprint');
 for (const facing of [1, 2, 3, 0]) {
-  A.ok(builderTurn(savedStation, compact.id).ok, 'compact desk turns successfully beside its neighbour');
-  const p = savedStation.propById(compact.id);
+  A.ok(builderTurn(savedKeep, compact.id).ok, 'compact desk turns successfully beside its neighbour');
+  const p = savedKeep.propById(compact.id);
   A.eq([p.w, p.h, p.r | 0], [2, 1, facing], 'upright desk changes facing without adopting catalog 3x1 size');
 }
-savedStation.undo();
-A.eq([savedStation.propById(compact.id).w, savedStation.propById(compact.id).h, savedStation.propById(compact.id).r], [2, 1, 3], 'undo restores compact size and the previous facing');
-const restoredStation = WM.create(JSON.parse(JSON.stringify(savedStation.doc())));
-A.ok(builderTurn(restoredStation, compact.id, -1).ok, 'compact saved desk remains turnable after reload');
-A.eq([restoredStation.propById(compact.id).w, restoredStation.propById(compact.id).h], [2, 1], 'reloaded upright desk still preserves its original footprint');
+savedKeep.undo();
+A.eq([savedKeep.propById(compact.id).w, savedKeep.propById(compact.id).h, savedKeep.propById(compact.id).r], [2, 1, 3], 'undo restores compact size and the previous facing');
+const restoredKeep = WM.create(JSON.parse(JSON.stringify(savedKeep.doc())));
+A.ok(builderTurn(restoredKeep, compact.id, -1).ok, 'compact saved desk remains turnable after reload');
+A.eq([restoredKeep.propById(compact.id).w, restoredKeep.propById(compact.id).h], [2, 1], 'reloaded upright desk still preserves its original footprint');
 for (const [type, x, w, h] of [['rug', 1, 4, 3], ['longtable', 7, 2, 1], ['booth', 10, 2, 1]]) {
-  const made = savedStation.addProp({ t: type, x, y: 5, w, h, block: type !== 'rug' });
+  const made = savedKeep.addProp({ t: type, x, y: 5, w, h, block: type !== 'rug' });
   A.ok(made.ok, type + ' saved plan prop is placed');
-  A.ok(builderTurn(savedStation, made.id).ok, type + ' builder turn is accepted');
-  let p = savedStation.propById(made.id);
+  A.ok(builderTurn(savedKeep, made.id).ok, type + ' builder turn is accepted');
+  let p = savedKeep.propById(made.id);
   A.eq([p.w, p.h], [h, w], type + ' rotates its actual saved floor plan');
-  A.ok(builderTurn(savedStation, made.id, -1).ok, type + ' reverse turn is accepted');
-  p = savedStation.propById(made.id);
+  A.ok(builderTurn(savedKeep, made.id, -1).ok, type + ' reverse turn is accepted');
+  p = savedKeep.propById(made.id);
   A.eq([p.w, p.h], [w, h], type + ' reverse turn restores its exact original size');
 }
-const customRug = savedStation.addProp({ t: 'rug_small', x: 7, y: 8, w: 3, h: 2, block: false });
-A.ok(customRug.ok && builderTurn(savedStation, customRug.id).ok, 'rectangular saved variant of a square catalog decal can turn');
-A.eq([savedStation.propById(customRug.id).w, savedStation.propById(customRug.id).h], [2, 3], 'square catalog dimensions do not hide a real floor-plan rotation');
+const customRug = savedKeep.addProp({ t: 'rug_small', x: 7, y: 8, w: 3, h: 2, block: false });
+A.ok(customRug.ok && builderTurn(savedKeep, customRug.id).ok, 'rectangular saved variant of a square catalog decal can turn');
+A.eq([savedKeep.propById(customRug.id).w, savedKeep.propById(customRug.id).h], [2, 3], 'square catalog dimensions do not hide a real floor-plan rotation');
 A.eq(boxFor('desk', 3), { w: 3, h: 1 }, 'new desk placement still uses the current catalog dimensions');
 A.eq(boxFor('longtable', 3), { w: 1, h: 3 }, 'new plan placement still uses the catalog turned box');
 

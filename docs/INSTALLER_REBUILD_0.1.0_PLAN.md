@@ -68,7 +68,7 @@ installer.
 - `frontend/app/interview.js`
 - `frontend/app/onboarding.js`  ← the awakening copy fix lives here
 - `frontend/app/save.js`
-- `frontend/app/stationui.js`
+- `frontend/app/keepui.js`
 - `frontend/index.html`  ← wires the new `<script>` modules below; must ship together with them
 
 **New frontend files absent from the build entirely (11):**
@@ -88,7 +88,7 @@ installer.
 - **Dossier extraction in awakening** — `a81233e` pain (Slice 6), `d1cd38a` ambition (Slice 7).
 - **First Pitch arc** (quest log + self-growing seed shelf + hardening) — `b28c727`, `6bdc48e`,
   `c16ad25`, `6ce5028`, `c221d7a`, `ad14b20`, `2c89849`.
-- **Autonomy layer** (Initiative×Reach posture engine, cadence beat + station dial, self-initiation
+- **Autonomy layer** (Initiative×Reach posture engine, cadence beat + keep dial, self-initiation
   → cron jobs) — `a997d06` (1a), `424ac16`/`4f5e34f` (1b), `2133d97` (Slice 2), `a4aa7a7` polish.
 - **Release/distribution test gates t0–t5 + replacement sweep** — `b2d53d3`, `ffcfd13`, `b219099`,
   `3994074`, `96a6c69`, `e743a0d`, `d19b694`, `30a9ff7`/`3438d56`, `a43c54d`/`7071cfe`,

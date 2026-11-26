@@ -6,7 +6,7 @@ The display applies CRT curvature and overscan after the camera transform. Input
 
 ## Live before/after
 
-Disposable seeded sidecar: http://127.0.0.1:8962, launched with node dev/seed.js --keep. No installed application files or personal station data changed.
+Disposable seeded sidecar: http://127.0.0.1:8962, launched with node dev/seed.js --keep. No installed application files or personal keep data changed.
 
 Chromium received mouse events through the real stage handlers, with the agent frozen for repeatability. The test independently projected the body through the forward render formula using curve .09 / overscan 1.2 and zoom approximately 1.15. The click callback recorded the selected agent ID.
 
@@ -20,7 +20,7 @@ Chromium received mouse events through the real stage handlers, with the agent f
 
 Raw local traces: .proof/before.json and .proof/after.json.
 
-A separate visible in-app browser used normal running simulation and the default phosphor preset (.04 curve / 1.08 overscan). A real pointer drag moved the station toward the right edge. Clicking NOVA's visible body at that off-center location opened AGENT DOSSIER with NOVA selected. The dossier was closed and the preview left open for owner testing.
+A separate visible in-app browser used normal running simulation and the default phosphor preset (.04 curve / 1.08 overscan). A real pointer drag moved the keep toward the right edge. Clicking NOVA's visible body at that off-center location opened AGENT DOSSIER with NOVA selected. The dossier was closed and the preview left open for owner testing.
 
 ## Regression coverage
 

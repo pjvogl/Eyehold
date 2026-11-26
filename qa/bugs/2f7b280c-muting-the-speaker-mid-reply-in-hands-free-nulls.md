@@ -14,7 +14,7 @@ fix: 50a8b07b
 
 ## Symptom
 
-In hands-free voice mode, the user mutes the speaker (🔊) while the agent is still speaking. Audio stops as intended — and the mic never re-opens again. The station sits at status 'online' with the mode button still reading 'voice mode: ON (hands-free) — click for push-to-talk'. The conversation is dead until the user notices and clicks the mic. The UI asserts a live hands-free loop the runtime no longer has.
+In hands-free voice mode, the user mutes the speaker (🔊) while the agent is still speaking. Audio stops as intended — and the mic never re-opens again. The keep sits at status 'online' with the mode button still reading 'voice mode: ON (hands-free) — click for push-to-talk'. The conversation is dead until the user notices and clicks the mic. The UI asserts a live hands-free loop the runtime no longer has.
 
 ## Repro
 

@@ -7,12 +7,12 @@
    screenshot.
 
    This module is tiny and dependency-free ON PURPOSE — it must work when everything after it is broken:
-     1. installs capture-phase `error` (runtime errors AND station-owned <script> load failures — a resource
+     1. installs capture-phase `error` (runtime errors AND keep-owned <script> load failures — a resource
         error does not bubble, so capture on window is the only place that sees a 404'd script) +
         `unhandledrejection` listeners and keeps bounded counts/tails since page load. Counts only — no secrets
-        are read, ever. Hosting layers may inject unrelated scripts; those cannot define station boot health;
+        are read, ever. Hosting layers may inject unrelated scripts; those cannot define keep boot health;
      2. after DOMContentLoaded (every classic <script> has run by then) probes the ~dozen module globals without
-        which the station is unusable. The probes are LITERAL `typeof X` expressions: these modules are `const`
+        which the keep is unusable. The probes are LITERAL `typeof X` expressions: these modules are `const`
         IIFEs (global lexical bindings, invisible on window.*), and the desktop CSP forbids eval/new Function;
      3. only if a critical global is missing OR a <script> failed to load does it render the fatal banner — matte
         CRT chrome in the app's own vocabulary, naming the file, with COPY DIAGNOSTICS + RELOAD. A healthy boot
@@ -51,7 +51,7 @@
   const RELOAD_MAX = 2;                                 // a flapping engine gets the banner, never a reload loop
 
   /* THE CRITICAL SET — module global → the file that defines it. Chosen from what app.js already guards with
-     `typeof X !== 'undefined'`: with any one of these missing the station cannot boot, save, render, or talk.
+     `typeof X !== 'undefined'`: with any one of these missing the keep cannot boot, save, render, or talk.
      Literal typeofs (see header). Adding one here = declaring "the app is unusable without it". */
   const PROBES = [
     ['U',          'js/util.js',           () => typeof U],
@@ -59,7 +59,7 @@
     ['Save',       'app/save.js',          () => typeof Save],
     ['CloudSave',  'app/cloudsave.js',     () => typeof CloudSave],
     ['World',      'app/world.js',         () => typeof World],
-    ['StationUI',  'app/stationui.js',     () => typeof StationUI],
+    ['KeepUI',  'app/keepui.js',     () => typeof KeepUI],
     ['Chat',       'app/chat.js',          () => typeof Chat],
     ['Channels',   'app/channels.js',      () => typeof Channels],
     ['Personas',   'app/personas.js',      () => typeof Personas],
@@ -75,8 +75,8 @@
     s = String(s || '').replace(/^[a-z][a-z0-9+.-]*:\/\/[^/]*/i, '').replace(/[?#].*$/, '');
     return s.replace(/^\/+/, '') || '(inline)';
   }
-  function isStationScript(s) {
-    // Every authored station module lives below one of these three roots. Public hosts may append their own
+  function isKeepScript(s) {
+    // Every authored keep module lives below one of these three roots. Public hosts may append their own
     // analytics/challenge scripts (for example Cloudflare's /beacon.min.js); a blocked optional host script is
     // not evidence that Eyehold failed to boot. Keep the allowlist structural so real app/shared 404s remain loud.
     return /^(?:app|js|shared)\//.test(shortPath(s));
@@ -152,7 +152,7 @@
         // a RESOURCE failure (capture phase). Only <script> is a boot fault — an <img>/<audio> that 404s is cosmetic.
         const src = t.src || t.getAttribute && t.getAttribute('src');
         if (String(t.tagName).toUpperCase() === 'SCRIPT' && isRetryElement(t)) return;   // a retry's own miss is handled by its onerror
-        if (String(t.tagName).toUpperCase() === 'SCRIPT' && isStationScript(src)) {
+        if (String(t.tagName).toUpperCase() === 'SCRIPT' && isKeepScript(src)) {
           state.scriptFailures++;
           push(state.scripts, shortPath(src));
           if (isSharedScript(src) && canRetry()) scheduleRetry(src);
@@ -191,7 +191,7 @@
   /* ---- 3. the report + the banner ---- */
   /* AN OUTDATED WEB ENGINE is not a broken file. macOS 10.15 (Safari 13 WebKit, 2026-10-08 report) parsed the bundle
      into four SyntaxError/TypeErrors — regex lookbehind, class fields, replaceChildren, MediaQueryList listeners —
-     and the banner said "a broken or blocked file", which RELOAD can never fix. The station code needs regex
+     and the banner said "a broken or blocked file", which RELOAD can never fix. The keep code needs regex
      lookbehind (Safari 16.4 WebKit); on macOS the app window uses the SYSTEM WebKit, which only updates with
      Safari / macOS. Two literal feature probes (the CSP forbids eval, not `new RegExp`) name the real cause. */
   function webviewTooOld() {
@@ -253,13 +253,13 @@
     const head = doc.createElement('div'); head.className = 'bgf-head';
     const old = webviewTooOld();
     const mac = isMacUA();
-    head.textContent = old ? (mac ? '▮ EYEHOLD NEEDS A NEWER macOS' : '▮ EYEHOLD NEEDS A NEWER WEB ENGINE') : '▮ STATION FAILED TO BOOT';
+    head.textContent = old ? (mac ? '▮ EYEHOLD NEEDS A NEWER macOS' : '▮ EYEHOLD NEEDS A NEWER WEB ENGINE') : '▮ KEEP FAILED TO BOOT';
     const lead = doc.createElement('div'); lead.className = 'bgf-lead';
     lead.textContent = old
       ? (mac
-        ? 'this Mac’s built-in web engine is too old to run Eyehold. Eyehold needs macOS 11 Big Sur or later with Safari 16.4 or newer — macOS 13.3 Ventura or later works out of the box. nothing is broken and your station is untouched: update macOS (or Safari) in System Settings, then reopen Eyehold.'
-        : 'this computer’s web engine is too old to run Eyehold (it has no regular-expression lookbehind). nothing is broken and your station is untouched: update the system web engine (WebKitGTK on Linux, WebView2 on Windows), then reopen Eyehold.')
-      : 'the app window loaded, but a required module did not. this is a broken or blocked file, not your station — your saved station has not been changed by this screen.';
+        ? 'this Mac’s built-in web engine is too old to run Eyehold. Eyehold needs macOS 11 Big Sur or later with Safari 16.4 or newer — macOS 13.3 Ventura or later works out of the box. nothing is broken and your keep is untouched: update macOS (or Safari) in System Settings, then reopen Eyehold.'
+        : 'this computer’s web engine is too old to run Eyehold (it has no regular-expression lookbehind). nothing is broken and your keep is untouched: update the system web engine (WebKitGTK on Linux, WebView2 on Windows), then reopen Eyehold.')
+      : 'the app window loaded, but a required module did not. this is a broken or blocked file, not your keep — your saved keep has not been changed by this screen.';
     const list = doc.createElement('ul'); list.className = 'bgf-list';
     why.forEach(w => { const li = doc.createElement('li'); li.textContent = w; list.appendChild(li); });
     const pre = doc.createElement('pre'); pre.className = 'bgf-pre'; pre.textContent = report();
@@ -306,6 +306,6 @@
     state: () => state,
     installed, summaryLine, report, check, render, verify,
     PROBES: PROBES.map(p => ({ name: p[0], file: p[1] })),
-    _internals: { webviewTooOld, onError, onRejection, shortPath, isStationScript, isSharedScript, reasonText, PROBES, RETRY_WAITS, RELOAD_MAX }
+    _internals: { webviewTooOld, onError, onRejection, shortPath, isKeepScript, isSharedScript, reasonText, PROBES, RETRY_WAITS, RELOAD_MAX }
   };
 });

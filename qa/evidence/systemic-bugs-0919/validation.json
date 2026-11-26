@@ -52,7 +52,7 @@
     "frontend/app/harness.js": "bdd1f46f527f2dd11d76d86c04c656044ad55f9eef2730188f83cc18b71d69fe",
     "frontend/app/marketplace.js": "082a7c77da177200a78b8423c869c7308935715565d37279a9a9ac986494fb4d",
     "frontend/app/permissionsstore.js": "fd14692a5aa1b95328ddd031b40f2feecd286287b9b8c99555a2cb8158dfd867",
-    "frontend/app/stationui.js": "5649ce6a9970d7746f856734bd10665890088fd92cfec9facfde1f5cdedccff9",
+    "frontend/app/keepui.js": "5649ce6a9970d7746f856734bd10665890088fd92cfec9facfde1f5cdedccff9",
     "frontend/app/windows/messaging.js": "94a7d7efe8e53f377dc259d8f9d7da755f7351d08c34bd0290381df550cb8b08",
     "test/durable-store-faults.test.js": "b06789bd1926364f2ad9108897b6c76b3c23c77be05b051c8d0b91bc4ba9fd14",
     "test/durable-store-faults.http.test.js": "10c7262097978817773235d82d4d85b74eb77e8388d6c36c419c5be142a12f47",

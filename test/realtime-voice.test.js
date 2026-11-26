@@ -17,7 +17,7 @@ const {
   assert.deepEqual(config.output_modalities, ['audio']);
   assert.equal(config.audio.input.turn_detection.type, 'semantic_vad');
   assert.equal(config.audio.input.turn_detection.interrupt_response, true);
-  // Male by default — the written station voice is a low American male and the crew sprites read male.
+  // Male by default — the written keep voice is a low American male and the crew sprites read male.
   assert.equal(config.audio.output.voice, 'ash');
   // …but the voice is a CHOICE: a requested one must be honoured, and an unknown one must fall back to the
   // default rather than being passed through into the session payload.

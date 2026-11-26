@@ -20,11 +20,11 @@ recovery: unconfirmed
 
 ## Symptom
 
-The 0.12.0 installer shows the old station materials and props although the graphical refresh is merged.
+The 0.12.0 installer shows the old keep materials and props although the graphical refresh is merged.
 
 ## Repro
 
-1. Install candidate `fd55ee2b2` and open the station with the default graphics settings.
+1. Install candidate `fd55ee2b2` and open the keep with the default graphics settings.
 2. Attach to the installed WebView and await `IndustrialTextures.ready` and `PropRemaster.ready`.
 3. Observe `IndustrialTextures.status()`: requested true, loaded false, failed calibration/crate. The document reports texturePack=fallback and textureRevision=native.
 

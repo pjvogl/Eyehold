@@ -2,7 +2,7 @@
 
    User report, 2026-08-24: the world viewport FULLY black — no agents, no props — HUD chrome
    alive, every 10-20 minutes, permanent until an app restart. That is a DIFFERENT mode from
-   the 08-15 black station (test/canvas-loss-recovery.test.js): there, the offscreen plates
+   the 08-15 black keep (test/canvas-loss-recovery.test.js): there, the offscreen plates
    died and the stage kept drawing agents+props (~15% of pixels survived). Here NOTHING
    survives, which only one mechanism produces: the visible stage canvas's own 2D context is
    dead, so every draw call is a silent no-op. preventDefault() on 'contextlost' asks for a

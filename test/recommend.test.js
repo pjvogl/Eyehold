@@ -71,7 +71,7 @@ A.ok(Recommend.MOD_CAP * 2 < Recommend.BAND_GAP_MIN,
 /* ── 4a. A READING IS A NUMBER OR IT IS NOTHING (fail-open for EVERY non-numeric shape, 2026-08-04) ──
    The old denylist ('' / null / boolean) still let `' '`, `[]` and `[0]` through Number() as a hard 0 — the
    identical bug one shape further out, and a hard 0 in `strength` is the FULL thin-evidence penalty applied to a
-   field the station simply failed to read. recquality.js num() is the same predicate. */
+   field the keep simply failed to read. recquality.js num() is the same predicate. */
 {
   const flat = { kind: 'seed', why: 'x' };
   for (const junk of [' ', '', '  \n', [], [0], [1], {}, false, true, null, undefined, NaN, Infinity, new Date(0), 'abc'])
@@ -116,12 +116,12 @@ const goodRoutine = { kind: 'routine', why: 'you’ve launched the digest 4 time
 A.eq(Recommend.pick([dudSuggest, goodRoutine]).kind, 'routine',
   'a channel with a real record of duds loses its rank lead to one with a real record of hits');
 A.eq(Recommend.pick([{ kind: 'suggest', why: 'a' }, { kind: 'routine', why: 'b' }]).kind, 'suggest',
-  '…and with NOTHING known about either, the rank order is the tie-bias (a cold station is unchanged)');
+  '…and with NOTHING known about either, the rank order is the tie-bias (a cold keep is unchanged)');
 // thin evidence speaks later than well-corroborated evidence in the same band
 A.eq(Recommend.pick([{ kind: 'seed', why: 'a', strength: 0.05 }, { kind: 'routine', why: 'b', strength: 1 }]).kind, 'routine',
   'a one-off seed shape loses to a well-grounded routine nudge in the same band');
 // THE SPINE-ERA VOI PROMOTION, locked for real this time: a blank high-weight dimension makes the get-to-know-you
-// question the most valuable thing the station can say, and it beats a recruit pitch it normally sits below.
+// question the most valuable thing the keep can say, and it beats a recruit pitch it normally sits below.
 const voiRead = { dims: { goals: { weight: 1, conf: 0 } } };
 A.eq(Recommend.pick([{ kind: 'recruit', why: 'your crew has no researcher' }, { kind: 'curiosity', why: 'i still don’t know your goals', dim: 'goals' }], voiRead).kind,
   'curiosity', 'a maximum-VOI question outranks the recruit pitch above it (the promotion the clamp had silently killed)');
@@ -203,7 +203,7 @@ const recBody = chatSrc.slice(iRecCard, iRecCard + 2600);
 A.ok(/rec-eyebrow/.test(recBody) && /rec-glyph/.test(recBody), 'the card leads with the eyebrow, glyph boxed on its own');
 // the eyebrow NAMES the noticer — every caller passes none, so a bare 'NOTICED' dropped the agent's identity
 A.ok(/name \? String\(name\)\.toUpperCase\(\) \+ ' NOTICED' : 'NOTICED'/.test(recBody),
-  'the eyebrow reads “◈ <AGENT> NOTICED” — the station has a name, and the card says it');
+  'the eyebrow reads “◈ <AGENT> NOTICED” — the keep has a name, and the card says it');
 A.ok(recBody.indexOf('rec-evidence') < recBody.indexOf("className = 'turnin-text'"),
   'the EVIDENCE line is rendered BEFORE the proposal (noticed → because → propose)');
 A.ok(recBody.indexOf("className = 'turnin-text'") < recBody.indexOf("className = 'consent-btns'"),
@@ -256,20 +256,20 @@ A.ok(/prop\.speaker === 'user'/.test(A.fnBody(chatSrc, 'function threadCiteKind(
   'a mined thread claims speech only when threadmine located the quote in the Commander’s own turns');
 /* …and a DOSSIER belief is cited by ITS recorded provenance, so the arc and the re-confirm card can no longer
    render a study-OBSERVED goal as words the Commander spoke (that is the exact mis-attribution above, on the one
-   card whose whole subject is whether the station's memory can be trusted). */
+   card whose whole subject is whether the keep's memory can be trusted). */
 const citeKindBody = A.fnBody(chatSrc, 'function beliefCiteKind(');
 A.ok(citeKindBody.length > 0, 'chat.js derives a belief’s citation kind from the belief itself');
 A.ok(/w === 'stated' \|\| src === 'commander'/.test(citeKindBody), 'only Commander-authored evidence may be rendered as speech');
 A.ok(/return '';/.test(citeKindBody), 'an observed / synthesised / seeded belief falls back to the neutral quote that claims no speaker');
 /* …and the two provenance holes the re-sweep found in that predicate (2026-08-04):
      · source:'curiosity' was a blanket "you said" — but a CANNED CHIP tap lands as weight:'seed'
-       (interview.js beliefFromAnswer), i.e. the station's own sentence read back as the Commander's words. A
+       (interview.js beliefFromAnswer), i.e. the keep's own sentence read back as the Commander's words. A
        TYPED answer is already 'stated', so the clause bought nothing and cost the truth.
-     · CONFIRMED must be checked BEFORE stated/commander: the re-confirm card upgrades a station-authored belief
+     · CONFIRMED must be checked BEFORE stated/commander: the re-confirm card upgrades a keep-authored belief
        to commander/stated (truthfully — an affirmation IS a statement of the content), so without the earlier
        check every later card would quote words the Commander never spoke. */
 A.eq(/src === 'curiosity'/.test(citeKindBody), false,
-  'a curiosity answer is NOT blanket-quoted as speech — a canned chip tap is the station’s own sentence');
+  'a curiosity answer is NOT blanket-quoted as speech — a canned chip tap is the keep’s own sentence');
 A.ok(/if \(ref === 'confirmed'\) return 'confirmed';/.test(citeKindBody),
   'an AFFIRMED belief cites the affirmation, never authorship');
 A.ok(citeKindBody.indexOf("ref === 'confirmed'") < citeKindBody.indexOf("w === 'stated'"),

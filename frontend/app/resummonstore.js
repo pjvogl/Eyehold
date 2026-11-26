@@ -1,6 +1,6 @@
 /* EYEHOLD — resummonstore.js : P3.1 "RUN THIS AGAIN?" — the re-summon signal.
 
-   Retention fast-follow: right after the Commander rated the hero's work 👍 on a real interactive run, the station
+   Retention fast-follow: right after the Commander rated the hero's work 👍 on a real interactive run, the keep
    offers ONCE, lightly, to run that same shape of work again — tied to the SAME agent and the run's directive. One
    tap PRE-FILLS a fresh run (selects that agent's stream + seeds the composer with the directive) and NEVER auto-runs
    it: the Commander edits and sends. It is not a new unearned suggestion surface — it rides a run the Commander just
@@ -27,7 +27,7 @@ const ResummonStore = (() => {
   const KEY = 'eyehold.resummon.v1';      // the per-run decision denylist (re-summoned/dismissed) — self-persisted
   const RETRY_MS = 7000;                  // blocked-offer retry cadence (bounded), cloned from bottlestore/away-digest
   const SETTLE_MS = 900;                  // let the rate control vanish before the offer slots in (bottlestore SETTLE)
-  const MAX_DECIDED = 200;                // cap the persisted ledger (FIFO) so a long-lived station can't grow it forever
+  const MAX_DECIDED = 200;                // cap the persisted ledger (FIFO) so a long-lived keep can't grow it forever
   let state = null;                       // { v:1, decided: { [runId]: 'again'|'dismissed' } }
   let deps = {};                          // { runInfo(runId), prefillRun({agentId, directive}) } injected by app.js
   let wired = false;
@@ -137,7 +137,7 @@ const ResummonStore = (() => {
     wired = true;
   }
 
-  // S2/new-hero: a fresh station re-earns every re-summon offer. Own key (like bottlestore.reset()).
+  // S2/new-hero: a fresh keep re-earns every re-summon offer. Own key (like bottlestore.reset()).
   function reset() { state = hydrate(null); try { localStorage.removeItem(KEY); } catch (_) {} }
 
   // onVerdict is public: chat.js rateWork hands its direct (never-on-the-bus) verdict here.

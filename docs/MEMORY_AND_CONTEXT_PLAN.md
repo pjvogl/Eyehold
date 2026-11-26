@@ -56,7 +56,7 @@ Decided with andro after mapping the real the reference harness source:
 
 **Bet 1 — "Living" core memory (fixes the reference harness's frozen-snapshot rigidity).** A small curated core block (`PROFILE` + `LEARNED`) lives in the *cached* system prefix, frozen **per run** so the cache stays warm across the loop's turns — **but** a tiny append-only "written-this-run" delta rides the `<recalled-memory>` fence after the cache boundary, so the agent can immediately use a fact it wrote 30 seconds ago. Cache stays warm on ~95% of the prompt. the reference harness structurally cannot do this.
 
-**Bet 2 — Truthful, provenance-tracked, *visible* memory (the moat).** Every record carries `{sourceRunId, createdAt, lastUsedAt, useCount, trust, pinned}`. A "Memory Core" panel (reusing the `stationui.js` window system) shows every belief, its provenance + trust, and lets the user pin / edit / forget. Drill any fact → the run that earned it. No other harness surfaces this.
+**Bet 2 — Truthful, provenance-tracked, *visible* memory (the moat).** Every record carries `{sourceRunId, createdAt, lastUsedAt, useCount, trust, pinned}`. A "Memory Core" panel (reusing the `keepui.js` window system) shows every belief, its provenance + trust, and lets the user pin / edit / forget. Drill any fact → the run that earned it. No other harness surfaces this.
 
 **Bet 3 — Auto-consolidation as a game beat (fixes under-saving).** A cheap *injected* post-run reflection fn reads the run's frozen event log and emits `memory.proposed` candidates → a **turn-in beat** (Keep/Edit/Discard). Solves under-saving, keeps the human in the loop, makes memory formation a *verb*. the reference harness has no auto-formation.
 

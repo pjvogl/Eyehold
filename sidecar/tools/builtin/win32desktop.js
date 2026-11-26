@@ -7,7 +7,7 @@
 'use strict';
 
 const CP = require('../../child-env.js').guardChildProcess(require('node:child_process'));
-const { stationChildEnv } = require('../../child-env.js');
+const { keepChildEnv } = require('../../child-env.js');
 
 const POWERSHELL = String.raw`
 $ErrorActionPreference = 'Stop'
@@ -97,8 +97,8 @@ function makeWin32DesktopDriver(opts) {
   const platform = opts.platform || process.platform;
   if (platform !== 'win32') return null;
   const execFile = opts.execFile || CP.execFile;
-  // no station secrets in the PowerShell helper's env (child-env.js); built per call so it tracks live keys
-  const baseEnv = () => opts.env || stationChildEnv(process.env);
+  // no keep secrets in the PowerShell helper's env (child-env.js); built per call so it tracks live keys
+  const baseEnv = () => opts.env || keepChildEnv(process.env);
   const timeoutMs = Number(opts.timeoutMs) || 20000;
   function invoke(payload) {
     return new Promise((resolve, reject) => {

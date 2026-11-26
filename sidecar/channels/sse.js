@@ -2,7 +2,7 @@
 
    The sidecar already validates + redacts every channel.* / workitem.* / queue.* event before it
    reaches chanBus.emit; this hub forwards each of those to every open browser EventSource so the
-   live station world can animate them (a box riding the belt, a queue-depth gauge). It is the
+   live keep world can animate them (a box riding the belt, a queue-depth gauge). It is the
    browser-facing half of the bridge the index.js comment reserved.
 
    Pure + testable: a "client" is any object with a .write(string) method (an http ServerResponse
@@ -71,7 +71,7 @@ function runTeeView(name, payload) {
 // reader drains far below it; only a truly stuck socket ever gets here.
 const SSE_MAX_BUFFER_BYTES = 4 * 1024 * 1024;
 
-// EventSource deliberately hides SSE comment lines from JavaScript. The station uses receipt of a
+// EventSource deliberately hides SSE comment lines from JavaScript. The keep uses receipt of a
 // MessageEvent as its proof that the live telemetry link is still carrying bytes, so the idle
 // keepalive must be a DATA frame. An empty object is valid JSON but has neither a product-event
 // `name` nor `payload`; world.js refreshes its link clock and then emits nothing to U.bus.
@@ -131,7 +131,7 @@ function makeSseHub(options) {
     const line = 'id: ' + epoch + ':' + (++sequence) + '\n' + format(name, payload);
     // Commands may already have timed out or executed. Reconnect restores observations,
     // never retries a renderer mutation. Keep a sequence tombstone so cursors remain valid.
-    const replayable = name !== 'station.command';
+    const replayable = name !== 'keep.command';
     const length = replayable ? Buffer.byteLength(line, 'utf8') : 0;
     history.push({ sequence, frame: replayable ? line : null, bytes: length }); bytes += length;
     while (history.length && (history.length > maxEvents || bytes > maxBytes)) bytes -= history.shift().bytes;

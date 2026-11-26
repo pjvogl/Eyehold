@@ -1,19 +1,19 @@
-/* sidecar/remote/devices.js — this station's remote identity and the phones allowed to reach it.
+/* sidecar/remote/devices.js — this keep's remote identity and the phones allowed to reach it.
 
    One protected file, WORKSPACES/.secrets/remote.json (a sibling of the fs jail, 0600 where the OS has modes):
-     { v:1, station:{ id, privateKey, publicKey, createdAt },
+     { v:1, keep:{ id, privateKey, publicKey, createdAt },
        devices:[ { id, name, publicKey, createdAt, lastSeenAt } ],
        enabled: false }
    Pairing codes live in MEMORY only: a restart forgets an unused code, which is the safe direction.
 
      const d = makeDevices({ fs, path, file, crypto, now, newId, tighten })
-     d.stationKeys()                          -> { id, privateKey:KeyObject, publicRaw }   (made on first use, persisted)
+     d.keepKeys()                          -> { id, privateKey:KeyObject, publicRaw }   (made on first use, persisted)
      d.list() / d.get(id)                     -> public device rows (never a private key; phones have none here)
-     d.startPairing({ name? })                -> { pairingId, code, stationId, stationPub, fingerprint, expiresAt }
+     d.startPairing({ name? })                -> { pairingId, code, keepId, keepPub, fingerprint, expiresAt }
      d.completePairing({ pairingId, publicKey, name, proof }) -> { ok, device } | { ok:false, error }
      d.revoke(id) -> bool     d.touch(id)     d.setEnabled(bool) / d.enabled()
      d.issueRelayToken(id)                    -> { ok, token }   the phone's pass to knock at the relay (only its hash is kept)
-     d.relayTokenHashes()                     -> [hash]          what the station tells the relay to admit
+     d.relayTokenHashes()                     -> [hash]          what the keep tells the relay to admit
 
    Laws:
      · A pairing code is single use, expires in 10 minutes, and burns after 5 wrong proofs.
@@ -45,7 +45,7 @@ function makeDevices(deps) {
   const randomBytes = deps.randomBytes || require('crypto').randomBytes;
   const tighten = typeof deps.tighten === 'function' ? deps.tighten : () => {};
   let state = null;          // loaded lazily
-  let stationCache = null;   // { id, privateKey:KeyObject, publicRaw }
+  let keepCache = null;   // { id, privateKey:KeyObject, publicRaw }
   const pairings = new Map();
 
   function load() {
@@ -55,7 +55,7 @@ function makeDevices(deps) {
     const v = (r.value && typeof r.value === 'object') ? r.value : {};
     state = {
       v: 1,
-      station: v.station && v.station.privateKey ? v.station : null,
+      keep: v.keep && v.keep.privateKey ? v.keep : null,
       devices: Array.isArray(v.devices) ? v.devices.filter(d => d && d.id && d.publicKey) : [],
       enabled: v.enabled === true
     };
@@ -68,26 +68,26 @@ function makeDevices(deps) {
       save: () => writeJsonResilient({ fs, path: pathMod }, file, next),
       load: () => readJsonResilient({ fs }, file).value,
       proof: (rb) => !!rb && JSON.stringify(rb.devices || []) === JSON.stringify(next.devices)
-        && ((rb.station && rb.station.publicKey) || null) === ((next.station && next.station.publicKey) || null)
+        && ((rb.keep && rb.keep.publicKey) || null) === ((next.keep && next.keep.publicKey) || null)
         && (rb.enabled === true) === (next.enabled === true)
     });
     if (res.ok) { state = next; try { tighten(); } catch (e) { note('remote.devices.tighten', e); } }
     return res;
   }
 
-  function stationKeys() {
-    if (stationCache) return stationCache;
+  function keepKeys() {
+    if (keepCache) return keepCache;
     const s = load();
-    if (s.station) {
-      stationCache = { id: s.station.id, privateKey: C.importPrivate(s.station.privateKey), publicRaw: s.station.publicKey };
-      return stationCache;
+    if (s.keep) {
+      keepCache = { id: s.keep.id, privateKey: C.importPrivate(s.keep.privateKey), publicRaw: s.keep.publicKey };
+      return keepCache;
     }
     const kp = C.generateKeyPair();
-    const station = { id: 'stn_' + newId().replace(/-/g, '').slice(0, 20), privateKey: C.exportPrivate(kp.privateKey), publicKey: kp.publicRaw, createdAt: now() };
-    const res = persist(Object.assign({}, s, { station }));
-    if (!res.ok) throw new Error('could not save the station key: ' + res.error);
-    stationCache = { id: station.id, privateKey: kp.privateKey, publicRaw: kp.publicRaw };
-    return stationCache;
+    const keep = { id: 'stn_' + newId().replace(/-/g, '').slice(0, 20), privateKey: C.exportPrivate(kp.privateKey), publicKey: kp.publicRaw, createdAt: now() };
+    const res = persist(Object.assign({}, s, { keep }));
+    if (!res.ok) throw new Error('could not save the keep key: ' + res.error);
+    keepCache = { id: keep.id, privateKey: kp.privateKey, publicRaw: kp.publicRaw };
+    return keepCache;
   }
 
   function publicRow(d) { return { id: d.id, name: d.name, createdAt: d.createdAt, lastSeenAt: d.lastSeenAt || null, fingerprint: C.fingerprint(d.publicKey), askFirst: d.askFirst === true }; }
@@ -98,13 +98,13 @@ function makeDevices(deps) {
 
   function startPairing(o) {
     sweepPairings();
-    const st = stationKeys();
+    const st = keepKeys();
     const bytes = randomBytes(CODE_LEN);
     let code = '';
     for (let i = 0; i < CODE_LEN; i++) code += CODE_ALPHABET[bytes[i] % CODE_ALPHABET.length];
     const p = { pairingId: 'pr_' + newId().replace(/-/g, '').slice(0, 16), code, name: cleanName(o && o.name), expiresAt: now() + PAIR_TTL_MS, tries: 0, used: false };
     pairings.set(p.pairingId, p);
-    return { pairingId: p.pairingId, code, stationId: st.id, stationPub: st.publicRaw, fingerprint: C.fingerprint(st.publicRaw), expiresAt: p.expiresAt };
+    return { pairingId: p.pairingId, code, keepId: st.id, keepPub: st.publicRaw, fingerprint: C.fingerprint(st.publicRaw), expiresAt: p.expiresAt };
   }
 
   function completePairing(o) {
@@ -160,8 +160,8 @@ function makeDevices(deps) {
     persist(Object.assign({}, s, { devices }));
   }
 
-  // A relay pass is not a key: it only lets a phone reach the relay's switchboard for this station. The sealed
-  // channel still needs the phone's private key. The station keeps a SHA-256 of it, the relay a copy of that hash.
+  // A relay pass is not a key: it only lets a phone reach the relay's switchboard for this keep. The sealed
+  // channel still needs the phone's private key. The keep keeps a SHA-256 of it, the relay a copy of that hash.
   function tokenHash(token) { return C.b64u(require('crypto').createHash('sha256').update(String(token)).digest()); }
   function issueRelayToken(id) {
     const s = load();
@@ -177,7 +177,7 @@ function makeDevices(deps) {
   function enabled() { return load().enabled === true; }
   function setEnabled(on) { const s = load(); const res = persist(Object.assign({}, s, { enabled: on === true })); return res.ok ? { ok: true } : { ok: false, error: res.error }; }
 
-  return { stationKeys, list, get, startPairing, completePairing, revoke, askFirst, setAskFirst, touch, enabled, setEnabled, issueRelayToken, relayTokenHashes, tokenHashOf, _pairings: pairings };
+  return { keepKeys, list, get, startPairing, completePairing, revoke, askFirst, setAskFirst, touch, enabled, setEnabled, issueRelayToken, relayTokenHashes, tokenHashOf, _pairings: pairings };
 }
 
 module.exports = { makeDevices, CODE_ALPHABET, PAIR_TTL_MS, PAIR_MAX_TRIES };

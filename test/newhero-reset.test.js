@@ -22,14 +22,14 @@ const enter = src.indexOf('enterGame(', i);
 A.ok(enter > i, 'onWake reaches enterGame() (the new-hero path)');
 const seg = src.slice(i, enter);
 
-for (const store of ['PitchStore', 'SuggestStore', 'SeedStore', 'CuriosityStore', 'MintStore', 'AutonomyStore', 'AutoJobStore', 'AutopilotStore', 'PermissionsStore', 'QuestStateStore', 'ReturnStore', 'PrideStore', 'ConfBeats', 'StationQuestStore']) {
+for (const store of ['PitchStore', 'SuggestStore', 'SeedStore', 'CuriosityStore', 'MintStore', 'AutonomyStore', 'AutoJobStore', 'AutopilotStore', 'PermissionsStore', 'QuestStateStore', 'ReturnStore', 'PrideStore', 'ConfBeats', 'KeepQuestStore']) {
   A.ok(new RegExp('\\b' + store + '\\.reset\\(\\)').test(seg),
     'new-hero onWake resets ' + store + ' — no prior-Commander state bleeds into a fresh agent');
 }
 
 // Permission lockdown is an authority gate, not one more best-effort cache reset. It must finish before the
-// new hero assignment (the commit point); otherwise a failed durable revoke leaves a half-reset station and
-// lets the fresh Commander inherit the previous station's cabinet:write grant.
+// new hero assignment (the commit point); otherwise a failed durable revoke leaves a half-reset keep and
+// lets the fresh Commander inherit the previous keep's cabinet:write grant.
 const permissionsReset = seg.indexOf('await PermissionsStore.reset()');
 const heroCommit = seg.indexOf("agent = { id: 'agent'");
 const autonomyReset = seg.indexOf('await AutonomyStore.reset()');
@@ -39,7 +39,7 @@ A.ok(permissionsReset >= 0 && heroCommit >= 0 && permissionsReset < heroCommit,
   'new-hero permission lockdown completes before the hero/state commit point');
 const savedResume = seg.indexOf('if (resumingSaved)');
 A.ok(savedResume >= 0 && savedResume < permissionsReset,
-  'saved-station resume returns before new-hero lockdown and keeps its existing grants');
+  'saved-keep resume returns before new-hero lockdown and keeps its existing grants');
 const journeyReset = seg.indexOf('await JourneyStore.reset(newCommanderEpoch)');
 A.ok(journeyReset >= 0 && journeyReset < heroCommit,
   'new-hero journey reset is acknowledged before the hero/state commit point');

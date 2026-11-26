@@ -66,13 +66,13 @@ function fakeDriver() {
   A.throws(() => T.assertLoopbackUrl('http://192.168.0.5'), 'local test route never widens to the LAN');
   A.throws(() => T.assertLoopbackUrl('https://example.com'), 'local test route accepts loopback only');
 
-  // Station-owned Chrome announces the installed browser generation, never the headless product token.
+  // Keep-owned Chrome announces the installed browser generation, never the headless product token.
   {
     const identity = T.makeLaunchIdentity('fake-chrome.exe', { browserVersion: '140.0.7339.12', locale: 'en_US', platform: 'win32', arch: 'x64' });
     A.eq(identity.locale, 'en-US', 'host locale is normalized for Chrome');
     A.ok(/Chrome\/140\.0\.7339\.12/.test(identity.userAgent), 'launch identity matches the installed browser version');
     A.ok(/Windows NT 10\.0; Win64; x64/.test(identity.userAgent), 'launch identity matches the host platform family');
-    A.ok(!/HeadlessChrome/.test(identity.userAgent), 'station identity never announces the headless product token');
+    A.ok(!/HeadlessChrome/.test(identity.userAgent), 'keep identity never announces the headless product token');
     const unknown = T.makeLaunchIdentity('missing-chrome', { spawnSync: () => ({ stdout: '', stderr: '' }), locale: 'de-DE' });
     A.eq(unknown.userAgent, '', 'an unproven browser version is never fabricated');
     A.eq(unknown.locale, 'de-DE', 'locale consistency remains available when version probing is unavailable');
@@ -205,8 +205,8 @@ function fakeDriver() {
   {
     const reg = makeRegistry();
     makeBrowserTools({ driver: fakeDriver() }).register(reg);
-    const station = { agents: { ag: { id: 'ag', room: 'r' } }, rooms: { r: { id: 'r', objects: [{ objectType: 'computer' }, { objectType: 'dish' }] } } };
-    const resolved = resolveTools('ag', station);
+    const keep = { agents: { ag: { id: 'ag', room: 'r' } }, rooms: { r: { id: 'r', objects: [{ objectType: 'computer' }, { objectType: 'dish' }] } } };
+    const resolved = resolveTools('ag', keep);
     A.ok(resolved.tools.indexOf('browser.navigate') >= 0 && resolved.tools.indexOf('browser.click') >= 0, 'dish grants browser tools');
     A.eq(resolved.approvalRules['browser.click'].requiresConsent, true, 'mutating browser tools carry consent rules');
     const noDish = resolveTools('ag', { agents: { ag: { id: 'ag', room: 'r' } }, rooms: { r: { id: 'r', objects: [{ objectType: 'computer' }] } } });
@@ -339,7 +339,7 @@ function fakeDriver() {
   A.ok(/requestFullscreen/.test(T.SYNTHETIC_INPUT_BOOTSTRAP) && /exitFullscreen/.test(T.SYNTHETIC_INPUT_BOOTSTRAP), 'isolation bootstrap emulates fullscreen without a platform transition');
   A.ok(/keyboard/.test(T.SYNTHETIC_INPUT_BOOTSTRAP) && /lock/.test(T.SYNTHETIC_INPUT_BOOTSTRAP), 'isolation bootstrap neutralizes keyboard lock');
   A.ok(/wakeLock/.test(T.SYNTHETIC_INPUT_BOOTSTRAP) && /orientation/.test(T.SYNTHETIC_INPUT_BOOTSTRAP), 'isolation bootstrap neutralizes wake/orientation locks');
-  A.ok(/Object\.freeze\(attestation\)/.test(T.SYNTHETIC_INPUT_BOOTSTRAP), 'page code cannot forge the synthetic-isolation ready attestation');
+  A.ok(/Object\.freeze\(attekeep\)/.test(T.SYNTHETIC_INPUT_BOOTSTRAP), 'page code cannot forge the synthetic-isolation ready attekeep');
   A.ok(/getOwnPropertyDescriptor\(Element\.prototype,'requestPointerLock'\)/.test(T.makeCdpDriver.toString()), 'navigation verifies the actual non-writable pointer-lock descriptor');
   A.ok(/getOwnPropertyDescriptor\(Element\.prototype,'requestFullscreen'\)/.test(T.makeCdpDriver.toString()), 'navigation verifies the actual non-writable fullscreen descriptor');
 
@@ -557,7 +557,7 @@ function fakeDriver() {
           if (m.method === 'Page.navigate') state.url = m.params.url;
           const expr = String((m.params && m.params.expression) || '');
           let value = state.url;
-          if (/return \{ready:/.test(expr)) value = { ready: true, error: null };          // isolation attestation
+          if (/return \{ready:/.test(expr)) value = { ready: true, error: null };          // isolation attekeep
           else if (/document\.readyState/.test(expr)) {  // the settle probe
             value = script(state.probes++);
           }
@@ -1444,7 +1444,7 @@ function fakeDriver() {
     signedIn.usingPersistentProfile = () => true;
     const S2 = makeBrowserTools({ driver: signedIn });
     await rejects(S2.tools.find(t => t.name === 'browser.eval').run({ expression: 'document.cookie' }, {}),
-      /refused|signed-in station profile/i, 'eval is REFUSED while the signed-in station profile is live');
+      /refused|signed-in keep profile/i, 'eval is REFUSED while the signed-in keep profile is live');
     await rejects(S2.session.evalPublic('document.cookie'), /cookies and storage/i,
       'and the refusal says WHY, and names the tools that do work there');
     /* The refusal named browser.inspect, which is DEFERRED (not callable until a tool_search reveals it), and
@@ -1643,7 +1643,7 @@ function fakeDriver() {
       A.ok(fs.existsSync(path.join(ws, 'ag', rel)), 'the PNG is actually written into the agent workspace jail');
       A.eq(fs.readFileSync(path.join(ws, 'ag', rel)).toString(), 'png', 'the captured bytes are what got written');
       const deliv = emitted.find(e => e[0] === 'deliverable');
-      A.ok(!!deliv, 'a deliverable event is emitted so the capture shows up in the station');
+      A.ok(!!deliv, 'a deliverable event is emitted so the capture shows up in the keep');
       A.eq(deliv[1].kind, 'image', 'the deliverable is an image');
       A.eq(deliv[1].agentId, 'ag', 'the deliverable is attributed to the capturing agent');
       A.eq(deliv[1].room, 'lab', 'the deliverable carries the room');
@@ -1781,11 +1781,11 @@ function fakeDriver() {
   }
 
   // ---- ATTENDED BROWSER LOGIN (browser.login): human-driven headed takeover on the persistent
-  //      station profile, bracketed by two live consent asks; unattended runs refuse. ----
+  //      keep profile, bracketed by two live consent asks; unattended runs refuse. ----
   {
     const mkLease = () => {
       const l = { acquired: 0, released: 0, ok: true };
-      l.profile = { dir: '/station-profile', acquire: () => { if (!l.ok) return false; l.acquired++; return true; }, release: () => { l.released++; } };
+      l.profile = { dir: '/keep-profile', acquire: () => { if (!l.ok) return false; l.acquired++; return true; }, release: () => { l.released++; } };
       return l;
     };
     const mkSeam = () => {
@@ -1855,11 +1855,11 @@ function fakeDriver() {
       A.eq(seam.made.length, 2, 'login = one headed launch + one headless restore');
       A.eq(seam.made[0].headed, true, 'the login window is headed');
       A.eq(seam.made[0].synthetic, false, 'the human-driven window carries NO synthetic-input shims (SSO popups must work)');
-      A.eq(seam.made[0].profileDir, '/station-profile', 'the login window uses the persistent station profile');
+      A.eq(seam.made[0].profileDir, '/keep-profile', 'the login window uses the persistent keep profile');
       A.eq(seam.made[0].cleanupProfile, false, 'the persistent profile is never marked for cleanup');
       A.eq(seam.made[0].closed, true, 'the headed window is torn down after Done');
       A.eq(seam.made[1].headed, false, 'after Done the browser is headless again');
-      A.eq(seam.made[1].profileDir, '/station-profile', 'the restored headless browser keeps the authenticated profile');
+      A.eq(seam.made[1].profileDir, '/keep-profile', 'the restored headless browser keeps the authenticated profile');
       A.ok(/finished logging in/i.test(out.content), 'completed login reports honestly');
       A.ok(lease.acquired >= 1 && lease.released === 0, 'the profile lease is held for the rest of the run');
       await B2.session.close();
@@ -1958,7 +1958,7 @@ function fakeDriver() {
       const lease = mkLease();
       const B2 = makeBrowserTools({ makeDriver: seam.makeDriver, forceHeadless: true, profileDir: '/ephemeral', persistentProfile: lease.profile });
       await B2.session.navigate('https://example.com');
-      A.eq(seam.made[0].profileDir, '/station-profile', 'a plain research run browses on the station profile (saved logins apply)');
+      A.eq(seam.made[0].profileDir, '/keep-profile', 'a plain research run browses on the keep profile (saved logins apply)');
       A.eq(seam.made[0].headed, false, 'the persistent profile never changes the headless posture');
       A.eq(seam.made[0].cleanupProfile, false, 'the persistent profile is not cleaned up by a research run');
 

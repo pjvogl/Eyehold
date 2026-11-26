@@ -1,4 +1,4 @@
-/* sidecar/hooks.js — THE HOOK SPINE. The one place the station lets a Commander put their own code in the
+/* sidecar/hooks.js — THE HOOK SPINE. The one place the keep lets a Commander put their own code in the
    agent's path.
 
    Eyehold had no extension point of this kind at all. Skills add INSTRUCTIONS, MCP adds TOOLS, routines add a

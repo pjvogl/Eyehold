@@ -14,7 +14,7 @@ const ARTIFACT = `<!doctype html>
 <html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Kepler — World Next local proof</title>
 <style>body{margin:0;background:#071018;color:#d9e6e9;font:16px/1.65 system-ui,sans-serif}main{max-width:780px;margin:9vh auto;padding:32px}small{letter-spacing:.2em;color:#71b4bb}h1{font-size:clamp(42px,8vw,80px);line-height:1.1;margin:24px 0}p{color:#adc4cc}.rooms{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:36px 0}.room{padding:20px;border:1px solid #315260;background:#102633}.room:nth-child(2){background:#33251b;border-color:#76563b}.room:nth-child(3){background:#1e3026;border-color:#456c4e}.room b{display:block;font-size:13px;letter-spacing:.08em}.room span{font-size:13px;color:#b7c7c9}code{color:#8ed3c4}footer{border-top:1px solid #315260;padding-top:20px;font-size:13px;color:#8babb5}@media(max-width:560px){.rooms{grid-template-columns:1fr}}</style>
-<main><small>KEPLER / LOCAL DEVELOPMENT ARTIFACT</small><h1>Made aboard<br>the station.</h1>
+<main><small>KEPLER / LOCAL DEVELOPMENT ARTIFACT</small><h1>Made aboard<br>the keep.</h1>
 <p>This HTML file is the output of a real filesystem tool call made by Eyehold's harness using an explicitly scripted local model.</p>
 <div class="rooms"><div class="room"><b>COMMAND</b><span>NOVA · cobalt alloy</span></div><div class="room"><b>FABRICATION</b><span>EMBER · warm industrial steel</span></div><div class="room"><b>CONSERVATORY</b><span>FERN · timber and botanical glass</span></div></div>
 <p>The local proof exercises model streaming, tool dispatch, artifact recording and opening a deliverable. It does not establish renderer performance, visual quality or production readiness.</p>

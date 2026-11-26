@@ -1,7 +1,7 @@
 'use strict';
 // E29 review (2026-10-08): a credits read that arrived while a link self-heal was already running did not wait for
 // it — healRetryDue() is false while a heal is in flight, so the read answered "not linked" at once (GET
-// /api/credits 404 → the STORE drew LINK STATION, WAKE said "link your Eyehold account first") over a station the
+// /api/credits 404 → the STORE drew LINK KEEP, WAKE said "link your Eyehold account first") over a keep the
 // heal was seconds from linking. SETTINGS sends the provider-card read and the STORE read back to back, so the
 // second one always met the first one's heal. Every read now joins the running heal (whoami AND its rebuild's
 // balance read) and answers from its result.
@@ -71,7 +71,7 @@ test('a credits read during the BOOT self-heal waits for it and answers linked, 
     assert.equal(r.body.configured, true, 'the read reports the link the heal just restored');
     assert.equal(r.body.balanceUsd, 22, 'with the real balance');
     const l = await linkable;
-    assert.equal(l.body.available, false, 'no LINK STATION card over a linked station');
+    assert.equal(l.body.available, false, 'no LINK KEEP card over a linked keep');
     assert.equal(cloud.state.whoamiCalls, 1, 'joining readers never start a second whoami');
     assert.equal(cloud.state.balanceCalls, 1, "joining readers reuse the heal's own balance read");
   } finally {

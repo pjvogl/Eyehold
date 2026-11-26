@@ -1,6 +1,6 @@
 # Eyehold systemic reliability audit — 2026-09-19
 
-The strongest recurring defect is loss of authority at a boundary: a transport response, cached projection, default value or late callback is treated as proof of current durable state. This audit reproduced and repaired eight additional manifestations across durable storage, permissions, routine creation, finite API requests, Recipe Bay and execution/messaging controls.
+The strongest recurring defect is loss of authority at a boundary: a transport response, cached projection, default value or late callback is treated as proof of current durable state. This audit reproduced and repaired eight additional manifekeeps across durable storage, permissions, routine creation, finite API requests, Recipe Bay and execution/messaging controls.
 
 Source fixes: `8eb87b0d3`; source candidate locked at `ff8c5b709`. Work remains on `agent/reliability-audit-0919`, in its isolated worktree. This is source and local runtime evidence, not an installer release or a claim that every customer incident is resolved.
 
@@ -49,13 +49,13 @@ Mirrored website frontend assets were synchronized. Existing recommendation cach
 
 | System | Boundaries inspected or exercised | Evidence and limits |
 | --- | --- | --- |
-| Station persistence and restart | `/api/save`, CloudSave, durable-store consumers, widgets, backup recovery, autosave | Prior audit save repairs retained; new shared writer guards and real restart fault tests. A successful source test does not prove every possible filesystem failure or multi-process writer race. |
+| Keep persistence and restart | `/api/save`, CloudSave, durable-store consumers, widgets, backup recovery, autosave | Prior audit save repairs retained; new shared writer guards and real restart fault tests. A successful source test does not prove every possible filesystem failure or multi-process writer race. |
 | Permissions and execution | grant/revoke/bypass, refresh/reset, policy, SSH save/clear/sync/cleanup | New ownership and acknowledgement matrix plus real browser revocation and policy refusal. No remote SSH host was modified. |
 | Routines and autonomy | proposal creation, cron fairness, armed/halted projection, loop lifecycle, budgets and completion history | Prior cron fairness repair retained; actual browser proposal refusal and full HTTP loop/night-shift tests. Reported overnight spend still requires affected run evidence. |
 | Providers and routing | factory, compatible adapter, task classification, model catalogs, fallback context, replay and output caps | Existing regressions cover provider switches, tool forwarding and refusal to silently drop tools. Controlled endpoints do not reproduce every local model or paid route. |
 | Integrations and channels | MCP schema translation, authentication truth, SSE lifecycle, delegated tool context, disconnect persistence | New disconnect acknowledgement checks; existing transport/channel/dispatch regressions. Live Zoho schema and affected OAuth accounts unavailable. |
 | Conversations and user results | rating origin, transcript restart, run identity, delivery/catch-up and failure states | Existing real-sidecar regression coverage retained. GitHub #18 maps to already-present per-run eligibility repair, not a new closure. |
-| Projects, Recipe Bay and station UI | valid backend response/render failure, cached lists, reopen/retry, real settings actions | New catalog matrix and browser recovery; existing Projects renderer repair is present. Live journeys pass 139/139. |
+| Projects, Recipe Bay and keep UI | valid backend response/render failure, cached lists, reopen/retry, real settings actions | New catalog matrix and browser recovery; existing Projects renderer repair is present. Live journeys pass 139/139. |
 | Packaging and telemetry | boot guard, legacy WebKit features, mirrored assets, source/installer/customer evidence separation | Existing Mac compatibility repair retained. This Windows campaign cannot certify physical Mac recovery or a shipped installer. |
 
 ## Fresh intake reconciliation
@@ -72,7 +72,7 @@ The September 18 Mac regex/timeout diagnostics match `5308fc67`; the separate sh
 | --- | --- | --- |
 | P1 | `2f156837` Mac shared-catalog boot failure | Affected installed app/build and exact asset request/response on physical Mac; validate packaged recovery. Do not equate source compatibility tests with this separate missing-script cause. |
 | P2, high impact | `f8d479d9` repeated overnight verification spending | Sanitized parent/run/tool ledger, armed work configuration, completion-check outcomes and usage reconciliation. Current dry-stop/red-streak guards cannot establish why these reported runs continued. |
-| P2 | `678ac951` Ollama zero-tool task completion | Actual model/station request and structured response, effective tool definitions and task classification. Do not execute tool-looking prose or force tools indiscriminately. |
+| P2 | `678ac951` Ollama zero-tool task completion | Actual model/keep request and structured response, effective tool definitions and task classification. Do not execute tool-looking prose or force tools indiscriminately. |
 | P2 | `54564ff9` Zoho bootstrap schema | Authenticated raw tools/list schema, registry schema and provider projection, then an authorized bootstrap call. Do not remove required parameters based only on a tool name. |
 | P2 | `5274c7b7` Ollama chat POST not observed | Packet/request correlation on reported Ollama/runtime; local controlled HTTP success is insufficient. |
 | P2 | `acb47320` unexplained idle usage; `abd75bb4` Mac credit consumption | Affected work ledger and account-side usage correlation. No refund or billing mutation is part of this audit. |
@@ -93,7 +93,7 @@ The complete live journey campaign passed 139/139 assertions. Full fast and HTTP
 
 A full HTTP attempt also hit one WORKSPACE_BUSY refusal during the paid-link restart test. All six cases passed on direct retry; the refusal is retained in the first HTTP log and has not been attributed to a product or fixture cause. The final full retry result is recorded separately. One fast retry stopped because the generated index had not yet been refreshed after importing the three new reports; regeneration restored all eight register assertions. These failed attempts are preserved alongside final gates.
 
-A retained intake wire probe passed 18 assertions using native loopback HTTP and the production Ollama provider factory: each of the three reported model identifiers retained the filesystem tool schema and parsed a structured tool call. MCP translation preserved absent, empty and account-required arrays without inventing requirements. This narrows the investigation to actual station/model/schema evidence; it does not close either customer report. Run from the repository root with `node qa/evidence/systemic-bugs-0919/intake-wire-probe.cjs`.
+A retained intake wire probe passed 18 assertions using native loopback HTTP and the production Ollama provider factory: each of the three reported model identifiers retained the filesystem tool schema and parsed a structured tool call. MCP translation preserved absent, empty and account-required arrays without inventing requirements. This narrows the investigation to actual keep/model/schema evidence; it does not close either customer report. Run from the repository root with `node qa/evidence/systemic-bugs-0919/intake-wire-probe.cjs`.
 
 The next full fast run also exposed an old direct-fetch source assertion in `test/class-loadouts.test.js`. It now follows the production collection reader through `Harness.api.get` and retains the live catalog requirement; all 2,651 assertions pass in that suite. No product code changed during these test-harness corrections.
 

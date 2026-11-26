@@ -1,6 +1,6 @@
 /* EYEHOLD — remotesessions.js : a conversation you have from your phone is a SESSION on the desk too.
 
-   Eyehold Remote runs a phone's task on the station, detached from any page (sidecar/remote/host.js). Without
+   Eyehold Remote runs a phone's task on the keep, detached from any page (sidecar/remote/host.js). Without
    this module the desk never learns about it: a conversation started on the phone has no row in the rail, and a
    phone turn sent into a desk session only shows up the next time that session happens to be reopened.
 
@@ -10,13 +10,13 @@
        titled with what you said, without stealing focus. A session you deleted stays deleted (adopt refuses it).
      · While a phone run is live its session shows busy through the SAME per-session channel state chat.js and
        autosessions.js drive. When it ends the busy state clears, and if that session is the one on screen it is
-       reloaded, which merges the station's transcript into it (chat.js reconcileServerHistory). Otherwise the
+       reloaded, which merges the keep's transcript into it (chat.js reconcileServerHistory). Otherwise the
        merge happens when you open it, exactly as for every other session.
      · It looks again whenever the floor feed reports a run starting or ending, and once after boot. The boot pass
        also reads /api/runs for 'remote_' streams, so phone conversations held while the desk was closed (or across
-       a station restart) still appear.
+       a keep restart) still appear.
 
-   TRUTH RULE: a row is only ever created from a run the station reports; busy is only ever set while the station
+   TRUTH RULE: a row is only ever created from a run the keep reports; busy is only ever set while the keep
    says that run is live; nothing here writes dialogue — the transcript is fetched by the normal session load.
 
    Follows autosessions.js: plain init()/reset(), never emits, fail-open (a route error changes nothing). */
@@ -42,7 +42,7 @@ const RemoteSessions = (() => {
     catch (_) { return null; }
   }
 
-  // one run the station reports -> the desk's session state. Returns true when something visible changed.
+  // one run the keep reports -> the desk's session state. Returns true when something visible changed.
   function applyRun(run) {
     if (!run || !STREAM_RE.test(String(run.streamId || ''))) return false;
     const id = String(run.streamId);
@@ -69,7 +69,7 @@ const RemoteSessions = (() => {
     if (hasCh() && Channels.isBusy(id) && (busyMine.has(id) || !(Channels.runIdOf && Channels.runIdOf(id)))) Channels.end(id);
     busyMine.delete(id);
     if (Number(run.endedAt) > (Number(ws.lastActiveAt) || 0)) ws.lastActiveAt = Number(run.endedAt);
-    // on screen: reload it so the station's transcript is merged in now; elsewhere the normal open does it
+    // on screen: reload it so the keep's transcript is merged in now; elsewhere the normal open does it
     if (hasChat() && Workstreams.activeId && Workstreams.activeId() === id && !(hasCh() && Channels.isBusy(id))) { try { Chat.load(ws); } catch (_) {} }
     return true;
   }

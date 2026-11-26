@@ -1,6 +1,6 @@
 'use strict';
 // Group chat repairs (10-04 sweep): multi-word @names, crew members who left, resuming a paused group, E-STOP on a bad
-// store, turns with no worker, orphaned uploads, and the station-wide list the rail reads. Real module, fake deps.
+// store, turns with no worker, orphaned uploads, and the keep-wide list the rail reads. Real module, fake deps.
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const os = require('node:os');
@@ -143,7 +143,7 @@ async function waitFor(fn) { for (let n = 0; n < 200; n++) { if (await fn()) ret
     await assert.rejects(api.configure(led.id, { revision: removed.revision, members: ['researcher-2'], leadId: 'outside' }), /lead who remains/, 'a live lead outside the chat is still refused');
     crew = crewBefore;
 
-    // ---- the station-wide list says what is waiting on the Commander ----
+    // ---- the keep-wide list says what is waiting on the Commander ----
     const listed = (await api.list()).groups.find(x => x.id === q.id);
     for (const k of ['updatedAt', 'approvals', 'questions', 'busy', 'paused']) assert.ok(k in listed, 'list carries ' + k);
 

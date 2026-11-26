@@ -158,7 +158,7 @@ node scripts/eval/campaign-runner.mjs --harness hermes --fixtures scripts/eval/f
 ```
 
 After parity is green, measure the actual installed desktop process and a provider-backed verified artifact.
-The signed result distinguishes desktop process-to-health/station readiness from installed-runtime
+The signed result distinguishes desktop process-to-health/keep readiness from installed-runtime
 send-to-first-token and send-to-verified-artifact latency.
 
 ```powershell

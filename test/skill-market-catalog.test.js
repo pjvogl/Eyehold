@@ -1,8 +1,8 @@
 /* node test/skill-market-catalog.test.js — the published Skill Market catalog is honest (2026-09-29).
 
-   The catalog in website/ is what starnetos.com serves and what every station downloads. This pins:
+   The catalog in website/ is what starnetos.com serves and what every keep downloads. This pins:
      - it is exactly what the sources build (scripts/build-skill-catalog.mjs --check)
-     - every bundled original's published digest equals its bundled text, so a fresh station reads BUILT IN, not
+     - every bundled original's published digest equals its bundled text, so a fresh keep reads BUILT IN, not
        UPDATE, for all of them
      - every file on disk matches the sha256 its entry pins, and the index fits the app's 256 KB fetch cap
      - every community skill ships its LICENSE and names its upstream commit; NOTICE.md credits every skill

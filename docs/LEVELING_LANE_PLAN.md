@@ -34,8 +34,8 @@ carries each specialist's earned credential.)* Every reader of `a.stats` is a *d
 | Consumer | What it does with it |
 | --- | --- |
 | `world.js:146`, `world.js:6185` | hero name-tag "Lv N" + level-up pulse |
-| `topbar.js:28` | station XP sliver |
-| `stationui.js:1090/1212/1246/1310` | crew chip, dossier gauge, trophy case |
+| `topbar.js:28` | keep XP sliver |
+| `keepui.js:1090/1212/1246/1310` | crew chip, dossier gauge, trophy case |
 | `chat.js:4899` | `/whoami` line |
 | `queststore.js:15` | quest copy |
 | `confbeats.js:66` | one-time narration beat |

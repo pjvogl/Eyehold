@@ -1,4 +1,4 @@
-/* EYEHOLD — hint.js : a tiny HTML-layer tooltip that explains the station's jargon on hover/tap.
+/* EYEHOLD — hint.js : a tiny HTML-layer tooltip that explains the keep's jargon on hover/tap.
 
    The app speaks fluent Eyehold at users who have been here zero minutes (see the UX audit's jargon
    wall). This is the shared primitive every screen sprinkles onto its own confusing labels instead of

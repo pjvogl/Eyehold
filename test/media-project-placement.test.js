@@ -37,7 +37,7 @@ const imageFetch = async (url) => ({
   fs.mkdirSync(PROJECT, { recursive: true });
   fs.mkdirSync(path.join(WORKSPACES, 'supervisor'), { recursive: true });   // every roster agent has its workspace
   const projectReal = fs.realpathSync(PROJECT);
-  // the station's path-trust core, with YoutubeService as the one trusted ("My Project Folders") root; a delegated
+  // the keep's path-trust core, with YoutubeService as the one trusted ("My Project Folders") root; a delegated
   // worker is an autonomous surface with no prompt, exactly like production's runPathTrust for a worker run
   const core = makePathTrust({ fsp, pathMod: path, roots: () => [projectReal], workspaceRoot: WORKSPACES });
   const pathTrust = (abs, o2) => core.guard(abs, { scope: (o2 && o2.scope) || 'read', surface: 'autonomous', agentId: o2 && o2.agentId });

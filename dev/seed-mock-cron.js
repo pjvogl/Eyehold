@@ -2,7 +2,7 @@
 
    Boots the REAL sidecar (serving the real frontend) with:
      - a tiny in-process MOCK OpenRouter (so a cron run produces deterministic reply text with no real key),
-     - the golden seed workspace copied to a scratch dir (pre-onboarded station, dev auto-boot),
+     - the golden seed workspace copied to a scratch dir (pre-onboarded keep, dev auto-boot),
      - SKYNET_CRON_ENABLED + full access so a routine can be created and fired live.
 
    Prints the URL. Not part of any test/build; SKYNET_DEV never ships. Used to drive preview_* DOM

@@ -1,6 +1,6 @@
 # Skill Market uploads — runbook
 
-Anyone with a Eyehold account can share a skill. This is how one gets from their upload to every station.
+Anyone with a Eyehold account can share a skill. This is how one gets from their upload to every keep.
 
 ```
 author                         account.eyehold.com            this PC (has the market signing key)          eyehold.com
@@ -38,7 +38,7 @@ SHARE YOUR SKILL (market.html) ─▶ ACCOUNT › SKILLS: upload ─▶ /admin/s
 ## Pulling a bad upload after it is live
 
 Same as any market skill: add it to `skills-catalog/revoked.json` with a reason, remove its folder (or ship a fixed
-version), rebuild, deploy. Stations switch it off within minutes.
+version), rebuild, deploy. Keeps switch it off within minutes.
 
 ## What the author sees
 

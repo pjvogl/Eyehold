@@ -1,6 +1,6 @@
-/* node test/browser-mac-keys.e2e.test.js — Mac keyboard in the station browser, on REAL Chromium (2026-10-01).
+/* node test/browser-mac-keys.e2e.test.js — Mac keyboard in the keep browser, on REAL Chromium (2026-10-01).
    On macOS, Chrome runs Cmd+A/C/X/Z and Cmd/Option+arrows in the browser process, which CDP key events never reach;
-   the driver names the editing command (`commands`) instead when the station runs on a Mac (macEditingCommands).
+   the driver names the editing command (`commands`) instead when the keep runs on a Mac (macEditingCommands).
    CDP honours `commands` on every platform, so the exact events a Mac sends are proven here against a live page:
    typing, Cmd+A selects all, Cmd+X cuts, Cmd+Z undoes, Option+Left moves by word, and an Option-composed
    character (Option+L = @ on a German Mac) is typed as text. */

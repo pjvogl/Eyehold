@@ -1,13 +1,13 @@
-/* EYEHOLD — windows/trophies.js : the TROPHY CASE window (extracted verbatim from stationui.js).
-   Loads AFTER stationui.js (see index.html) and registers itself via StationUI.registerWindow;
-   the only stationui internals it touches are the enumerated StationUI.h helper surface. */
+/* EYEHOLD — windows/trophies.js : the TROPHY CASE window (extracted verbatim from keepui.js).
+   Loads AFTER keepui.js (see index.html) and registers itself via KeepUI.registerWindow;
+   the only keepui internals it touches are the enumerated KeepUI.h helper surface. */
 'use strict';
 (() => {
-  if (typeof StationUI === 'undefined' || !StationUI.registerWindow) return;
-  const esc = StationUI.h.esc;
+  if (typeof KeepUI === 'undefined' || !KeepUI.registerWindow) return;
+  const esc = KeepUI.h.esc;
 
   /* ============== TROPHY CASE (G3b) ==============
-     The station-wide surface the TROPHY CASE prop opens: REAL earned achievements made permanent. Every trophy
+     The keep-wide surface the TROPHY CASE prop opens: REAL earned achievements made permanent. Every trophy
      is a genuine completion (a completed quest / an earned milestone) projected by the pure Trophies engine over
      the live quest view + the durable QuestState memory. Dates are honest — a completion with no knowable date
      (a resumed pre-fix save) renders "date unknown", NEVER 1969 (the whole point of the G3b hydrate fix). An
@@ -16,7 +16,7 @@
   function buildTrophies(body) {
     // fold the live memory first so a just-completed quest is a trophy the instant this opens (buildQuests idiom).
     const QSS = (typeof QuestStateStore !== 'undefined') ? QuestStateStore : null;
-    const SQS = (typeof StationQuestStore !== 'undefined') ? StationQuestStore : null;
+    const SQS = (typeof KeepQuestStore !== 'undefined') ? KeepQuestStore : null;
     if (SQS && SQS.sync) { try { SQS.sync(); } catch (_) {} }
     if (QSS && QSS.sync) { try { QSS.sync(); } catch (_) {} }
     const v = (typeof QuestStore !== 'undefined' && QuestStore.view) ? QuestStore.view() : null;
@@ -27,7 +27,7 @@
       ? Trophies.build({ quests, stateOf, tools })
       : { trophies: [], tools: [], earned: 0, empty: true };
 
-    const KIND = { milestone: 'MILESTONE', 'station-gap': 'CAPABILITY', station: 'STATION', dossier: 'DOSSIER', idea: 'WORK' };
+    const KIND = { milestone: 'MILESTONE', 'keep-gap': 'CAPABILITY', keep: 'KEEP', dossier: 'DOSSIER', idea: 'WORK' };
     const fmtDate = at => { if (at == null) return 'date unknown'; try { return new Date(at).toLocaleDateString(); } catch (_) { return 'date unknown'; } };
     const troRow = t =>
       '<div class="gx-tro on">'
@@ -52,12 +52,12 @@
       : '';
 
     body.innerHTML = '<div class="gx">'
-      + '<div class="dim" style="margin:2px 0 10px;">the station&rsquo;s real achievements, made permanent. every honour here is a completion that genuinely happened &mdash; never points, never invented. no dates are guessed.</div>'
+      + '<div class="dim" style="margin:2px 0 10px;">the keep&rsquo;s real achievements, made permanent. every honour here is a completion that genuinely happened &mdash; never points, never invented. no dates are guessed.</div>'
       + '<div class="gx-sec"><span class="gx-title">HONOURS</span> <span class="gx-tag">' + surf.earned + ' EARNED</span></div>'
       + trophiesHtml
       + toolsHtml
       + '</div>';
   }
 
-  StationUI.registerWindow('trophies', 'TROPHY CASE', buildTrophies, {});   // G3b: the TROPHY CASE prop opens this station-wide surface. PANEL shell — see the two-sizes note in style.css
+  KeepUI.registerWindow('trophies', 'TROPHY CASE', buildTrophies, {});   // G3b: the TROPHY CASE prop opens this keep-wide surface. PANEL shell — see the two-sizes note in style.css
 })();

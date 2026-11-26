@@ -13,7 +13,7 @@ const path = require('path').win32;
 
 (async () => {
   const store = P.makePersonalizationStore({ fs: memfs, path, workspaces: 'C:\\ws', writeDurable: (_deps, file, body) => files.set(file, String(body)) });
-  A.eq(store.read().enabled, true, 'personalization defaults on for existing stations');
+  A.eq(store.read().enabled, true, 'personalization defaults on for existing keeps');
   const paused = await store.setEnabled(false, 10);
   A.eq(paused.enabled, false, 'pause is durable sidecar authority');
   A.eq(store.read().revision, 1, 'pause advances the auditable revision');

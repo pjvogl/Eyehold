@@ -11,7 +11,7 @@
  *   - one crew row per agent carries BOTH axes (reach chips + asks-first chips)
  *   - a reach flip writes agent.executionProfile
  *   - an ASKS FIRST escalation ARMS without granting (one press must not change the model)
- *   - the whole-station sweeps still move every agent
+ *   - the whole-keep sweeps still move every agent
  *
  *   node dev/permissions-shots.mjs
  */
@@ -51,7 +51,7 @@ function portFree(port) {
 async function main() {
   for (const [label, port] of [['sidecar', PORT], ['CDP', CDP_PORT]]) {
     if (!(await portFree(port))) {
-      throw new Error(`port ${port} (${label}) is already in use — another agent's station is probably there.\n` +
+      throw new Error(`port ${port} (${label}) is already in use — another agent's keep is probably there.\n` +
         `  This harness would have measured THAT app, not this worktree's build.\n` +
         `  Re-run with a free pair, e.g. SKYNET_SHOT_PORT=<free> SKYNET_CDP_PORT=<free+1> node dev/permissions-shots.mjs`);
     }
@@ -63,10 +63,10 @@ async function main() {
   try {
     if (!(await waitUp(URL))) throw new Error('sidecar never came up on ' + URL);
     // Second belt: prove the served bundle is THIS worktree's build before believing any measurement.
-    const marker = await (await fetch(URL + 'app/stationui.js')).text();
+    const marker = await (await fetch(URL + 'app/keepui.js')).text();
     if (!marker.includes('id="perm-postures"')) {
       throw new Error('the app served on ' + URL + ' is not this worktree\'s build (no posture front door) — ' +
-        'refusing to measure a station this harness did not boot');
+        'refusing to measure a keep this harness did not boot');
     }
     chrome = launchChrome({ cdpPort: CDP_PORT, profileDir: join(scratch, 'chrome') });
     await sleep(1200);
@@ -80,11 +80,11 @@ async function main() {
     await evalJS(cdp, `(() => { if (document.body) document.body.classList.add('no-flicker');
       if (typeof World !== 'undefined' && World.stop) { World.stop(); return 'frozen'; } return 'no-world'; })()`);
 
-    await evalJS(cdp, `StationUI.openTerm('settings','permissions')`);
+    await evalJS(cdp, `KeepUI.openTerm('settings','permissions')`);
     await sleep(2200);   // the pane fetches /api/execution-profiles + refreshes PermissionsStore
 
     /* ── THE THREE TIERS ────────────────────────────────────────────────────────────────────────
-       What a newcomer meets on arrival: the glance, three station-wide postures, and the per-agent
+       What a newcomer meets on arrival: the glance, three keep-wide postures, and the per-agent
        rows — with only the rare controls folded. Tier 2 being VISIBLE is the point of round 3, so
        the harness asserts it rather than assuming it. `frontWords` is the tier-1 reading cost (the
        decision a newcomer actually has to make); `arrivalWords` is everything on screen. */
@@ -98,7 +98,7 @@ async function main() {
       const tier1 = span(glance, crewHead);
       const all = span(glance, fold).concat([fold]);
       const tier1Txt = tier1.map(e => e.innerText).join(' ').replace(/\\s+/g,' ').trim();
-      const jargon = ['STATION GEAR','SAFE CELL','REMOTE SSH','TRUSTED PROJECT','execution profile',
+      const jargon = ['KEEP GEAR','SAFE CELL','REMOTE SSH','TRUSTED PROJECT','execution profile',
         'STANDING APPROVALS','desktop lease','Docker','capability','/yolo','block 2'];
       // Tier 2 deliberately prints the HOUSE name — but only ever as a subtitle under a plain label,
       // so the vocabulary is taught rather than assumed. Prove that pairing instead of banning the word.
@@ -116,7 +116,7 @@ async function main() {
       };
     })()`);
     check('only the ADVANCED tier is folded on arrival', front.foldClosed, JSON.stringify(front.foldClosed));
-    check('three station-wide postures are offered', front.cards.length === 3, front.cards.join(' · '));
+    check('three keep-wide postures are offered', front.cards.length === 3, front.cards.join(' · '));
     // TIER 2 IS NOT BEHIND A DISCLOSURE. A posture can only set every agent the SAME way, so the
     // "except this one" control has to be on screen — hiding it was the round-2 over-correction.
     check('the per-agent crew rows are VISIBLE, not folded', front.crewVisible, front.crewVisible);
@@ -208,7 +208,7 @@ async function main() {
       document.querySelector('#perm-ask-all').click();
       out.allAsk = line(); out.allAskLoud = loud();
       const full = document.querySelector('#perm-full-all');
-      full.click(); full.click();                      // arm + confirm the whole-station escalation
+      full.click(); full.click();                      // arm + confirm the whole-keep escalation
       out.allFull = line();
       document.querySelector('#perm-ask-all').click();
       PermissionsStore.snapshot = real;
@@ -325,8 +325,8 @@ async function main() {
     check('a disarm restores the reach meter (not a flattened label)', hostProbe.meterSurvived, hostProbe);
     await sleep(900);
 
-    // ---- the whole-station sweeps still move every agent ----
-    console.log('\n— WHOLE-STATION SWEEP —');
+    // ---- the whole-keep sweeps still move every agent ----
+    console.log('\n— WHOLE-KEEP SWEEP —');
     const sweepProbe = await evalJS(cdp, `(() => {
       const modes = () => (App.agents() || []).map(a => a.approvalMode || 'ask');
       const out = { before: modes() };
@@ -341,8 +341,8 @@ async function main() {
     })()`);
     console.log(JSON.stringify(sweepProbe));
     check('EVERYONE ASKS FIRST sets every agent to ask', sweepProbe.afterAskAll.every(m => m === 'ask'), sweepProbe);
-    check('the whole-station escalation arms without granting', sweepProbe.afterFullPress1.every(m => m === 'ask'), sweepProbe);
-    check('the whole-station escalation applies on press 2', sweepProbe.afterFullPress2.every(m => m === 'full'), sweepProbe);
+    check('the whole-keep escalation arms without granting', sweepProbe.afterFullPress1.every(m => m === 'ask'), sweepProbe);
+    check('the whole-keep escalation applies on press 2', sweepProbe.afterFullPress2.every(m => m === 'full'), sweepProbe);
     await sleep(800);
 
     // ---- ADVANCED fold opens and holds the policy control ----

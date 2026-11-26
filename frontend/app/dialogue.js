@@ -31,7 +31,7 @@ const Dialogue = (() => {
 
   // GENESIS never leaves a mind nameless-yet-labelled. If the Commander wakes an overseer without typing a name,
   // the flow used to fall back to the bland literal 'AGENT' (name = n || name) with no nudge — a blank ceremony.
-  // Instead, mint a station codename: eerie-not-cute, single-word, machine-designation flavour (matching the
+  // Instead, mint a keep codename: eerie-not-cute, single-word, machine-designation flavour (matching the
   // seeded NOVA / VENOM / ULTRON tone), uppercased and clamped to the 18-char nameplate cap. Deterministic pool,
   // random pick — every silent awakening still gets a real name, never the generic placeholder.
   const CODENAMES = [
@@ -56,8 +56,8 @@ const Dialogue = (() => {
   const sfx = n => { try { if (typeof SFX !== 'undefined' && SFX[n]) SFX[n](); } catch (_) {} };
   const reduceMotion = () => { try { return matchMedia('(prefers-reduced-motion: reduce)').matches; } catch (_) { return false; } };
   function seg(text, cps, hold) { return { text: String(text == null ? '' : text), cps: cps || 46, holdAfter: hold || 0 }; }
-  /* THE DOOR LAW (systems.js): a line that names a station system brings it online. COMMS lines already did; the awakening and
-     the quick tour speak HERE, so on a fresh station they sent the Commander to WORK › AUTOMATE › WORKFLOWS (or CONNECT ›
+  /* THE DOOR LAW (systems.js): a line that names a keep system brings it online. COMMS lines already did; the awakening and
+     the quick tour speak HERE, so on a fresh keep they sent the Commander to WORK › AUTOMATE › WORKFLOWS (or CONNECT ›
      ABILITIES) while that dock button was still hidden. */
   function doorLaw(segs, extra) {
     if (typeof Systems === 'undefined' || !Systems.noticeReply) return;
@@ -70,7 +70,7 @@ const Dialogue = (() => {
     return lines.map(l => (typeof l === 'string') ? seg(l) : seg(l.text, l.cps, l.holdAfter));
   }
 
-  // set the speaker label. A real typed name is honoured; a blank/placeholder mints (and remembers) a station
+  // set the speaker label. A real typed name is honoured; a blank/placeholder mints (and remembers) a keep
   // codename so the awakening never shows the bland generic 'AGENT'. Never hard-blocks — the flow always advances.
   function setName(n) { name = resolveName(n); if (speakerEl) speakerEl.textContent = name; }
 

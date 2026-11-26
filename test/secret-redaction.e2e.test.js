@@ -1,4 +1,4 @@
-/* node test/secret-redaction.e2e.test.js — a SHAPELESS secret the station holds never reaches the run stream,
+/* node test/secret-redaction.e2e.test.js — a SHAPELESS secret the keep holds never reaches the run stream,
    the transcript or diagnostics, even when something prints it verbatim.
 
    Security audit 2026-09-25: redact() only knew vendor shapes (sk-…, xoxb-…, JWT …). A service key the model was

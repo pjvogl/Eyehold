@@ -1,4 +1,4 @@
-/* node test/web.reach.test.js — the WEB REACH layer: the station READER (webreader.js) and its
+/* node test/web.reach.test.js — the WEB REACH layer: the keep READER (webreader.js) and its
    automatic rungs inside web_fetch / web_search.
 
    Field context (2026-07-31): plain HTTP is bot-walled (403s) and the keyless engines throttle; a
@@ -124,8 +124,8 @@ function stubFetch(routes) {
     const { r } = reader(() => ({ status: 200, title: 'Article', text: 'Browser-rendered body text.' }));
     const { fetchTool } = makeWebTools({ fetchImpl: stubFetch([['walled.example', { status: 403 }]]), lookup: null, reader: r });
     const res = await fetchTool.run({ url: 'https://walled.example/story' }, {});
-    A.ok(/Browser-rendered body text/.test(res.content), 'the walled page was read through the station browser');
-    A.ok(/read via the station browser after http 403/.test(res.content), 'the provenance label says the browser read it (truthful telemetry)');
+    A.ok(/Browser-rendered body text/.test(res.content), 'the walled page was read through the keep browser');
+    A.ok(/read via the keep browser after http 403/.test(res.content), 'the provenance label says the browser read it (truthful telemetry)');
     A.ok(/chars via browser$/.test(res.summary), 'the summary names the browser source');
   }
 
@@ -154,7 +154,7 @@ function stubFetch(routes) {
     const res = await fetchTool.run({ url: 'https://walled.example/story' }, {});
     A.eq(res.summary, 'site declined (403)', 'still a calm site-declined answer');
     A.ok(/browser also tried/.test(res.content) && /verification wall/.test(res.content),
-      'the answer records that the station browser escalated and met a verification wall');
+      'the answer records that the keep browser escalated and met a verification wall');
   }
 
   // ---- J. search: throttled scrape chain falls through to the reader BEFORE the paid fallback ----

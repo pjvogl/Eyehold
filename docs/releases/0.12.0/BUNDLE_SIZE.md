@@ -11,7 +11,7 @@ failed to bundle project `The system cannot find the file specified. (os error 2
 ```
 
 **Cause:** Tauri embeds every byte under `build.frontendDist` (`../frontend`) into the executable. The
-station remaster merged on September 12–16 tracks its art SOURCES under `frontend/assets/industrial/`
+keep remaster merged on September 12–16 tracks its art SOURCES under `frontend/assets/industrial/`
 (review batches, camera audits, calibration sheets, superseded prop sets) next to the runtime art:
 
 | Measure | v0.11.2 | 0.12.0 candidate before the fix |

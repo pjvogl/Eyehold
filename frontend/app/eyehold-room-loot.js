@@ -1,6 +1,6 @@
 /* Eyehold milestone room-loot catalog.
  * A visual specification only. Never reads owner-entered or agent-claimed
- * earnings as proof, never alters finances, permissions, or station props.
+ * earnings as proof, never alters finances, permissions, or keep props.
  */
 'use strict';
 (function(root,factory){

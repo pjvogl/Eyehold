@@ -213,10 +213,10 @@
       } catch (e) { /* keep the status-based default */ }
       if (code === 'invalid_grant' || code === 'invalid_token' || code === 'invalid_request') relogin = true;
       if (code === 'refresh_token_reused') {
-        // #92: no Codex CLI needed — Eyehold's own device-code sign-in mints fresh tokens. A copied station
+        // #92: no Codex CLI needed — Eyehold's own device-code sign-in mints fresh tokens. A copied keep
         // folder carries the single-use refresh token too, so name that cause alongside the CLI/editor.
         message = 'Codex refresh token was already consumed by another client (the Codex CLI, the VS Code extension, '
-          + 'or a copy of this station on another computer). Sign in with ChatGPT again: ⏼ RECONNECT on the ChatGPT card '
+          + 'or a copy of this keep on another computer). Sign in with ChatGPT again: ⏼ RECONNECT on the ChatGPT card '
           + 'in SETTINGS › AI & MODELS.';
         relogin = true;
       }

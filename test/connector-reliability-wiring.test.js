@@ -6,7 +6,7 @@ const read = p => fs.readFileSync(path.join(__dirname, '..', p), 'utf8');
 const rust = read('src-tauri/src/main.rs') + '\n' + read('src-tauri/src/credentials.rs');
 const host = read('sidecar/index.js');
 const harness = read('frontend/app/harness.js');
-const settings = read('frontend/app/stationui.js');
+const settings = read('frontend/app/keepui.js');
 const connectors = read('frontend/app/windows/connectors.js');
 
 A.ok(/\("custom",\s*"SKYNET_CUSTOM_OPENAI_KEY"\)/.test(rust), 'desktop restart injects the custom-provider key');

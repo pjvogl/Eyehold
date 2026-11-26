@@ -68,7 +68,7 @@ function fakeFetch(seed) {
   // ---- REMOTE REVOCATION: the account page can delete the device while this process still holds its token.
   //      The cloud's 401/403 must erase the cached number and become an explicit invalid-auth verdict. This is
   //      the 0.10.8 field report: cached $0 + remote unlink was painted as "LINKED · no credits" beside a paid
-  //      account with $22 and no linked stations. ----
+  //      account with $22 and no linked keeps. ----
   {
     let status = 200;
     const fetchImpl = async () => status === 200
@@ -77,7 +77,7 @@ function fakeFetch(seed) {
         ? { ok: true, status: 200, json: async () => ({ error: 'unexpected success shape' }) }
       : { ok: false, status, json: async () => ({ error: status === 401 ? 'unauthorized' : 'down' }) };
     const c = makeCredits({ url: 'https://credits.example', accountId: 'acct', fetch: fetchImpl });
-    A.eq(await c.refresh('acct'), 0, 'precondition: the linked station cached a real $0 response');
+    A.eq(await c.refresh('acct'), 0, 'precondition: the linked keep cached a real $0 response');
     A.eq(c.snapshot().balanceUsd, 0, 'the real zero is cached while the credential is valid');
     status = 401;
     A.eq(await c.refresh('acct'), null, 'the remotely revoked bearer no longer yields a balance');
@@ -349,7 +349,7 @@ function fakeFetch(seed) {
   }
 
   {
-    // exhaustion must break through the low latch: it is the one that actually stops the station
+    // exhaustion must break through the low latch: it is the one that actually stops the keep
     const { c, f, low } = withWarn(4);
     await c.refresh('acct');
     A.eq(low().length, 1, 'low fired');
@@ -476,7 +476,7 @@ function fakeFetch(seed) {
 
   {
     const c = makeCredits({ url: '', emit: () => { throw new Error('must never be called'); } });
-    A.eq(c.configured(), false, 'an unconfigured (BYOK) station stays inert');
+    A.eq(c.configured(), false, 'an unconfigured (BYOK) keep stays inert');
     A.eq(c.snapshot().balanceUsd, null, 'and has no balance to warn about');
   }
 

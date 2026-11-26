@@ -1,4 +1,4 @@
-/* V2 setup: shared station glass, quiet typography and complete controls. */
+/* V2 setup: shared keep glass, quiet typography and complete controls. */
 #screen-connect { --ov-well: linear-gradient(145deg,rgba(var(--ph-bright-rgb),.045),rgba(var(--ph-rgb),.018)),rgba(0,0,0,.18); }
 #screen-connect.active { padding:0; align-items:stretch; }
 #screen-connect .ov-panel { width:100%; max-width:none; height:100%; margin:0; border:0; border-radius:0; background:var(--gd-face); box-shadow:inset 0 1px 0 var(--gd-light); overflow:hidden; }

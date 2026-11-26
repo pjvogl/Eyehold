@@ -8,13 +8,13 @@ Integrated trunk snapshot: `ff9e147cf044e9c3a9206f1fecc92cda0afbc8be`.
 ## Integration
 
 Merged trunk into the feature branch without rebasing or touching the integration tree.
-The initial trunk snapshot was `010a6b50f`; the approved station interface landed during
+The initial trunk snapshot was `010a6b50f`; the approved keep interface landed during
 verification (`6085f26b8`), followed by session/workflow updates (`ff9e147cf`). All are
 included in this candidate. Generated release-surface locks were refreshed without
 changing claim verdicts. Both script imports were retained in the HTML conflict;
 both ignored development directories were retained in .gitignore.
 
-The station interface introduced `.comms-identity` and `.comms-portrait` wrappers.
+The keep interface introduced `.comms-identity` and `.comms-portrait` wrappers.
 Group mode now hides those direct-session wrappers so names, count, and Add agents
 remain on the existing single identity line. Direct sessions restore both wrappers.
 No new feature scope or settings were added.
@@ -33,10 +33,10 @@ workspace, isolated `dev/.group-profile`, and configured Haiku provider.
   original run `2827a343-35dc-4eac-a5a0-ea4b56acd9f1` was not replayed. Continuation
   `7d1ff62f-0fed-47ad-8383-4657f422e7ac` completed with Beta.
 - Stop canceled RESEARCHER's pending Red/Blue question; no pending card after reload.
-- With the approved station interface loaded, header/transcript/composer shared x=8
+- With the approved keep interface loaded, header/transcript/composer shared x=8
   and width=617 at a 633px viewport; no page horizontal overflow. Direct identity and
   portrait were hidden in group mode. The picker remained a .term under #terms; sampled
-  buttons used station colors, without white/gray native control paint.
+  buttons used keep colors, without white/gray native control paint.
 - Removed ENGINEER via the native picker and SAVE; header became two members.
 - Switching to a direct session restored identity/portrait and one composer. A real
   direct run completed (provider replied OK).

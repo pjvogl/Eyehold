@@ -13,7 +13,7 @@
      poll  (afterSeq, signal) → Promise<{ status, body }>   body: { ok, frame:{seq,mime,width,height,data}|null, page }
      send  (events[]) → Promise<{ status }>   omit for a VIEW-ONLY picture: nothing is ever sent
      onPage(page)   the page's { url, title } whenever a poll reports it
-     onEnd(body)    the stream ended on its own (the station said no): body carries { code, error } */
+     onEnd(body)    the stream ended on its own (the keep said no): body carries { code, error } */
 'use strict';
 (function (root) {
   const MOVE_MS = 50;
@@ -45,13 +45,13 @@
         try { r = await opts.poll(s.seq, s.abort && s.abort.signal); }
         catch (_) {
           if (!s.on || gen !== s.gen) return;
-          if (++fails > 5) { stop(); if (opts.onEnd) opts.onEnd({ code: 'lost', error: 'Lost the picture from the station.' }); return; }
+          if (++fails > 5) { stop(); if (opts.onEnd) opts.onEnd({ code: 'lost', error: 'Lost the picture from the keep.' }); return; }
           await new Promise(res => setTimeout(res, 400 * fails));
           continue;
         }
         fails = 0;
         if (!s.on || gen !== s.gen) return;
-        if (r.status !== 200 || !r.body || !r.body.ok) { stop(); if (opts.onEnd) opts.onEnd(r.body || { code: 'lost', error: 'The station stopped answering.' }); return; }
+        if (r.status !== 200 || !r.body || !r.body.ok) { stop(); if (opts.onEnd) opts.onEnd(r.body || { code: 'lost', error: 'The keep stopped answering.' }); return; }
         if (r.body.page && opts.onPage) opts.onPage(r.body.page);
         const f = r.body.frame;
         if (f && f.data) {
@@ -128,14 +128,14 @@
       }, { passive: false });
       /* NO KEYBOARD TRAP (release review 2026-09-30): keys are taken for the page only while you can actually type in
          it (opts.canType — not while an agent drives and every key would be refused anyway), so Tab and Esc move on as
-         everywhere else in the station. And F6 / Ctrl+L always leave the page for the address bar, like any browser. */
+         everywhere else in the keep. And F6 / Ctrl+L always leave the page for the address bar, like any browser. */
       const typing = () => s.on && (typeof opts.canType !== 'function' || !!opts.canType());
       vp.addEventListener('keydown', e => {
         if ((e.key === 'F6' || ((e.ctrlKey || e.metaKey) && (e.key === 'l' || e.key === 'L'))) && typeof opts.onLeave === 'function') {
           e.preventDefault(); e.stopPropagation(); opts.onLeave(); return;
         }
         if (!typing()) return;
-        e.stopPropagation();   // everything typed here belongs to the page, not the station (no hotkeys, no COMMS)
+        e.stopPropagation();   // everything typed here belongs to the page, not the keep (no hotkeys, no COMMS)
         if ((e.ctrlKey || e.metaKey) && (e.key === 'v' || e.key === 'V')) return;   // paste arrives as its own event
         e.preventDefault();
         push(keyDown(e));

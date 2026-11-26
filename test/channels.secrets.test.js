@@ -64,7 +64,7 @@ const root = path.resolve(__dirname, '..');
   A.eq(res.changed, false, 'bare mode: unchanged');
 }
 
-// ---- B2. Agent-bound Telegram bots obey the same keychain/last-copy split as the station bot ----
+// ---- B2. Agent-bound Telegram bots obey the same keychain/last-copy split as the keep bot ----
 {
   const secrets = {
     telegramBots: {

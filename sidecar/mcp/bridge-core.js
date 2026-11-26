@@ -2,7 +2,7 @@
 
    This is a thin OBSERVE/MESSAGE shim over a RUNNING Eyehold sidecar — an independent implementation
    that is wire-compatible with the reference harness's MCP bridge surface. It exposes the same 11-tool
-   compat surface so any MCP client (Claude Code, Cursor, …) can watch and message a Eyehold station. It does
+   compat surface so any MCP client (Claude Code, Cursor, …) can watch and message a Eyehold keep. It does
    NOT run agent turns — that is a separate OpenAI-compat surface.
 
    HARD INVARIANT (one sidecar owner per workspace): this core NEVER reads or writes store files.
@@ -30,12 +30,12 @@ const QUEUE_CAP = 1000;                               // the reference harness p
 const PROTO_RE = /^\d{4}-\d{2}-\d{2}$/;               // a well-formed MCP protocol revision string
 
 const INSTRUCTIONS =
-  'Eyehold station messaging bridge. These tools OBSERVE and MESSAGE a running Eyehold station over ' +
+  'Eyehold keep messaging bridge. These tools OBSERVE and MESSAGE a running Eyehold keep over ' +
   'its local loopback API — they do not run agent turns. conversations_list / conversation_get / ' +
-  'messages_read read the station\'s run history and per-stream transcripts; channels_list shows the ' +
-  'connected messaging channels; events_poll / events_wait deliver live station telemetry (runs, ' +
+  'messages_read read the keep\'s run history and per-stream transcripts; channels_list shows the ' +
+  'connected messaging channels; events_poll / events_wait deliver live keep telemetry (runs, ' +
   'deliveries, permission prompts) with monotonic cursors; permissions_list_open / permissions_respond ' +
-  'surface and answer live consent prompts. messages_send drives the station over its local DEV channel ' +
+  'surface and answer live consent prompts. messages_send drives the keep over its local DEV channel ' +
   '(target "dev:<chat>", only when Eyehold runs with DEV mode enabled); real platform channels ' +
   '(telegram/discord/…) are not injectable over the API and return a structured not-supported result. ' +
   'If the sidecar is not running every tool returns a structured error telling you to start Eyehold.';
@@ -62,7 +62,7 @@ const AGENT_RE = /^[A-Za-z0-9_-]{1,40}$/;             // the sidecar's transcrip
 const TOOLS = [
   {
     name: 'conversations_list',
-    description: 'List the station\'s recent runs (conversations) across agents. Returns each run\'s session_key (needed for messages_read), the agent, a display title, model, outcome, and last-activity time.',
+    description: 'List the keep\'s recent runs (conversations) across agents. Returns each run\'s session_key (needed for messages_read), the agent, a display title, model, outcome, and last-activity time.',
     inputSchema: {
       type: 'object',
       properties: {
@@ -95,7 +95,7 @@ const TOOLS = [
   },
   {
     name: 'events_poll',
-    description: 'Poll for new station events since a cursor (runs, deliveries, permission prompts). Returns events plus a next_cursor to pass back. Events are fed from the station\'s live SSE stream.',
+    description: 'Poll for new keep events since a cursor (runs, deliveries, permission prompts). Returns events plus a next_cursor to pass back. Events are fed from the keep\'s live SSE stream.',
     inputSchema: {
       type: 'object',
       properties: {
@@ -107,7 +107,7 @@ const TOOLS = [
   },
   {
     name: 'events_wait',
-    description: 'Long-poll: block until the next matching station event arrives or the timeout expires. Use for near-real-time delivery without busy-polling.',
+    description: 'Long-poll: block until the next matching keep event arrives or the timeout expires. Use for near-real-time delivery without busy-polling.',
     inputSchema: {
       type: 'object',
       properties: {
@@ -119,17 +119,17 @@ const TOOLS = [
   },
   {
     name: 'messages_send',
-    description: 'Deliver a message INTO the station over its local DEV channel (target "dev:<chat>"), as if from the operator; the station\'s agent processes it and its replies are returned. Requires Eyehold running with DEV mode. Real platform channels (telegram/discord/…) are not injectable over the API and return a structured not-supported result.',
+    description: 'Deliver a message INTO the keep over its local DEV channel (target "dev:<chat>"), as if from the operator; the keep\'s agent processes it and its replies are returned. Requires Eyehold running with DEV mode. Real platform channels (telegram/discord/…) are not injectable over the API and return a structured not-supported result.',
     inputSchema: { type: 'object', required: ['target', 'message'], properties: { target: { type: 'string', description: 'Target in "platform:chat_id" form, e.g. "dev:devchat".' }, message: { type: 'string' } } }
   },
   {
     name: 'channels_list',
-    description: 'List the station\'s messaging channels and their connection status. Connected channels can receive the station\'s agent replies; use messages_send target "dev:<chat>" to drive the station locally.',
+    description: 'List the keep\'s messaging channels and their connection status. Connected channels can receive the keep\'s agent replies; use messages_send target "dev:<chat>" to drive the keep locally.',
     inputSchema: { type: 'object', properties: { platform: { type: 'string', description: 'Filter by platform id (telegram/discord/slack/matrix/signal).' } } }
   },
   {
     name: 'permissions_list_open',
-    description: 'List the station\'s OPEN consent prompts awaiting a human decision (each carries an id, the run, agent, and — when observed on the live stream — the tool/scope/argsSummary).',
+    description: 'List the keep\'s OPEN consent prompts awaiting a human decision (each carries an id, the run, agent, and — when observed on the live stream — the tool/scope/argsSummary).',
     inputSchema: { type: 'object', properties: {} }
   },
   {
@@ -160,7 +160,7 @@ function makeEventQueue(deps) {
 
   function matches(e, sessionKey) { return e.cursor > 0 && (!sessionKey || e.session_key === sessionKey); }
 
-  // push ONE normalized station event ({ name, payload } off the SSE wire). Returns the assigned cursor,
+  // push ONE normalized keep event ({ name, payload } off the SSE wire). Returns the assigned cursor,
   // or 0 for a frame we deliberately ignore (keepalives / nameless frames).
   function push(name, payload) {
     const type = str(name);
@@ -262,7 +262,7 @@ const IMPLS = {
     const limit = clampInt(args.limit, 50, 1, 200);
     const platform = str(args.platform).toLowerCase();
     const search = str(args.search).toLowerCase();
-    if (platform && platform !== 'eyehold') return { count: 0, conversations: [] };   // only station runs today
+    if (platform && platform !== 'eyehold') return { count: 0, conversations: [] };   // only keep runs today
     const r = await ctx.callSidecar('GET', '/api/runs?agent=*&limit=' + Math.min(500, limit * 4));
     if (!r.ok) return sidecarDown(ctx, r);
     if (r.status !== 200) return badStatus('/api/runs', r);
@@ -337,7 +337,7 @@ const IMPLS = {
     if (platform !== 'dev') {
       return {
         ok: false, supported: false, target: target,
-        error: 'Eyehold exposes no outbound-send route for platform channel "' + platform + '". Channel replies are produced only as agent turns inside runs. Use messages_send target "dev:<chat>" to drive the station over its local DEV channel (requires Eyehold running with DEV mode).'
+        error: 'Eyehold exposes no outbound-send route for platform channel "' + platform + '". Channel replies are produced only as agent turns inside runs. Use messages_send target "dev:<chat>" to drive the keep over its local DEV channel (requires Eyehold running with DEV mode).'
       };
     }
     const r = await ctx.callSidecar('POST', '/api/dev/inbound', { text: message, chatId: chatId || 'devchat' });

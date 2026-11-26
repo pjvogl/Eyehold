@@ -376,16 +376,16 @@ async function waitUntil(fn, ms, label) {
     await waitUntil(() => tg.sends.some(s => String(s.chat_id) === '4242' && /Owner paired/i.test(String(s.text || ''))), 8000, 'Telegram owner-pair acknowledgement');
 
     const channelFile = path.join(ws, 'channels', 'secrets.json');
-    const stationBeforeMalformed = fs.existsSync(channelFile) ? fs.readFileSync(channelFile, 'utf8') : null;
-    const stationStatusBefore = await (await fetch(B + '/api/channels/telegram/status', { headers: { 'X-Eyehold-Token': token, Origin: B } })).json();
-    const stationBadDisconnect = await fetch(B + '/api/channels/telegram/disconnect', {
+    const keepBeforeMalformed = fs.existsSync(channelFile) ? fs.readFileSync(channelFile, 'utf8') : null;
+    const keepStatusBefore = await (await fetch(B + '/api/channels/telegram/status', { headers: { 'X-Eyehold-Token': token, Origin: B } })).json();
+    const keepBadDisconnect = await fetch(B + '/api/channels/telegram/disconnect', {
       method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Eyehold-Token': token, Origin: B }, body: '{bad'
     });
-    A.eq(stationBadDisconnect.status, 400, 'malformed station Telegram disconnect -> 400');
-    if (stationBeforeMalformed !== null) A.eq(fs.readFileSync(channelFile, 'utf8'), stationBeforeMalformed, 'malformed station disconnect leaves durable configuration byte-identical');
-    const stationStatus = await (await fetch(B + '/api/channels/telegram/status', { headers: { 'X-Eyehold-Token': token, Origin: B } })).json();
-    A.eq(stationStatus.connected, stationStatusBefore.connected, 'malformed station disconnect does not change the connected flag');
-    A.eq(stationStatus.state, stationStatusBefore.state, 'malformed station disconnect does not change the poll state');
+    A.eq(keepBadDisconnect.status, 400, 'malformed keep Telegram disconnect -> 400');
+    if (keepBeforeMalformed !== null) A.eq(fs.readFileSync(channelFile, 'utf8'), keepBeforeMalformed, 'malformed keep disconnect leaves durable configuration byte-identical');
+    const keepStatus = await (await fetch(B + '/api/channels/telegram/status', { headers: { 'X-Eyehold-Token': token, Origin: B } })).json();
+    A.eq(keepStatus.connected, keepStatusBefore.connected, 'malformed keep disconnect does not change the connected flag');
+    A.eq(keepStatus.state, keepStatusBefore.state, 'malformed keep disconnect does not change the poll state');
     tg.pushText(4242, 99, 'research AI trend now');
 
     await waitUntil(() => tg.sends.some(s => String(s.chat_id) === '4242' && String(s.text || '').indexOf('Telegram answer') >= 0), 8000, 'telegram sendMessage reply');
@@ -418,7 +418,7 @@ async function waitUntil(fn, ms, label) {
     A.ok(shellWire.indexOf('team_dispatch') >= 0, 'owner Telegram run advertises task delegation to the provider');
     const shellSystem = String((shellReqs[0].messages.find(m => m.role === 'system') || {}).content || '');
     A.ok(shellSystem.includes('[ORCHESTRATION]'), 'owner Telegram task receives the crew briefing for its advertised delegation tools');
-    // the owner away from the station (self-driving lane 2): a pointer to manual.read — never the ~6K index, never nothing
+    // the owner away from the keep (self-driving lane 2): a pointer to manual.read — never the ~6K index, never nothing
     const Manual = require('../sidecar/manual.js');
     A.ok(shellSystem.includes(Manual.eyeholdManualPointer()) && shellWire.indexOf('manual_read') >= 0, 'owner Telegram task gets the manual pointer, and manual_read is on its wire');
     A.ok(!shellSystem.includes(Manual.eyeholdManualIndex()), 'owner Telegram task does NOT carry the inline manual index');
@@ -490,11 +490,11 @@ async function waitUntil(fn, ms, label) {
 
     // ---- /tools must describe the office this channel's runs ACTUALLY get -------------------------------
     // THE BUG (2026-07-28, reported off a v0.6.8 install): runSlashForChannel read `placed` ONLY from
-    // router.stationFor(agentId), which is null for every agent NOT docked in a conveyor bay — i.e. essentially
+    // router.keepFor(agentId), which is null for every agent NOT docked in a conveyor bay — i.e. essentially
     // every main agent. So /tools computed placed=[] and answered "This agent has no tools yet", while the very
     // same agent's Telegram RUNS were handed the full autonomous office all along. The readout lied about a
-    // grant that was working. No routing plan is posted in this test, so stationFor is null here exactly as it
-    // is on a real station — which is what makes this a true reproduction rather than a mocked one.
+    // grant that was working. No routing plan is posted in this test, so keepFor is null here exactly as it
+    // is on a real keep — which is what makes this a true reproduction rather than a mocked one.
     const llmCallsBeforeTools = llm.requests.length;
     tg.pushText(7777, 99, '/tools');
     await waitUntil(() => tg.sends.some(s => String(s.chat_id) === '7777'), 8000, '/tools reply to chat 7777');
@@ -532,7 +532,7 @@ async function waitUntil(fn, ms, label) {
        composeOffice. `interactive` means THE MOAT — the floor is real, so the office starts COMPUTE-ONLY and the
        browser appends the agent's actually-placed props via extraObjects. A phone never sends extraObjects and
        has no floor at all, so turning on approve/deny buttons silently cut the chat from the 59-tool autonomous
-       office to THREE tools (quest.update, station.inspect, tool.search) — while /tools, fixed just above to quote the autonomous
+       office to THREE tools (quest.update, keep.inspect, tool.search) — while /tools, fixed just above to quote the autonomous
        office, went on describing the 59 the run no longer had. That is exactly the "/tools work and they don't"
        the user saw: the agent truthfully reported no web capability (its tool.search even answered "every tool
        you have been granted is already listed", which is only reachable with an EMPTY deferred set), and the
@@ -737,7 +737,7 @@ async function waitUntil(fn, ms, label) {
         return last;
       };
 
-      // Control: the token still works and a human really has messaged this station, so the chat IS reachable.
+      // Control: the token still works and a human really has messaged this keep, so the chat IS reachable.
       const up = await runTargets();
       A.ok(up && /reachable now/.test(String(up.summary || '')), 'while the token works the chat is reported reachable: ' + (up && up.summary));
       A.ok(!/0 of/.test(String(up.summary || '')), 'and not as zero-of-N');

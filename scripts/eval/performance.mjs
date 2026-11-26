@@ -66,7 +66,7 @@ export async function collectPerformanceBaseline(opts = {}) {
     },
     regressionGate: { medianIncreasePct: 10 },
     pendingInstalledMeasurements: [
-      'cold boot to interactive station', 'send to first visible token', 'send to first tool activity',
+      'cold boot to interactive keep', 'send to first visible token', 'send to first tool activity',
       'send to verified useful artifact', 'final token to durable visible delivery',
       'session switching at 100/1000/10000 turns', '48-hour idle and active CPU/memory'
     ]

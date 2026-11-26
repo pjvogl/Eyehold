@@ -98,7 +98,7 @@ async function restoreDeclined(store, agentId, text) {
    High-stakes memory proposals (credential/PII/standing-instruction shaped) are not auto-saved — they wait for a
    Keep/Edit/Discard verdict. That wait used to live in an in-memory Map keyed by runId, which was fine while only
    the watched browser run could raise one. Unattended runs reflect now, so a deck can be raised with nobody at the
-   station, and an un-answered proposal that evaporates on the next restart is a belief the Commander never got to
+   keep, and an un-answered proposal that evaporates on the next restart is a belief the Commander never got to
    rule on. These three helpers are the durable half; the composite key is runId+':'+id because proposal ids are
    per-batch (every batch mints a prop_1).
 

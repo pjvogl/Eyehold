@@ -148,8 +148,8 @@ async function startSseCollector(url, onEvent) {
     A.eq(create.status, 200, 'created a line routine');
     const job = (await create.json()).job;
     sse = await startSseCollector(B + '/api/channels/events?' + require('./_httpToken.js').sseQuery(token), async event => {
-      if (event.name !== 'station.command') return;
-      await fetch(B + '/api/station/ack', { method: 'POST', headers, body: JSON.stringify({ id: event.payload.id, ok: true, result: { folded: true } }) });
+      if (event.name !== 'keep.command') return;
+      await fetch(B + '/api/keep/ack', { method: 'POST', headers, body: JSON.stringify({ id: event.payload.id, ok: true, result: { folded: true } }) });
     });
     const Pipeline = require('../frontend/app/pipeline.js');
     const belt = (x, y, dir) => ({ x, y, dir });

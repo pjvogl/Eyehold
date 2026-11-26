@@ -3,12 +3,12 @@
   "release": "69baf91a5b2c22230f87e614da6a72882278bc6c",
   "notesSha256": "0ec2303c35313351c79fa5996cad4f177451a8ec31969864bfa5801e8bb7aafb",
   "sections": [
-    "Station visuals and performance",
+    "Keep visuals and performance",
     "Overseer creation and agent personalities",
     "Providers, connections and discovery",
     "Saves, conversations and recovery",
     "COMMS, reports and task feedback",
-    "Crew movement, furniture and station behavior",
+    "Crew movement, furniture and keep behavior",
     "Images, usage and speech",
     "API and automation reliability",
     "Desktop, installation and diagnostics",
@@ -350,7 +350,7 @@
     },
     {
       "sha": "e9051515a4b87c326b9d048f726cd0db49df05c5",
-      "subject": "merge: include integrated station card polish in release audit"
+      "subject": "merge: include integrated keep card polish in release audit"
     },
     {
       "sha": "9441660d0968ec7f21903ae8851fc1a28e09ac34",
@@ -382,7 +382,7 @@
     },
     {
       "sha": "455ffc9ed1e20540f65a6b00601df5ba108c8a77",
-      "subject": "style: make station announcements readable"
+      "subject": "style: make keep announcements readable"
     },
     {
       "sha": "bed625bdd24afd44175b7c9d61d82952ae321121",
@@ -582,7 +582,7 @@
     },
     {
       "sha": "8c482f327f96883c57af64d1fd38d85973a102fc",
-      "subject": "fix: preserve current station branding during tutorial integration"
+      "subject": "fix: preserve current keep branding during tutorial integration"
     },
     {
       "sha": "652f7d62e0f556f4bce548a4a8a2b667e5b18786",
@@ -766,7 +766,7 @@
     },
     {
       "sha": "b16654186bee9d5e7261d9eef7c42ad8e56434f2",
-      "subject": "test: restrict audit probes to development stations"
+      "subject": "test: restrict audit probes to development keeps"
     },
     {
       "sha": "95840aed5fb3a94ff1cd0458b60c569837d2db98",
@@ -794,7 +794,7 @@
     },
     {
       "sha": "5c8d26e32f75b4475e2c17d606908c0fc3cf549c",
-      "subject": "style: use station controls for save recovery"
+      "subject": "style: use keep controls for save recovery"
     },
     {
       "sha": "a5aaaf3e1022b5000c1348dd7ed54466615e95b1",
@@ -1226,7 +1226,7 @@
     },
     {
       "sha": "0946764a577ff628c1e08551db97b2e129850cf2",
-      "subject": "feat: rebuild Overseer setup controls and model flow with station glass"
+      "subject": "feat: rebuild Overseer setup controls and model flow with keep glass"
     },
     {
       "sha": "c2193f1fbc07f827db07814487769adaeb6467b3",
@@ -1608,7 +1608,7 @@
     },
     {
       "sha": "455ffc9ed1e20540f65a6b00601df5ba108c8a77",
-      "subject": "style: make station announcements readable"
+      "subject": "style: make keep announcements readable"
     },
     {
       "sha": "bed625bdd24afd44175b7c9d61d82952ae321121",
@@ -1632,7 +1632,7 @@
     },
     {
       "sha": "8c482f327f96883c57af64d1fd38d85973a102fc",
-      "subject": "fix: preserve current station branding during tutorial integration"
+      "subject": "fix: preserve current keep branding during tutorial integration"
     },
     {
       "sha": "f129e19e340e589fe976d19082ccaaa55a779863",
@@ -1648,7 +1648,7 @@
     },
     {
       "sha": "5c8d26e32f75b4475e2c17d606908c0fc3cf549c",
-      "subject": "style: use station controls for save recovery"
+      "subject": "style: use keep controls for save recovery"
     },
     {
       "sha": "ff188bee70c34753216cef061a074109420985d7",
@@ -1760,7 +1760,7 @@
     },
     {
       "sha": "0946764a577ff628c1e08551db97b2e129850cf2",
-      "subject": "feat: rebuild Overseer setup controls and model flow with station glass"
+      "subject": "feat: rebuild Overseer setup controls and model flow with keep glass"
     },
     {
       "sha": "774a5eeed83354a4c10772b4d2e878fc7c9a105d",
@@ -1937,7 +1937,7 @@
     "frontend/app/overseer-setup.js",
     "frontend/app/personas.js",
     "frontend/app/spacebg.js",
-    "frontend/app/stationui.js",
+    "frontend/app/keepui.js",
     "frontend/app/terrain.js",
     "frontend/app/tutorial.js",
     "frontend/app/voice-live.js",
@@ -4345,7 +4345,7 @@
     "qa/bugs/65587128-desktop-overlay-version-disagrees-with-sidecar-d.md",
     "qa/bugs/694472bf-linux-appimage-staging-includes-incompatible-mus.md",
     "qa/bugs/70860aa8-comms-loses-report-tables-list-hierarchy-quotes.md",
-    "qa/bugs/72af29f4-funded-station-false-zero-warning.md",
+    "qa/bugs/72af29f4-funded-keep-false-zero-warning.md",
     "qa/bugs/72da34d7-deleted-rooms-leave-floating-furniture.md",
     "qa/bugs/7546cccd-stale-client-save-overwrite.md",
     "qa/bugs/758185bc-windows-computer-movement-resolves-to-filesystem.md",
@@ -4678,7 +4678,7 @@
     "website/app/app/overseer-setup.js",
     "website/app/app/personas.js",
     "website/app/app/spacebg.js",
-    "website/app/app/stationui.js",
+    "website/app/app/keepui.js",
     "website/app/app/terrain.js",
     "website/app/app/tutorial.js",
     "website/app/app/voice-live.js",

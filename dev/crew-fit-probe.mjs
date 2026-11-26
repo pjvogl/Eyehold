@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /* dev/crew-fit-probe.mjs — measure the CREW rail's roster window against a real multi-agent
-   station, and shoot it. The complaint this exists for: the roster cuts mid-row, so the second
+   keep, and shoot it. The complaint this exists for: the roster cuts mid-row, so the second
    agent is sliced in half and the list reads as broken rather than scrollable.
 
    It boots a seeded sidecar, summons crew until the roster is 6 deep, then reports for a set of
@@ -35,7 +35,7 @@ const SUMMON = (n) => `(() => {
 })()`;
 
 // A REAL rail also carries sessions. That matters: #ws-wrap only steals from the roster once its
-// own content overflows the column, which is exactly the state a used station is always in.
+// own content overflows the column, which is exactly the state a used keep is always in.
 const SESSIONS = (n) => `(() => {
   const btn = document.getElementById('ws-new');
   if (!btn) return 'no-btn';

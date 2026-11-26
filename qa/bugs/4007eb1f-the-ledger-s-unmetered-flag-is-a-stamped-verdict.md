@@ -14,7 +14,7 @@ fix: fdbb12a2
 
 ## Symptom
 
-On a Grok-OAuth / Kimi / ollama-behind-a-proxy station, the same run reads two different amounts depending on which surface you look at: the RUNS recap says "subscription" and /api/insights says $0.00 with spendLabel "subscription / unmetered", while /api/budget's spentToday + lifetime and the budget governor's day/global pools count the full provider-reported figure. Worse, that phantom spend then BLOCKS a later real (BYOK) run with reason 'budget' and a "CAP HIT" HUD note naming money the Commander never spent.
+On a Grok-OAuth / Kimi / ollama-behind-a-proxy keep, the same run reads two different amounts depending on which surface you look at: the RUNS recap says "subscription" and /api/insights says $0.00 with spendLabel "subscription / unmetered", while /api/budget's spentToday + lifetime and the budget governor's day/global pools count the full provider-reported figure. Worse, that phantom spend then BLOCKS a later real (BYOK) run with reason 'budget' and a "CAP HIT" HUD note naming money the Commander never spent.
 
 ## Repro
 

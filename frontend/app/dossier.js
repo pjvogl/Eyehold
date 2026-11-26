@@ -1,10 +1,10 @@
-/* EYEHOLD — dossier.js : the PURE Commander Dossier engine — what the STATION knows about its Commander.
+/* EYEHOLD — dossier.js : the PURE Commander Dossier engine — what the KEEP knows about its Commander.
 
-   Phase A of the Commander Dossier (docs/COMMANDER_DOSSIER_PLAN.md): one station-wide, dimensioned,
+   Phase A of the Commander Dossier (docs/COMMANDER_DOSSIER_PLAN.md): one keep-wide, dimensioned,
    local-first model of the human, unifying signals that today are thin + scattered. This is the durable
    BELIEF layer — a small set of named dimensions (identity / stack / goals / style / standing_orders / pain / ambition / people / schedule),
    each holding human-readable beliefs with provenance — that compose into every agent's system prompt so
-   the whole station knows the Commander. (The live affinity vector in profile.js is the SEPARATE "what
+   the whole keep knows the Commander. (The live affinity vector in profile.js is the SEPARATE "what
    you work on" signal; this engine never rewrites it — the store reads it for the panel only.)
 
    PURE + testable, mirroring profile.js / xp.js: a `Dossier` global in the browser, module.exports under
@@ -20,7 +20,7 @@
 })(typeof globalThis !== 'undefined' ? globalThis : this, function () {
   'use strict';
 
-  // the dimensions the station models — this array's order IS the render + compose order.
+  // the dimensions the keep models — this array's order IS the render + compose order.
   const DIMS = [
     { key: 'identity',        label: 'Identity',        lead: 'Identity' },
     { key: 'stack',           label: 'Stack & tools',   lead: 'Stack & tools' },
@@ -50,11 +50,11 @@
   const COMPOSE_ORDER = ['goals', 'pain', 'ambition', 'identity', 'people', 'schedule', 'stack', 'style', 'standing_orders'];
   const TEXT_CHARS = 280;    // a single belief is capped (mirrors the §5.2 memory-record content cap)
 
-  // ONBOARDING V3 (docs/ONBOARDING_V3_PLAN.md §5): every belief carries an evidence WEIGHT — how the station
+  // ONBOARDING V3 (docs/ONBOARDING_V3_PLAN.md §5): every belief carries an evidence WEIGHT — how the keep
   // came to hold it. 'stated' = the Commander's own words; 'synth' = model-synthesized FROM their words;
   // 'observed' = learned from real work (study); 'seed' = mechanically copied from a config doc. The readiness
   // gate (understanding.js) counts only non-seed beliefs — a canned/doc-copied line can never convince the
-  // station it "knows" its Commander (the blitz-through-onboarding poison this field exists to kill).
+  // keep it "knows" its Commander (the blitz-through-onboarding poison this field exists to kill).
   const WEIGHTS = ['stated', 'synth', 'observed', 'seed'];
 
   function isKey(k) { return DIM_KEYS.indexOf(k) >= 0; }
@@ -98,14 +98,14 @@
         /* A CALLER MAY RE-STAMP PROVENANCE ON AN EXISTING BELIEF (2026-08-04). Only updatedAt moved before, which
            left a belief the Commander had just CONFIRMED OUT LOUD still recorded as the mechanical seed it started
            as (EVIDENCE_WEIGHT.seed = 0) — so its dimension's confidence never rose, it read stale again three
-           weeks later, and the station asked "still true?" about the same belief every three weeks forever. The
+           weeks later, and the keep asked "still true?" about the same belief every three weeks forever. The
            re-stamp is truthful: the Commander really did just state it. Omit source/weight and nothing moves. */
         if (belief.source && typeof belief.source === 'string') cur.source = belief.source;
         if (isWeight(belief.weight)) cur.weight = belief.weight;
         /* …and the EVIDENCE REFERENCE, when the caller explicitly declares one (additive, 2026-08-04; DEFAULTED
            OFF — omit the field and the stored ref is untouched, exactly as before). The re-confirm card needs it:
-           it upgrades a station-authored belief to commander/stated, and without a marker saying the Commander
-           AFFIRMED the station's wording rather than authored it, every later card renders `you said "…"` about
+           it upgrades a keep-authored belief to commander/stated, and without a marker saying the Commander
+           AFFIRMED the keep's wording rather than authored it, every later card renders `you said "…"` about
            words they never spoke. Same shape/normalization as the insert path below. */
         if (belief.evidenceRef && typeof belief.evidenceRef === 'object') {
           cur.evidenceRef = {
@@ -127,7 +127,7 @@
         runId: (typeof belief.evidenceRef.runId === 'string') ? belief.evidenceRef.runId : null,
         kind: (typeof belief.evidenceRef.kind === 'string') ? belief.evidenceRef.kind.slice(0, 40) : ''
       } : null,
-      // Phase B (study): when the STATION observed a belief from real work (not the Commander authoring it), stamp
+      // Phase B (study): when the KEEP observed a belief from real work (not the Commander authoring it), stamp
       // WHEN — the COMMANDER panel renders a study-sourced belief with an "observed" tag + this timestamp. Only a
       // finite number is kept (never a guessed 0), so a Commander-authored belief carries none.
       observedAt: (Number.isFinite(belief.observedAt) && belief.observedAt > 0) ? belief.observedAt : null,
@@ -188,7 +188,7 @@
 
   // the compact COMMANDER block folded into every agent's system prompt. DURABLE BELIEFS ONLY (no volatile
   // affinity signal) so it is byte-identical for identical state — the cached prefix stays warm. Returns ''
-  // when nothing is known (a cold station adds nothing to the prompt). Empty dimensions are omitted, never
+  // when nothing is known (a cold keep adds nothing to the prompt). Empty dimensions are omitted, never
   // guessed. Capped at maxChars (whole-word backoff so the cap never splits a word mid-token).
   function composeBlock(dossier, opts) {
     opts = opts || {};
@@ -196,7 +196,7 @@
     // known dims in compose-PRIORITY order (pitch-critical first) so a trim never silently loses the keystone dims.
     const known = COMPOSE_ORDER.map(k => DIMS.find(d => d.key === k)).filter(d => d && beliefs(dossier, d.key).length);
     if (!known.length) return '';
-    const head = 'WHAT YOU KNOW ABOUT YOUR COMMANDER (the station has learned this — honor it; if anything here is wrong, the Commander will correct it):';
+    const head = 'WHAT YOU KNOW ABOUT YOUR COMMANDER (the keep has learned this — honor it; if anything here is wrong, the Commander will correct it):';
     const lineOf = d => '- ' + d.lead + ': ' + beliefs(dossier, d.key).map(b => b.text).join('; ');
     let body = head + '\n' + known.map(lineOf).join('\n');
     if (body.length <= cap) return body;   // fast path: everything fits (the common case)

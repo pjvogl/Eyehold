@@ -88,7 +88,7 @@ function kill(child) { return new Promise(r => { try { child.on('exit', () => r(
     const headers = { 'Content-Type': 'application/json', 'X-Eyehold-Token': token, Origin: B };
     const status = async () => (await fetch(B + '/api/nightshift/status', { headers })).json();
 
-    // arm the shift by raising the dial (the same call a live station makes).
+    // arm the shift by raising the dial (the same call a live keep makes).
     const arm = await (await fetch(B + '/api/autonomy/posture', { method: 'POST', headers, body: JSON.stringify({ posture: { initiative: 'leash', reach: 'sandbox', leashPerDay: 3 } }) })).json();
     A.ok(arm.ok === true, 'raising the dial armed the night shift');
 

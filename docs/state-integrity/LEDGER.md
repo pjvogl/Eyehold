@@ -28,14 +28,14 @@ product-call borderlines. The founding crew bug is FIXED and shipped on trunk.
 | CuriosityStore (.curiosity.v1) | ⚠ S2 | ✅ | — | ⚠ S2 | — | — |
 | Marketplace ack / Build seen | — | — | — | ⚠ S3/S4 | — | — |
 | Workstreams / Xp / Profile / Dossier | ✅ | ✅ | ✅ | ✅ | ✅ | — |
-| StationUI panels | ✅ | ✅ | ✅ | ✅ | — | — |
+| KeepUI panels | ✅ | ✅ | ✅ | ✅ | — | — |
 | Harness fetch / CloudSave / codexPoll | ✅ | ✅ | ✅ | ✅ | — | — |
 
 ## Findings (ranked)
 
 | ID | Sev | Conf | Status | File | Leak (one line) |
 |---|---|---|---|---|---|
-| **W1** | Med | High | **FIXED** | world.js spawn | FloorStats economy (spend/slag/yield) + SlagLog not reset → new agent's HUD shows prior agent's numbers. Reset in `spawn()` (NOT loadStation — that also runs on refit). Verified live: spend 0.42 → 0. |
+| **W1** | Med | High | **FIXED** | world.js spawn | FloorStats economy (spend/slag/yield) + SlagLog not reset → new agent's HUD shows prior agent's numbers. Reset in `spawn()` (NOT loadKeep — that also runs on refit). Verified live: spend 0.42 → 0. |
 | **W2** | Med | High | **FIXED** | world.js spawn | Conveyor boxes not reset → prior agent's belt crates ride the new floor. `convey.reset()` now called in `spawn()`. |
 | **N1** | Med | High | **FIXED** | world.js + app.js | Connector poll now held in `connPollTimer`; `pauseBridge()` (on disconnect) clears it, `resumeBridge()` (on entry) restarts it. Verified live: poll true → false → true. |
 | **N2** | Med | High | **FIXED** | world.js + app.js | Channel `EventSource` now held in `chanES`; closed on disconnect, reopened on entry; `onerror` bails while paused. Verified live: es true → false → true. |
@@ -61,7 +61,7 @@ flags stay per-user (S3/S4/C5 → no change, already correct).
 
 Workstreams.reset (full wipe), XpStore (explicit fresh fallback + `wired` guard),
 ProfileStore/DossierStore (pendingX null on WAKE → fresh; first-seed keys off the fresh
-slice), StationUI.enter/leave (closes terminal windows, clears runningAgents; once-guards),
+slice), KeepUI.enter/leave (closes terminal windows, clears runningAgents; once-guards),
 Harness fetch-hardening (`__EYEHOLD_FETCH_HARDENED__` guard), CloudSave.installUnloadFlush
 (boot-once, not per-enterGame), codexPoll (cleared on every exit), World ResizeObserver
 (disconnects before re-observe), audio.js (clears its interval; self-stopping oscillators),
@@ -72,10 +72,10 @@ onboarding/intake stop() (clear timers/flags), Tutorial bus handlers (gated by `
 
 - **Iteration 1** (2026-06-23): W1+W2+W3+W4 — the World per-agent session state (FloorStats
   economy, SlagLog, Conveyor boxes, channel queue gauge / working-lights, XP chip + one-shot
-  beats). Reset at the `spawn()` seam (NOT loadStation, which also runs on a same-agent REFIT
-  where the economy must persist). Verified live on a seeded station: injected spend=$0.42 +
+  beats). Reset at the `spawn()` seam (NOT loadKeep, which also runs on a same-agent REFIT
+  where the economy must persist). Verified live on a seeded keep: injected spend=$0.42 +
   queueDepth=7 into NOVA → NEW AGENT "KILO" → both read 0 (and crew 0). `test:fast` green.
-  Refit-preservation guaranteed by construction (reset only in spawn, never in loadStation/rederive).
+  Refit-preservation guaranteed by construction (reset only in spawn, never in loadKeep/rederive).
 - **Iteration 2** (2026-06-23): Voice cluster — V1 (Commander rule: only the orchestrator speaks;
   summoned agents silent) gated at the single `chat.js` TTS seam; C4 (`Voice.init` now cuts the
   prior agent's in-flight speech + watchdog); C3 (`forcedSpeak` reset per agent). Also recorded

@@ -1,7 +1,7 @@
-/* EYEHOLD — recipefit.js : WHAT THIS STATION IS ACTUALLY READY TO RUN.
+/* EYEHOLD — recipefit.js : WHAT THIS KEEP IS ACTUALLY READY TO RUN.
 
    The recipes tab was a MENU: 98 cards, identical for everybody, and it was on the Commander to work out
-   which of them applied to their situation. That is backwards — the station already knows its own
+   which of them applied to their situation. That is backwards — the keep already knows its own
    situation. It knows the real project folders it has been granted, which channels are connected, which
    capabilities are placed on the floor, what it has learned the Commander keeps working on, what has been
    launched before, and what is already running as a routine.
@@ -9,7 +9,7 @@
    This module turns that into OFFERS: a catalog recipe, bound to the Commander's real context, carrying
    the evidence for why it is being offered. "The Graveyard" becomes "sweep the 3 project folders you have
    granted — nothing is watching them." The catalog stops being a menu and becomes a to-do list for THIS
-   station, and it re-derives itself whenever the context changes.
+   keep, and it re-derives itself whenever the context changes.
 
    ══ THE HONESTY LAW — the only rule that really matters here ══
    ⛔ AN OFFER MAY ONLY CITE WHAT THE CONTEXT ACTUALLY CONTAINS. Every `why` string is built from a counter
@@ -17,7 +17,7 @@
    carries that recipeId. This module NEVER guesses, never says "you probably", and never describes the
    CONTENTS of anything it was not given — it has not read inside those folders, so it may not claim there
    are four abandoned drafts in them. It may only say the folders exist and nothing is watching them. That
-   distinction is the whole difference between a station that earns trust and one that makes things up,
+   distinction is the whole difference between a keep that earns trust and one that makes things up,
    and it is the product's core law applied to its own recommender.
 
    Pure and deterministic: same ctx -> same offers, no clock, no storage, no fetch. The caller gathers the
@@ -172,7 +172,7 @@
     if (needs.folder && projects) s += 3;
     if (needs.web && topics) s += 2;
     if (needs.files && projects) s += 1;
-    // a standing job the station could be running and is not
+    // a standing job the keep could be running and is not
     if (needs.standing && !n.scheduled) s += 3;
     // the Commander already voted with their hands
     if (n.launches > 0) s += Math.min(2, n.launches);
@@ -181,7 +181,7 @@
     // two misses survive on launch count alone, which is the Commander telling us twice and being ignored.
     if (n.miss > 0) s -= 2 * Math.min(3, n.miss);
     // UNMET NEEDS SINK IT. A connector recipe with no channel connected is an advert for a feature the
-    // Commander does not have — it belongs in the library, not on a shelf claiming the station is ready.
+    // Commander does not have — it belongs in the library, not on a shelf claiming the keep is ready.
     if (needs.channel && !channels) s -= 5;
     if (needs.folder && !projects) s -= 4;
     // a code recipe pointed at a real repo is a strong match (the DISqualifying half lives in eligible()).
@@ -193,7 +193,7 @@
      A score penalty was the first attempt and it was wrong: PR Sweep still cleared zero on "2 folders
      granted" plus "standing job not scheduled", so it kept appearing against a landing page and a folder of
      invoices. A mismatch of KIND is not a weak match to be out-ranked — it is a card that should never have
-     been printed, because the shelf's whole claim is that these are things this station is ready to run. */
+     been printed, because the shelf's whole claim is that these are things this keep is ready to run. */
   function eligible(recipe, ctx) {
     const needs = needsOf(recipe);
     if (needs.channel && !arr(ctx.channels).length) return false;   // no channel connected
@@ -235,7 +235,7 @@
     };
   }
 
-  /* Is there enough real context to offer anything honestly? A station with no granted project, no
+  /* Is there enough real context to offer anything honestly? A keep with no granted project, no
      connected channel and no learned topic knows NOTHING about its Commander, and a shelf claiming
      otherwise would be theatre. The caller renders the plain library instead — which is the honest state. */
   function hasContext(ctx) {
@@ -254,7 +254,7 @@
     const out = [];
     arr(recipes).forEach((r, idx) => {
       if (!r || !r.id) return;
-      if (!eligible(r, ctx)) return;                 // wrong KIND of station for this recipe
+      if (!eligible(r, ctx)) return;                 // wrong KIND of keep for this recipe
       const n = counters(r, ctx);
       if (n.scheduled) return;                       // already running — not an offer
       const s = score(r, ctx, n);
@@ -281,7 +281,7 @@
     }));
   }
 
-  /* A one-line, fully honest summary of WHAT THE STATION LOOKED AT — rendered above the shelf so the
+  /* A one-line, fully honest summary of WHAT THE KEEP LOOKED AT — rendered above the shelf so the
      Commander can audit the basis of every card below it. Truthful telemetry: if this line cannot be
      built from real counters, there is no shelf. */
   function basis(ctx) {

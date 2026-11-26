@@ -1,14 +1,14 @@
 # Eyehold
 
-**A real desktop station where AI agents do real work — and you watch it happen.**
+**A real desktop keep where AI agents do real work — and you watch it happen.**
 
 Eyehold is a local-first desktop app. You spawn into one shabby starter room of a living
-pixel-art station and expand outward: place rooms, run hallways, summon specialists. The catch
-is that the station isn't decoration — the way you build it **is** the way your real
+pixel-art keep and expand outward: place rooms, run hallways, summon specialists. The catch
+is that the keep isn't decoration — the way you build it **is** the way your real
 multi-agent org is wired. A room is a capability-scoped team; a hallway is an authorized
 handoff lane; a placed object is a real tool grant. Behind the glass, the agents make real
 model calls, run real tools, spend real money, and produce real output. Nothing on the screen
-is faked: the station only ever shows you what the machine underneath is actually doing.
+is faked: the keep only ever shows you what the machine underneath is actually doing.
 
 ## Download
 
@@ -96,8 +96,8 @@ Email only, best-effort: androo.agi@gmail.com.
   actions.
 
 <!-- ===================== SCREENSHOTS / CLIP PLACEHOLDER =====================
-     TODO before launch: drop in real media of the running station.
-       - Hero screenshot: the pixel-art station with agents at work.
+     TODO before launch: drop in real media of the running keep.
+       - Hero screenshot: the pixel-art keep with agents at work.
        - Short clip/GIF: an agent walking to its desk and running a real task
          (COMMS beat + world reacting to a real tool call).
        - 2-3 supporting shots: recruitment bay, room/hallway building, spend ledger.

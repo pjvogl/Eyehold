@@ -48,16 +48,16 @@
   },
   "recoveryScreen": {
     "active": true,
-    "text": "RECOVERY CODE: SAVE-READ · STATION FILE UNAVAILABLEthe station service is running, but could not read the saved station; your existing files are preserved. Send a screenshot of this code to support."
+    "text": "RECOVERY CODE: SAVE-READ · KEEP FILE UNAVAILABLEthe keep service is running, but could not read the saved keep; your existing files are preserved. Send a screenshot of this code to support."
   },
-  "retryResumedStation": true,
+  "retryResumedKeep": true,
   "cacheAdoption": {
     "unknown": true,
     "cacheUnchanged": true
   },
   "cacheRecoveryScreen": {
     "active": true,
-    "text": "RECOVERY CODE: SAVE-CACHE · LOCAL RESTORE FAILEDthe saved station was received, but this window could not store or read it; the durable station is preserved. Send a screenshot of this code to support."
+    "text": "RECOVERY CODE: SAVE-CACHE · LOCAL RESTORE FAILEDthe saved keep was received, but this window could not store or read it; the durable keep is preserved. Send a screenshot of this code to support."
   },
   "primaryRecovered": "NOVA",
   "backupRead": 503,

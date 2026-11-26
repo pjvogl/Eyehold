@@ -41,13 +41,13 @@ const Harness = (() => {
   let runConv = {};          // runId -> { key, sentEstimate } registered by chat() at run.start
   /* HARNESS OVERHEAD, LEARNED FROM A REAL REQUEST (agentId\0model -> tokens).
      A request carries far more than the visible dialogue: system prompt, every tool schema, and the
-     sidecar's manual/capability/skill/memory dressing. On a seeded station that measured ~13.1k tokens
+     sidecar's manual/capability/skill/memory dressing. On a seeded keep that measured ~13.1k tokens
      against a two-line chat. So a browser-side estimate of the dialogue alone is not a usable stand-in —
      but prompt_tokens MINUS our estimate of the messages we sent IS the overhead, directly observed.
      Learned from the FIRST cost event of a run only: later turns of an agentic run carry accumulated
      tool results the next request will never resend, and calibrating on those inflates the overhead.
 
-     PERSISTED, because this closure dies on every reload and a station gets reloaded constantly — an
+     PERSISTED, because this closure dies on every reload and a keep gets reloaded constantly — an
      un-persisted calibration means the gauge goes blank after every refresh and only comes back once
      you have paid for another turn, which is most of what "it never works" felt like. The stored value
      is a real past measurement, it is only ever used to produce a tilde-marked projection, and the very
@@ -280,8 +280,8 @@ const Harness = (() => {
   // "reload this page". Surfaces read it (Harness.sessionStale) so they stop blaming the network or the catalog.
   let sessionStale = false;
   let staleNotified = false;
-  function stationNotify(text, cls) {
-    try { if (typeof StationUI !== 'undefined' && StationUI && StationUI.notify) StationUI.notify(text, cls); } catch (_) {}
+  function keepNotify(text, cls) {
+    try { if (typeof KeepUI !== 'undefined' && KeepUI && KeepUI.notify) KeepUI.notify(text, cls); } catch (_) {}
   }
   const staleToken = staleTokenRecovery({
     rawFetch: (u, init) => window.fetch(u, init),   // '/' is not an API URL, so the wrapper passes it straight through
@@ -290,11 +290,11 @@ const Harness = (() => {
     canRefresh: () => !DESKTOP && !(typeof window !== 'undefined' && window.__EYEHOLD_API__),
     onRecovered: () => {
       sessionStale = false; staleNotified = false;
-      stationNotify('The station service restarted — this page reconnected on its own.', 'good');
+      keepNotify('The keep service restarted — this page reconnected on its own.', 'good');
     },
     onStale: () => {
       sessionStale = true;
-      if (!staleNotified) { staleNotified = true; stationNotify('The station restarted and this page could not reconnect — reload this page.', 'warn'); }
+      if (!staleNotified) { staleNotified = true; keepNotify('The keep restarted and this page could not reconnect — reload this page.', 'warn'); }
     }
   });
   if (typeof window !== 'undefined' && window.fetch && !window.__EYEHOLD_FETCH_HARDENED__) {
@@ -327,7 +327,7 @@ const Harness = (() => {
       if (Array.isArray(status)) {
         // #93: the keychain knows nothing about managed credits (KEYCHAIN_PROVIDERS has no eyehold), so rebuilding
         // the map from it erased the /api/credits answer probed just above — every desktop boot then read the
-        // linked station as unlinked (resume, pickers, KeyCTA) until SETTINGS re-probed. The sidecar owns it.
+        // linked keep as unlinked (resume, pickers, KeyCTA) until SETTINGS re-probed. The sidecar owns it.
         const eyehold = !!_configuredByProvider.eyehold;
         _configuredByProvider = Object.create(null);
         status.forEach(s => {
@@ -362,11 +362,11 @@ const Harness = (() => {
       } catch (_) {}
     }));
   }
-  // Whether this station can run on managed credits. The bearer is the linked device token the SIDECAR
+  // Whether this keep can run on managed credits. The bearer is the linked device token the SIDECAR
   // holds — there is nothing on this side to inspect, so we ask, exactly as codex/grok/kimi do. Fail-open:
   // /api/credits 404s by design when credits are unconfigured, which just leaves the provider unconfigured.
   //
-  // WITHOUT THIS A CREDITS-ONLY STATION IS STRANDED. Resume gates on `getKey() || configured()`, and a user
+  // WITHOUT THIS A CREDITS-ONLY KEEP IS STRANDED. Resume gates on `getKey() || configured()`, and a user
   // who linked an account and never pasted a key has neither — so every boot would bounce them to the
   // connect screen demanding an API key they deliberately do not have.
   //
@@ -441,8 +441,8 @@ const Harness = (() => {
     if (p === 'ollama' || p === 'claude-cli') return true;
     if (p === 'custom' && getBaseUrl(p)) return true;
     // EYEHOLD MANAGED is configured IFF the sidecar reports live credits — in BOTH modes. It must not fall
-    // through to the keyless branch below, which would answer "configured" for every station simply because
-    // there is no key to look for, and claim a station can run on credits it has never been linked to.
+    // through to the keyless branch below, which would answer "configured" for every keep simply because
+    // there is no key to look for, and claim a keep can run on credits it has never been linked to.
     if (p === 'eyehold') return !!_configuredByProvider.eyehold;
     return DESKTOP ? !!(_configuredByProvider[p] || (p === 'openrouter' && _configured)) : (DEVMODE || !providerNeedsKey(p) || !!getKey(p));
   }
@@ -468,7 +468,7 @@ const Harness = (() => {
     if (DESKTOP) return !!(_configuredByProvider[p] || (p === 'openrouter' && _configured));
     if (!!readScoped(LS.key, p)) return true;              // a real key is stored in this browser
     // DEV seed: the host may hold a server-side runtime key for the seeded provider. It is not a given —
-    // a seeded station with no key at all still boots in DEV mode, and ASSUMING the key existed made the
+    // a seeded keep with no key at all still boots in DEV mode, and ASSUMING the key existed made the
     // settings row render "● KEY SAVED" over nothing (an agent live-verifying a change reads that badge as
     // proof it can run). `hasKey` is the sidecar's own answer; an older boot payload without it reads false.
     if (DEVMODE && DEV && DEV.hasKey === true && normalizeProviderId(DEV.prov) === p) return true;
@@ -511,22 +511,22 @@ const Harness = (() => {
         .then(count => { _alternateCountByProvider[p] = Math.max(0, Number(count) || 0); return { count }; });
     }
     writeScoped(LS.keyPool, p, JSON.stringify(cleaned));
-    // #89: the station's copy follows the backups too — resolves { count, engine } like setKey's { engine }
+    // #89: the keep's copy follows the backups too — resolves { count, engine } like setKey's { engine }
     return syncEngineKey(p).then(engine => ({ count: cleaned.length, engine }));
   }
-  /* #89 THE STATION KEEPS A COPY. In the browser build a key lives in this page's localStorage and rides each
+  /* #89 THE KEEP KEEPS A COPY. In the browser build a key lives in this page's localStorage and rides each
      interactive /api/run — so chat works — but a scheduled routine, Run Now, the night shift or a line hop runs with
-     no page attached and resolves its key on the station. So whenever a provider's key, backups or endpoint change
-     here (and once per page boot for what is already saved), hand the station that provider's FULL config through the
-     token-gated /api/providers/engine-key; an all-empty config removes the station's copy. The desktop app (keychain)
+     no page attached and resolves its key on the keep. So whenever a provider's key, backups or endpoint change
+     here (and once per page boot for what is already saved), hand the keep that provider's FULL config through the
+     token-gated /api/providers/engine-key; an all-empty config removes the keep's copy. The desktop app (keychain)
      and dev (server-held key) never call it, nor do the sign-in providers. Never rejects — the key is already saved in
-     this browser either way — and resolves { ok, error? }: whether unattended runs have it (presence only; the station
+     this browser either way — and resolves { ok, error? }: whether unattended runs have it (presence only; the keep
      never echoes a key back).
      localStorage is per ORIGIN (localhost:8787, 127.0.0.1:8787 and a forwarded port are three separate stores), so each
-     page remembers per provider the station revision it last proved (ENGINE_SYNC_SLOT { rev, pending }). A boot
-     hand-over carries that revision and the station takes it only if nothing changed since — an older page can never
-     put back a key the Commander rotated or removed elsewhere. A save or REMOVE that failed to reach the station is
-     `pending`: the next page boot retries it (on the same condition) until the station confirms it. */
+     page remembers per provider the keep revision it last proved (ENGINE_SYNC_SLOT { rev, pending }). A boot
+     hand-over carries that revision and the keep takes it only if nothing changed since — an older page can never
+     put back a key the Commander rotated or removed elsewhere. A save or REMOVE that failed to reach the keep is
+     `pending`: the next page boot retries it (on the same condition) until the keep confirms it. */
   const ENGINE_SYNC_SKIP = { codex: 1, grok: 1, kimi: 1, eyehold: 1, 'claude-cli': 1 };
   const ENGINE_SYNC_SLOT = 'eyehold.byok.engineSync';
   const ENGINE_RETRY_NOTE = ' — this page retries the next time it loads';
@@ -546,7 +546,7 @@ const Harness = (() => {
     try {
       if (!s.rev && !s.pending) localStorage.removeItem(providerSlot(ENGINE_SYNC_SLOT, p));
       else localStorage.setItem(providerSlot(ENGINE_SYNC_SLOT, p), JSON.stringify({ rev: s.rev || '', pending: !!s.pending }));
-    } catch (_) { /* storage full/blocked: the next explicit save still hands the station its copy */ }
+    } catch (_) { /* storage full/blocked: the next explicit save still hands the keep its copy */ }
   }
   async function syncEngineKey(provider, boot) {
     const p = normalizeProviderId(provider || getProv());
@@ -562,21 +562,21 @@ const Harness = (() => {
       let j = {}; try { j = JSON.parse(text) || {}; } catch (_) { j = {}; }
       if (r.ok && j.ok) {
         out = { ok: true, keySource: String(j.keySource || ''), unattendedReady: !!j.unattendedReady };
-        // stale = another page changed this provider on the station since this one last did: keep the revision this
+        // stale = another page changed this provider on the keep since this one last did: keep the revision this
         // page proved (never the newer one — that would let this page's older config win its next boot)
         if (j.stale) out.stale = true;
         setEngineSyncState(p, { rev: j.stale ? state.rev : String(j.rev || ''), pending: false });
       } else {
         retry = r.status >= 500;
         out = { ok: false, error: j.error ? String(j.error) : removing
-          ? 'the station refused to delete its copy of this connection (HTTP ' + r.status + ') — routines and other unattended runs keep using it until a retry succeeds'
-          : 'the station refused to keep a copy for routines (HTTP ' + r.status + ') — chat in this browser still works' };
+          ? 'the keep refused to delete its copy of this connection (HTTP ' + r.status + ') — routines and other unattended runs keep using it until a retry succeeds'
+          : 'the keep refused to keep a copy for routines (HTTP ' + r.status + ') — chat in this browser still works' };
       }
     } catch (_) {
       retry = true;
       out = { ok: false, error: removing
-        ? 'the station could not be reached to delete its copy of this connection — routines and other unattended runs keep using it until a retry succeeds'
-        : 'the station could not be reached to keep a copy for routines — chat in this browser still works' };
+        ? 'the keep could not be reached to delete its copy of this connection — routines and other unattended runs keep using it until a retry succeeds'
+        : 'the keep could not be reached to keep a copy for routines — chat in this browser still works' };
     }
     if (!out.ok) {
       if (retry) { setEngineSyncState(p, { rev: state.rev, pending: true }); out.error += ENGINE_RETRY_NOTE; }
@@ -585,8 +585,8 @@ const Harness = (() => {
     return out;
   }
   // once per page boot: every provider this browser holds a key, backup pool or endpoint for, plus any whose last
-  // change (a save OR a REMOVE) never reached the station. Each rides as a BOOT hand-over (see above): it fills a
-  // station that holds nothing and retries this page's own failed change, but never overwrites a newer one.
+  // change (a save OR a REMOVE) never reached the keep. Each rides as a BOOT hand-over (see above): it fills a
+  // keep that holds nothing and retries this page's own failed change, but never overwrites a newer one.
   function syncEngineKeysOnBoot() {
     if (DESKTOP || DEVMODE) return Promise.resolve([]);
     const seen = new Set();
@@ -610,17 +610,17 @@ const Harness = (() => {
   /* #62: WHY a key check failed, in words. The sidecar's /api/providers/validate answers 200 with { error } for a
      provider verdict, but the route itself can be refused before it runs (403 forbidden origin/host/token, 423 frozen)
      with a non-JSON body — which used to fold into "the provider did not verify this key" while the provider was
-     never even asked. Name the station's refusal and its fix instead. PURE (test-locked). */
+     never even asked. Name the keep's refusal and its fix instead. PURE (test-locked). */
   function keyCheckFailure(status, j, text) {
     j = j || {};
     if (j.error) return String(j.error);
     const t = String(text == null ? '' : text).trim().slice(0, 80);
     if (status >= 200 && status < 300) return 'the provider did not verify this key';
-    const hint = /forbidden origin/.test(t) ? ' — this page’s address doesn’t match the station; open Eyehold at the exact address you forward to it'
+    const hint = /forbidden origin/.test(t) ? ' — this page’s address doesn’t match the keep; open Eyehold at the exact address you forward to it'
       : /forbidden host/.test(t) ? ' — Eyehold answers only on localhost / 127.0.0.1; reach it through a port forward, not a hostname'
-      : /forbidden token/.test(t) ? ' — the station restarted since this page loaded; reload the page'
+      : /forbidden token/.test(t) ? ' — the keep restarted since this page loaded; reload the page'
       : '';
-    return 'the station refused the key check (HTTP ' + status + (t && !/^[{<]/.test(t) ? ' ' + t : '') + ')' + hint;
+    return 'the keep refused the key check (HTTP ' + status + (t && !/^[{<]/.test(t) ? ' ' + t : '') + ')' + hint;
   }
   async function postKeyCheck(route, body) {
     const r = await fetch(route, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
@@ -856,7 +856,7 @@ const Harness = (() => {
     const credentialSaved = hasStoredCredential(p);
     const endpointConfigured = p === 'ollama' || p === 'claude-cli' || (p === 'custom' && !!baseUrl);
     const selected = p === getProv();
-    const fallback = { provider: p, credentialSaved, endpointConfigured, reachable: false, catalogAvailable: false, credentialVerified: false, selected, error: 'station unreachable' };
+    const fallback = { provider: p, credentialSaved, endpointConfigured, reachable: false, catalogAvailable: false, credentialVerified: false, selected, error: 'keep unreachable' };
     if (p === 'custom' && !endpointConfigured) return Object.assign({}, fallback, { error: 'endpoint not configured' });
     try {
       const r = await fetch('/api/providers/probe', {
@@ -912,7 +912,7 @@ const Harness = (() => {
      stream of newline-delimited JSON events — the FROZEN agent.* U.bus events the harness emits.
      Each event is re-emitted on U.bus (for telemetry) and mapped to the caller's callbacks.
      onToken(delta) per text delta · onToolCall/onToolResult per tool step · onUsage per turn. */
-  async function chat({ system, messages, onToken, onTerminalReset, onUsage, onToolCall, onToolResult, onRunId, onDeliverable, onPermission, onSummon, agentId, isTask, recurring, signal, streamId, recipeId, workbench, placed, stationPlaced, internal, evidence, projectRoot, taskAction, postconditions, recovery, connectorContinuationOf, retryUserRunId }) {
+  async function chat({ system, messages, onToken, onTerminalReset, onUsage, onToolCall, onToolResult, onRunId, onDeliverable, onPermission, onSummon, agentId, isTask, recurring, signal, streamId, recipeId, workbench, placed, keepPlaced, internal, evidence, projectRoot, taskAction, postconditions, recovery, connectorContinuationOf, retryUserRunId }) {
     const model = getModel(), provider = getProv(), key = getKey(provider), reasoningEffort = getReasoningEffort(provider);
     // Codex authenticates by an OAuth token (server-side); the desktop build keeps the key in the
     // sidecar's env (keychain). Neither needs a key sent from here.
@@ -954,11 +954,11 @@ const Harness = (() => {
       // Empty is an authoritative live floor snapshot, distinct from an older client omitting it.
       if (Array.isArray(placed)) reqBody.placed = placed;
       else if (workbench) reqBody.workbench = true;
-      // Class Loadouts (shared-gear model): the STATION-WIDE gear the agent draws on under the overseer. Tools stay
+      // Class Loadouts (shared-gear model): the KEEP-WIDE gear the agent draws on under the overseer. Tools stay
       // gated by `placed` (the agent's own desk-room), but a class's SKILL PACKAGE — recipes, not tools — becomes
-      // available when the STATION has the required shared gear (a specialist owns only a desk yet still gets its
+      // available when the KEEP has the required shared gear (a specialist owns only a desk yet still gets its
       // class skills). Sent separately so the tool projection is untouched; the sidecar uses it for skills only.
-      if (Array.isArray(stationPlaced) && stationPlaced.length) reqBody.stationPlaced = stationPlaced;
+      if (Array.isArray(keepPlaced) && keepPlaced.length) reqBody.keepPlaced = keepPlaced;
       if (!DESKTOP && !DEVMODE && provider !== 'codex' && provider !== 'grok' && provider !== 'kimi') reqBody.key = key;   // dev/desktop + the OAuth providers keep secrets server-side (custom/ollama may still ride an optional key)
       if (!DESKTOP && !DEVMODE) {
         try { const pool = JSON.parse(readScoped(LS.keyPool, provider) || '[]'); if (Array.isArray(pool) && pool.length) reqBody.keyPool = pool; } catch (_) {}
@@ -1106,7 +1106,7 @@ const Harness = (() => {
     if (!runId) return { ok: false, error: 'no run id' };
     try {
       const r = await fetch('/api/cancel', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ runId }) });
-      if (!r.ok) return { ok: false, error: 'the station refused the stop (http ' + r.status + ')', status: r.status };
+      if (!r.ok) return { ok: false, error: 'the keep refused the stop (http ' + r.status + ')', status: r.status };
       return { ok: true };
     } catch (e) { return { ok: false, error: (e && e.message) || String(e), transport: true }; }
   }
@@ -1143,15 +1143,15 @@ const Harness = (() => {
 
   // the WHOLE (redacted) request behind a live consent card — the event only carries the short argsSummary line.
   // { ok:true, tool, args, truncated } while the prompt waits; { ok:false, gone:true, error } once it was answered/expired;
-  // { ok:false, error } when the station could not be reached. Never cached: the text exists only while the prompt does.
+  // { ok:false, error } when the keep could not be reached. Never cached: the text exists only while the prompt does.
   async function consentArgs(runId, promptId) {
     if (!runId || !promptId) return { ok: false, gone: true, error: 'This approval is no longer tied to a live run.' };
     try {
       const r = await fetch('/api/consent/args?runId=' + encodeURIComponent(runId) + '&promptId=' + encodeURIComponent(promptId), { cache: 'no-store' });
       const j = await r.json().catch(() => null);
       if (r.ok && j && j.ok && typeof j.args === 'string') return j;
-      return { ok: false, gone: r.status === 404, error: (j && j.error) || ('the station refused the request (http ' + r.status + ')') };
-    } catch (e) { return { ok: false, error: 'The station could not be reached: ' + ((e && e.message) || String(e)) }; }
+      return { ok: false, gone: r.status === 404, error: (j && j.error) || ('the keep refused the request (http ' + r.status + ')') };
+    } catch (e) { return { ok: false, error: 'The keep could not be reached: ' + ((e && e.message) || String(e)) }; }
   }
 
   // EL-11 FIX 1c: attest to the sidecar that a live permission.prompt is now RENDERED to a human (the active
@@ -1159,12 +1159,12 @@ const Harness = (() => {
   // extension of the fail-closed auto-deny timer — a deny on a prompt nobody saw is a consent violation.
   // A stale id is a harmless no-op on the sidecar. The RESULT is honest: { ok:true } only on a 2xx; a refused status
   // or a thrown fetch returns { ok:false, error } so the caller can warn that the extension was NOT earned (the
-  // fail-closed auto-deny timer is still running against a card the station cannot prove anyone saw).
+  // fail-closed auto-deny timer is still running against a card the keep cannot prove anyone saw).
   async function consentAck(runId, promptId) {
     if (!runId || !promptId) return { ok: false, error: 'no run/prompt id' };
     try {
       const r = await fetch('/api/consent/ack', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ runId, promptId }) });
-      if (!r.ok) return { ok: false, error: 'the station refused the ack (http ' + r.status + ')', status: r.status };
+      if (!r.ok) return { ok: false, error: 'the keep refused the ack (http ' + r.status + ')', status: r.status };
       return { ok: true };
     } catch (e) { return { ok: false, error: (e && e.message) || String(e), transport: true }; }
   }
@@ -1184,7 +1184,7 @@ const Harness = (() => {
   // answer a live crew.summon.request: report the new agentId we summoned (or null if we couldn't), which resolves
   // the run's awaiting team.summon tool. Separate request from the open /api/run stream — no deadlock. The summon
   // tool has its own browser-ack timeout, so a dropped ack settles cleanly to "not completed" rather than hanging.
-  // `desk` (optional) is the room the new agent's seeded workstation actually landed in — the ONLY reason the
+  // `desk` (optional) is the room the new agent's seeded workkeep actually landed in — the ONLY reason the
   // tool result may mention a desk at all, so the lead can never announce furniture the floor doesn't have.
   async function summonAck(runId, requestId, agentId, desk) {
     if (!runId || !requestId) return;
@@ -1311,7 +1311,7 @@ const Harness = (() => {
       const j = await r.json().catch(() => null);
       if (r.ok) return j || { ok: true };
       return { ok: false, error: (j && j.error) || 'could not record that decision' };
-    } catch (e) { return { ok: false, error: 'the station did not answer' }; }
+    } catch (e) { return { ok: false, error: 'the keep did not answer' }; }
   }
   async function skillExchangePost(path, body) {
     try {
@@ -1321,7 +1321,7 @@ const Harness = (() => {
       const j = await r.json().catch(() => null);
       if (r.ok) return j || { ok: true };
       return { ok: false, error: (j && j.error) || 'the skill exchange refused that request' };
-    } catch (e) { return { ok: false, error: 'the station did not answer' }; }
+    } catch (e) { return { ok: false, error: 'the keep did not answer' }; }
   }
   function skillExchangeInspect(url) { return skillExchangePost('inspect', { url }); }
   function skillExchangeRegistry(o) { return skillExchangePost('registry', o); }
@@ -1329,7 +1329,7 @@ const Harness = (() => {
   async function skillExchangeRegistries(o) {
     if (o) return skillExchangePost('registries', o);
     try { const r = await fetch('/api/skill-exchange/registries', { cache: 'no-store' }); return r.ok ? await r.json() : { ok: false }; }
-    catch (_) { return { ok: false, error: 'the station did not answer' }; }
+    catch (_) { return { ok: false, error: 'the keep did not answer' }; }
   }
   function skillExchangeImport(envelope) { return skillExchangePost('import', { envelope }); }
   function skillExchangeInstall(o) { return skillExchangePost('install', o); }
@@ -1399,7 +1399,7 @@ const Harness = (() => {
             return init ? { ok: r.ok, status: r.status, j } : j;
           }),
           new Promise((_, reject) => { deadline = setTimeout(() => {
-            reject(new Error(init ? 'The station did not confirm this change. Check its state before retrying.' : 'The station took too long to respond. Please retry.'));
+            reject(new Error(init ? 'The keep did not confirm this change. Check its state before retrying.' : 'The keep took too long to respond. Please retry.'));
             abort();
           }, (options && options.timeoutMs > 0) ? options.timeoutMs : init ? 60000 : 15000); })
         ]);
@@ -1465,7 +1465,7 @@ const Harness = (() => {
   }
 
   /* ENGINE RECOVERY (link-down 2026-10-07): the in-game LINK DOWN chip and the boot SAVE-UNKNOWN screen share ONE
-     reading of why the station service is gone and ONE restart door. Before this the reason probe and the restart
+     reading of why the keep service is gone and ONE restart door. Before this the reason probe and the restart
      lived only on the boot screen, so a crash-loop hold after the game loaded showed a red LINK DOWN with no reason
      and no way out ("I could not find where I could quit/restart").
      engineState(timeoutMs) -> { state, reason }, never throws:
@@ -1493,7 +1493,7 @@ const Harness = (() => {
     finally { if (timer) clearTimeout(timer); }
     const core = tauriCoreNow();
     if (!reason && state !== 'ok' && core) {
-      try { const g = await core.invoke('eyehold_sidecar_status'); if (g && g.halted && g.reason) reason = 'station service halted: ' + String(g.reason); } catch (_) {}
+      try { const g = await core.invoke('eyehold_sidecar_status'); if (g && g.halted && g.reason) reason = 'keep service halted: ' + String(g.reason); } catch (_) {}
     }
     return { state, reason };
   }

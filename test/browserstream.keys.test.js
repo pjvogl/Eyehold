@@ -54,7 +54,7 @@ function key(k, o) {
   const n = sent.length;
   const tab2 = key('Tab'); vp.fire('keydown', tab2);
   const esc = key('Escape'); vp.fire('keydown', esc); await tick();
-  A.ok(!tab2.prevented && !tab2.stopped && !esc.prevented && !esc.stopped, 'while an agent drives, Tab and Esc are NOT trapped — they move on in the station');
+  A.ok(!tab2.prevented && !tab2.stopped && !esc.prevented && !esc.stopped, 'while an agent drives, Tab and Esc are NOT trapped — they move on in the keep');
   A.eq(sent.length, n, '…and nothing is sent');
   const f6 = key('F6'); vp.fire('keydown', f6);
   const ctrlL = key('l', { ctrl: true }); vp.fire('keydown', ctrlL);

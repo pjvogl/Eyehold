@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-/* Opt-in real-model personality evaluation. No tool execution, installed credentials or station writes.
+/* Opt-in real-model personality evaluation. No tool execution, installed credentials or keep writes.
    Prepare the trial plan: node scripts/personality-eval.mjs --out .tmp/personality-eval
    Capture responses: EYEHOLD_PERSONALITY_EVAL_KEY=<key> node scripts/personality-eval.mjs --live --model <OpenRouter model id> --out <new directory>
    Responses are ungraded evidence. Blind reviewers identify character separately from factual quality. */

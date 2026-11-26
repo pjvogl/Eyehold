@@ -104,7 +104,7 @@ export function validateManifest(manifest) {
 
 function receiptPayload(receipt) {
   const copy = Object.assign({}, receipt);
-  delete copy.attestation;
+  delete copy.attekeep;
   return stableJson(copy);
 }
 
@@ -118,9 +118,9 @@ export function sealReceipt(receipt, key) {
   const normalized = normalizeKey(key);
   if (!normalized) throw new Error('receipt HMAC key must contain at least 32 bytes');
   const unsigned = Object.assign({}, receipt);
-  delete unsigned.attestation;
+  delete unsigned.attekeep;
   return Object.assign(unsigned, {
-    attestation: {
+    attekeep: {
       algorithm: 'HMAC-SHA256',
       keyId: sha256(normalized).slice(0, 16),
       digest: crypto.createHmac('sha256', normalized).update(receiptPayload(unsigned)).digest('hex')
@@ -166,13 +166,13 @@ export function receiptValidity(receipt, context) {
   if (Number.isFinite(finishedMs) && nowMs - finishedMs > Number(context.wave.maxReceiptAgeMs)) errors.push('receipt is stale');
 
   const key = normalizeKey(context.key);
-  const attestation = receipt.attestation || {};
+  const attekeep = receipt.attekeep || {};
   if (!key) errors.push('receipt HMAC key unavailable');
-  else if (attestation.algorithm !== 'HMAC-SHA256' || attestation.keyId !== sha256(key).slice(0, 16) || !/^[0-9a-f]{64}$/i.test(str(attestation.digest))) {
-    errors.push('receipt attestation missing or invalid');
+  else if (attekeep.algorithm !== 'HMAC-SHA256' || attekeep.keyId !== sha256(key).slice(0, 16) || !/^[0-9a-f]{64}$/i.test(str(attekeep.digest))) {
+    errors.push('receipt attekeep missing or invalid');
   } else {
     const expected = crypto.createHmac('sha256', key).update(receiptPayload(receipt)).digest('hex');
-    const actual = str(attestation.digest).toLowerCase();
+    const actual = str(attekeep.digest).toLowerCase();
     if (!crypto.timingSafeEqual(Buffer.from(expected, 'hex'), Buffer.from(actual, 'hex'))) errors.push('receipt HMAC mismatch');
   }
 

@@ -1,6 +1,6 @@
 /* Local UI review only: actual frontend modules, deterministic model replies.
  * Run node dev/onboarding-review.js and open http://127.0.0.1:8998.
- * No real agent, account, or station data is used. */
+ * No real agent, account, or keep data is used. */
 'use strict';
 const http = require('node:http');
 const fs = require('node:fs');

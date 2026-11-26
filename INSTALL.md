@@ -87,7 +87,7 @@ requires all applicable layers.
 
 On Windows, current manual installers detect an older Eyehold installation and use the same
 in-place update mode as Update Center. They do not depend on the older installation's
-`uninstall.exe`, and the user's station data remains outside the application directory. If an
+`uninstall.exe`, and the user's keep data remains outside the application directory. If an
 older installer still shows an **Already Installed** page, quit Eyehold from its tray icon,
 choose **Do not uninstall**, and continue. Do not delete `%APPDATA%\ai.skynet.harness` as an
 update workaround.

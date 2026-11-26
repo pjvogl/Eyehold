@@ -62,7 +62,7 @@ A.ok(src.indexOf('argsHint') >= 0, 'palette carries the registry argsHint so arg
 A.ok(src.indexOf('LOOP_MIN_MS') >= 0 && src.indexOf('LOOP_MAX_ITERS') >= 0, 'the loop carries a minimum cadence and an iteration budget');
 A.ok(src.indexOf('loopStop(activeWs.id') >= 0, 'stop ends an armed loop, not just a live run');
 // A loop tick goes through send(), which routes text into interview()/TaskIntent when one of those owns the
-// input — so an unguarded tick would ANSWER the station's own question. It must obey the same gate /goal does.
+// input — so an unguarded tick would ANSWER the keep's own question. It must obey the same gate /goal does.
 A.ok(/goalBlocked\(activeWs\)/.test(src.slice(src.indexOf('function loopTick'), src.indexOf('function loopCommand'))), 'a loop tick obeys goalBlocked, so it cannot answer an interview or approval prompt');
 A.ok(src.indexOf('LOOP_MAX_SKIPS') >= 0 && src.indexOf('loopEnded') >= 0, 'a loop that dies unattended is bounded and can still explain itself');
 A.ok(src.indexOf('needsServer && await dispatchSlash') >= 0, 'a command with no local action still asks the sidecar before refusing');

@@ -1,9 +1,9 @@
 // SELF-DRIVING — a real model drives Eyehold from plain words (2026-10-08).
-//   node dev/self-driving-proof.mjs [port] [--estop]        against a RUNNING station with a real model
+//   node dev/self-driving-proof.mjs [port] [--estop]        against a RUNNING keep with a real model
 // Each ask goes into a FRESH COMMS session in the Commander's own words — no tool names — and every check reads the
 // harness's truth (the caps route, the halt route, the page's own state), never the agent's reply. Close every other tab
-// on that station first: station.show answers only the page whose focused session owns the run.
-// The scratch station: the `self-driving-seed` launch entry (dev/seed.js --keep, dev/.env.dev key) — never a real station.
+// on that keep first: keep.show answers only the page whose focused session owns the run.
+// The scratch keep: the `self-driving-seed` launch entry (dev/seed.js --keep, dev/.env.dev key) — never a real keep.
 // --estop also presses the E-STOP through the agent and then RESUMEs it through the top-bar button, as the Commander would.
 import { mkdtempSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
@@ -50,11 +50,11 @@ try {
 
   // 1 · open a window
   let r = await ask('Open my deliverables for me please.');
-  check('"open my deliverables" puts DELIVERABLES on screen', await run(`!!document.querySelector('.term.dlv-win')`) && used(r, /station\.show/), stamp(r));
+  check('"open my deliverables" puts DELIVERABLES on screen', await run(`!!document.querySelector('.term.dlv-win')`) && used(r, /keep\.show/), stamp(r));
 
   // 2 · an escalation, read back from the caps route
   const want = 6 + Math.floor(Math.random() * 4);
-  r = await ask('Set a daily spending limit of $' + want + ' for the whole station.');
+  r = await ask('Set a daily spending limit of $' + want + ' for the whole keep.');
   const caps = (await api('/api/budget/status')).caps || {};
   check('"daily spending limit of $' + want + '" saves perDay ' + want, caps.perDay === want, stamp(r) + ' · perDay ' + caps.perDay);
 
@@ -64,10 +64,10 @@ try {
 
   // 4 · a look setting both ways, read back from the page
   r = await ask('Turn off the hover hints.');
-  const off = await run(`(StationUI.lookNow() || {}).hints`);
+  const off = await run(`(KeepUI.lookNow() || {}).hints`);
   check('"turn off the hover hints" → hints false', off === false, stamp(r));
   r = await ask('Turn the hover hints back on.');
-  const on = await run(`(StationUI.lookNow() || {}).hints`);
+  const on = await run(`(KeepUI.lookNow() || {}).hints`);
   check('"turn the hover hints back on" → hints true', on === true, stamp(r));
 
   // 5 · the conversation it is in

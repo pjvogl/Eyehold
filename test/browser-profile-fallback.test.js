@@ -1,4 +1,4 @@
-/* node test/browser-profile-fallback.test.js — a run that loses the durable station profile to the STATION BROWSER
+/* node test/browser-profile-fallback.test.js — a run that loses the durable keep profile to the KEEP BROWSER
    (the shared browser the Commander has open, sidecar/browser-view.js) browses on a temporary profile. It must not
    error, must not wait out the 8 s profile wait, and must never close the Commander's browser. Against another RUN
    the old rule stands: wait, then refuse — two runs never silently swap account identity. makeDriver SEAM (not an
@@ -16,7 +16,7 @@ function fakeDriver() {
 }
 
 (async () => {
-  // 1. lost to the station browser → temporary profile, at once
+  // 1. lost to the keep browser → temporary profile, at once
   {
     const built = [];
     const B = makeBrowserTools({
@@ -25,7 +25,7 @@ function fakeDriver() {
     });
     const t0 = Date.now();
     await B.session.waitForProfile();
-    A.ok(Date.now() - t0 < 1000, 'no 8 s wait when the station browser holds the profile');
+    A.ok(Date.now() - t0 < 1000, 'no 8 s wait when the keep browser holds the profile');
     const url = await B.session.navigate('https://example.com/');
     A.eq(url, 'https://example.com/', 'the run browses');
     A.eq(!!built[0].profileIsPersistent, false, 'on a TEMPORARY profile (it never touches the one the Commander has open)');

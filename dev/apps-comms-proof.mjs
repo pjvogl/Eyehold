@@ -1,5 +1,5 @@
 // APPS — asking for an app in plain COMMS builds a real Eyehold app (2026-10-02).
-//   node dev/apps-comms-proof.mjs [port] ["what to ask"]     against a RUNNING station with a real model
+//   node dev/apps-comms-proof.mjs [port] ["what to ask"]     against a RUNNING keep with a real model
 // No NEW APP button, no tool names: a fresh COMMS session is sent the Commander's plain words, and the proof waits
 // for a NEW app in /api/apps whose page the crew actually wrote (builtAt). Leaves the app in place for a look.
 import { mkdtempSync, rmSync } from 'node:fs';

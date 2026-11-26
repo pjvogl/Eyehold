@@ -18,9 +18,9 @@ to retry recovery after the initial audio unlock.
 
 ## Live evidence
 
-Disposable station launched with `node dev/seed.js --keep`, port 9297, isolated workspace.
+Disposable keep launched with `node dev/seed.js --keep`, port 9297, isolated workspace.
 Real Edge and local Kokoro `/api/tts` requests returned MP3 and WAV audio respectively.
-No provider credentials or production station settings were changed.
+No provider credentials or production keep settings were changed.
 
 CDP instrumented the real browser AudioContext constructors and media-element ended
 events; it did not substitute synthesized audio. Baseline shell playback ended at

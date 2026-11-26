@@ -1,5 +1,5 @@
 // APPS — asking for an OUTSIDE tool never makes a Eyehold app (2026-10-02).
-//   node dev/apps-external-proof.mjs [port]     against a RUNNING station with a real model
+//   node dev/apps-external-proof.mjs [port]     against a RUNNING keep with a real model
 // The other side of apps-comms-proof: a script, a website to host, a browser extension, a React project are things
 // that live OUTSIDE Eyehold. Each ask goes to a fresh COMMS session; when its run ends, /api/apps must hold no new
 // app. The reply's opening is printed so a person can see what the crew did instead.

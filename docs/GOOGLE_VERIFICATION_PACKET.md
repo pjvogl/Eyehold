@@ -56,7 +56,7 @@ Use a private review build and dedicated test data. Never enable unverified scop
 the public release merely to record the demo. Show the actual account consent screen,
 browser address bar/client ID, app name and unverified-app screen as required by Google.
 The supplied `Downloads/eyeholddemo.mp4` was sampled at 80-second intervals: it shows
-onboarding and general station work, not evidence establishing the required Google flows.
+onboarding and general keep work, not evidence establishing the required Google flows.
 It has not been uploaded or represented as a verification demo.
 
 1. Show Eyehold's public home/privacy pages, then the in-app Google disclosure. Explain
@@ -92,7 +92,7 @@ It has not been uploaded or represented as a verification demo.
 - The private native review launcher reached real Google account selection with the
   installed client and reduced Docs scopes. Account selection and the fresh grant
   remain unfinished; no new real Google API acceptance is claimed.
-- The HTTP suite passed 119 steps. Focused Google lifecycle, vault, station recovery,
+- The HTTP suite passed 119 steps. Focused Google lifecycle, vault, keep recovery,
   update preparation and an encrypted-state update HTTP run also passed after the
   follow-up fixes. The full fast run passed steps 1–750, then stopped because the
   silent-catch baseline needed lowering from 371 to 368. After that metadata fix,
@@ -101,7 +101,7 @@ It has not been uploaded or represented as a verification demo.
   uninterrupted final-commit fast gate has not been claimed and remains required
   before merge.
 - No Mac installer acceptance, signed release, verification submission, external
-  assessment or station-wide `qa:ready` verdict is claimed. Work remains isolated
+  assessment or keep-wide `qa:ready` verdict is claimed. Work remains isolated
   on `agent/google-oauth-audit-0919`; trunk and public activation are unchanged.
 
 | Condition | Evidence/status |

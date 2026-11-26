@@ -177,7 +177,7 @@
       "previousFootDrift": 1.75
     },
     {
-      "id": "station_minion",
+      "id": "keep_minion",
       "frames": 64,
       "cycleUnits": 17.5,
       "cyclesPerSecondAt28": 1.6,

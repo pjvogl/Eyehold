@@ -29,8 +29,8 @@ A.ok(iW > 0 && iL > iW && iE > iL, 'index.html loads linelayout.js and lineedit.
 
 // the Build host: one runner for every edit
 const run = at(build, '  function lineEditRun(op, propId, args, how) {', '  /* pan the floor so a part');
-A.ok(/LineEdit\.run\(station, propId, op, args, \{ near: viewCenterTile\(\), sizes: lineSizes\(\), tidy: !!\(how && how\.tidy\) \}\)/.test(run), 'every edit runs through LineEdit with the catalog sizes, a new line laid near the middle of the view (and the armed second click\'s TIDY)');
-A.ok(/station\.lineGraph\(propId\)/.test(run) && /pushMoves\(moves\)/.test(run) && /pushFlash\(gone, true\)/.test(run), 'what an edit moved glides on the floor, what it took out flashes red');
+A.ok(/LineEdit\.run\(keep, propId, op, args, \{ near: viewCenterTile\(\), sizes: lineSizes\(\), tidy: !!\(how && how\.tidy\) \}\)/.test(run), 'every edit runs through LineEdit with the catalog sizes, a new line laid near the middle of the view (and the armed second click\'s TIDY)');
+A.ok(/keep\.lineGraph\(propId\)/.test(run) && /pushMoves\(moves\)/.test(run) && /pushFlash\(gone, true\)/.test(run), 'what an edit moved glides on the floor, what it took out flashes red');
 A.ok(/if \(fl\.moves\) \{ drawMoves\(fl, k, t\); continue; \}/.test(build) && /function drawMoves\(fl, k, t\)/.test(build), '…drawn with the placement flashes');
 A.ok(/pushFlash\(/.test(run) && /Tutorial\.onPropPlaced/.test(run) && /rebake\(\)/.test(run), '…what it placed flashes, the tutorial hears it, and the plan recompiles at once');
 A.ok(/lineEdit: \(op, propId, args, how\) => lineEditRun\(op, propId, args, how\)/.test(build) && /canLineEdit: \(op, propId, args\) =>[^\n]*LineEdit\.check\(/.test(build), 'the panel host offers lineEdit and canLineEdit (the dry answer that greys a button out)');

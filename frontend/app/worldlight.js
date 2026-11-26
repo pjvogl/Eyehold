@@ -1,4 +1,4 @@
-/* Eyehold WorldLight — spatial illumination for the station's local pixel frame.
+/* Eyehold WorldLight — spatial illumination for the keep's local pixel frame.
  * All sources are supplied by the world: this module invents no activity or fixtures.
  * setGeometry() must follow each projection/bake, including edits that move the origin.
  * prepare(frame) exposes current illumination before bodies and shadows are drawn;
@@ -226,7 +226,7 @@ const WorldLight = (() => {
       frames: 0, preparations: 0, beamBuilds: 0, lastBuildMs: 0, droppedSources: 0, supported: true, contextLosses: 0, contextRecoveries: 0,
       configRevision: 0, sampleCacheHits: 0, sampleCacheMisses: 0, sampleCacheEvictions: 0, sampleCacheInvalidations: 0 };
     const sampleLimit = () => clamp(Math.floor(finite(config.sampleCacheLimit, 512)), 0, 2048);
-    /* GEOMETRY-SCOPED VISIBILITY (2026-10-07, a 207-source station drew at ~22ms): an emitter's area origins, and
+    /* GEOMETRY-SCOPED VISIBILITY (2026-10-07, a 207-source keep drew at ~22ms): an emitter's area origins, and
        the wall-occlusion fraction a point sees from them, depend only on the walls (segments) and the emitter's
        physical origin + softness — never on its brightness. prepare() re-normalizes every source each frame and a
        working screen changes some alpha every frame, which (correctly) clears the sample cache: so every sample
@@ -490,7 +490,7 @@ const WorldLight = (() => {
       }
       g.globalAlpha = 1; g.globalCompositeOperation = 'source-over';
     }
-    // Neutral grey over the station silhouette only (space stays untouched): a
+    // Neutral grey over the keep silhouette only (space stays untouched): a
     // faint blue-over-red split, so unlit deck reads cool and the lamp pools warm.
     function rebuildKey(lights) {
       if (!keyOn()) { release(baseKey); release(frameLift); baseKey = null; frameLift = null; return; }
@@ -530,7 +530,7 @@ const WorldLight = (() => {
       // otherwise it forms a black stripe across walls AND foreground prop tops.
       if (!interiorPath && hasInteriorMask()) {
         // Reuse an existing frame surface during the static build. No extra
-        // station-sized canvas is needed for REFIT's chunked silhouette union.
+        // keep-sized canvas is needed for REFIT's chunked silhouette union.
         const floor = reset(frameDark); floor.save(); clipDeckFootprint(floor);
         paintFloorMask(floor); floor.restore(); floor.globalCompositeOperation = 'source-in';
         floor.fillStyle = 'rgba(5,9,22,' + inside + ')'; floor.fillRect(0, 0, width, height);

@@ -91,7 +91,7 @@ function detectCleanSurface() {
   ];
   const vmTools = [
     'C:\\Program Files\\Oracle\\VirtualBox\\VBoxManage.exe',
-    'C:\\Program Files (x86)\\VMware\\VMware Workstation\\vmrun.exe',
+    'C:\\Program Files (x86)\\VMware\\VMware Workkeep\\vmrun.exe',
     'C:\\Program Files\\qemu\\qemu-system-x86_64.exe'
   ];
   const windowsSandboxPaths = sandboxPaths.filter(windowsPath);

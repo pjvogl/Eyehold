@@ -37,7 +37,7 @@ $amber = New-Object System.Drawing.SolidBrush ([System.Drawing.Color]::FromArgb(
 $green = New-Object System.Drawing.SolidBrush ([System.Drawing.Color]::FromArgb(255, 130, 230, 150))
 
 $y = 6
-$g.DrawString('STATION WALL CORNERS -- BEFORE / AFTER (bake pixels, nearest-neighbour zoom)', $fontHead, $white, 8, $y)
+$g.DrawString('KEEP WALL CORNERS -- BEFORE / AFTER (bake pixels, nearest-neighbour zoom)', $fontHead, $white, 8, $y)
 $y += $Head
 foreach ($r in $rows) {
   $g.DrawString($r.Label, $font, $white, 8, $y)

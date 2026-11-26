@@ -14,7 +14,7 @@ origin: audit
 
 ## Symptom
 
-P1: a review decision can delete work the station says was approved. Reject and Approve from two clients, or overlapping requests from one review panel, both succeed. The files are reverted but the authoritative iteration remains approved. Further review is refused because the iteration already has a verdict.
+P1: a review decision can delete work the keep says was approved. Reject and Approve from two clients, or overlapping requests from one review panel, both succeed. The files are reverted but the authoritative iteration remains approved. Further review is refused because the iteration already has a verdict.
 
 ## Repro
 

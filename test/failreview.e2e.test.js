@@ -1,7 +1,7 @@
 /* node test/failreview.e2e.test.js — TRUE end-to-end proof of the FAILURE-REVIEW aux pass (failure-learn lane).
 
    THE GAP THIS CLOSES: all six post-run learning passes gate on reason 'done', so a FAILED run (error /
-   max_iters / budget / refusal) taught the station nothing. The failure-review pass reads the failed run's
+   max_iters / budget / refusal) taught the keep nothing. The failure-review pass reads the failed run's
    persisted evidence (failureStage/failureCode, tool trace, recovery attempts) + transcript tail and writes at
    most 3 durable LESSONS to notebook memory with origin 'failure-review'. Against the REAL sidecar + a mock
    OpenRouter that records every model call, one fixture proves:
@@ -15,7 +15,7 @@
      ARM 3 — failureReviewEnabled=false (POST /api/memory/config, the reflectEnabled pattern) suppresses the
              pass LIVE for a fresh agent; the config API round-trips the flag.
      ARM 4 — the personalization PAUSE (POST /api/personalization {enabled:false}) suppresses the pass — a
-             paused station learns nothing new, same server authority as the scout.
+             paused keep learns nothing new, same server authority as the scout.
      ARM 5 — REGRESSION: a run ending 'done' fires reflection exactly as before and NEVER fires
              failure-review (the done-gated and fail-gated families are mutually exclusive per run).
      ARM 6 — a CANCELLED run (client abort via POST /api/cancel) fires NO failure-review pass.
@@ -111,7 +111,7 @@ function startMock() {
           if (rec.main && raw.indexOf(FAIL_MARK) >= 0) {
             if (!messages.some(m => m && m.role === 'tool')) {
               // one REAL tool turn first, so the failed run has a tool trace (the salience floor) …
-              sse(res, [{ tool_calls: [{ index: 0, id: 'inspect_once', type: 'function', function: { name: 'station_inspect', arguments: '{}' } }] }],
+              sse(res, [{ tool_calls: [{ index: 0, id: 'inspect_once', type: 'function', function: { name: 'keep_inspect', arguments: '{}' } }] }],
                 { prompt_tokens: 8, completion_tokens: 2, total_tokens: 10 }, 'tool_calls');
               return;
             }
@@ -219,7 +219,7 @@ async function settle(state, stableMs, maxMs) {
 
     // ---- ARM 1 — a run ending 'error' fires EXACTLY ONE failure-review pass on the aux model ----------------
     {
-      const ev = await driveRun(fixture, 'fr-hot', FAIL_MARK + ' inspect the station then push the registry update');
+      const ev = await driveRun(fixture, 'fr-hot', FAIL_MARK + ' inspect the keep then push the registry update');
       A.eq(endReason(ev), 'error', 'the driven run really ended with reason error');
       await settle(mock.state);
       const fr = frCalls();
@@ -242,7 +242,7 @@ async function settle(state, stableMs, maxMs) {
     //      assertion existed the emitter→store→prompt seam was never proven end to end.
     {
       const before = frCalls().length, mainBefore = mock.state.calls.filter(c => c.main).length;
-      const ev = await driveRun(fixture, 'fr-hot', FAIL_MARK + ' inspect the station then push the registry update again');
+      const ev = await driveRun(fixture, 'fr-hot', FAIL_MARK + ' inspect the keep then push the registry update again');
       A.eq(endReason(ev), 'error', 'the second run also ended error');
       await sleep(2500);
       A.eq(frCalls().length, before, 'the per-agent cooldown suppressed a second failure-review pass');
@@ -259,7 +259,7 @@ async function settle(state, stableMs, maxMs) {
       A.eq(set.status, 200, 'config POST accepted');
       A.eq(set.body.failureReviewEnabled, false, 'the flag round-trips OFF through the config API');
       const before = frCalls().length;
-      const ev = await driveRun(fixture, 'fr-off', FAIL_MARK + ' inspect the station then push the registry update');
+      const ev = await driveRun(fixture, 'fr-off', FAIL_MARK + ' inspect the keep then push the registry update');
       A.eq(endReason(ev), 'error', 'the disabled-arm run ended error');
       await sleep(2500);
       A.eq(frCalls().length, before, 'failureReviewEnabled=false fired NO failure-review pass');
@@ -272,11 +272,11 @@ async function settle(state, stableMs, maxMs) {
       A.eq(paused.status, 200, 'personalization pause accepted');
       A.eq(paused.body.enabled, false, 'personalization reports paused');
       const before = frCalls().length;
-      const ev = await driveRun(fixture, 'fr-paused', FAIL_MARK + ' inspect the station then push the registry update');
+      const ev = await driveRun(fixture, 'fr-paused', FAIL_MARK + ' inspect the keep then push the registry update');
       A.eq(endReason(ev), 'error', 'the paused-arm run ended error');
       await sleep(2500);
       A.eq(frCalls().length, before, 'the personalization pause fired NO failure-review pass');
-      // …and REFLECTION honours the same pause (memory-compound lane): a paused station learns nothing from a
+      // …and REFLECTION honours the same pause (memory-compound lane): a paused keep learns nothing from a
       // 'done' run either — no aux call, no memory written.
       const beforeRefl = reflCalls().length;
       const evDone = await driveRun(fixture, 'fr-paused-done', GOOD_MARK + ' rebuild the staging deploy rollback path and write up what changed and why');
@@ -284,7 +284,7 @@ async function settle(state, stableMs, maxMs) {
       await sleep(2500);
       A.eq(reflCalls().length, beforeRefl, 'the personalization pause fired NO reflection pass on a done run');
       const recPaused = await fixture.json('GET', '/api/memory/records?agent=fr-paused-done');
-      A.eq((recPaused.body.records || []).length, 0, 'a paused station wrote NO memory for the done run');
+      A.eq((recPaused.body.records || []).length, 0, 'a paused keep wrote NO memory for the done run');
       await fixture.json('POST', '/api/personalization', { enabled: true });   // resume
     }
 
@@ -302,7 +302,7 @@ async function settle(state, stableMs, maxMs) {
     // ---- ARM 6 — a CANCELLED run fires NO failure-review pass -----------------------------------------------
     {
       const before = frCalls().length;
-      const ev = await driveCancelledRun(fixture, 'fr-cancel', SLOW_MARK + ' inspect the station slowly');
+      const ev = await driveCancelledRun(fixture, 'fr-cancel', SLOW_MARK + ' inspect the keep slowly');
       A.eq(endReason(ev), 'cancelled', 'the aborted run really ended cancelled');
       await sleep(2500);
       A.eq(frCalls().length, before, 'a cancelled run fired NO failure-review pass');
@@ -312,7 +312,7 @@ async function settle(state, stableMs, maxMs) {
     {
       const mainsSince = (n) => mock.state.calls.filter(c => c.main).slice(n);
       const before = frCalls().length;
-      const evA = await driveRun(fixture, 'fr-proj', FAIL_MARK + ' inspect the station then push the registry update', { projectRoot: projA });
+      const evA = await driveRun(fixture, 'fr-proj', FAIL_MARK + ' inspect the keep then push the registry update', { projectRoot: projA });
       A.eq(endReason(evA), 'error', 'the project-A run ended error');
       await settle(mock.state);
       A.eq(frCalls().length - before, 1, 'the project-A failure fired one failure-review pass');
@@ -323,17 +323,17 @@ async function settle(state, stableMs, maxMs) {
       A.eq(lesson && path.resolve(String(lesson.projectRoot || '')).toLowerCase(), path.resolve(projA).toLowerCase(), 'the record is keyed to the project-A root');
       // project B: same agent, same lexical overlap — the lesson must NOT be injected
       let n = mock.state.calls.filter(c => c.main).length;
-      const evB = await driveRun(fixture, 'fr-proj', FAIL_MARK + ' inspect the station then push the registry update again', { projectRoot: projB });
+      const evB = await driveRun(fixture, 'fr-proj', FAIL_MARK + ' inspect the keep then push the registry update again', { projectRoot: projB });
       A.eq(endReason(evB), 'error', 'the project-B probe run ended error (cooldown: no new lesson)');
       A.ok(mainsSince(n).length >= 1 && mainsSince(n).every(c => c.recall.indexOf('Registry pushes rate-limit') < 0), 'the project-B prompt carries NO project-A lesson');
       // unscoped run: the project tier stays inside its project
       n = mock.state.calls.filter(c => c.main).length;
-      const evU = await driveRun(fixture, 'fr-proj', FAIL_MARK + ' inspect the station then push the registry update once more');
+      const evU = await driveRun(fixture, 'fr-proj', FAIL_MARK + ' inspect the keep then push the registry update once more');
       A.eq(endReason(evU), 'error', 'the unscoped probe run ended error');
       A.ok(mainsSince(n).length >= 1 && mainsSince(n).every(c => c.recall.indexOf('Registry pushes rate-limit') < 0), 'an UNSCOPED run prompt carries NO project-A lesson');
       // back inside project A: the lesson surfaces
       n = mock.state.calls.filter(c => c.main).length;
-      const evA2 = await driveRun(fixture, 'fr-proj', FAIL_MARK + ' inspect the station then push the registry update yet again', { projectRoot: projA });
+      const evA2 = await driveRun(fixture, 'fr-proj', FAIL_MARK + ' inspect the keep then push the registry update yet again', { projectRoot: projA });
       A.eq(endReason(evA2), 'error', 'the second project-A run ended error');
       A.ok(mainsSince(n).length >= 1 && mainsSince(n).every(c => c.recall.indexOf('Registry pushes rate-limit') >= 0), 'back in project A the lesson IS injected into the prompt');
       A.eq(frCalls().length - before, 1, 'still exactly one failure-review pass for fr-proj (cooldown held across the probes)');
@@ -345,9 +345,9 @@ async function settle(state, stableMs, maxMs) {
       const mainsSince = (n) => mock.state.calls.filter(c => c.main).slice(n);
       // a task with ZERO lexical overlap with the lesson ("Registry pushes rate-limit after repeated attempts; batch
       // retries with exponential backoff before the next push") — no shared significant token.
-      const PARAPHRASE = FAIL_MARK + ' inspect the station; our uploads to the package index keep getting throttled';
+      const PARAPHRASE = FAIL_MARK + ' inspect the keep; our uploads to the package index keep getting throttled';
       const before = frCalls().length;
-      const ev0 = await driveRun(fixture, 'fr-sem', FAIL_MARK + ' inspect the station then push the registry update');
+      const ev0 = await driveRun(fixture, 'fr-sem', FAIL_MARK + ' inspect the keep then push the registry update');
       A.eq(endReason(ev0), 'error', 'the semantic-arm seed run ended error');
       await settle(mock.state);
       A.eq(frCalls().length - before, 1, 'the seed failure fired one failure-review pass (the lesson exists)');
@@ -388,7 +388,7 @@ async function settle(state, stableMs, maxMs) {
       const cfgPaused = await fixture.json('GET', '/api/memory/config');
       A.eq(cfgPaused.body.embedEnabled, false, 'while paused the config honestly reports the lane OFF');
       n = mock.state.calls.filter(c => c.main).length;
-      const ev4 = await driveRun(fixture, 'fr-sem', FAIL_MARK + ' inspect the station; a brand new wording about the package index being slow');
+      const ev4 = await driveRun(fixture, 'fr-sem', FAIL_MARK + ' inspect the keep; a brand new wording about the package index being slow');
       A.eq(endReason(ev4), 'error', 'the paused probe ended error');
       A.eq(embedCalls().length, ecBefore, 'PAUSED: no embedding call was made (the pause is server authority for the lane too)');
       await fixture.json('POST', '/api/personalization', { enabled: true });

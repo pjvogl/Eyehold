@@ -138,7 +138,7 @@ function boot(port, workspaces, attemptsLeft, extraEnv) {
     booted = await boot(port + 100, ws, 20, { SKYNET_CRON_TICK_MS: '300' });
     child = booted.child; port = booted.port; getOut = booted.out;
     apiToken = await bootToken(B(), B());
-    A.eq((await j('GET', '/api/lifecycle/armed')).body.armed, false, 'paused-only station stays idle after restart');
+    A.eq((await j('GET', '/api/lifecycle/armed')).body.armed, false, 'paused-only keep stays idle after restart');
     A.eq((await j('POST', '/api/cron/update', { id: routineId, patch: { enabled: true } })).status, 200, 'resume the routine');
     A.eq((await j('GET', '/api/lifecycle/armed')).body.categories.routines.count, 1, 'resumed routine is counted again');
     const otherRoutine = await j('POST', '/api/cron', { name: 'Paused digest', prompt: 'summarize', schedule: '0 10 * * *', agentId: 'lc_test' });
@@ -187,7 +187,7 @@ function boot(port, workspaces, attemptsLeft, extraEnv) {
     A.eq(rebootCron.body.enabled, true, 'REBOOT: arm intent persisted (enabled:true)');
     A.eq(rebootCron.body.halted, true, 'REBOOT: still halted (cron.halt.json read at boot)');
     const rebootLife = await j('GET', '/api/lifecycle/armed');
-    A.eq(rebootLife.body.armed, false, 'REBOOT: aggregate still armed:false — a halted station never holds the tray open');
+    A.eq(rebootLife.body.armed, false, 'REBOOT: aggregate still armed:false — a halted keep never holds the tray open');
     A.ok(getOut().indexOf('cron tick armed') < 0, 'REBOOT: the timer did NOT arm at boot while halted');
 
     // The dossier mirrors beliefs through the posture route during normal page load. That background write is

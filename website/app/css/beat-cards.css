@@ -1,4 +1,4 @@
-/* Transient work surfaces share the station's reading scale and glass material.
+/* Transient work surfaces share the keep's reading scale and glass material.
    Keep this after readability.css: small legacy captions must not win the cascade.
    Scope to decision cards, not ordinary replies, streaming logs or world chrome. */
 body {
@@ -214,7 +214,7 @@ body #chat-panel .tb-read-spent.folded .tb-read-head { font-size: var(--sn-type-
 body #chat-panel .tb-read .tb-read-chev { font-size: var(--sn-type-meta); }
 @media (max-width: 520px) { body #chat-panel .cmsg.tb-read { padding: 12px; } }
 /* Saved receipts are passive transcript, with an accessible undo target. */
-/* Station broadcasts remain one grouped status announcement, readable at COMMS width. */
+/* Keep broadcasts remain one grouped status announcement, readable at COMMS width. */
 body #chat-panel .cmsg.broadcast {
   display: block; margin: 12px 0; padding: 12px 16px; min-width: 0;
   border: 1px solid var(--beat-edge) !important; border-radius: 8px; background: var(--beat-face) !important;

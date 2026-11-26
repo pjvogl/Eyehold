@@ -4,31 +4,31 @@
      app.create    a new app (the APPS window's NEW APP does this for the Commander; the tool is for "make me an app…" in chat)
      app.read      what an app is made of: its files, its data keys, its schedule — or one file / one data value
      app.write     write one page file (index.html …) — the open window reloads onto it at once
-     app.check     compile its scripts and look-check it against the station style (never runs anything)
+     app.check     compile its scripts and look-check it against the keep style (never runs anything)
      app.publish   put data into the app (what its page shows) — scheduled refreshes end with this
      app.schedule  refresh it on a schedule ("every 24h", "0 8 * * *") with a task; "off" stops it
    All of it is inert until a page draws or a routine runs: the page is a network-less sandbox, and the scheduled
-   task is an ordinary routine under the station's normal rules. So none of these ask first. */
+   task is an ordinary routine under the keep's normal rules. So none of these ask first. */
 'use strict';
 
 const GUIDE = [
   'HOW A EYEHOLD APP WORKS (keep to this):',
   '- A Eyehold app lives INSIDE Eyehold. If the Commander asked for something to host, ship or run elsewhere (a website for Netlify, a React project, a script, an extension), this was the wrong tool: build real files instead, and tell the Commander this empty app can be removed from APPS.',
   '- The app is ONE page: index.html (put CSS/JS inline or in style.css / app.js beside it). It opens in a Eyehold window.',
-  '- IT IS THE COMMANDER\'S APP — it can be ANYTHING: a dashboard, a tracker, a calculator, a timer, a game, a canvas toy. If they describe a look, layout, colours, fonts, animation or behaviour, build EXACTLY that with your own CSS/JS/canvas/SVG — their wish beats the station style. Only when they did not say how it should look, make it native:',
-  '- DEFAULT LOOK (no look asked for): the station kit is injected automatically — build with its classes so the app looks native: sn-stack · sn-row-flex · sn-grid · sn-panel · sn-card · sn-sect (▮ header strip) + sn-list/sn-item rows · sn-stats/sn-stat (<b>value</b><span>LABEL</span>) · sn-table · sn-badge · dot ok|warn|bad · sn-title · sn-label · sn-hint · sn-muted · sn-btn (.primary .xs) · sn-input · sn-select · sn-tabs/sn-tab.on · sn-empty · sn-loading · sn-error. Colours via var(--ph), rgba(var(--ph-rgb),.2), var(--ok) --bad --warn; the page background stays transparent (the window glass shows through).',
-  '- INTERACTIVE apps keep the Commander\'s own input with eyehold.store.set(key, value) / eyehold.store.get(key) / eyehold.store.delete(key) / eyehold.store.keys() (JSON, saved on the station, survives reloads) — a tracker, a to-do, settings, a high score. Never localStorage (the sandbox has none).',
+  '- IT IS THE COMMANDER\'S APP — it can be ANYTHING: a dashboard, a tracker, a calculator, a timer, a game, a canvas toy. If they describe a look, layout, colours, fonts, animation or behaviour, build EXACTLY that with your own CSS/JS/canvas/SVG — their wish beats the keep style. Only when they did not say how it should look, make it native:',
+  '- DEFAULT LOOK (no look asked for): the keep kit is injected automatically — build with its classes so the app looks native: sn-stack · sn-row-flex · sn-grid · sn-panel · sn-card · sn-sect (▮ header strip) + sn-list/sn-item rows · sn-stats/sn-stat (<b>value</b><span>LABEL</span>) · sn-table · sn-badge · dot ok|warn|bad · sn-title · sn-label · sn-hint · sn-muted · sn-btn (.primary .xs) · sn-input · sn-select · sn-tabs/sn-tab.on · sn-empty · sn-loading · sn-error. Colours via var(--ph), rgba(var(--ph-rgb),.2), var(--ok) --bad --warn; the page background stays transparent (the window glass shows through).',
+  '- INTERACTIVE apps keep the Commander\'s own input with eyehold.store.set(key, value) / eyehold.store.get(key) / eyehold.store.delete(key) / eyehold.store.keys() (JSON, saved on the keep, survives reloads) — a tracker, a to-do, settings, a high score. Never localStorage (the sandbox has none).',
   '- Hard limits (the sandbox, not a style rule): the page has no network and loads nothing from the web (no CDN scripts, web fonts or remote images — inline everything, draw with CSS/SVG/canvas, images only as data: URIs); files are text.',
-  '- TIME: your own sense of today\'s date is WRONG (it is your training era). app.read states the station\'s real date — anything current (news, prices, "today") is searched for THAT date, and every item you publish is from it.',
+  '- TIME: your own sense of today\'s date is WRONG (it is your training era). app.read states the keep\'s real date — anything current (news, prices, "today") is searched for THAT date, and every item you publish is from it.',
   '- The page has NO network: it never fetches anything. Its content is DATA you publish with app.publish(app, key, value) — any JSON (e.g. key "items": [{ title, detail, url }]).',
-  '- In the page: const data = await eyehold.store.get("items"); render it; and re-render when new data lands: eyehold.onData(async () => { … }). Show an empty state (sn-empty) until the first data arrives, and a small "updated <time>" line (data._meta is kept by the station: await eyehold.store.get("_meta") → { updatedAt }).',
-  '- Links: a plain <a href="https://…"> opens in the Commander\'s browser (the station catches the click) — just link. Never put a URL inside an inline onclick="…" attribute (its quotes break the attribute); for a whole clickable row, wrap it in the <a>.',
+  '- In the page: const data = await eyehold.store.get("items"); render it; and re-render when new data lands: eyehold.onData(async () => { … }). Show an empty state (sn-empty) until the first data arrives, and a small "updated <time>" line (data._meta is kept by the keep: await eyehold.store.get("_meta") → { updatedAt }).',
+  '- Links: a plain <a href="https://…"> opens in the Commander\'s browser (the keep catches the click) — just link. Never put a URL inside an inline onclick="…" attribute (its quotes break the attribute); for a whole clickable row, wrap it in the <a>.',
   '- AUTOMATION: an app can update itself on any cadence ("every 15m", "every 1h", "0 8 * * *"). Each update is a crew run doing the `task` — publishing fresh data AND/OR changing the page itself (a new layout each week, a theme that follows the season). The Commander can also set or change this from AUTO-UPDATE under the app. Anything that must tick live (a clock, a timer, an animation) the page does itself in JS — never a run per second.',
   '- If it should update by itself (daily, hourly…), call app.schedule with `every` and the `task` each refresh performs (e.g. "gather what the crew finished this week and publish it with app.publish key items"). Schedule FIRST, before you search or read anything from the web; then do the first refresh yourself (do the task, app.publish) so the Commander sees real content immediately.',
-  '- Build order: app.read → app.schedule (if it updates by itself — do this BEFORE any web research, or the station asks the Commander to approve it) → app.write index.html → app.check → research → app.publish real data. Tell the Commander in one or two sentences what the app does and when it refreshes.'
+  '- Build order: app.read → app.schedule (if it updates by itself — do this BEFORE any web research, or the keep asks the Commander to approve it) → app.write index.html → app.check → research → app.publish real data. Tell the Commander in one or two sentences what the app does and when it refreshes.'
 ].join('\n');
 
-// the station's real date, in words — a model assumes its training-era date, so every app turn is told it
+// the keep's real date, in words — a model assumes its training-era date, so every app turn is told it
 // the SAME line every run's [RUNTIME] block carries (sidecar/runtimeinfo.js) — one wording, one place
 function todayLine(now) {
   if (typeof now !== 'function') return '';
@@ -70,7 +70,7 @@ function makeAppTools(deps) {
           content: todayLine(deps.now) + 'App "' + meta.name + '" (id: ' + id + ')\nDescription: ' + (meta.description || '—') +
             '\nFiles: ' + files.map(f => f.path + ' (' + f.bytes + ' B)').join(', ') +
             '\nData keys: ' + (keys.join(', ') || 'none yet') +
-            '\nSchedule: ' + (d.schedule && d.schedule.missing ? 'its routine was removed — call app.schedule again to restore it' : d.schedule ? (d.schedule.display + ' — task: ' + (meta.schedule && meta.schedule.task) + (d.schedule.armed === false ? ' (routines are switched OFF on this station — it will not fire until the Commander turns them on)' : '')) : 'none') +
+            '\nSchedule: ' + (d.schedule && d.schedule.missing ? 'its routine was removed — call app.schedule again to restore it' : d.schedule ? (d.schedule.display + ' — task: ' + (meta.schedule && meta.schedule.task) + (d.schedule.armed === false ? ' (routines are switched OFF on this keep — it will not fire until the Commander turns them on)' : '')) : 'none') +
             '\n\n' + GUIDE,
           summary: 'app ' + id
         };
@@ -89,7 +89,7 @@ function makeAppTools(deps) {
     },
     {
       name: 'app.check',
-      description: 'Check a Eyehold app without running it: every script compiles, and a look check against the station style (warnings).',
+      description: 'Check a Eyehold app without running it: every script compiles, and a look check against the keep style (warnings).',
       schema: { type: 'object', required: ['app'], properties: { app: { type: 'string' } } },
       scope: 'read', readOnly: true,
       run: async (a) => {
@@ -112,7 +112,7 @@ function makeAppTools(deps) {
             if (!/class="[^"]*\bsn-/.test(text)) warnings.push(f.path + ': no kit classes (sn-*) — fine for a custom look the Commander asked for; otherwise it will not look like Eyehold');
             if (/<(?:script|link|img|iframe)\b[^>]*\b(?:src|href)=["']https?:/i.test(text) || /@import\s+(?:url\()?["']?https?:/i.test(text) || /\blocalStorage\b|\bsessionStorage\b/.test(text)) warnings.push(f.path + ': loads something from the web or uses localStorage — neither works in an app (no network, no browser storage); inline it, and keep data with eyehold.store');
             if (/\bfetch\s*\(|XMLHttpRequest|new WebSocket/.test(text)) warnings.push(f.path + ': the page tries to use the network — it has none; publish data with app.publish instead');
-            if (/onclick\s*=\s*"[^"]*\$\{\s*JSON\.stringify/i.test(text)) warnings.push(f.path + ': JSON.stringify inside an onclick="…" attribute — its quotes end the attribute and the handler never runs; use a plain <a href> (the station opens links) or addEventListener');
+            if (/onclick\s*=\s*"[^"]*\$\{\s*JSON\.stringify/i.test(text)) warnings.push(f.path + ': JSON.stringify inside an onclick="…" attribute — its quotes end the attribute and the handler never runs; use a plain <a href> (the keep opens links) or addEventListener');
           }
         }
         return { content: (problems.length ? 'PROBLEMS:\n- ' + problems.join('\n- ') : 'OK — no problems.') + (warnings.length ? '\nLook warnings:\n- ' + warnings.join('\n- ') : ''), summary: problems.length ? 'app check: ' + problems.length + ' problem(s)' : 'app check ok' };
@@ -142,7 +142,7 @@ function makeAppTools(deps) {
         const r = await apps.schedule(id, { every: a.every, task: a.task, byAgent: true });   // a crew edit: a changed task drops the routine's unattended grants
         if (r.off) return { content: 'The app no longer refreshes on a schedule.', summary: 'app schedule off' };
         return {
-          content: 'Scheduled: ' + r.display + '.' + (r.armed === false ? ' NOTE: routines are switched OFF on this station, so it will not fire until the Commander turns them on — the app window offers a TURN ON button. Do the first refresh yourself now.' : ' Do the first refresh yourself now so the app has content.'),
+          content: 'Scheduled: ' + r.display + '.' + (r.armed === false ? ' NOTE: routines are switched OFF on this keep, so it will not fire until the Commander turns them on — the app window offers a TURN ON button. Do the first refresh yourself now.' : ' Do the first refresh yourself now so the app has content.'),
           summary: 'app scheduled ' + r.display
         };
       }

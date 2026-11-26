@@ -24,7 +24,7 @@ const ReturnStore = (() => {
 
   function beat() { if (!ready()) return; state = Returns.heartbeat(state, Date.now()); save(); }
 
-  // fetch this station's run history (ALL agents — cron routines run on crew too) + the routine
+  // fetch this keep's run history (ALL agents — cron routines run on crew too) + the routine
   // A failed or partial history read must reject: empty work and unread work are different states.
   async function composeRows(sinceMs, ranges, signal) {
     let runs = [];

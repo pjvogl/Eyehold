@@ -13,15 +13,15 @@
 const A = require('./_assert.js');
 const fs = require('fs'); const path = require('path');
 const read = (...p) => fs.readFileSync(path.join(__dirname, '..', ...p), 'utf8');
-const ui = read('frontend', 'app', 'stationui.js');
+const ui = read('frontend', 'app', 'keepui.js');
 const appjs = read('frontend', 'app', 'app.js');
 const signin = read('frontend', 'app', 'codexsignin.js');
 const html = read('frontend', 'index.html');
 const css = read('frontend', 'css', 'app.css');
 
 // ---- the panel consumes the full status truth ----
-A.ok(/codexStatusKnown\s*=\s*next/.test(ui) && /expired:\s*!!\(j && j\.expired\)/.test(ui), 'stationui stores connected+expired+reason from /api/auth/codex/status (not a lone bool)');
-A.ok(/function codexExpired\(\)/.test(ui), 'stationui exposes the codexExpired predicate');
+A.ok(/codexStatusKnown\s*=\s*next/.test(ui) && /expired:\s*!!\(j && j\.expired\)/.test(ui), 'keepui stores connected+expired+reason from /api/auth/codex/status (not a lone bool)');
+A.ok(/function codexExpired\(\)/.test(ui), 'keepui exposes the codexExpired predicate');
 
 // ---- dead sign-in renders EXPIRED, never SIGNED IN ----
 A.ok(/SIGN-IN EXPIRED — RECONNECT/.test(ui), 'the provider card renders SIGN-IN EXPIRED — RECONNECT when known-dead');
@@ -42,10 +42,10 @@ A.ok(/id="codex-inline-code"/.test(ui) && /id="codex-inline-status"/.test(ui), '
 // ---- ONE sign-in engine — no duplicated poll loops ----
 A.ok(/\/api\/auth\/codex\/poll/.test(signin), 'codexsignin.js owns the device-code poll');
 A.ok(!/\/api\/auth\/codex\/poll/.test(appjs), 'app.js no longer carries its own poll loop (extracted, not duplicated)');
-A.ok(!/\/api\/auth\/codex\/poll/.test(ui), 'stationui.js never grows its own poll loop');
+A.ok(!/\/api\/auth\/codex\/poll/.test(ui), 'keepui.js never grows its own poll loop');
 A.ok(/CodexSignIn\.start\(/.test(appjs), 'the brain screen drives the same shared engine');
 A.ok(/<script src="app\/codexsignin\.js"><\/script>/.test(html), 'index.html loads the shared engine');
-A.ok(html.indexOf('app/codexsignin.js') < html.indexOf('app/stationui.js') && html.indexOf('app/codexsignin.js') < html.indexOf('app/app.js'), 'codexsignin.js loads before both consumers');
+A.ok(html.indexOf('app/codexsignin.js') < html.indexOf('app/keepui.js') && html.indexOf('app/codexsignin.js') < html.indexOf('app/app.js'), 'codexsignin.js loads before both consumers');
 
 // ---- the brain screen tells the expired truth too ----
 A.ok(/j\.expired/.test(appjs) && /sign-in expired/i.test(appjs), 'the connect screen renders the expired state honestly (not a generic "not connected")');
@@ -59,9 +59,9 @@ A.ok(/j\.expired/.test(appjs) && /sign-in expired/i.test(appjs), 'the connect sc
   A.ok(btn && btn.label === '⏼ RECONNECT CHATGPT', 'the door reads ⏼ RECONNECT CHATGPT (got ' + (btn && btn.label) + ')');
   // the run() deep-links Settings→providers: openTerm(key, section) when the host supports it
   let opened = null;
-  global.StationUI = { openTerm: (key, section) => { opened = { key, section }; } };
+  global.KeepUI = { openTerm: (key, section) => { opened = { key, section }; } };
   btn.run();
-  delete global.StationUI;
+  delete global.KeepUI;
   A.eq(opened, { key: 'settings', section: 'providers' }, 'the door deep-links Settings→PROVIDERS');
 
   // not-signed-in (codex_not_connected) is the same class → same door, even with no stored credential

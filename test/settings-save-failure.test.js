@@ -2,7 +2,7 @@
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const vm = require('node:vm');
-const src = fs.readFileSync(require.resolve('../frontend/app/stationui.js'), 'utf8');
+const src = fs.readFileSync(require.resolve('../frontend/app/keepui.js'), 'utf8');
 const start = src.indexOf('  let lastSaveOk = true;');
 const end = src.indexOf('  /* ---------- CUSTOM PHOSPHOR', start);
 let fail = true, writes = 0;

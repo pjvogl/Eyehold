@@ -16,7 +16,7 @@ many of these — they win on any wording conflict.
   feedback signal that is logged but never read back is a bug. Shipped shape (`agent/feedback-learning`):
   a rating + correction becomes one user-confirmed Preference record per rated run
   (`sidecar/feedbackmemory.js`, origin `feedback`), editable/forgettable in the Memory Core; the
-  newest feedback rides EVERY run, station-wide (taste is about the Commander, not the rated agent);
+  newest feedback rides EVERY run, keep-wide (taste is about the Commander, not the rated agent);
   a run rated missed counts as a failure in the track record; rating review packets are durable.
   Respects the personalization pause. Only words that read as feedback on the work become taste.
 - **Eyehold is for beginners and power users.** It is easier for beginners to use, never
@@ -38,7 +38,7 @@ many of these — they win on any wording conflict.
     Andrew on 2026-09-23** ("merge the runaway breaker"); per-run loop detection in `sidecar/loop-breaker.js`
     (Hermes-gap Step 2) is separate and is not a quota. **Strict vs soft (2026-09-23):** a cap someone CHOSE (env or a saved Budget value) stays fail-closed when spend history is uncertain (test/spend-authority.http.test.js); the shipped $25 default is SOFT — after a crash leaves unsettled spend it cannot be enforced, so it proceeds instead of refusing every paid run, and the Budget panel shows the day spend as unknown (sidecar/budget.js strictScope).
 - **FULL POWER MEANS THE WHOLE LOCAL COMPUTER** (2026-08-14, Andrew; supersedes every older
-  Full-Access/hard-floor/desktop-lease limitation). Per-agent Full Access and the station-wide
+  Full-Access/hard-floor/desktop-lease limitation). Per-agent Full Access and the keep-wide
   master bypass are host-minted scopes of one general authority: Eyehold must project every
   available capability and must not block host paths (including `.env`/`.git`), arbitrary host
   commands, visible apps, or physical screen/input control. Do not build niche request allowlists;
@@ -49,13 +49,13 @@ many of these — they win on any wording conflict.
 - **Truthful telemetry is THE core law.** The app must never assert state the harness can't
   prove. Object = capability: a prop in the world is a real grant, not decoration. Tool
   surface must never exceed wired reality.
-- **Eerie-not-cute** tone. A living pixel-art station doing REAL work.
+- **Eerie-not-cute** tone. A living pixel-art keep doing REAL work.
 - **Deliverable = OPEN, not read** (2026-07-04). The payoff action on a finished work card is
   opening the runnable artifact, not viewing source. View-source is demoted.
 - **Engagement = the daily loop adapting to the user — NEVER a gauge/score UI.** (North Star.)
 - **Model is a roster property, never per-chat** (2026-07-03). /model and the model dock act
   on the agent, not the conversation.
-- **Specialists own only their desk.** All other props are station-shared via the overseer.
+- **Specialists own only their desk.** All other props are keep-shared via the overseer.
   Never build per-agent prop kits.
 - **Skills = HOW, Recipes = WHAT, Routines = WHEN.** Marketplace framing; meter compute, not
   recipes (open-core).
@@ -63,7 +63,7 @@ many of these — they win on any wording conflict.
   recommended"). D1 the catalog is static files on eyehold.com (Cloudflare Pages), never the
   eyehold-cloud money server; D2 a catalog skill whose downloaded bytes reproduce the catalog's
   pinned digest installs in ONE click at the curated (`trusted`) tier — the local guard scan still
-  runs and a dangerous finding is still refused; D3 installs land in the station SKILL LIBRARY, not
+  runs and a dangerous finding is still refused; D3 installs land in the keep SKILL LIBRARY, not
   one agent; D4 Eyehold Originals lead the catalog, then credited community picks; D5 the bundled
   library stays, the market is its update channel and the only home for new skills. Community
   publishing waits for a review queue. Plan: https://claude.ai/artifact/HuPtbuXdPrQC3xBVKVf79f
@@ -71,7 +71,7 @@ many of these — they win on any wording conflict.
   with an Ed25519 key that lives only on the publisher's machine (never the website, never the
   repo); the app ships the public keys (a working key + an offline backup) and refuses unsigned,
   mis-signed or older-serial documents. The market can PULL a skill (skills-catalog/revoked.json):
-  stations with market skills installed re-read the signed pulled list every few minutes and switch
+  keeps with market skills installed re-read the signed pulled list every few minutes and switch
   it off. Market packages are text only — SKILL.md, a license, plain-text references/ — and the app
   enforces that rule itself, not just the build. Serials are tracked per catalog, the app ships a
   minimum official serial (market-floor.json, pinned after each catalog deploy), and bundled
@@ -107,14 +107,14 @@ many of these — they win on any wording conflict.
 - **The OS paints NOTHING in Eyehold** (2026-07-27, Andrew). The corollaries of the control law
   below, for the other two surfaces the user agent will draw if nobody stops it: **no renderer-native
   dialog** — `window.confirm/alert/prompt` is an OS modal over the phosphor terminal; arm through
-  `ArmConfirm` (that helper exists for this) or use a station panel. The sole exception is a
+  `ArmConfirm` (that helper exists for this) or use a keep panel. The sole exception is a
   **host-boundary security confirmation** for a renderer-callable OS launch: the host may show a
   blocking native prompt only when it names the exact canonical target + action, remembers nothing,
   asks on every call, and Cancel cannot fall through to another launch path. Renderer UI cannot mint
   that proof; this exception is never reusable for ordinary product confirmation. **No native tooltip** —
   `frontend/app/tooltip.js` adopts every `[title]` into `[data-tip]`, removes the attribute, and
-  draws the station's card; `data-no-tip` opts an element out when it owns a richer tip. Both
-  locked by `test/station-tooltip.test.js`.
+  draws the keep's card; `data-no-tip` opts an element out when it owns a richer tip. Both
+  locked by `test/keep-tooltip.test.js`.
 - **NO white HTML controls, ever** (2026-07-27, Andrew — reported for the third time). A
   control that renders with the browser's own paint (buttonface white, ButtonBorder grey,
   black Arial, OS-blue tick) is a BUG, not a detail. `frontend/css/app.css` carries a
@@ -124,12 +124,12 @@ many of these — they win on any wording conflict.
   overriding real skins. Locked by `test/control-floor-theming.test.js`.
 - **COMMS beats:** decided cards must `vanish()`; ONE post-run beat at a time; gold-inset
   beat family (no `.reply` for asides).
-- **Per-agent spoken voices** (2026-09-06, Andrew). Supersedes the single station-voice
+- **Per-agent spoken voices** (2026-09-06, Andrew). Supersedes the single keep-voice
   restriction: the Commander may assign different built-in voices to stable agent IDs in
-  Settings → Live Voice. Unassigned agents retain existing station behavior. Assignments
+  Settings → Live Voice. Unassigned agents retain existing keep behavior. Assignments
   apply to spoken direct replies and hands-free; each agent's selected identity and serving
   engine remain pinned during a live call. Personality still controls the words independently.
-  Voice preferences are local to the app/browser, matching the existing station voice picker.
+  Voice preferences are local to the app/browser, matching the existing keep voice picker.
   PACE-WORD LAW and the /api/tts 200-always contract remain unchanged.
 
 ## Engineering / process
@@ -168,7 +168,7 @@ many of these — they win on any wording conflict.
   cycle GREEN + fresh (≤24h) + on the current trunk head · qa:journeys last run pass · Beginner Run
   not STUCK/FAIL · installed-exe smoke stamp GREEN + fresh (≤7d). No-fake-green: any check that can't
   run (missing/unreadable artifact, git failure) is NOT READY, loudly — never a silent pass.
-  **Lane-level done stays lane-level:** an agent may say "lane X verified"; station-wide status is
+  **Lane-level done stays lane-level:** an agent may say "lane X verified"; keep-wide status is
   whatever `qa:ready` says, nothing more. Why: session after session reported lane-green as
   project-green while the Guardian sat RED with open findings — the aggregate claim was never gated
   on anything. Now it is.

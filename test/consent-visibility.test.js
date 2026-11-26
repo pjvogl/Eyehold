@@ -1,6 +1,6 @@
 /* node test/consent-visibility.test.js — EL-11 escape tests: background consent must be VISIBLE.
 
-   FIX 1 escape: a consent prompt on a NON-displayed session rendered nothing — StationUI.notify lived only
+   FIX 1 escape: a consent prompt on a NON-displayed session rendered nothing — KeepUI.notify lived only
    inside permissionRow (active stream only); background prompts produced an unlabeled crew-dot flip that lit
    ALL agents' dots, and the sidecar auto-denied at 120s. A deny on a prompt nobody saw = consent violation.
 
@@ -35,7 +35,7 @@ const F = p => fs.readFileSync(path.join(__dirname, '..', p), 'utf8');
   A.ok(/onPermission:[\s\S]{0,600}?else\s*\{?\s*backgroundPermissionNotify\(ev,\s*ws\)/.test(chat),
     'chat.js: onPermission calls backgroundPermissionNotify for a non-displayed session');
   const fnBody = chat.split('function backgroundPermissionNotify')[1] || '';
-  A.ok(/StationUI\.notify\(/.test(fnBody.slice(0, 2000)), 'backgroundPermissionNotify: fires StationUI.notify');
+  A.ok(/KeepUI\.notify\(/.test(fnBody.slice(0, 2000)), 'backgroundPermissionNotify: fires KeepUI.notify');
   A.ok(/needsApproval/.test(fnBody.slice(0, 2000)), 'backgroundPermissionNotify: uses the needsApproval category (mutable pref honored)');
   A.ok(/App\.agentName|agentName\(/.test(fnBody.slice(0, 2000)), 'backgroundPermissionNotify: names the AGENT (not the focused hero)');
   A.ok(/openWorkstream\(\s*ws\.id\s*\)|go:\s*\{\s*ws:\s*ws\.id\s*\}/.test(fnBody.slice(0, 2000)),
@@ -45,9 +45,9 @@ const F = p => fs.readFileSync(path.join(__dirname, '..', p), 'utf8');
   A.ok(/consentAck\(/.test(chat), 'chat.js: acks the sidecar that the prompt reached a human surface');
 }
 {
-  const sui = F('frontend/app/stationui.js');
-  A.ok(/function notify\(text, cls, category, opts\)/.test(sui), 'stationui.js: notify accepts opts (additive 4th arg)');
-  A.ok(/onClick/.test(sui.split('function toast')[1] || ''), 'stationui.js: the toast supports a click-through action');
+  const sui = F('frontend/app/keepui.js');
+  A.ok(/function notify\(text, cls, category, opts\)/.test(sui), 'keepui.js: notify accepts opts (additive 4th arg)');
+  A.ok(/onClick/.test(sui.split('function toast')[1] || ''), 'keepui.js: the toast supports a click-through action');
 }
 
 /* ---------- FIX 1b · the marker lands on the SPECIFIC workstream row, and crew dots stop lying globally ---------- */

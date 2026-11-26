@@ -1,17 +1,17 @@
-/* EYEHOLD — windows/find.js : FIND (Ctrl+K) — one search for every place, agent and conversation in the station.
+/* EYEHOLD — windows/find.js : FIND (Ctrl+K) — one search for every place, agent and conversation in the keep.
 
    WHY (Andrew 2026-10-04: "WAAY easier to use and navigate"): Eyehold has ~50 places behind a dock, menus, tabs and
    console rails, and the only searches lived INSIDE single windows. FIND searches all of it from one field and opens the
-   result through the SAME door its button uses — Places.open (app/places.js), the opener the agent's station.show uses —
+   result through the SAME door its button uses — Places.open (app/places.js), the opener the agent's keep.show uses —
    so FIND, the agent and the manual can never name different places. No match is never a dead end: the last row hands
    the words to the crew in COMMS (typed in, not sent — the Commander presses Enter).
 
-   A station window like every other (WINDOWS DOCK FROM THE BOTTOM law): registered here, opened from SYSTEM › FIND or
+   A keep window like every other (WINDOWS DOCK FROM THE BOTTOM law): registered here, opened from SYSTEM › FIND or
    Ctrl+K, never a centred popup. Material: the Workflow-window glass (css/find-window.css). */
 'use strict';
 (() => {
-  if (typeof StationUI === 'undefined' || !StationUI.registerWindow || typeof Places === 'undefined') return;
-  const esc = StationUI.h.esc;
+  if (typeof KeepUI === 'undefined' || !KeepUI.registerWindow || typeof Places === 'undefined') return;
+  const esc = KeepUI.h.esc;
   let query = '';
   let sel = 0;
   let rows = [];
@@ -71,7 +71,7 @@
     rows = search(query);
     if (query.trim()) rows.push({ kind: 'ask', name: 'ASK THE CREW', line: '“' + query.trim().slice(0, 120) + '” — typed into COMMS for you to send' });
     if (sel >= rows.length) sel = Math.max(0, rows.length - 1);
-    list.innerHTML = rows.length ? rows.map(rowHtml).join('') : '<p class="fnd-empty">nothing on the station yet</p>';
+    list.innerHTML = rows.length ? rows.map(rowHtml).join('') : '<p class="fnd-empty">nothing on the keep yet</p>';
     const count = body.querySelector('.fnd-count');
     if (count) count.textContent = query.trim() ? (rows.length - 1) + ' found' : rows.length + ' places';
     const on = list.querySelector('.fnd-row.on');
@@ -80,7 +80,7 @@
 
   async function go(e) {
     if (!e) return;
-    StationUI.closeTerm('find');
+    KeepUI.closeTerm('find');
     try {
       if (e.kind === 'session') { if (typeof App !== 'undefined' && App.openWorkstream) App.openWorkstream(e.ws); return; }
       if (e.kind === 'ask') {
@@ -88,15 +88,15 @@
         const input = document.getElementById('chat-input'); if (input) input.focus();
         return;
       }
-      const out = await Places.open(e.place, { ui: StationUI, agentId: e.agentId,
+      const out = await Places.open(e.place, { ui: KeepUI, agentId: e.agentId,
         build: typeof Build !== 'undefined' ? Build : null, app: typeof App !== 'undefined' ? App : null, market: typeof Marketplace !== 'undefined' ? Marketplace : null });
-      if (!out || !out.open) StationUI.notify(e.name + ' could not open right now', 'warn');
-    } catch (err) { StationUI.notify(String((err && err.message) || err), 'warn'); }
+      if (!out || !out.open) KeepUI.notify(e.name + ' could not open right now', 'warn');
+    } catch (err) { KeepUI.notify(String((err && err.message) || err), 'warn'); }
   }
 
   function build(body) {
     body.innerHTML = '<div class="fnd">'
-      + '<div class="fnd-head"><input class="fnd-field" type="search" autocomplete="off" spellcheck="false" placeholder="find a window, an agent, a setting, a conversation…" aria-label="Find anything on the station" aria-controls="fnd-list">'
+      + '<div class="fnd-head"><input class="fnd-field" type="search" autocomplete="off" spellcheck="false" placeholder="find a window, an agent, a setting, a conversation…" aria-label="Find anything on the keep" aria-controls="fnd-list">'
       + '<span class="fnd-count" aria-live="polite"></span></div>'
       + '<div class="fnd-list" id="fnd-list" role="listbox" aria-label="Results"></div>'
       + '<p class="fnd-keys">↑ ↓ to move · Enter to open · Ctrl+K from anywhere</p></div>';
@@ -116,13 +116,13 @@
     setTimeout(() => { try { field.focus(); field.select(); } catch (_) {} }, 0);
   }
 
-  StationUI.registerWindow('find', 'FIND', build, { className: 'find-win' });
+  KeepUI.registerWindow('find', 'FIND', build, { className: 'find-win' });
 
   // Ctrl+K (⌘K) from anywhere: open FIND — or, when it is already showing, put the cursor back in its field
   document.addEventListener('keydown', ev => {
     if (!(ev.ctrlKey || ev.metaKey) || ev.shiftKey || ev.altKey || !(ev.key === 'k' || ev.key === 'K')) return;
     ev.preventDefault();
-    const out = StationUI.showTerm('find');
+    const out = KeepUI.showTerm('find');
     const field = document.querySelector('.find-win .fnd-field');
     if (out && out.open && field) { field.focus(); field.select(); }
   });

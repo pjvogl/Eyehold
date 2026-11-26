@@ -39,12 +39,12 @@
     },
     {
       "number": 15,
-      "title": "[Feature]: Station Templates, Community Gallery & AI-Assisted Station Building",
+      "title": "[Feature]: Keep Templates, Community Gallery & AI-Assisted Keep Building",
       "url": "https://github.com/Eyehold/eyehold/issues/15",
       "state": "OPEN",
       "updatedAt": "2026-09-18T00:55:35Z",
       "commentsRetrieved": 2,
-      "disposition": "Feature request for station templates/community gallery/agent assistance; no additional reproduced defect assigned."
+      "disposition": "Feature request for keep templates/community gallery/agent assistance; no additional reproduced defect assigned."
     },
     {
       "number": 14,

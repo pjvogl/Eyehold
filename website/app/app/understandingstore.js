@@ -1,6 +1,6 @@
 /* EYEHOLD — understandingstore.js : the live wiring around the pure understanding engine (understanding.js).
 
-   The browser half of the "how well the station understands its Commander" read-model, modelled on
+   The browser half of the "how well the keep understands its Commander" read-model, modelled on
    goalstore.js / dossierstore.js: a READ-ONLY citizen of the event spine (subscribes to agent.run.end,
    NEVER emits — the frozen shared/events.js contract is owned elsewhere). It holds NO state of its own —
    it composes the pure Understanding.understanding() read from state that already persists:
@@ -127,7 +127,7 @@ const UnderstandingStore = (() => {
   }
 
   // V3 §6: the live recommendation-gate read — the shared Understanding.readiness predicate over the live
-  // dossier. null when the engine is absent (callers treat null as NOT ready: a station that can't prove
+  // dossier. null when the engine is absent (callers treat null as NOT ready: a keep that can't prove
   // readiness doesn't recommend — fail-closed, matching truthful telemetry).
   function readiness() {
     if (!hasEngine() || typeof Understanding.readiness !== 'function') return null;

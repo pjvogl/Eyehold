@@ -13,15 +13,15 @@
    • retryable   — whether a plain "↻ Try again" makes sense.
    • action      — null | 'settings' | 'skills' | 'store' | 'refit' | 'reload': a context-aware DESTINATION
                    instead of a blind retry. capdenied's true unlock is BUILD MODE (place the gear) —
-                   NOT the SKILLS list — because a station quest, minted on the denial, completes
-                   by PLACEMENT (stationqueststore.js). auth/no-key opens the PROVIDERS key field.
+                   NOT the SKILLS list — because a keep quest, minted on the denial, completes
+                   by PLACEMENT (keepqueststore.js). auth/no-key opens the PROVIDERS key field.
    • cap         — (capdenied only) the resolved capability id ('web'|'cabinet'|…) parsed from the
                    raw 'no <need> — …' message, so copy can name WHICH power was missing + its gear.
    • raw         — the original technical text, kept for a de-emphasized sub-line / title tooltip.
 
    RENDERING THE ACTION (the door): `actionButton(verdict)` maps a verdict to { label, run } — a
    ready-to-wire button that OPENS the exact surface (Build.open() for BUILD MODE, the settings PROVIDERS
-   section for keys, StationUI SKILLS for a skill toggle). The consumer (chat.js offerRetry) calls
+   section for keys, KeepUI SKILLS for a skill toggle). The consumer (chat.js offerRetry) calls
    it instead of re-deriving the label/route per action, so a new action door is added in ONE place.
 
    INTEGRATION (not duplication): when the sidecar classifier module is reachable (node/tests), we delegate
@@ -43,10 +43,10 @@
 
   // The capability a `no <need> — …` denial names → the plain power word + the placeable GEAR that grants it.
   // Single-sourced from the sidecar's capsummary CAPS table (id/object) + worldmodel's CAP_LABEL power words, so
-  // a beginner reads "needs FILE ACCESS — the CABINET isn't on station" instead of a raw cap token. `compute` is
-  // the loop's turn-precondition (the DESK/workstation); the rest are placeable floor gear closed in BUILD MODE.
+  // a beginner reads "needs FILE ACCESS — the CABINET isn't on keep" instead of a raw cap token. `compute` is
+  // the loop's turn-precondition (the DESK/workkeep); the rest are placeable floor gear closed in BUILD MODE.
   const CAP_INFO = {
-    compute:      { power: 'a WORKSTATION', gear: 'a DESK',       does: 'run at all' },
+    compute:      { power: 'a WORKKEEP', gear: 'a DESK',       does: 'run at all' },
     web:          { power: 'WEB ACCESS',    gear: 'a DISH',       does: 'search or fetch the web' },
     cabinet:      { power: 'FILE ACCESS',   gear: 'an INTEL CAB', does: 'read or write files' },
     workbench:    { power: 'a TERMINAL',    gear: 'a WORKBENCH',  does: 'run commands or control the computer' },
@@ -57,7 +57,7 @@
   };
   // aliases the raw message may carry for the same capability (prop objectType ↔ cap id, or a tool family word).
   const CAP_ALIAS = {
-    computer: 'compute', desk: 'compute', workstation: 'compute',
+    computer: 'compute', desk: 'compute', workkeep: 'compute',
     dish: 'web', search: 'web', browser: 'web', fetch: 'web',
     files: 'cabinet', file: 'cabinet', fs: 'cabinet',
     terminal: 'workbench', shell: 'workbench', exec: 'workbench', desktop: 'workbench',
@@ -102,23 +102,23 @@
     grok_oauth_unavailable: { retryable: false, action: 'settings', msg: "Grok sign-in isn't available on this account yet — xAI hasn't opened the Grok sign-in for it. Add an xAI provider key instead (paste it under SETTINGS → AI & MODELS and pick the XAI provider)." },
     billing:       { retryable: false, action: 'settings', msg: "Your provider account is out of credit — top it up, then try again." },
     // managed Eyehold credits ran out (only reachable when a managed-credit backend is wired). Point at the STORE
-    // to top up; a BYOK station never hits this kind (it gets `billing`/`auth` instead).
+    // to top up; a BYOK keep never hits this kind (it gets `billing`/`auth` instead).
     // copy names the SAME door the button opens (PROVIDERS) — "the STORE" was a surface that doesn't exist as a button.
     managed_credit:{ retryable: false, action: 'store',    msg: "You're out of Eyehold credits — top up under SETTINGS → AI & MODELS, or connect your own provider key." },
     // The balance check FAILED (the account service was slow, erroring or unreachable) — the balance is unknown, NOT
     // $0. Reading this as managed_credit told a customer holding $79.24 to top up (2026-10-06). Retry is the door.
     managed_credit_unavailable: { retryable: true, action: null, msg: "Eyehold couldn't check your credit balance just now — your credits are safe and nothing was charged. Try again in a moment." },
-    // The service reported $0 because THIS station's running Eyehold runs hold the balance (each reserves up to its PER
+    // The service reported $0 because THIS keep's running Eyehold runs hold the balance (each reserves up to its PER
     // RUN limit and refunds what it doesn't spend; budgetcaps.managedRefusalMessage). Waiting is the first fix (retry),
     // then lowering PER RUN so runs can share the balance (the SPENDING LIMITS door); topping up stays the last
     // door — a small wallet's hold may come back as cents. Audit B11.
     managed_credit_held: { retryable: true, action: 'budget', msg: "Your Eyehold balance is held by Eyehold runs that are still working — nothing is lost: each run reserves up to its PER RUN limit and refunds what it doesn't spend. Wait for them to finish, lower PER RUN in SETTINGS › SPENDING LIMITS, or top up under SETTINGS → AI & MODELS." },
-    // The account service ANSWERED and refused this station's token (unlinked on the account page, or linked to a
+    // The account service ANSWERED and refused this keep's token (unlinked on the account page, or linked to a
     // different account). Topping up fixes nothing; relinking does — same PROVIDERS door as the EYEHOLD card.
-    managed_credit_link: { retryable: false, action: 'store', msg: "Your Eyehold account didn't accept this station's link (it was unlinked, or it belongs to another account) — your credits are safe. Relink it under SETTINGS → AI & MODELS → EYEHOLD MANAGED." },
+    managed_credit_link: { retryable: false, action: 'store', msg: "Your Eyehold account didn't accept this keep's link (it was unlinked, or it belongs to another account) — your credits are safe. Relink it under SETTINGS → AI & MODELS → EYEHOLD MANAGED." },
     // capdenied copy is REBUILT per-error in friendlyError() to name the exact power + gear; this is the fallback
     // when the capability can't be parsed. The door is BUILD MODE (place the gear), NOT the SKILLS list.
-    capdenied:     { retryable: false, action: 'refit',    msg: "This task needed a tool this agent doesn't have on station yet — open BUILD MODE to place the gear it's missing." },
+    capdenied:     { retryable: false, action: 'refit',    msg: "This task needed a tool this agent doesn't have on keep yet — open BUILD MODE to place the gear it's missing." },
     timeout:       { retryable: true,  action: null,       msg: 'That took too long and timed out — try again.' },
     user_abort:    { retryable: false, action: null,       msg: 'Stopped.' },
     context_overflow: { retryable: false, action: null,    msg: 'This conversation got too long for the model — start a fresh chat or shorten it.' },
@@ -127,8 +127,8 @@
     // JUKEBOX is placed (the Spotify tools ARE granted) but Spotify's OAuth session isn't connected yet — the
     // real second half of the unlock chain. The door is TOOLSETS (its JUKEBOX row carries ▶ CONNECT SPOTIFY —
     // Settings has NO spotify surface; the old 'settings' door landed on PROVIDERS with no connect control),
-    // NOT BUILD MODE (the gear is already on station) — distinct from `capdenied` which fires when no JUKEBOX exists.
-    spotify_not_connected: { retryable: false, action: 'toolsets', msg: 'The JUKEBOX is on station, but Spotify isn’t connected yet — connect it in ABILITIES, then try again.' },
+    // NOT BUILD MODE (the gear is already on keep) — distinct from `capdenied` which fires when no JUKEBOX exists.
+    spotify_not_connected: { retryable: false, action: 'toolsets', msg: 'The JUKEBOX is on keep, but Spotify isn’t connected yet — connect it in ABILITIES, then try again.' },
     // the one-run-at-a-time mutex: the SIDECAR message names the holder (age/source) + recovery steps.
     // Keep those details instead of flattening to `unknown` (2026-07-07 escape:
     // the user got "Something went wrong" in a loop while the real answer was one sentence away).
@@ -136,7 +136,7 @@
     // the SIDECAR's own token gate said no (a 403 with "forbidden token/origin/host"): after a sidecar
     // crash+respawn the page still holds the OLD X-Eyehold-Token, so EVERY action 403s. Retrying is doomed and
     // "add a key" is the wrong door — the page needs the fresh boot token, which only a reload fetches.
-    stale_session: { retryable: false, action: 'reload',   msg: 'The station restarted — reload this page to reconnect.' },
+    stale_session: { retryable: false, action: 'reload',   msg: 'The keep restarted — reload this page to reconnect.' },
     /* Eyehold's OWN spend ledger can't say what was spent (sidecar/loop.js stopForSpend, failureCode
        spend_history_unavailable): a limit the Commander chose can't be checked, so the run was stopped. NOT a provider
        out of credit (never `billing`), and never the generic "Something went wrong — try again": a retry hits the same
@@ -242,12 +242,12 @@
   }
 
   // Build the beginner capdenied sentence naming the exact power + its gear, e.g.
-  //   "This task needs FILE ACCESS — an INTEL CAB isn't on station. Open BUILD MODE to place it."
+  //   "This task needs FILE ACCESS — an INTEL CAB isn't on keep. Open BUILD MODE to place it."
   // Falls back to the generic KINDS.capdenied copy when the capability can't be parsed.
   function capdeniedMessage(cap) {
     const info = cap && CAP_INFO[cap];
     if (!info) return KINDS.capdenied.msg;
-    return 'This task needs ' + info.power + ' — ' + info.gear + " isn't on station. Open BUILD MODE to place it and try again.";
+    return 'This task needs ' + info.power + ' — ' + info.gear + " isn't on keep. Open BUILD MODE to place it and try again.";
   }
 
   // browser fallback: classify the UI-level error string + optional HTTP status into a kind, using the SAME
@@ -371,9 +371,9 @@
     // ONLY "out of managed credit" means an empty wallet: "Managed credits are unavailable" also says "managed credit",
     // and matching that as managed_credit told funded customers to top up whenever a balance check failed.
     if (/managed credits? (?:are |is )?unavailable/.test(raw.toLowerCase())) {
-      kind = /refused this station'?s link|relink/.test(raw.toLowerCase()) ? 'managed_credit_link' : 'managed_credit_unavailable';
+      kind = /refused this keep'?s link|relink/.test(raw.toLowerCase()) ? 'managed_credit_link' : 'managed_credit_unavailable';
     } else if (/managed credits? (?:are |is )?held|balance is held by \d+ running eyehold run/.test(raw.toLowerCase())) {
-      kind = 'managed_credit_held';   // the balance sits in this station's own running runs' holds — never "out of credit"
+      kind = 'managed_credit_held';   // the balance sits in this keep's own running runs' holds — never "out of credit"
     } else if (/managed credit|add credits in the store|out of managed credit/.test(raw.toLowerCase())) {
       kind = 'managed_credit';
     } else
@@ -453,7 +453,7 @@
     }
     const k = KINDS[kind] || KINDS.unknown;
     // capdenied: name the exact power + gear parsed from the raw message, and route to BUILD MODE (the true unlock —
-    // a station quest minted on this denial completes by PLACEMENT, not a SKILLS toggle).
+    // a keep quest minted on this denial completes by PLACEMENT, not a SKILLS toggle).
     if (kind === 'capdenied') {
       const cap = capFromRaw(raw);
       return { userMessage: capdeniedMessage(cap), kind: kind, retryable: k.retryable, action: k.action, cap: cap, raw: raw };
@@ -488,8 +488,8 @@
       const low = raw.toLowerCase();
       const named = raw.match(/connect an? (.+?) api key\b/i);   // the sidecar guard: providerCredentialError()
       let userMessage = k.msg;
-      if (/link this station to a eyehold account/.test(low)) {
-        userMessage = "This station isn't linked to Eyehold credits yet — link it under SETTINGS → AI & MODELS → EYEHOLD MANAGED, or connect your own provider key.";
+      if (/link this keep to a eyehold account/.test(low)) {
+        userMessage = "This keep isn't linked to Eyehold credits yet — link it under SETTINGS → AI & MODELS → EYEHOLD MANAGED, or connect your own provider key.";
       } else if (named) {
         userMessage = 'No ' + named[1].trim().replace(/\s+api$/i, '') + ' API key is connected yet — add it under SETTINGS → AI & MODELS, or pick a model from a provider you have already connected.';
       } else if (/configure the (.+?) base url/i.test(raw)) {
@@ -512,7 +512,7 @@
 
   /* ---- Why a EYEHOLD account-link start failed, from facts only (link-down 2026-10-07). Every failure used to read
      "could not reach the link service", which blamed the cloud for a dead LOCAL engine and gave support nothing.
-     `info` is what the caller saw: { local:true } when the station's own POST never answered (refused, non-JSON, or
+     `info` is what the caller saw: { local:true } when the keep's own POST never answered (refused, non-JSON, or
      Harness.api's deadline), else { status, j } from the sidecar — j.reason is its stable classification of the
      cloud failure (sidecar/index.js linkStartFailure). Lower-case lead, no trailing period (callers add their own). */
   function linkStartFailure(info) {
@@ -532,7 +532,7 @@
   /* ---- The DOOR: map a verdict to a ready-to-wire action button { label, run }. ONE place owns every
      error→surface route, so the consumer (chat.js offerRetry) never re-derives per-action labels/wiring, and a
      new door is added here alone. Returns null when the verdict has no actionable door (a plain retry / nothing).
-     run() is a no-op-safe opener: it feature-detects each global (Build / StationUI / Harness) so it degrades
+     run() is a no-op-safe opener: it feature-detects each global (Build / KeepUI / Harness) so it degrades
      quietly if a surface isn't loaded, never throwing. Routing is context-aware where it matters:
        • auth/oauth → if ChatGPT (Codex) is already connected, offer "sign in with ChatGPT"; else the key field.
        • capdenied  → BUILD MODE (Build.open) — place the missing gear the message just named.
@@ -549,11 +549,11 @@
   // open Settings, landing on a specific section when the host supports it (Lane C's openTerm(key, section)); the
   // bare openTerm('settings') is the graceful fallback so this works today.
   function openSettings(section) {
-    if (typeof StationUI === 'undefined') return;
+    if (typeof KeepUI === 'undefined') return;
     try {
-      if (section && StationUI.openTerm && StationUI.openTerm.length >= 2) { StationUI.openTerm('settings', section); return; }
-      if (StationUI.openTerm) StationUI.openTerm('settings');
-    } catch (_) { try { if (StationUI.openTerm) StationUI.openTerm('settings'); } catch (_) {} }
+      if (section && KeepUI.openTerm && KeepUI.openTerm.length >= 2) { KeepUI.openTerm('settings', section); return; }
+      if (KeepUI.openTerm) KeepUI.openTerm('settings');
+    } catch (_) { try { if (KeepUI.openTerm) KeepUI.openTerm('settings'); } catch (_) {} }
   }
   /* connector_required (beginner seam Lane 1, 2026-08-22): the bus event the MCP manager emits alongside its
      "connector X is not connected" throw becomes ONE post-run chip that opens the ABILITIES window ALREADY
@@ -594,8 +594,8 @@
       label: label, connectorId: id, kind: ev.kind || 'mcp',
       run: () => {
         try {
-          if (typeof StationUI === 'undefined' || !StationUI.openTerm) return false;
-          StationUI.openTerm('connectors', 'catalog');
+          if (typeof KeepUI === 'undefined' || !KeepUI.openTerm) return false;
+          KeepUI.openTerm('connectors', 'catalog');
           if (typeof document !== 'undefined') routeConsoleSearch(document, id);
           return true;
         } catch (_) { return false; }
@@ -626,7 +626,7 @@
         // spotify_not_connected: the connect flow lives on the ABILITIES window's JUKEBOX row (setupSpotify) —
         // the only surface with a ▶ CONNECT SPOTIFY control. The action KEY stays 'toolsets' (internal, and the
         // shelf inside is still called TOOLSETS); only the LABEL follows the dock button, which reads ABILITIES.
-        return { label: '⇄ OPEN ABILITIES', run: () => { try { if (typeof StationUI !== 'undefined' && StationUI.openTerm) StationUI.openTerm('connectors'); } catch (_) {} } };
+        return { label: '⇄ OPEN ABILITIES', run: () => { try { if (typeof KeepUI !== 'undefined' && KeepUI.openTerm) KeepUI.openTerm('connectors'); } catch (_) {} } };
       case 'settings':
         // Grok's OAuth sign-in is 403-allowlisted off for this account — the honest door is the xAI (API KEY)
         // provider, not a doomed reconnect. Lands on the PROVIDERS section where the xAI key row lives.
@@ -670,7 +670,7 @@
         // only surface that clears the refusal. No retry chip rides with it: a retry hits the same refusal.
         return { label: '$ OPEN SPENDING LIMITS', run: () => openSettings('budget') };
       case 'skills':
-        return { label: '✦ OPEN SKILL LIBRARY', run: () => { try { if (typeof StationUI !== 'undefined' && StationUI.openTerm) StationUI.openTerm('skills'); } catch (_) {} } };   // 'skills' aliases into ABILITIES ▸ SKILL LIBRARY (NAV CONDENSE 2)
+        return { label: '✦ OPEN SKILL LIBRARY', run: () => { try { if (typeof KeepUI !== 'undefined' && KeepUI.openTerm) KeepUI.openTerm('skills'); } catch (_) {} } };   // 'skills' aliases into ABILITIES ▸ SKILL LIBRARY (NAV CONDENSE 2)
       default:
         return null;
     }

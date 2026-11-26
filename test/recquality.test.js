@@ -36,7 +36,7 @@ A.ok(RQ.beliefStrength({ updatedAt: NOW }, NOW, uRead, 'pain') < RQ.beliefStreng
 A.eq(RQ.beliefStrength({ updatedAt: NOW }, NOW, null, 'goals'), 1, 'no understanding read → freshness alone is the reading');
 A.eq(RQ.beliefStrength(null, NOW, uRead, 'goals'), null, 'no belief → no reading');
 /* NEITHER READING MAY ZERO THE OTHER OUT (fixed after a live run, 2026-08-04): the dimension confidence is a
-   lagging aggregate — a station can genuinely hold the goal belief the arc is citing while the goals dim still
+   lagging aggregate — a keep can genuinely hold the goal belief the arc is citing while the goals dim still
    reads 0 — so a fresh, real citation must never be discounted to nothing by it. */
 A.ok(RQ.beliefStrength({ updatedAt: NOW }, NOW, { dims: { goals: { conf: 0 } } }, 'goals') >= 0.5,
   'a FRESH belief in a dimension reading zero confidence is still half-strength, never zero');
@@ -104,7 +104,7 @@ A.eq(RQ.staleness(old, NOW, thinDim, 'goals').stale, true, 'old AND under-confir
 A.eq(RQ.staleness(recent, NOW, thinDim, 'goals').stale, false, 'a recent belief is never stale, however thin the dimension');
 A.eq(RQ.staleness(old, NOW, uRead, 'goals').stale, false, 'an OLD belief in a well-corroborated dimension is not stale — age alone is not doubt');
 A.eq(RQ.staleness({ id: 'p', text: 't', pinned: true, updatedAt: NOW - 900 * DAY }, NOW, thinDim, 'goals').stale, false,
-  'a PINNED belief is never stale — the station does not second-guess what the Commander pinned');
+  'a PINNED belief is never stale — the keep does not second-guess what the Commander pinned');
 A.eq(RQ.staleness({ id: 'u', text: 't' }, NOW, thinDim, 'goals').stale, false, 'an undatable belief is never stale (unknown age is not evidence)');
 A.eq(RQ.staleness(old, null, thinDim, 'goals').stale, false, 'no clock → no staleness claim');
 A.eq(RQ.staleness(old, NOW, null, 'goals').stale, false, 'no understanding read → no staleness claim (fail-open to neutral)');
@@ -149,7 +149,7 @@ A.eq(RQ.beliefFingerprint('goals', null), '', 'no belief, no fingerprint');
 /* ── 6c. THE SAME "a reading is a number or it is nothing" PREDICATE (2026-08-04) ──
    num() is the gate every read in this module passes through, and it used to DENYLIST the bad shapes — so `' '`,
    `[]` and `[0]` still reached Number() and came back a hard, finite 0. In dimStrength/staleness a hard 0 is
-   CONFIDENCE ZERO, which marks a belief stale and asks the Commander to re-confirm it on a field the station
+   CONFIDENCE ZERO, which marks a belief stale and asks the Commander to re-confirm it on a field the keep
    merely failed to read. Mirrors recommend.js reading() exactly. */
 for (const junk of [' ', '', '  \n', [], [0], [1], {}, false, true, null, undefined, NaN, 'abc']) {
   A.eq(RQ.dimStrength({ dims: { goals: { conf: junk } } }, 'goals'), null,

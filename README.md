@@ -36,13 +36,13 @@ simulation.
 | --- | --- |
 | **A crew, not a chatbot** | Create agents with distinct classes, personas, and loadouts. Run several at once — each gets its own workspace, transcript, memory, and bounded permissions. |
 | **Bring your own models** | Paste an OpenRouter key, or sign in with supported provider accounts (Anthropic, OpenAI, Google) — keys live in the OS keychain, never in the frontend. |
-| **Message it from anywhere** | Wire agents to Telegram, Discord, Slack, Signal, or Matrix and talk to your station away from the desk. |
-| **Night Shift** | Leave the station running and agents keep working inside an explicit, adjustable leash — every away-action is logged and reviewable. |
+| **Message it from anywhere** | Wire agents to Telegram, Discord, Slack, Signal, or Matrix and talk to your keep away from the desk. |
+| **Night Shift** | Leave the keep running and agents keep working inside an explicit, adjustable leash — every away-action is logged and reviewable. |
 | **Recipes, skills, schedules** | Launch proven multi-step recipes, grant reusable skills, and put work on cron schedules with visible output. |
 | **Asks before it guesses** | Task Briefs turn ambiguity into one concrete question with options — over any connected channel — instead of a silent wrong guess. |
 | **Finished work has a front door** | Deliverables land in the OUTBOX as real files you open, not chat scrollback you archaeology. |
 | **MCP connectors** | Attach Model Context Protocol servers and paste-a-key/OAuth connectors to extend what agents can touch. |
-| **Voice** | Push-to-talk dictation in, one consistent station voice out. |
+| **Voice** | Push-to-talk dictation in, one consistent keep voice out. |
 | **Real ledgers** | Spend, budgets, and run history persist on disk and are shown as-is. |
 
 ## What is real
@@ -51,7 +51,7 @@ simulation.
 - Tools operate through explicit capability and consent checks.
 - Agent memory, transcripts, spend records, tasks, and schedules persist on disk.
 - Multiple agents run concurrently with separate workspaces and bounded permissions.
-- The visual station projects the same runtime state the harness can prove.
+- The visual keep projects the same runtime state the harness can prove.
 
 Eyehold does not simulate revenue, completed work, model activity, or spend. Its core product
 law is that **the interface must never assert state the harness cannot prove.**
@@ -97,7 +97,7 @@ node sidecar/index.js
 
 Open <http://localhost:8787>, then connect a provider —
 **bring your own OpenRouter API key (BYOK)** or use a supported OAuth sign-in. Provider requests leave your machine when you run an agent;
-station state, transcripts, memory, and ledgers stay in the local Eyehold workspace unless you
+keep state, transcripts, memory, and ledgers stay in the local Eyehold workspace unless you
 explicitly use a network tool or connector. See [PRIVACY.md](PRIVACY.md) for the full data map.
 
 ### Run free with a local model
@@ -128,7 +128,7 @@ never transfer — you re-enter those in the KEYS tab.
 
 | Path | Responsibility |
 | --- | --- |
-| `frontend/` | Vanilla JavaScript station world and desktop UI. |
+| `frontend/` | Vanilla JavaScript keep world and desktop UI. |
 | `sidecar/` | Local Node agent runtime: providers, tools, persistence, budgets, consent. |
 | `shared/` | Additive cross-boundary event and schema contracts. |
 | `src-tauri/` | Rust/Tauri desktop shell and bundled runtime. |
@@ -167,7 +167,7 @@ reporting instructions.
 Eyehold is open source under the [MIT License](LICENSE). Third-party components remain
 under their original licenses — see [NOTICE.md](NOTICE.md).
 
-**The MIT License covers the code only.** The **Eyehold** name, the logo, the station artwork
+**The MIT License covers the code only.** The **Eyehold** name, the logo, the keep artwork
 and sprites, and the rest of the project's brand identity are owned by Eyehold and are
 **not** licensed with it — no trademark or other brand rights are granted, expressly or by
 implication.
@@ -177,6 +177,6 @@ may not do is ship it as Eyehold: forks and derivatives must use their own name,
 artwork, and must not present themselves as this project or as endorsed by it.
 
 This checkout is the Eyehold fork. Its visible marks and the default realm art added here
-are original. The reserved Eyehold name, the traced station sheets under `frontend/assets`,
+are original. The reserved Eyehold name, the traced keep sheets under `frontend/assets`,
 and the signed skill catalog are not relicensed. See
 [docs/EYEHOLD_UPSTREAM_LEFTOVERS.md](docs/EYEHOLD_UPSTREAM_LEFTOVERS.md).

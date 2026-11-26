@@ -1,7 +1,7 @@
 /* EYEHOLD — pitchstore.js : the browser wiring around the pure First Pitch engine (pitch.js).
 
    The wiring half of "the agent that points you." It listens (read-only) for the agent finishing its first
-   real task, then — once the station knows enough about the Commander — has the agent REASON OUT one tailored,
+   real task, then — once the keep knows enough about the Commander — has the agent REASON OUT one tailored,
    buildable suggestion and offers to build it. This is the graduation beat: order-taker → advisor.
 
    How the pitch is generated without a template: it runs Pitch.buildDirective through the EXISTING model path
@@ -85,7 +85,7 @@ const PitchStore = (() => {
   }
 
   // V3 §6: the shared readiness gate, read live. FAIL-CLOSED: a missing/broken readiness read means the
-  // station cannot PROVE it knows its Commander — so it does not advise (never the old guess-and-pitch).
+  // keep cannot PROVE it knows its Commander — so it does not advise (never the old guess-and-pitch).
   /* the Commander's goal's NEXT unfinished milestone, or '' (rec perfection W2 — the twin of suggeststore's).
      The server evidence pack carries the GOAL; the milestone tree lives in the browser, so this is the one fact
      the pack structurally cannot supply. Fail-open: no store / no goal / no decomposition → '' → unchanged. */
@@ -225,7 +225,7 @@ const PitchStore = (() => {
 
   // THE FLOOR — when the handoff pitch can't fire (skipped/denied demo, cold dossier, no brain), the tour
   // must still end POINTING somewhere. One gentle COMMS nudge: a generated first move when the brain is
-  // live (Pitch.buildStarterDirective — honest about a toolless station), the quest-log pointer when it
+  // live (Pitch.buildStarterDirective — honest about a toolless keep), the quest-log pointer when it
   // isn't. Fire-once (persisted on offer, so an ignored nudge never re-nags); a delivered First Pitch
   // makes it moot; "run it" starts a real run — whose end is exactly what unlocks the real First Pitch.
   async function offerStarter() {
@@ -245,7 +245,7 @@ const PitchStore = (() => {
       }
       // V3 §6: a GENERATED first move is a recommendation — it only fires above the shared readiness gate.
       // Below it (blitzed/skipped interview → thin dossier) the floor is the honest quest-pointer + an
-      // invitation to NAME a chore: the Commander directs, the station never guesses a task from nothing.
+      // invitation to NAME a chore: the Commander directs, the keep never guesses a task from nothing.
       else if (readinessRead().ready && typeof Harness !== 'undefined' && Harness.chat && Harness.configured && Harness.configured()) {
         const directive = Pitch.buildStarterDirective({ capabilities: deps.getCaps ? deps.getCaps() : [] });
         const call = Harness.chat({ system: deps.getSystem ? deps.getSystem() : '', messages: [{ role: 'user', content: directive }], agentId: 'agent', isTask: false, placed: [], internal: true, evidence: true }).catch(() => null);

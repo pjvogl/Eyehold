@@ -5,7 +5,7 @@
 //   2. LAMP GRID     — LIGHT.pitch: lamps run DOWN the room, not one row at the north wall
 //   3. CORNER PROFILE— SHAPE.cornerN: 2 = circular fillet (legacy) · 1 = 45° chamfer
 //
-// Bakes the SAME station through the shipped StationBake at each config, so every difference in
+// Bakes the SAME keep through the shipped KeepBake at each config, so every difference in
 // the output is one of the three knobs and nothing else. Also dumps a luma profile DOWN the room's
 // centre column, which is the number that says whether the deck is actually lit or just claimed to be.
 //
@@ -21,7 +21,7 @@ const CDP_PORT = Number(process.env.SKYNET_CDP_PORT || 9371);
 const URL = `http://127.0.0.1:${PORT}/`;
 
 const PROBE = `(() => {
-  const SB = StationBake;
+  const SB = KeepBake;
   // the shipped values, captured before anything is overridden, so 'after' is provably the default
   const SHIPPED = { wall: { ...SB.WALL }, light: { ...SB.LIGHT }, shape: { ...SB.SHAPE } };
 
@@ -32,7 +32,7 @@ const PROBE = `(() => {
   const ra = geo.allRects.find(r => r.z === A.id);
   /* BAKE PIXELS ARE tile * T — geo.origin is the world→screen offset the renderer applies, NOT the
      bake's own frame (the bake pass itself computes X = ccx * T). Subtracting origin here
-     silently crops a DIFFERENT part of the station: no throw, no blank image, just a plausible
+     silently crops a DIFFERENT part of the keep: no throw, no blank image, just a plausible
      picture of the wrong place. Verified against geo.W: tiles 3..40 → 41*12 + pad/skirt = 528. */
   const PX = (tx) => tx * T, PY = (ty) => ty * T;
 

@@ -125,7 +125,7 @@ function boot(port, env, attemptsLeft) {
     A.ok(/simply new, not worse/.test(brief), '…and that an agent without one is simply new, not worse');
     A.ok(!/only delegate|must delegate|prefer.*over/i.test(brief), 'nothing in the briefing GATES or mandates a choice');
 
-    /* ---- a station with NO proven crew is byte-identical to the pre-S3 briefing ---- */
+    /* ---- a keep with NO proven crew is byte-identical to the pre-S3 briefing ---- */
     await push([
       { agentId: 'agent', system: 'lead', name: 'NOVA', role: 'overseer', track: '' },
       { agentId: 'rookie', system: 'you research', name: 'ROOKIE', role: 'researcher', track: '' },

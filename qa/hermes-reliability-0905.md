@@ -4,7 +4,7 @@ The three observed Eyehold reliability gaps are implemented in commits d4c4c2195
 
 1. Recognized MCP command-execution tools, including `run_command`, no longer receive reusable write receipts. Repeating an identical check after repair executes it again. External sends and other ordinary writes retain per-work-item deduplication. Command execution still follows the existing mutation/consent policy.
 2. Native verification uses the active project root when no narrower execution directory exists. Dispatch, clones, structured-result repair and resumed workers inherit host-owned project scope. Background worker records persist that scope.
-3. A routine addressed to a captured local session passes scheduled preflight and uses the existing acknowledged station-delivery bridge. Remote channel targets still require their channel. Native routine inspection exposes actionable errors, and routine.manage can repair local/origin delivery.
+3. A routine addressed to a captured local session passes scheduled preflight and uses the existing acknowledged keep-delivery bridge. Remote channel targets still require their channel. Native routine inspection exposes actionable errors, and routine.manage can repair local/origin delivery.
 
 ## Live backend proof
 
@@ -14,7 +14,7 @@ All scenarios launched `node dev/seed.js --keep` with isolated workspaces, deter
 | --- | --- |
 | Connector retry | 24 assertions: identical failed-check arguments execute again after repair; the model receives CHECK-PASS; duplicate external sends remain suppressed within each run. |
 | Project scope | 9 assertions: parent and delegated worker read the selected project's file and execute its npm test. Both emit done; recorded token-cost events are reconciled. |
-| Scheduled local delivery | 35 assertions: scheduler fires a session-only origin and persists its delivery acknowledgment; a disconnected remote origin stays blocked. The station-page acknowledgment is simulated through the actual SSE/ack bridge; no UI rendering claim. |
+| Scheduled local delivery | 35 assertions: scheduler fires a session-only origin and persists its delivery acknowledgment; a disconnected remote origin stays blocked. The keep-page acknowledgment is simulated through the actual SSE/ack bridge; no UI rendering claim. |
 | Worker restart/resume | 14 assertions: kill the seeded sidecar tree with a worker running, restart the same workspace, observe stale status and preserved project root, then resume via team.resume from a session without project scope. The worker finishes against the original project. |
 | Native routine repair | 14 assertions: actual scheduled preflight blocks an unavailable channel; routine.list exposes the reason; routine.manage durably switches to detached local output and clears the stale configuration block. |
 

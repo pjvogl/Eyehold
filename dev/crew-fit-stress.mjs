@@ -103,8 +103,8 @@ const END_RUNS_AND_SAMPLE = `(async () => {
 // reach) — so click the actual TEXT SIZE chip in Settings ▸ APPEARANCE, which is the only honest
 // way to reach the zoom + --sn-unzoom pair a Commander actually produces.
 const OPEN_SETTINGS = `(() => {
-  if (typeof StationUI === 'undefined' || !StationUI.openTerm) return 'no-stationui';
-  StationUI.openTerm('settings');
+  if (typeof KeepUI === 'undefined' || !KeepUI.openTerm) return 'no-keepui';
+  KeepUI.openTerm('settings');
   return document.querySelector('#set-textsize') ? 'open' : 'opened-no-chips';
 })()`;
 

@@ -11,8 +11,8 @@
         the router picks the entry dock, the chain runner runs the downstream stage, the reply the line
         delivers is the LAST stage's, the recorded runs.jsonl rows are scoped by the sample's own streamId,
         and the workitem crates (with the additive sample:true marker, re-proven against shared/events
-        validate()) ride the station bus;
-     5. ONE IN FLIGHT per station: a concurrent second post refuses 409 while the first is riding;
+        validate()) ride the keep bus;
+     5. ONE IN FLIGHT per keep: a concurrent second post refuses 409 while the first is riding;
      6. NO GRANTS PROPAGATION (the chain-grants law): a sample whose model tries a consent-gated mutation
         (shell.exec) is default-denied — the request body cannot smuggle unattendedGrants — and the line
         still delivers (a denial never gates the reply);
@@ -109,12 +109,12 @@ function boot(port, env, attemptsLeft) {
   });
 }
 
-// the station SSE bus — where the workitem crates the world draws actually ride (chanEmit → /api/channels/events)
+// the keep SSE bus — where the workitem crates the world draws actually ride (chanEmit → /api/channels/events)
 async function startSseCollector(url) {
   const ac = new AbortController();
   const events = [];
   const res = await fetch(url, { signal: ac.signal });
-  A.eq(res.status, 200, 'the station SSE feed opens');
+  A.eq(res.status, 200, 'the keep SSE feed opens');
   const reader = res.body.getReader();
   (async () => {
     const dec = new TextDecoder();
@@ -237,10 +237,10 @@ function twoStagePlan() {
        The mock provider recorded every request body; the ENTRY dock's brief must ride its run's SYSTEM
        context, and the RECEIVING dock's brief must ride the handoff turn's USER text (the shared
        Pipeline.handoffPrompt 5th param via the chain runner's stageBrief seam). ---- */
-    const BRIEF_HDR = 'YOUR STANDING BRIEF FOR THIS STATION:';
+    const BRIEF_HDR = 'YOUR STANDING BRIEF FOR THIS KEEP:';
     const lastUserOf = rq => { const m = [...((rq && rq.messages) || [])].reverse().find(x => x && x.role === 'user'); return String((m && m.content) || ''); };
     const sysOf = rq => ((rq && rq.messages) || []).filter(x => x && x.role === 'system').map(x => String(x.content || '')).join('\n');
-    // the station's own background jobs (the quest master reads recent activity, which can quote the sample) are not the
+    // the keep's own background jobs (the quest master reads recent activity, which can quote the sample) are not the
     // entry dock's run: a race picked one of them now and then
     const entryReq = mock.requests.find(rq => lastUserOf(rq).indexOf('SAMPLE JOB') >= 0 && lastUserOf(rq).indexOf('PIPELINE HANDOFF') < 0 && sysOf(rq).indexOf('quest master') < 0);
     A.ok(entryReq, 'the entry dock\'s provider request was recorded');
@@ -252,18 +252,18 @@ function twoStagePlan() {
       'the RECEIVING dock\'s standing brief rode the handoff turn: ' + lastUserOf(hopReq).slice(0, 300));
     A.ok(lastUserOf(hopReq).indexOf('stage one findings') >= 0, 'alongside the upstream output (the turn still carries the work)');
 
-    // the recorded rows are in the station's real run history too (the ledger/run-store path, not a claim)
+    // the recorded rows are in the keep's real run history too (the ledger/run-store path, not a claim)
     const runsApi = await fetch(B + '/api/runs?agent=*&limit=50', { headers }).then(r => r.json());
     for (const r of h.runs) {
       A.ok((runsApi.runs || []).some(x => x && x.runId === r.runId), 'run ' + r.runId + ' is in GET /api/runs');
     }
 
-    // the crates the world draws rode the REAL station bus — entry crate marked sample:true, chain hop, delivery
+    // the crates the world draws rode the REAL keep bus — entry crate marked sample:true, chain hop, delivery
     await sse.settle(1500);
     const placed = sse.events.filter(e => e.name === 'workitem.placed').map(e => e.payload || {});
     const deliveredEv = sse.events.filter(e => e.name === 'workitem.delivered').map(e => e.payload || {});
     const entry = placed.find(p => p.kind === 'sample');
-    A.ok(entry, 'the entry crate (kind:sample) rode the station bus');
+    A.ok(entry, 'the entry crate (kind:sample) rode the keep bus');
     A.eq(entry.queueId, 'research-agent', 'the entry crate queues at the routed dock');
     A.eq(entry.sample, true, 'the entry crate carries the additive sample:true marker');
     A.ok(placed.some(p => p.kind === 'chain' && p.agentId === 'writer-agent'), 'the chain hop placed its own crate at the downstream dock');
@@ -309,7 +309,7 @@ function twoStagePlan() {
     A.ok(!sse.events.some(e => e.name === 'workitem.delivered' && e.payload && e.payload.workitemId === early.j.workitemId), 'clean early-stop crate never emits OUTBOX delivery');
     A.ok(!sse.events.some(e => e.name === 'workitem.superseded' && e.payload && e.payload.workitemId === early.j.workitemId), 'clean early stop is not falsely labeled as a supersede');
 
-    /* ---- 4. ONE in flight per station ---- */
+    /* ---- 4. ONE in flight per keep ---- */
     const p1 = post({});
     await sleep(30);   // let the first post claim the lock in its synchronous slice
     const p2 = await post({});
@@ -433,7 +433,7 @@ function twoStagePlan() {
     await sse.settle(800);
     const scopedCrate = sse.events.filter(e => e.name === 'workitem.placed').map(e => e.payload || {})
       .find(p => p.workitemId === scoped.j.workitemId);
-    A.ok(scopedCrate, 'the scoped sample\'s entry crate rode the station bus');
+    A.ok(scopedCrate, 'the scoped sample\'s entry crate rode the keep bus');
     A.eq(scopedCrate.queueId, 'beta-agent', 'the crate queues at line B\'s dock');
     A.eq(scopedCrate.lineId, lineB, 'the crate carries line B — the chain seed scopes the whole ride to the named line');
 

@@ -20,7 +20,7 @@ const TEMPLATE_DIR = path.join(OUT_DIR, 'templates');
 const THREE_URL = 'https://unpkg.com/three@0.165.0/build/three.module.js';
 
 const SPECS = [
-  { id: 'desk2', label: 'Legged workstation', kind: 'desk2', footprint: [2, 1], size: [96, 72] },
+  { id: 'desk2', label: 'Legged workkeep', kind: 'desk2', footprint: [2, 1], size: [96, 72] },
   { id: 'pixelrig', label: 'Pixel rig', kind: 'pixelrig', footprint: [2, 1], size: [96, 72] },
   { id: 'holotable', label: 'Hologram table', kind: 'holotable', footprint: [4, 2], size: [192, 96] },
   { id: 'crate', label: 'Long cargo crate', kind: 'crate', footprint: [2, 1], size: [96, 48] },

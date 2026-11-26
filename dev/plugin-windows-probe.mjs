@@ -1,9 +1,9 @@
-// PLUGIN WINDOWS — live proof on a disposable seeded station (plugin extensions phase 1, 2026-09-29).
+// PLUGIN WINDOWS — live proof on a disposable seeded keep (plugin extensions phase 1, 2026-09-29).
 //   node dev/plugin-windows-probe.mjs        → .worldshots/plugin-windows/*.png + report.json
 // Boots an isolated sidecar (scratch WORKSPACES + scratch APPDATA/LOCALAPPDATA/USERPROFILE/HOME, mocked model
 // catalog), creates the starter plugin through the real route, opens its window through the real host, then
 // proves from INSIDE the sandboxed frame: the kit is loaded and themed, the bridge answers, the store round-trips,
-// and the page cannot reach the station (no token, no parent DOM, no credentialed API). Then a theme change, a
+// and the page cannot reach the keep (no token, no parent DOM, no credentialed API). Then a theme change, a
 // text-size change, and an on-disk edit (the window must say the plugin is off, never keep running old code).
 import assert from 'node:assert/strict';
 import { mkdtempSync, mkdirSync, writeFileSync, readFileSync, existsSync, appendFileSync } from 'node:fs';
@@ -128,11 +128,11 @@ try {
   await cdp.send('Emulation.setDeviceMetricsOverride', { width: 1440, height: 900, deviceScaleFactor: 1, mobile: false });
   await cdp.send('Page.navigate', { url: 'http://127.0.0.1:' + PORT + '/' });
   assert.ok(await waitDevReady(cdp, evalJS, { url: 'http://127.0.0.1:' + PORT + '/' }));
-  await until(`typeof PluginHost === 'object' && typeof StationUI === 'object'`);
+  await until(`typeof PluginHost === 'object' && typeof KeepUI === 'object'`);
 
   // ---- 1. the starter plugin, created through the real route, opens as a real window ----
   // through the real EXTENSIONS form: ABILITIES → CREATE / ADVANCED → EXTENSIONS → Create a plugin
-  await run(`StationUI.openTerm('connectors','extensions')`);
+  await run(`KeepUI.openTerm('connectors','extensions')`);
   await until(`!!document.querySelector('#pl-form') && !!document.querySelector('[data-ext-editor="plugin"]')`);
   await run(`document.querySelector('[data-ext-editor="plugin"]').click()`);
   await run(`(()=>{const n=document.querySelector('#pl-name');n.focus();n.value='PR Radar';n.dispatchEvent(new Event('input',{bubbles:true}));return true})()`);
@@ -144,13 +144,13 @@ try {
   await check('its tools came up in its own process and its TERMINAL was placed in the lead\'s room', /terminal now stands in the lead/.test(report.facts.createMsg));
   report.facts.terminal = await run(`JSON.stringify(PluginHost.terminalOf('pr-radar'))`);
   await check('the terminal is a real placed prop bound to the plugin', /"id":"p\d+"/.test(report.facts.terminal));
-  report.facts.leadCaps = await run(`(()=>{ const st=App.station(); const d=st.serialize(); const t=d.props.find(p=>p.t==='plugin_terminal'); return JSON.stringify({ caps: st.bayObjects('agent'), capRoom: st.agentRoomId('agent'), termRoom: t && st.roomAt ? st.roomAt(t.x,t.y) : null, agentProps: d.props.filter(p=>p.agentId==='agent').map(p=>p.t+'@'+p.x+','+p.y), term: t }); })()`);
+  report.facts.leadCaps = await run(`(()=>{ const st=App.keep(); const d=st.serialize(); const t=d.props.find(p=>p.t==='plugin_terminal'); return JSON.stringify({ caps: st.bayObjects('agent'), capRoom: st.agentRoomId('agent'), termRoom: t && st.roomAt ? st.roomAt(t.x,t.y) : null, agentProps: d.props.filter(p=>p.agentId==='agent').map(p=>p.t+'@'+p.x+','+p.y), term: t }); })()`);
   await check('the terminal projects the plugin capability into the lead\'s run reach', await run(`World.heroCaps('agent').some(o => o && o.objectType === 'plugin' && o.pluginId === 'pr-radar')`));
   await check('the EXTENSIONS row offers OPEN PR RADAR', await run(`[...document.querySelectorAll('[data-ext="plugin-open"]')].some(b=>b.textContent==='OPEN PR RADAR')`));
   await check('it opens again through the ordinary registry', await run(`PluginHost.open('pr-radar','main')`) === true);
   await until(`document.querySelector('.term.plugin-win').classList.contains('gd-sheet')`);
   await check('the window is a glass sheet (glass-demo.js attached it like every other window)', true);
-  await check('the station title bar carries the PLUGIN plate', await run(`!!document.querySelector('.term.plugin-win .plugin-plate')`));
+  await check('the keep title bar carries the PLUGIN plate', await run(`!!document.querySelector('.term.plugin-win .plugin-plate')`));
   await check('the frame is sandboxed WITHOUT allow-same-origin', await run(`(()=>{const s=document.querySelector('iframe.plugin-frame').getAttribute('sandbox');return /allow-scripts/.test(s)&&!/allow-same-origin/.test(s)})()`));
 
   // ISOLATED=1: Chrome's DEFAULT process model (sandboxed frames in their own process, as WebView2 runs them). The
@@ -161,7 +161,7 @@ try {
     await check('ISOLATED: the kit loaded in its own process and its bridge call reached the host (auto height)', true);
     const tree = await cdp.send('Page.getFrameTree');
     report.facts.isolatedFrameUrl = ((tree.frameTree.childFrames || [])[0] || {}).frame?.url?.replace(/~t\/[^/]+/, '~t/<ticket>');
-    await run(`StationUI.setTheme('green')`); await sleep(500);
+    await run(`KeepUI.setTheme('green')`); await sleep(500);
     report.facts.shotIsolated = await capture(cdp, out, 'isolated-green');
     writeFileSync(join(out, 'report-isolated.json'), JSON.stringify(report, null, 2));
     console.log(JSON.stringify(report, null, 2));
@@ -173,7 +173,7 @@ try {
   await check('the bridge says hello with the RIGHT plugin (named by the host, not the page)', true);
   const phParent = await run(`getComputedStyle(document.body).getPropertyValue('--ph').trim()`);
   await frameUntil(`getComputedStyle(document.documentElement).getPropertyValue('--ph').trim() === ${JSON.stringify(phParent)}`);
-  await check('the frame carries the station\'s live --ph', true);
+  await check('the frame carries the keep\'s live --ph', true);
   report.facts.frameFont = await frameEval(`getComputedStyle(document.body).fontFamily`);
   await check('the kit font is VT323', /VT323/.test(report.facts.frameFont));
   await frameUntil(`document.fonts.check('18px VT323')`);
@@ -185,15 +185,15 @@ try {
   report.facts.shot1 = await capture(cdp, out, '01-starter-window-amber');
 
   // ---- 3. the store round-trips through the host, and survives on disk ----
-  await run(`(()=>{ window.__pluginToasts=[]; const o=StationUI.notify; StationUI.notify=function(text, cls, cat, opts){ window.__pluginToasts.push({ text, transient: !!(opts && opts.transient) }); return o.apply(this, arguments); }; return true; })()`);
+  await run(`(()=>{ window.__pluginToasts=[]; const o=KeepUI.notify; KeepUI.notify=function(text, cls, cat, opts){ window.__pluginToasts.push({ text, transient: !!(opts && opts.transient) }); return o.apply(this, arguments); }; return true; })()`);
   const stored = await frameEval(`(async()=>{ await eyehold.store.set('probe',{n:42}); return (await eyehold.store.get('probe')).n; })()`);
   await check('store.set → store.get round-trips through the host', stored === 42);
   await frameEval(`(async()=>{ const i=document.getElementById('note'); i.value='Ship plugin windows'; document.getElementById('add').requestSubmit(); await new Promise(r=>setTimeout(r,600)); return true; })()`);
   await frameUntil(`document.querySelectorAll('#list .sn-item').length === 1`);
   const onDisk = join(ws, 'plugin-data', 'pr-radar.json');
-  await check('the note is saved by the station on disk', existsSync(onDisk) && /Ship plugin windows/.test(readFileSync(onDisk, 'utf8')));
+  await check('the note is saved by the keep on disk', existsSync(onDisk) && /Ship plugin windows/.test(readFileSync(onDisk, 'utf8')));
   await until(`(window.__pluginToasts || []).some(t => /^PR Radar: Note saved/.test(t.text) && t.transient)`, 40);
-  await check('a plugin toast reaches the station, prefixed with the plugin name, and stays out of the notification history', await run(`!StationUI.h.store.notifs.some(n => /^PR Radar:/.test(n.txt))`));
+  await check('a plugin toast reaches the keep, prefixed with the plugin name, and stays out of the notification history', await run(`!KeepUI.h.store.notifs.some(n => /^PR Radar:/.test(n.txt))`));
   await frameUntil(`/^\\d+$/.test(document.getElementById('stat-calls').textContent)`, 60);
   await check('the window reaches its own backend (eyehold.backend.call → api.handle, in the plugin process)', true);
   await sleep(300);
@@ -201,7 +201,7 @@ try {
 
   // ---- 3b. the CREW uses the plugin: a real chat run, the plugin tool offered, a real approval card, the effect ----
   await run(`App.persist(), true`);
-  await sleep(2500);   // the station save reaches the sidecar (the run resolves tools from the saved floor)
+  await sleep(2500);   // the keep save reaches the sidecar (the run resolves tools from the saved floor)
   await run(`(()=>{ const i=document.getElementById('chat-input'); i.value='Add a note to PR Radar saying the probe was here'; i.dispatchEvent(new Event('input',{bubbles:true})); document.getElementById('chat-send').click(); return true; })()`);
   await until(`[...document.querySelectorAll('#chat-panel button')].some(b => b.textContent.trim() === 'Approve once' && !b.disabled)`, 150);
   report.facts.approvalCard = await run(`(()=>{ const b=[...document.querySelectorAll('#chat-panel button')].find(b => b.textContent.trim()==='Approve once'); const card=b.closest('.perm,.permission,.beat,.msg,div'); return (card && card.textContent || '').replace(/\\s+/g,' ').slice(0,300); })()`);
@@ -221,9 +221,9 @@ try {
   // ---- 3c. (retired 2026-09-30) the crew no longer BUILDS plugins: plugin-authoring is ungranted, the crew builds
   //      APPS instead (dev/apps-*-proof.mjs). Plugins remain the Commander's own power-user path.
 
-  // ---- 4. the page CANNOT reach the station ----
+  // ---- 4. the page CANNOT reach the keep ----
   await check('no API token in the frame', await frameEval(`typeof window.__EYEHOLD_API_TOKEN__ === 'undefined'`));
-  await check('the frame cannot read the station page', await frameEval(`(()=>{ try { return !window.parent.document; } catch (e) { return true; } })()`));
+  await check('the frame cannot read the keep page', await frameEval(`(()=>{ try { return !window.parent.document; } catch (e) { return true; } })()`));
   await check('the frame is an opaque origin', await frameEval(`origin === 'null'`));
   const apiTry = await frameEval(`fetch('http://127.0.0.1:${PORT}/api/plugins').then(r=>'status '+r.status, e=>'blocked: '+e.name)`);
   report.facts.apiFromFrame = apiTry;
@@ -232,27 +232,27 @@ try {
   await check('the page cannot name a different plugin (the host always uses its own)', other === JSON.stringify({ n: 42 }));
   const noNonce = await frameEval(`new Promise((res) => { let got = false; const h = (ev) => { if (ev.data && ev.data.re === 9999) got = true; }; addEventListener('message', h); parent.postMessage({ __sn: 1, id: 9999, m: 'store.keys', a: {} }, '*'); setTimeout(() => { removeEventListener('message', h); res(got); }, 800); })`);
   await check('a message WITHOUT the frame nonce is never answered (a page this frame navigated to cannot use the bridge)', noNonce === false);
-  await check('the frame is labelled for assistive tech with aria-label, never title= (the station tooltip would park over the plugin)', await run(`(()=>{ const f=document.querySelector('iframe.plugin-frame[data-plugin="pr-radar"]'); return !f.hasAttribute('title') && !f.hasAttribute('data-tip') && /PR Radar/.test(f.getAttribute('aria-label')||''); })()`));
+  await check('the frame is labelled for assistive tech with aria-label, never title= (the keep tooltip would park over the plugin)', await run(`(()=>{ const f=document.querySelector('iframe.plugin-frame[data-plugin="pr-radar"]'); return !f.hasAttribute('title') && !f.hasAttribute('data-tip') && /PR Radar/.test(f.getAttribute('aria-label')||''); })()`));
   const unknown = await frameEval(`eyehold.call('fs.read',{path:'C:/'}).then(()=>'answered',e=>e.message)`);
   await check('an unknown bridge call is refused', /unknown call/.test(unknown));
   const badLink = await frameEval(`eyehold.ui.openLink('file:///C:/Windows').then(()=>'opened',e=>e.message)`);
   await check('a non-https link is refused', /https/.test(badLink));
 
-  // ---- 5. the KIT tab, then a theme change repaints the plugin with the station ----
+  // ---- 5. the KIT tab, then a theme change repaints the plugin with the keep ----
   await frameEval(`document.querySelector('[data-tab="kit"]').click(), true`);
   await sleep(400);
   await check('the KIT tab swaps the pane (hidden always hides, even on a flex stack)',
     await frameEval(`getComputedStyle(document.querySelector('[data-pane="notes"]')).display === 'none' && getComputedStyle(document.querySelector('[data-pane="kit"]')).display !== 'none'`));
   report.facts.shot3 = await capture(cdp, out, '03-kit-tab-amber');
-  await run(`StationUI.setTheme('green')`);
+  await run(`KeepUI.setTheme('green')`);
   const phGreen = await run(`getComputedStyle(document.body).getPropertyValue('--ph').trim()`);
   await frameUntil(`getComputedStyle(document.documentElement).getPropertyValue('--ph').trim() === ${JSON.stringify(phGreen)}`);
   await check('a theme change repaints the plugin (' + phParent + ' → ' + phGreen + ')', phGreen !== phParent);
   await sleep(400);
   report.facts.shot4 = await capture(cdp, out, '04-kit-tab-green');
-  await run(`StationUI.setTheme('amber')`);
+  await run(`KeepUI.setTheme('amber')`);
 
-  // ---- 6. text size: how the frame scales with the station's body zoom ----
+  // ---- 6. text size: how the frame scales with the keep's body zoom ----
   const before = await frameEval(`innerWidth`);
   const rectBefore = await run(`document.querySelector('iframe.plugin-frame[data-plugin="pr-radar"]').getBoundingClientRect().width`);
   await run(`document.body.style.zoom='1.3'`);

@@ -4,14 +4,14 @@ const root=path.resolve(__dirname,'../..');process.chdir(root);
 const sha=p=>crypto.createHash('sha256').update(fs.readFileSync(p)).digest('hex');
 const read=p=>JSON.parse(fs.readFileSync(p));
 async function main(){
-const old=read('frontend/assets/industrial/batch02/catalog.json').items,claims=read('docs/station-remaster/batch03/claims.json'),structure=read('dev/industrial-textures/prop-structure-manifest.json').props;
+const old=read('frontend/assets/industrial/batch02/catalog.json').items,claims=read('docs/keep-remaster/batch03/claims.json'),structure=read('dev/industrial-textures/prop-structure-manifest.json').props;
 const candidates=[...old.map(a=>({...a,kind:'repaint'})),...claims.newSections.flatMap(g=>g.ids.map(id=>({id,lane:g.lane,section:g.section,kind:'new'})))],records=[],missing=[];
 const hashCache=new Map(),getHash=p=>{if(!hashCache.has(p))hashCache.set(p,sha(p));return hashCache.get(p);};
 for(const a of candidates){
 const lanes=[a.lane,'coordinator','crew','storage','utility','habitat','control'],lane=lanes.find(l=>fs.existsSync('frontend/assets/industrial/batch03/'+l+'/'+a.id+'.png'));
 if(!lane){missing.push(a.id);continue;}
 for(const v of Object.values(structure[a.id].views)){
-const output='frontend/assets/industrial/batch03/'+lane+'/'+v.image,key=path.basename(v.image,'.png'),doc='docs/station-remaster/batch03/'+lane+'/';
+const output='frontend/assets/industrial/batch03/'+lane+'/'+v.image,key=path.basename(v.image,'.png'),doc='docs/keep-remaster/batch03/'+lane+'/';
 if(!fs.existsSync(output)){missing.push(key);continue;}
 let receipt,receiptPath;
 if(lane==='crew'||lane==='storage'){receiptPath=doc+key+'.export.json';receipt=read(receiptPath);}
@@ -29,5 +29,5 @@ if(!transparent||!opaque||rgbChanges)throw Error('Alpha/RGB failed '+key);
 records.push({id:a.id,kind:a.kind,view:v.r,output,source,sourceSha256:getHash(source),outputSha256:outputHash,receipt:receiptPath,width:dst.info.width,height:dst.info.height,transparentPixels:transparent,opaquePixels:opaque,retainedRgbChanges:rgbChanges});
 }}
 const report={plannedUnique:candidates.length,exportedUnique:new Set(records.map(r=>r.id)).size,repaintedUnique:new Set(records.filter(r=>r.kind==='repaint').map(r=>r.id)).size,newUnique:new Set(records.filter(r=>r.kind==='new').map(r=>r.id)).size,authoredPngs:records.length,missing,allPresent:missing.length===0,allVerified:true,scope:'Source export validation only. No runtime, animation or user acceptance claim.',records};
-fs.writeFileSync('docs/station-remaster/batch03/source-audit.json',JSON.stringify(report,null,2)+'\n');console.log(JSON.stringify({...report,records:undefined}));}
+fs.writeFileSync('docs/keep-remaster/batch03/source-audit.json',JSON.stringify(report,null,2)+'\n');console.log(JSON.stringify({...report,records:undefined}));}
 main().catch(e=>{console.error(e);process.exitCode=1;});

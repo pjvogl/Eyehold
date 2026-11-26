@@ -5,7 +5,7 @@
   if(['127.0.0.1','localhost'].includes(location.hostname)&&new URLSearchParams(location.search).get('worldPerf')==='1'){
     const panel=document.createElement('div');panel.id='world-perf';panel.style.cssText='position:fixed;right:12px;top:80px;z-index:99999;padding:8px;background:#101b20;color:#c6d8dc;border:1px solid #647a80;max-width:600px;font:12px VT323,monospace';
     const button=document.createElement('button');button.className='bb';button.textContent='Measure frame performance';
-    const overview=document.createElement('button');overview.className='bb';overview.textContent='Frame full station';overview.onclick=()=>{World.setCinecamIdle(86400000);World.frameReviewRoom('');};
+    const overview=document.createElement('button');overview.className='bb';overview.textContent='Frame full keep';overview.onclick=()=>{World.setCinecamIdle(86400000);World.frameReviewRoom('');};
     const recover=document.createElement('button');recover.className='bb';recover.textContent='Verify recovery';recover.onclick=async()=>{
       recover.disabled=true;const results=[];World.setCinecamIdle(86400000);
       try{for(let i=0;i<3;i++){
@@ -28,7 +28,7 @@
   for(const file of ['prop-catalog-data.js','prop-catalog-fixture.js'])await new Promise((resolve,reject)=>{const s=document.createElement('script');s.src='app/'+file;s.onload=resolve;s.onerror=reject;document.head.append(s);});
   const panel=document.createElement('aside');panel.id='runtime-audit';
   const css=document.createElement('style');css.textContent='#kepler-review,#skin-study-preview{display:none!important}#runtime-audit{position:fixed;z-index:99999;left:8px;top:50px;max-width:calc(100vw - 36px);background:#091214ed;color:#d7c89d;border:1px solid #746546;padding:8px;font:12px VT323,monospace}#runtime-audit button,#runtime-audit select{background:#172124;color:#d7c89d;border:1px solid #61716b;padding:4px;margin:2px;font:12px VT323,monospace}#runtime-audit output{display:block;white-space:pre-wrap;max-width:700px}#runtime-audit pre{max-height:200px;overflow:auto;font-size:10px}';document.head.append(css);
-  panel.innerHTML='<b>LOCAL RUNTIME AUDIT · disposable station</b><nav></nav><output id="runtime-summary">Waiting for World…</output><details><summary>Measured results</summary><pre id="runtime-results"></pre></details>';
+  panel.innerHTML='<b>LOCAL RUNTIME AUDIT · disposable keep</b><nav></nav><output id="runtime-summary">Waiting for World…</output><details><summary>Measured results</summary><pre id="runtime-results"></pre></details>';
   document.body.append(panel);const nav=panel.querySelector('nav'),out=panel.querySelector('output'),raw=panel.querySelector('pre');
   const pageSelect=document.createElement('select');pageSelect.setAttribute('aria-label','Catalog room');nav.append(pageSelect);
   const subject=document.createElement('select');subject.setAttribute('aria-label','Audit subject');nav.append(subject);
@@ -47,7 +47,7 @@
   const load=async(mirror=false)=>{
     fixture=PropCatalogFixture.create(entries(),PropSprites,WorldModel);
     for(const p of fixture.doc.props){if(p.id.startsWith('catalog-')&&mirror&&PropSprites.canMirror(p.t))p.m=true;}
-    fixture.station=WorldModel.deserialize(fixture.doc);World.loadStation(fixture.station);
+    fixture.keep=WorldModel.deserialize(fixture.doc);World.loadKeep(fixture.keep);
     subject.replaceChildren();for(const v of entries()){const o=document.createElement('option');o.value='catalog-'+v.key;o.textContent=v.key;subject.append(o);}
     await pause(350);World.frameReviewRoom(fixture.roomId);World.setCinecamIdle(86400000);
     pageSelect.value=String(page);last='Room '+(page+1)+' / '+pageSelect.options.length+' · '+entries().map(v=>v.key).join(', ')+(mirror?' · mirrored':'');publish();
@@ -86,7 +86,7 @@
           if(result.interaction!=='none'&&!result.planned)result.issues.push('interaction planner failed');
           if(result.interaction==='seat'&&(!result.result.seated||result.result.usingProp!==result.id))result.issues.push('seat arrival mismatch');
           if(result.interaction==='bed'&&(!result.result.lying||result.result.usingProp!==result.id))result.issues.push('bed arrival mismatch');
-          if(result.workstation&&result.anchor&&result.result.dir!==result.anchor.face)result.issues.push('workstation facing mismatch');
+          if(result.workkeep&&result.anchor&&result.result.dir!==result.anchor.face)result.issues.push('workkeep facing mismatch');
           if(result.side&&result.result.dir!==result.side.face)result.issues.push('profile sitter facing mismatch');
           if(status.failures.length)result.issues.push('asset load failure');
           receipt.cases.push(result);last='Checked '+receipt.cases.length+' placements · '+receipt.cases.filter(r=>r.issues.length).length+' with issues · '+result.key;publish();
@@ -123,7 +123,7 @@
     }
     busy=false;publish();
   });
-  button('Kepler layout',async()=>{if(busy)return;World.loadStation(WorldModel.deserialize(original));await pause(400);World.frameReviewRoom('');last='Kepler: 47 props, three rooms and transfer gallery';publish();});
+  button('Kepler layout',async()=>{if(busy)return;World.loadKeep(WorldModel.deserialize(original));await pause(400);World.frameReviewRoom('');last='Kepler: 47 props, three rooms and transfer gallery';publish();});
   button('Large layout',async()=>{
     if(busy)return;const d=JSON.parse(JSON.stringify(original));d.rooms={};d.order=[];d.props=[];d.belts={};d.edges=[];
     for(let i=0;i<4;i++){const dx=(i%2)*62,dy=Math.floor(i/2)*48,prefix='copy'+i+'-';
@@ -131,15 +131,15 @@
       for(const p of original.props){const q={...p,id:prefix+p.id,x:p.x+dx,y:p.y+dy};delete q.agentId;d.props.push(q);}
       for(const[k,v]of Object.entries(original.belts)){const[x,y]=k.split(',').map(Number);d.belts[(x+dx)+','+(y+dy)]=v;}
     }
-    d.meta={...d.meta,spawnRoomId:d.order[0],trunkRoomId:d.order[0]};World.loadStation(WorldModel.deserialize(d));await pause(500);World.frameReviewRoom('');last='Large layout: '+d.props.length+' props, '+d.order.length+' room regions, '+Object.keys(d.belts).length+' belt tiles. Four separated Kepler modules.';publish();
+    d.meta={...d.meta,spawnRoomId:d.order[0],trunkRoomId:d.order[0]};World.loadKeep(WorldModel.deserialize(d));await pause(500);World.frameReviewRoom('');last='Large layout: '+d.props.length+' props, '+d.order.length+' room regions, '+Object.keys(d.belts).length+' belt tiles. Four separated Kepler modules.';publish();
   });
   button('Overview',()=>{World.frameReviewRoom('');});
   button('Doorway walk regression',async()=>{
     if(busy)return;busy=true;receipt.doorways=[];
-    const station=WorldModel.create();
-    station.placeHallway({rect:{x1:7,y1:-5,x2:8,y2:-1}});
-    const g=station.projectGeometry(StationBake.WALL),root=station.doc().order[0];
-    World.loadStation(station);await pause(500);World.frameReviewRoom(root);World.setCinecamIdle(86400000);
+    const keep=WorldModel.create();
+    keep.placeHallway({rect:{x1:7,y1:-5,x2:8,y2:-1}});
+    const g=keep.projectGeometry(KeepBake.WALL),root=keep.doc().order[0];
+    World.loadKeep(keep);await pause(500);World.frameReviewRoom(root);World.setCinecamIdle(86400000);
     const tile=(x,y)=>({x:x-g.origin.tx,y:y-g.origin.ty}),foot=t=>g.footPoint(t.x,t.y);
     for(let round=0;round<3;round++)for(const side of [3,12])for(const reverse of [false,true]){
       const a=tile(7,-2),b=tile(side,0),start=reverse?b:a,end=reverse?a:b,p=foot(start),dest=foot(end),aid=actor().id;
@@ -158,10 +158,10 @@
     }
     busy=false;publish();
   });
-  button('Close view',()=>{const d=World.stationDoc();World.frameReviewRoom(fixture&&d.rooms[fixture.roomId]?fixture.roomId:d.order[0]);});
+  button('Close view',()=>{const d=World.keepDoc();World.frameReviewRoom(fixture&&d.rooms[fixture.roomId]?fixture.roomId:d.order[0]);});
   button('Inspect wall',async()=>{
-    if(busy)return;const d=JSON.parse(JSON.stringify(World.stationDoc())),id=fixture&&d.rooms[fixture.roomId]?fixture.roomId:d.order[0];
-    d.rooms[id].wallMat=wallReview.value;World.loadStation(WorldModel.deserialize(d));await pause(400);World.frameReviewRoom(id);World.setCinecamIdle(86400000);
+    if(busy)return;const d=JSON.parse(JSON.stringify(World.keepDoc())),id=fixture&&d.rooms[fixture.roomId]?fixture.roomId:d.order[0];
+    d.rooms[id].wallMat=wallReview.value;World.loadKeep(WorldModel.deserialize(d));await pause(400);World.frameReviewRoom(id);World.setCinecamIdle(86400000);
     receipt.structure={material:wallReview.value,texturePack:IndustrialTextures.status(),room:id};last='Wall review: '+wallReview.value+' · '+receipt.structure.texturePack.assets.length+' textures loaded · '+receipt.structure.texturePack.failed.length+' failures';publish();
   });
   button('Test remaster recovery',async()=>{
@@ -193,6 +193,6 @@
     const r={viewport:[innerWidth,innerHeight],dpr:devicePixelRatio,props:p.props,scale:+p.scale.toFixed(3),frames:p.samples.length,callbackMs:{p50:q(ms,.5),p95:q(ms,.95)},intervalMs:{p50:q(gaps,.5),p95:q(gaps,.95)},renderFaults:p.renderFaults,raster:PropRemaster.status().failures,renderer:World.renderStats(),canvas:p.canvas};receipt.performance.push(r);busy=false;last=JSON.stringify(r);publish();
   });
   for(let i=0;i<Math.ceil(reviewViews.length/6);i++){const o=document.createElement('option');o.value=String(i);o.textContent=capabilityReview?'Five capability props':'Room '+(i+1);pageSelect.append(o);}
-  for(let n=0;n<150;n++){if(typeof World!=='undefined'&&World.stationDoc()&&actor())break;await pause(200);}
-  original=JSON.parse(JSON.stringify(World.stationDoc()));await Promise.all([IndustrialTextures.ready,PropRemaster.ready]);await load();
+  for(let n=0;n<150;n++){if(typeof World!=='undefined'&&World.keepDoc()&&actor())break;await pause(200);}
+  original=JSON.parse(JSON.stringify(World.keepDoc()));await Promise.all([IndustrialTextures.ready,PropRemaster.ready]);await load();
 })().catch(e=>console.error('[remaster-audit]',e));

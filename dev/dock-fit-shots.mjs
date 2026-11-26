@@ -32,7 +32,7 @@ const OUT = process.env.SKYNET_SHOT_OUT || join(process.cwd(), 'dev', '.shots-do
 const SCALES = [['t100', 100], ['auto', 0], ['t130', 130]];
 
 const setScale = (v) => `(() => {
-  const KEY = 'eyehold.station.v1';
+  const KEY = 'eyehold.keep.v1';
   const r = JSON.parse(localStorage.getItem(KEY) || '{"v":1}');
   r.settings = Object.assign({}, r.settings, { textScale: ${v} });
   localStorage.setItem(KEY, JSON.stringify(r));

@@ -53,7 +53,7 @@ artifacts. Run `npm run security:secrets` before submitting if you have Gitleaks
 
 | Path | Responsibility |
 | --- | --- |
-| `frontend/` | Station UI and renderer. |
+| `frontend/` | Keep UI and renderer. |
 | `sidecar/` | Agent runtime and local authority. |
 | `shared/` | Cross-boundary schemas and events. |
 | `src-tauri/` | Desktop shell. |

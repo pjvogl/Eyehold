@@ -8,10 +8,10 @@
    ══ THE RECIPE BAR (2026-08 STANDING-AUTOMATION overhaul — every built-in must clear ALL SIX) ══
      1. THE CHAT-BOX TEST — ⛔ THE GATE THAT DECIDES EVERYTHING. Paste this directive into a plain chat box
                          with no tools. If the answer is roughly as good, THE RECIPE DOES NOT SHIP. A recipe
-                         must NEED this station: its live tools, its durable memory, or its cadence. "Plan a
+                         must NEED this keep: its live tools, its durable memory, or its cadence. "Plan a
                          trip", "draft a reply", "give me gift ideas" all fail — they are prompts wearing a
                          card, and a catalog full of them makes the whole feature look like a prompt list.
-     2. DRIVES THE STATION — it reads or writes something REAL: the web (dish), files (cabinet), terminal
+     2. DRIVES THE KEEP — it reads or writes something REAL: the web (dish), files (cabinet), terminal
                          (workbench), memory (notebook), connected channels (connector). A paste-box is a
                          fallback the directive offers, never the primary input.
      3. COMPOUNDS      — it reads its OWN previous run out of memory and reports the DELTA. The Nth run must
@@ -30,18 +30,18 @@
                          obvious request is what the chat box is for. THE CATALOG'S JOB IS TO SHOW SOMEONE A
                          USE CASE THEY COULD NOT HAVE NAMED THEMSELVES.
 
-   Aim the content at who ACTUALLY runs this station — people building software, shipping content, and
+   Aim the content at who ACTUALLY runs this keep — people building software, shipping content, and
    running small operations — but reach for the use case that generalizes, not the one narrowed to one job.
 
    The scout's auto-mint directive (sidecar/scout.js buildRecipeDirective) enforces the same bar, so
-   personalized recipes the station drafts for its Commander never regress below the curated catalog.
+   personalized recipes the keep drafts for its Commander never regress below the curated catalog.
 
    Schema v2 (each record; recipes.js fills sensible defaults for anything omitted):
      id, name, emoji, tagline, blurb, accent   — identity + card language
      tags: { code|research|general -> weight }  — interest-lane weights the recommender ranks by
      params: [{ key, label, placeholder, required, default }]   — the launch form
      task: '<directive template with {tokens}>' — the imperative directive the agent runs
-     gear: [objectType]        — station objects this use case DRAWS ON (advisory only; same vocab as skills
+     gear: [objectType]        — keep objects this use case DRAWS ON (advisory only; same vocab as skills
                                  `requires`: dish/cabinet/notebook/workbench/studio/computer/connector). NEVER gates.
      skills: [slug]            — optional bundled-skill references ("pairs with feed-watch")
      cadence: 'morning'|'weekly'|'sixhourly'|'hourly'|null   — a SUGGESTED cadence for naturally-recurring use
@@ -138,7 +138,7 @@
         { key: 'tone', label: 'Tone', required: false, type: 'choice', default: 'warm and concise',
           options: ['warm and concise', 'friendly', 'formal', 'direct', 'apologetic'] }
       ],
-      // the station's edge over a chat box here is HISTORY: the thread, and how this Commander has written to
+      // the keep's edge over a chat box here is HISTORY: the thread, and how this Commander has written to
       // this person before. A reply drafted without either is a generic reply, which is what the chat box gives.
       task: 'Draft a reply to {message} in a {tone} tone. First get the context a cold draft cannot have: read back through the thread so the reply answers what was actually asked rather than the last line, and check your memory for how I have written to this person before — how formal, how long, whether we open with pleasantries — because a reply in the wrong register reads worse than a late one. Read what the sender actually needs, the question under the question, and answer that first. Never invent a fact or a commitment I did not give you; where the right answer depends on something only I know, leave a clearly marked gap rather than a plausible guess. Give me one clean ready-to-send draft, then a one-line note on anything in their message I might be missing, and flag it if this warrants a conversation rather than a reply. Record the register you used so the next draft matches. Do not send anything — the draft is mine to review.'
     },
@@ -153,7 +153,7 @@
         { key: 'text', label: 'The text', type: 'file', placeholder: 'the draft to tighten — a file, or paste it' },
         { key: 'archive', label: 'Your other writing', type: 'folder', placeholder: 'a folder of your writing, so I cut to YOUR voice', required: false, default: 'whatever of my writing you have already read' }
       ],
-      // "tighten this" pasted into a chat box returns competent, ANONYMOUS prose. The station's edge is that it
+      // "tighten this" pasted into a chat box returns competent, ANONYMOUS prose. The keep's edge is that it
       // can read the Commander's OTHER writing first and cut toward that voice instead of a generic standard.
       task: 'Tighten {text} without flattening its voice. FIRST read {archive} and work out what my voice actually is — my normal sentence length and rhythm, the constructions I use deliberately, the words I favour — and state that briefly so I can judge whether you found it. That step is the whole point: an edit made to a generic standard returns competent anonymous prose, which is worse than my own rough draft. Then cut filler, hedges and throat-clearing; favour concrete verbs; keep every load-bearing idea. Leave alone anything merely unusual but working — that is voice, and editing it out is how writing becomes uniform. If a sentence must change meaning to get shorter, flag it rather than silently changing it. Return the tightened version first, then every change as before-and-after with a one-line reason, then the word count before and after. Finish with the two or three habits showing up repeatedly, since fixing a habit beats fixing thirty instances of it. Save what you learned about my voice so the next edit starts from there.'
     },

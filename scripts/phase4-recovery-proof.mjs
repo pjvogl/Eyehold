@@ -35,7 +35,7 @@ function evidenceTemplate() {
     generatedAt: new Date().toISOString(),
     operator: process.env.USERNAME || process.env.USER || 'andro',
     sameWorkTrial: { passed: false, screenshots: [], runIds: [], transcriptIds: [], artifactPaths: [], ledgerRows: [], notes: '' },
-    soak: { freshPass: false, restartPass: false, transcriptPreserved: false, ledgerPreserved: false, artifactsPreserved: false, memoryPreserved: false, stationStatePreserved: false, notes: '' },
+    soak: { freshPass: false, restartPass: false, transcriptPreserved: false, ledgerPreserved: false, artifactsPreserved: false, memoryPreserved: false, keepStatePreserved: false, notes: '' },
     failureRecovery: { cancelPassed: false, budgetPassed: false, deniedConsentPassed: false, toolErrorPassed: false, checkpointRestorePassed: false, notes: '' }
   };
 }

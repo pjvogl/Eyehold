@@ -9,7 +9,7 @@ flag('longtable:e','East view still uses the previous table camera; match the co
 flag('pixelrig','Near-frontal instrument panel and shallow control shelf; compare/rebuild against the accepted desk camera.');
 flag('bar','Countertop is a thin strip above a tall front panel. Raise camera while preserving wall mounting and stool clearance.');
 flag('stool','Large visible pedestal/underside relative to seat; compress the projected stem and compare with accepted chair.');
-flag('industrial_bench booth:s','Front-facing backrest dominates; expose more seat plane from the station camera.');
+flag('industrial_bench booth:s','Front-facing backrest dominates; expose more seat plane from the keep camera.');
 flag('podchair','Seat opening and shell retain a low product-view camera across facings; rebuild as one coherent facing set.');
 flag('dinerchair:w dinerchair:e','Side views are nearly straight profiles; seat depth should agree with the elevated south/north views.');
 flag('camerarig camerarig_r','Tripod is a flat frontal triangle with little separation in depth; use an elevated three-foot stance.');
@@ -25,6 +25,6 @@ const records=Object.entries(m.props).flatMap(([id,p])=>Object.entries(p.views).
  return {id,view,image:s.image,footprint:s.footprint,bounds:s.bounds,status:fixed.has(key)?'corrected-candidate':accepted.has(key)?'preserve-accepted':n?.status||'source-check',reason:fixed.has(key)?'Generated camera correction integrated and inspected in Kepler; owner acceptance pending.':['desk:s','crate:s','chair:s'].includes(key)?'Owner-accepted design/camera; low-resolution extraction restored after the September 15 blur report. Sharpness candidate requires owner comparison.':accepted.has(key)?'Owner-accepted anchor/view. Preserve.':n?.reason||'No obvious camera conflict in source inspection. This is not an in-room or owner approval.'};
 }));
 const counts={};for(const r of records)counts[r.status]=(counts[r.status]||0)+1;
-fs.writeFileSync('docs/station-remaster/camera-audit/audit.json',JSON.stringify({date:'2026-09-15',method:'Visual inspection of eight labeled source contact sheets, 184 exported views; four corrected views also inspected in Kepler. Geometry/placement checks are separate.',counts,records},null,2)+'\n');
+fs.writeFileSync('docs/keep-remaster/camera-audit/audit.json',JSON.stringify({date:'2026-09-15',method:'Visual inspection of eight labeled source contact sheets, 184 exported views; four corrected views also inspected in Kepler. Geometry/placement checks are separate.',counts,records},null,2)+'\n');
 console.log(counts);
-fs.copyFileSync('docs/station-remaster/camera-audit/audit.json','frontend/assets/industrial/camera-audit/audit.json');
+fs.copyFileSync('docs/keep-remaster/camera-audit/audit.json','frontend/assets/industrial/camera-audit/audit.json');

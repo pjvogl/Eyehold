@@ -45,29 +45,29 @@ const MARKER = `(() => { try {
   return { roam: (typeof Zones !== 'undefined' && Zones.ROAM_RADIUS) || null, facing: !!(b && ('facing' in b)) };
 } catch (e) { return { err: String(e) }; } })()`;
 
-/* BUILD A REAL FLOOR before soaking. The dev seed's station is a SINGLE bare room with no leisure
+/* BUILD A REAL FLOOR before soaking. The dev seed's keep is a SINGLE bare room with no leisure
    props, which cannot exercise W2 (per-prop beats) or W3 (roam into the next room) at all — a soak
    on it would report a green nothing. This lays a second room sharing an edge with the first (the
    model auto-opens a threshold on any zone seam) and scatters real catalog props through both,
    through the SAME validated mutation API the REFIT editor uses. */
 const BUILD = `(() => { try {
   const KIT_NAME = ${JSON.stringify(KITNAME)};
-  const st = (typeof Build !== 'undefined' && Build.__test__ && Build.__test__.station && Build.__test__.station()) || null;
-  if (!st) return { err: 'no station' };
+  const st = (typeof Build !== 'undefined' && Build.__test__ && Build.__test__.keep && Build.__test__.keep()) || null;
+  if (!st) return { err: 'no keep' };
   const rooms = st.rooms();
   if (!rooms.length) return { err: 'no rooms' };
   const r0 = rooms[0].rects[0];
   const out = { home: r0, added: null, props: [] };
   // a second room to the EAST, same height, 10 wide — sharing r0's east edge so a door opens
   const nx1 = r0.x2 + 1, nx2 = r0.x2 + 10;
-  const oneRoom = KIT_NAME === 'lounge';   // Andrew's station is ONE room — don't add a second one for that case
+  const oneRoom = KIT_NAME === 'lounge';   // Andrew's keep is ONE room — don't add a second one for that case
   const can = oneRoom ? { ok: false } : st.canPlaceRoom ? st.canPlaceRoom([{ x1: nx1, y1: r0.y1, x2: nx2, y2: r0.y2 }], 'hab') : { ok: true };
   if (can && can.ok !== false) {
     const res = st.addRoom({ kind: 'hab', rect: { x1: nx1, y1: r0.y1, x2: nx2, y2: r0.y2 } });
     out.added = res && res.ok ? { x1: nx1, y1: r0.y1, x2: nx2, y2: r0.y2 } : (res && res.reason) || 'addRoom failed';
   } else out.added = 'canPlaceRoom: ' + JSON.stringify(can);
   // leisure kit, spread over BOTH rooms (each entry: type, w, h). KIT=lounge mirrors Andrew's own
-  // station (2026-08-08): one room, couch+tv, arcade, pinball, bar + stools — the layout the
+  // keep (2026-08-08): one room, couch+tv, arcade, pinball, bar + stools — the layout the
   // "they never use my lounge" report came from, so the measurement is of HIS case, not a fixture's.
   const LOUNGE = [['couch',5,1],['tv',3,1],['arcade',1,2],['pinball',1,2],['longtable',3,1],['chair',1,1]];   // bar + its stools are placed adjacently below
   const MIXED = [['bookshelf',2,1],['arcade',1,2],['fishtank',2,1],['coffee',1,1],['jukebox',1,2],['pinball',1,2],['terrarium',1,1],['quarters_vending',1,2]];
@@ -123,7 +123,7 @@ try {
   ({ proc } = launchChrome({ cdpPort: CDP_PORT, win: '1440,900', profileDir: join(OUT, '_profile') }));
   cdp = await connectCDP(CDP_PORT);
   await cdp.send('Page.enable'); await cdp.send('Runtime.enable');
-  /* Throttle rAF BEFORE boot: a software-rendered station canvas at full tilt starves every
+  /* Throttle rAF BEFORE boot: a software-rendered keep canvas at full tilt starves every
      Runtime.evaluate (the documented headless gotcha). 10fps is deliberate and costs nothing in
      fidelity — every timer in the idle engine is WALL-CLOCK (performance.now), not frame-counted,
      so behaviour advances at the same rate either way; the frames we skip are only redraws. The
@@ -287,7 +287,7 @@ try {
 
   /* DUTY CYCLE — the number that decides whether the pace is right, and the one a per-encounter
      COUNT cannot tell you. "6 conversations in 7 minutes" sounds modest; if each runs 25s that is a
-     third of the time with two agents standing around talking, which on a station whose whole point
+     third of the time with two agents standing around talking, which on a keep whose whole point
      is that it does real work reads as slacking rather than as life. Counted over samples: the share
      of the run in which a talking encounter was live at all, and the share in which somebody was
      actually mouth-moving. */

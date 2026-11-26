@@ -3,7 +3,7 @@
    Same shape as seed-mock-comms.js (real sidecar + real frontend + in-process mock OpenRouter), but the
    mock model's FIRST reply is a tool call to browser_login for SKYNET_MOCK_LOGIN_URL (default
    https://example.com/), so a single "log in" chat drives the REAL takeover path end-to-end:
-   permission.prompt card -> headed Chrome on the persistent station profile -> done-wait card -> headless
+   permission.prompt card -> headed Chrome on the persistent keep profile -> done-wait card -> headless
    restore -> the tool result streams back as the final answer. Not part of any test/build; SKYNET_DEV
    never ships. */
 'use strict';
@@ -19,13 +19,13 @@ const SIDECAR = path.join(REPO, 'sidecar', 'index.js');
 const PORT = String(process.env.SKYNET_PORT || '8933');
 const LOGIN_URL = process.env.SKYNET_MOCK_LOGIN_URL || 'https://example.com/';
 
-// The golden seed intentionally has no station document; the UI builds its bare starter station on first boot.
+// The golden seed intentionally has no keep document; the UI builds its bare starter keep on first boot.
 // This proof needs the real object=capability grant BEFORE that boot so the first run can actually reach
 // browser.login. Seed the exact persisted starter shape plus a real comms_dish (never a fake `t:'dish'` prop,
 // which worldmodel rejects). Kept pure/exported so the fast suite locks the proof fixture against going stale.
-function ensureLoginStation(save) {
+function ensureLoginKeep(save) {
   if (!save || !save.doc) return save;
-  const st = save.doc.station;
+  const st = save.doc.keep;
   if (st && Array.isArray(st.props)) {
     if (!st.props.some(p => p && p.t === 'comms_dish')) {
       const next = Math.max(1, Number(st._nid) || 1);
@@ -34,9 +34,9 @@ function ensureLoginStation(save) {
     }
     return save;
   }
-  save.doc.station = {
-    schema: 'eyehold.station', version: 1, _nid: 4,
-    meta: { name: 'EYEHOLD STATION', createdAt: 1, tier: 0, spawnRoomId: 'r1', trunkRoomId: 'r1' },
+  save.doc.keep = {
+    schema: 'eyehold.keep', version: 1, _nid: 4,
+    meta: { name: 'EYEHOLD KEEP', createdAt: 1, tier: 0, spawnRoomId: 'r1', trunkRoomId: 'r1' },
     rooms: { r1: { id: 'r1', kind: 'hab', name: 'HAB-01', rects: [{ x1: 0, y1: 0, x2: 17, y2: 10 }], floorStyle: 'hull', floorMat: null, wallStyle: null, wallMat: null, hullStyle: null, hullMat: null, tier: 0, floorPaint: {} } },
     order: ['r1'],
     props: [
@@ -121,7 +121,7 @@ async function main() {
     if (w.doc) { w.doc.updatedAt = now; if (w.doc.agent) w.doc.agent.model = 'test/model'; }
     // THE MOAT: interactive runs grant only what is ON THE FLOOR. Seed a comms dish (-> web capability) so
     // the takeover proof can reach browser.login without hand-placing a prop each launch.
-    ensureLoginStation(w);
+    ensureLoginKeep(w);
     fs.writeFileSync(sp, JSON.stringify(w, null, 2));
   } catch (_) {}
   const base = await startMock();
@@ -136,5 +136,5 @@ async function main() {
   child.on('exit', c => process.exit(c == null ? 0 : c));
 }
 
-module.exports = { ensureLoginStation };
+module.exports = { ensureLoginKeep };
 if (require.main === module) main().catch(error => { console.error(error); process.exit(1); });

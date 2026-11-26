@@ -19,7 +19,7 @@
    status: 'active' | 'paused' | 'done' | 'cleared'
 
    Fail-open by construction: an unparseable judge reply → CONTINUE (a broken judge must never wedge progress;
-   the turn budget + the consecutive-parse-failure auto-pause are the backstops). A station with no goalloop.js
+   the turn budget + the consecutive-parse-failure auto-pause are the backstops). A keep with no goalloop.js
    loaded is byte-identical to before (additive-only). */
 'use strict';
 (function (root, factory) {

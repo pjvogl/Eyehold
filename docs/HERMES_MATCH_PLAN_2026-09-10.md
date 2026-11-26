@@ -4,7 +4,7 @@ Status: implemented in an isolated branch with full source gates green. Core bro
 
 ## Outcome
 
-Close the four demonstrated Hermes advantages while strengthening Eyehold's own promise: a usable result, a provable outcome, and a clear next action. Use Hermes's source and regression tests as an engineering reference, translate the successful behaviors into Eyehold's JavaScript sidecar and station UI, and verify the result on the same workloads.
+Close the four demonstrated Hermes advantages while strengthening Eyehold's own promise: a usable result, a provable outcome, and a clear next action. Use Hermes's source and regression tests as an engineering reference, translate the successful behaviors into Eyehold's JavaScript sidecar and keep UI, and verify the result on the same workloads.
 
 Success means a user can retry a disconnected task without accidentally starting it again, distinguish partial work from finished work, read and copy a well-structured report, and obtain validated machine-readable results from a team.
 
@@ -14,7 +14,7 @@ The [stress audit](HERMES_STRESS_AUDIT_2026-09-10.md) provides the reproduced fa
 
 The audit established controlled runtime and rendering behavior. It did not establish a general Hermes advantage in reasoning, speed, cost, memory, onboarding, or long-duration autonomy. Those belong in a later measured comparison.
 
-Architecture constraints: one sidecar process per workspace, one runOnce loop, existing durable-store helpers, existing cost accounting, existing permissions, and the existing station visual language. Shared events/schema remain owner-controlled. Create narrowly scoped sidecar helpers where necessary; do not broaden the frozen shared validator just to support result contracts.
+Architecture constraints: one sidecar process per workspace, one runOnce loop, existing durable-store helpers, existing cost accounting, existing permissions, and the existing keep visual language. Shared events/schema remain owner-controlled. Create narrowly scoped sidecar helpers where necessary; do not broaden the frozen shared validator just to support result contracts.
 
 ## How we will use the Hermes repository
 
@@ -74,7 +74,7 @@ Add request admission around the existing runOnce call. Keep it distinct from th
 
 Exit proof: sequential and concurrent duplicates; same key/different body; different caller/agent/project; client disconnect; explicit cancellation; restart before dispatch, during work, and after work but before reply; storage failure; retention expiry. Count actual executions, local fixture mutations, transcript rows, auxiliary triggers, and costs. Matching retries admit one run within the declared guarantee; uncertain mutations require recovery evidence.
 
-Eyehold benefit: API consumers and the station see one durable piece of work with recoverable progress, rather than unrelated attempts.
+Eyehold benefit: API consumers and the keep see one durable piece of work with recoverable progress, rather than unrelated attempts.
 
 ### Slice 3 — Give COMMS proper report structure
 
@@ -82,7 +82,7 @@ Effort: medium. Independent of request admission; integrate as a separate slice.
 
 Extract the current prose renderer into a reusable module and expand it deliberately: tables, ordered and nested lists, blockquotes, and named links, retaining headings, emphasis, fenced code, and copy controls.
 
-- Use semantic structure with Eyehold's existing colors, typography, spacing, and control styling. Preserve the phosphor station appearance.
+- Use semantic structure with Eyehold's existing colors, typography, spacing, and control styling. Preserve the phosphor keep appearance.
 - Keep raw source as the durable content. Live streaming, restored history, and any sibling surface using the same prose path render from that source consistently.
 - Preserve escaping, safe link protocols, literal code contents, and inert HTML. Handle incomplete Markdown during streaming without resetting selection or jumping the viewport on every token.
 - Let wide tables scroll within the report or use an explicitly tested compact presentation. Keep headers associated with values; do not silently omit columns or force the whole panel wider.
@@ -91,7 +91,7 @@ Extract the current prose renderer into a reusable module and expand it delibera
 
 Exit proof: the audit's identical report renders correctly at narrow, normal, and expanded COMMS widths, at supported UI zoom levels, during streaming, after reload, and after restart. Test keyboard access, selection/copy, malformed links, escaped pipes, nested structures, and large reports. Verify readability in the real seeded UI and check for scroll/selection regressions.
 
-Eyehold benefit: comparisons and instructions are immediately usable inside the station, while runnable artifacts still open through their normal payoff action.
+Eyehold benefit: comparisons and instructions are immediately usable inside the keep, while runnable artifacts still open through their normal payoff action.
 
 ### Slice 4 — Strengthen result contracts, then support API JSON output
 
@@ -158,7 +158,7 @@ Use isolated worktrees and small commits. The API slices share a hot file and sh
 
 For every production slice: focused regression, production-sidecar live proof, relevant customer journeys, full fast gate, and full HTTP gate for backend/route changes. Exercise persistence through a real restart and review billing/permission/lifecycle siblings. Synchronize Codex branches by merging current trunk into the lane, following the merge ritual, before integration.
 
-The audit's full HTTP command timed out; a passing tail rerun is coverage evidence, not a green full-command receipt. Before integration, obtain a complete gate run under a justified runner budget without removing tests or concealing the timeout. No release or station-wide readiness claim follows from these lane results.
+The audit's full HTTP command timed out; a passing tail rerun is coverage evidence, not a green full-command receipt. Before integration, obtain a complete gate run under a justified runner budget without removing tests or concealing the timeout. No release or keep-wide readiness claim follows from these lane results.
 
 Definition of matched: the four original reproducers now pass through the real Eyehold surfaces, no relevant sibling path still has the defect, and the controlled same-model campaign supports the specific claimed parity. Report source-verified, installed-verified, and long-soak-verified outcomes separately.
 

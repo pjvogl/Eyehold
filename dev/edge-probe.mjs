@@ -21,7 +21,7 @@ try {
   await evalJS(cdp, `location.href = ${JSON.stringify(URL)}`);
   if (!(await waitDevReady(cdp, evalJS, { url: URL }))) throw new Error('no game screen');
   await sleep(1500);
-  await evalJS(cdp, `StationUI.openTerm('connectors')`); await sleep(1600);
+  await evalJS(cdp, `KeepUI.openTerm('connectors')`); await sleep(1600);
 
   // 1. SEARCH x TIER FILTER: activate "no setup", then search a name that is API-key tier.
   const sxf = await evalJS(cdp, `(async () => {
@@ -45,8 +45,8 @@ try {
 
   // 2. WINDOW REOPEN: close + reopen, then one route jump + one filter click must still work.
   const reopen = await evalJS(cdp, `(async () => {
-    StationUI.toggleTerm('connectors'); await new Promise(r => setTimeout(r, 300));
-    StationUI.openTerm('connectors'); await new Promise(r => setTimeout(r, 1200));
+    KeepUI.toggleTerm('connectors'); await new Promise(r => setTimeout(r, 300));
+    KeepUI.openTerm('connectors'); await new Promise(r => setTimeout(r, 1200));
     const r = {};
     document.querySelector('.ab-route[data-ab-to="catalog"]').click();
     r.routeWorks = (document.querySelector('.con-rail-item.active') || {}).dataset?.section === 'catalog';

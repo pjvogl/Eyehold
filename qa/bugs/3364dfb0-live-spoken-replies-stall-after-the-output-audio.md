@@ -24,7 +24,7 @@ Customer reports that chimes were restored but live agent speech keeps failing. 
 
 ## Repro
 
-1. Launch a disposable station with `node dev/seed.js --keep` and enable spoken replies.
+1. Launch a disposable keep with `node dev/seed.js --keep` and enable spoken replies.
 2. Speak a sentence using real `/api/tts` audio and wait for playback completion.
 3. Close the speech AudioContext to model a lost output graph, then speak another sentence.
 4. Before repair, the second media element stays at currentTime 0 with no ended/error event. The effects graph still reports closed.

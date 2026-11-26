@@ -18,7 +18,7 @@ Everything below was re-proven against trunk code tonight (not docs). File:line 
 ## The invariant we are enforcing
 
 > **An update may change code, never state.** After any upgrade (or downgrade), every byte of
-> user state — world save, agents, station build, workstreams, settings, routines, memory —
+> user state — world save, agents, keep build, workstreams, settings, routines, memory —
 > must be byte-preserved or losslessly migrated, and the UI must never render state through
 > stale code. If an incompatibility exists, the app must SAY so, not guess.
 
@@ -80,7 +80,7 @@ Everything below was re-proven against trunk code tonight (not docs). File:line 
 ### P1.2 — Missing agent id ⇒ silent impersonation by the overseer  **[the "merged with ULTRON" lie]**
 - Seams: `frontend/app/app.js:361` (`focusAgent`: `agents.get(id) || agents.get('agent')`);
   `sidecar/index.js:892-919` (`cronIdentityFor` returns null → `cronSystemFor`/`cronModelFor`
-  silently fall back to station persona/default model, zero logging);
+  silently fall back to keep persona/default model, zero logging);
   `sidecar/index.js:4279` (runOnce roster lookup silently nulls).
 - Failure: any roster/registry gap makes a specialist ANSWER AS THE OVERSEER — no error, no log.
   Users read this as "my agents were never real." Direct violation of the truthful-telemetry law.
@@ -97,7 +97,7 @@ Everything below was re-proven against trunk code tonight (not docs). File:line 
   drain moment, THEN install. Cheap and closes the window.
 
 ### P1.4 — No automated "update preserves state" proof
-- Today nothing exercises the actual user journey: install vN, build a station, update to vN+1,
+- Today nothing exercises the actual user journey: install vN, build a keep, update to vN+1,
   assert world/settings/roster byte-identical. All tonight's classes (P0.1-P1.3) would be caught
   by ONE such harness. Existing tests cover pieces (`test/desktop-workspace-migration.test.js`,
   `save.test.js`, `updatecore.test.js`) but not the end-to-end parity.
@@ -135,7 +135,7 @@ Everything below was re-proven against trunk code tonight (not docs). File:line 
 - **P2.5 Uninstaller "Delete app data" checkbox** deletes BOTH `%APPDATA%` and `%LOCALAPPDATA%`
   `ai.skynet.harness` (installer.nsi:2992-3008) = world save + webview profile. Unchecked by
   default and update-mode never deletes (solid), but the label should spell out "deletes your
-  station, agents and history" — one careless click is total loss. Consider auto-exporting a
+  keep, agents and history" — one careless click is total loss. Consider auto-exporting a
   `eyehold-backup` file to Desktop before honoring it.
 - **P2.6 Legacy dual data roots** — the TRUE root is `%APPDATA%\ai.skynet.harness\workspaces`
   (Rust shell passes it; `startup.log` proves). Stale hot-patch-era roots

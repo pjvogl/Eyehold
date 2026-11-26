@@ -1,7 +1,7 @@
 /* node test/update-state-parity.test.js — the update STATE-PARITY gate (UPDATE_STATE_SAFETY_AUDIT P1.4).
  *
  * INVARIANT UNDER TEST: "an update may change CODE, never STATE." After a version upgrade, every byte of the
- * user's world — save doc, roster, station build, workstreams, cron routines, notebook memory — must be
+ * user's world — save doc, roster, keep build, workstreams, cron routines, notebook memory — must be
  * byte-preserved or losslessly migrated. This gate is the automated proof the audit asked for.
  *
  * SCOPE (honest, per eyehold-verify — say what is proven vs deferred):
@@ -22,7 +22,7 @@
  *         field — every field either survives verbatim or is explicitly folded by a documented migration.
  *
  *   DEFERRED (belongs to the release train, NOT this gate):
- *     - A true OLD-BINARY -> NEW-BINARY matrix (install vN, build a station, install vN+1, diff) needs two real
+ *     - A true OLD-BINARY -> NEW-BINARY matrix (install vN, build a keep, install vN+1, diff) needs two real
  *       builds + a CDP-driven live app. That is the release-train variant the audit names; this gate proves the
  *       STORE LAYER + migration ladder, which is where every tonight-class bug (P0.1-P1.3) actually lands.
  */
@@ -57,7 +57,7 @@ const loadCron = () => { const r = readJsonResilient({ fs }, CRON_FILE); return 
 const saveCron = (env) => writeJsonResilient({ fs, path }, CRON_FILE, env);
 
 // ---------------------------------------------------------------------------------------------------------
-// FIXTURE — a realistic seeded station: hero + a specialist crew member, a station build with desks + a bay
+// FIXTURE — a realistic seeded keep: hero + a specialist crew member, a keep build with desks + a bay
 // bound to the specialist, workstreams, an agent-bound cron routine, and notebook memory. Modeled on the real
 // dev/fixtures/seed-workspace + the shapes the stores persist.
 // ---------------------------------------------------------------------------------------------------------
@@ -75,7 +75,7 @@ const SAVE_DOC = {
     { id: 'scout', name: 'SCOUT', color: '#ffd05a', model: 'openai/gpt-4o', provider: 'openrouter', skin: 'researcher', personaId: 'worker-nerd', specialtyId: 'researcher' }
   ],
   usage: { tokens: 4200, cost: 0.0891, calls: 8 }, prov: 'openrouter',
-  station: {
+  keep: {
     props: [
       { id: 'desk1', kind: 'desk', x: 3, y: 4, agentId: 'agent' },
       { id: 'desk2', kind: 'desk', x: 7, y: 4, agentId: 'scout' },
@@ -83,7 +83,7 @@ const SAVE_DOC = {
     ],
     floor: 'grid'
   },
-  stationStats: { xp: 200, level: 4, lifetimeXp: 540, confidence: 58, samples: 12, counters: {}, milestones: [] },
+  keepStats: { xp: 200, level: 4, lifetimeXp: 540, confidence: 58, samples: 12, counters: {}, milestones: [] },
   profile: { v: 1, tags: { research: 3, coding: 1 }, seed: 'builder', enabled: true, total: 4 },
   worksignal: { v: 1, ewma: { web: 0.4, fs: 0.2 }, updatedAt: 1699500000000 },
   dossier: { v: 1, dims: { identity: ['builder'], stack: ['node'], goals: ['ship'], style: [], standing_orders: [], pain: [], ambition: [] }, seededFrom: { identity: 'onboarding' }, updatedAt: 1699000000000 },
@@ -106,7 +106,7 @@ const CRON_JOBS = [
   cronStore.makeJob({ name: 'Morning research', prompt: 'summarize overnight news', schedule: { kind: 'daily', at: '08:00' }, agentId: 'scout', model: 'openai/gpt-4o', provider: 'openrouter', deliver: 'notebook' }, { id: 'job_research', now: 1700000000000 })
 ];
 
-const NOTEBOOK_NOVA = ['Commander prefers terse replies.', 'The station boots from a golden fixture.'];
+const NOTEBOOK_NOVA = ['Commander prefers terse replies.', 'The keep boots from a golden fixture.'];
 const NOTEBOOK_SCOUT = ['Researcher: cite sources, no speculation.'];
 
 // ---------------------------------------------------------------------------------------------------------
@@ -122,7 +122,7 @@ const NOTEBOOK_SCOUT = ['Researcher: cite sources, no speculation.'];
   nb.set('notebook:scout', NOTEBOOK_SCOUT);
 }
 
-// deep-read the full station state through fresh stores. Returns a normalized snapshot object.
+// deep-read the full keep state through fresh stores. Returns a normalized snapshot object.
 function readWorld() {
   const save = mkSave();
   const nb = mkNotebook();
@@ -140,7 +140,7 @@ function readWorld() {
 const snap = readWorld();
 A.eq(snap.save.agent.name, 'NOVA', 'snapshot: hero loaded');
 A.eq(snap.save.agents.length, 2, 'snapshot: crew (hero + specialist) loaded');
-A.eq(snap.save.station.props.filter(p => p.kind === 'bay')[0].agentId, 'scout', 'snapshot: bay bound to the specialist');
+A.eq(snap.save.keep.props.filter(p => p.kind === 'bay')[0].agentId, 'scout', 'snapshot: bay bound to the specialist');
 A.eq(snap.save.workstreams.length, 2, 'snapshot: workstreams loaded');
 A.eq(snap.roster.agents.length, 2, 'snapshot: roster has both agents');
 A.eq(snap.cron.jobs.length, 1, 'snapshot: cron routine loaded');

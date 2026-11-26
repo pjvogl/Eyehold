@@ -1,6 +1,6 @@
 /* EYEHOLD — interview.js : the PURE engine for THE INTAKE INTERVIEW (Commander Dossier, Phase B).
 
-   The station actively gets to know its Commander: a short, optional, skippable Q&A — one question per
+   The keep actively gets to know its Commander: a short, optional, skippable Q&A — one question per
    blank dossier dimension — whose answers become durable dossier beliefs. This is the "deeply research the
    user" move made real (the user is asked directly; nothing is inferred and nothing reaches outside the
    conversation). The flow/COMMS half lives in intake.js (a thin controller mirroring onboarding.js); ALL
@@ -112,7 +112,7 @@
 
   // the ordered questions to ask: every question whose dimension is not in `skip`, capped at `max`.
   // The controller passes skip = the dossier's already-known dimensions, so a routine interview asks only
-  // what the station doesn't know yet (and stays short); pass skip:[] to re-ask everything (refine mode).
+  // what the keep doesn't know yet (and stays short); pass skip:[] to re-ask everything (refine mode).
   function plan(opts) {
     opts = opts || {};
     const skip = new Set(Array.isArray(opts.skip) ? opts.skip : []);
@@ -130,7 +130,7 @@
      and the chip is literally labelled `skip`, so typing the word is the behaviour the copy TEACHES. But a
      skip was recognised only from the CHIP (`explicitSkip`) or an empty string, so the typed word fell through
      as the Commander's own words and was written to the dossier at weight 'stated' — the strongest belief the
-     station holds, the one that opens the readiness gate and rides every prompt. The Commander's stated goal
+     keep holds, the one that opens the readiness gate and rides every prompt. The Commander's stated goal
      for the month became "skip".
      WHOLE-ANSWER MATCH ONLY, never a substring: "skip the standup prep" is a real answer about a real
      recurring task and must land untouched. Punctuation and case are stripped first so "Skip." counts. */

@@ -11,7 +11,7 @@ const q = (id, kind, status, extra) => Object.assign({ id, kind, status, title: 
 
 /* ---------- only DONE quests become trophies; open ones are omitted ---------- */
 {
-  const quests = [q('ms:first_light', 'milestone', 'done'), q('ms:workhorse', 'milestone', 'open'), q('sq:a:dish', 'station-gap', 'done')];
+  const quests = [q('ms:first_light', 'milestone', 'done'), q('ms:workhorse', 'milestone', 'open'), q('sq:a:dish', 'keep-gap', 'done')];
   const dates = { 'ms:first_light': { completedAt: 2000 }, 'sq:a:dish': { completedAt: 3000 } };
   const r = T.build({ quests, stateOf: id => dates[id] || null });
   A.eq(r.earned, 2, 'exactly the two DONE quests are trophies (the open one is omitted)');

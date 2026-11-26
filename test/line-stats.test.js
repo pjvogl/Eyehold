@@ -1,6 +1,6 @@
 /* node test/line-stats.test.js — LINE WATCH per-line stats fold (sidecar/routing/line-stats.js) + the run-row
    stamp it depends on (runstore records lineId/dockId only when present and well-formed).
-   Laws under test: numbers come ONLY from rows stamped with the line; "shipped" is the station SHIPPED predicate
+   Laws under test: numbers come ONLY from rows stamped with the line; "shipped" is the keep SHIPPED predicate
    (done + proven work) AND a dock whose lane reaches the OUTBOX (a job shipped, not a stage done); failed is the dead-run set; a line with no runs answers zeros (never absent, never a guess);
    the $ ledger + cap are read through the injected readers; each bay's LAST outcome is its newest row. */
 'use strict';

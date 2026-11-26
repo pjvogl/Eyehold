@@ -25,7 +25,7 @@ A customer reports frequent cut-off agent replies despite starting new sessions.
 ## Repro
 
 1. In an isolated worktree with dependencies installed, run `node scripts/qa/chat-cutoff-investigate.mjs` (Node 22+, local Chromium, free ports 19419/19420).
-2. The script boots `node dev/seed.js --keep`, opens the real station in headless Chromium and starts fresh task sessions through `Chat.send`.
+2. The script boots `node dev/seed.js --keep`, opens the real keep in headless Chromium and starts fresh task sessions through `Chat.send`.
 3. At the browser fetch boundary only, inject `agent.run.start`, a mid-sentence `agent.token`, then clean EOF without `agent.run.end`. This is a controlled transport fixture, not an observed customer/network failure or real inference.
 4. Before repair: EOF returns no error and no end reason; COMMS renders `RUN COMPLETE`, saves the partial text and emits `workitem.delivered`. After repair: EOF throws a transport interruption, COMMS preserves partial text plus a durable error, and emits no delivery.
 5. Controls: a normal end is complete; `finishReason:length` shows `CUT SHORT` and emits no delivery. A complete final JSON end record without a trailing newline now retains the output-limit status too.
@@ -34,7 +34,7 @@ A customer reports frequent cut-off agent replies despite starting new sessions.
 
 Source anchors: `frontend/app/harness.js:769` breaks on reader EOF, does not flush the final buffered record and returns success without requiring a matching run-end. `frontend/app/chat.js:8568` takes the non-error completion branch; `frontend/app/chat.js:8689` accepts a null end reason for delivery. The normal sidecar writer at `sidecar/index.js:14782` does append newlines; the no-newline fixture is defensive coverage, not evidence the host normally omits delimiters.
 
-Sanitized live receipt: `qa/evidence/chat-cutoff-0919/investigation.json`. All four cases used the real browser Harness and COMMS in a seeded station. The missing-end case preserved `The answer stops in the middle of`, returned `endReason:null`, rendered `RUN COMPLETE`, and emitted one delivery. The output-limit control rendered `CUT SHORT` with zero deliveries.
+Sanitized live receipt: `qa/evidence/chat-cutoff-0919/investigation.json`. All four cases used the real browser Harness and COMMS in a seeded keep. The missing-end case preserved `The answer stops in the middle of`, returned `endReason:null`, rendered `RUN COMPLETE`, and emitted one delivery. The output-limit control rendered `CUT SHORT` with zero deliveries.
 
 Related policy: `sidecar/index.js:17251` disables semantic continuation for non-task, non-internal calls across providers. Ollama's defaults in `sidecar/providers/registry.js:513` are 4096 task tokens and 512 casual-chat tokens. General substantive prompts default to tasks; this is not a blanket 512-token cap on all chat or hosted providers. Starting a new session does not alter these per-response policies.
 

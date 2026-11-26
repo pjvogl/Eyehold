@@ -163,7 +163,7 @@ const AuthoredServiceContent = (() => {
     if(bound)clipped(g,p.nameplate,()=>{
       lens(g,p.nameplate,'102,169,143',.15);
       const name=typeof s.dockName==='string'?s.dockName.replace(/[\u0000-\u001f\u007f]/g,' ').trim():'';
-      // The separate world bay-name pass remains authoritative at station scale.
+      // The separate world bay-name pass remains authoritative at keep scale.
       if(name)text(g,name.slice(0,64),617,151,42,'#c1dab2',453);
     });
     if(s.work===true||s.scanning===true)for(const p0 of p.rollers)rollers(g,p0,t,s.still);

@@ -41,8 +41,8 @@ const AgentPortraits = (() => {
     });
   }
 
-  /* ---------- the station body at NATIVE resolution (the dossier portrait's pipeline, shared) ----------
-     Moved here from stationui.js drawPortrait (which now calls it) so every surface that shows an agent draws
+  /* ---------- the keep body at NATIVE resolution (the dossier portrait's pipeline, shared) ----------
+     Moved here from keepui.js drawPortrait (which now calls it) so every surface that shows an agent draws
      the SAME figure the floor renders — SPRITES.drawBody, its own frame choice and foot anchor — instead of a
      letter or a second crop of a PNG. drawBody draws at the FLOOR scale; 1/bodyScale cancels it so the 92px
      master lands 1:1 in the buffer (asked of the engine, never re-derived), then the drawn body's real bounds

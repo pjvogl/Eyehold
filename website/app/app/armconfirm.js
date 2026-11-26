@@ -1,7 +1,7 @@
 /* EYEHOLD — armconfirm.js : the ONE reusable "click to arm, click again to confirm" helper.
 
    The 2-step arm/confirm ritual (no native dialogs inside the phosphor terminal) is copy-pasted in at
-   least three shapes today — the stored-key remove (stationui.js ~1990, dataset.armed + label swap +
+   least three shapes today — the stored-key remove (keepui.js ~1990, dataset.armed + label swap +
    5s auto-disarm), the dossier forget (chat.js ~1078), and the study-card discard (chat.js ~1378). This
    extracts that idiom so the UX lanes adding NEW irreversible actions (quest dismiss, prospect dismiss)
    reuse one tested behaviour instead of forking a fourth copy.

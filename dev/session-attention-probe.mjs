@@ -17,10 +17,10 @@ async function shot(name){await run(`document.activeElement?.blur();typeof Hint!
 async function key(key,code){await cdp.send('Input.dispatchKeyEvent',{type:'keyDown',key,code:key,windowsVirtualKeyCode:code});await cdp.send('Input.dispatchKeyEvent',{type:'keyUp',key,code:key,windowsVirtualKeyCode:code});}
 try{
   const ws=join(scratch,'ws');materializeSeedWorkspace(ws,'test/model');
-  // Borrow only the demo's station and roster, preserving its source save untouched.
+  // Borrow only the demo's keep and roster, preserving its source save untouched.
   const saved=JSON.parse(readFileSync(join(ws,'agent.save.json'),'utf8'));
   const demo=JSON.parse(readFileSync('dev/.scratch-workspace/agent.save.json','utf8')).doc;
-  for(const k of ['station','agents','agent'])saved.doc[k]=demo[k];
+  for(const k of ['keep','agents','agent'])saved.doc[k]=demo[k];
   saved.doc.agent.model='test/model';
   for(const a of Object.values(saved.doc.agents||{}))a.model='test/model';
   writeFileSync(join(ws,'agent.save.json'),JSON.stringify(saved));
@@ -88,7 +88,7 @@ try{
   await run(`document.querySelector('#ws-attention').focus();Channels.clearPending(window.__sessions.b)`);await sleep(1200);
   await check('Resolving the last prompt hides the shortcut, restores ordinary sessions and recovers focus',`document.querySelector('#ws-attention').hidden&&document.querySelector('#ws-attention').getAttribute('aria-pressed')==='false'&&!!document.querySelector('#workstreams [data-id="'+window.__before.session+'"]')&&document.activeElement.id==='ws-search'`);
   await check('Resolved archived sessions return to the archive',`!document.querySelector('#workstreams [data-id="'+window.__sessions.b+'"]')`);
-  await check('Controls use station styling instead of native white paint',`[...document.querySelectorAll('#crew-search-toggle,#crew-search,#crew-search-close,#ws-attention')].every(e=>!['rgb(255, 255, 255)','rgb(239, 239, 239)'].includes(getComputedStyle(e).backgroundColor))`);
+  await check('Controls use keep styling instead of native white paint',`[...document.querySelectorAll('#crew-search-toggle,#crew-search,#crew-search-close,#ws-attention')].every(e=>!['rgb(255, 255, 255)','rgb(239, 239, 239)'].includes(getComputedStyle(e).backgroundColor))`);
   await run(`localStorage.setItem('eyehold.crewrail.rows','0');localStorage.setItem('skynet.session-view',JSON.stringify({kind:'conversations'}))`);await cdp.send('Page.reload');
   assert.ok(await waitDevReady(cdp,evalJS,{url:'http://127.0.0.1:9488/'}));await sleep(500);
   await check('A deliberately collapsed roster stays collapsed after reload',`document.querySelector('#crew').classList.contains('shut')`);

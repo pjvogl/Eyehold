@@ -83,7 +83,7 @@ A.eq(PropSprites.CATALOG.length, n0 - 1, 'the catalog shrinks by one');
 A.eq(PropSprites.spec(row.id), null, 'spec no longer knows it');
 A.eq(PropSprites.ruleFor(row.id), null, 'a deleted made prop is pruned from saves');
 PropSprites.markUserDeleted(['user_old_deleted_aaaaaa']);
-A.eq(PropSprites.ruleFor('user_old_deleted_aaaaaa'), null, 'a tombstoned id from the station is pruned too');
+A.eq(PropSprites.ruleFor('user_old_deleted_aaaaaa'), null, 'a tombstoned id from the keep is pruned too');
 A.eq(PropSprites.ruleFor('user_still_protected_bbbbbb'), { mount: null, stack: false, surface: false, flat: false }, 'other unregistered made props stay protected');
 
 // ---- SIZE: pure geometry, row resize, and a copy saved at another size draws SCALED into its own box
@@ -132,7 +132,7 @@ A.ok(calls.some((c) => c[0] === 'scale' && Math.abs(c[1] - 0.5) < 1e-9 && Math.a
   A.eq(need(null), '', 'before /api/credits answers nothing is claimed');
 }
 
-// (sweep 2026-10-02) a FRESH load never reuses one already in flight: station.make_prop's reload got the list from before
+// (sweep 2026-10-02) a FRESH load never reuses one already in flight: keep.make_prop's reload got the list from before
 // the prop finished and said it was not on the page
 (async () => {
   const lists = [[], [{ id: 'user_new_lamp_abc123', label: 'new lamp' }]];
@@ -148,8 +148,8 @@ A.ok(calls.some((c) => c[0] === 'scale' && Math.abs(c[1] - 0.5) < 1e-9 && Math.a
   await new Promise(r => setImmediate(r)); release();
   const [a, b] = await Promise.all([stale, fresh]);
   A.eq([a.props.length, b.props.map(p => p.id)], [0, ['user_new_lamp_abc123']], 'a fresh load waits for the one in flight, then asks again (and sees the new prop)');
-  const sc = require('fs').readFileSync(require('path').join(__dirname, '..', 'frontend', 'app', 'stationcommands.js'), 'utf8');
-  A.ok(/'station\.props_reload': async \(\) => \{[\s\S]{0,200}UserProps\.load\(\{ fresh: true \}\)/.test(sc), 'station.props_reload asks for a fresh load');
+  const sc = require('fs').readFileSync(require('path').join(__dirname, '..', 'frontend', 'app', 'keepcommands.js'), 'utf8');
+  A.ok(/'keep\.props_reload': async \(\) => \{[\s\S]{0,200}UserProps\.load\(\{ fresh: true \}\)/.test(sc), 'keep.props_reload asks for a fresh load');
   global.fetch = hadFetch; global.PropSprites = hadPS;
   A.report();
 })();

@@ -15,7 +15,7 @@ origin: audit
 
 ## Symptom
 
-Two successful queued station saves can leave the browser cache dirty with an obsolete revision. A normal installed-app restart then reports a false save conflict. The durable station and conflicting local copy survive, but subsequent saving and update readiness are interrupted.
+Two successful queued keep saves can leave the browser cache dirty with an obsolete revision. A normal installed-app restart then reports a false save conflict. The durable keep and conflicting local copy survive, but subsequent saving and update readiness are interrupted.
 
 ## Repro
 
@@ -35,4 +35,4 @@ Compare the acknowledged document with the browser cache excluding only transpor
 
 ## Regression
 
-`test/cloudsave-concurrency.test.js` covers two clients, conflict export, update refusal, offline restart, queued cache acknowledgements and protection of newer unsubmitted content. The website's bundled CloudSave copy matches the frontend. The dev-seeded browser check passed matching revisions 12/12 after queued writes and 14/14 after reload, with a successful update drain and no conflict or browser exception. Fresh signed-installer verification passed in workflow 34569801784: actual published 0.11.1 to candidate 6e729e4cb preserved the populated station across installation and normal close/restart. All five continuity checks passed; candidate save drains had no failures or conflict. The earlier failed receipt is retained. Portable proof: `qa/evidence/0.11.2-issues-12-13/public-upgrade.json`.
+`test/cloudsave-concurrency.test.js` covers two clients, conflict export, update refusal, offline restart, queued cache acknowledgements and protection of newer unsubmitted content. The website's bundled CloudSave copy matches the frontend. The dev-seeded browser check passed matching revisions 12/12 after queued writes and 14/14 after reload, with a successful update drain and no conflict or browser exception. Fresh signed-installer verification passed in workflow 34569801784: actual published 0.11.1 to candidate 6e729e4cb preserved the populated keep across installation and normal close/restart. All five continuity checks passed; candidate save drains had no failures or conflict. The earlier failed receipt is retained. Portable proof: `qa/evidence/0.11.2-issues-12-13/public-upgrade.json`.

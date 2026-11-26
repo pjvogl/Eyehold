@@ -66,7 +66,7 @@ function startProvider() {
           return res.end(anthropicSse([
             // 140k > 65% of Anthropic's 200k default context: the next loop iteration must compact.
             { type: 'message_start', message: { usage: { input_tokens: 140000, output_tokens: 0 } } },
-            { type: 'content_block_start', index: 0, content_block: { type: 'tool_use', id: 'inspect_1', name: 'station_inspect', input: {} } },
+            { type: 'content_block_start', index: 0, content_block: { type: 'tool_use', id: 'inspect_1', name: 'keep_inspect', input: {} } },
             { type: 'content_block_delta', index: 0, delta: { type: 'input_json_delta', partial_json: '{}' } },
             { type: 'content_block_stop', index: 0 },
             { type: 'message_delta', delta: { stop_reason: 'tool_use' }, usage: { output_tokens: 4 } },
@@ -134,7 +134,7 @@ async function eventsOf(response) {
 
     const history = [];
     for (let i = 0; i < 8; i++) history.push({ role: i % 2 ? 'assistant' : 'user', content: 'history turn ' + i + ' with enough content to fold' });
-    history.push({ role: 'user', content: 'finish this after inspecting the station' });
+    history.push({ role: 'user', content: 'finish this after inspecting the keep' });
     const request = {
       provider: 'anthropic', model: 'claude-test', key: PRIMARY, keyPool: [BACKUP],
       baseUrl: provider.baseUrl, internal: true, isTask: false, messages: history

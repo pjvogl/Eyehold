@@ -2,7 +2,7 @@
 
 Owner request: retain the approved shell refresh, add a few matching finishes, and make insulation interior-only.
 
-Implementation: `86ad9d463`; combined with trunk's station-builder improvements in `dfcd8fcc4`. Release surface re-locked in `94c9ad7d7`.
+Implementation: `86ad9d463`; combined with trunk's keep-builder improvements in `dfcd8fcc4`. Release surface re-locked in `94c9ad7d7`.
 
 ## Delivered materials
 
@@ -19,7 +19,7 @@ Seeded app: `node dev/seed.js --keep`, isolated `shell-refresh-1002`, http://127
 - Entered BUILD > BUILD MODE > Surfaces > SHELL. Observed all 15 choices and no insulation option.
 - Applied TRUSS, LOUVER and CERAMIC in turn to the Outpost room at 136% zoom. Screenshots showed diagonal truss braces, recessed chevron louver blades, and pale ceramic plates on the exterior front and clipped corner faces.
 - Selected WALLS > INSULATION. The picker automatically suggested AMBER. Applied it to the room; quilted insulation appeared on the interior north/side walls while the ceramic exterior stayed in place.
-- SAVE & EXIT displayed “Station layout saved locally”. Restarted the seeded server with `--keep`, reloaded the page, and observed both interior insulation and ceramic exterior still present.
+- SAVE & EXIT displayed “Keep layout saved locally”. Restarted the seeded server with `--keep`, reloaded the page, and observed both interior insulation and ceramic exterior still present.
 - SESSIONS and the General session were visible after the restart.
 - No lighting adjustments were made. The authored exterior shading remains subdued.
 
@@ -27,7 +27,7 @@ Seeded app: `node dev/seed.js --keep`, isolated `shell-refresh-1002`, http://127
 
 - `node --check`: all six edited JavaScript source/test files passed; rechecked both worldmodel copies after trunk merge.
 - `node test/industrial-shells.test.js`: PASS (shipped versioned URLs, interior-only insulation routing, paint relief, alpha, caches and fallback behavior).
-- `node test/stationbake.hull.test.js`: PASS, 358 assertions, including migration, save/load and distinct native shell recipes. Passed again after trunk sync.
+- `node test/keepbake.hull.test.js`: PASS, 358 assertions, including migration, save/load and distinct native shell recipes. Passed again after trunk sync.
 - `node test/worldsurface.test.js`: PASS, 822 assertions.
 - `node test/industrialtextures.test.js`: PASS, 417 public-contract assertions. Synthetic canvas tests do not assess art quality.
 - New shell PNGs exactly match their website mirrors; interior insulation exactly matches the owner-approved artwork.
@@ -48,4 +48,4 @@ Merged into `feat/harness-backend` at **`3ae7f72e18ea390ad894ca6978f956e8a6e0d30
 
 The seeded preview was restarted on port 18802 after the gates with the saved ceramic exterior and interior insulation. The worktree is retained to serve that preview and preserve the test logs.
 
-This verifies this texture lane only; it is not a station-wide release-readiness claim.
+This verifies this texture lane only; it is not a keep-wide release-readiness claim.

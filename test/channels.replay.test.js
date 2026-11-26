@@ -5,7 +5,7 @@ const read = s => JSON.parse(s.split('\n').find(l => l.startsWith('data: ')).sli
 const hub = makeSseHub({ epoch: 'boot-a', maxEvents: 3 });
 hub.broadcast('queue.status', { depth: 1 });
 const cursor = hub.cursor();
-hub.broadcast('station.command', { id: 'must-not-repeat' });
+hub.broadcast('keep.command', { id: 'must-not-repeat' });
 hub.broadcast('queue.status', { depth: 2 });
 const frames = []; const client = { write: s => { frames.push(s); return true; } };
 hub.add(client); hub.resume(client, cursor);

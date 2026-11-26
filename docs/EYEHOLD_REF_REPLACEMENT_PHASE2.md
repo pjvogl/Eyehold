@@ -15,8 +15,8 @@ Phase 2 is complete only when:
 
 - A paid live smoke passes with a real provider key and a real model.
 - A daily-driver task pack proves research, file write, shell/verify, transcript resume,
-  memory/logbook, and cancellation/budget paths on a seeded station.
-- A restart/resume pass proves run history, transcripts, ledger, and station state survive.
+  memory/logbook, and cancellation/budget paths on a seeded keep.
+- A restart/resume pass proves run history, transcripts, ledger, and keep state survive.
 - A safety pass proves consent, checkpoint/restore, and file-jail behavior around mutating tools.
 - `npm run test:fast`, `npm run test:http`, `npm run audit`, and `npm run golden` are green.
 - Deferred ref-surface gaps have explicit owners and are not confused with pilot blockers.
@@ -115,7 +115,7 @@ Gate:
 - Stop and restart the sidecar.
 - Reopen Eyehold.
 - Logbook still shows the run, spend/model labels, and transcript link.
-- Memory/notebook and saved station state survive.
+- Memory/notebook and saved keep state survive.
 
 ### Blocker E: Desktop Clean-Machine Is Still Not Verified
 
@@ -188,7 +188,7 @@ Done:
 Ownership:
 
 - `sidecar/checkpoint*`, `sidecar/tools/builtin/*`, `test/checkpoint*`, `test/consent*`,
-  and narrow UI affordances in `frontend/app/stationui.js` if needed.
+  and narrow UI affordances in `frontend/app/keepui.js` if needed.
 
 Loop:
 
@@ -225,7 +225,7 @@ Done:
 
 Ownership:
 
-- `frontend/app/stationui.js`, `frontend/css/app.css`, `scripts/lib/states.mjs`,
+- `frontend/app/keepui.js`, `frontend/css/app.css`, `scripts/lib/states.mjs`,
   `scripts/goldens.json` only for reviewed visual changes.
 
 Loop:

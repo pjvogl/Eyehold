@@ -235,7 +235,7 @@ function greenCfg() {
   const officialEvidence = {
     schemaVersion: 1, candidateCommit: TRUNK, sourceTree: TREE,
     artifact: { sha256: installed.artifact.sha256, size: installed.artifact.size },
-    authority: 'release-attestation-verifier', verificationId: 'attestation-123'
+    authority: 'release-attekeep-verifier', verificationId: 'attekeep-123'
   };
   A.eq(checkInstalled(Object.assign({}, installed, { provenanceKind: 'official', officialEvidence, officialEvidenceVerified: true }), cfg).ok, true, 'host-reverified exact official evidence is accepted');
   A.eq(checkInstalled(Object.assign({}, installed, { buildKind: 'custom', provenanceKind: 'custom' }), cfg).ok, true, 'an exact clean custom open-source build is accepted as custom');
@@ -298,14 +298,14 @@ function greenCfg() {
     officialEvidence: {
       schemaVersion: 1, candidateCommit: TRUNK, sourceTree: TREE,
       artifact: { sha256: artifactIdentity.sha256, size: artifactIdentity.size },
-      authority: 'release-attestation-verifier', verificationId: 'attestation-123'
+      authority: 'release-attekeep-verifier', verificationId: 'attekeep-123'
     }
   });
   files.set(path.resolve(receiptPath), Buffer.from(JSON.stringify(officialReceipt), 'utf8'));
   A.eq(inspectInstalledIdentity(opts).ok, false, 'standalone inspector rejects official receipt without an external verifier');
   const externallyVerified = inspectInstalledIdentity(Object.assign({}, opts, {
     verifyOfficialEvidence: (_normalized, raw) => ({
-      ok: raw.verificationId === 'attestation-123',
+      ok: raw.verificationId === 'attekeep-123',
       authority: raw.authority,
       verificationId: raw.verificationId,
     })

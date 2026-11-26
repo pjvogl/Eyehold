@@ -119,7 +119,7 @@ function startToolMock(model) {
         req.on('data', d => { body += d; });
         req.on('end', () => {
           calls++;
-          // CONTENT-AWARE ROUTING (2026-07-15 truth-regression triage, finding 6a3a04cf): the station now runs
+          // CONTENT-AWARE ROUTING (2026-07-15 truth-regression triage, finding 6a3a04cf): the keep now runs
           // autonomous background model passes (quest-refresh boot look, interests/scout, skill review, the First
           // Pitch) that share this mock. The old `calls === 1` script assumed the FIRST completion was the audit
           // directive — a background pass landing first consumed the scripted tool_call, so the directive run
@@ -304,7 +304,7 @@ async function scenarioSummon(cdp, A) {
 }
 
 // SCENARIO: THE MOAT — object=capability. Enter BUILD, place a `dish`, and prove the WEB capability
-// comes online (placed object ⇒ earned reach). Placement goes through the real station.addProp path via
+// comes online (placed object ⇒ earned reach). Placement goes through the real keep.addProp path via
 // a DEV-only Build.__test__ hook (canvas-drag pixel math is private), then we read World.heroCaps.
 const capList = (caps) => (Array.isArray(caps) ? caps.map((c) => c && c.objectType) : []);
 async function scenarioMoat(cdp, A) {
@@ -319,15 +319,15 @@ async function scenarioMoat(cdp, A) {
   for (let i = 0; i < 20; i++) { built = await evalJS(cdp, "!!(typeof Build!=='undefined' && Build.__test__ && Build.__test__.isOpen())").catch(() => false); if (built) break; await sleep(200); }
   A.ok('moat/build-mode', built, built ? 'REFIT open + dev hook present' : 'Build.__test__ not available');
 
-  // The default station ships pre-equipped (2026-09-15: workstation + all five capability props), so a
+  // The default keep ships pre-equipped (2026-09-15: workkeep + all five capability props), so a
   // fresh seed already owns TERMINAL. object=capability is proven in BOTH directions instead: strip every
   // workbench through the validated model API → the capability must go OFFLINE after the re-bake; place one
   // back → it must come ONLINE again. Either direction lying (a cap with no object, an object with no cap)
   // is the app-lies pattern this scenario exists to catch.
   let placed = null;
   if (built) {
-    const stripped = await evalJS(cdp, "(() => { const st = Build.__test__.station(); if (!st || !st.propsByType) return { ok: false, reason: 'no-station' }; const ids = st.propsByType('workbench').map(p => p.id); const out = ids.map(id => (st.removeProp(id) || {}).ok !== false); return { ok: out.every(Boolean), removed: ids.length }; })()").catch((e) => ({ ok: false, reason: e.message }));
-    A.ok('moat/strip-prop', !!(stripped && stripped.ok), stripped && stripped.ok ? `${stripped.removed} workbench(es) removed via station.removeProp` : `strip failed: ${stripped && stripped.reason}`);
+    const stripped = await evalJS(cdp, "(() => { const st = Build.__test__.keep(); if (!st || !st.propsByType) return { ok: false, reason: 'no-keep' }; const ids = st.propsByType('workbench').map(p => p.id); const out = ids.map(id => (st.removeProp(id) || {}).ok !== false); return { ok: out.every(Boolean), removed: ids.length }; })()").catch((e) => ({ ok: false, reason: e.message }));
+    A.ok('moat/strip-prop', !!(stripped && stripped.ok), stripped && stripped.ok ? `${stripped.removed} workbench(es) removed via keep.removeProp` : `strip failed: ${stripped && stripped.reason}`);
     await clickSel(cdp, '#refit-done');                 // exit build → re-bake
     await evalJS(cdp, closeOnly).catch(() => {});
     await sleep(900);
@@ -356,13 +356,13 @@ async function scenarioMoat(cdp, A) {
 // Where `moat` places through the DEV Build.__test__ hook (validated-tile shortcut), this drives the REAL
 // pointer path: enter REFIT, dismiss the first-use guide (it blankets the canvas), select the prop tool +
 // CAPABILITY → comms_dish through the actual palette buttons, then CLICK the grid with CDP mouse events at
-// the framed centre (fitCamera centres the station, so centre lands inside the spawn room). Asserts
+// the framed centre (fitCamera centres the keep, so centre lands inside the spawn room). Asserts
 // World.heroCaps gains `dish` (WEB) — the placement, and the capability it earns, both came from a mouse.
 async function scenarioPropPlace(cdp, A) {
   await evalJS(cdp, closeOnly).catch(() => {});
-  // the pre-equipped default station already owns WEB, so the proof counts comms_dish OBJECTS in the live
+  // the pre-equipped default keep already owns WEB, so the proof counts comms_dish OBJECTS in the live
   // world model (before/after the real clicks) and then re-reads the capability after the re-bake.
-  const dishCount = () => evalJS(cdp, "(() => { const st = Build.__test__ && Build.__test__.station(); return st && st.propsByType ? st.propsByType('comms_dish').length : -1; })()").catch(() => -1);
+  const dishCount = () => evalJS(cdp, "(() => { const st = Build.__test__ && Build.__test__.keep(); return st && st.propsByType ? st.propsByType('comms_dish').length : -1; })()").catch(() => -1);
 
   await clickSel(cdp, '#bb-build');
   let built = false;
@@ -417,7 +417,7 @@ async function scenarioPropPlace(cdp, A) {
 // Commander progression, whose authority is the sidecar's journey endpoint.
 async function scenarioHudXp(cdp, A) {
   await evalJS(cdp, closeOnly).catch(() => {});
-  // the app's own displayed-vs-reduced checks (station level etc.) must all hold.
+  // the app's own displayed-vs-reduced checks (keep level etc.) must all hold.
   const hud = await evalJS(cdp, 'window.__SKYNET_TEST__.hud()').catch(() => null);
   A.ok('hud-xp/hud-readable', !!(hud && Array.isArray(hud.checks) && hud.checks.length), hud ? `${hud.checks.length} HUD checks` : 'hud() returned nothing');
   if (hud && Array.isArray(hud.checks)) for (const c of hud.checks) A.ok(`hud-xp/${c.metric}`, c.ok, `displayed=${c.displayed} ${c.mode} expected=${c.expected}`);
@@ -435,11 +435,11 @@ async function scenarioHudXp(cdp, A) {
   const xp = await evalJS(cdp, 'window.__SKYNET_TEST__.reduceXp()').catch(() => null);
   const journey = await evalJS(cdp, "Harness.api.get('/api/journey')").catch(() => null);
   const commanderLevel = journey && journey.ok && journey.journey && journey.journey.progression && journey.journey.progression.level;
-  const chip = await evalJS(cdp, "(() => { const e=document.getElementById('gt-station'); return e?(e.textContent||'').trim():null; })()").catch(() => null);
+  const chip = await evalJS(cdp, "(() => { const e=document.getElementById('gt-keep'); return e?(e.textContent||'').trim():null; })()").catch(() => null);
   const chipLevel = chip == null ? null : (() => { const m = String(chip).match(/(\d+)/); return m ? parseInt(m[1], 10) : null; })();
   A.ok('hud-xp/xp-reduced', !!(xp && typeof xp.level === 'number'), xp ? `Xp.level=${xp.level} xp=${xp.xp}` : 'reduceXp() returned nothing');
   A.ok('hud-xp/commander-source-available', Number.isFinite(commanderLevel), 'backend Commander level=' + commanderLevel);
-  A.ok('hud-xp/station-chip-matches-journey', chipLevel != null && Number.isFinite(commanderLevel) && chipLevel === commanderLevel, `displayed COMMANDER="${chip}" (lvl ${chipLevel}) vs backend level=${commanderLevel}`);
+  A.ok('hud-xp/keep-chip-matches-journey', chipLevel != null && Number.isFinite(commanderLevel) && chipLevel === commanderLevel, `displayed COMMANDER="${chip}" (lvl ${chipLevel}) vs backend level=${commanderLevel}`);
 }
 
 // SCENARIO: CONVEYOR — drive the REAL production transport module (Conveyor, a page global) end-to-end: a TEST
@@ -543,7 +543,7 @@ async function runApprovalScenario() {
 
     // give the agent the FILES capability by placing a cabinet-granting prop (safe → cabinet). This isn't the
     // prop-placement test (that's scenarioPropPlace); here we just need fs.write to be OWNED, so use the fast hook.
-    // The pre-equipped default station (2026-09-15) already grants FILES; only an older/bare seed needs the
+    // The pre-equipped default keep (2026-09-15) already grants FILES; only an older/bare seed needs the
     // placement. Either way the assertion is the same truth: fs.write must be an OWNED capability here.
     const owned = (await heroCapTypes(cdp)) || [];
     let placed = { ok: true, skipped: true };

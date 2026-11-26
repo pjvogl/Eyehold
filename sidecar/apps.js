@@ -1,19 +1,19 @@
 /* sidecar/apps.js — APPS: describe what you want, get a real app inside Eyehold (2026-09-29).
 
    "I want a habit tracker" / "a dashboard of my crew's week" / "a pomodoro timer that looks like an arcade cabinet" →
-   a window in the station that the crew builds from those words. No manifests, approvals, terminals or folders to
+   a window in the keep that the crew builds from those words. No manifests, approvals, terminals or folders to
    think about: an app is
-     · a PAGE the crew writes (HTML with the station kit — served sandboxed, scripts only, NO network),
+     · a PAGE the crew writes (HTML with the keep kit — served sandboxed, scripts only, NO network),
      · its DATA (a private store the page reads; the crew publishes into it with app.publish),
      · an optional SCHEDULE (an ordinary routine that runs the app's task and publishes the result), for an app
        that should update by itself; you just open the window.
    Changing it is vibe coding: describe the change, the crew rewrites the page.
 
    WHY NO APPROVAL STEP: an app page can only draw. Its frame is an opaque-origin sandbox with the network switched
-   off (connect-src/form-action 'none', no popups — the /plugin-draft/ lockdown), it cannot read the station, its
+   off (connect-src/form-action 'none', no popups — the /plugin-draft/ lockdown), it cannot read the keep, its
    token or other apps, and the only data it ever sees is what its own scheduled run published. Anything that
-   touches the world (the web research, a write somewhere) happens in an ordinary crew run under the station's
-   normal consent and taint rules — never in the page. (Code that runs in the station with full power is what
+   touches the world (the web research, a write somewhere) happens in an ordinary crew run under the keep's
+   normal consent and taint rules — never in the page. (Code that runs in the keep with full power is what
    plugins are for; apps never have any.)
 
    makeApps({ fsp, path, dir, store, treeDigest, relPathOk, now, template, cron, notify }) -> api */
@@ -114,7 +114,7 @@ function makeApps(deps) {
       await fsp.rm(appDir(id), { recursive: true, force: true }).catch((e2) => note('apps.create-cleanup', e2));
       throw e;
     }
-    notify.reload(id);   // the station page learns a new app exists (the APPS dock appears, its window opens)
+    notify.reload(id);   // the keep page learns a new app exists (the APPS dock appears, its window opens)
     return { id, name, description };
   }
   async function remove(id) {
@@ -157,7 +157,7 @@ function makeApps(deps) {
   async function writeFile(id, rel, content) {
     const { meta } = await need(id);
     const r = String(rel || '').replace(/^\.\//, '');
-    // app.json is the station's (case-insensitive: Windows would let "App.json" overwrite it); 5 folders deep is
+    // app.json is the keep's (case-insensitive: Windows would let "App.json" overwrite it); 5 folders deep is
     // as far as the file walk (and so the size caps) can see
     if (!relPathOk(r) || r.toLowerCase() === 'app.json' || r.split('/').length > 5) throw new Error('`path` must be a page file inside the app (index.html, style.css, app.js …)');
     if (!TEXT_EXT.test(r)) throw new Error('only text files: .html .css .js .json .svg .txt .md');
@@ -183,7 +183,7 @@ function makeApps(deps) {
   async function publish(id, key, value) {
     await need(id);
     const k = String(key || '');
-    if (k === META_KEY) throw new Error('"' + META_KEY + '" is kept by the station');
+    if (k === META_KEY) throw new Error('"' + META_KEY + '" is kept by the keep');
     // Models often send the JSON as TEXT ("{\"items\":[…]}"): the page would then read a string with no .items and
     // show nothing. Text that is a JSON object or array is stored as that value.
     if (typeof value === 'string' && /^\s*[[{]/.test(value)) value = jsonOr(value);
@@ -220,7 +220,7 @@ function makeApps(deps) {
   }
   async function scheduleNow(id, spec) {
     const { meta } = await need(id);
-    if (!cron) throw new Error('routines are not available on this station');
+    if (!cron) throw new Error('routines are not available on this keep');
     const every = plain(spec && spec.every, 80);
     const task = plain(spec && spec.task, 2000);
     const old = (meta.schedule && meta.schedule.jobId && ownJob(id, meta.schedule.jobId)) ? meta.schedule.jobId : null;
@@ -258,7 +258,7 @@ function makeApps(deps) {
       out = await cron.create({ name, schedule: every, prompt, agentId: 'agent', meta: { appId: id } });
       if (!out.ok) throw new Error(out.error || 'the routine could not be created');
       // the routine must be THIS app's own new one — never an existing routine handed back as a "duplicate"
-      if (out.job.id === old || !out.job.meta || out.job.meta.appId !== id) throw new Error('the routine could not be created (the station answered with another routine)');
+      if (out.job.id === old || !out.job.meta || out.job.meta.appId !== id) throw new Error('the routine could not be created (the keep answered with another routine)');
       await retire();
     }
     await retireOthers(id, out.job.id);

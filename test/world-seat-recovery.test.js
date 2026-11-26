@@ -29,13 +29,13 @@ if(src.includes('function invalidateRefitLeisure(')){
  const prop={id:'p1',t:'couch',x:8,y:5,w:3,h:1},before={origin:{tx:-3,ty:-3},props:[prop]};
  const body=()=>({seatKey:'p1:0',seated:true,sitting:true,usingProp:'p1',goal:'use',pendSeat:{px:100,py:100},working:false});
  const c=body();reset(c,before,{...before,props:[]});A.eq([c.seated,c.sitting,c.usingProp,c.seatKey,c.pendSeat],[false,false,null,null,null],'deleted furniture releases pose, reference and reservation');A.eq(occupiedSeats.size,0,'deleted seat releases shared occupancy');
- const keep=body();reset(keep,before,{origin:{tx:-8,ty:-7},props:[{...prop,x:13,y:9}]});A.eq(keep.seated,true,'unchanged couch survives station-origin shift');
+ const keep=body();reset(keep,before,{origin:{tx:-8,ty:-7},props:[{...prop,x:13,y:9}]});A.eq(keep.seated,true,'unchanged couch survives keep-origin shift');
  const moved=body();reset(moved,before,{...before,props:[{...prop,x:9}]});A.eq(moved.seated,false,'moving couch releases stale cushion');
  const rotated=body();reset(rotated,before,{...before,props:[{...prop,r:1}]});A.eq(rotated.seated,false,'rotating couch releases old seat anchor');
  const trip={...body(),seated:false,target:{x:90,y:90}};reset(trip,before,before);A.eq(trip.goal,null,'interrupted trip releases goal so crew can replan');
  const worker={working:true,goal:null,sitting:true};reset(worker,before,{...before,props:[]});A.eq(worker.working,true,'furniture cleanup preserves unrelated work');
 }else A.ok(false,'refit invalidation exists');
-/* Remastered workstation art, approach, fractional seating and save coordinates agree. */
+/* Remastered workkeep art, approach, fractional seating and save coordinates agree. */
 {
  const PA=require('../frontend/app/propanchor');
  const helper=['seatCx','seatCy','deskSeat','seatFoot'].map(fn).join('\n');
@@ -60,8 +60,8 @@ if(src.includes('function invalidateRefitLeisure(')){
   const legacy=seats(clean,()=>true,()=>[0]).deskSeat(side);
   A.eq([legacy.tx,legacy.ty,legacy.face,legacy.cy],[5,7,'north',undefined],(clean?'unavailable view':'classic mode')+' ignores an unsupported saved remaster rotation');
  }
- A.eq(seats(true,()=>true,()=>[0,1,2,3]).deskSeat({...side,t:'console'}).face,'north','other functional workstations retain their existing south-front approach');
- A.eq(seats(true,()=>false).deskSeat(side),null,'a sealed-in workstation invents no chair');
+ A.eq(seats(true,()=>true,()=>[0,1,2,3]).deskSeat({...side,t:'console'}).face,'north','other functional workkeeps retain their existing south-front approach');
+ A.eq(seats(true,()=>false).deskSeat(side),null,'a sealed-in workkeep invents no chair');
  const heroSeat=Function('PropAnchor','geo','IndustrialTextures','PropSprites','home',
   'const T=12,agent={id:"agent"},deskPropFor=()=>home;let blocked,desk,seat,deskPropId,deskFace;'+helper+'\n'+fn('placeDesk')+';placeDesk();return {seat,deskFace};')
   (PA,{walkable:()=>true},{isRemaster:()=>true},{facings:()=>[0,1,2,3]},side);
@@ -83,10 +83,10 @@ if(src.includes('function invalidateRefitLeisure(')){
  // An in-memory round trip exercises the real save boundary without touching a user save.
  const st=WM.create(),added=st.addProp({...side,x:5,y:3,agentId:'agent'});
  A.ok(added.ok,'turned assigned desk is valid model geometry');
- const store=require('../sidecar/station-store').makeStationStore();
- A.ok(store.setSaveDoc({station:st.serialize()}).ok,'station save accepts the turned workstation');
- const restored=WM.deserialize(store.getStation()).projectGeometry().props.find(p=>p.id===added.id);
- A.eq([restored.r,restored.w,restored.h,restored.agentId],[3,1,2,'agent'],'facing, effective footprint and assignment survive the real station save/model seam');
+ const store=require('../sidecar/keep-store').makeKeepStore();
+ A.ok(store.setSaveDoc({keep:st.serialize()}).ok,'keep save accepts the turned workkeep');
+ const restored=WM.deserialize(store.getKeep()).projectGeometry().props.find(p=>p.id===added.id);
+ A.eq([restored.r,restored.w,restored.h,restored.agentId],[3,1,2,'agent'],'facing, effective footprint and assignment survive the real keep save/model seam');
 }
 /* A doorway re-enters entity depth order using its detailed art when available. */
 {

@@ -1,7 +1,7 @@
 /* EYEHOLD — dossierstore.js : the live wiring around the pure Commander Dossier engine (dossier.js).
 
    The browser half of the dossier system, modelled on profilestore.js / xpstore.js: it owns the one
-   station-wide dossier object, seeds it from the onboarding docs the Commander already authored, persists
+   keep-wide dossier object, seeds it from the onboarding docs the Commander already authored, persists
    it in the save envelope, and exposes the read + mutation surface the COMMANDER panel and the system-
    prompt composer use.
 
@@ -93,7 +93,7 @@ const DossierStore = (() => {
   function upsert(dim, belief) {
     if (!ready()) return;
     Dossier.upsert(dossier, dim, belief, now()); commit();
-    if (dim === 'goals') { try { if (typeof StationUI !== 'undefined' && StationUI.rerender) StationUI.rerender('quests', false); } catch (_) {} }
+    if (dim === 'goals') { try { if (typeof KeepUI !== 'undefined' && KeepUI.rerender) KeepUI.rerender('quests', false); } catch (_) {} }
     if (typeof CuriosityStore !== 'undefined' && CuriosityStore.markAnswered) { try { CuriosityStore.markAnswered(dim); } catch (_) {} }
   }
   function forget(dim, id) {
@@ -105,7 +105,7 @@ const DossierStore = (() => {
     try { const b = (Dossier.beliefs(dossier, dim) || []).find(x => x && x.id === id); text = b ? String(b.text || '') : ''; } catch (_) {}
     Dossier.forget(dossier, dim, id, now());
     commit();
-    if (dim === 'goals') { try { if (typeof StationUI !== 'undefined' && StationUI.rerender) StationUI.rerender('quests', false); } catch (_) {} }
+    if (dim === 'goals') { try { if (typeof KeepUI !== 'undefined' && KeepUI.rerender) KeepUI.rerender('quests', false); } catch (_) {} }
     try { if (text && typeof StudyStore !== 'undefined' && StudyStore.declineText) StudyStore.declineText(text); } catch (_) {}
   }
   function setPinned(dim, id, pinned) { if (ready()) { Dossier.setPinned(dossier, dim, id, pinned, now()); commit(); } }

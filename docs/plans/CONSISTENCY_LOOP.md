@@ -64,7 +64,7 @@ Commander's own words, not only a chip. Free text beats the six chips — this i
 Skill review writes land as `state: proposed` (additive enum value in skillstore), emit `skill.proposed`, and
 the COMMS turn-in card (the same deck memory uses, `chat.js` memory beat) shows the diff with keep/edit/discard.
 Accept → `active` + allow-by-digest; discard → archived + a `declined` mark the review must honor.
-- Popup law holds: the card appears only when a skill actually changed, and the answer changes station state.
+- Popup law holds: the card appears only when a skill actually changed, and the answer changes keep state.
 - Done = propose → card → keep → skill active in the next run's index; discard → never re-proposed.
 
 ### Slice 4 — Golden tests per skill (the consistency proof)

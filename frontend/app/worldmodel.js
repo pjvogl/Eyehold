@@ -1,7 +1,7 @@
-/* EYEHOLD — worldmodel.js : the canonical, mutable, serializable STATION document.
+/* EYEHOLD — worldmodel.js : the canonical, mutable, serializable KEEP document.
 
    This is the single source of truth the builder edits and that both the renderer
-   (via projectGeometry → stationbake.js) and the future AgentOrg runtime read.
+   (via projectGeometry → keepbake.js) and the future AgentOrg runtime read.
 
    PURITY CONTRACT (so it stays headless-testable and deterministic):
      - no DOM, no canvas, no `window`/`document`
@@ -9,13 +9,13 @@
    It only depends on the global `U` (util.js: U.clamp/U.shade/U.hash) — none of which are
    non-deterministic. See frontend/app/BUILDER.md for the full contract.
 
-   The model stores LOGICAL geometry in signed world-tile coords (unbounded; the station can
+   The model stores LOGICAL geometry in signed world-tile coords (unbounded; the keep can
    grow in any direction). `projectGeometry()` emits the v7 MAP-shaped object the bake consumes,
    shifted into a non-negative local frame with a margin for the hull. */
 'use strict';
 
 const WorldModel = (() => {
-  /* MOUNT RULES lookup, injected once at module level (NOT per station instance) — a per-instance
+  /* MOUNT RULES lookup, injected once at module level (NOT per keep instance) — a per-instance
      setter would have to be re-armed at every create()/deserialize()/undo-clone site, and the one
      that got missed would silently place wall props in open floor. Null = no rules installed, which
      is the plain-node/test case: every prop is placeable on bare deck exactly as before. */
@@ -37,7 +37,7 @@ const WorldModel = (() => {
   const MARGIN = 3;     // tile padding around the bounding box (hull extrusion + chamfer arcs need room)
   const MIN_ROOM = 3;   // min room floor side, in tiles
   const MIN_HALL = 2;   // min hallway length, in tiles (long axis)
-  const MAX_SPAN = 240; // max station footprint span per axis (keeps the bake canvas bounded)
+  const MAX_SPAN = 240; // max keep footprint span per axis (keeps the bake canvas bounded)
   const HULL_PAD = 14;  // extra canvas px below the grid for the south hull extrusion (matches v7 H = ROWS*T+14)
 
   /* FILTER/MERGER junction config carried on a prop (additive, like a BAY's agentId; the pipeline reads
@@ -111,7 +111,7 @@ const WorldModel = (() => {
      props grant reach; everything else is inert decor. A bay with no `computer` prop can't run (compute gate
      stays shut = cost-safe), which the REFIT validator surfaces as NO COMPUTE. */
   const CAP_PROP_MAP = {
-    console: 'computer', consoleL: 'computer', desk: 'computer', desk2: 'computer', pixelrig: 'computer', bench: 'computer',  // a workstation = compute
+    console: 'computer', consoleL: 'computer', desk: 'computer', desk2: 'computer', pixelrig: 'computer', bench: 'computer',  // a workkeep = compute
     war_intelcab: 'cabinet', safe: 'cabinet', vault: 'cabinet', rack: 'cabinet', shelf: 'cabinet',                            // a locked cabinet = files
     comms_dish: 'dish', comms_uplink: 'dish', comms_beacon: 'dish',                                                           // a comms dish = web
     gigs_servercart: 'notebook', bridge_relaystack: 'notebook', core: 'notebook',                                            // a server/databank = memory
@@ -140,7 +140,7 @@ const WorldModel = (() => {
      style automatically. */
   const FLOOR_STYLES = {
     // 2026-09-02: hull #33302a -> #3c3429, decking #2c2924 -> #342d25. The stock hab is what every
-    // new station boots on and it measured the greyest room in the building (mean chroma 11 on a
+    // new keep boots on and it measured the greyest room in the building (mean chroma 11 on a
     // furnished floor vs 22 on oak). Same value band, a notch of warmth — the lamp pools finally
     // have a colour to land on. Every other swatch is untouched.
     hull:     { base: '#3a3b41', label: 'HULL' },
@@ -177,7 +177,7 @@ const WorldModel = (() => {
        as PAINT rather than as stone. It matters most on a hull: the exterior is the one surface with
        no ambient over it, so it is the only place a white actually stays white — and a whitewashed
        STUCCO or CLAPBOARD building is the point of having it. See the bright-pole band in
-       stationbake's vacuum(), which is what keeps it from being clamped into the dark shell band
+       keepbake's vacuum(), which is what keeps it from being clamped into the dark shell band
        along with every ordinary hue. */
     white:    { base: '#f2f0ea', label: 'WHITE' },
     onyx:     { base: '#0e0e12', label: 'ONYX' },
@@ -190,9 +190,9 @@ const WorldModel = (() => {
      but coherent and the user's call. `pitch` is the plate/plank cell in tiles; `suggest` is the
      hue the SURFACE palette pre-selects when you pick that material (a UI convenience only — the
      model never forces a colour). This catalog is the sole source: add a material here, give it
-     a recipe in stationbake, and it appears in the SURFACE palette's MATERIAL row automatically. */
+     a recipe in keepbake, and it appears in the SURFACE palette's MATERIAL row automatically. */
   const FLOOR_MATERIALS = {
-    // the hab default since 2026-07-25 — see the note above deckSpine in stationbake.js
+    // the hab default since 2026-07-25 — see the note above deckSpine in keepbake.js
     spine: { label: 'SPINE',  pitch: [4, 3], suggest: null },
     alloy: { label: 'ALLOY', pitch: [4, 3], suggest: 'hull' },
     plate: { label: 'PLATE',  pitch: [2, 2], suggest: null },
@@ -200,14 +200,14 @@ const WorldModel = (() => {
     tile:  { label: 'TILE',   pitch: [2, 2], suggest: null },
     tread: { label: 'TREAD',  pitch: [2, 2], suggest: null },
     soft:  { label: 'MATTED', pitch: [3, 2], suggest: null },
-    // v4 additions — the decks that don't look like the old station
+    // v4 additions — the decks that don't look like the old keep
     grate: { label: 'GRATE',  pitch: [1, 1], suggest: 'onyx' },
     hex:   { label: 'HEX',    pitch: [1, 1], suggest: 'sterile' },
     plank: { label: 'PLANK',  pitch: [5, 1], suggest: 'walnut' },
     turf:  { label: 'TURF',   pitch: [1, 1], suggest: 'meadow' },
     // v6 CORRIDOR candidates — decks sized and surfaced for a passage rather than a room.
-    // See the note above deckRunner in stationbake.js.
-    // 2026-09-03 additions — painters live above paintDeck in stationbake.js
+    // See the note above deckRunner in keepbake.js.
+    // 2026-09-03 additions — painters live above paintDeck in keepbake.js
     diamond: { label: 'DIAMOND', pitch: [1, 1], suggest: null },
     resin:   { label: 'RESIN',   pitch: [4, 4], suggest: 'sterile' },
     ceramic: { label: 'CERAMIC', pitch: [3, 3], suggest: 'bone' },
@@ -232,13 +232,13 @@ const WorldModel = (() => {
   /* the WALL material catalog — the deck's opposite number. Walls carry the same two axes as the
      floor (hue × recipe) and read from the same FLOOR_STYLES hue catalog, because a room should be
      able to be cobalt all the way up. `room.wallStyle` null means "follow this room's floor hue",
-     which is what makes a freshly-built station instantly varied instead of one brown-grey box.
+     which is what makes a freshly-built keep instantly varied instead of one brown-grey box.
      `viewport` is the odd one out: it doesn't PAINT the wall, it punches a hole in it — the bake
-     leaves those pixels transparent so the live drifting starfield behind the station shows
+     leaves those pixels transparent so the live drifting starfield behind the keep shows
      through. Baked stars would be a lie; the real sky is already back there. */
   const WALL_MATERIALS = {
-    // base-wall candidates — see the note above wallBulkhead in stationbake.js
-    // the base wall since 2026-07-25 — see the note above wallBulkhead in stationbake.js
+    // base-wall candidates — see the note above wallBulkhead in keepbake.js
+    // the base wall since 2026-07-25 — see the note above wallBulkhead in keepbake.js
     bulkhead: { label: 'BULKHEAD', suggest: null },
     courses:  { label: 'COURSES',  suggest: null },
     service:  { label: 'SERVICE',  suggest: null },
@@ -261,27 +261,27 @@ const WorldModel = (() => {
 
   /* the HULL material catalog — THE THIRD SURFACE AXIS (2026-08-05, Andrew, circling the outside
      edges of five rooms in a screenshot: "the outer walls are not customizable... for users who
-     want to put their station in the forest, and want a more cabin feel").
+     want to put their keep in the forest, and want a more cabin feel").
 
      DECK and WALLS dress the INSIDE of a room. The hull is everything you see of it from OUTSIDE:
      the plate that surrounds the footprint, the texture over that plate, the framed rim + bolts,
      the rounded corner arcs, and — the surface that actually reads at a glance — the SKIRT, the
-     tall face extruded below the station's silhouette. All five were painted from five hardcoded
-     constants, so every room in every station had the identical dark riveted shell. Now the shell
-     is per room, which is what makes a mixed station read as a CITY of separate buildings rather
+     tall face extruded below the keep's silhouette. All five were painted from five hardcoded
+     constants, so every room in every keep had the identical dark riveted shell. Now the shell
+     is per room, which is what makes a mixed keep read as a CITY of separate buildings rather
      than one hull with seams in it.
 
      `suggest` is the hue a material defaults to when the room carries no explicit hullStyle. Unlike
      the wall axis — where `suggest` is only a UI convenience — this one binds in the MODEL, because
-     a hull's default has to be a tone the material was drawn for: TIMBER at the station's own
-     #191712 is black wood, which is nobody's cabin. `station` alone suggests null, meaning "keep
-     the shell's own tone" — the literal legacy constants, so every station already built renders
+     a hull's default has to be a tone the material was drawn for: TIMBER at the keep's own
+     #191712 is black wood, which is nobody's cabin. `keep` alone suggests null, meaning "keep
+     the shell's own tone" — the literal legacy constants, so every keep already built renders
      pixel-identical until someone paints it.
 
-     Adding one here is the whole job: give it a recipe in stationbake's HULL_RECIPES and it appears
+     Adding one here is the whole job: give it a recipe in keepbake's HULL_RECIPES and it appears
      in the REFIT SURFACE palette's HULL target automatically. */
   const HULL_MATERIALS = {
-    station:   { label: 'STATION',   suggest: null,     blurb: 'riveted hull plate — the shell you launched with' },
+    keep:   { label: 'KEEP',   suggest: null,     blurb: 'riveted hull plate — the shell you launched with' },
     monocoque: { label: 'MONOCOQUE', suggest: 'bone', blurb: 'large inset alloy panels with recessed joints and protected edge rails' },
     timber:    { label: 'TIMBER',    suggest: 'walnut', blurb: 'stacked log courses — the cabin' },
     clapboard: { label: 'CLAPBOARD', suggest: 'ash',    blurb: 'lapped siding boards — the farmhouse' },
@@ -299,21 +299,21 @@ const WorldModel = (() => {
     louver: { label: 'LOUVER', suggest: 'hull', blurb: 'deep chevron intake blades in armored frames' },
     ceramic: { label: 'CERAMIC', suggest: 'bone', blurb: 'pale ceramic-composite plates with graphite joints' }
   });
-  const HULL_ORDER = ['station', 'monocoque', 'timber', 'clapboard', 'shingle', 'brick', 'stone', 'stucco', 'curtain', 'hedge', 'thermal', 'heatsink', 'truss', 'louver', 'ceramic'];
+  const HULL_ORDER = ['keep', 'monocoque', 'timber', 'clapboard', 'shingle', 'brick', 'stone', 'stucco', 'curtain', 'hedge', 'thermal', 'heatsink', 'truss', 'louver', 'ceramic'];
 
   /* room categories — a capability-zone label + a default floor (hue + material). kind drives
      nothing behavioural yet (capability mapping is a later pass); it tags the zone + seeds the
      look. `mat` is the DEFAULT deck material a room of this kind is built with — a room whose
      floorMat is null renders at this material.
 
-     THIS MAP IS THE AUTHORITY on a room's default deck. `MAT_BY_KIND` in stationbake.js looks like
+     THIS MAP IS THE AUTHORITY on a room's default deck. `MAT_BY_KIND` in keepbake.js looks like
      a second copy but is only a fallback for geometry that arrives without `matOf` — projected
-     geometry always carries it, so editing stationbake alone changes NOTHING you can see. Change
+     geometry always carries it, so editing keepbake alone changes NOTHING you can see. Change
      both, and keep them agreeing.
 
      2026-07-25: hab and corridor moved off `plate` onto `spine` (they must move together or a
      corridor reads as a different floor through the doorway). This DELIBERATELY changes the look of
-     every station already built — floorMat is null on all of them — because the default deck is the
+     every keep already built — floorMat is null on all of them — because the default deck is the
      one surface every player sees. `plate` stays in the palette, so the old look is still choosable
      and nothing is destroyed. It also means the Guardian goldens all shift. */
   const ROOM_KINDS = {
@@ -330,12 +330,12 @@ const WorldModel = (() => {
     : ((rm && ROOM_KINDS[rm.kind] && ROOM_KINDS[rm.kind].mat) || 'plate');
   // walls: material defaults to plating; hue defaults to FOLLOWING THE FLOOR, so every room's
   // walls harmonize with its deck without the Commander having to pick twice.
-  /* THE AUTHORITY on a room's default wall material (stationbake's `wallMatOf` fallback is only for
+  /* THE AUTHORITY on a room's default wall material (keepbake's `wallMatOf` fallback is only for
      geometry arriving without one). 2026-07-25: moved off `plating` onto `bulkhead` — every room
-     carries wallMat null, so this reaches stations already built, deliberately, for the same reason
+     carries wallMat null, so this reaches keeps already built, deliberately, for the same reason
      the deck default moved. `plating` stays in the palette as the classic. */
   const wallMatOfRoom = rm => (rm && WALL_MATERIALS[rm.wallMat]) ? rm.wallMat : 'bulkhead';
-  /* A CORRIDOR'S WALL IS THE STATION'S BULKHEAD, NOT ITS DECKING (2026-07-29, Andrew: "light
+  /* A CORRIDOR'S WALL IS THE KEEP'S BULKHEAD, NOT ITS DECKING (2026-07-29, Andrew: "light
      doesn't seem to reflect on the walls of the hallway"). Following the deck is right for a ROOM —
      wall and floor are the same room's finish — but a corridor's floor style is DECKING #2c2924,
      the DARKEST entry in the table, and its wall inherited that on top of two other deliberate
@@ -343,8 +343,8 @@ const WorldModel = (() => {
      face at luma 26.5 where a room's reads 39.5 — BELOW what a room wall measures after its own
      ambient, so no amount of light could ever bring it back. That is why the wall read as unlit
      next to a deck that had just been fixed.
-     Same law stationbake's sideCap note already states for the wall's top surface: a hallway's
-     bulkhead is the same slab of station as the rooms it connects. A wall's HEIGHT may differ
+     Same law keepbake's sideCap note already states for the wall's top surface: a hallway's
+     bulkhead is the same slab of keep as the rooms it connects. A wall's HEIGHT may differ
      between space types — that is the tunnel read and it stays — its MATERIAL may not.
      Default only: an explicitly painted wallStyle still wins. */
   const wallStyleOfRoom = rm => {
@@ -353,9 +353,9 @@ const WorldModel = (() => {
     if (rm && FLOOR_STYLES[rm.floorStyle]) return rm.floorStyle;
     return 'hull';
   };
-  /* THE AUTHORITY on a room's exterior shell (stationbake's HULL_RECIPES fallback is only for
-     geometry arriving without one). Defaults to `station` so nothing already built moves. */
-  const hullMatOfRoom = rm => rm && rm.hullMat === 'insulation' ? 'thermal' : (rm && HULL_MATERIALS[rm.hullMat]) ? rm.hullMat : 'station';
+  /* THE AUTHORITY on a room's exterior shell (keepbake's HULL_RECIPES fallback is only for
+     geometry arriving without one). Defaults to `keep` so nothing already built moves. */
+  const hullMatOfRoom = rm => rm && rm.hullMat === 'insulation' ? 'thermal' : (rm && HULL_MATERIALS[rm.hullMat]) ? rm.hullMat : 'keep';
   /* A HULL'S HUE, or null for "the shell's own tone". Explicit paint wins; otherwise the material's
      own suggested hue (see the HULL_MATERIALS note on why this binds in the model and the wall
      axis's `suggest` does not). A CORRIDOR follows the room it connects only in spirit — it takes
@@ -380,27 +380,27 @@ const WorldModel = (() => {
   const clone = o => JSON.parse(JSON.stringify(o));
   const pad2 = n => String(n).padStart(2, '0');
 
-  /* STATION IDENTITY (2026-08-07 conveyor audit). `meta.createdAt` is the station's DURABLE ID: the
+  /* KEEP IDENTITY (2026-08-07 conveyor audit). `meta.createdAt` is the keep's DURABLE ID: the
      REFIT one-shots (first ride, ORDERS, the finish-the-line registry) namespace their localStorage
-     keys on it, so a second station must not inherit the first one's dismissals. It used to be
+     keys on it, so a second keep must not inherit the first one's dismissals. It used to be
      stamped 0 by every path — no caller ever passed one — which made that namespace the constant
-     string 'default' and every "per-station" latch global. Stamped once at creation, backfilled once
+     string 'default' and every "per-keep" latch global. Stamped once at creation, backfilled once
      on migrate for docs saved before this existed, and never touched again. Injectable so tests and
      any future importer stay deterministic. */
-  function stationId() { return (typeof Date !== 'undefined' && Date.now) ? Date.now() : 1; }
+  function keepId() { return (typeof Date !== 'undefined' && Date.now) ? Date.now() : 1; }
   /* SAVE VERSION. 2 (2026-09-28, the conveyor-links plan): the doc carries `links` — the explicit machine-to-machine
      connections its belts make (Pipeline.deriveLinks). Belts stay in the save, so an older build that opens a v2 save
      still routes by tiles; this build re-derives the links from the belts on load, so a save an older build edited
      can never carry stale ones. */
-  const STATION_VERSION = 2;
+  const KEEP_VERSION = 2;
   function freshDoc(createdAt) {
     const doc = {
-      schema: 'eyehold.station', version: STATION_VERSION, _nid: 1,
-      meta: { name: 'EYEHOLD STATION', createdAt: createdAt || stationId(), tier: 0, spawnRoomId: null, trunkRoomId: null },
+      schema: 'eyehold.keep', version: KEEP_VERSION, _nid: 1,
+      meta: { name: 'EYEHOLD KEEP', createdAt: createdAt || keepId(), tier: 0, spawnRoomId: null, trunkRoomId: null },
       rooms: {}, order: [], props: [], belts: {}, edges: []
     };
     // seed the shabby starter HAB (18×11 floor — the v7 / world.js starter room), so a new
-    // station is never empty and the builder has something to extend from.
+    // keep is never empty and the builder has something to extend from.
     const id = 'r' + (doc._nid++);
     doc.rooms[id] = {
       id, kind: 'hab', name: 'HAB-01',
@@ -896,8 +896,8 @@ const WorldModel = (() => {
       ] },
   ];
   /* PLAIN NAMES + KIND OF WORK (2026-09-28, moved here 2026-09-29): what each line does in everyday words (the shelf card's
-     name; the station name stays as its tag), and the kind of work it is for (the shelf's sections, the same kinds the
-     station presets are for). One source for the Lines shelf, the agent's station builder and the tests. */
+     name; the keep name stays as its tag), and the kind of work it is for (the shelf's sections, the same kinds the
+     keep presets are for). One source for the Lines shelf, the agent's keep builder and the tests. */
   const LINE_PLAIN = {
     front_desk: 'One agent', allowance_desk: 'One agent, $5 a day', ship_out: 'Agent work to OUTBOX', two_doors: 'Two ways in',
     revision_loop: 'Draft + review', crucible: 'Two review rounds', fire_escape: 'Review + a fixer',
@@ -917,7 +917,7 @@ const WorldModel = (() => {
   for (const bp of BLUEPRINTS) { if (LINE_PLAIN[bp.id]) bp.plain = LINE_PLAIN[bp.id]; if (LINE_WORK[bp.id]) bp.work = LINE_WORK[bp.id]; }
 
   /* ============================================================= */
-  function makeStation(doc) {
+  function makeKeep(doc) {
     doc = doc || freshDoc();
     migrate(doc);
     let seq = 0;
@@ -1096,7 +1096,7 @@ const WorldModel = (() => {
       const acc = r => { if (r.x1 < mnx) mnx = r.x1; if (r.y1 < mny) mny = r.y1; if (r.x2 > mxx) mxx = r.x2; if (r.y2 > mxy) mxy = r.y2; };
       eachRectWorld(ignoreId, (id, rm, r) => acc(r));
       for (const r of rects) acc(r);
-      if (mxx - mnx + 1 > MAX_SPAN || mxy - mny + 1 > MAX_SPAN) return fail('TOO_FAR', 'too far from the station');
+      if (mxx - mnx + 1 > MAX_SPAN || mxy - mny + 1 > MAX_SPAN) return fail('TOO_FAR', 'too far from the keep');
       let hitName = null;
       eachRectWorld(ignoreId, (id, rm, r) => {
         if (hitName) return;
@@ -1110,9 +1110,9 @@ const WorldModel = (() => {
       checkRects((rects || []).map(normRect), kind || 'hab', ignoreId);
     const canPlaceHallway = (rects, ignoreId) =>
       checkRects((rects || []).map(normRect), 'corridor', ignoreId);
-    /* ROOM SPOTS (2026-09-29; moved here from Build mode's MAKE ROOM so the agent's station builder uses the same finder):
-       every W×H room rect that touches the station orthogonally (so the auto-doors can join it) and passes the same
-       room check a drawn room does — right of the station, then below, left, above, each slid along its edge, the one
+    /* ROOM SPOTS (2026-09-29; moved here from Build mode's MAKE ROOM so the agent's keep builder uses the same finder):
+       every W×H room rect that touches the keep orthogonally (so the auto-doors can join it) and passes the same
+       room check a drawn room does — right of the keep, then below, left, above, each slid along its edge, the one
        nearest that edge's middle first. Pure: it only looks. `limit` caps how many it returns (default all). */
     function roomSpots(W, H, kind, limit) {
       W |= 0; H |= 0;
@@ -1214,7 +1214,7 @@ const WorldModel = (() => {
 
     /* EYEHOLD: optional visual territory identity saved on the canonical room.
        It does not modify the layout kind, equipment, routing, or capability grants.
-       Uses the ordinary room undo/redo + change emission + station autosave seam. */
+       Uses the ordinary room undo/redo + change emission + keep autosave seam. */
     function setRoomTerritory(id, environmentId) {
       const rm = doc.rooms[id];
       if (!rm) return fail('NOT_FOUND', 'no such room');
@@ -1311,7 +1311,7 @@ const WorldModel = (() => {
          move, and so does every belt tile on them (pipeline edges are prop-id based, so a wired
          line survives untouched). A machine straddling the join with a neighbour belongs to
          neither room — it stays. The landing needs one extra guard: rooms can't overlap, so the
-         only stationary props/belts the destination can contain are straddlers reaching into the
+         only keepary props/belts the destination can contain are straddlers reaching into the
          old∩new overlap of a short move. A rider that would land on one vetoes the whole move —
          all-or-nothing, one undo slot, same shape as placeBeltRun. */
       const inRoom = (x, y) => { for (const r of rm.rects) if (x >= r.x1 && x <= r.x2 && y >= r.y1 && y <= r.y2) return true; return false; };
@@ -1354,7 +1354,7 @@ const WorldModel = (() => {
 
     /* MOVE SEVERAL ROOMS AT ONCE (the lead builder's re-lay, 2026-10-02): each room carries its contents exactly as moveRoom
        does (every prop wholly on it, every belt tile on it, its floor paint), but only the FINAL arrangement is checked:
-       rooms passing each other on the way, or a station briefly wider than the span while half its rooms have moved, never
+       rooms passing each other on the way, or a keep briefly wider than the span while half its rooms have moved, never
        block a re-lay whose result is sound. Checked before anything changes, then applied as one undo slot. */
     function moveRooms(moves) {
       const list = (Array.isArray(moves) ? moves : []).filter(m => m && doc.rooms[m.id] && (Math.round(+m.dx || 0) || Math.round(+m.dy || 0)));
@@ -1382,10 +1382,10 @@ const WorldModel = (() => {
       }
       const finalOf = new Map(plans.map(pl => [pl.rm.id, pl.rects]));
       const all = Object.keys(doc.rooms).map(id => ({ id, rm: doc.rooms[id], rects: finalOf.get(id) || doc.rooms[id].rects }));
-      // the span of the station as it will stand
+      // the span of the keep as it will stand
       let mnx = Infinity, mny = Infinity, mxx = -Infinity, mxy = -Infinity;
       for (const z of all) for (const r of z.rects) { mnx = Math.min(mnx, r.x1); mny = Math.min(mny, r.y1); mxx = Math.max(mxx, r.x2); mxy = Math.max(mxy, r.y2); }
-      if (mxx - mnx + 1 > MAX_SPAN || mxy - mny + 1 > MAX_SPAN) return fail('TOO_FAR', 'too far from the station');
+      if (mxx - mnx + 1 > MAX_SPAN || mxy - mny + 1 > MAX_SPAN) return fail('TOO_FAR', 'too far from the keep');
       // no moved room lands on another room (moved or not)
       for (const pl of plans) for (const z of all) if (z.id !== pl.rm.id && pl.rects.some(r => z.rects.some(q => hits(r, q)))) return fail('OVERLAP', (pl.rm.name || pl.rm.id) + ' would overlap ' + (z.rm.name || z.id));
       // nothing that stays (a piece or a belt riding no moved room) is left inside a moved room's new floor
@@ -1492,7 +1492,7 @@ const WorldModel = (() => {
 
     /* HULL — the exterior shell, third axis, same shape as setWalls: hue AND material in ONE undo
        slot. `{style: 'follow'}` clears back to the material's own default tone; `{style: null}` (or
-       omitting it) leaves that axis alone. Picking `station` normalizes the material back to null so
+       omitting it) leaves that axis alone. Picking `keep` normalizes the material back to null so
        a doc that was never re-clad serializes exactly as it did before this axis existed. */
     function setHull(id, opts) {
       const rm = doc.rooms[id];
@@ -1502,19 +1502,19 @@ const WorldModel = (() => {
       const wantMat = o.mat == null ? undefined : o.mat;
       if (wantStyle !== undefined && wantStyle !== null && !FLOOR_STYLES[wantStyle]) return fail('BAD_STYLE', 'unknown hull colour');
       if (wantMat !== undefined && !HULL_MATERIALS[wantMat]) return fail('BAD_MAT', 'unknown hull material');
-      const nextMat = wantMat === undefined ? (rm.hullMat || null) : (wantMat === 'station' ? null : wantMat);
+      const nextMat = wantMat === undefined ? (rm.hullMat || null) : (wantMat === 'keep' ? null : wantMat);
       // picking the material's OWN suggested hue IS "follow" — normalize so it never serializes
       // redundantly (and so a later catalog re-tune reaches rooms that never chose a tone).
-      const suggested = (HULL_MATERIALS[nextMat || 'station'] || {}).suggest || null;
+      const suggested = (HULL_MATERIALS[nextMat || 'keep'] || {}).suggest || null;
       const nextStyle = wantStyle === undefined ? (rm.hullStyle || null)
         : (wantStyle === suggested ? null : wantStyle);
       if ((rm.hullStyle || null) === nextStyle && (rm.hullMat || null) === nextMat) return { ok: true };
       snapshot();
       rm.hullStyle = nextStyle;
       rm.hullMat = nextMat;
-      /* ⛔ THE SHELL IS A STATION-WIDE COMPOSITE, SO ITS INVALIDATION CANNOT BE A RECTANGLE.
+      /* ⛔ THE SHELL IS A KEEP-WIDE COMPOSITE, SO ITS INVALIDATION CANNOT BE A RECTANGLE.
          The bake groups footprints by SKIN and resolves every skirt pixel to the nearest footprint
-         above it — both station-global. Re-cladding ONE room therefore changes which group its
+         above it — both keep-global. Re-cladding ONE room therefore changes which group its
          neighbours belong to and can change what their skirts look like anywhere on the map.
          Emitting only this room's rects let REFIT (which caches the bake in CHUNKS) re-bake the
          chunks near the edit and keep every other chunk from the PREVIOUS grouping — so earlier
@@ -1545,7 +1545,7 @@ const WorldModel = (() => {
     /* ---------- prop validation + mutations ----------
        The model stays pure: it doesn't know the prop CATALOG (that lives in propsprites.js).
        The caller supplies w,h (the footprint) from the catalog; the model only validates
-       GEOMETRY — every footprint tile must sit on station floor (inside a zone), the footprint
+       GEOMETRY — every footprint tile must sit on keep floor (inside a zone), the footprint
        must not overlap another prop, and the type tag must be a non-empty string.
 
        MOUNT RULES (2026-07-26) are the one exception, and they are injected rather than imported so
@@ -2018,7 +2018,7 @@ const WorldModel = (() => {
       const k = fromId + '>' + toId + ':' + size.w + 'x' + size.h + (size.block ? '' : 'w');
       if (!insertProbe.memo[k]) {
         let r;
-        try { r = makeStation(clone(doc)).insertBayBetween(fromId, toId, size); } catch (e) { r = fail('THREW', String((e && e.message) || e)); }
+        try { r = makeKeep(clone(doc)).insertBayBetween(fromId, toId, size); } catch (e) { r = fail('THREW', String((e && e.message) || e)); }
         insertProbe.memo[k] = (r && r.ok) ? { ok: true, beforeJoin: !!lane.beforeJoin } : (r || fail('NO_ROOM', 'no room for a new BAY here'));
       }
       return insertProbe.memo[k];
@@ -2583,7 +2583,7 @@ const WorldModel = (() => {
        own links along, so only a loose belt at the new spot is a new connection. Same answer shape as the ring rule's. */
     function linkedPreview(cand) {
       const cp = (cand && cand.props) || [], cb = (cand && cand.belts) || [], ignoreId = cand && cand.ignoreId;
-      const probe = makeStation(clone(doc));
+      const probe = makeKeep(clone(doc));
       const pairs = ls => new Set((ls || []).map(l => l.from.prop + '>' + l.to.prop));
       const before = pairs(probe.links()), mine = new Set();
       if (ignoreId) {
@@ -2718,10 +2718,10 @@ const WorldModel = (() => {
     // Whole-layout changes use the same single-step history and invalidation as
     // ordinary REFIT edits. Assemble and validate before touching the live doc.
     function replaceLayout(layout) {
-      if (!layout || layout.schema !== 'eyehold.station' || !Array.isArray(layout.props) || !layout.rooms) return fail('BAD_LAYOUT');
+      if (!layout || (layout.schema && layout.schema !== 'eyehold.keep' && layout.schema !== 'eyehold.station') || !Array.isArray(layout.props) || !layout.rooms) return fail('BAD_LAYOUT');
       const candidate = migrate(clone(layout));
       if (!candidate.order.length || new Set(candidate.props.map(p => p.id)).size !== candidate.props.length) return fail('BAD_LAYOUT');
-      const probe = makeStation(clone(candidate));
+      const probe = makeKeep(clone(candidate));
       for (const rid of candidate.order) {
         const room = candidate.rooms[rid];
         if (!room.rects.length || room.rects.some(r => ![r.x1,r.y1,r.x2,r.y2].every(Number.isFinite))) return fail('BAD_LAYOUT');
@@ -2732,10 +2732,10 @@ const WorldModel = (() => {
         const placed = probe.canPlaceProp(p.t,p.x,p.y,p.w,p.h,p.id);
         if (!placed.ok) return placed;
       }
-      const next = makeStation(candidate);
+      const next = makeKeep(candidate);
       const owners = [...new Set(doc.props.filter(p => p.agentId).map(p => p.agentId))];
       for (const aid of owners) {
-        const placed = next.ensureWorkstation(aid);
+        const placed = next.ensureWorkkeep(aid);
         if (!placed.ok) return placed;
       }
       const prepared = next.serialize();
@@ -2796,7 +2796,7 @@ const WorldModel = (() => {
       /* spatial room-seal: a room holding a SEALING airlock (closed|jammed) gets NO boundary doors
          below, so canStep can't cross its edge — the agent's BODY is sealed in, like an unmerged branch
          (floor containment only, not capability isolation). The
-         trunk room (the integration hub) never seals, so the station can't be severed from its core. */
+         trunk room (the integration hub) never seals, so the keep can't be severed from its core. */
       const sealed = new Set();
       for (const p of doc.props) {
         if (p.t !== 'airlock' || !doorSeals(p.door)) continue;
@@ -2846,7 +2846,7 @@ const WorldModel = (() => {
          an UNWALKABLE tile, and hallways are narrow. MIN_HALL allows 2 wide, so blocking both
          corners of a 2-wide end row severs the hallway there — and a 2x2 hallway (Andrew has one
          joining r3 to r1) would have all four corners blocked and become an impassable hole in the
-         station's connectivity. Measured, not feared: with the block left in, a 2x2 hallway comes
+         keep's connectivity. Measured, not feared: with the block left in, a 2x2 hallway comes
          back with 2 of its 4 tiles walkable. Pathing would have broken silently on existing saves.
 
          So the two meanings of "chamfer" are separated, because they were only ever conflated:
@@ -2963,7 +2963,7 @@ const WorldModel = (() => {
         let left=0,right=0;
         for(let c=x-1;c>=0&&seam(c,y)===2;c--)left++;
         for(let c=end+1;c<COLS&&seam(c,y)===2;c++)right++;
-        // Same architectural doorway rule as StationBake.classifyJoins.
+        // Same architectural doorway rule as KeepBake.classifyJoins.
         if(left&&right&&end-x+1<left+right)for(let a=x;a<=end;a++) {
           const room=at(a,y);
           if(isCorridor(room)||!isCorridor(at(a,y-1)))continue;
@@ -3194,7 +3194,7 @@ const WorldModel = (() => {
     }
     /* PLACE A PLUGIN'S TERMINAL (install places it — Andrew 2026-09-29): a REAL placed prop, bound to the plugin, in
        the agent's capability room (desk room, then bay room, then the spawn room). Idempotent: an existing terminal
-       for this plugin anywhere on the station is returned as-is, never duplicated. Scans the room for the first
+       for this plugin anywhere on the keep is returned as-is, never duplicated. Scans the room for the first
        spot the ordinary placement rules accept (walls, doors, walk paths), top rows first so it stands against the
        wall like the other capability props. Fails honestly when the room is full — the caller says so. */
     function placePluginTerminal(pluginId, agentId) {
@@ -3203,7 +3203,7 @@ const WorldModel = (() => {
       const existing = doc.props.find(p => p.t === 'plugin_terminal' && p.pluginId === pid);
       if (existing) return { ok: true, existing: true, id: existing.id, x: existing.x, y: existing.y, roomId: roomAt(existing.x, existing.y) };
       const aid = String(agentId || '').trim();
-      const desk = aid ? doc.props.find(p => SEAT_WORKSTATIONS[p.t] && p.agentId === aid) : null;
+      const desk = aid ? doc.props.find(p => SEAT_WORKKEEPS[p.t] && p.agentId === aid) : null;
       const roomId = (desk && roomAt(desk.x, desk.y)) || (aid && agentRoomId(aid)) || doc.meta.spawnRoomId;
       const rm = roomId && doc.rooms[roomId];
       if (!rm || !Array.isArray(rm.rects) || !rm.rects.length) return fail('NO_ROOM', 'no room to place the terminal in');
@@ -3348,10 +3348,10 @@ const WorldModel = (() => {
       return { ok: true, count: next.length };
     }
     /* The agent's CAPABILITY room — the capability-isolation seam. REMOTE-BAY RULING (2026-08-14, Andrew):
-       a bay is a REMOTE TRIGGER, placeable anywhere on the station — it fires the run and the crate physics,
+       a bay is a REMOTE TRIGGER, placeable anywhere on the keep — it fires the run and the crate physics,
        but the agent's toolbox lives where its DESK is. So: still gated on OWNING a bay (a bayless agent keeps
-       its legacy scope — hero station-wide, summoned worker lead-conferred), but the room resolved is the
-       agent's own SEAT_WORKSTATIONS desk room first, falling back to the bay's room only when the agent has
+       its legacy scope — hero keep-wide, summoned worker lead-conferred), but the room resolved is the
+       agent's own SEAT_WORKKEEPS desk room first, falling back to the bay's room only when the agent has
        no desk (a desk-less bay behaves byte-for-byte as before). */
     /* MULTI-BAY (2026-09-22 — Andrew's ruling): an agent may crew several bays. `dockId` names the bay THIS run
        is at: a deskful agent still resolves its desk room (the remote-bay ruling holds on every bay), a desk-less
@@ -3361,7 +3361,7 @@ const WorldModel = (() => {
       const bay = (dockId != null && doc.props.find(p => p.t === 'bay' && p.agentId === agentId && p.id === dockId))
         || doc.props.find(p => p.t === 'bay' && p.agentId === agentId);
       if (!bay) return null;
-      const desk = doc.props.find(p => SEAT_WORKSTATIONS[p.t] && p.agentId === agentId);
+      const desk = doc.props.find(p => SEAT_WORKKEEPS[p.t] && p.agentId === agentId);
       if (desk) { const r = roomAt(desk.x, desk.y); if (r) return r; }
       return roomAt(bay.x, bay.y);
     }
@@ -3394,7 +3394,7 @@ const WorldModel = (() => {
         }
         if (cap === 'connector') {
           // per-instance, NOT deduped: each BOUND connector portal grants its OWN server's tools. The sidecar
-          // reads { objectType, connectorId } (router.stationFor passes the object through; resolveTools yields
+          // reads { objectType, connectorId } (router.keepFor passes the object through; resolveTools yields
           // no static grant — the MCP tools are projected dynamically by the connector manager). An UNBOUND
           // portal (no connectorId) grants nothing until the Commander binds it.
           if (p.connectorId) out.push({ objectType: 'connector', connectorId: p.connectorId });
@@ -3416,14 +3416,14 @@ const WorldModel = (() => {
        world.js — drawn and walk-blocking, but absent from doc.props. That was an object=capability lie
        with real teeth: bayObjects() truthfully found no computer in the room, so a bay placed beside the
        visible "PC" nagged NO COMPUTE and the belt system looked broken on every fresh install (2026-07-05
-       playtest bug). This materializes the same desk as a REAL placed workstation prop assigned to the
+       playtest bug). This materializes the same desk as a REAL placed workkeep prop assigned to the
        agent, at the exact spot the synthetic one drew (spawn room, mid-width on the north wall), keeping
        the old invariant — the overseer always has a desk — honestly. Idempotent: no-op when the agent
-       already owns any seat-type workstation. Falls back to the nearest valid spawn-room tile if the
+       already owns any seat-type workkeep. Falls back to the nearest valid spawn-room tile if the
        canonical spot is occupied; callers may still synthesize when even that fails (crowded floor). */
-    const SEAT_WORKSTATIONS = { desk: 1, desk2: 1, console: 1, consoleL: 1, pixelrig: 1, bench: 1 };
+    const SEAT_WORKKEEPS = { desk: 1, desk2: 1, console: 1, consoleL: 1, pixelrig: 1, bench: 1 };
     // Is there anywhere to put the CHAIR? world.js seats a body on the tile row directly SOUTH of a
-    // workstation (PropAnchor's 'south' approach), so a desk whose whole south row is wall or blocking
+    // workkeep (PropAnchor's 'south' approach), so a desk whose whole south row is wall or blocking
     // prop is a desk nobody can sit at. Pure geometry — the model still knows nothing about chairs.
     function deskSeatFree(x, y, w) {
       const sy = y + 1;
@@ -3453,19 +3453,19 @@ const WorldModel = (() => {
         }
       return any;
     }
-    function ensureWorkstation(agentId) {
+    function ensureWorkkeep(agentId) {
       const aid = String(agentId || '').trim();
       if (!aid || !AID_RE.test(aid)) return fail('BAD_AGENT');
-      const own = doc.props.find(p => SEAT_WORKSTATIONS[p.t] && p.agentId === aid);
+      const own = doc.props.find(p => SEAT_WORKKEEPS[p.t] && p.agentId === aid);
       if (own) return { ok: true, existing: true, id: own.id, agentId: aid, x: own.x, y: own.y, roomId: roomAt(own.x, own.y) };
-      // ADOPT BEFORE BUILDING. An UNBOUND workstation is dead furniture — no agent may walk to an unassigned
+      // ADOPT BEFORE BUILDING. An UNBOUND workkeep is dead furniture — no agent may walk to an unassigned
       // capability prop (world.js mayTouchProp), so it grants nobody a seat. Two ways one appears: the Commander
       // built a desk and never bound it, and deleteAgent unbinds (never demolishes) the props of a removed
       // specialist. Without this, a summon → delete → summon cycle silently litters the spawn room with
       // abandoned desks and eventually pushes the seeder into other rooms. Deliberately SPAWN-ROOM ONLY: a
       // free desk the Commander built in some far lab is theirs to assign, and adopting it would land a
       // newly-summoned specialist (and its whole zone/leash) somewhere they never asked for.
-      const adopt = doc.props.find(p => SEAT_WORKSTATIONS[p.t] && !p.agentId && roomAt(p.x, p.y) === doc.meta.spawnRoomId);
+      const adopt = doc.props.find(p => SEAT_WORKKEEPS[p.t] && !p.agentId && roomAt(p.x, p.y) === doc.meta.spawnRoomId);
       if (adopt) {
         const bound = assignPropAgent(adopt.id, aid);
         return bound.ok ? Object.assign({}, bound, { adopted: true, x: adopt.x, y: adopt.y, roomId: roomAt(adopt.x, adopt.y) }) : bound;
@@ -3480,7 +3480,7 @@ const WorldModel = (() => {
       let spot = (canPlaceProp('desk', dtx, dty, 2, 1).ok && deskSeatFree(dtx, dty, 2)) ? { x: dtx, y: dty } : null;
       if (!spot) spot = deskSpotIn(r);
       // CREW SEEDING: the spawn room fills up once several summoned specialists each own a desk. A crowded
-      // spawn room must not strand the next one deskless while the rest of the station stands empty, so
+      // spawn room must not strand the next one deskless while the rest of the keep stands empty, so
       // fall through to every OTHER room (spawn room stays first — the hero's seed never moves).
       if (!spot) {
         for (const id of doc.order) {
@@ -3495,11 +3495,11 @@ const WorldModel = (() => {
       const bound = assignPropAgent(res.id, aid);
       return bound.ok ? Object.assign({}, bound, { x: spot.x, y: spot.y, roomId: roomAt(spot.x, spot.y) }) : bound;
     }
-    /* ONE DESK PER AGENT (2026-10-08). world.js seats an agent at the FIRST workstation bound to it (deskPropFor, by
+    /* ONE DESK PER AGENT (2026-10-08). world.js seats an agent at the FIRST workkeep bound to it (deskPropFor, by
        capForProp === 'computer'), so binding a second one must take the agent off the others — otherwise the binding
        reports success while the agent keeps walking to its old desk. BUILD MODE's WHO SITS HERE chips (build.js) and the
-       overseer's station-control 'agent' op (stationbuilder.js) both bind through here: one transaction, one UNDO. A
-       non-workstation prop (a bay) binds exactly as assignPropAgent does, and '' empties just this prop. `released`
+       overseer's keep-control 'agent' op (keepbuilder.js) both bind through here: one transaction, one UNDO. A
+       non-workkeep prop (a bay) binds exactly as assignPropAgent does, and '' empties just this prop. `released`
        names the desks the agent left, so a caller can say so instead of implying nothing else moved. */
     function assignDesk(propId, agentId) {
       const p = doc.props.find(q => q.id === propId);
@@ -3539,7 +3539,7 @@ const WorldModel = (() => {
       // A renderer holds whatever frame it draws in — build.js has WORLD props, world.js has the
       // LOCAL ones projectGeometry() emits (same ids, shifted by the hull margin) — and the doc's
       // tables are only ever in WORLD tiles. Measuring the caller's copy compared a local footprint
-      // against world footprints, so a station whose origin wasn't (0,0) — i.e. every real one —
+      // against world footprints, so a keep whose origin wasn't (0,0) — i.e. every real one —
       // found no host and the live world silently never lifted a single table-top prop.
       surfaceHostOf: (p) => {
         const host = p ? surfaceHostFor(propFootprint(propById(p.id) || p), p.id) : null;
@@ -3558,7 +3558,7 @@ const WorldModel = (() => {
       },
       // mutations
       addRoom, placeHallway, removeRoom, setRoomTerritory, moveRoom, moveRooms, resizeRoom, setRoomKind, setFloor, setMaterial, setDeck, setWalls, setHull, paintTiles, renameRoom,
-      addProp, removeProp, moveProp, moveProps, rotateProp, faceProp, mirrorProp, assignPropAgent, assignDesk, ensureWorkstation, configureJunction, swapJoinerMerger, bindConnector, bindPlugin, placePluginTerminal, setDoorState, setPropProject, setPropBrief, setPropRole, setPropHands, setPropLabel, setPropLimits,
+      addProp, removeProp, moveProp, moveProps, rotateProp, faceProp, mirrorProp, assignPropAgent, assignDesk, ensureWorkkeep, configureJunction, swapJoinerMerger, bindConnector, bindPlugin, placePluginTerminal, setDoorState, setPropProject, setPropBrief, setPropRole, setPropHands, setPropLabel, setPropLimits,
       setBelt, removeBelt, removeBelts, placeBeltRun, connectBelt, connectionPreview, hookedBelts, stampBlueprint, insertBayBetween, canInsertBayBetween, transact, lineGraph, applyLineLayout, blueprintGraph,
       // agent-bay binding queries
       propsByType, propsByAgent, pipelineEdges, setPipelineEdges, addPipelineEdge, removePipelineEdge, agentRoomId, bayObjects,
@@ -3577,9 +3577,10 @@ const WorldModel = (() => {
   /* forward-only migration ladder for serialized docs (none yet — v1 is current) */
   function migrate(doc) {
     if (!doc || typeof doc !== 'object') return doc;
-    if (!doc.schema) doc.schema = 'eyehold.station';
+    if (doc.schema === 'eyehold.station') doc.schema = 'eyehold.keep';
+    if (!doc.schema) doc.schema = 'eyehold.keep';
     if (!doc.version) doc.version = 1;
-    // v1 -> v2: links are added — derived from the belts on the first read after load (makeStation's link cache), which is
+    // v1 -> v2: links are added — derived from the belts on the first read after load (makeKeep's link cache), which is
     // the same compile that routes the floor now, and adopted only when they compile to the identical plan
     if (doc.version < 2) doc.version = 2;
     if (doc.links != null && !Array.isArray(doc.links)) doc.links = null;
@@ -3605,7 +3606,7 @@ const WorldModel = (() => {
       if (!('wallMat' in rm)) rm.wallStyle = null;
       if (!FLOOR_STYLES[rm.wallStyle]) rm.wallStyle = null;
       if (!WALL_MATERIALS[rm.wallMat]) rm.wallMat = null;
-      // the hull axis is additive the same way — absent means `station` at the shell's own tone,
+      // the hull axis is additive the same way — absent means `keep` at the shell's own tone,
       // which is exactly what every pre-axis room already renders as.
       if (!FLOOR_STYLES[rm.hullStyle]) rm.hullStyle = null;
       // Insulation belongs inside. Retire old exterior selections without changing interior walls or explicit paint.
@@ -3616,10 +3617,10 @@ const WorldModel = (() => {
     if (!Array.isArray(doc.props)) doc.props = [];
     // legacy repair: the 2×2 workflow docks shipped as block:false for a while, so agents walked
     // straight through them. They are solid now (catalog blocks:true; belts hook to ring tiles,
-    // never under the footprint) — strip the stale flag from saved docs so old stations heal on load.
+    // never under the footprint) — strip the stale flag from saved docs so old keeps heal on load.
     const LEGACY_WALKABLE_DOCKS = { intake: 1, bay: 1, outbox: 1 };
     // RETIRED PROP TYPES must be dropped, not merely left unpainted. PropSprites.draw() no-ops on an
-    // unknown type, but the doc entry keeps its footprint — so a station saved with a since-retired prop
+    // unknown type, but the doc entry keeps its footprint — so a keep saved with a since-retired prop
     // would carry an INVISIBLE obstacle that agents path around forever. Only prunes when the mount-rule
     // lookup is installed (i.e. a real client with the catalog); plain node tests keep every prop.
     if (propRules) doc.props = doc.props.filter(p => !(p && typeof p.t === 'string') || !!propRules(p.t));
@@ -3639,14 +3640,14 @@ const WorldModel = (() => {
     else { const clean = {}; for (const k in doc.belts) { const d = doc.belts[k]; if (/^-?\d+,-?\d+$/.test(k) && (d === 'E' || d === 'W' || d === 'N' || d === 'S')) clean[k] = d; } doc.belts = clean; }
     if (!Array.isArray(doc.edges)) doc.edges = [];
     doc.edges = doc.edges.map(cleanPipelineEdge).filter(Boolean);
-    if (!doc.meta || typeof doc.meta !== 'object') doc.meta = { name: 'EYEHOLD STATION', createdAt: 0, tier: 0, spawnRoomId: null };
-    /* ONE-TIME, NON-DESTRUCTIVE BACKFILL of the station id (see freshDoc's note). A doc saved before
-       station identity existed carries createdAt 0/absent; give it one now so its per-station latches
-       stop colliding with every other station's. It must be SAVED on the same load that stamps it —
+    if (!doc.meta || typeof doc.meta !== 'object') doc.meta = { name: 'EYEHOLD KEEP', createdAt: 0, tier: 0, spawnRoomId: null };
+    /* ONE-TIME, NON-DESTRUCTIVE BACKFILL of the keep id (see freshDoc's note). A doc saved before
+       keep identity existed carries createdAt 0/absent; give it one now so its per-keep latches
+       stop colliding with every other keep's. It must be SAVED on the same load that stamps it —
        app.js persists immediately when the incoming doc had none — or the stamp would re-roll every
        reload and the latches it keys would be lost instead of merely shared. Never overwrites a
        stamp that is already there. */
-    if (!doc.meta.createdAt) doc.meta.createdAt = stationId();
+    if (!doc.meta.createdAt) doc.meta.createdAt = keepId();
     if (typeof doc._nid !== 'number') doc._nid = doc.order.length + 1;
     for (const p of doc.props) if (!p.id) p.id = 'p' + (doc._nid++);   // backfill ids for legacy/partial props
     // spawnRoomId must point at a live non-corridor room (or null) so removeRoom's guard stays meaningful
@@ -3660,8 +3661,8 @@ const WorldModel = (() => {
 
   return {
     TILE, MARGIN, MIN_ROOM, MIN_HALL, FLOOR_STYLES, FLOOR_MATERIALS, MAT_ORDER, WALL_MATERIALS, WALL_ORDER, HULL_MATERIALS, HULL_ORDER, ROOM_KINDS, KIND_ORDER,
-    create: doc => makeStation(doc),
-    deserialize: doc => makeStation(clone(doc)),
+    create: doc => makeKeep(doc),
+    deserialize: doc => makeKeep(clone(doc)),
     defaultDoc: freshDoc,
     // Product entry composition. Keep the empty construction document available to
     // importers and layout tools; existing saves never pass through this factory.
@@ -3675,8 +3676,8 @@ const WorldModel = (() => {
       room.hullStyle = 'bone';
       doc.props = [
         // The five essentials are real floor grants. Keep the desk unassigned so
-        // ensureWorkstation adopts it for the new Commander on the normal boot path.
-        // User-approved placement from the live station, 2026-09-15.
+        // ensureWorkkeep adopts it for the new Commander on the normal boot path.
+        // User-approved placement from the live keep, 2026-09-15.
         // Preserve this composition and the original 18 x 11 room footprint.
         { id: 'p' + doc._nid++, t: 'desk', x: 8, y: 1, w: 2, h: 1, block: true },
         { id: 'p' + doc._nid++, t: 'war_intelcab', x: 1, y: 0, w: 1, h: 2, block: true },
@@ -3688,7 +3689,7 @@ const WorldModel = (() => {
         { id: 'p' + doc._nid++, t: 'plant', x: 17, y: 0, w: 1, h: 1, block: false },
         // Original keep furnishings. The open band y=2..7 stays empty so workflow
         // lines and the desk's south seat still have a clear walk. Rugs are flat.
-        // The scribe desk is not a workstation, so boot still adopts the one desk.
+        // The scribe desk is not a workkeep, so boot still adopts the one desk.
         { id: 'p' + doc._nid++, t: 'eyehold_banner', x: 12, y: 0, w: 2, h: 1, block: false },
         { id: 'p' + doc._nid++, t: 'eyehold_hearth', x: 5, y: 0, w: 2, h: 2, block: true },
         { id: 'p' + doc._nid++, t: 'eyehold_candle', x: 11, y: 0, w: 1, h: 1, block: false },
@@ -3708,7 +3709,7 @@ const WorldModel = (() => {
     },
     // pure helpers reused by the build layer
     normRect, rectW, rectH, rectsHit, inRect,
-    // install the prop-type -> {mount, surface} lookup once for every station this module makes
+    // install the prop-type -> {mount, surface} lookup once for every keep this module makes
     setPropRules,
     // capability legibility — prop -> plain power word (WEB/FILES/…); one owned source for the palette tile + Field Manual
     CAP_PROP_MAP, CAP_LABEL, capForProp: t => CAP_PROP_MAP[t] || null, grantLabelForProp,

@@ -76,7 +76,7 @@ const CREDITS_SITE_SCRIPT = '<script src="site.js?v=20260811-credits-live"></scr
 const EDITS = [
   {
     file: 'sidecar/index.js',
-    what: 'CLOUD_LIVE = true — the app offers LINK STATION against the deployed service',
+    what: 'CLOUD_LIVE = true — the app offers LINK KEEP against the deployed service',
     done: (s) => /const CLOUD_LIVE = true;/.test(s),
     apply: (s) => s.replace(/const CLOUD_LIVE = false;/, 'const CLOUD_LIVE = true;'),
     can: (s) => /const CLOUD_LIVE = false;/.test(s)

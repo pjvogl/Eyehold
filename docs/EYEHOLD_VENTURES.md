@@ -26,6 +26,6 @@ Etsy listings have an adapter for the Etsy Open API. It is not connected. A key 
 
 ## The ladder
 
-Verified profit is recorded in the station ledger toward $1,000,000, then $10,000,000, then $100,000,000 after compute and other measured costs. Missing numbers stay missing. Crowns do not move the ladder. The ladder does not mean the money is in the bank.
+Verified profit is recorded in the keep ledger toward $1,000,000, then $10,000,000, then $100,000,000 after compute and other measured costs. Missing numbers stay missing. Crowns do not move the ladder. The ladder does not mean the money is in the bank.
 
-This station does not deploy itself, and it does not ship with payment or brokerage secrets.
+This keep does not deploy itself, and it does not ship with payment or brokerage secrets.

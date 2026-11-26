@@ -1,6 +1,6 @@
 /* EYEHOLD — recommend.js : THE RECOMMENDATION SPINE (pure, node-testable, zero DOM / zero fetch).
 
-   The station used to talk to its Commander through ~9 independent proactive channels (study, arc, trust,
+   The keep used to talk to its Commander through ~9 independent proactive channels (study, arc, trust,
    thread, rate, suggestion, seed, routine, recruitment, curiosity), each with its own timer. Whoever armed
    EARLIEST won the one post-run beat, so the LOWEST-value ask usually spoke first and the priority order
    baked into beatcard.js was inert. This module is the single relevance bar they all pass through.
@@ -8,7 +8,7 @@
    Two laws it enforces, both of them the product's truthful-telemetry law applied to recommendations:
 
      1. ONE VOICE — pick() returns at most ONE candidate. Best-first, or silence.
-     2. EVIDENCE OR SILENCE — a candidate with no non-empty `why` is DROPPED, never shown. The station may
+     2. EVIDENCE OR SILENCE — a candidate with no non-empty `why` is DROPPED, never shown. The keep may
         only make a proactive offer it can justify out of real state (the Commander's own words, a real
         streak count, a real targeted gap). No citable evidence means the channel stays quiet.
 
@@ -29,10 +29,10 @@
                   a channel — a dud channel gets quieter, never mute.
        preference — optional LEARNED PREFERENCE WEIGHT (−0.75..+0.75) from the durable cross-surface ledger
                   (recledger.js): the Commander's own decayed accept/decline history for this kind. The one
-                  TWO-SIDED modifier here, because it is their answers rather than the station's confidence.
+                  TWO-SIDED modifier here, because it is their answers rather than the keep's confidence.
        title    — optional plain-language name of the thing being proposed. Not scored: it is what the ledger
                   records and what the shared declined memory is matched against. A channel that proposes an
-                  IDEA should carry one; a channel that asks a question about the station need not.
+                  IDEA should carry one; a channel that asks a question about the keep need not.
        target   — optional stable key for the ledger row (defaults to a fingerprint of the title).
 
    SCORING IS BANDED (redesigned 2026-08-04, after the scorer was proved INERT). It used to give every KIND its
@@ -46,7 +46,7 @@
               smallest gap between adjacent bands, so NO stack of modifiers can ever move a candidate across a
               band. That is the part of the old law worth keeping: a gentle nudge can never outrank a turn-in.
      RANK   — inside a band, kinds sit RANK_STEP apart. That step is a TIE-BIAS, not a wall: it decides who
-              speaks when the station knows nothing about either channel, and the modifiers are deliberately
+              speaks when the keep knows nothing about either channel, and the modifiers are deliberately
               large enough to overturn it. Same-band reordering is the POINT — a fresh, high-value curiosity
               question may beat a stale recruit pitch, and a dud-channel suggestion may lose to a routine nudge
               whose accepted offers really produced work. Priority is the default, not the verdict. */
@@ -61,7 +61,7 @@
   /* The one priority order. Its head is beatcard.js's DEFAULT_PRIORITY (memory > study > arc > trust >
      thread > rate > nudge); its tail expands the single 'nudge' slot family into the five gentle channels
      in the EXACT precedence the old wireCuriosity if/return ladder used (suggestion → seed → routine →
-     recruitment → curiosity). That order is the TIE-BIAS — what decides when the station knows nothing about
+     recruitment → curiosity). That order is the TIE-BIAS — what decides when the keep knows nothing about
      either channel — NOT a wall: since the band restructure, evidence really does reorder same-band kinds, which
      is the point of measuring it. (This comment used to claim consolidating the ladder "changes who can speak,
      never the pecking order". That was true only while the scorer was inert; it is exactly what got fixed.) */
@@ -83,8 +83,8 @@
   /* THE SESSION ASK BUDGET. Per-channel caps are the second floor, but nothing bounded the TOTAL number of
      unprompted consent cards a single browser session could stack up — five channels each spending their own
      one-per-session cap is still five interruptions. This is the spine-level ceiling on PROACTIVE asks.
-     TUNABLE: raise/lower this one number to make the station more or less talkative.
-     Two kinds are EXEMPT because the run itself earns them rather than the station choosing to interrupt:
+     TUNABLE: raise/lower this one number to make the keep more or less talkative.
+     Two kinds are EXEMPT because the run itself earns them rather than the keep choosing to interrupt:
        · memory — the Commander's own reflection deck; it is the run reporting back, and it never routes
                   through the pass at all (it reserves the slot directly on memory.proposed).
        · rate   — the primary leveling beat for work that was just done, and the one control the Commander
@@ -124,9 +124,9 @@
 
   /* THE TWO DAMPED MULTIPLIERS (quality loop, Q1/Q2). Both are read as multipliers in the [floor..1(..cap)]
      range and converted into a bounded WITHIN-TIER term: `MAX × (multiplier − 1)`. That shape is deliberate —
-       · a NEUTRAL reading (1) contributes exactly 0, so a cold station scores identically to the pre-quality
+       · a NEUTRAL reading (1) contributes exactly 0, so a cold keep scores identically to the pre-quality
          spine (fail-open, truthful telemetry);
-       · a WEAK reading only ever SUBTRACTS. The station does not promote an offer for having strong evidence;
+       · a WEAK reading only ever SUBTRACTS. The keep does not promote an offer for having strong evidence;
          it declines to shout about one whose evidence is thin.
      THE HONEST CONSEQUENCE, stated rather than glossed: because the term is one-sided, ABSENT strength is not
      neutral in effect — it is a small RELATIVE ADVANTAGE over a channel that reports one honestly and reports it
@@ -141,9 +141,9 @@
   /* QUALITY OUTRANKS RANK, NOT EVERYTHING (measured live 2026-08-04). Its swing comfortably clears a RANK_STEP,
      so a channel's real outcome record reorders it against its band siblings — which is the whole point. It does
      NOT clear a maximum-VOI promotion: forty real declines still leave a blank high-weight dimension the most
-     valuable thing the station can ask about. That is deliberate and it is this module's stated law — silencing a
+     valuable thing the keep can ask about. That is deliberate and it is this module's stated law — silencing a
      channel is the job of the per-channel caps and the Commander's own explicit "never", not of a number the
-     station computed. Raising this until quality could veto VOI was tried and reverted. */
+     keep computed. Raising this until quality could veto VOI was tried and reverted. */
   // …and the same SCALE-not-swing reading: the multiplier band is [0.5 .. 1.25], so the real term is −15 .. +7.5.
   // A dud channel loses 1.5 rank steps; a proven one gains under one. Both clear a tie, neither clears a band.
   const QUALITY_MAX = 30;
@@ -157,9 +157,9 @@
      ledger had been recording what the Commander accepts and declines across the bay, the night shift, the
      quests and the scout for months, and the one component that decides who speaks was ranking blind to all of it.
 
-     WHY THIS ONE IS TWO-SIDED, when strength and quality are not. Those two are the STATION's readings about its
-     own confidence, and the law there is that the station never promotes an offer for feeling sure — it only
-     declines to shout about a thin one. This is not the station's reading. It is a decayed tally of the
+     WHY THIS ONE IS TWO-SIDED, when strength and quality are not. Those two are the KEEP's readings about its
+     own confidence, and the law there is that the keep never promotes an offer for feeling sure — it only
+     declines to shout about a thin one. This is not the keep's reading. It is a decayed tally of the
      COMMANDER'S OWN ANSWERS, and their yes deserves exactly as much weight as their no. Rejecting the positive
      half would mean a kind they have accepted eight times running is ranked identically to one they have never
      seen — which is not caution, it is deafness.
@@ -171,9 +171,9 @@
   const PREF_MAX = 20;          // ±2 rank steps: enough to reorder a band, never enough to cross one
   const PREF_RANGE = 0.75;      // the ledger's own clamp (recommendation-ledger.js preferenceFor)
 
-  /* A READING THE STATION CANNOT PARSE IS NO READING AT ALL (fail-open, explicit). `Number('')`, `Number(false)`
+  /* A READING THE KEEP CANNOT PARSE IS NO READING AT ALL (fail-open, explicit). `Number('')`, `Number(false)`
      and `Number(null)` are all a perfectly finite 0 — which used to hand an empty string or a `false` the FULL
-     thin-evidence penalty, i.e. the station punished a channel for a field it had failed to read.
+     thin-evidence penalty, i.e. the keep punished a channel for a field it had failed to read.
      ALLOWLIST, NOT DENYLIST (2026-08-04). The denylist version ('' / null / boolean) still let `' '`, `[]` and
      `[0]` through as a hard 0 — the same bug, a shape further out. Only a real finite number, or a string that
      actually spells one, is a reading; EVERY other shape is neutral. recquality.js num() is the same predicate,
@@ -183,7 +183,7 @@
     if (typeof v === 'string') { const t = v.trim(); if (!t) return null; const n = Number(t); return Number.isFinite(n) ? n : null; }
     return null;   // null / undefined / boolean / array / object / Date → no reading at all
   }
-  // an unreadable / absent multiplier is NEUTRAL (1) — the station never invents a reading it does not have.
+  // an unreadable / absent multiplier is NEUTRAL (1) — the keep never invents a reading it does not have.
   function damp(v, floor, cap) {
     const n = reading(v);
     if (n == null) return 1;
@@ -237,7 +237,7 @@
   /* the value-of-information term for a dim-targeted candidate: the SAME weight × (1 − conf) gap the
      understanding engine already computes (understanding.js) and CuriosityStore.voiOrder() already ranks
      on — generalized here rather than duplicated. Returns 0 when the read or the dim is unavailable, so a
-     cold station simply falls back to pure priority order (fail-open, never a fabricated bonus). */
+     cold keep simply falls back to pure priority order (fail-open, never a fabricated bonus). */
   function voi(candidate, uRead) {
     if (!candidate || !candidate.dim) return 0;
     const dims = uRead && uRead.dims;

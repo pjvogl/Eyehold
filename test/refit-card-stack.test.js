@@ -8,7 +8,7 @@
    The four laws, each a shipped bug found by the 2026-08-07 conveyor audit:
 
    1. ESC CLOSES A CARD THROUGH THE CARD'S OWN CLOSE PATH. `.refit-guide` is shared by EIGHT cards (the
-      first-run guide, the step editor, the workstation picker, the flow / belt / junction / connector /
+      first-run guide, the step editor, the workkeep picker, the flow / belt / junction / connector /
       room / door cards). ESC matched that shared class, then called markSeen() + removeChild() itself —
       so ESC over a step card discarded an unsaved job brief AND permanently marked the build-mode guide
       seen. Only the first-run card may mark itself seen, and it does that from its OWN registered path.
@@ -66,7 +66,7 @@ A.ok(/saveOpenFields\(\);/.test(pClose), "the panel's close path saves its open 
 const pSave = panel.slice(panel.indexOf('  function saveOpenFields() {'), panel.indexOf('/* ===== BAY'));
 for (const k of ['_saveName', '_saveBay', '_saveLimits', '_saveGate']) A.ok(pSave.indexOf(k) > 0, 'saveOpenFields saves ' + k);
 A.ok(/WorkflowPanel\.isOpen\(\)\) \{ WorkflowPanel\.close\(\); return; \}/.test(build), 'ESC closes the docked panel THROUGH its close path (saving) before it leaves REFIT');
-A.ok(/if \(typeof WorkflowPanel !== 'undefined' && WorkflowPanel\.isOpen\(\)\) WorkflowPanel\.close\(\);/.test(build.slice(build.indexOf('  function close() {'), build.indexOf('  const toggle'))), 'closing REFIT closes the panel through its save path while the station is still ours');
+A.ok(/if \(typeof WorkflowPanel !== 'undefined' && WorkflowPanel\.isOpen\(\)\) WorkflowPanel\.close\(\);/.test(build.slice(build.indexOf('  function close() {'), build.indexOf('  const toggle'))), 'closing REFIT closes the panel through its save path while the keep is still ours');
 
 // the ROOM card docks above the library now (2026-10-01 build-mode upgrade, phase 2): its rename saves on Enter or on leaving the field
 const roomBlock = build.slice(build.indexOf('function renderRoomCard'), build.indexOf('function renderGroupCard'));
@@ -74,7 +74,7 @@ A.ok(/nameEl\.onblur = saveName;/.test(roomBlock), "the room card saves the rena
 A.ok(/if \(e\.key === 'Enter'\) \{ e\.preventDefault\(\); nameEl\.blur\(\); \}/.test(roomBlock), '…and on Enter');
 
 // EVERY card opener replaces rather than bailing out
-for (const fn of ['openStepCard', 'openWorkstationPicker', 'openFlowCard', 'openBeltCard',
+for (const fn of ['openStepCard', 'openWorkkeepPicker', 'openFlowCard', 'openBeltCard',
                   'openJunctionEditor', 'openConnectorEditor', 'openRoomCard', 'openDoorPicker']) {
   const i = build.indexOf('function ' + fn + '(');
   A.ok(i > 0, fn + ' is still a card opener');
@@ -108,7 +108,7 @@ A.ok(/if \(drag \|\| connectFrom \|\| dupe\) \{ selectTool\('select'\); return; 
   && /if \(drag \|\| dragPid != null\) releaseDrag\(\)/.test(build), 'ESC cancels the gesture and tool through the capture-release path');
 
 /* ---------- 5. completed Build actions leave truthful controls and status ---------- */
-// STARTER GEAR (2026-08-18, Andrew — replaced STATION ORDERS): the card's rows come from the ONE
+// STARTER GEAR (2026-08-18, Andrew — replaced KEEP ORDERS): the card's rows come from the ONE
 // catalog list, and done is read by GRANT off the live doc (a VAULT ticks the INTEL CAB row).
 const ordersBlock = build.slice(build.indexOf('function ordersSteps()'), build.indexOf('function renderOrders()'));
 A.ok(/PropSprites\.STARTER/.test(ordersBlock), 'STARTER GEAR reads PropSprites.STARTER (no second list)');
@@ -128,12 +128,12 @@ A.ok(commitDrawBlock.indexOf('deselectTool({ silent: true })') < commitDrawBlock
 A.ok(/const isHall = tool === 'hall'/.test(commitDrawBlock) && /feedback\(res, ev, isHall \?/.test(commitDrawBlock),
   'the feedback label reads the tool captured BEFORE deselect — a hallway commit must never flash "room placed"');
 
-/* ---------- 6. per-station latches + session-state hygiene ---------- */
-A.ok(/const ORDERS_KEY = \(\) => 'eyehold\.refit\.orders\.dis\.' \+ stationKeyOf\(station\)/.test(build),
-  'the ORDERS dismissal is namespaced per station (it shipped global, with no suffix at all)');
-A.ok(/localStorage\.setItem\(ORDERS_KEY\(\), '1'\)/.test(build), '…and the writer uses the same per-station key');
-A.ok(/'eyehold\.refit\.firstride\.' \+ stationKeyOf\(station\)/.test(build), 'the first ride is per station');
-A.ok(/'eyehold\.refit\.finline\.' \+ stationKeyOf\(st \|\| station\)/.test(build), 'the finish-the-line registry is per station');
+/* ---------- 6. per-keep latches + session-state hygiene ---------- */
+A.ok(/const ORDERS_KEY = \(\) => 'eyehold\.refit\.orders\.dis\.' \+ keepKeyOf\(keep\)/.test(build),
+  'the ORDERS dismissal is namespaced per keep (it shipped global, with no suffix at all)');
+A.ok(/localStorage\.setItem\(ORDERS_KEY\(\), '1'\)/.test(build), '…and the writer uses the same per-keep key');
+A.ok(/'eyehold\.refit\.firstride\.' \+ keepKeyOf\(keep\)/.test(build), 'the first ride is per keep');
+A.ok(/'eyehold\.refit\.finline\.' \+ keepKeyOf\(st \|\| keep\)/.test(build), 'the finish-the-line registry is per keep');
 
 const openBlock = build.slice(build.indexOf('function open() {'), build.indexOf('function open() {') + 2500);
 A.ok(/for \(const k in layerFailed\) delete layerFailed\[k\];/.test(openBlock),
@@ -148,9 +148,9 @@ A.ok(!/fillText\('⌂'/.test(build), "the '⌂' glyph is gone — it is not in V
 const lockBlock = build.slice(build.indexOf('if (protectedSpawn) {'), build.indexOf('if (protectedSpawn) {') + 1200);
 A.ok(/voiceSay\('hover'/.test(lockBlock), 'the lock badge speaks through the one-voice arbiter, not a bare fillText');
 
-/* ---------- 8. delivery bookkeeping resolves against the LIVE station ---------- */
+/* ---------- 8. delivery bookkeeping resolves against the LIVE keep ---------- */
 const noteBlock = build.slice(build.indexOf('function noteLineDelivered'), build.indexOf('function noteLineDelivered') + 900);
-A.ok(/opts\.getStation\(\)[\s\S]*const st = live \|\| station;/.test(noteBlock),
-  'noteLineDelivered prefers the live station over the module-level one close() never nulls');
+A.ok(/opts\.getKeep\(\)[\s\S]*const st = live \|\| keep;/.test(noteBlock),
+  'noteLineDelivered prefers the live keep over the module-level one close() never nulls');
 
 A.report('refit-card-stack');

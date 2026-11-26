@@ -16,7 +16,7 @@ function save(name, updatedAt, marker) {
     version: 1, agentId: 'agent', updatedAt, savedAt: updatedAt,
     doc: {
       schema: 'eyehold.save', version: 5, updatedAt,
-      agent: { id: 'agent', name }, station: { rooms: [{ id: marker }], props: [] },
+      agent: { id: 'agent', name }, keep: { rooms: [{ id: marker }], props: [] },
       workstreams: [{ id: 'general', history: [{ role: 'user', content: marker }] }]
     }
   };
@@ -35,10 +35,10 @@ try {
   write(legacyA, '.eyehold-workspace-owner.json', JSON.stringify({ pid: 999999 }));
 
   const one = Recovery.inspectCandidates({ fs, path, platform: 'darwin', home, workspaceRoot: current, candidateRoots: [legacyA, legacyB] });
-  A.eq(one.recoverableCount, 1, 'one valid stranded station is recoverable');
+  A.eq(one.recoverableCount, 1, 'one valid stranded keep is recoverable');
   A.eq(one.automaticCandidateId, one.candidates[0].id, 'one valid root is an unambiguous automatic candidate');
   A.ok(one.candidates[0].displayRoot.startsWith('~'), 'candidate path redacts the user home');
-  A.eq(one.candidates[0].stationName, 'NOVA', 'candidate names the station from the valid save envelope');
+  A.eq(one.candidates[0].keepName, 'NOVA', 'candidate names the keep from the valid save envelope');
   A.eq(Recovery._internals.displayPath('D:\\Profiles\\Eyehold\\workspaces', 'C:\\Users\\Ada', require('node:path').win32, 'win32'),
     '[local-data]/Eyehold/workspaces', 'a custom data shelf outside the home is never disclosed as an absolute path');
 
@@ -52,36 +52,36 @@ try {
   const requested = Recovery.requestRecovery({ fs, path, platform: 'darwin', home, workspaceRoot: current, candidateRoots: [legacyA], inspection: one, candidateId: one.automaticCandidateId });
   A.eq(requested.ok, true, 'authenticated selection produces a pending recovery request');
   const applied = Recovery.applyPendingRecovery({ fs, path, platform: 'darwin', home, workspaceRoot: current, candidateRoots: [legacyA], now: () => 2000 });
-  A.eq(applied.applied, true, 'next pre-store boot activates the requested station');
-  A.eq(JSON.parse(fs.readFileSync(path.join(current, 'agent.save.json'), 'utf8')).doc.agent.name, 'NOVA', 'selected station is active');
+  A.eq(applied.applied, true, 'next pre-store boot activates the requested keep');
+  A.eq(JSON.parse(fs.readFileSync(path.join(current, 'agent.save.json'), 'utf8')).doc.agent.name, 'NOVA', 'selected keep is active');
   A.eq(fs.readFileSync(path.join(current, 'agent', 'report.md'), 'utf8'), 'source must stay byte-exact', 'complete selected generation is active');
   A.eq(Recovery._internals.sha256(fs.readFileSync(path.join(legacyA, 'agent.save.json'))), sourceHash, 'legacy source remains byte-exact');
   A.eq(fs.existsSync(path.join(legacyA, '.eyehold-workspace-owner.json')), true, 'source is not cleaned or mutated');
   A.eq(fs.existsSync(path.join(current, '.eyehold-workspace-owner.json')), false, 'stale runtime ownership is not copied into the active generation');
   A.ok(fs.readdirSync(path.dirname(current)).some(name => name.startsWith('workspaces.recovery-rollback-')), 'prior current generation is retained as rollback');
-  A.eq(Recovery.readRootCandidate(current, { fs, path }).stationName, 'NOVA', 'fresh store boot can read the recovered canonical save');
+  A.eq(Recovery.readRootCandidate(current, { fs, path }).keepName, 'NOVA', 'fresh store boot can read the recovered canonical save');
   fs.writeFileSync(Recovery._internals.lastResultFile(current, path), JSON.stringify({ ok: false, error: 'rename failed at ' + legacyA }));
   const redactedFailure = Recovery.recoveryReport({ fs, path, platform: 'darwin', home, workspaceRoot: current, candidateRoots: [legacyA] });
   A.ok(!JSON.stringify(redactedFailure).includes(home), 'support report redacts absolute paths from recovery errors too');
 
-  // Reset to an empty active root and prove two distinct valid stations require an explicit choice.
+  // Reset to an empty active root and prove two distinct valid keeps require an explicit choice.
   fs.rmSync(current, { recursive: true, force: true });
   write(current, '.migrated', '1');
   write(legacyB, 'agent.save.json', save('ORION', 2000, 'legacy-b'));
   const conflict = Recovery.inspectCandidates({ fs, path, platform: 'darwin', home, workspaceRoot: current, candidateRoots: [legacyA, legacyB] });
-  A.eq(conflict.recoverableCount, 2, 'both valid station generations are shown');
+  A.eq(conflict.recoverableCount, 2, 'both valid keep generations are shown');
   A.eq(conflict.distinctSaveCount, 2, 'different save bytes are identified as a real conflict');
   A.eq(conflict.automaticCandidateId, null, 'conflict has no automatic winner');
   const untouched = Recovery.applyPendingRecovery({ fs, path, platform: 'darwin', home, workspaceRoot: current, candidateRoots: [legacyA, legacyB], auto: true, scratchRoots: [] });
-  A.eq(untouched.applied, false, 'automatic boot refuses to choose between stations');
+  A.eq(untouched.applied, false, 'automatic boot refuses to choose between keeps');
   A.ok(!untouched.autoSkipped, 'with scratchRoots:[] the refusal is the CONFLICT rule, not the scratch guard');
   A.eq(fs.existsSync(path.join(current, 'agent.save.json')), false, 'conflict leaves active workspace empty and unmodified');
 
-  const selectedB = conflict.candidates.find(row => row.stationName === 'ORION');
+  const selectedB = conflict.candidates.find(row => row.keepName === 'ORION');
   Recovery.requestRecovery({ fs, path, platform: 'darwin', home, workspaceRoot: current, candidateRoots: [legacyA, legacyB], inspection: conflict, candidateId: selectedB.id });
   const resolved = Recovery.applyPendingRecovery({ fs, path, platform: 'darwin', home, workspaceRoot: current, candidateRoots: [legacyA, legacyB], now: () => 3000 });
-  A.eq(resolved.stationName, 'ORION', 'explicit conflict selection activates exactly the chosen station');
-  A.eq(JSON.parse(fs.readFileSync(path.join(current, 'agent.save.json'), 'utf8')).doc.station.rooms[0].id, 'legacy-b', 'unselected station never contaminates the chosen generation');
+  A.eq(resolved.keepName, 'ORION', 'explicit conflict selection activates exactly the chosen keep');
+  A.eq(JSON.parse(fs.readFileSync(path.join(current, 'agent.save.json'), 'utf8')).doc.keep.rooms[0].id, 'legacy-b', 'unselected keep never contaminates the chosen generation');
 
   // An unreadable save remains visible for reporting but can never become a selectable request.
   fs.rmSync(current, { recursive: true, force: true });
@@ -120,7 +120,7 @@ try {
   A.eq(fs.existsSync(path.join(current, 'agent.save.json')), false, 'an aged live holder still blocks every workspace mutation');
   const reclaimed = Recovery.applyPendingRecovery({ fs, path, platform: 'darwin', home, workspaceRoot: current, candidateRoots: [legacyA], now: () => 6000, lockPidAlive: () => false });
   A.eq(reclaimed.applied, true, 'a provably-dead holder\'s stale lock is broken and recovery proceeds');
-  A.eq(JSON.parse(fs.readFileSync(path.join(current, 'agent.save.json'), 'utf8')).doc.agent.name, 'VEGA', 'stale-break activation lands the requested station');
+  A.eq(JSON.parse(fs.readFileSync(path.join(current, 'agent.save.json'), 'utf8')).doc.agent.name, 'VEGA', 'stale-break activation lands the requested keep');
   A.eq(fs.existsSync(lockfile), false, 'recovery lock is released after activation');
 
   // Size guard: a pathological source fails CLOSED with a clear error before it can be buffered.
@@ -143,18 +143,18 @@ try {
   A.ok(/per-file/.test(String(fileTooBig.error)), 'per-file failure names the per-file limit: ' + fileTooBig.error);
   A.eq(fs.existsSync(path.join(current, 'agent.save.json')), false, 'per-file over-limit source never mutates the active workspace');
 
-  // ---- SCRATCH-TARGET GUARD (2026-08-19/20 incident): auto recovery must never heal a REAL station INTO a temp
-  // workspace. Real filesystem: a fake "real" home holding one unambiguous station + a target under os.tmpdir().
+  // ---- SCRATCH-TARGET GUARD (2026-08-19/20 incident): auto recovery must never heal a REAL keep INTO a temp
+  // workspace. Real filesystem: a fake "real" home holding one unambiguous keep + a target under os.tmpdir().
   const realHome = fs.mkdtempSync(path.join(os.tmpdir(), 'eyehold-fake-real-home-'));
   const tmpTarget = fs.mkdtempSync(path.join(os.tmpdir(), 'eyehold-scratch-target-')) + path.sep + 'workspaces';
   try {
     const realRoot = path.join(realHome, '.local', 'share', 'Eyehold', 'workspaces');
-    write(realRoot, 'agent.save.json', save('ANDREWS-REAL-STATION', 5000, 'real-station'));
+    write(realRoot, 'agent.save.json', save('ANDREWS-REAL-KEEP', 5000, 'real-keep'));
     write(realRoot, 'agent/secret-report.md', 'production bytes');
     const realBytes = fs.readFileSync(path.join(realRoot, 'agent.save.json'));
     // sanity: the fixture IS an unambiguous auto candidate (so a skip below is the guard, not a non-candidate)
     const probe = Recovery.inspectCandidates({ fs, path, platform: 'linux', home: realHome, workspaceRoot: tmpTarget, candidateRoots: [realRoot] });
-    A.eq(probe.recoverableCount, 1, 'fixture: one unambiguous real station is visible to auto recovery');
+    A.eq(probe.recoverableCount, 1, 'fixture: one unambiguous real keep is visible to auto recovery');
     // (a) default guard: target under os.tmpdir() -> auto recovery SKIPS, nothing ingested, source untouched
     const warns = []; const origWarn = console.warn; console.warn = (...a) => warns.push(a.join(' '));
     let skipped;
@@ -163,11 +163,11 @@ try {
     A.eq(skipped.applied, false, 'auto recovery into a tmpdir target does NOT apply');
     A.eq(skipped.autoSkipped, true, 'result names the skip explicitly (autoSkipped)');
     A.eq(skipped.code, 'AUTO_RECOVERY_TARGET_IS_SCRATCH', 'result carries the scratch code');
-    A.eq(fs.existsSync(path.join(tmpTarget, 'agent.save.json')), false, 'the real station was NOT copied into the temp workspace');
+    A.eq(fs.existsSync(path.join(tmpTarget, 'agent.save.json')), false, 'the real keep was NOT copied into the temp workspace');
     A.eq(fs.existsSync(path.join(tmpTarget, 'agent', 'secret-report.md')), false, 'no production artifact landed in the temp workspace');
     A.eq(fs.readdirSync(path.dirname(tmpTarget)).filter(n => /recovery-(stage|rollback)/.test(n)).length, 0, 'no stage/rollback generation was created');
     A.eq(fs.readFileSync(path.join(realRoot, 'agent.save.json')).equals(realBytes), true, 'real source byte-exact after the skip');
-    A.ok(warns.some(w => /\[recovery\] auto station recovery SKIPPED/.test(w)), 'the skip is LOUD: a [recovery] warn line names it (not a silent no-op)');
+    A.ok(warns.some(w => /\[recovery\] auto keep recovery SKIPPED/.test(w)), 'the skip is LOUD: a [recovery] warn line names it (not a silent no-op)');
     // (b) env-declared scratch root outside tmpdir is honored too
     const envScratch = fs.mkdtempSync(path.join(realHome, 'ci-scratch-'));
     const envTarget = path.join(envScratch, 'ws');
@@ -179,8 +179,8 @@ try {
     const realTarget = path.join(realHome, 'Library', 'Application Support', 'ai.skynet.harness', 'workspaces');
     const healed = Recovery.applyPendingRecovery({ fs, path, platform: 'darwin', home: realHome, workspaceRoot: realTarget, candidateRoots: [realRoot], auto: true, now: () => 6200,
       tmpdir: () => path.join(realHome, 'not-tmp'), env: {} });
-    A.eq(healed.applied, true, 'a non-scratch target still auto-heals one unambiguous station');
-    A.eq(JSON.parse(fs.readFileSync(path.join(realTarget, 'agent.save.json'), 'utf8')).doc.agent.name, 'ANDREWS-REAL-STATION', 'non-scratch auto-heal content intact');
+    A.eq(healed.applied, true, 'a non-scratch target still auto-heals one unambiguous keep');
+    A.eq(JSON.parse(fs.readFileSync(path.join(realTarget, 'agent.save.json'), 'utf8')).doc.agent.name, 'ANDREWS-REAL-KEEP', 'non-scratch auto-heal content intact');
     // (d) an EXPLICIT operator request into a tmpdir target is NOT blocked (the guard is auto-only)
     const explicitTarget = fs.mkdtempSync(path.join(os.tmpdir(), 'eyehold-explicit-target-')) + path.sep + 'workspaces';
     write(explicitTarget, '.migrated', '1');

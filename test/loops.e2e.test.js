@@ -131,10 +131,10 @@ async function until(B, headers, pred, label, ms) {
     let token = await bootToken(B, B);
     let headers = { 'Content-Type': 'application/json', 'X-Eyehold-Token': token, Origin: B };
 
-    // ---- a station with no loops pays no timer ----------------------------------------------------------
+    // ---- a keep with no loops pays no timer ----------------------------------------------------------
     const empty = await (await fetch(B + '/api/loops', { headers })).json();
-    A.eq(empty.loops.length, 0, 'a fresh station has no loops');
-    A.eq(empty.armed, false, 'and arms no timer — a loopless station costs nothing');
+    A.eq(empty.loops.length, 0, 'a fresh keep has no loops');
+    A.eq(empty.armed, false, 'and arms no timer — a loopless keep costs nothing');
 
     // ---- create: no arm ceremony, it just goes ----------------------------------------------------------
     const created = await fetch(B + '/api/loops', {

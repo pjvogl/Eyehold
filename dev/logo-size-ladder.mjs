@@ -42,7 +42,7 @@ const page = `<!doctype html><meta charset="utf-8"><title>ladder</title>
  .bar svg{display:block;width:auto;color:${PH}}
 </style>
 <h1>WORDMARK SIZE LADDER — true size, DPR ${DPR}</h1>
-<p class="sub">Each row is the mark at the stated CSS height on the station background. 30px is the
+<p class="sub">Each row is the mark at the stated CSS height on the keep background. 30px is the
  topbar; 24px is the topbar under the &lt;=1480px media query.</p>
 <div id="root"></div>
 <script>

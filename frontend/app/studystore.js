@@ -1,7 +1,7 @@
 /* EYEHOLD — studystore.js : the live wiring around the pure STUDY ENGINE (study.js) — the dossier's Phase B.
 
    Where dossierstore.js only folds the Commander's OWN onboarding docs + panel edits (Phase A), this is the
-   glue that lets the station LEARN from actual work: after a salient run the sidecar studies the transcript and
+   glue that lets the keep LEARN from actual work: after a salient run the sidecar studies the transcript and
    stashes belief-update proposals; this store fetches them, gates them (session cap + anti-nag), and applies the
    Commander's Keep / Edit / Discard verdict to the DOSSIER (Keep → DossierStore.upsert source:'study'; Discard →
    a PERMANENT studyDeclined denylist; ignore 2× → stop proposing that belief). It also owns the RATINGS→TASTE

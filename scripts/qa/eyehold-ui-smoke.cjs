@@ -1,11 +1,11 @@
-/* Real browser + real sidecar, isolated fixture station, zero model calls.
+/* Real browser + real sidecar, isolated fixture keep, zero model calls.
  * Requires playwright and Chromium (EYEHOLD_CHROME may point to installed Chrome).
  */
 'use strict';
 const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path'),os=require('node:os');
 const {spawn}=require('node:child_process');
 const {chromium}=require('playwright');
-const {buildEyeholdStation}=require('../eyehold-seven-room-starter.cjs');
+const {buildEyeholdKeep}=require('../eyehold-seven-room-starter.cjs');
 const {createFinanceStore}=require('../../sidecar/eyehold-finance-store.js');
 const {provision}=require('../../sidecar/eyehold-owner-auth.js');
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));
@@ -27,10 +27,10 @@ async function run(){
  // Test browser cannot send prompts to a provider even if a boot regression tries.
  await page.route('**/*',route=>route.request().url().startsWith(base+'/')?route.continue():route.abort());
  await page.route('**/api/run',route=>{errors.push('Unexpected model run requested');return route.abort();});
- const seed={schema:'eyehold.save',version:6,updatedAt:Date.now(),agent:{id:'agent',name:'THE EYE',createdAt:Date.now(),onboarded:true,role:'orchestrator',purpose:'Offline UI fixture; no model calls',provider:'ollama',model:'ui-fixture',specialtyId:'eyehold-keep'},station:buildEyeholdStation().doc,workstreams:[]};
+ const seed={schema:'eyehold.save',version:6,updatedAt:Date.now(),agent:{id:'agent',name:'THE EYE',createdAt:Date.now(),onboarded:true,role:'orchestrator',purpose:'Offline UI fixture; no model calls',provider:'ollama',model:'ui-fixture',specialtyId:'eyehold-keep'},keep:buildEyeholdKeep().doc,workstreams:[]};
  await page.addInitScript(doc=>{if(!localStorage.getItem('eyehold.save'))localStorage.setItem('eyehold.save',JSON.stringify(doc));},seed);
  page.on('pageerror',e=>errors.push(e.message));
- await page.goto(base+'/');await page.waitForFunction(()=>typeof App!=='undefined'&&!!App.station?.(),null,{timeout:30000});
+ await page.goto(base+'/');await page.waitForFunction(()=>typeof App!=='undefined'&&!!App.keep?.(),null,{timeout:30000});
  await page.getByRole('button',{name:'WORK BOARD',exact:true}).click();
  await page.evaluate(async()=>{const r=await fetch('/api/goals',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({goal:{id:'ui-goal',text:'Verify the owner review flow in an isolated test',milestones:[]}})});if(!r.ok)throw Error('fixture goal rejected')});
  await page.getByRole('button',{name:/UI review fixture/}).click();
@@ -52,11 +52,11 @@ async function run(){
  store.replaceReviewed([JSON.stringify({id:'ui-fixture',currency:'USD',type:'revenue',cents:100000000})],{confirmedReviewed:true});
  await page.getByRole('button',{name:'CHECK TREASURY',exact:true}).click();
  await page.getByRole('heading',{name:/Guild Ascendant \(INSTALLED\)/}).waitFor();
- assert.equal(await page.evaluate(()=>App.station().props().filter(p=>String(p.label||'').startsWith('Eyehold:')).length),7);
- await page.reload();await page.waitForFunction(()=>typeof App!=='undefined'&&!!App.station?.());
+ assert.equal(await page.evaluate(()=>App.keep().props().filter(p=>String(p.label||'').startsWith('Eyehold:')).length),7);
+ await page.reload();await page.waitForFunction(()=>typeof App!=='undefined'&&!!App.keep?.());
  await page.getByRole('button',{name:'WORK BOARD',exact:true}).click();await page.getByText('TREASURY — PROFIT MILESTONES',{exact:true}).click();await page.getByRole('button',{name:'CHECK TREASURY',exact:true}).click();
  await page.getByRole('heading',{name:/Guild Ascendant \(INSTALLED\)/}).waitFor();
- assert.equal(await page.evaluate(()=>App.station().props().filter(p=>String(p.label||'').startsWith('Eyehold:')).length),7,'reload cannot duplicate markers');
+ assert.equal(await page.evaluate(()=>App.keep().props().filter(p=>String(p.label||'').startsWith('Eyehold:')).length),7,'reload cannot duplicate markers');
  if(output){fs.mkdirSync(output,{recursive:true});await page.screenshot({path:path.join(output,'work-board-desktop.png')});}
  await page.setViewportSize({width:390,height:844});
  const box=await page.locator('#eyehold-workboard').boundingBox();assert(box&&box.x>=0&&box.x+box.width<=391,'work board fits mobile viewport');

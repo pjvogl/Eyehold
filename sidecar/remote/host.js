@@ -1,10 +1,10 @@
-/* sidecar/remote/host.js — what each gateway verb actually does on this station.
+/* sidecar/remote/host.js — what each gateway verb actually does on this keep.
 
    index.js builds this with the SAME in-process functions the desktop and the channels use (the roster, the
    transcript store, runOnce, the channel consent waiter, the deliverable library, the fs jail, the cron store),
-   so a phone's answer is the desk's answer and nothing here re-implements station logic.
+   so a phone's answer is the desk's answer and nothing here re-implements keep logic.
 
-   Remote runs are DETACHED: they belong to the station, not to the phone's connection. A phone that drops,
+   Remote runs are DETACHED: they belong to the keep, not to the phone's connection. A phone that drops,
    sleeps or changes network mid-run changes nothing; the run finishes, its transcript lands in the same
    conversation, and the phone catches up by reading the thread when it comes back. That is the difference
    from a desktop /api/run, whose run dies with its socket by design.
@@ -19,7 +19,7 @@
      run.step     { runId, callId, ok, ms }       how that step went
      run.ended    { runId, agentId, streamId, reason, usd, error }
      approval.opened / approval.closed            from the shared registry
-     station      { name, payload }               the station floor's own redacted feed (SSE tee) */
+     keep      { name, payload }               the keep floor's own redacted feed (SSE tee) */
 'use strict';
 
 const { note } = require('../failopen.js');
@@ -49,33 +49,33 @@ function makeRemoteHost(d) {
       const r = busy.get(a.agentId);
       return Object.assign(a, r ? { state: 'working', runId: r.runId, since: r.startedAt, source: r.source || null } : { state: 'idle' });
     });
-    return { station: d.stationName ? d.stationName() : 'Eyehold', at: now(), agents, runs: live.map(r => ({ runId: r.runId, agentId: r.agentId, startedAt: r.startedAt, source: r.source || null })) };
+    return { keep: d.keepName ? d.keepName() : 'Eyehold', at: now(), agents, runs: live.map(r => ({ runId: r.runId, agentId: r.agentId, startedAt: r.startedAt, source: r.source || null })) };
   }
 
-  /* SESSIONS. The desk keeps its sessions (title, agent, history) in the station save; the transcript store holds
+  /* SESSIONS. The desk keeps its sessions (title, agent, history) in the keep save; the transcript store holds
      what runs wrote. A phone must see the SAME sessions the desk shows and continue them under the same id, so:
        · the list = the desk's sessions (save.workstreams) ∪ any transcript stream the desk has not adopted yet
-       · a thread = the desk's history for that session, plus any newer turns the station recorded that the desk
+       · a thread = the desk's history for that session, plus any newer turns the keep recorded that the desk
          page has not merged yet (a phone turn sent while the desk was closed)
-     The desk reconciles the other way on its own: opening a session merges the station's transcript into it. */
+     The desk reconciles the other way on its own: opening a session merges the keep's transcript into it. */
   const isProse = (m) => m && (m.role === 'user' || m.role === 'assistant') && !m.sys && typeof m.content === 'string' && m.content.trim();
   function deskSessions() {
     let list = [];
     try { list = (d.deskSessions && d.deskSessions()) || []; } catch (e) { note('remote.host.deskSessions', e); list = []; }
     return Array.isArray(list) ? list.filter(w => w && typeof w.id === 'string' && /^[A-Za-z0-9_-]{1,64}$/.test(w.id) && !w.archived && w.conversationMode !== 'group') : [];
   }
-  const STATION_TURNS = 2000;
-  function stationTurns(streamId, limit) {
-    try { return (d.transcript.history(streamId, { limit: limit || STATION_TURNS }) || []).filter(isProse); }
-    catch (e) { note('remote.host.stationTurns', e); return []; }
+  const KEEP_TURNS = 2000;
+  function keepTurns(streamId, limit) {
+    try { return (d.transcript.history(streamId, { limit: limit || KEEP_TURNS }) || []).filter(isProse); }
+    catch (e) { note('remote.host.keepTurns', e); return []; }
   }
-  /* ONE CONVERSATION, TWO COPIES: the desk's save (its own order, its status lines) and the station's transcript
+  /* ONE CONVERSATION, TWO COPIES: the desk's save (its own order, its status lines) and the keep's transcript
      (every turn any run recorded, from the desk, the phone, a channel). A phone used to take the desk copy and add
-     only station turns NEWER than its last line — so once the desk saved anything later, every phone turn before it
+     only keep turns NEWER than its last line — so once the desk saved anything later, every phone turn before it
      vanished ("session history disappears", Andrew 10-02 on the road). Now the phone merges exactly the way the desk
      does (frontend/app/chat.js mergeCanonicalHistory, copied here; keep the two in step): the desk's rows keep their
-     order, a station turn with a twin enriches it, and a turn the desk never saw is inserted after the last row a
-     station turn matched. Nothing is dropped and nothing is reordered. */
+     order, a keep turn with a twin enriches it, and a turn the desk never saw is inserted after the last row a
+     keep turn matched. Nothing is dropped and nothing is reordered. */
   function mergeCanonical(local, turns) {
     const runParts = new Map();
     for (const turn of Array.isArray(turns) ? turns : []) {
@@ -138,14 +138,14 @@ function makeRemoteHost(d) {
     return merged;
   }
   // the whole conversation, prose only, oldest first
-  /* The desk save is raw; the station transcript is redacted when it is written. Redact the desk copy first, so a turn holding a
+  /* The desk save is raw; the keep transcript is redacted when it is written. Redact the desk copy first, so a turn holding a
      secret-shaped token is ONE turn (the two copies' keys match) and its raw text never reaches the relay. */
   const redactText = (t) => { try { return typeof d.redact === 'function' ? String(d.redact(String(t))) : String(t); } catch (e) { note('remote.host.redact', e); return String(t); } };
   // limit: the newest N turns (a phone SEND hands the model at most 100, as it always did; a page reads them all)
   function mergedTurns(streamId, limit) {
     const w = deskSessions().find(x => x.id === streamId);
     const local = (w && Array.isArray(w.history) ? w.history : []).map(r => (r && typeof r.content === 'string') ? Object.assign({}, r, { content: redactText(r.content) }) : r);
-    const st = stationTurns(streamId);
+    const st = keepTurns(streamId);
     const all = (local.length ? mergeCanonical(local, st) : st).filter(isProse);
     return Number(limit) > 0 ? all.slice(-Number(limit)) : all;
   }
@@ -155,19 +155,19 @@ function makeRemoteHost(d) {
     const out = [], seen = new Set();
     const names = new Map(agentsList().map(a => [a.agentId, String(a.name || '').toLowerCase()]));
     const rows = d.transcript.streams({ limit: 500, previewChars: 140 }) || [];
-    const stationHas = new Set(rows.filter(r => Number(r.turns) > 0).map(r => r.streamId));
+    const keepHas = new Set(rows.filter(r => Number(r.turns) > 0).map(r => r.streamId));
     for (const w of deskSessions()) {
       const agentId = String(w.agentId || 'agent');
       const hist = Array.isArray(w.history) ? w.history.filter(isProse) : [];
       seen.add(w.id);
       if (o.agentId && agentId !== o.agentId) continue;
       // an untouched blank session (no title, or only the agent's own name as one, and nothing recorded anywhere) is
-      // noise on a phone; one whose turns live only in the station's record (the desk never opened it since) is not
-      if (!hist.length && !stationHas.has(w.id) && (!w.title || String(w.title).trim().toLowerCase() === (names.get(agentId) || agentId.toLowerCase()))) continue;
+      // noise on a phone; one whose turns live only in the keep's record (the desk never opened it since) is not
+      if (!hist.length && !keepHas.has(w.id) && (!w.title || String(w.title).trim().toLowerCase() === (names.get(agentId) || agentId.toLowerCase()))) continue;
       out.push({ streamId: w.id, agentId, title: w.title ? clip(w.title, 80) : '', turns: hist.length, lastAt: Number(w.lastActiveAt) || 0, preview: lastUserLine(hist), source: 'desk' });
     }
     for (const r of rows) {
-      if (seen.has(r.streamId)) {   // the station may have newer turns than the desk save: surface the later time
+      if (seen.has(r.streamId)) {   // the keep may have newer turns than the desk save: surface the later time
         const row = out.find(x => x.streamId === r.streamId);
         if (row && Number(r.lastAt) > row.lastAt) { row.lastAt = Number(r.lastAt); if (r.preview) row.preview = r.preview; }
         continue;
@@ -176,7 +176,7 @@ function makeRemoteHost(d) {
       let agentId = r.agentId || '';
       if (!agentId) { try { const h = d.transcript.history(r.streamId, { limit: 1 }); agentId = (h[0] && h[0].agentId) || ''; } catch (e) { note('remote.host.threadAgent', e); } }
       if (o.agentId && agentId !== o.agentId) continue;
-      out.push({ streamId: r.streamId, agentId, title: '', turns: r.turns, lastAt: r.lastAt, preview: r.preview || '', source: /^remote_/.test(r.streamId) ? 'phone' : 'station' });
+      out.push({ streamId: r.streamId, agentId, title: '', turns: r.turns, lastAt: r.lastAt, preview: r.preview || '', source: /^remote_/.test(r.streamId) ? 'phone' : 'keep' });
     }
     out.sort((a, b) => (b.lastAt || 0) - (a.lastAt || 0));
     return out.slice(0, o.limit);
@@ -208,7 +208,7 @@ function makeRemoteHost(d) {
 
   async function send(o) {
     const who = agentsList().find(a => a.agentId === o.agentId);
-    if (!who) return { ok: false, error: 'there is no agent called ' + o.agentId + ' on this station' };
+    if (!who) return { ok: false, error: 'there is no agent called ' + o.agentId + ' on this keep' };
     const cred = d.credentials(o.agentId);
     if (!cred || !cred.ok) return { ok: false, error: (cred && cred.error) || 'this agent has no model set up yet' };
     const streamId = o.streamId || ('remote_' + String(o.agentId).replace(/[^A-Za-z0-9_-]/g, '_') + '_' + now().toString(36)).slice(0, 64);
@@ -217,7 +217,7 @@ function makeRemoteHost(d) {
     const rec = { ac, agentId: o.agentId, streamId, deviceId: o.deviceId || '', startedAt: now() };
     remoteRuns.set(runId, rec);
 
-    // the conversation so far: the desk's memory of this session plus anything the station recorded since
+    // the conversation so far: the desk's memory of this session plus anything the keep recorded since
     const messages = mergedTurns(streamId, 100).map(m => ({ role: m.role, content: m.content })).concat([{ role: 'user', content: o.text }]);
     let isTask = true;
     // the agent's last turn rides along, as on COMMS and the channels: "yes" to "want me to draft it?" is a TASK (tools),
@@ -230,7 +230,7 @@ function makeRemoteHost(d) {
     // the reply, coalesced: a phone on cellular gets a few frames a second, not one per token
     let buf = '', timer = null, errMsg = null, reason = null, usd = 0;
     /* The reply only GROWS, so a frame carries only what is new (and where it starts): resending the whole reply four
-       times a second made a long answer cost its full size every quarter second on the station's uplink. Every eighth
+       times a second made a long answer cost its full size every quarter second on the keep's uplink. Every eighth
        frame (two seconds) is the whole text again, so a phone that missed a piece is put right at once. */
     let sent = 0, flushes = 0;
     const flush = () => {
@@ -264,7 +264,7 @@ function makeRemoteHost(d) {
       surface: 'interactive', prompt, ownerTrusted: true, floorless: true, broadcast: true, reflect: true,
       // A PHONE WORKS WITH THE DESK'S PERMISSIONS (Andrew 2026-10-02: "full access so I can vibe code on the go"): an
       // agent on Full Access acts from the phone without asking, exactly as at the desk. A phone the Commander marked
-      // ALWAYS ASK (desk > Remote > that phone) never inherits Full Access or the station bypass: every gated step asks
+      // ALWAYS ASK (desk > Remote > that phone) never inherits Full Access or the keep bypass: every gated step asks
       // on the phone. Host-minted, never from text, and it rides into delegated workers (run-origin.js). If the
       // setting cannot be read, the phone asks (never more power on an error).
       connectorAuthority: { withholdHostPower: phoneAsksFirst(o.deviceId) },
@@ -296,7 +296,7 @@ function makeRemoteHost(d) {
     }));
   }
 
-  /* A PHONE READS WHAT THE STATION SHOWED IT, nothing else: a file inside that agent's own workspace (a relative
+  /* A PHONE READS WHAT THE KEEP SHOWED IT, nothing else: a file inside that agent's own workspace (a relative
      path), or a file outside it only when one of that agent's runs or deliverables recorded it (the file chips the
      phone was given). A free-form absolute path is refused even under a folder the agents may use at the desk. */
   const isAbsPath = (p) => /^([A-Za-z]:|[\\/])/.test(String(p || ''));
@@ -351,7 +351,7 @@ function makeRemoteHost(d) {
     return n;
   }
 
-  /* THE STATION VIEW. The desk page draws the still (the sidecar has no renderer); this hands it to a phone in
+  /* THE KEEP VIEW. The desk page draws the still (the sidecar has no renderer); this hands it to a phone in
      sealed chunks and notes that a phone is looking, which is what makes the desk keep it fresh. The phone gets
      the time the desk drew it and shows that age: an old picture is never passed off as live. */
   async function view(o) {
@@ -361,7 +361,7 @@ function makeRemoteHost(d) {
     let desk = false;
     try { desk = !!(d.deskOpen && d.deskOpen()); } catch (e) { note('remote.host.deskOpen', e); }
     if (!m) return { none: true, desk, now: now() };
-    // `now` is this station's clock at the moment of the answer: the phone works out the picture's age from
+    // `now` is this keep's clock at the moment of the answer: the phone works out the picture's age from
     // (now - at), so a phone whose own clock is off still shows the right age
     if (!o.offset && o.have && o.have === m.at) return { at: m.at, checked: m.checkedAt || m.at, now: now(), same: true, crewPaused: !!m.crewPaused };
     if (o.offset && o.at !== m.at) return { at: m.at, now: now(), changed: true };   // the desk drew a newer one mid-read: start over
@@ -385,7 +385,7 @@ function makeRemoteHost(d) {
     return t ? t : { ok: false, error: 'unknown sprite' };
   }
 
-  /* ACTIVITY: the station's work in one list, newest first — what is running now (and what the phone knows of its
+  /* ACTIVITY: the keep's work in one list, newest first — what is running now (and what the phone knows of its
      steps), then what finished, with its result line and the files it made. Background self-talk is left out.
      It reads the same run history the desk's activity feed reads; nothing here is inferred. */
   async function activity(o) {
@@ -408,7 +408,7 @@ function makeRemoteHost(d) {
       // the newest finished run of a conversation is shown against it, so that is this run's own reply)
       if (!said && r.reason === 'done' && r.streamId && !resultOf.has(r.streamId)) {
         resultOf.add(r.streamId);
-        const turns = stationTurns(r.streamId, 6);
+        const turns = keepTurns(r.streamId, 6);
         for (let i = turns.length - 1; i >= 0; i--) if (turns[i].role === 'assistant') { said = turns[i].content.replace(/\s+/g, ' ').trim(); break; }
       }
       done.push({ runId: r.runId, agentId: r.agentId, state: r.reason === 'done' ? 'done' : r.reason === 'cancelled' || r.reason === 'stopped' ? 'stopped' : 'failed',

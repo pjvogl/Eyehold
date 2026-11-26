@@ -40,8 +40,8 @@ export const NAV = [
     { url: 'docs/providers.html', title: 'Models & providers', kind: 'Reference' },
     { url: 'docs/guides/index.html', title: 'Step-by-step guides', kind: 'Overview' },
   ]},
-  { id: 'station', group: 'Station & agents', description: 'Build your station, recruit a crew, and give them the tools to work.', items: [
-    { url: 'docs/station.html', title: 'Station & capabilities', kind: 'Reference' },
+  { id: 'keep', group: 'Keep & agents', description: 'Build your keep, recruit a crew, and give them the tools to work.', items: [
+    { url: 'docs/keep.html', title: 'Keep & capabilities', kind: 'Reference' },
     { url: 'docs/guides/crew.html', title: 'Set up your crew', kind: 'Guide' },
     { url: 'docs/agents.html', title: 'Agents, teams & voice', kind: 'Reference' },
     { url: 'docs/guides/goals.html', title: 'Goals, quests & XP', kind: 'Guide' },
@@ -58,7 +58,7 @@ export const NAV = [
     { url: 'docs/guides/night-shift.html', title: 'Set up autonomy', kind: 'Guide' },
     { url: 'docs/autonomy.html', title: 'Autonomy controls', kind: 'Reference' },
   ]},
-  { id: 'connections', group: 'Connect your tools', description: 'Connect services, message your station, or work with another harness.', items: [
+  { id: 'connections', group: 'Connect your tools', description: 'Connect services, message your keep, or work with another harness.', items: [
     { url: 'docs/connect-a-platform.html', title: 'Connect a service', kind: 'Guide' },
     { url: 'docs/guides/channels.html', title: 'Messaging channels', kind: 'Guide' },
     { url: 'docs/connectors.html', title: 'Connectors & MCP reference', kind: 'Reference' },
@@ -99,7 +99,7 @@ function topbar(page) {
   return `<header class="topbar" id="topbar">
   <a class="brand" href="${root || '#top'}" aria-label="Eyehold home"><img src="${h('assets/eyehold-logo-small.png')}" alt="Eyehold" width="355" height="60"></a>
   <nav class="topnav" aria-label="Site">
-    <a href="${root}#station">Product</a>
+    <a href="${root}#keep">Product</a>
     <a href="${h('docs/index.html')}"${dc}>Docs</a>
     <a href="${h('market.html')}"${mk}>Skills</a>
     <a href="${h('pricing.html')}"${pr} data-pricing-link${LOADS_SITE_JS.includes(page) ? ' hidden' : ''}>Pricing</a>
@@ -148,7 +148,7 @@ function footer(page) {
   const here = (u) => page === '404.html' ? '/' + u : rel(page, u);
   const home = page === 'index.html' ? '#top' : (page === '404.html' ? '/' : rel(page, 'index.html'));
   return `<footer class="footer">
-  <div class="footer-line">EYEHOLD &middot; a living station of AI agents, doing real work in the dark</div>
+  <div class="footer-line">EYEHOLD &middot; a living keep of AI agents, doing real work in the dark</div>
   <div class="footer-links">
     <a href="${home}">HOME</a>
     <a href="${GITHUB}" target="_blank" rel="noopener">GITHUB</a>

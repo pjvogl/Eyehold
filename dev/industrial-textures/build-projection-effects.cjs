@@ -2,11 +2,11 @@
 // Regenerate bindings/coverage only after reviewing changed source art. This
 // never updates the runtime manifest or alters a PNG.
 const fs=require('node:fs'),crypto=require('node:crypto');
-const file='frontend/app/projection-prop-effects.js',dir='docs/station-remaster/projection-effects';
+const file='frontend/app/projection-prop-effects.js',dir='docs/keep-remaster/projection-effects';
 const root='frontend/assets/industrial/projection-correction',m=JSON.parse(fs.readFileSync(root+'/manifest.json'));
 const quiet={};
 function group(ids,reason){for(const id of ids.split(' ')){if(quiet[id])throw Error('Duplicate quiet '+id);quiet[id]=reason;}}
-group('desk desk2','Accepted workstation screen/occupancy renderer remains authoritative, including compact native fallback and separately authored facings. No added effects.');
+group('desk desk2','Accepted workkeep screen/occupancy renderer remains authoritative, including compact native fallback and separately authored facings. No added effects.');
 group('industrial_locker industrial_drawerbank industrial_supplycart industrial_toolcaddy industrial_wallpanel safe vault shelf quarters_lockerbank arc_indexwall','Storage or passive hardware; no evidenced moving mechanism or live display region on this source.');
 group('industrial_partition industrial_bench industrial_roundtable industrial_floorvent industrial_cabletray bridge_deckperimeter cablerun hazardpad rug rug_small rug_large arc_ladder','Passive structural, floor or support object. Painted surface remains still; no fabricated process.');
 group('industrial_planter plant tallplant terrarium monstera','Quiet painted foliage/colony. Old ambient sway or spores were decorative, not a live process; omitted intentionally.');
@@ -23,7 +23,7 @@ source=source.replace(/const BINDINGS = \/\* projection-bindings \*\/ [\s\S]*?;\
 source=source.replace(/const QUIET = \/\* projection-quiet \*\/ [\s\S]*?;\n/,`const QUIET = /* projection-quiet */ ${JSON.stringify(quiet)};\n`);
 fs.writeFileSync(file,source);
 const fx=require('../../'+file),native=fs.readFileSync('frontend/app/propsprites.js','utf8').split(/\r?\n/);
-const demo=JSON.parse(fs.readFileSync('docs/station-remaster/projection-correction/demo-placement-audit.json'));
+const demo=JSON.parse(fs.readFileSync('docs/keep-remaster/projection-correction/demo-placement-audit.json'));
 const records=[];
 for(const[id,p]of Object.entries(m.props))for(const[view,v]of Object.entries(p.views)){
  const c=fx.classify(id,view);if(!c||!c.reason)throw Error('Unclassified '+id+':'+view);

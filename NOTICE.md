@@ -3,7 +3,7 @@
 Eyehold bundles a library of **pure-prompt skill recipes** (`sidecar/skills/library/*.md`).
 Many are adaptations of MIT-licensed community skills. This file preserves the attribution
 and license notices for that upstream work, as the MIT License requires. The recipe text in
-the app is condensed and re-voiced for Eyehold's workstation model, but the underlying ideas
+the app is condensed and re-voiced for Eyehold's workkeep model, but the underlying ideas
 and, in places, close paraphrases originate with the authors credited below.
 
 Several recipes reached Eyehold through the open-source **Hermes agent project**
@@ -55,7 +55,7 @@ published as **Eyehold Originals** in the Skill Market (`skills-catalog/original
 The Skill Market catalog (`website/skills/`, built by `scripts/build-skill-catalog.mjs`) publishes the
 **Eyehold Originals** listed above plus these market-only originals, written for Eyehold:
 
-`address-pr-comments`, `bills-and-subscriptions`, `brand-assets`, `calendar-scheduling`, `changelog-writing`, `channel-updates`, `crew-handoff`, `daily-briefing`, `data-cleanup-and-analysis`, `deliverable-handoff`, `fitness-and-nutrition`, `fix-failing-ci`, `flashcards`, `grounded-citations`, `issue-triage`, `line-design`, `link-and-video-summary`, `meeting-prep`, `notebook-gardening`, `persistent-reminders`, `project-onboarding`, `receipt-organizer`, `routine-craft`, `skill-authoring`, `spend-aware-work`, `station-self-check`, `studio-video`.
+`address-pr-comments`, `bills-and-subscriptions`, `brand-assets`, `calendar-scheduling`, `changelog-writing`, `channel-updates`, `crew-handoff`, `daily-briefing`, `data-cleanup-and-analysis`, `deliverable-handoff`, `fitness-and-nutrition`, `fix-failing-ci`, `flashcards`, `grounded-citations`, `issue-triage`, `line-design`, `link-and-video-summary`, `meeting-prep`, `notebook-gardening`, `persistent-reminders`, `project-onboarding`, `receipt-organizer`, `routine-craft`, `skill-authoring`, `spend-aware-work`, `keep-self-check`, `studio-video`.
 
 and these **community picks**, adapted for Eyehold. Each package ships its full license text
 (`skills-catalog/skills/<slug>/LICENSE`) naming the original author and Eyehold's modifications; Apache-2.0 packages also ship a `NOTICE`.
@@ -168,7 +168,7 @@ The credits above cover third-party work bundled with Eyehold. Eyehold's own cod
 under the MIT License (see `LICENSE`) and may be forked, modified, and redistributed, including
 commercially.
 
-That license covers the code only. The **Eyehold** name, the logo, the station artwork and
+That license covers the code only. The **Eyehold** name, the logo, the keep artwork and
 sprites, and the rest of the project's brand identity are owned by Eyehold and are not
 licensed with the code. No trademark or other brand right is granted, expressly or by
 implication. A fork or derivative must ship under its own name, logo, and artwork, and must not

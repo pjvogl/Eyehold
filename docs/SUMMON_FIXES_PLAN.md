@@ -41,7 +41,7 @@ This replaces today's **room-based** compute model with **per-PC binding**.
   In a shared room, BOTH agents get every computer — the exact ambiguity to fix.
 - **Routing is geometric, via bays.** `compileRoutingPlan` (`pipeline.js`) builds `bays[]` from
   `bay` props (each carries `agentId`); work rides belts to whichever bay tile it reaches
-  (`resolveTarget`). Belts carry **no** agentId today. Sidecar `router.stationFor(agentId)`
+  (`resolveTarget`). Belts carry **no** agentId today. Sidecar `router.keepFor(agentId)`
   (`sidecar/routing/router.js:39`) feeds the bay's `objects` into the compute gate (`loop.js:177`).
 - **Bay sprite already draws the bound agent's name** (`propsprites.js F.bay`). Build-mode hover
   (`build.js:1016`) draws only an outline — no agent label yet.
@@ -70,10 +70,10 @@ This replaces today's **room-based** compute model with **per-PC binding**.
 
 ### Run-path truth (why the marker isn't "can't run")
 
-`/api/run` sends no per-agent station (`harness.js:137`); the sidecar falls back to the **default
+`/api/run` sends no per-agent keep (`harness.js:137`); the sidecar falls back to the **default
 office, which includes a computer** (`index.js:1425-1443`). So a directly-chatted agent (hero or
 summoned) runs regardless. The compute gate only bites on **bay/conveyor-routed** work
-(`router.stationFor`). The PC rule makes the *floor* honest about who can take routed work.
+(`router.keepFor`). The PC rule makes the *floor* honest about who can take routed work.
 
 ---
 
@@ -88,7 +88,7 @@ if (!routingPlan || !routingPlan.bays || !routingPlan.bays.length || !geo) { if 
 When there are **no bound bays**, it wiped the ENTIRE crew array — including summoned bodies. The
 rest of the function carefully preserves summoned crew (`crew.filter(b => b.summoned)`,
 `world.js:1910`), but this guard did not. A freshly summoned agent with no bay is exactly the
-no-bays case. Toggling build fires a rederive (`station.onChange` → `geoDirty`, `world.js:211`),
+no-bays case. Toggling build fires a rederive (`keep.onChange` → `geoDirty`, `world.js:211`),
 which calls `syncCrewFromPlan` → the guard nuked the summoned body.
 
 **Fix (applied).** Mirror the existing preservation in the guard:
@@ -133,7 +133,7 @@ awakening gate) — verify live in a running instance.
 
 **Report.** Placing a PC made the hero walk over and use it — the curiosity/novelty system treats
 any freshly-placed prop as "go inspect it." For complex Factorio-style multi-agent floors, an agent
-must only interact with props **assigned to it**; another agent's (or an unassigned) workstation /
+must only interact with props **assigned to it**; another agent's (or an unassigned) workkeep /
 capability prop must be ignored.
 
 **Fix — DONE.** Added `isOwnableProp(t)` (a capability prop via `capForProp`, or a `bay`) +

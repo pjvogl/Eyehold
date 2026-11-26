@@ -183,7 +183,7 @@ function twoStagePlan(hopBrief) {
     const sysOf = rq => ((rq && rq.messages) || []).filter(x => x && x.role === 'system').map(x => String(x.content || '')).join('\n');
     const lastUserOf = rq => { const m = [...((rq && rq.messages) || [])].reverse().find(x => x && x.role === 'user'); return String((m && m.content) || ''); };
     const entryReq = mock.requests.find(rq => lastUserOf(rq).indexOf('STEPTEST JOB') >= 0 && lastUserOf(rq).indexOf('PIPELINE HANDOFF') < 0);
-    A.ok(entryReq && sysOf(entryReq).indexOf('YOUR STANDING BRIEF FOR THIS STATION:\n' + ENTRY_BRIEF) >= 0, 'the entry dock\'s brief rode its system context');
+    A.ok(entryReq && sysOf(entryReq).indexOf('YOUR STANDING BRIEF FOR THIS KEEP:\n' + ENTRY_BRIEF) >= 0, 'the entry dock\'s brief rode its system context');
 
     /* ---- 4. continue with an EDITED handoff ---- */
     const EDIT = 'stage one findings + OWNER NOTE: cite two studies';
@@ -197,7 +197,7 @@ function twoStagePlan(hopBrief) {
     A.eq(s.hops[1].output, 'final answer built on the owner note', 'the writer really worked from the edited text');
     A.eq(s.paused.next, { kind: 'outbox' }, 'next stop: the OUTBOX');
     const hopReq = mock.requests.find(rq => lastUserOf(rq).indexOf('OWNER NOTE') >= 0);
-    A.ok(hopReq && /PIPELINE HANDOFF/.test(lastUserOf(hopReq)) && lastUserOf(hopReq).indexOf('YOUR STANDING BRIEF FOR THIS STATION:\n' + HOP_BRIEF) >= 0, 'the writer\'s handoff turn carries the edit AND its brief');
+    A.ok(hopReq && /PIPELINE HANDOFF/.test(lastUserOf(hopReq)) && lastUserOf(hopReq).indexOf('YOUR STANDING BRIEF FOR THIS KEEP:\n' + HOP_BRIEF) >= 0, 'the writer\'s handoff turn carries the edit AND its brief');
     const runs1 = await call('GET', '/api/runs?agent=*&limit=50');
     const writerRow = ((runs1.j && runs1.j.runs) || []).find(r => r.runId === s.hops[1].runId);
     A.ok(writerRow, 'the writer\'s run is in GET /api/runs');

@@ -35,14 +35,14 @@ const baseSave = { v: 2, agent: { id: 'agent', name: 'NOVA', role: 'orchestrator
 }
 
 /* ---- 2. the GROWTH dossier never paints a non-hex colour (render-site whitelist) ---- */
-const source = fs.readFileSync(path.join(__dirname, '..', 'frontend', 'app', 'stationui.js'), 'utf8');
+const source = fs.readFileSync(path.join(__dirname, '..', 'frontend', 'app', 'keepui.js'), 'utf8');
 const start = source.indexOf('  function agGrowth(a) {');
 const end = source.indexOf('\n  function agSkills(agentId) {', start);
-A.ok(start >= 0 && end > start, 'the growth dossier renderer can be isolated from stationui.js');
+A.ok(start >= 0 && end > start, 'the growth dossier renderer can be isolated from keepui.js');
 // a calibrated satisfaction gauge is the branch that paints the suit colour — force it so the lock is exercised
 const XpKnown = Object.assign({}, Xp, { compute: st => Object.assign({}, Xp.compute(st), { known: true, confidence: 80, band: 'reliable' }) });
 const render = vm.runInNewContext(source.slice(start, end) + '\n  agGrowth;', {
-  Xp: XpKnown, XpStore: { stationStats: () => null }, present: [{ id: 'agent' }], esc: value => String(value)
+  Xp: XpKnown, XpStore: { keepStats: () => null }, present: [{ id: 'agent' }], esc: value => String(value)
 });
 const stats = Xp.fresh();
 const evilHtml = render({ id: 'a', name: 'NOVA', role: 'orchestrator', color: EVIL, stats });

@@ -69,9 +69,9 @@
       "kind": "unchanged save function with failed localStorage; callers flashSaved unconditionally (source inspection), not live disk-full proof"
     },
     {
-      "id": "routine-station-provider-overrides-selected-agent",
+      "id": "routine-keep-provider-overrides-selected-agent",
       "agentProvider": "codex",
-      "uiStationProvider": "openrouter",
+      "uiKeepProvider": "openrouter",
       "resolvedFromUi": "openrouter",
       "resolvedWithoutOverride": "codex",
       "kind": "actual resolver + inspected UI request path; multi-provider live dispatch unverified"

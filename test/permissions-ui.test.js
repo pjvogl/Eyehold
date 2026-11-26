@@ -1,10 +1,10 @@
 'use strict';
-// permissions-ui.test.js — source-lock that the Permissions Panel is wired into the SETTINGS view (stationui.js):
+// permissions-ui.test.js — source-lock that the Permissions Panel is wired into the SETTINGS view (keepui.js):
 // the never→fully-autonomous level row, the standing-grant list, and the store hooks that drive them. A grep-style
 // guard (mirrors autonomy-ui / autojobs-ui) so the panel can't silently regress out of the build.
 const assert = require('assert');
 const fs = require('fs'); const path = require('path');
-const src = fs.readFileSync(path.join(__dirname, '..', 'frontend', 'app', 'stationui.js'), 'utf8');
+const src = fs.readFileSync(path.join(__dirname, '..', 'frontend', 'app', 'keepui.js'), 'utf8');
 const appSrc = fs.readFileSync(path.join(__dirname, '..', 'frontend', 'app', 'app.js'), 'utf8');
 
 let n = 0; const ok = (c, m) => { assert.ok(c, m); n++; };
@@ -17,7 +17,7 @@ ok(/<h4 class="ms-h">EACH CREW MEMBER/.test(src), 'the crew list is a real secti
 // ONE QUESTION (2026-10-04, Andrew: "make it less confusing"): the unattended ladder lives in AUTONOMY only (a
 // posture still sets it), and the two sweep buttons that repeated the postures are gone.
 ok(!/ONE-STEP AUTONOMY/.test(src) && !/id="perm-level"/.test(src), 'no second copy of the AUTONOMY ladder on the permissions pane');
-ok(!/id="perm-full-all"/.test(src) && !/id="perm-ask-all"/.test(src), 'no whole-station sweep buttons repeating the postures');
+ok(!/id="perm-full-all"/.test(src) && !/id="perm-ask-all"/.test(src), 'no whole-keep sweep buttons repeating the postures');
 ok(/<h4 class="ms-h">STANDING APPROVALS/.test(src), 'standing-approvals header is a real section header');
 // Block NUMBERS are gone. They forced the reader to hold a cross-reference ("overridden by block 2")
 // and they only existed because the pane made a newcomer walk all four blocks in order.
@@ -26,7 +26,7 @@ ok(!/ms-h">\d · /.test(src) && !/block 2/i.test(src), 'no numbered blocks and n
 // ── THE POSTURE FRONT DOOR ──
 // Measured: the previous pass still cost 547 words + 16 controls to set up ONE agent. Three postures
 // compose reach + approval + unattended so a newcomer answers ONE question; the rest is behind a fold.
-ok(/const STATION_POSTURES = \[/.test(src), 'the station postures table exists');
+ok(/const KEEP_POSTURES = \[/.test(src), 'the keep postures table exists');
 ok(/id="perm-postures"/.test(src) && /const paintPostures = \(\) =>/.test(src), 'the posture front door is rendered');
 for (const p of ['CHECK WITH ME', 'LET IT WORK', 'FULL POWER']) ok(new RegExp("label: '" + p + "'").test(src), 'posture offered: ' + p);
 // TRUTH: a posture is a shortcut for SETTING values, never a badge claiming one. It lights only when
@@ -34,15 +34,15 @@ for (const p of ['CHECK WITH ME', 'LET IT WORK', 'FULL POWER']) ok(new RegExp("l
 ok(/const activePosture = \(\) => \{[\s\S]{0,700}present\.every\(a =>[\s\S]{0,300}snap\.level === P\.level\)/.test(src),
   'a posture matches only when EVERY component matches the live state');
 ok(/if \(!snap\.loaded \|\| snap\.masterBypass \|\| snap\.envFullAccess\) return null;/.test(src),
-  'the master override outranks every posture (no card may claim a bypassed station)');
-ok(/CUSTOM — your crew have different answers/.test(src), 'a hand-tuned station reads CUSTOM instead of being claimed by the nearest card');
+  'the master override outranks every posture (no card may claim a bypassed keep)');
+ok(/CUSTOM — your crew have different answers/.test(src), 'a hand-tuned keep reads CUSTOM instead of being claimed by the nearest card');
 ok(/const done = res\.filter\(r => r\.ok\)\.length;/.test(src) && /r\.done \+ ' of ' \+ r\.of \+ ' crew set to '/.test(src),
   'applying a posture reports the number that ACTUALLY changed');
-ok(/STATION_POSTURES[\s\S]{0,900}profile: 'station-gear'[\s\S]{0,900}profile: 'trusted-project'[\s\S]{0,900}profile: 'this-computer'/.test(src),
+ok(/KEEP_POSTURES[\s\S]{0,900}profile: 'keep-gear'[\s\S]{0,900}profile: 'trusted-project'[\s\S]{0,900}profile: 'this-computer'/.test(src),
   'postures only ever name LOCAL-runtime profiles (Docker/SSH need a probe and a saved target)');
 ok(/btn\.querySelector\('\.pp-name'\)\.textContent = 'SURE\? WHOLE COMPUTER'/.test(src),
   'FULL POWER keeps a two-press confirm, arming the NAME span so the card is not flattened');
-// ADVANCED = the whole-station override + Safe Cell maintenance, ONE fold. The override's EFFECT is never hidden:
+// ADVANCED = the whole-keep override + Safe Cell maintenance, ONE fold. The override's EFFECT is never hidden:
 // the glance and every crew row report it, and the fold opens itself while the override is ON.
 ok(/<details class="perm-fold" id="perm-advanced">/.test(src), 'ADVANCED is one closed fold');
 {
@@ -53,7 +53,7 @@ ok(/<details class="perm-fold" id="perm-advanced">/.test(src), 'ADVANCED is one 
 }
 ok(/const advFold = bypassWrap\.closest\('details'\);[\s\S]{0,160}advFold\.open = true;/.test(src),
   'an ON override opens its fold, so the switch outranking every row is on screen');
-ok(/Turn the whole-station override off under <b>Advanced<\/b> below/.test(src), 'the glance says where to turn the override off');
+ok(/Turn the whole-keep override off under <b>Advanced<\/b> below/.test(src), 'the glance says where to turn the override off');
 ok(/id="perm-crew"[\s\S]{0,400}<h4 class="ms-h">STANDING APPROVALS[\s\S]{0,600}id="perm-advanced"/.test(src),
   'the pane runs question → crew → standing approvals → advanced, in that order');
 // TIER 2 MUST STAY VISIBLE. Folding the per-agent rows away over-corrected: a posture can only set
@@ -71,7 +71,7 @@ ok(/<details class="cf-access-more"[\s\S]{0,200}executionProfileCard\(a\) \+ app
 ok(/accWrap\.querySelectorAll\('\[data-access-posture\]'\)/.test(src) && /if \(P\.id === 'open'\) ArmConfirm\.wire\(chip/.test(src), 'dossier answers apply through the same paths with a two-press FULL POWER');
 
 // ── the plain-language pass (2026-08-07) ──
-// AT A GLANCE: the pane opens with ONE ordinary sentence about the station's real posture, counted from
+// AT A GLANCE: the pane opens with ONE ordinary sentence about the keep's real posture, counted from
 // the same live records the rows render — never a fixed string, never a claim the roster can't back.
 ok(/id="perm-glance"/.test(src), 'the pane opens with an AT A GLANCE summary card');
 ok(/const paintGlance = \(\) =>/.test(src) && /present\.filter\(a => a && a\.approvalMode === 'full'\)\.length/.test(src),
@@ -93,11 +93,11 @@ ok(/<span class="pc-q">CAN REACH<\/span>/.test(src) && /<span class="pc-q">AUTHO
   'each control is preceded by the plain question it answers');
 // the reach ladder must stay ORDERED and self-describing: a meter plus one ordinary sentence per rung.
 ok(/const reachMeter = \(n\) =>/.test(src) && /class="pc-dots"/.test(src), 'each reach chip wears a reach meter');
-ok(/id: 'safe-cell'[\s\S]{0,900}id: 'remote-ssh'[\s\S]{0,900}id: 'station-gear'[\s\S]{0,900}id: 'trusted-project'[\s\S]{0,900}id: 'this-computer'/.test(src),
+ok(/id: 'safe-cell'[\s\S]{0,900}id: 'remote-ssh'[\s\S]{0,900}id: 'keep-gear'[\s\S]{0,900}id: 'trusted-project'[\s\S]{0,900}id: 'this-computer'/.test(src),
   'EXECUTION_PROFILES is ordered safest → broadest (the array order IS the chip order)');
 ok(/reach: 1,[\s\S]{0,900}reach: 1,[\s\S]{0,900}reach: 2,[\s\S]{0,900}reach: 3,[\s\S]{0,900}reach: 4,/.test(src),
   'the reach meter never decreases down the ladder');
-ok(/EXECUTION_PROFILE_DEFAULT = 'station-gear'/.test(src) && !/\|\| EXECUTION_PROFILES\[0\]/.test(src),
+ok(/EXECUTION_PROFILE_DEFAULT = 'keep-gear'/.test(src) && !/\|\| EXECUTION_PROFILES\[0\]/.test(src),
   'the profile fallback is the DEFAULT by id, never an index into the reach-ordered array');
 ok(/plain: 'None of your files\./.test(src) && /plain: 'The whole local computer/.test(src),
   'every rung carries a plain-English sentence about what it can touch');
@@ -107,7 +107,7 @@ ok(/plain: 'None of your files\./.test(src) && /plain: 'The whole local computer
 ok(/const effFull = full \|\| overridden;/.test(src), 'the row reports the EFFECTIVE approval posture, not the stored one alone');
 ok(/const overridden = !!\(snap\.loaded && \(snap\.masterBypass \|\| snap\.envFullAccess\)\);/.test(src),
   'the override state is read from SERVER truth, never guessed locally');
-ok(/OVERRIDDEN BY WHOLE-STATION FULL POWER/.test(src) && /The whole-station Full Power switch is ON, so this agent has host-wide authority/.test(src),
+ok(/OVERRIDDEN BY WHOLE-KEEP FULL POWER/.test(src) && /The whole-keep Full Power switch is ON, so this agent has host-wide authority/.test(src),
   'an overridden row says so in plain words instead of contradicting the glance');
 ok(/Turn that switch off and it goes back to stopping for your yes/.test(src),
   'the stored setting stays visible as what it returns to (never hidden)');
@@ -125,7 +125,7 @@ ok(/PermissionsStore\.setBypass\(want\)/.test(src), 'the bypass flip drives Perm
 ok(/flip\(onBtn, true,/.test(src) && /flip\(offBtn, false,/.test(src), 'the switch flips both ways');
 ok(/btn\.disabled = true;/.test(src), 'a flip in flight disables its button (no double POST)');
 ok(/class="perm-m-err"/.test(src) && /bypassErr/.test(src), 'a refused flip reports AT the switch, not in another block');
-ok(/ArmConfirm\.wire\(onBtn/.test(src), 'turning station-wide Full Power ON keeps the two-press confirm');
+ok(/ArmConfirm\.wire\(onBtn/.test(src), 'turning keep-wide Full Power ON keeps the two-press confirm');
 ok(/snap\.envFullAccess/.test(src), 'an env-forced bypass is explained (pinned switch), never a dead toggle');
 ok(/host-wide authority: protected files, arbitrary commands, visible apps/.test(src), 'the bypass copy names the authority it actually grants');
 
@@ -134,7 +134,7 @@ ok(/setApproval/.test(src), 'rows apply through access.config.setApproval (the d
 ok(/ArmConfirm\.wire\(b, \{ armedLabel: 'SURE\? GRANT FULL POWER'/.test(src),
   'escalating one agent to Full Power keeps the two-press confirm');
 // the SAME three answers per agent: both halves written through the card paths, counted, FULL POWER two-press
-ok(/const agentPostureOf = \(a\) => STATION_POSTURES\.find/.test(src), 'a crew row knows which of the three answers it holds');
+ok(/const agentPostureOf = \(a\) => KEEP_POSTURES\.find/.test(src), 'a crew row knows which of the three answers it holds');
 ok(/data-agent-posture="/.test(src) && /class="ov-vchips pc-chips pc-posture-chips"/.test(src), 'each crew row offers the three answers');
 ok(/setExecutionProfile\(id, P\.profile\)\)\s*\.then\(okP => !!okP && !!access\.config\.setApproval\(id, P\.approval\)\)/.test(src),
   'a per-agent answer writes reach THEN asking, and never half-applies after a refused reach change');
@@ -166,7 +166,7 @@ ok(/Full Access is represented only by the canonical per-agent APPROVAL rows/.te
   'Full Access is not duplicated as an ephemeral standing-grant wildcard');
 
 // the store hooks
-ok(/PermissionsStore\.setLevel\(P\.level\)/.test(src), 'a station posture still sets the unattended level (one click, one truth)');
+ok(/PermissionsStore\.setLevel\(P\.level\)/.test(src), 'a keep posture still sets the unattended level (one click, one truth)');
 ok(/PermissionsStore\.grant\(/.test(src) && /PermissionsStore\.revoke\(/.test(src), 'grant + revoke wired to the store');
 ok(/PermissionsStore\.refresh\(/.test(src), 'panel refreshes grants from the sidecar on open');
 ok(/snap\.error/.test(src), 'panel surfaces permission load/mutation failures instead of painting fake empty authority');

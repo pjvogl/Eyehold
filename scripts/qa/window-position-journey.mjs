@@ -20,8 +20,8 @@ async function waitFor(expr, label) {
 }
 
 async function openSettings() {
-  await waitFor("typeof StationUI === 'object' && typeof StationUI.openTerm === 'function' && !!document.querySelector('#screen-game.active')", 'active station');
-  await evalJS(cdp, "StationUI.openTerm('settings')");
+  await waitFor("typeof KeepUI === 'object' && typeof KeepUI.openTerm === 'function' && !!document.querySelector('#screen-game.active')", 'active keep');
+  await evalJS(cdp, "KeepUI.openTerm('settings')");
   await waitFor("!!document.querySelector('.term.console .term-x')", 'Settings terminal');
   await sleep(650);
 }
@@ -33,7 +33,7 @@ async function probe(label) {
     const close = w && w.querySelector('.term-x');
     if (!w || !head || !close) return { label: ${JSON.stringify(label)}, ok: false, reason: 'missing terminal chrome' };
     const wr = w.getBoundingClientRect(), hr = head.getBoundingClientRect(), xr = close.getBoundingClientRect();
-    const saved = JSON.parse(localStorage.getItem('eyehold.station.v1') || '{}').termPos?.settings;
+    const saved = JSON.parse(localStorage.getItem('eyehold.keep.v1') || '{}').termPos?.settings;
     const ok = hr.bottom > 0 && hr.top < innerHeight && xr.left >= 0 && xr.right <= innerWidth && xr.top >= 0 && xr.bottom <= innerHeight;
     return { label: ${JSON.stringify(label)}, ok, viewport: [innerWidth, innerHeight], window: [wr.left, wr.top, wr.width, wr.height], close: [xr.left, xr.top, xr.right, xr.bottom], saved };
   })()`);
@@ -47,9 +47,9 @@ try {
   await cdp.send('Page.enable');
   await cdp.send('Runtime.enable');
   await cdp.send('Page.navigate', { url });
-  await waitFor("typeof StationUI === 'object' && typeof StationUI.openTerm === 'function' && !!document.querySelector('#screen-game.active')", 'station floor');
+  await waitFor("typeof KeepUI === 'object' && typeof KeepUI.openTerm === 'function' && !!document.querySelector('#screen-game.active')", 'keep floor');
   await evalJS(cdp, `(() => {
-    const key = 'eyehold.station.v1';
+    const key = 'eyehold.keep.v1';
     const state = JSON.parse(localStorage.getItem(key) || '{"v":1}');
     state.v = 1; state.termPos = state.termPos || {}; state.termPos.settings = { left: -996, top: -40 };
     localStorage.setItem(key, JSON.stringify(state));

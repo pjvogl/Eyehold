@@ -43,7 +43,7 @@ function packagePlay({root,out,nodeExecutable=process.execPath,platform=process.
   'then enter it only in the local Work Board owner review form. It is separate from the provider key.',
   '',
   'This is a personal development/test package. Public art/signing/release readiness is not certified.',
-  'If port 8787 is already in use, the launcher stops instead of opening a different existing station.'
+  'If port 8787 is already in use, the launcher stops instead of opening a different existing keep.'
  ].join('\r\n')+'\r\n');
  return out;
 }

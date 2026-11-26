@@ -115,7 +115,7 @@ function boot(port, env, attemptsLeft) {
     A.ok(skillHeads.length >= 1, 'the task turn carries at least one skill recipe (default-on library skills)');
     A.ok(skillHeads.every(h => chat.system.indexOf(h) < 0), 'greeting: none of those skill recipes ship');
     A.ok(chat.system.indexOf('<capabilities_ground_truth>') >= 0, 'greeting: the capabilities ground truth STAYS (truthful telemetry)');
-    // ...but it never says "You CAN" on a turn with no tools attached: it states the station grant and that this reply has none
+    // ...but it never says "You CAN" on a turn with no tools attached: it states the keep grant and that this reply has none
     A.ok(chat.system.indexOf('NONE of these tools are attached to THIS reply') >= 0 && !/- You CAN: (?!think and reply)/.test(chat.system), 'greeting: the ground truth says no tools are attached to this reply');
     A.ok(task.system.indexOf('NONE of these tools are attached to THIS reply') < 0 && task.system.indexOf('- You CAN: ') >= 0, 'task: the ground truth still says what it CAN do');
     A.ok(chat.system.indexOf('[RUNTIME]') >= 0 && chat.system.indexOf('Run id:') >= 0, 'greeting: the runtime identity block STAYS');

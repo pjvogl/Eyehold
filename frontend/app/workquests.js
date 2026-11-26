@@ -8,7 +8,7 @@
      • a RECIPE build that's already runnable, or an AGENT-CAPABILITY (workflow) build → a single step: the
        launched run COMPLETING. Run-completion is the honest done-signal (no claim button).
 
-   The honest-quest + XP laws (same as stationquests/maintquests):
+   The honest-quest + XP laws (same as keepquests/maintquests):
      • completion is the REAL build happening (the recipe launched / the run finished) — never a claim.
      • DISMISSAL = STOP FOREVER (the Commander changed their mind; the anti-nag law).
      • NO XP — the payout is the real build, plus the shared celebration. XP still flows only from rating the
@@ -16,7 +16,7 @@
    If the accepted idea was SEEDBORN, the store passes a credit line (G3a SeedCredit) which the card carries —
    the mint→pitch→build loop, spoken on the quest card.
 
-   PURE + node-testable (mirrors stationquests.js): no Date.now / Math.random — the caller injects the clock and
+   PURE + node-testable (mirrors keepquests.js): no Date.now / Math.random — the caller injects the clock and
    the live "which required params are still missing?" list. The browser store (workqueststore.js) owns the live
    reads (the recipe's requiredMissing, the run lifecycle) + persistence; this file owns the deterministic fold +
    the projection into the shared Quests shape. */

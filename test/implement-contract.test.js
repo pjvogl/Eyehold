@@ -73,7 +73,7 @@ const selected = { title: 'Add a retry to the uploader', grounds: 'they said upl
    goals/quests/threads are often PHRASED as drafts — "Draft Automation Backlog" was a real quest that produced a
    real backlog instead of the tool it described. That choice happens at CANDIDATE time, before any card exists. */
 (function selectorAimsAtFinishableWork() {
-  const ctx = { beliefs: { goals: ['ship the station'] }, activity: ['ran a build (today)'], eligible: AP.ARCHETYPES };
+  const ctx = { beliefs: { goals: ['ship the keep'] }, activity: ['ran a build (today)'], eligible: AP.ARCHETYPES };
   const free = AP.buildCandidateDirectiveV2(Object.assign({ initiative: 'free' }, ctx));
   const leash = AP.buildCandidateDirectiveV2(Object.assign({ initiative: 'leash' }, ctx));
 
@@ -113,7 +113,7 @@ const selected = { title: 'Add a retry to the uploader', grounds: 'they said upl
   A.ok(body.indexOf("reason: 'manifest-stamp-failed'") < body.indexOf('workshopStore.markBuilt'),
     'stamp failure exits before any built registration');
   A.ok(body.indexOf('workshopStore.markBuilt') < body.indexOf("chanEmit('workshop.built'"),
-    'the station cannot emit workshop.built before durable registration');
+    'the keep cannot emit workshop.built before durable registration');
   A.ok(/retireImplementedSource\(id, sourceRunId, source/.test(body),
     'source retirement runs through the recoverable durable transaction');
   A.ok(/reason: 'built-source-retire-failed'/.test(body),

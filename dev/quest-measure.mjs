@@ -11,7 +11,7 @@ const PORT = process.env.SKYNET_PORT || '8741';
 const CDP_PORT = Number(process.env.SKYNET_CDP_PORT || 9786);
 
 const MEASURE = `(async () => {
-  StationUI.openTerm('quests');
+  KeepUI.openTerm('quests');
   await new Promise(r => setTimeout(r, 2200));
   const win = [...document.querySelectorAll('.term')].find(t => /QUEST LOG/.test(t.textContent));
   (win.getAnimations ? win.getAnimations() : []).forEach(a => { try { a.finish(); } catch (_) {} });

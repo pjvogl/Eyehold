@@ -52,7 +52,7 @@ function signedHeaders(token, origin, timestamp, nonce, body) {
 (async () => {
   const ws = fs.mkdtempSync(path.join(os.tmpdir(), 'sk-webhook-replay-'));
   const env = { SKYNET_WORKSPACES: ws, EYEHOLD_CHANNEL_WEBHOOK_SECRET: SECRET };
-  const body = JSON.stringify({ message: { chatId: 'chat-1', text: 'hello station' } });
+  const body = JSON.stringify({ message: { chatId: 'chat-1', text: 'hello keep' } });
   const timestamp = String(Date.now());
   const nonce = 'nonce_e2e_' + crypto.randomBytes(12).toString('hex');
   let child, port;

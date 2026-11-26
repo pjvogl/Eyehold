@@ -1,4 +1,4 @@
-/* sidecar/userprops.js — player-made props: the station asks the Eyehold cloud to generate a prop from a noun
+/* sidecar/userprops.js — player-made props: the keep asks the Eyehold cloud to generate a prop from a noun
    (paid from Eyehold credits), then keeps the result locally so it survives restarts and relinks.
 
    Contract with the cloud (eyehold-cloud src/propgen.js):
@@ -100,7 +100,7 @@ function makeUserProps(deps) {
     return f.startsWith(dir) ? f : null;
   }
   // ids the player deliberately deleted. The page must NOT keep these in a save (made props are otherwise protected
-  // from pruning), or a copy in another crew member's station would linger as a placeholder forever.
+  // from pruning), or a copy in another crew member's keep would linger as a placeholder forever.
   function deleted() {
     const idx = readJson(indexFile, { props: [] });
     return (Array.isArray(idx.deleted) ? idx.deleted : []).filter(isPropId);
@@ -136,13 +136,13 @@ function makeUserProps(deps) {
     if (!noun) return { ok: false, code: 'empty', message: 'Describe an object.' };
     if (noun.length > 60) return { ok: false, code: 'too_long', message: 'Keep it under 60 characters.' };
     const c = cloudCfg();
-    if (!c) return { ok: false, code: 'not_linked', message: 'Making props uses Eyehold credits. Link this station under SETTINGS \u2192 AI & MODELS first.' };
+    if (!c) return { ok: false, code: 'not_linked', message: 'Making props uses Eyehold credits. Link this keep under SETTINGS \u2192 AI & MODELS first.' };
     let r;
     try { r = await request('POST', c.url + '/v1/props/preview', c.token, { noun }, START_TIMEOUT_MS); }
     catch (e) { note('userprops.preview.start', e); return { ok: false, code: 'unreachable', message: 'Eyehold could not be reached. Check your connection and try again.' }; }
     const cloudMsg = r.j && r.j.error && r.j.error.message ? String(r.j.error.message).slice(0, 200) : '';
     if (r.status === 402) return { ok: false, code: 'insufficient_credits', message: cloudMsg && /at least/.test(cloudMsg) ? cloudMsg + ' Top up under SETTINGS \u2192 AI & MODELS.' : 'Out of Eyehold credits. Top up under SETTINGS \u2192 AI & MODELS.' };
-    if (r.status === 401 || r.status === 403) return { ok: false, code: 'not_linked', message: 'This station\u2019s Eyehold link is no longer valid. Relink it under SETTINGS \u2192 AI & MODELS.' };
+    if (r.status === 401 || r.status === 403) return { ok: false, code: 'not_linked', message: 'This keep\u2019s Eyehold link is no longer valid. Relink it under SETTINGS \u2192 AI & MODELS.' };
     if (r.status === 429) return { ok: false, code: 'busy', message: cloudMsg || 'Too many props right now. Try again shortly.' };
     if (r.status === 400) return { ok: false, code: (r.j && r.j.error && r.j.error.code) || 'invalid', message: cloudMsg || 'That description was not accepted.' };
     if (r.status === 404) return { ok: false, code: 'unsupported', message: 'Your Eyehold account server does not offer previews yet.' };
@@ -169,7 +169,7 @@ function makeUserProps(deps) {
             if (job.status === 'done' && res && res.size && typeof res.sketch === 'string') {
               const png = Buffer.from(res.sketch, 'base64');
               if (isPng(png) && png.length < MAX_PNG_BYTES) pv.result = { label: String(res.label || '').slice(0, 24), size: { fp: String(res.size.fp || ''), height: Number(res.size.height) || 0, like: String(res.size.like || '').slice(0, 80), symmetric: res.size.symmetric === true, profile: res.size.profile === true }, sketch: res.sketch };
-              else pv.job = { ...pv.job, status: 'failed', error: { code: 'bad_result', message: 'Eyehold returned a preview this station could not use.' } };
+              else pv.job = { ...pv.job, status: 'failed', error: { code: 'bad_result', message: 'Eyehold returned a preview this keep could not use.' } };
             }
           }
         } catch (e) { note('userprops.preview.poll', e); }   // offline: the page asks again
@@ -182,8 +182,8 @@ function makeUserProps(deps) {
   function startAnswer(r, what) {
     const cloudMsg = r.j && r.j.error && r.j.error.message ? String(r.j.error.message).slice(0, 200) : '';
     if (r.status === 402) return { ok: false, final: true, code: 'insufficient_credits', message: cloudMsg && /at least/.test(cloudMsg) ? cloudMsg + ' Top up under SETTINGS \u2192 AI & MODELS.' : 'Out of Eyehold credits. Top up under SETTINGS \u2192 AI & MODELS.' };
-    if (r.status === 401) return { ok: false, final: true, code: 'not_linked', message: 'This station\u2019s Eyehold link is no longer valid. Relink it under SETTINGS \u2192 AI & MODELS.' };
-    if (r.status === 403) return { ok: false, final: true, code: (r.j && r.j.error && r.j.error.code) || 'not_linked', message: cloudMsg || 'This station\u2019s Eyehold link is no longer valid. Relink it under SETTINGS \u2192 AI & MODELS.' };
+    if (r.status === 401) return { ok: false, final: true, code: 'not_linked', message: 'This keep\u2019s Eyehold link is no longer valid. Relink it under SETTINGS \u2192 AI & MODELS.' };
+    if (r.status === 403) return { ok: false, final: true, code: (r.j && r.j.error && r.j.error.code) || 'not_linked', message: cloudMsg || 'This keep\u2019s Eyehold link is no longer valid. Relink it under SETTINGS \u2192 AI & MODELS.' };
     if (r.status === 429) return { ok: false, final: true, code: 'busy', message: cloudMsg || 'Too many props right now. Try again shortly.' };
     if (r.status === 400 || r.status === 413) return { ok: false, final: true, code: (r.j && r.j.error && r.j.error.code) || 'invalid', message: cloudMsg || 'That description was not accepted.' };
     if (r.status === 404) return { ok: false, final: true, code: 'unsupported', message: 'Your Eyehold account server does not offer ' + what + ' yet.' };
@@ -195,7 +195,7 @@ function makeUserProps(deps) {
   // duplicate check BEFORE the network call; the cloud dedupes on the key, so a retried POST returns the same job.
   async function paidStart(claim, endpoint, body, what, isDuplicate) {
     const c = cloudCfg();
-    if (!c) return { ok: false, code: 'not_linked', message: 'Making props uses Eyehold credits. Link this station under SETTINGS \u2192 AI & MODELS first.' };
+    if (!c) return { ok: false, code: 'not_linked', message: 'Making props uses Eyehold credits. Link this keep under SETTINGS \u2192 AI & MODELS first.' };
     const key = newKey();
     const entry = { ...claim, key, status: 'starting', startedAt: now(), endpoint, body };
     const claimed = await serial(() => {
@@ -263,7 +263,7 @@ function makeUserProps(deps) {
   }
 
   // ---- SIDE VIEW: turn a made prop's accepted front view into its left-facing side view (the cloud keeps the
-  // height; the station stores <id>-w.png and the side footprint on the index entry). Same pending ledger.
+  // height; the keep stores <id>-w.png and the side footprint on the index entry). Same pending ledger.
   async function startSide(propId) {
     const entry = list().find((p) => p.id === propId);
     if (!entry) return { ok: false, code: 'not_found', message: 'No such made prop.' };
@@ -360,19 +360,19 @@ function makeUserProps(deps) {
       // unreadable file, a write frozen during an update) keeps the paid job pending and is retried next tick.
       let keep = false;
       const landFail = (e, what) => {
-        if (e && (e.code === 'bad_image')) { pub.status = 'failed'; pub.error = { code: 'bad_result', message: 'Eyehold returned ' + what + ' this station could not use.' }; return; }
+        if (e && (e.code === 'bad_image')) { pub.status = 'failed'; pub.error = { code: 'bad_result', message: 'Eyehold returned ' + what + ' this keep could not use.' }; return; }
         if (e && e.code === 'prop_gone') { pub.status = 'failed'; pub.error = { code: 'prop_gone', message: 'The prop was deleted before its side view arrived.' }; return; }
         note('userprops.land', e);
         keep = true; pub.status = 'running'; pub.step = 'saving'; pub.error = null;
       };
       if (job.status === 'done' && pj.kind === 'side') {
-        if (!validSide(job.result)) { pub.status = 'failed'; pub.error = { code: 'bad_result', message: 'Eyehold returned a side view this station could not use.' }; }
+        if (!validSide(job.result)) { pub.status = 'failed'; pub.error = { code: 'bad_result', message: 'Eyehold returned a side view this keep could not use.' }; }
         else {
           try { await landSide(pj.propId, pj.id, job.result, job.costUsd); }
           catch (e) { landFail(e, 'a side view'); }
         }
       } else if (job.status === 'done') {
-        if (!validResult(job.result)) { pub.status = 'failed'; pub.error = { code: 'bad_result', message: 'Eyehold returned a prop this station could not use.' }; }
+        if (!validResult(job.result)) { pub.status = 'failed'; pub.error = { code: 'bad_result', message: 'Eyehold returned a prop this keep could not use.' }; }
         else {
           try { const entry = await land(pj.id, pj.noun, job.result, job.costUsd); pub.propId = entry.id; }
           catch (e) { landFail(e, 'a prop'); }

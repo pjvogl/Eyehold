@@ -5,7 +5,7 @@ classic video-game handbook. Lane: `agent/field-manual-0906`, based on `824bdfce
 
 The in-app SYSTEM → FIELD MANUAL now has seven numbered chapters: First Mission,
 Controls, Crew, Gear, Lines, Progress, and Help. It teaches a small first job,
-shows the work cycle and station menus, supplies REFIT keycaps and practice
+shows the work cycle and keep menus, supplies REFIT keycaps and practice
 exercises, and links directly to the appropriate existing panels. Navigation
 keeps keyboard focus and accessible selected state aligned. Layout adapts to
 narrow panels. The optional quick tour remains available.

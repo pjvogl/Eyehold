@@ -163,7 +163,7 @@ jobs:
             bundles: app,dmg
             rust-target: aarch64-apple-darwin
           # The x64 release is built and upgrade-tested on actual Intel hardware. An ARM
-          # cross-build alone cannot prove the installed Intel station path.
+          # cross-build alone cannot prove the installed Intel keep path.
           - os: macos-15-intel
             target: darwin-x64
             bundles: app,dmg
@@ -195,7 +195,7 @@ jobs:
 
       - run: npm ci
 
-      - name: Verify v0.8.5 station recovery on Intel macOS
+      - name: Verify v0.8.5 keep recovery on Intel macOS
         if: runner.os == 'macOS' && matrix.target == 'darwin-x64'
         shell: bash
         run: |
@@ -821,7 +821,7 @@ jobs:
           name: eyehold-darwin-x64
           path: intel-distributable
 
-      - name: Install, Finder-launch, and recover v0.9.0 station
+      - name: Install, Finder-launch, and recover v0.9.0 keep
         shell: bash
         env:
           EYEHOLD_REQUIRE_NOTARIZED: "true"

@@ -1,7 +1,7 @@
 'use strict';
 // Crop transparent margins only. New machine bodies remain generated raster art.
 const fs=require('node:fs'),sharp=require('sharp'),crypto=require('node:crypto');
-const root='frontend/assets/industrial/dispatch-polish',docs='docs/station-remaster/dispatch-polish';
+const root='frontend/assets/industrial/dispatch-polish',docs='docs/keep-remaster/dispatch-polish';
 const generated='C:/Users/andro/.codex/generated_images/01a09e45-c8db-79c2-b990-4349e09fba9c';
 const hash=b=>crypto.createHash('sha256').update(b).digest('hex');
 const jobs=[['intake','c7de9e7f-92e6-4b13-9333-1ca5e8739440','v2'],['outbox','c0f0b0ca-742f-472d-9caa-81ee64a550a4','v2']];
@@ -24,7 +24,7 @@ const jobs=[['intake','c7de9e7f-92e6-4b13-9333-1ca5e8739440','v2'],['outbox','c0
   console.log(id,crop);
  }
  fs.writeFileSync(docs+'/integration.json',JSON.stringify({records},null,2)+'\n');
- const gp='docs/station-remaster/projection-correction/catalog-groups.json',groups=JSON.parse(fs.readFileSync(gp));
+ const gp='docs/keep-remaster/projection-correction/catalog-groups.json',groups=JSON.parse(fs.readFileSync(gp));
  if(!groups.groups.some(g=>g.name==='dispatch-polish'))groups.groups.push({name:'dispatch-polish',file:docs+'/integration.json'});
  fs.writeFileSync(gp,JSON.stringify(groups,null,2)+'\n');
 })();

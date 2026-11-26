@@ -70,7 +70,7 @@ const refusedLink = refusalOf({ linkRefused: true }).message;
 const unanswered = refusalOf({}).message;
 const outOf = refusalOf({ exhausted: true }).message;
 const heldBy = refusalOf({ exhausted: true, held: { counted: true, runs: 2, usd: 4 }, balanceUsd: 0 }).message;
-A.ok(/refused this station's link/.test(refusedLink) && /did not answer/.test(unanswered) && /^Out of managed credit/.test(outOf) && /held by 2 running Eyehold runs/.test(heldBy),
+A.ok(/refused this keep's link/.test(refusedLink) && /did not answer/.test(unanswered) && /^Out of managed credit/.test(outOf) && /held by 2 running Eyehold runs/.test(heldBy),
   'the sidecar still emits the refused-link, unanswered, out-of-credit and held refusals');
 const postMortem = (text) => {
   const v = Friendly.friendlyError(new Error(text));
@@ -108,7 +108,7 @@ global.Recipes = { get: () => null, requiredMissing: () => [] };
 const listeners = {};
 global.U = { bus: { emit: () => { throw new Error('LAW VIOLATION: workqueststore must never emit on U.bus'); }, on: (name, fn) => { (listeners[name] = listeners[name] || []).push(fn); } } };
 const notifs = [];
-global.StationUI = { rerender() {}, notify: (txt, cls) => notifs.push({ txt, cls }) };
+global.KeepUI = { rerender() {}, notify: (txt, cls) => notifs.push({ txt, cls }) };
 global.SlagLog = SlagLog;
 global.Friendly = Friendly;
 const { WorkQuestStore } = require('../frontend/app/workqueststore.js');

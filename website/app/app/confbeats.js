@@ -29,7 +29,7 @@ const ConfBeats = (() => {
 
   const LINES = {
     calibrated: '✦ i’ve started keeping score of myself — GROWTH in my dossier shows how reliable i’ve been. three verdicts in; the number is real now.',
-    trusted: '✦ my reliability crossed ' + TRUSTED_AT + '% — the station calls that TRUSTED. the badge is lit in GROWTH, in my dossier. i intend to keep it.'
+    trusted: '✦ my reliability crossed ' + TRUSTED_AT + '% — the keep calls that TRUSTED. the badge is lit in GROWTH, in my dossier. i intend to keep it.'
   };
 
   function load() { try { const raw = localStorage.getItem(KEY); return raw ? JSON.parse(raw) : null; } catch (_) { return null; } }

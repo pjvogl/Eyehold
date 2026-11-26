@@ -29,7 +29,7 @@ gets exactly ONE owning lane per wave; everyone else keeps their hands off it:
 | Hotfile | Wave-1 owner | Wave-2 owner |
 |---|---|---|
 | `frontend/app/chat.js` | Lane B (run-truth & outputs) | Lane G (loop comprehension) |
-| `frontend/app/stationui.js` | Lane C (settings & diagnostics) | Lane H (budget/models/voice) |
+| `frontend/app/keepui.js` | Lane C (settings & diagnostics) | Lane H (budget/models/voice) |
 | `frontend/app/marketplace.js` | Lane D (recruitment) | — |
 | `frontend/app/app.js` + onboarding/tutorial/keycta | Lane E (first-run) | — |
 | `frontend/app/friendlyerror.js`, `modelpicker.js` | Lane A (error doors) | — |
@@ -58,7 +58,7 @@ One new module `frontend/app/hint.js` + a term map `frontend/app/glossary.js`:
   family per frontend law).
 - Glossary entries are ONE sentence each, written for a beginner:
   `workstream: "this agent's own chat thread — switch streams to talk to different agents"`,
-  `refit: "the station's build mode — open it from the dock to place furniture and gear"`, etc.
+  `refit: "the keep's build mode — open it from the dock to place furniture and gear"`, etc.
   Seed it with the audit's Theme-1 table.
 - **Done means:** hover any `data-hint` element in the live app → tooltip renders with the
   right copy; zero tooltips on canvas hover paths (hover=glance law untouched).
@@ -66,7 +66,7 @@ One new module `frontend/app/hint.js` + a term map `frontend/app/glossary.js`:
   instead of inventing local tooltip code.
 
 Also in Wave 0: extract the existing 2-step arm/confirm pattern (key removal,
-stationui.js:~1990) into a small helper if it isn't one already, so Lanes B/D reuse it.
+keepui.js:~1990) into a small helper if it isn't one already, so Lanes B/D reuse it.
 
 ---
 
@@ -78,8 +78,8 @@ Every error names its door and opens it.
 
 1. **capdenied v2:** parse the capability from the raw error (the classifier at
    friendlyerror.js:85 already sees it), render "needs FILE ACCESS (the CABINET)" + an action
-   button. Route to the true unlock: gear/REFIT (or the station quest if one was minted —
-   stationqueststore already mints on capdenied), NOT the SKILLS list.
+   button. Route to the true unlock: gear/REFIT (or the keep quest if one was minted —
+   keepqueststore already mints on capdenied), NOT the SKILLS list.
 2. **auth/no-key v2:** action button that opens the actual key entry (CONNECT key field /
    PROVIDERS card), not generic Settings. Codex users get "sign in with ChatGPT" instead.
 3. **modelpicker stranded state:** "no models found" gets the same button. modelpicker.js:81.
@@ -119,7 +119,7 @@ Sequential slices inside one worktree, committed one at a time:
 shows a working open-folder affordance; a workshop return card shows named commands; quest
 dismiss takes two clicks. Canvas untouched.
 
-### Lane C — `ux-settings-truth` (SOLE stationui.js owner, wave 1)
+### Lane C — `ux-settings-truth` (SOLE keepui.js owner, wave 1)
 
 1. **Key-save confirmation:** after SAVE, inline "✓ key saved — stored in your OS keychain"
    (desktop) / "stored locally in this browser" (browser). Truth source: keychainMode from
@@ -138,11 +138,11 @@ key end-to-end; an env-pinned cap renders its badge.
 ### Lane D — `ux-recruit-doors` (SOLE marketplace.js owner, wave 1)
 
 1. **Prospect dismiss confirm:** 2-step arm + copy that admits permanence ("dismiss forever —
-   the station won't draft this role again").
+   the keep won't draft this role again").
 2. **Model-picker stranded state** in the summon flow: consume Lane A's action-button pattern
    (coordinate: Lane A owns modelpicker.js; Lane D only wires the container).
 3. **Dossier de-jargon (copy-only):** CLEARANCE/EFFORT/FOCUS/GEAR rows get `data-hint` terms;
-   "not on station — add in REFIT" gains "(optional — you can still summon)". No layout changes.
+   "not on keep — add in REFIT" gains "(optional — you can still summon)". No layout changes.
 4. **Kit checkboxes in the custom builder** show their capability blurbs (the `capGrant` map
    already has them) + inline "pick at least one kit item" validation on save.
 
@@ -208,7 +208,7 @@ rule from the Codex-coexistence lesson).
   stronger working animation within motion.css tokens.
 - Interview progress ("2 of 5") + closing beat ("that's everything — talk normally now").
 
-### Lane H — `ux-settings-depth` (stationui.js owner, wave 2)
+### Lane H — `ux-settings-depth` (keepui.js owner, wave 2)
 
 - Budget spend bars per scope from `/api/budget/status` (`scopes{usd,cap,frac}` already
   computed; warn color at 80% matches backend `warn`).
@@ -228,7 +228,7 @@ rule from the Codex-coexistence lesson).
 - "Because you said: …" grounding lines on pitches, standing-job proposals, and the recruiter
   shelf (the engines already store the grounding — render it).
 - Locked skills: each gear badge links to its unlock path; copy reframed from "currently off"
-  to "unlocks when the <gear> is on station — place it in REFIT".
+  to "unlocks when the <gear> is on keep — place it in REFIT".
 - Belief provenance badges in the dossier ("you told me" / "observed from your work").
 
 ### Lane J — `ux-lifecycle` (updates.js, updatecore.js, INSTALL.md)

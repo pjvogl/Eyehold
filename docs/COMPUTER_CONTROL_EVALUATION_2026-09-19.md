@@ -105,9 +105,9 @@ stable.
 Eight adapter regression tests passed. The real Notepad probes, native image
 loop and seeded app smoke passed as described above. `npm run test:fast` timed
 out at its 900,000 ms limit after 743/829 steps, last completed
-`test/station-recovery.test.js`. No assertion failure was reported in that
+`test/keep-recovery.test.js`. No assertion failure was reported in that
 prefix. This is **not a green full gate**. The remaining 86 steps were resumed
-separately, starting with `test/station-recovery-cli.test.js`, and passed:
+separately, starting with `test/keep-recovery-cli.test.js`, and passed:
 `cua-eval-fast-remainder: OK — 86 step(s) green`. All 829 steps completed across
 the split runs, but the standard single-run gate still timed out. The branch
 has not been merged. No production sidecar/route files changed, so

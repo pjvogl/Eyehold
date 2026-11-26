@@ -1,7 +1,7 @@
 'use strict';
 // Non-destructive export of generated corrections; only transparent margins are cropped.
 const fs=require('node:fs'),sharp=require('sharp'),crypto=require('node:crypto');
-const root='frontend/assets/industrial/camera-audit',docs='docs/station-remaster/camera-audit';
+const root='frontend/assets/industrial/camera-audit',docs='docs/keep-remaster/camera-audit';
 const hash=b=>crypto.createHash('sha256').update(b).digest('hex');
 const sourceRoot='C:/Users/andro/.codex/generated_images/01a09e45-c8db-79c2-b990-4349e09fba9c';
 const jobs=[['workbench','2131b83e-6dd5-429f-a8a7-52d741fb6a6f','v2'],['longtable','dc7a85fc-3af7-4974-870e-5425661ecb1f'],['bridge_tacticaltable','3f5548d0-5cb9-441a-8618-0944b6800b9a','v2'],['toolbox','2f24db72-bcab-4816-aa73-968a110eb2f0']];
@@ -17,14 +17,14 @@ for(const[id,key,version]of jobs){
  const width=right-left+1,height=bottom-top+1,crop={left,top,width,height};
  retained=0;for(let y=top;y<=bottom;y++)for(let x=left;x<=right;x++)if(data[(y*info.width+x)*4+3]>0)retained++;
  const out=await sharp(bytes).extract(crop).png().toBuffer(),repoPath=root+'/'+id+'.png';fs.writeFileSync(repoPath,out);
- const old=m.props[id].views.s,record={id,view:'s',source,sourceSha256:hash(bytes),repoPath,outputSha256:hash(out),sourceCrop:crop,sourceWidth:width,sourceHeight:height,footprint:old.footprint,bounds:old.bounds,contact:{x:.5,y:(foot+1-top)/height},retained,status:'camera correction candidate; inspect in station'};
+ const old=m.props[id].views.s,record={id,view:'s',source,sourceSha256:hash(bytes),repoPath,outputSha256:hash(out),sourceCrop:crop,sourceWidth:width,sourceHeight:height,footprint:old.footprint,bounds:old.bounds,contact:{x:.5,y:(foot+1-top)/height},retained,status:'camera correction candidate; inspect in keep'};
  if(id==='longtable')record.surfaceSupport={space:'export-normalized',points:[[.04,.06],[.96,.06],[.96,.74],[.04,.74]]};
  if(id==='toolbox')record.bounds={x:1,y:5,width:10,height:7};
  if(id==='workbench')record.exposure=1.35; // dark top stays legible against the tread deck under the shared light pass
  records.push(record);console.log(id,JSON.stringify(crop));
 }
 fs.writeFileSync(docs+'/integration.json',JSON.stringify({records},null,2)+'\n');
-const gp='docs/station-remaster/projection-correction/catalog-groups.json',groups=JSON.parse(fs.readFileSync(gp));
+const gp='docs/keep-remaster/projection-correction/catalog-groups.json',groups=JSON.parse(fs.readFileSync(gp));
 if(!groups.groups.some(g=>g.name==='camera-audit'))groups.groups.push({name:'camera-audit',file:docs+'/integration.json'});
 fs.writeFileSync(gp,JSON.stringify(groups,null,2)+'\n');
 })();

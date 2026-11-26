@@ -36,10 +36,10 @@
     note.textContent='Imported net profit: $'+report.netProfitUSD.toLocaleString('en-US')+'. '+report.scope;
     for(const tier of tiers){
      const label=labels.get(tier);label.textContent=label.textContent.replace('(LOCKED)','(UNLOCKED)');
-     if(typeof App==='undefined'||!App.station?.()||typeof EyeholdNativeLoot==='undefined')continue;
+     if(typeof App==='undefined'||!App.keep?.()||typeof EyeholdNativeLoot==='undefined')continue;
      try{
-      const applied=EyeholdNativeLoot.applyTrustedMilestone({station:App.station(),tier,attestation:report,
-       verifyAttestation:(proof,t)=>proof===report&&tiers.includes(t),persist:()=>App.persist()});
+      const applied=EyeholdNativeLoot.applyTrustedMilestone({keep:App.keep(),tier,attekeep:report,
+       verifyAttekeep:(proof,t)=>proof===report&&tiers.includes(t),persist:()=>App.persist()});
       label.textContent=label.textContent.replace('(UNLOCKED)',applied.complete?'(INSTALLED)':'(UNLOCKED — make space in the rooms, then retry)');
      }catch(e){label.textContent=label.textContent.replace('(UNLOCKED)','(UNLOCKED — '+e.message+')');}
     }

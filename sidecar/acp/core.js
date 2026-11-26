@@ -1,7 +1,7 @@
 /* sidecar/acp/core.js — the PURE core of Eyehold's ACP (Agent Client Protocol) agent.
 
    THE GAP THIS CLOSES. Eyehold had no editor integration of any kind — zero. You could reach an agent from the
-   station window, from five messaging channels, from a routine, and from an OpenAI-compatible HTTP surface, but
+   keep window, from five messaging channels, from a routine, and from an OpenAI-compatible HTTP surface, but
    not from the place a developer actually works. The reference harness ships a full ACP agent (acp_adapter/,
    ~5.3k lines) and that is what makes it reachable from Zed, Neovim, and every other ACP client. This is the
    same protocol on Eyehold's own seams.
@@ -14,11 +14,11 @@
      makeAcpCore({ callSidecar, openRun, notify, request, newId, version?, log? }) -> { handleRpc, _internals }
 
    ── WHY IT PROXIES OVER LOOPBACK (read before restructuring) ─────────────────────────────────────────────────
-   The editor SPAWNS this process; the station is a separate long-running sidecar. One sidecar owner per
+   The editor SPAWNS this process; the keep is a separate long-running sidecar. One sidecar owner per
    workspace is a hard invariant, so this core never touches a store file: every action is an HTTP call to the
    running sidecar, exactly like sidecar/mcp/serve.js. A prompt is POST /api/run (which streams NDJSON events),
    a permission answer is POST /api/consent, a cancel is POST /api/cancel. Nothing here duplicates harness logic
-   — if the station is down, every method answers with an honest "start Eyehold" error instead of pretending.
+   — if the keep is down, every method answers with an honest "start Eyehold" error instead of pretending.
 
    ── PURE ───────────────────────────────────────────────────────────────────────────────────────────────────
    No fs, no fetch, no clock, no rng: `callSidecar` / `openRun` / `notify` / `request` / `newId` are all injected,
@@ -189,7 +189,7 @@
     const n = str(name);
     const path = args && (args.path || args.file || args.filePath || args.file_path);
     const short = (v) => clip(str(v).replace(/\s+/g, ' '), 60);
-    /* path.trust is not a tool the model calls — it is the station's FOLDER-TRUST ask, and because an ACP
+    /* path.trust is not a tool the model calls — it is the keep's FOLDER-TRUST ask, and because an ACP
        session sends its cwd as the project root it is very often the FIRST card a user ever sees here. Titling
        it "path.trust" made the most important first impression unreadable. */
     if (n === 'path.trust' && path) return 'Allow Eyehold to work in ' + short(path);
@@ -241,7 +241,7 @@
     if (r === 'budget' && atBalance === true) return '\n\n(stopped: this run used what was left on your Eyehold balance — add credits in Eyehold under SETTINGS → AI & MODELS.)';
     if (r === 'budget') return '\n\n(stopped: this run hit a spend cap — raise or clear it in Eyehold under SETTINGS › SPENDING LIMITS.)';
     if (r === 'max_iters') return '\n\n(stopped: reached the step limit for one turn — send "continue" to keep going.)';
-    if (r === 'error') return '\n\n(stopped: the run failed inside Eyehold — check the station log for the error.)';
+    if (r === 'error') return '\n\n(stopped: the run failed inside Eyehold — check the keep log for the error.)';
     return '';
   }
 
@@ -312,7 +312,7 @@
              It was true in the first cut, which is a capability lie of the exact kind this project forbids: a
              client reads `image: true` as "this agent can see pictures", so it happily lets the user attach a
              screenshot, and the agent then answers about text it was never shown. Attachments enter Eyehold
-             through the station's own attachment seam (a workspace file + provider image blocks) and this
+             through the keep's own attachment seam (a workspace file + provider image blocks) and this
              bridge has no path to it. Declaring false makes a client either disable image attachment or warn,
              which is the truthful outcome; blocksToTurn still degrades gracefully and STATES the count if a
              client sends one anyway.
@@ -320,7 +320,7 @@
              (fenced and labelled as data). */
           promptCapabilities: { image: false, embeddedContext: true }
         },
-        // No auth methods: the station's own per-launch token fences /api, and this bridge is spawned locally by
+        // No auth methods: the keep's own per-launch token fences /api, and this bridge is spawned locally by
         // the editor on the same machine. Advertising an auth method we do not enforce would be theatre.
         authMethods: []
       };
@@ -333,10 +333,10 @@
       sessions.set(sessionId, { cwd: cwd, messages: [], run: null });
       log('new session ' + sessionId + ' (cwd=' + cwd + ')');
       // mcpServers: an ACP client may pass its own MCP servers for this session. Eyehold's connectors are
-      // account-level and configured in the station, so we do not silently adopt them — and we say so once
+      // account-level and configured in the keep, so we do not silently adopt them — and we say so once
       // rather than letting the user wonder why their editor's MCP tools are absent.
       if (Array.isArray(p.mcpServers) && p.mcpServers.length) {
-        log('ignoring ' + p.mcpServers.length + ' client-supplied MCP server(s): Eyehold connectors are configured in the station');
+        log('ignoring ' + p.mcpServers.length + ' client-supplied MCP server(s): Eyehold connectors are configured in the keep');
       }
       return { sessionId: sessionId };
     }
@@ -378,7 +378,7 @@
       const turn = blocksToTurn(p.prompt);
       if (!turn.text && !turn.images) throw { rpc: err(id, E_PARAMS, 'prompt carried no usable content') };
 
-      /* An image block cannot ride into /api/run from here: attachments enter through the station's own
+      /* An image block cannot ride into /api/run from here: attachments enter through the keep's own
          attachment seam (a workspace file + provider image blocks), which this bridge has no path to. Rather
          than dropping them silently — the model would answer about text it was never shown — the turn states
          the count, so both the model and the user can see that something was not delivered. */

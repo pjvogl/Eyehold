@@ -72,12 +72,12 @@ Three facts make the bridge additive:
   = per-agent). `CAP_REGISTRY.connector` marker entry. `/api/connectors` (GET list, POST upsert,
   POST remove, POST refresh) — tokens accepted + persisted server-side, never echoed back. Boot
   warming. Verified by a live boot-smoke (routes + token-never-leaks + persistence).
-- [x] **Slice 5a — Connectors panel.** `stationui.js` `buildConnectors` + a `data-term="connectors"`
+- [x] **Slice 5a — Connectors panel.** `keepui.js` `buildConnectors` + a `data-term="connectors"`
   toolbar button + `app.css` styles: add / enable / disable / remove / refresh MCP servers, see each
   server's discovered tools, live over `/api/connectors`. The token field is never re-displayed.
   Browser-verified (panel renders every state, zero console errors; live API round-trip confirmed
   separately via the boot-smoke).
-- [x] **Slice 5b — connector-portal prop (the gamified projection).** A first-class, living station object:
+- [x] **Slice 5b — connector-portal prop (the gamified projection).** A first-class, living keep object:
   a placeable `connector_portal` prop (CATALOG/`comms`, 1×2) drawn PROCEDURALLY in the phosphor pixel-art
   style (`propsprites.js` `F.connector_portal`) — a gateway pylon whose crown aperture + status lamp + conduit
   ride the BOUND connector's LIVE state (green=connected · amber=offline · red=error · grey=unbound), and which
@@ -86,7 +86,7 @@ Three facts make the bridge additive:
       `worldmodel.bayObjects` emits `{ objectType:'connector', connectorId }` per BOUND portal (NOT deduped),
       `projectGeometry` carries `connectorId` to the renderer, and `world.js`'s plan hash serializes it so a
       re-bind re-POSTs. `bindConnector(propId, id)` sets/clears the binding (new mutation, undo-snapshotted).
-    - **Sidecar contract.** `router.stationFor` now passes a rich `{ objectType, connectorId }` object through
+    - **Sidecar contract.** `router.keepFor` now passes a rich `{ objectType, connectorId }` object through
       verbatim (string caps still map to `{ objectType }`); `resolveTools` yields no static grant for it (the
       MCP tools are projected dynamically by the connector manager keyed on `connectorId`).
     - **Builder UX.** `build.js` `openConnectorEditor` (via `PROP_EDITABLE`/`openPropEditor`) lists the live
@@ -95,14 +95,14 @@ Three facts make the bridge additive:
     - **Live + firing.** `world.js` polls `/api/connectors` → `PropSprites.setConnectorState`; an `mcp__<id>__*`
       tool call (hero re-emitted onto `U.bus` by `chat.js`) resolves to the bound portal → `pulseConnector`.
   Tests: `worldmodel.test.js` (bayObjects connector emission + `bindConnector`) and `routing.b5.test.js`
-  (`stationFor` rich-object passthrough). `test:fast` green; browser-verified (palette + sprite renders every
+  (`keepFor` rich-object passthrough). `test:fast` green; browser-verified (palette + sprite renders every
   state with no throw, zero console errors).
 
 ## Open decisions for andro
 
 1. **Auth:** bearer-token paste only for the MVP, or full OAuth 2.1 device-code flow (dovetails with
    the planned ChatGPT/Codex OAuth work)?
-2. **Connector scope:** station-wide (any agent with a portal) vs. per-agent (only the agent whose
+2. **Connector scope:** keep-wide (any agent with a portal) vs. per-agent (only the agent whose
    bay holds the portal)? Per-agent matches the existing per-bay capability isolation (B5).
 3. **stdio in scope at all**, or remote-only until the `terminal`/shell.exec jail exists?
 

@@ -25,17 +25,17 @@ Engineering work closed for the reproduced permanently dead stage canvas: the li
 
 ## Symptom
 
-The station viewport becomes blank after approximately 10-20 minutes.
+The keep viewport becomes blank after approximately 10-20 minutes.
 
 ## Repro
 
-Run the affected customer station idle for 20 minutes at its actual window size and display scale. Capture renderer diagnostics and saved state before reloading.
+Run the affected customer keep idle for 20 minutes at its actual window size and display scale. Capture renderer diagnostics and saved state before reloading.
 
 ## Evidence
 
-docs/EMAIL_BUG_FOLLOWUP_2026-09-04.md; test/station-recovery.e2e.test.js
+docs/EMAIL_BUG_FOLLOWUP_2026-09-04.md; test/keep-recovery.e2e.test.js
 
-Release verification 2026-09-06 re-read the original support thread: Windows was explicitly identified; the viewport went black or white after 10–20 minutes while agents kept working, and restart restored it temporarily. The owner's signed Windows bd65c7737 process was launched at about 01:00 UTC on 2026-09-07 and native Computer Use inspection after 01:20 UTC showed the station visibly rendering and its camera moving between crew. This is a successful spot check after prolonged uptime, not continuous monitoring or a retest on the affected customer's GPU. No historical cause or customer recovery is inferred.
+Release verification 2026-09-06 re-read the original support thread: Windows was explicitly identified; the viewport went black or white after 10–20 minutes while agents kept working, and restart restored it temporarily. The owner's signed Windows bd65c7737 process was launched at about 01:00 UTC on 2026-09-07 and native Computer Use inspection after 01:20 UTC showed the keep visibly rendering and its camera moving between crew. This is a successful spot check after prolonged uptime, not continuous monitoring or a retest on the affected customer's GPU. No historical cause or customer recovery is inferred.
 
 ## Verdict
 

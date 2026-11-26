@@ -1,9 +1,9 @@
 /* EYEHOLD — windows/loops.js : the LOOPS lane of the AUTOMATION window (standing objectives).
 
-   Loads AFTER stationui.js and windows/automation.js (see index.html) and registers itself as an
+   Loads AFTER keepui.js and windows/automation.js (see index.html) and registers itself as an
    AutomationWindow LANE — its two sections (ACTIVE LOOPS · START A LOOP) mount inside the shared
    AUTOMATION console rather than a window of their own (NAV CONDENSE 2026-08-04). The only
-   stationui internals it touches are the enumerated StationUI.h helper surface.
+   keepui internals it touches are the enumerated KeepUI.h helper surface.
 
    ROUTINES answer WHEN. LOOPS answer UNTIL. A loop keeps working at one standing objective and stops for the
    Commander's verdict — the verdict is what starts the next pass, not a clock. This panel is a thin polling
@@ -22,8 +22,8 @@
        everything built on top of it. */
 'use strict';
 (() => {
-  if (typeof StationUI === 'undefined' || typeof AutomationWindow === 'undefined') return;
-  const H = StationUI.h;
+  if (typeof KeepUI === 'undefined' || typeof AutomationWindow === 'undefined') return;
+  const H = KeepUI.h;
   const esc = H.esc, sfx = H.sfx, notify = H.notify, fmtRel = H.fmtRel;
   const consoleSection = H.consoleSection;
 
@@ -181,7 +181,7 @@
           '<button class="bb xs" data-vact="approve" data-n="' + p.n + '">✓ APPROVE</button>' +
           '<button class="bb xs danger" data-vact="reject" data-n="' + p.n + '" data-stacked="' + stacked + '">' + rejectLabel + '</button>' +
         '</div>' +
-        /* THE REJECTION REASON, inline. This was a window.prompt() — a native modal, wrong for the station's
+        /* THE REJECTION REASON, inline. This was a window.prompt() — a native modal, wrong for the keep's
            vocabulary and unreliable in the Tauri webview — holding the single most valuable input in the whole
            subsystem: the reason rides into the NEXT pass's prompt and is what stops the loop repeating itself. */
         '<div class="lp-why" hidden>' +
@@ -288,7 +288,7 @@
         if (!j || !Array.isArray(j.loops)) throw new Error('invalid loops response');
         const loops = (j && j.loops) || [];
         // HONEST ARM STATE. `armed` is whether a timer is genuinely running — not whether loops exist. A halted
-        // station must say so loudly, with the one-click lift, rather than showing loops that will never advance.
+        // keep must say so loudly, with the one-click lift, rather than showing loops that will never advance.
         if (j && j.halted) {
           gateEl.innerHTML = '<div class="brief-block" style="border-left-color:var(--bad);margin-bottom:8px">' +
             '<div class="brief-k" style="color:var(--bad)">✕ LOOPS ARE STOPPED (E-STOP)</div>' +
@@ -297,10 +297,10 @@
           const ub = gateEl.querySelector('#lp-unhalt');
           if (ub) ub.addEventListener('click', async () => {
             ub.disabled = true; sfx('click');
-            // The E-STOP lift is a SAFETY claim: a refused request left the durable halt engaged while the station
+            // The E-STOP lift is a SAFETY claim: a refused request left the durable halt engaged while the keep
             // said "loops resumed". Only a 2xx proves the stand-down was lifted (refresh() re-reads it either way).
             try { const r = await post('/api/loops/control', { action: 'unhalt' }); notify(r.ok ? 'loops resumed' : 'could NOT resume — the emergency stop is still engaged', r.ok ? 'good' : 'warn'); }
-            catch (_) { notify('could not reach the station — loops are still stopped', 'warn'); }
+            catch (_) { notify('could not reach the keep — loops are still stopped', 'warn'); }
             refresh();
           });
         } else if (loops.length) {
@@ -419,7 +419,7 @@
               verdict === 'approved' ? 'good' : 'warn');
             if (r && r.undoNote) notify(r.undoNote, 'warn');
           }
-        } catch (_) { notify('could not reach the station', 'warn'); sfx('bad'); }
+        } catch (_) { notify('could not reach the keep', 'warn'); sfx('bad'); }
         finally {
           pendingVerdicts.delete(verdictKey); ++refreshGeneration;
           listEl.querySelectorAll('.mc-row').forEach(el => {
@@ -439,7 +439,7 @@
         // announce a delete the sidecar refused, with the still-present row re-drawn underneath it by refresh().
         sfx('bad');
         try { const r = await post('/api/loops/remove', { id }); notify(r.ok ? 'loop deleted' : 'could not delete this loop', r.ok ? 'good' : 'warn'); }
-        catch (_) { notify('could not reach the station — the loop was not deleted', 'warn'); }
+        catch (_) { notify('could not reach the keep — the loop was not deleted', 'warn'); }
         refresh(); return;
       }
       if (act === 'pause' || act === 'resume') {
@@ -459,7 +459,7 @@
             new Promise((_, reject) => { deadline = setTimeout(() => { reject(new Error('No acknowledgement received. Refresh the loop state before retrying.')); controller.abort(); }, 15000); })
           ]);
           notify(act === 'pause' ? 'loop paused' : 'loop resumed', 'good');
-        } catch (error) { notify(error.message || 'could not reach the station', 'warn'); sfx('bad'); }
+        } catch (error) { notify(error.message || 'could not reach the keep', 'warn'); sfx('bad'); }
         finally {
           clearTimeout(deadline); ++refreshGeneration;
           pendingControls.delete(id);
@@ -564,7 +564,7 @@
               if (r && r.ok && r.cmd) {
                 checkEl.value = r.cmd;
                 rowEl.className = 'lp-checkline';
-                rowEl.innerHTML = 'After each pass the station will run <code>' + esc(r.cmd) + '</code> ' +
+                rowEl.innerHTML = 'After each pass the keep will run <code>' + esc(r.cmd) + '</code> ' +
                   '<span class="dim">— ' + esc(r.why) + '.</span> ' +
                   '<button type="button" class="lp-link" id="lp-checkedit">change</button>';
                 const ed = rowEl.querySelector('#lp-checkedit');
@@ -582,7 +582,7 @@
           rowEl.className = 'lp-checkline';
           rowEl.innerHTML = '<label class="mc-lbl">What command checks this project? <span style="color:var(--bad)">*</span>' +
             '<input id="lp-checktext" class="key-input" placeholder="npm test" value="' + esc(current || '') + '" autocomplete="off">' +
-            '<span class="dim">' + esc(why || 'the station runs it after each pass to know when the loop is done') + '</span></label>';
+            '<span class="dim">' + esc(why || 'the keep runs it after each pass to know when the loop is done') + '</span></label>';
           const inp = rowEl.querySelector('#lp-checktext');
           inp.addEventListener('input', () => { checkEl.value = inp.value; gate(); });
           inp.focus();
@@ -664,7 +664,7 @@
         try {
           const b = await (await post('/api/projects/bless', { path: extra.workdir, surface: 'interactive' })).json();
           if (!b || !b.ok) { msgEl.innerHTML = '<span style="color:var(--bad)">✕ ' + esc((b && b.reason) || 'that folder could not be approved') + '</span>'; sfx('bad'); releaseStart(); return; }
-        } catch (_) { msgEl.innerHTML = '<span style="color:var(--bad)">✕ could not reach the station</span>'; sfx('bad'); releaseStart(); return; }
+        } catch (_) { msgEl.innerHTML = '<span style="color:var(--bad)">✕ could not reach the keep</span>'; sfx('bad'); releaseStart(); return; }
       }
 
       /* THE CHECK PRE-FLIGHT, now automatic. It used to be a TEST button, which asked the user to know to
@@ -691,7 +691,7 @@
             releaseStart();
             return;
           }
-        } catch (_) { /* the pre-flight is a courtesy; never block creation on a station hiccup */ }
+        } catch (_) { /* the pre-flight is a courtesy; never block creation on a keep hiccup */ }
       }
 
       const spec = tpl.buildSpec(t, values, Object.assign({}, extra, { workdir: extra.workdir || undefined }));
@@ -706,7 +706,7 @@
         consoleSection['automation'] = 'loops';
         const tab = body.querySelector('#con-tab-automation-loops'); if (tab) tab.click();
         refresh();
-      } catch (e) { msgEl.innerHTML = '<span style="color:var(--bad)">✕ ' + esc((e && e.message) || 'could not reach the station') + '</span>'; sfx('bad'); }
+      } catch (e) { msgEl.innerHTML = '<span style="color:var(--bad)">✕ ' + esc((e && e.message) || 'could not reach the keep') + '</span>'; sfx('bad'); }
       releaseStart();
     }
     body.querySelector('#lp-create').addEventListener('click', createLoop);
@@ -757,7 +757,7 @@
       if (!r.ok) return;                        // an errored read must not clear the waiting badge
       j = await r.json();
     }
-    catch (_) { return; }                       // station offline — say nothing rather than guess
+    catch (_) { return; }                       // keep offline — say nothing rather than guess
     const loops = (j && j.loops) || [];
     let waiting = 0;
     const seen = loadSeen();
@@ -771,12 +771,12 @@
     }
     paintBadge(waiting);
     // every result reviewed: the bell's "waiting on your review" leaves NEEDS YOU (it stayed lit for good)
-    if (!waiting && typeof StationUI !== 'undefined' && StationUI.settleNotifs) StationUI.settleNotifs('loops-review');
+    if (!waiting && typeof KeepUI !== 'undefined' && KeepUI.settleNotifs) KeepUI.settleNotifs('loops-review');
     saveSeen(seen);
     // announce at most one line per sweep — N new candidates at once is one event to a human, not N.
-    if (fresh.length && typeof StationUI !== 'undefined' && StationUI.h && StationUI.h.notify) {
+    if (fresh.length && typeof KeepUI !== 'undefined' && KeepUI.h && KeepUI.h.notify) {
       const f = fresh[0];
-      StationUI.h.notify(fresh.length === 1
+      KeepUI.h.notify(fresh.length === 1
         ? '∞ ' + (f.l.name || 'a loop') + ' has work for you — #' + f.p.n + ' ' + (f.p.title || '')
         : '∞ ' + fresh.length + ' loop results are waiting on your review', 'good', undefined, { kind: 'needs', key: 'loops-review', go: { term: 'loops' } });
     }

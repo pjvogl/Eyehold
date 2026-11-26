@@ -54,7 +54,7 @@ function note(tag, err) { return swallow(tag)(err); }
 // read-only copy for tests / diagnostics; never expose the live Map (a caller clearing it would blind the trace)
 function counts() { const o = {}; for (const [k, v] of tally) o[k] = v.n; return o; }
 
-/* Bounded, secret-free pressure summary for /api/diagnostics + station.inspect (2026-08-21). Tags are static
+/* Bounded, secret-free pressure summary for /api/diagnostics + keep.inspect (2026-08-21). Tags are static
    code literals (never user text, never paths); timestamps are epoch ms. Sorted by count desc so the loudest
    seam leads; capped at MAX_TAGS with `truncated` set honestly when more exist. Fresh objects every call —
    mutating the result cannot blind the trace. */

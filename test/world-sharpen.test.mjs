@@ -1,6 +1,6 @@
 /* Real headless-WebGL parity for the shipped CRT detail pass. Requires Chromium (SKYNET_CHROME
    overrides discovery). Compiles the ACTUAL world.js shader and compares its readPixels output
-   with the ACTUAL CPU sampler. No sidecar, saved station, network service or renderer edits.
+   with the ACTUAL CPU sampler. No sidecar, saved keep, network service or renderer edits.
    Opaque input matches the composited camera feed; vignette/aberration are disabled to isolate
    detail parity, including the real inverse warp and the off-curve identity path. */
 import assert from 'node:assert/strict';
@@ -163,7 +163,7 @@ try {
     assert.ok(rel && !rel.startsWith('..') && !isAbsolute(rel) && rel.startsWith('eyehold-sharpen-parity-'), 'cleanup stays inside its unique test temp directory');
     // Chrome's children can hold chrome_debug.log for seconds after the parent exits on a loaded
     // Windows box (2s was not enough under a full gate) — the same transient-lock window
-    // stationbake.connections.test.mjs allows, and it still fails if the lock never lifts.
+    // keepbake.connections.test.mjs allows, and it still fails if the lock never lifts.
     for (let attempt = 0; attempt < 50; attempt++) {
       try { rmSync(profile, { recursive: true, force: true }); break; }
       catch (error) { if (!['EBUSY', 'EPERM', 'ENOTEMPTY'].includes(error.code) || attempt === 49) throw error; await sleep(200); }

@@ -39,7 +39,7 @@ const OPEN_REFIT = `(() => {
 })()`;
 
 const CLEAR_FLOOR = `(() => {
-  const st = Build.__test__.station();
+  const st = Build.__test__.keep();
   for (const b of st.belts()) st.removeBelt(b.x, b.y);
   const WF = { intake:1, bay:1, outbox:1, filter:1, splitter:1, merger:1 };
   for (const p of st.props().slice()) if (WF[p.t]) st.removeProp(p.id);
@@ -47,7 +47,7 @@ const CLEAR_FLOOR = `(() => {
 })()`;
 
 const findSpot = (bpId) => `(() => {
-  const st = Build.__test__.station();
+  const st = Build.__test__.keep();
   const b = st.bounds();
   for (let ty = b.minTy - 2; ty <= b.maxTy + 2; ty++)
     for (let tx = b.minTx - 2; tx <= b.maxTx + 2; tx++)
@@ -86,7 +86,7 @@ async function main() {
 
     // default text size (the shelf harness's known zoom trap) — pin + reload
     await evalJS(cdp, `(() => {
-      const KEY = 'eyehold.station.v1';
+      const KEY = 'eyehold.keep.v1';
       const r = JSON.parse(localStorage.getItem(KEY) || '{"v":1}');
       r.settings = Object.assign({}, r.settings, { textScale: 100 });
       localStorage.setItem(KEY, JSON.stringify(r));
@@ -107,7 +107,7 @@ async function main() {
     if (!spot) throw new Error('no stampable spot for research_line');
     const stamped = await evalJS(cdp, `(() => {
       const bp = WorldModel.BLUEPRINTS.find(b => b.id === 'research_line');
-      const st = Build.__test__.station();
+      const st = Build.__test__.keep();
       const before = st.props().length;
       const cx = ${spot.tx} + (bp.w >> 1), cy = ${spot.ty} + (bp.h >> 1);
       const cv = document.querySelector('.refit-canvas');
@@ -158,13 +158,13 @@ async function main() {
     const typed = await evalJS(cdp, typeInto('#step-brief', BRIEF, true));
     if (typed !== 'ok') throw new Error('brief field not typed: ' + typed);
     await sleep(300);
-    const savedBrief = await evalJS(cdp, `(Build.__test__.station().propById(${JSON.stringify(bayId)}).brief || null)`);
+    const savedBrief = await evalJS(cdp, `(Build.__test__.keep().propById(${JSON.stringify(bayId)}).brief || null)`);
     console.log('BRIEF SAVED ON PROP:', JSON.stringify(savedBrief));
     if (savedBrief !== BRIEF) throw new Error('brief did not save on blur');
     await evalJS(cdp, `document.querySelector('#bay-summon').click()`);
     await sleep(1800);
     const afterSummon = await evalJS(cdp, `JSON.stringify((() => {
-      const st = Build.__test__.station();
+      const st = Build.__test__.keep();
       const p = st.propById(${JSON.stringify(bayId)});
       const g = document.querySelector('.refit-step-card');
       return { agentId: p.agentId || null, brief: p.brief || null,
@@ -198,7 +198,7 @@ async function main() {
     await evalJS(cdp, typeInto('#line-name', LINE_NAME, true));
     await sleep(300);
     const named = await evalJS(cdp, `JSON.stringify((() => {
-      const st = Build.__test__.station();
+      const st = Build.__test__.keep();
       const label = st.propById(${JSON.stringify(stamped.intake)}).label || null;
       const fl = document.querySelector('.refit-finline .fl-title');
       return { label, finTitle: fl ? fl.textContent.trim() : null };
@@ -210,7 +210,7 @@ async function main() {
 
     // ---- 6. the named INBOX's glance: 'LINE · PRESS DESK' through the arbiter (hover layer) ----
     await evalJS(cdp, `(() => {
-      const st = Build.__test__.station();
+      const st = Build.__test__.keep();
       const p = st.propById(${JSON.stringify(stamped.intake)});
       const cv = document.querySelector('.refit-canvas');
       const ev = Build.__test__._tileEvent([p.x + 1, p.y + 1], 0);
@@ -227,7 +227,7 @@ async function main() {
     shots.push(await capture(cdp, OUT, 'intake-glance-line-name'));
 
     // ---- LIVE WIRE PROOF: the browser-posted plan serves the downstream dock's brief over the seam ----
-    const researcherAgent = await evalJS(cdp, `(Build.__test__.station().propById(${JSON.stringify(bayId)}).agentId || null)`);
+    const researcherAgent = await evalJS(cdp, `(Build.__test__.keep().propById(${JSON.stringify(bayId)}).agentId || null)`);
     await evalJS(cdp, `(() => { Build.close(); return 'closed'; })()`);   // close REFIT -> world rederives -> plan POSTs
     await sleep(2500);
     const wire = await evalJS(cdp, `(async () => {
@@ -248,7 +248,7 @@ async function main() {
     if (opened !== 'open') throw new Error('REFIT did not reopen: ' + opened);
     await sleep(800);
     const survived = await evalJS(cdp, `JSON.stringify((() => {
-      const st = Build.__test__.station();
+      const st = Build.__test__.keep();
       const bay = st.props().find(p => p.t === 'bay' && p.role === 'RESEARCHER');
       const intake = st.props().find(p => p.t === 'intake');
       return { brief: bay && bay.brief || null, agentId: bay && bay.agentId || null, label: intake && intake.label || null, bayId: bay && bay.id };

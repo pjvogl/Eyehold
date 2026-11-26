@@ -2,7 +2,7 @@
 
    Reported 2026-08-07: the roster "cuts off" — the last agent rendered sliced in half. Cause: the
    window was a flat `max-height: 40%` of the column, and a percentage of a column is never a whole
-   number of rows. Measured on a 6-agent station that left 10px of a row hanging at 1440x900, 18px
+   number of rows. Measured on a 6-agent keep that left 10px of a row hanging at 1440x900, 18px
    at 780 and 25px at 660 — enough that the list reads as broken rather than as scrollable.
 
    The fix measures the window from real row geometry and rounds DOWN to a whole row. crewCap is

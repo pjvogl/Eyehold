@@ -70,7 +70,7 @@ exists because of a law; the law is cited so you know why you can't wave it thro
 | 48-hour installed soak acceptance | WARN — manual evidence review remains owed | review elapsed duration, real-provider workload and final readiness under `docs/RELEASE_READINESS.md`; a smoke stamp does not prove the soak. An explicit owner hotfix waiver must be recorded in `RELEASE_NOTES`/`NEXT.md` |
 | `qa:ready` verdict | FAIL on NOT READY or unrunnable | READY-GATE law (`docs/RELEASE_READINESS.md`, `docs/DECISIONS.md`): no version is cut against a red house. No-fake-green: an unrunnable `qa:ready` is NOT READY |
 | updater signing key present | FAIL | `~/.tauri/eyehold-updater.key` — lose it and no installed Eyehold can ever update again (§4). Presence only; the file is never read or printed |
-| updater key backed up offline ≥2 copies | SKIP — human attestation | §4.1; no machine can verify a USB stick |
+| updater key backed up offline ≥2 copies | SKIP — human attekeep | §4.1; no machine can verify a USB stick |
 | `RELEASE_NOTES.md` for the target | WARN pre-bump, **FAIL post-bump** if still the TODO scaffold | the notes are the GitHub release body AND the in-app UPDATE CENTER text |
 | trunk vs `origin` | WARN if ahead | informational: push the branch WITH the tag so the source-release mirror can find the commit |
 
@@ -178,7 +178,7 @@ whose schedules are CORRUPTED in the store under the first restart (the driver m
 grace — so the catch-up collapse is exercised for real.
 
 It boots a hermetic SOURCE sidecar (scratch workspace + scratch app-data profile, free port, in-process MOCK
-provider — zero spend, never your real station) and drives it unattended: real `/api/run` conversations, a
+provider — zero spend, never your real keep) and drives it unattended: real `/api/run` conversations, a
 real `shell_exec` tool run, a cron routine firing on its own, `/api/diagnostics` / `/api/health` /
 `/api/state/snapshot` reads every tick, and stop→boot restart cycles on the same workspace. Every tick samples
 RSS, health latency, the fail-open swallowed-error tally, the diagnostics error ring, and workspace growth.
@@ -358,7 +358,7 @@ do not publish.**
   `npm run qa:lifecycle:packaged -- --exe=<path\skynet-desktop.exe> --tag=v0.2.0` — but ONLY inside
   an isolated identity (a throwaway Windows user or VM): the shell reads `lifecycle.json` from the
   real `%APPDATA%\ai.skynet.harness` of whoever runs it, and the runner closes, rewrites that prefs
-  file, and relaunches whatever exe you point it at. Never run it against your real station.
+  file, and relaunches whatever exe you point it at. Never run it against your real keep.
 
 ### 1.8 Publish (the only human ship gate)
 

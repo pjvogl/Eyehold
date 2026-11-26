@@ -31,7 +31,7 @@ function makeGate(updates) {
 
 (async () => {
   {
-    // #91: the in-app path failed at the recovery point -> say so, and offer the full installer (it keeps the station)
+    // #91: the in-app path failed at the recovery point -> say so, and offer the full installer (it keeps the keep)
     let opened = 0;
     const g = makeGate({
       check: async () => ({ phase: 'available' }),
@@ -43,7 +43,7 @@ function makeGate(updates) {
     const msg = g.nodes['future-msg'].textContent;
     A.ok(!/checking for an update/.test(msg), 'the gate no longer claims it is still checking');
     A.ok(/Pre-update recovery point failed - ENOENT/.test(msg), 'it names why the install paused');
-    A.ok(/keeps your station/.test(msg), 'and says the full installer keeps the station');
+    A.ok(/keeps your keep/.test(msg), 'and says the full installer keeps the keep');
     const dl = g.nodes['btn-future-download'];
     A.ok(!!dl && g.actions.children.indexOf(dl) >= 0, 'a DOWNLOAD LATEST door appears beside UPDATE EYEHOLD');
     A.eq(dl && dl.className, 'btn-xl', 'in the gate\'s own button skin (no OS paint)');

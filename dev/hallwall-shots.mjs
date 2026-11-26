@@ -19,7 +19,7 @@ const CDP_PORT = Number(process.env.SKYNET_CDP_PORT || 9379);
 const URL = `http://127.0.0.1:${PORT}/`;
 
 const PROBE = `(() => {
-  const SB = StationBake;
+  const SB = KeepBake;
   const SHIPPED = { wall: { ...SB.WALL }, light: { ...SB.LIGHT }, shape: { ...SB.SHAPE } };
   const OLD = { wall: { up: 14, corUp: 8, capH: 3 }, shape: { cornerN: 2 } };
 
@@ -28,11 +28,11 @@ const PROBE = `(() => {
        B  hallway running along a room's flank, flush    (an open join on the long side)
        C  hallway BRIDGING two rooms
        D  hallway meeting a room at its corner           (where the chamfer and the hall collide) */
-  /* OFFSET CLEAR OF THE DEFAULT STATION, AND ASSERT EVERY PLACEMENT. defaultDoc() already contains
+  /* OFFSET CLEAR OF THE DEFAULT KEEP, AND ASSERT EVERY PLACEMENT. defaultDoc() already contains
      a room at roughly x0..17 / y0..10. Building a case on top of it makes addRoom fail with OVERLAP
      and return a falsy result - and because the DEFAULT room still bakes, the probe hands back a
      perfectly plausible picture of a room that is not the one under test. That is how the first run
-     of this file produced four panels showing the same untouched default station. Nothing threw. */
+     of this file produced four panels showing the same untouched default keep. Nothing threw. */
   const OX = 40, OY = 40;
   const put = (st, kind, x1, y1, x2, y2) => {
     const rects = [{ x1: x1 + OX, y1: y1 + OY, x2: x2 + OX, y2: y2 + OY }];
@@ -84,7 +84,7 @@ const PROBE = `(() => {
     const geo = st.projectGeometry(), T = geo.TILE, bk = SB.bake(geo);
     const lit = mk(bk.W, bk.H);
     /* MAGENTA UNDERNEATH, ALWAYS. A hole in the hull and a dark pixel look the same over black, and
-       the station is nearly all dark pixels - the first read of these crops had me about to report
+       the keep is nearly all dark pixels - the first read of these crops had me about to report
        "missing hull" from what turned out to be a fine dither pattern in the skirt. Over #ff00ff a
        gap is unmistakable and a texture is obviously a texture. */
     lit.g.fillStyle = '#ff00ff'; lit.g.fillRect(0, 0, bk.W, bk.H);

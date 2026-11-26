@@ -88,7 +88,7 @@ struct AppState {
 }
 
 /// What the guardian knows about the sidecar's exit history. Serialized verbatim to the frontend
-/// (STATION DATA UNREACHABLE screen) so a halted crash loop is shown as such, never as a generic
+/// (KEEP DATA UNREACHABLE screen) so a halted crash loop is shown as such, never as a generic
 /// "not answering".
 #[derive(Clone, Default, Serialize)]
 #[serde(rename_all = "camelCase")]
@@ -195,7 +195,7 @@ mod guardian_cap_tests {
 
 /// Serializes user-driven recovery commands and keeps the guardian paused until every return path
 /// (including errors) has finished. Tauri commands may run concurrently, so a plain load/store can
-/// let Restart and Start Fresh kill/spawn/move the same station at the same time.
+/// let Restart and Start Fresh kill/spawn/move the same keep at the same time.
 struct RecoveryOperation<'a> {
     flag: &'a AtomicBool,
 }
@@ -210,7 +210,7 @@ fn begin_recovery(state: &AppState) -> Result<RecoveryOperation<'_>, String> {
     state
         .recovery_in_progress
         .compare_exchange(false, true, Ordering::SeqCst, Ordering::SeqCst)
-        .map_err(|_| "another station recovery is already running".to_string())?;
+        .map_err(|_| "another keep recovery is already running".to_string())?;
     Ok(RecoveryOperation {
         flag: &state.recovery_in_progress,
     })
@@ -659,10 +659,10 @@ fn hash_file(path: &Path) -> std::io::Result<(u64, String)> {
     Ok((bytes, format!("{:x}", hasher.finalize())))
 }
 
-/// A legacy root becomes an automatic station source only when its canonical save is readable and proves the
+/// A legacy root becomes an automatic keep source only when its canonical save is readable and proves the
 /// Eyehold save contract. This is intentionally stronger than "some JSON object": migration may carry other
-/// durable stores, but it must never choose between two different stations by directory enumeration order.
-fn valid_station_save_hash(root: &Path) -> Option<String> {
+/// durable stores, but it must never choose between two different keeps by directory enumeration order.
+fn valid_keep_save_hash(root: &Path) -> Option<String> {
     for name in ["agent.save.json", "agent.save.json.bak"] {
         let file = root.join(name);
         let Ok(bytes) = std::fs::read(&file) else {
@@ -887,12 +887,12 @@ fn migrate_workspace_data(
         }
     }
 
-    // One valid legacy station is safe to self-heal. Two different valid saves are a product decision, not a
+    // One valid legacy keep is safe to self-heal. Two different valid saves are a product decision, not a
     // filesystem merge: leave both byte-untouched and let Recovery Mode's candidate picker choose explicitly.
     let valid_legacy = legacy_roots
         .iter()
         .filter(|root| root.is_dir())
-        .filter_map(|root| valid_station_save_hash(root).map(|digest| (root.clone(), digest)))
+        .filter_map(|root| valid_keep_save_hash(root).map(|digest| (root.clone(), digest)))
         .collect::<Vec<_>>();
     let distinct_saves = valid_legacy
         .iter()
@@ -902,7 +902,7 @@ fn migrate_workspace_data(
         log_startup(
             startup_log,
             format!(
-                "workspace-migration: CONFLICT — {} different valid legacy stations found; awaiting explicit Recovery Mode selection",
+                "workspace-migration: CONFLICT — {} different valid legacy keeps found; awaiting explicit Recovery Mode selection",
                 distinct_saves.len()
             ),
         );
@@ -1197,7 +1197,7 @@ mod workspace_migration_tests {
         let _ = std::fs::remove_dir_all(base);
     }
 
-    fn station_save(name: &str, updated_at: u64) -> Vec<u8> {
+    fn keep_save(name: &str, updated_at: u64) -> Vec<u8> {
         serde_json::to_vec(&serde_json::json!({
             "version": 1,
             "doc": {
@@ -1211,16 +1211,16 @@ mod workspace_migration_tests {
     }
 
     #[test]
-    fn distinct_valid_legacy_stations_wait_for_explicit_selection() {
-        let base = temp_dir("station-conflict");
+    fn distinct_valid_legacy_keeps_wait_for_explicit_selection() {
+        let base = temp_dir("keep-conflict");
         let first = base.join("first");
         let second = base.join("second");
         let current = base.join("current");
         let startup_log = base.join("startup.log");
         std::fs::create_dir_all(&first).unwrap();
         std::fs::create_dir_all(&second).unwrap();
-        std::fs::write(first.join("agent.save.json"), station_save("NOVA", 1)).unwrap();
-        std::fs::write(second.join("agent.save.json"), station_save("ORION", 2)).unwrap();
+        std::fs::write(first.join("agent.save.json"), keep_save("NOVA", 1)).unwrap();
+        std::fs::write(second.join("agent.save.json"), keep_save("ORION", 2)).unwrap();
 
         let migrated = migrate_workspace_data(
             &current,
@@ -1230,7 +1230,7 @@ mod workspace_migration_tests {
         assert!(migrated.is_empty());
         assert!(
             !current.exists(),
-            "conflicting stations never create an active generation"
+            "conflicting keeps never create an active generation"
         );
         assert!(first.join("agent.save.json").exists());
         assert!(second.join("agent.save.json").exists());
@@ -1242,18 +1242,18 @@ mod workspace_migration_tests {
     }
 
     #[test]
-    fn one_valid_legacy_station_is_selected_without_merging_noise() {
-        let base = temp_dir("single-station");
-        let station = base.join("station");
+    fn one_valid_legacy_keep_is_selected_without_merging_noise() {
+        let base = temp_dir("single-keep");
+        let keep = base.join("keep");
         let unrelated = base.join("unrelated");
         let current = base.join("current");
-        std::fs::create_dir_all(&station).unwrap();
+        std::fs::create_dir_all(&keep).unwrap();
         std::fs::create_dir_all(&unrelated).unwrap();
-        std::fs::write(station.join("agent.save.json"), station_save("NOVA", 1)).unwrap();
-        std::fs::write(unrelated.join("unrelated.cache"), b"not station state").unwrap();
+        std::fs::write(keep.join("agent.save.json"), keep_save("NOVA", 1)).unwrap();
+        std::fs::write(unrelated.join("unrelated.cache"), b"not keep state").unwrap();
 
-        let migrated = migrate_workspace_data(&current, &[station.clone(), unrelated], &None);
-        assert_eq!(migrated, vec![station]);
+        let migrated = migrate_workspace_data(&current, &[keep.clone(), unrelated], &None);
+        assert_eq!(migrated, vec![keep]);
         assert!(current.join("agent.save.json").exists());
         assert!(!current.join("unrelated.cache").exists());
 
@@ -2094,7 +2094,7 @@ fn show_startup_failure_dialog(app: &AppHandle, startup_log: &Option<PathBuf>) -
         "Eyehold — local engine not ready",
         format!(
             "Eyehold could not start its local engine yet. It will keep retrying in the background, \
-             but the station may stay unreachable until it does.\n\n{}",
+             but the keep may stay unreachable until it does.\n\n{}",
             startup_log_line(startup_log)
         ),
         || {},
@@ -2351,7 +2351,7 @@ fn spawn_guardian(app: AppHandle) {
                             count = count.saturating_add(1);
                             if count >= GUARDIAN_MAX_CONSECUTIVE_CRASHES {
                                 let reason = format!(
-                                    "crash-loop: the station service exited {count} times in {} minutes (last exit code {code:?}); the guardian stopped restarting it. Use RESTART STATION SERVICE to try again, or quit Eyehold fully and reopen it.",
+                                    "crash-loop: the keep service exited {count} times in {} minutes (last exit code {code:?}); the guardian stopped restarting it. Use RESTART KEEP SERVICE to try again, or quit Eyehold fully and reopen it.",
                                     GUARDIAN_CRASH_WINDOW.as_secs() / 60
                                 );
                                 log_startup(
@@ -2386,7 +2386,7 @@ fn spawn_guardian(app: AppHandle) {
                                 g.last_exit_at_ms = Some(now_ms());
                                 g.next_respawn_in_ms = Some(backoff.as_millis() as u64);
                                 g.reason = Some(format!(
-                                    "station service exited unexpectedly (code {code:?}) — restart {count} of {GUARDIAN_MAX_CONSECUTIVE_CRASHES} in {}s",
+                                    "keep service exited unexpectedly (code {code:?}) — restart {count} of {GUARDIAN_MAX_CONSECUTIVE_CRASHES} in {}s",
                                     backoff.as_secs()
                                 ));
                             }
@@ -2596,7 +2596,7 @@ fn push_channel_token(state: &AppState, channel: &str, token: &str) {
 
 // ---- Lane 4D: supervised background lifecycle (tray + close-to-tray + bounded drain) ----
 //
-// The tray owns the ONE sidecar's visibility contract: closing the window keeps the station running ONLY when
+// The tray owns the ONE sidecar's visibility contract: closing the window keeps the keep running ONLY when
 // the sidecar proves armed work exists (GET /api/lifecycle/armed), and that state is explicit in the tray. If
 // nothing is armed, window-close = full quit (drain + kill + app.exit) — no hidden daemon. Every decision reads
 // LIVE sidecar truth; a poll failure degrades to "not armed" (a dead sidecar can't be doing background work, so
@@ -2739,7 +2739,7 @@ fn post_sidecar_halt(state: &AppState, timeout: Duration) {
 }
 
 /// POST /api/lifecycle/quit: ask the sidecar to run its own graceful shutdown. On Windows `kill_sidecar` ends the
-/// child with TerminateProcess, which no handler in the sidecar can see — so the STATION browser (a real Chrome
+/// child with TerminateProcess, which no handler in the sidecar can see — so the KEEP browser (a real Chrome
 /// window the sidecar started) was left running with its network proxy dead, still holding the durable profile
 /// (2026-09-30 release review). Best-effort and bounded like the halt: a dead sidecar is simply already gone.
 fn post_sidecar_quit(state: &AppState, timeout: Duration) {
@@ -2761,7 +2761,7 @@ fn post_sidecar_quit(state: &AppState, timeout: Duration) {
     }
 }
 
-/// Ask the sidecar to shut down cleanly (it closes the station browser, flushing its sign-ins, and exits), wait a
+/// Ask the sidecar to shut down cleanly (it closes the keep browser, flushing its sign-ins, and exits), wait a
 /// bounded moment for it to leave, then `kill_sidecar` ends whatever is left. The kill still guarantees no orphan.
 fn stop_sidecar_gracefully(state: &AppState) {
     post_sidecar_quit(state, Duration::from_secs(2));
@@ -3324,7 +3324,7 @@ fn update_lifecycle_preferences(
 /// a multi-second drain there would freeze the app (review m1).
 fn on_tray_menu(app: &AppHandle, id: &str) {
     match id {
-        // Open Eyehold means the full station: a HUD that is up hands the window back first.
+        // Open Eyehold means the full keep: a HUD that is up hands the window back first.
         "lifecycle_open" => {
             hud_mode::request(app, false);
             show_main_window(app);
@@ -3574,7 +3574,7 @@ fn harness_clear_key(state: State<AppState>) -> Result<(), String> {
     harness_store_key(String::new(), state)
 }
 
-/// Adopt a freshly linked station's device token into the OS keychain and strip it from
+/// Adopt a freshly linked keep's device token into the OS keychain and strip it from
 /// `.secrets/credits.json`. Called by the UI right after a successful link.
 ///
 /// **The token never enters the WebView.** The UI only says "a link just happened"; Rust reads the
@@ -3728,14 +3728,14 @@ fn resolve_artifact_path(
         root.join(supplied)
     };
     if artifact_path_hits_hard_floor(&candidate) {
-        return Err("protected station paths cannot be opened".to_string());
+        return Err("protected keep paths cannot be opened".to_string());
     }
 
     let canonical = std::fs::canonicalize(&candidate)
         .map(|path| strip_verbatim(&path))
         .map_err(|_| "the saved artifact no longer exists".to_string())?;
     if artifact_path_hits_hard_floor(&canonical) {
-        return Err("protected station paths cannot be opened".to_string());
+        return Err("protected keep paths cannot be opened".to_string());
     }
 
     let mut allowed = false;
@@ -3754,7 +3754,7 @@ fn resolve_artifact_path(
         }
     }
     if !allowed {
-        return Err("artifact is outside the station workspace and trusted folders".to_string());
+        return Err("artifact is outside the keep workspace and trusted folders".to_string());
     }
     Ok(canonical)
 }
@@ -3853,7 +3853,7 @@ async fn eyehold_open_artifact(
         return Err("that artifact is not a file".to_string());
     }
     if !safe_native_artifact_extension(&artifact) {
-        return Err("that file type stays in the station preview for safety".to_string());
+        return Err("that file type stays in the keep preview for safety".to_string());
     }
     let body = format!(
         "Open this file with its system default app?\n\n{}",
@@ -4176,7 +4176,7 @@ fn open_external_url(state: State<AppState>, url: String) -> Result<(), String> 
         return Err("Only http(s) URLs can be opened externally".to_string());
     }
     if url_carries_api_token(trimmed, &state.api_token) {
-        return Err("Refusing to hand the station's API token to the system browser".to_string());
+        return Err("Refusing to hand the keep's API token to the system browser".to_string());
     }
 
     #[cfg(windows)]
@@ -4532,7 +4532,7 @@ struct LifecycleView {
     close_to_tray: bool,
 }
 
-/// User-driven restart of the local station service from the STATION DATA UNREACHABLE screen.
+/// User-driven restart of the local keep service from the KEEP DATA UNREACHABLE screen.
 /// The guardian only heals a child that has EXITED; a sidecar that is alive but not answering (hung
 /// event loop, wedged listener) or one that exits before listening every time it is spawned (a workspace
 /// claim refusal) leaves the page polling a dead port forever. This kills whatever child exists, spawns a
@@ -4546,7 +4546,7 @@ fn eyehold_restart_sidecar(state: State<AppState>) -> Result<bool, String> {
     let _recovery = begin_recovery(st)?;
     log_startup(
         &st.startup_log,
-        "restart: user requested a station service restart",
+        "restart: user requested a keep service restart",
     );
     // A user restart is an explicit "try again": clear the guardian's crash-loop halt and count so a
     // fresh window starts. If the sidecar keeps dying, the cap simply re-arms.
@@ -4588,7 +4588,7 @@ struct FreshStartView {
     browser_data_cleared: bool,
 }
 
-/// Last-resort recovery for a station service that cannot answer HTTP at all. The sidecar-backed
+/// Last-resort recovery for a keep service that cannot answer HTTP at all. The sidecar-backed
 /// START FRESH route cannot help in that state, so the desktop shell stops its own child, moves the
 /// entire workspace generation to a reversible quarantine, seals a clean generation against legacy
 /// re-migration, and respawns with the same OS-keychain credentials. Purchased credits therefore
@@ -4627,7 +4627,7 @@ fn eyehold_start_fresh(
             let listening = spawn_sidecar(st);
             log_startup(
                 &st.startup_log,
-                format!("fresh-start: refused ({error}); original station respawn listening={listening}"),
+                format!("fresh-start: refused ({error}); original keep respawn listening={listening}"),
             );
             return Err(error);
         }
@@ -4712,13 +4712,13 @@ fn local_voice_model_cache() -> Option<PathBuf> {
 }
 
 /// #65 ERASE EVERYTHING (Settings > APP & BACKUP). The full "start over from scratch": stop every run and the
-/// sidecar (its graceful quit closes the station browser and reaps its children), swap in a sealed empty station
-/// (fresh_start::set_aside_for_erase; a failed move changes NOTHING), then DELETE the old station, every other entry
+/// sidecar (its graceful quit closes the keep browser and reaps its children), swap in a sealed empty keep
+/// (fresh_start::set_aside_for_erase; a failed move changes NOTHING), then DELETE the old keep, every other entry
 /// of the app-data folder, older Eyehold data roots and the voice-model cache (erase_all.rs: Eyehold-owned paths
 /// only, links never followed), remove every keychain credential this shell can have created, turn launch-at-login
 /// off, clear the WebView's own storage, and start a clean sidecar. The receipt lists what was removed and what
 /// could not be, so the UI never claims an erase that did not happen. Project folders the user trusted are
-/// recorded by path and are never inside the station data; they are not touched.
+/// recorded by path and are never inside the keep data; they are not touched.
 #[tauri::command]
 fn eyehold_erase_everything(
     app: AppHandle,
@@ -4739,11 +4739,11 @@ fn eyehold_erase_everything(
         "erase: ERASE EVERYTHING confirmed by the user",
     );
 
-    // Read what only the station files can tell us (agent-bound bot ids) before they go.
+    // Read what only the keep files can tell us (agent-bound bot ids) before they go.
     let bot_ids = erase_all::telegram_bot_ids(&st.workspaces);
 
-    // Stop all work, then the sidecar: its graceful quit closes the station browser (which holds files in the
-    // station profile) and reaps backgrounded children; the bounded kill guarantees it is gone.
+    // Stop all work, then the sidecar: its graceful quit closes the keep browser (which holds files in the
+    // keep profile) and reaps backgrounded children; the bounded kill guarantees it is gone.
     post_sidecar_halt(st, Duration::from_secs(3));
     let stopped_pid = st
         .sidecar
@@ -4767,7 +4767,7 @@ fn eyehold_erase_everything(
             let listening = spawn_sidecar(st);
             log_startup(
                 &st.startup_log,
-                format!("erase: refused before any deletion ({error}); station respawn listening={listening}"),
+                format!("erase: refused before any deletion ({error}); keep respawn listening={listening}"),
             );
             return Err(format!(
                 "nothing was erased - {error}. Close any other Eyehold window or browser and try again."
@@ -4865,7 +4865,7 @@ fn eyehold_erase_everything(
     })
 }
 
-/// What the crash guardian knows about the sidecar (read by the STATION DATA UNREACHABLE screen).
+/// What the crash guardian knows about the sidecar (read by the KEEP DATA UNREACHABLE screen).
 /// Pure read of AppState.guardian — no probe, no side effect — so a HALTED crash loop is shown as
 /// exactly that instead of a generic "not answering".
 #[tauri::command]
@@ -5051,7 +5051,7 @@ fn main() {
             // BEFORE spawning the sidecar so the injected SKYNET_<ID>_TOKEN env reflects the migrated tokens.
             migrate_channel_tokens_from_plaintext(&workspaces);
             // Same one-time sweep for the cloud device token — this is what upgrades an already
-            // linked station from a plaintext token to a keychain one, with no user action.
+            // linked keep from a plaintext token to a keychain one, with no user action.
             migrate_credits_token_from_plaintext(&workspaces);
             let state = AppState {
                 port,

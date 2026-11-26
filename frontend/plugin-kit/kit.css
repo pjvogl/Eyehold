@@ -1,14 +1,14 @@
-/* eyehold-kit.css — the STATION LOOK for plugin windows (plugin extensions phase 1, 2026-09-29).
+/* eyehold-kit.css — the KEEP LOOK for plugin windows (plugin extensions phase 1, 2026-09-29).
 
    Injected at the top of every plugin page by the sidecar (/plugin-ui/ route). Everything here is copied from the
-   station's own GLASS recipes (frontend/css/glass-demo.css + style.css tokens) — a plugin built from these classes
-   looks like it shipped with Eyehold, and repaints with the station when the Commander changes the phosphor.
+   keep's own GLASS recipes (frontend/css/glass-demo.css + style.css tokens) — a plugin built from these classes
+   looks like it shipped with Eyehold, and repaints with the keep when the Commander changes the phosphor.
 
    · Tokens: the defaults below are the amber reference build. eyehold-kit.js overwrites them on :root with the
-     station's LIVE computed values the moment the window opens and on every theme change.
+     keep's LIVE computed values the moment the window opens and on every theme change.
    · Everything sits in `@layer eyehold`, the lowest layer: any CSS the plugin author writes (unlayered) wins, with
      no !important and no specificity fights. The kit is the default, never a cage.
-   · Matte glass, no glow. No control is ever left in the browser's own white paint (the station's standing law).
+   · Matte glass, no glow. No control is ever left in the browser's own white paint (the keep's standing law).
 
    Class reference (docs/PLUGINS.md has the full list with examples):
      layout   sn-stack · sn-row-flex · sn-grid · sn-spacer
@@ -128,7 +128,7 @@
   .sn-badge.ok { color: var(--ok); border-color: rgba(var(--ok-rgb), .4); }
   .sn-badge.bad { color: var(--bad); border-color: rgba(var(--bad-rgb), .4); }
   .sn-badge.gold { color: var(--gold); border-color: rgba(var(--gold-rgb), .4); }
-  /* the station's status lamp */
+  /* the keep's status lamp */
   .dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; flex: none; background: var(--ph); }
   .dot.ok { background: var(--ok); } .dot.bad { background: var(--bad); } .dot.warn { background: var(--warn); }
   .dot.off { background: transparent; border: 1px solid rgba(var(--ph-rgb), .45); }
@@ -155,7 +155,7 @@
   /* button-like inputs and the file picker's button wear the same skin as a button (never OS paint) */
   input[type="color"] { background: rgba(0, 0, 0, .3); border: 1px solid var(--gd-edge); border-radius: var(--r-sm); padding: 2px; height: 28px; }
   input[type="file"] { color: var(--text); font-size: 16px; }
-  /* KEYS = the station's current glass key (Build Library / workflow panel): 8px glass, lit-glass primary */
+  /* KEYS = the keep's current glass key (Build Library / workflow panel): 8px glass, lit-glass primary */
   button, input:is([type="submit"], [type="button"], [type="reset"]) {
     background: linear-gradient(125deg, rgba(var(--ph-bright-rgb), .09), rgba(var(--ph-rgb), .045) 48%, rgba(var(--ph-rgb), .015));
     border: 1px solid rgba(var(--ph-rgb), .2); border-radius: 8px; color: var(--ph); cursor: pointer;
@@ -164,7 +164,7 @@
   /* own rule: a pseudo-element an engine does not know would void a whole selector list */
   ::file-selector-button { font: inherit; background: rgba(0, 0, 0, .22); border: 1px solid var(--gd-edge); border-radius: var(--r-sm); color: var(--ph); cursor: pointer; margin-right: 8px; }
   ::file-selector-button:hover { color: var(--ph-bright); border-color: var(--ph); }
-  /* THE KEY (the station's glass key: 36px, 8px radius, read at 16px) */
+  /* THE KEY (the keep's glass key: 36px, 8px radius, read at 16px) */
   .sn-btn {
     display: inline-flex; align-items: center; justify-content: center; gap: 6px; box-sizing: border-box; min-height: 36px;
     font: 16px/1.15 var(--sn-font); letter-spacing: .6px; padding: 7px 14px;

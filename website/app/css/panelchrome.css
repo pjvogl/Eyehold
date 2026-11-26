@@ -95,9 +95,9 @@
 
 /* ============================================================
    3 · TOPBAR — the loose instruments dock into ONE recessed
-   cockpit plate (a milled well holding STATION · UPLINK ·
+   cockpit plate (a milled well holding KEEP · UPLINK ·
    ONLINE · save), so the top chrome reads as a gauge cluster,
-   not floating text. The STATION chip keeps its gold identity
+   not floating text. The KEEP chip keeps its gold identity
    and gains a proper lamp housing.
    ============================================================ */
 #topbar .tb-stats {
@@ -110,8 +110,8 @@
     0 1px 0 rgba(var(--ph-bright-rgb), .06),
     0 0 10px rgba(0,0,0,.6);
 }
-/* the STATION lamp: gold-ringed housing on the recessed plate (border/value stay app.css gold) */
-#topbar .tb-stat.station {
+/* the KEEP lamp: gold-ringed housing on the recessed plate (border/value stay app.css gold) */
+#topbar .tb-stat.keep {
   border-radius: 4px; padding: 3px 12px;
   background: linear-gradient(180deg, rgba(var(--gold-rgb), .09), rgba(var(--gold-rgb), .025) 62%, transparent);
   box-shadow: inset 0 1px 0 rgba(var(--gold-rgb), .22), 0 0 10px rgba(var(--gold-rgb), .10);

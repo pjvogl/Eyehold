@@ -1,6 +1,6 @@
-/* EYEHOLD — pride.js : the LIFETIME STATION RECORD engine (Game session, Phase G3a / Layer 6).
+/* EYEHOLD — pride.js : the LIFETIME KEEP RECORD engine (Game session, Phase G3a / Layer 6).
 
-   Pure, durable fold of the station's WHOLE-LIFETIME record — the counters that grow across every
+   Pure, durable fold of the keep's WHOLE-LIFETIME record — the counters that grow across every
    session and don't reset at app-open the way floorstats.js does. This is the "pride" half of the meta
    loop: a beginner reopens the app weeks in and sees the colony's real track record, not a now-only HUD.
 
@@ -9,7 +9,7 @@
        routine, real elapsed run time. Nothing is estimated, padded, or a fabricated "hours saved".
      • A counter with NO samples yet reports known:false so the surface shows "—" instead of a made-up 0-as-real
        (same rule ctxgauge.js / floorstats.js apply). tasks/deliverables/routines each have their own known flag.
-     • "station founded" = the first-boot timestamp, stamped ONCE and never moved (monotonic like the
+     • "keep founded" = the first-boot timestamp, stamped ONCE and never moved (monotonic like the
        return-ritual heartbeat) — the honest birthday of the colony.
      • total agent-work minutes = the SUM of real run durations (agent.run.start paired to agent.run.end by
        runId, injected wall-clock). A run with no matching start contributes nothing — never guessed.
@@ -53,7 +53,7 @@
     };
   }
 
-  // stamp the founding instant exactly once (the first REAL event the station ever folds). Monotonic — a later
+  // stamp the founding instant exactly once (the first REAL event the keep ever folds). Monotonic — a later
   // event never moves it. nowMs is the caller's injected wall-clock (Date.now()); a missing/garbage clock is ignored.
   function found(s, nowMs) {
     const t = num(nowMs);
@@ -63,7 +63,7 @@
   /* fold ONE real event into the lifetime record (returns a NEW state — pure). name = the U.bus event name,
      p = its payload, nowMs = the caller's injected wall-clock for the founding stamp + run-duration pairing.
      Unknown names are folded through untouched (the caller can point the firehose at it) — but they do NOT
-     found the station, so an idle heartbeat event never fakes a birthday before the first real outcome. */
+     found the keep, so an idle heartbeat event never fakes a birthday before the first real outcome. */
   function fold(state, name, p, nowMs) {
     const s = hydrate(state);
     p = p || {};
@@ -91,7 +91,7 @@
     return s;
   }
 
-  // render-agnostic snapshot for the STATION RECORD surface. Honest unknowns: a counter with no real sample
+  // render-agnostic snapshot for the KEEP RECORD surface. Honest unknowns: a counter with no real sample
   // yet reports known:false so the UI shows "—". foundedAt is passed through raw (null when unfounded) so the
   // caller formats the date in its own locale. workMinutes is floored whole minutes of REAL summed run time.
   function snapshot(state) {

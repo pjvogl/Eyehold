@@ -11,7 +11,7 @@ linked schedule. Required syntax, fast and HTTP gates must pass before integrati
 
 ## Implementation
 
-- Your widgets / Connected apps / Pinned picker; no default station counters. Old pins remain
+- Your widgets / Connected apps / Pinned picker; no default keep counters. Old pins remain
   manageable. Three editable presets plus custom Number, List, Trend and Progress displays.
 - Sources are the current MCP manager and configured service-key inventory, plus information
   Eyehold manages. API keys are labelled configured rather than independently verified. The
@@ -40,7 +40,7 @@ linked schedule. Required syntax, fast and HTTP gates must pass before integrati
 `dev/widget-studio-replay.mjs` runs a labelled local MCP server and deterministic provider.
 It exercises the actual HTTP connector, run loop, capability/consent machinery, widget tool,
 durable store, UI and Automation. These are synthetic fixtures, not production account readings
-or a model-quality evaluation. The normal preview is :9186; the disposable proof station is :9190.
+or a model-quality evaluation. The normal preview is :9186; the disposable proof keep is :9190.
 
 - Created Revenue snapshot by selecting the connected Demo Revenue fixture in the browser.
   Provider trace: brief_proceed -> mcp__widget_demo__revenue_snapshot -> widget_set. UI showed

@@ -11,8 +11,8 @@ const port = Number(process.env.WIDGET_PROOF_PORT || 9190), fixturePort = port +
 const MODEL = 'replay/widget-studio-fixture';
 let amount = 1240, fail = false, reads = 0, child, providerCalls = 0;
 const workspace = process.env.WIDGET_PROOF_WORKSPACE || mkdtempSync(join(tmpdir(), 'eyehold-widget-proof-'));
-if (process.env.WIDGET_PROOF_WORKSPACE) { if (!existsSync(join(workspace, 'station', 'agent.save.json'))) throw new Error('Missing proof workspace'); }
-else materializeSeedWorkspace(join(workspace, 'station'), MODEL);
+if (process.env.WIDGET_PROOF_WORKSPACE) { if (!existsSync(join(workspace, 'keep', 'agent.save.json'))) throw new Error('Missing proof workspace'); }
+else materializeSeedWorkspace(join(workspace, 'keep'), MODEL);
 const json = (res, body, status = 200) => { res.writeHead(status, { 'Content-Type':'application/json' }); res.end(JSON.stringify(body)); };
 function turn(body) {
   const all = body.messages || [];
@@ -79,7 +79,7 @@ const server = http.createServer(async (req, res) => {
   }
   return json(res,{},404);
 });
-function boot() { child = bootSeededSidecar({port,model:MODEL,key:'local-widget-fixture-not-a-credential',scratchDir:join(workspace,'station'),env:{
+function boot() { child = bootSeededSidecar({port,model:MODEL,key:'local-widget-fixture-not-a-credential',scratchDir:join(workspace,'keep'),env:{
   SKYNET_OPENROUTER_BASE:'http://127.0.0.1:'+fixturePort+'/api/v1',EYEHOLD_OPENROUTER_BASE:'http://127.0.0.1:'+fixturePort+'/api/v1',
   EYEHOLD_OPENROUTER_KEY:'local-widget-fixture-not-a-credential',SKYNET_API_TOKEN:'widget-proof-local-token',EYEHOLD_API_TOKEN:'widget-proof-local-token',SKYNET_QUEST_REFRESH:'0',SKYNET_SCOUT:'0'
 }}); }

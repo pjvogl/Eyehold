@@ -8,7 +8,7 @@
    Locked here:
      A. connectBelt no longer ends (or starts) a lane on a tile a THIRD machine touches when a clean tile
         exists — the stacked-bay floor compiles as two parallel branches, both fed by the INBOX;
-     B. station.connectionPreview names the existing machines a placement WOULD hook (the ghost turns amber
+     B. keep.connectionPreview names the existing machines a placement WOULD hook (the ghost turns amber
         and says so). Since conveyor links phase B (2026-09-28) a floor connects by LINKS, so touching joins
         nothing: a line stamped right under another stays its own line, a BAY dropped against a lane hooks
         nothing — and the preview (a dry run of the real edit) says exactly that; what it does name is a

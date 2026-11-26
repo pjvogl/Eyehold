@@ -32,7 +32,7 @@ A.ok(/const\s+workerMaxIters[\s\S]{0,220}:\s*0;/.test(orch),
 A.ok(/maxIters:\s*bounded\s*\?\s*lowerPositive\(workerMaxIters,\s*bounded\.workerMaxIters\)\s*:\s*workerMaxIters/.test(orch),
   'orchestration.js passes the ordinary worker ceiling and only lowers it for a task-specific bound');
 
-// --- HOST half 1: the station actually SUPPLIES workerMaxIters (it previously never did) ---
+// --- HOST half 1: the keep actually SUPPLIES workerMaxIters (it previously never did) ---
 A.ok(/const\s+ORCH_WORKER_MAX_ITERS\s*=/.test(sidecar),
   'index.js defines a per-worker iteration knob');
 A.ok(/workerMaxIters:\s*ORCH_WORKER_MAX_ITERS/.test(sidecar),
@@ -41,8 +41,8 @@ A.ok(/workerMaxIters:\s*ORCH_WORKER_MAX_ITERS/.test(sidecar),
 // --- HOST half 2: runOnce CONSUMES o.maxIters, and only ever downward ---
 A.ok(/const\s+runMaxIters\s*=/.test(sidecar), 'runOnce computes a per-run iteration ceiling');
 A.ok(/o\.maxIters/.test(sidecar), 'runOnce reads the caller-supplied o.maxIters (it previously never did)');
-A.ok(/Math\.min\(Math\.floor\(o\.maxIters\),\s*stationMaxIters\)/.test(sidecar),
-  'the caller cap is clamped against the station policy — a caller may LOWER but never RAISE an explicit ceiling');
+A.ok(/Math\.min\(Math\.floor\(o\.maxIters\),\s*keepMaxIters\)/.test(sidecar),
+  'the caller cap is clamped against the keep policy — a caller may LOWER but never RAISE an explicit ceiling');
 
 // --- HOST half 3: ordinary runs use the computed cap; repair may only lower it to one.
 // Actual one-generation/no-mutation behavior is covered by output-only-repair.e2e.test.js. ---
@@ -51,8 +51,8 @@ A.ok(/limits:\s*\{\s*maxIters:\s*(?:o\.outputOnly\s*\?\s*1\s*:\s*)?runMaxIters/.
 A.ok(!/limits:\s*\{\s*maxIters:\s*CAPS\.maxIters\s*,/.test(sidecar),
   'the old hardcoded limits.maxIters = CAPS.maxIters assignment is gone (that line WAS the bug)');
 
-// --- the default path is unlimited: an ordinary run supplies no o.maxIters and inherits stationMaxIters ---
-A.ok(/:\s*stationMaxIters\s*;/.test(sidecar),
-  'runMaxIters inherits the station policy, which defaults to unlimited');
+// --- the default path is unlimited: an ordinary run supplies no o.maxIters and inherits keepMaxIters ---
+A.ok(/:\s*keepMaxIters\s*;/.test(sidecar),
+  'runMaxIters inherits the keep policy, which defaults to unlimited');
 
 A.report('worker-iteration-cap.test');

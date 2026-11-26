@@ -13,7 +13,7 @@
      3. Launches `node sidecar/index.js` in DEV mode: SKYNET_DEV=1 (the frontend auto-boot hook) +
         SKYNET_FULL_ACCESS=1 (no consent prompts mid-test) + the seeded workspace + your key/model.
 
-   Result: open the printed URL and you land straight in the live station, agent awake, ready to chat.
+   Result: open the printed URL and you land straight in the live keep, agent awake, ready to chat.
    No BEGIN, no key paste, no ceremony — on any port.
 
    Dev-only. The SKYNET_DEV flag is never set in a packaged build, so none of this can leak to shipping. */
@@ -63,7 +63,7 @@ function materializeWorkspace(model) {
   fs.mkdirSync(SCRATCH, { recursive: true });
   // --keep must actually KEEP the previous session's state. The old unconditional cpSync overwrote
   // agent.save.json/agent.roster.json from the fixture on EVERY relaunch — and the boot reconcile is
-  // "freshest updatedAt wins", so the re-stamped fixture (crew none, default station) silently clobbered
+  // "freshest updatedAt wins", so the re-stamped fixture (crew none, default keep) silently clobbered
   // the real save: summoned crew + built floor vanished on every --keep restart. With --keep we only
   // fill in MISSING files (a fixture file added since the scratch was made) and never touch existing ones.
   const kept = KEEP && fs.existsSync(path.join(SCRATCH, 'agent.save.json'));
@@ -171,7 +171,7 @@ async function main() {
   const url = 'http://127.0.0.1:' + port;
   console.log('');
   console.log('  ╔══════════════════════════════════════════════════════════╗');
-  console.log('  ║  Eyehold DEV SEED — booting a pre-onboarded station        ║');
+  console.log('  ║  Eyehold DEV SEED — booting a pre-onboarded keep        ║');
   console.log('  ╚══════════════════════════════════════════════════════════╝');
   console.log('   agent     : NOVA (seeded, no setup needed)');
   console.log('   model     : ' + model);

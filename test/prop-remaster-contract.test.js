@@ -42,7 +42,7 @@ let mode=true,still=false;
 const window={addEventListener:no,matchMedia:()=>({matches:still})};
 const document={addEventListener:no,documentElement:{style:{setProperty:no}},createElement:()=>({getContext:()=>null})};
 const U=new Function('window','document',fs.readFileSync(path.join(__dirname,'../frontend/js/util.js'),'utf8')+';return U;')(window,document);
-const textures={isRemaster:()=>mode,enabled:()=>mode,ready:Promise.resolve(),workstation:()=>true,chair:()=>true,furniture:()=>true,crate:()=>true};
+const textures={isRemaster:()=>mode,enabled:()=>mode,ready:Promise.resolve(),workkeep:()=>true,chair:()=>true,furniture:()=>true,crate:()=>true};
 const remaster={ready:Promise.resolve(),revision:()=>0,enabled:()=>mode,
  draw(ctx,id,view,x,y,w,h,state,native){if(!mode)return false;calls.push({id,view,x,y,w,h,state,native});return true;}};
 function load(extra){

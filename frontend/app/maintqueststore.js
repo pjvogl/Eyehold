@@ -14,7 +14,7 @@
        (its skip streak decays after a quiet window, or a clean cron.fire/cron.result lands for it).
 
    Self-persists the SLAG quests to its own localStorage key (rides the backup prefix, like queststatestore /
-   stationqueststore — no save.js change). The CRON-JAM tally is IN-MEMORY only (a live-session signal — a
+   keepqueststore — no save.js change). The CRON-JAM tally is IN-MEMORY only (a live-session signal — a
    backlog is a now-problem, not a durable one). The projection (quests()) is joined into QuestStore.view, so
    these ride the EXACT same quest-log render + QuestState fold as every other quest — one shape, and completion
    gets G1a's gold celebration for free. NOTHING MINTS XP (the xp.js law): a maintenance quest pays out the line
@@ -35,14 +35,14 @@ const MaintQuestStore = (() => {
   const MIN = () => (typeof MaintQuests !== 'undefined' && MaintQuests.MIN_HITS) || 2;
 
   // if the log is open, refresh it so the new/cleared row lands immediately (a no-op when closed).
-  function poke() { try { if (typeof StationUI !== 'undefined' && StationUI.rerender) StationUI.rerender('quests', false); } catch (_) {} }
+  function poke() { try { if (typeof KeepUI !== 'undefined' && KeepUI.rerender) KeepUI.rerender('quests', false); } catch (_) {} }
 
   /* ---------- the SLAG source: tally the live ring, mint recurring causes, clear cleared ones ---------- */
   function ring() { try { return (typeof World !== 'undefined' && World.slagPostmortems) ? (World.slagPostmortems() || []) : []; } catch (_) { return []; } }
 
   /* SETTLED post-mortems: the ring records ONLY unproductive runs, so a clean run never pushed a failure out of
      it and a fix-it quest could never clear — three billing errors from days earlier still read "3 runs errored
-     out" on a station whose runs had long since been finishing (2026-10-07). A clean finish (`done`) by an agent
+     out" on a keep whose runs had long since been finishing (2026-10-07). A clean finish (`done`) by an agent
      now settles every earlier post-mortem of THAT agent (an entry with no agent settles on any clean run). The
      ring itself is untouched — the LOGBOOK's SLAG tab still shows the history; only the live tally forgets. */
   let settled = new WeakSet();
@@ -108,8 +108,8 @@ const MaintQuestStore = (() => {
     'stale-lock-reclaimed': 'a stuck run had to be reclaimed'
   };
 
-  /* ---------- the heartbeat: mint recurring causes, clear cleared ones. Driven by the 1s station tick +
-     every quest-log render (mirrors StationQuestStore.sync). Idempotent + side-effect-light. ---------- */
+  /* ---------- the heartbeat: mint recurring causes, clear cleared ones. Driven by the 1s keep tick +
+     every quest-log render (mirrors KeepQuestStore.sync). Idempotent + side-effect-light. ---------- */
   function sync() {
     if (!ready()) return;
     const min = MIN();
@@ -187,7 +187,7 @@ const MaintQuestStore = (() => {
   }
 
   // a NEW AGENT starts with no maintenance history (own key — Save.clear() only wipes eyehold.save; mirrors
-  // StationQuestStore.reset). The next init() hydrates clean.
+  // KeepQuestStore.reset). The next init() hydrates clean.
   function reset() { state = null; jamByJob.clear(); settled = new WeakSet(); try { localStorage.removeItem(KEY); } catch (_) {} }
 
   return { init, sync, quests, openCount, dismiss, isDismissed, jammedJobs, reset,

@@ -109,7 +109,7 @@ A.ok(!parseGateLog('').ok, 'empty log rejected');
   A.eq(byId(r, 'ready').status, 'PASS', 'READY');
   A.eq(byId(r, 'updater-key').status, 'PASS', 'key present');
   A.ok(!/NEVER-PRINTED/.test(renderChecklist(r)), 'key contents never rendered');
-  A.eq(byId(r, 'updater-key-backup').status, 'SKIP', 'offline backup is human attestation');
+  A.eq(byId(r, 'updater-key-backup').status, 'SKIP', 'offline backup is human attekeep');
   A.eq(byId(r, 'notes').status, 'WARN', 'notes header is previous version pre-bump → WARN');
   A.ok(/PREFLIGHT PASS/.test(renderChecklist(r)), 'render says PASS');
   A.ok(!io.calls.some(c => /push|commit|tag v|checkout|reset/.test(c) && !/tag --list/.test(c)), 'no mutating git call: ' + io.calls.filter(c => /push|commit|checkout|reset/.test(c)).join(','));

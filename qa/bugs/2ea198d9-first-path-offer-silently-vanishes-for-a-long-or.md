@@ -15,7 +15,7 @@ origin: audit
 
 ## Symptom
 
-At the end of the interview the Commander corrects the station's read and states the mission in their own words at length (over 280 characters), or states a mission identical to an older goal. The meeting ends without ever offering the step-by-step path for that mission; nothing says why.
+At the end of the interview the Commander corrects the keep's read and states the mission in their own words at length (over 280 characters), or states a mission identical to an older goal. The meeting ends without ever offering the step-by-step path for that mission; nothing says why.
 
 ## Repro
 

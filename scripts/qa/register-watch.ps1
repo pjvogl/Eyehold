@@ -1,9 +1,9 @@
 <#
-  scripts/qa/register-watch.ps1 -- PREPARED scheduling glue for the Self-Testing Station (lane Q5).
+  scripts/qa/register-watch.ps1 -- PREPARED scheduling glue for the Self-Testing Keep (lane Q5).
 
   WHAT THIS IS: registers the HEADLESS, KEYLESS QA crew members as Windows Scheduled Tasks so the
   watch runs unattended. It is the single documented activation command for the cron-style jobs
-  (see qa/QA_STATION.md section 11/section 13).
+  (see qa/QA_KEEP.md section 11/section 13).
 
   HARD CONSTRAINT (Part 5 read-only / propose-only + this lane's charter): this script is INERT
   until an operator runs it WITH -Apply. Run it with no flags and it only PRINTS what it would
@@ -15,7 +15,7 @@
     Eyehold-QA-Beginner-Daily    npm run qa:beginner    daily 09:00 (fresh-user --ui-only path)
     Eyehold-QA-Janitor-Weekly    npm run qa:janitor     Sun 09:15  (hygiene sweep, propose-only)
 
-  IT DELIBERATELY DOES NOT REGISTER (these are NOT Task-Scheduler jobs -- see qa/QA_STATION.md):
+  IT DELIBERATELY DOES NOT REGISTER (these are NOT Task-Scheduler jobs -- see qa/QA_KEEP.md):
     - the per-merge Guardian (`npm run qa:guardian:watch`) -- a STANDING PROCESS, started once,
       not a time-triggered task.
     - the `--live` Beginner run -- spends tokens + needs SKYNET_OPENROUTER_KEY from env; a secret

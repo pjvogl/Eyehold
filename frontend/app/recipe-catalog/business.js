@@ -5,12 +5,12 @@
    NO logic here — pure data.
 
    Content contract: every record clears THE RECIPE BAR documented in core.js (earns its tap / drives
-   the station / lands somewhere / compounds when recurring), in the same imperative harness voice.
+   the keep / lands somewhere / compounds when recurring), in the same imperative harness voice.
 
    ══ THE OUTBOUND LINE (this module's extra bar) ══
    Half of these recipes end in something addressed to another human — a proposal, a follow-up, a
    contract reply. EVERY one of them stops at the draft. The directive says so explicitly, in the
-   directive itself, because the Commander must never discover after the fact that the station sent
+   directive itself, because the Commander must never discover after the fact that the keep sent
    something on their behalf. (recipes.js `impliesOutbound` reads these for the launch-form warning;
    the honesty has to live in the task text too, where the agent actually reads it.)
 

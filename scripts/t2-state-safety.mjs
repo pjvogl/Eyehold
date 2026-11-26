@@ -134,7 +134,7 @@ function currentSave(overrides = {}) {
     workstreams: [{ id: 'general', title: 'General', messages: [{ role: 'user', content: 'still here' }] }],
     activeId: 'general',
     generalId: 'general',
-    stationStats: { xp: 42, level: 3 },
+    keepStats: { xp: 42, level: 3 },
     profile: { v: 1, tags: {}, seed: null, enabled: true, total: 0 },
     dossier: { v: 1, dims: { identity: [], stack: [], goals: [], style: [], standing_orders: [], pain: [], ambition: [] }, seededFrom: {}, updatedAt: 0 }
   }, overrides);
@@ -159,21 +159,21 @@ function workstreamsMigrator() {
 function legacyCopyForwardStep() {
   const legacySave = JSON.stringify({ schema: 'skynet.save', agent: { id: 'old' } });
   const currentSaveRaw = JSON.stringify(currentSave({ agent: { id: 'agent', name: 'CURRENT' } }));
-  const stationRaw = JSON.stringify({ slots: ['alpha'] });
+  const keepRaw = JSON.stringify({ slots: ['alpha'] });
   const storage = new MemoryStorage({
     'skynet.save': legacySave,
-    'skynet.station.v1': stationRaw,
+    'skynet.keep.v1': keepRaw,
     'eyehold.save': currentSaveRaw
   });
   const copied = LegacyMigrate.run(storage);
   assert(copied === 1, 'legacy migration should copy only missing eyehold targets');
   assert(storage.getItem('eyehold.save') === currentSaveRaw, 'existing eyehold.save must not be clobbered');
-  assert(storage.getItem('eyehold.station.v1') === stationRaw, 'missing eyehold station key should be copied forward');
-  assert(storage.getItem('skynet.station.v1') === stationRaw, 'legacy key should remain for rollback');
+  assert(storage.getItem('eyehold.keep.v1') === keepRaw, 'missing eyehold keep key should be copied forward');
+  assert(storage.getItem('skynet.keep.v1') === keepRaw, 'legacy key should remain for rollback');
   return {
     copied,
     protectedKeys: ['eyehold.save'],
-    rollbackKeysLeftInPlace: ['skynet.station.v1'],
+    rollbackKeysLeftInPlace: ['skynet.keep.v1'],
     reason: 'Skynet localStorage keys copy forward without clobbering Eyehold keys.'
   };
 }

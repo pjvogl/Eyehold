@@ -62,7 +62,7 @@ const ThreadStore = (() => {
     sessionShown = 0;
   }
   // a brand-new hero starts clean (mirrors the other stores' reset on commission). The server-side ledger +
-  // denylist are station-wide and owned there; only the client gate state resets here.
+  // denylist are keep-wide and owned there; only the client gate state resets here.
   function reset() { state = hydrate(null); sessionShown = 0; try { localStorage.removeItem(KEY); } catch (_) {} }
 
   // ---- the gate the chat beat consults ----

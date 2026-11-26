@@ -1,6 +1,6 @@
 /* EYEHOLD — autonomy.js : the PURE engine for the AUTONOMY POSTURE — the tunable "alive between sessions" dial.
 
-   THE DIAL IS THE PRODUCT. The station can do real work while the Commander is away and feel alive — honestly — and
+   THE DIAL IS THE PRODUCT. The keep can do real work while the Commander is away and feel alive — honestly — and
    the Commander tunes exactly HOW MUCH, per agent, along TWO independent axes (separating them is the whole insight:
    "be productive on your own all day" can coexist with "but ask before anything irreversible"):
 
@@ -9,7 +9,7 @@
                     observe → sandbox → reach
 
    The awakening's cadence beat sets the OPENING posture from four concrete, picture-able choices (never an abstract
-   "how autonomous do you want me to be?" — see the awakening-question-design rule); a station dial retunes it later.
+   "how autonomous do you want me to be?" — see the awakening-question-design rule); a keep dial retunes it later.
    Range is honored at BOTH ends: full wait-for-me (off) and full free-range (on).
 
    SAFE BY DEFAULT: fresh() PROPOSES (studies the Commander, lines up suggestions to approve, never acts unattended)
@@ -50,7 +50,7 @@
   const rankOf = (axis, v) => axis.indexOf(v);
 
   // the persisted shape. DEFAULT (USER-STUDY LOOP, 2026-09-28, Andrew's call) = PROPOSE with a Sandbox ceiling:
-  // a new station studies the Commander and lines up goal-grounded suggestions and quests for them to approve,
+  // a new keep studies the Commander and lines up goal-grounded suggestions and quests for them to approve,
   // but never ACTS unattended (actsUnattended stays false below 'leash'). 'wait' remains one tap away and is
   // honored exactly. Reach is stored (at 'sandbox') even below 'leash', so later RAISING initiative inherits a
   // ceiling the Commander actually set — never a surprise reach.
@@ -68,7 +68,7 @@
   // tolerant hydrate: clamp every field to a known value. A corrupt / old / partial save degrades to the safe floor
   // per field — never throws, never yields an out-of-enum posture that the runtime gates could misread.
   function normalize(raw) {
-    if (!raw || typeof raw !== 'object') return fresh();   // nothing saved yet → the new-station default
+    if (!raw || typeof raw !== 'object') return fresh();   // nothing saved yet → the new-keep default
     const s = floor();
     if (INITIATIVE.indexOf(raw.initiative) >= 0) s.initiative = raw.initiative;
     if (REACH.indexOf(raw.reach) >= 0) s.reach = raw.reach;

@@ -1,4 +1,4 @@
-/* Live UI regression against an isolated seeded station. Uses normal controls only;
+/* Live UI regression against an isolated seeded keep. Uses normal controls only;
  * no provider execution, synthetic app state, saved widget changes, or external accounts.
  * EYEHOLD_PLAYWRIGHT_MODULE / EYEHOLD_CHROME select locally available browser dependencies. */
 'use strict';

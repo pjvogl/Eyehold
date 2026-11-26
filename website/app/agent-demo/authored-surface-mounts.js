@@ -14,7 +14,7 @@ const AuthoredSurfaceMounts = (() => {
   function quadOK(q) {
     if(!Array.isArray(q)||q.length!==4||!q.every(point))return false;
     // TL/TR/BR/BL: require a bounded non-folding surface, with positive depth on
-    // both side rails. Malformed data must not lift objects into the station void.
+    // both side rails. Malformed data must not lift objects into the keep void.
     if(q.some(p=>p.some(n=>Math.abs(n)>384)))return false;
     if(q[1][0]<=q[0][0]||q[2][0]<=q[3][0]||q[3][1]<=q[0][1]||q[2][1]<=q[1][1])return false;
     let sign=0;

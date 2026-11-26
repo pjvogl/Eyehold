@@ -28,7 +28,7 @@ const focusHeader = "TONIGHT'S FOCUS: alpha — because you worked in alpha — 
 })();
 
 (function v2PatchSteer() {
-  const snap = 'PROJECT SNAPSHOT — C:/repo/alpha (read by the station, not guessed):\nTODO / FIXME markers:\n  src/app.js:12:// TODO: handle empty invoice list';
+  const snap = 'PROJECT SNAPSHOT — C:/repo/alpha (read by the keep, not guessed):\nTODO / FIXME markers:\n  src/app.js:12:// TODO: handle empty invoice list';
   const cand = AP.buildCandidateDirectiveV2({ beliefs: {}, activity: ['w'], eligible, focusHeader, projectSnapshot: snap });
   A.ok(cand.indexOf(snap) >= 0, 'V2 candidate carries the project snapshot');
   A.ok(/kind.{0,4}:.{0,4}patch/i.test(cand) || /"kind":"patch"/.test(cand), 'V2 candidate instructs a patch-kind artifact');

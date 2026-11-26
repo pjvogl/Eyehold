@@ -205,7 +205,7 @@
     {
       "id": "full-backup-export-restore",
       "classification": "required",
-      "releaseTreatment": "Expose and prove the full secret-free path or narrow the claim to station backup."
+      "releaseTreatment": "Expose and prove the full secret-free path or narrow the claim to keep backup."
     },
     {
       "id": "three-platform-release-pipeline",

@@ -32,7 +32,7 @@ Per skin, in order:
    measured 0.8% frame drift vs 84% for a regenerated blink.
 
 4. **Sit — NOT SOLVED.** Still the old flat art (~7-12 colours vs ~50 on the new idle). It is the
-   visible seam because agents sit at workstations constantly. Another `create_character_state`
+   visible seam because agents sit at workkeeps constantly. Another `create_character_state`
    at ~20 each = 720 for the full roster. Deferred, not skipped.
 
 5. **Assemble** with `scripts` equivalent of `_assembly/assemble.py`: 92×92 canvas, content bottom

@@ -1,7 +1,7 @@
 # Connector / plugin / platform UX — the plan to make Eyehold's the easiest in open source
 
 **Status:** plan, nothing built. **Grounded:** every finding below was walked LIVE on a seeded
-station (`dev/seed.js`, port 8931, trunk `87b61564`) on 2026-07-28 — not read off docs.
+keep (`dev/seed.js`, port 8931, trunk `87b61564`) on 2026-07-28 — not read off docs.
 Supersedes nothing; `docs/CONNECTORS_MCP_PLAN.md` is the original bridge design and still holds.
 
 ## The one idea
@@ -10,7 +10,7 @@ Today Eyehold makes the user answer a question they cannot answer: **"which of s
 does the thing I want use?"** MCP connector, platform API key, messaging channel, AI provider,
 hook, plugin — each lives behind a different door, and picking the wrong door is a dead end.
 
-Invert it. **The user names the thing; the station picks the mechanism.** One search box, one
+Invert it. **The user names the thing; the keep picks the mechanism.** One search box, one
 result list, the setup card rendered inline wherever it lives. Mechanism becomes a badge, not a
 navigation decision. Then two more rules that no open-source harness does well:
 
@@ -33,7 +33,7 @@ document and it reprioritizes everything below it.**
 
 ### R1 — The search box cannot see a single one of the 48 connectable platforms
 
-`stationui.js:1031` filters on a **hardcoded class allowlist**:
+`keepui.js:1031` filters on a **hardcoded class allowlist**:
 `.set-row, label.set-row, .prov-card, .key-row, .set-about, .ms-h, .perk, .sk-card, .mc-hint, .mc-row, .ts-row`
 
 Every catalog entry and every KEYS platform renders as **`.cc-card`** — which is not on that list.
@@ -90,7 +90,7 @@ not a model failure.
 
 ### The fix, in the order that buys the most
 
-1. **Add `.cc-card` to the allowlist at `stationui.js:1031`.** One line. Makes all 48 platforms
+1. **Add `.cc-card` to the allowlist at `keepui.js:1031`.** One line. Makes all 48 platforms
    findable by name today. Verify by typing `google` and landing on the Google Workspace card.
 2. **Correct `manual.js`** — add ABILITIES › CATALOG / KEYS / MCP CONNECTORS / EXTENSIONS and the
    CHANNELS window to NAVIGATION; add a "how do I connect <platform>" troubleshooting entry; and
@@ -152,12 +152,12 @@ claims to be the complete list isn't.
 On the interactive (browser) surface `composeOffice` gives an agent **compute only** plus
 whatever props are placed (`sidecar/capability/office.js:35`) — but **every configured connector
 portal rides on unconditionally** (`office.js:38`, "account-level, not a placed floor prop").
-On the seeded station (one `desk` prop, verified in `eyehold.save`) that means:
+On the seeded keep (one `desk` prop, verified in `eyehold.save`) that means:
 
 > NOVA can query a third-party MCP server on the public internet, but cannot run `web_search`.
 
 And TOOLSETS diagnoses it without treating it: every row renders
-`<span class="ts-inert">no dish on station — place one to grant these tools</span>`
+`<span class="ts-inert">no dish on keep — place one to grant these tools</span>`
 (`frontend/app/windows/connectors.js:374`) — an inert span with **no button**. The panel tells
 you exactly what is wrong and gives you nothing to click.
 
@@ -235,9 +235,9 @@ highest-frequency card an MCP agent raises, so this is the most-trafficked doorw
 
 ### S2 — Fix the inversion
 
-7. **Auto-place on first connect.** When a CATALOG/KEYS connect implies a prop the station
+7. **Auto-place on first connect.** When a CATALOG/KEYS connect implies a prop the keep
    doesn't have (a KEYS platform is useless without `web_request`, i.e. a dish), place it and say
-   so in a visible beat: *"placed a dish on your station so NOVA can reach Printify."* Keeps the
+   so in a visible beat: *"placed a dish on your keep so NOVA can reach Printify."* Keeps the
    moat (placing-grants-reach stays true and visible) while removing the invisible second step.
 8. **Give connectors a TOOLSETS row.** One `CONNECTORS` family listing each connected server with
    its live tools and its own kill-switch, so "every capability your agents can use" is true.

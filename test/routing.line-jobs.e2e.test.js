@@ -3,7 +3,7 @@
    (POST /api/routing/sample with its line) is kept as ONE record from the moment it goes out: GET /api/line-jobs lists it newest
    first, GET /api/line-jobs/<id> holds the whole thing (what was asked, the route's own verdict, each step's run at its bay, what came
    out, what it cost), …/note keeps what the Commander changed because of it, a re-run names the job it re-ran, and the records
-   survive a restart. SET IT UP FOR ME (POST /api/routing/line-draft) drafts a line from a description on the station default model:
+   survive a restart. SET IT UP FOR ME (POST /api/routing/line-draft) drafts a line from a description on the keep default model:
    only an offered starter, bad input refused before any spend, and nothing is placed. */
 const test = require('node:test');
 const assert = require('node:assert/strict');
@@ -104,7 +104,7 @@ test('a line job is one durable record; SET IT UP FOR ME drafts only an offered 
     calls.length = 0;
     assert.equal((await fixture.json('POST', '/api/routing/line-draft', { want: '   ', starters })).status, 400);
     assert.equal(calls.filter(c => c.draft).length, 0, 'no spend on a refused ask');
-    // …a real ask: one call on the station default; only an offered starter, only its roles
+    // …a real ask: one call on the keep default; only an offered starter, only its roles
     draftReply = 'Sure:\n```json\n' + JSON.stringify({ starter: 'research_line', name: '"AI news digest"', steps: { researcher: 'Find this week\'s most important AI news.', WRITER: 'Write it up as a short newsletter section.', EDITOR: 'not a role of this line' }, job: 'This week in AI' }) + '\n```';
     const drafted = await fixture.json('POST', '/api/routing/line-draft', { want: 'a weekly AI news digest for my newsletter', starters });
     assert.equal(drafted.status, 200, JSON.stringify(drafted.body));

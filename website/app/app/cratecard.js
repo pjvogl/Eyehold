@@ -1,6 +1,6 @@
 /* EYEHOLD — cratecard.js : the CRATE INSPECT card (line watch, 2026-09-23).
 
-   Click a crate riding a belt on the live floor (world.js crateAt → openCrate) and this small station card opens
+   Click a crate riding a belt on the live floor (world.js crateAt → openCrate) and this small keep card opens
    beside it: what job it carries, which line, where it came from and is going, the run working it (agent, live
    RECONCILED cost) or — once finished — the run's recorded outcome (GET /api/runs?runId=), plus two doors: the
    agent's LOGBOOK (where the run's transcript opens) and, for a step-test crate, the Workflow panel.

@@ -1,15 +1,15 @@
-/* EYEHOLD — remoteview.js : the picture of this station that a paired phone sees.
+/* EYEHOLD — remoteview.js : the picture of this keep that a paired phone sees.
 
-   Eyehold Remote's phone app has a STATION view. The station is drawn by THIS page (the sidecar has no
+   Eyehold Remote's phone app has a KEEP view. The keep is drawn by THIS page (the sidecar has no
    renderer), so this page draws it: World.renderStill() runs the real scene pass — floor, walls, props, the
-   crew where they really stand, light — onto an offscreen canvas framed on the whole station, and the still is
+   crew where they really stand, light — onto an offscreen canvas framed on the whole keep, and the still is
    handed to the sidecar (POST /api/remote/view), which passes it to the phone over the sealed channel.
 
-   WHEN IT DRAWS (an idle station does no extra work):
+   WHEN IT DRAWS (an idle keep does no extra work):
      · GET /api/remote/view says whether Remote is on and whether a phone is looking right now.
      · Remote off: nothing is drawn; it looks again once a minute.
      · Remote on: one picture when the floor is up (so a phone that opens later has something, stamped with its
-       age), then a fresh one every few seconds only while a phone is looking. A station that is slow to draw
+       age), then a fresh one every few seconds only while a phone is looking. A keep that is slow to draw
        is drawn less often, so the phone's picture never makes the desk stutter.
 
    TRUTH RULE: the picture is whatever the real renderer drew at that moment, stamped by the sidecar with the
@@ -23,7 +23,7 @@ const RemoteView = (() => {
   const LIVE_MS = 12000;      // a phone is looking: redraw the room this often (the crew move on their own stream)
   const CREW_MS = 200;        // a phone is looking: where the crew are, this often
   const CREW_KEEPALIVE_MS = 2000;
-  const SLOWEST_MS = 20000;   // …and never slower than this, however heavy the station
+  const SLOWEST_MS = 20000;   // …and never slower than this, however heavy the keep
   const MAX_PX = 2200;        // longest side of the still (sharp enough to zoom into on a phone)
   let timer = null, busy = false, sentOnce = false, started = false;
   let lastData = '', stillScale = 0, crewTimer = null, crewUntil = 0, crewBusy = false, lastCrew = '', lastCrewAt = 0;
@@ -119,14 +119,14 @@ const RemoteView = (() => {
     }, CREW_MS);
   }
 
-  // one look at the station's answer, maybe one picture; returns how long to wait before the next look
+  // one look at the keep's answer, maybe one picture; returns how long to wait before the next look
   async function step() {
     const s = await getJson('/api/remote/view');
     if (!s || !s.enabled) { sentOnce = false; return IDLE_MS; }
     let cost = 0;
     if (s.want || !sentOnce || !s.at) { const t0 = performance.now(); if (await draw()) sentOnce = true; cost = performance.now() - t0; }
     if (s.want) crewWhileWanted();
-    // a big station takes longer to draw: never spend more than about a fifteenth of the desk's time on the phone's picture
+    // a big keep takes longer to draw: never spend more than about a fifteenth of the desk's time on the phone's picture
     return s.want ? Math.max(LIVE_MS, Math.min(SLOWEST_MS, Math.round(cost * 15))) : WATCH_MS;
   }
 

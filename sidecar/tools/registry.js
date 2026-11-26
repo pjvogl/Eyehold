@@ -497,7 +497,7 @@
 
       /* HOOKS — pre_tool_call. Placed HERE, and the position is the whole security argument: it is the last
          thing before the tool runs and it is AFTER the user-control authority, the capability gate, schema
-         validation and the consent broker. A hook therefore reaches only calls the station had already
+         validation and the consent broker. A hook therefore reaches only calls the keep had already
          decided to allow, and the only thing it can do is take that permission away. It cannot approve what
          a gate refused, because a refusal returned above this line and never got here.
          Unwired (`ctx.hooks` absent) = every existing caller and test, byte-identical. */

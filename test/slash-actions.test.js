@@ -303,7 +303,7 @@ const mk = (over) => { const d = deps(over); return { S: makeSlashActions(d), ca
     const r = await S.run('away', 'now');
     A.ok(/No away shift ran/.test(r.text), 'a shift that did not fire never claims it did');
     A.ok(/nothing queued to build/.test(r.text), 'a machine reason code is translated to something actionable');
-    // 'no-capability' is what a keyless station returns — the most likely real-world case, and the least
+    // 'no-capability' is what a keyless keep returns — the most likely real-world case, and the least
     // legible raw. It must name the door that fixes it.
     const cap = await mk({ workshop: { shiftNow: async () => ({ ok: true, fired: false, reason: 'no-capability' }) } })
       .S.run('away', 'now');
@@ -362,13 +362,13 @@ const mk = (over) => { const d = deps(over); return { S: makeSlashActions(d), ca
     A.ok(/1,234,567 tokens/.test(r.lines[1]), 'token total is reported');
     A.ok(/scout/.test(r.lines[2]) && /\$9\.50/.test(r.lines[2]), 'per-agent spend is scoped to the asking agent');
     A.ok(/per run \$10\.00/.test(r.lines[3]), 'configured caps are named');
-    // THE POINT of moving this server-side: the number must be legible as the STATION's, not this window's.
+    // THE POINT of moving this server-side: the number must be legible as the KEEP's, not this window's.
     A.ok(r.lines.some(l => /routines, away shifts and messaging runs/.test(l)), 'the readout says the ledger covers headless runs too');
   }
 
   {
     const noCaps = await makeSlashActions({ budget: { snapshot: async () => Object.assign({}, SNAP, { caps: {} }) } }).run('usage', '', {});
-    A.ok(noCaps.lines.some(l => /No spend caps are set/.test(l)), 'an uncapped station says so plainly');
+    A.ok(noCaps.lines.some(l => /No spend caps are set/.test(l)), 'an uncapped keep says so plainly');
     // sub-cent spend must not render as "$0.00" — that reads as "free"
     const tiny = await makeSlashActions({ budget: { snapshot: async () => Object.assign({}, SNAP, { today: 0.004 }) } }).run('usage', '', {});
     A.ok(/<\$0\.01/.test(tiny.lines[0]), 'sub-cent spend is not rounded away to $0.00');

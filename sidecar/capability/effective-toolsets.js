@@ -6,17 +6,17 @@ const { toolsetRows } = require('./toolsets.js');
 const profiles = require('../execution-profiles.js');
 function effectiveToolsets({ registry, agentId, agent, placed = [], disabled = {}, fullAccess = false, masterBypass = false, lead = false, backendId = 'local' } = {}) {
   agent = agent || {};
-  const source = fullAccess ? 'environment' : masterBypass ? 'station' : agent.approvalMode === 'full' ? 'agent' : null;
+  const source = fullAccess ? 'environment' : masterBypass ? 'keep' : agent.approvalMode === 'full' ? 'agent' : null;
   const unrestricted = !!source;
   const profile = profiles.resolve(agent.executionProfile, { approvalMode: agent.approvalMode, backendId });
   const onFloor = new Set(placed);
   const projected = new Set(profile.capabilityObjects);
   return {
-    authority: { agentId: agentId || null, name: agent.name || agentId || 'Station defaults', unrestricted, source,
+    authority: { agentId: agentId || null, name: agent.name || agentId || 'Keep defaults', unrestricted, source,
       context: lead ? 'interactive lead' : 'capability grants',
       profile: profile.id, profileLabel: profile.label, filesystemLabel: unrestricted ? 'Whole local computer' : profile.filesystemLabel,
       approvalLabel: unrestricted ? 'FULL ACCESS — no Eyehold approval prompts' : 'ASK — standing grants apply',
-      revoke: source === 'environment' ? 'Clear SKYNET_FULL_ACCESS in the launch environment and restart.' : source === 'station' ? 'Turn off the station master bypass in Settings → Permissions; individual Full Access agents stay unrestricted.' : source === 'agent' ? 'Set this agent to ASK in its dossier.' : 'Revoke standing grants in Settings → Permissions.' },
+      revoke: source === 'environment' ? 'Clear SKYNET_FULL_ACCESS in the launch environment and restart.' : source === 'keep' ? 'Turn off the keep master bypass in Settings → Permissions; individual Full Access agents stay unrestricted.' : source === 'agent' ? 'Set this agent to ASK in its dossier.' : 'Revoke standing grants in Settings → Permissions.' },
     toolsets: toolsetRows(registry).map(r => {
       const enabled = disabled[r.id] !== false;
       const placedHere = !!(r.object && onFloor.has(r.object));
@@ -24,7 +24,7 @@ function effectiveToolsets({ registry, agentId, agent, placed = [], disabled = {
       const runtimeGranted = lead && r.object === 'orchestrator';
       return Object.assign({}, r, { toolCount: r.tools.length, enabled, placed: placedHere, profileGranted, runtimeGranted,
         available: unrestricted || (enabled && (placedHere || profileGranted || runtimeGranted)),
-        grantSource: unrestricted ? 'Full Access' : profileGranted ? profile.label : placedHere ? 'station prop' : runtimeGranted ? 'lead run' : null,
+        grantSource: unrestricted ? 'Full Access' : profileGranted ? profile.label : placedHere ? 'keep prop' : runtimeGranted ? 'lead run' : null,
         switchEffective: !unrestricted, consentGated: !unrestricted && r.consentGated });
     })
   };
@@ -38,10 +38,10 @@ function effectiveToolsets({ registry, agentId, agent, placed = [], disabled = {
    A fact is certain only as `false`. true = available; undefined = the host does not know -> stays advertised.
    Signals deliberately NOT here because they are not certain: browser.* without a Chromium binary
    (browser.attach can still drive a Chrome the Commander started), channel.send with no known chat (a person
-   may message the station mid-run), image_analyze (falls back to the run's own model). */
+   may message the keep mid-run), image_analyze (falls back to the run's own model). */
 const AVAILABILITY_SIGNALS = [
   { id: 'media-route', fact: 'mediaRoute', tools: ['image_generate'], label: 'image_generate', announce: true,
-    why: 'no image-generation connection is configured for this station',
+    why: 'no image-generation connection is configured for this keep',
     enable: 'the Commander signs in to ChatGPT, or connects an OpenAI or OpenRouter key or a Eyehold account in SETTINGS' },
   { id: 'voice-route', fact: 'voiceRoute', tools: ['voice_generate'], label: 'voice_generate', announce: true,
     why: 'no voice route exists: no OpenRouter, Gemini or OpenAI key is connected and the free Edge voice is switched off',

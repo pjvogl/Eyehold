@@ -9,7 +9,7 @@
 
    SELF-RETIRING by construction: the fork instruction only enters the system prompt while the style model's
    confidence is LOW (the same understanding.js floor that aims the VOI question and the belief probes) —
-   once the station knows how the Commander likes work done, the forks stop appearing at all. The system
+   once the keep knows how the Commander likes work done, the forks stop appearing at all. The system
    asks LESS the longer it's used.
 
    This engine is the pure half: the directive block, the reply-marker parser, the confidence gate, and the
@@ -57,10 +57,10 @@
       'HARD FORMAT RULE while this block is present: if your reply ends by offering the Commander a choice or',
       'asking their preference (formats, tone, length, "want A or B?", "should I keep/save/shorten…?"), that',
       'question MUST be the FORK line — never plain prose. Same question, but the Commander answers with one',
-      'tap and the station keeps the answer permanently. A reply that needs no question needs no FORK line.',
+      'tap and the keep keeps the answer permanently. A reply that needs no question needs no FORK line.',
       'Example — instead of ending with "Want me to keep this casual, or make it formal?", end with:',
       'FORK: keep this casual, or formal? || casual | formal',
-      'Your Commander answers with one tap; their answer arrives as their next message AND the station remembers',
+      'Your Commander answers with one tap; their answer arrives as their next message AND the keep remembers',
       'it permanently — so never ask a fork twice, and never ask what the briefing above already tells you.'
     ].join('\n');
   }

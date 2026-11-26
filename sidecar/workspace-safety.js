@@ -19,7 +19,7 @@ function workspaceCandidates(deps) {
   const home = String(homedir() || '');
   // Tauri's stable macOS app-data root is ~/Library/Application Support/<bundle-id>. Manual sidecar boots
   // used the generic POSIX ~/.local/share fallback instead. Inspect/protect BOTH so the desktop can recover
-  // the stranded root and the two launch modes can never silently become separate stations again.
+  // the stranded root and the two launch modes can never silently become separate keeps again.
   if (home && platform === 'darwin') bases.push(path.join(home, 'Library', 'Application Support'));
   if (home) bases.push(path.join(home, '.local', 'share'));
   const out = [];

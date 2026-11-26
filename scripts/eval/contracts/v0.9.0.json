@@ -69,7 +69,7 @@
     { "id": "no-phone-home", "classification": "excluded", "releaseTreatment": "Remove the blanket claim; publish the exact boot-egress inventory instead." },
     { "id": "secrets-keychain-never-render", "classification": "required", "releaseTreatment": "Complete verified desktop coverage or narrow the advertised scope before freeze." },
     { "id": "crash-safe-forward-corrupt-recovery", "classification": "required", "releaseTreatment": "Prove protected stores and explicitly exclude unprotected browser state from blanket wording." },
-    { "id": "full-backup-export-restore", "classification": "required", "releaseTreatment": "Expose and prove the full secret-free path or narrow the claim to station backup." },
+    { "id": "full-backup-export-restore", "classification": "required", "releaseTreatment": "Expose and prove the full secret-free path or narrow the claim to keep backup." },
     { "id": "three-platform-release-pipeline", "classification": "required", "releaseTreatment": "Prove Windows and macOS artifacts from one immutable candidate; do not claim Linux." },
     { "id": "self-update-verified", "classification": "required", "releaseTreatment": "Prove signed Windows update and state macOS manual re-download exactly." },
     { "id": "free-no-markup-budget-caps", "classification": "required", "releaseTreatment": "Keep BYOK and managed-credit economics separate and prove cap enforcement." },

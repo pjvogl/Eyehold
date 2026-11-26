@@ -579,7 +579,7 @@ const ModelDock = (() => {
     renderList();
     // Tier badges ride beside the catalog, never gate it: a slow/unreachable cloud leaves the list badge-less.
     loadTiers(!!force).then(() => { if (!loading && generation === fetchGeneration) renderList(); }).catch(() => {});
-    // 'eyehold' first: a linked station's own credits are the most direct way to run, and its catalog is
+    // 'eyehold' first: a linked keep's own credits are the most direct way to run, and its catalog is
     // the whole managed lineup. providerEnabled() keeps it out of the list when no credits are configured.
     const ids = ['eyehold', 'codex', 'grok', 'kimi', 'openrouter', 'openai', 'anthropic', 'gemini', 'xai', 'groq', 'mistral', 'deepseek', 'together', 'fireworks', 'perplexity', 'cerebras', 'ollama', 'claude-cli', 'custom'];
     const active = provider();
@@ -857,8 +857,8 @@ const ModelDock = (() => {
     if (currentEl) currentEl.textContent = current ? modelLabel({ id: current }) : 'NO MODEL';
     // SCOPE (front doors): the model pickers change different things — say which one THIS is. The dock writes the
     // FOCUSED agent's own model (applyQuickModel → agent.model, the same pin as its AGENTS › CONFIG). The Overseer's
-    // pin IS the station default every unpinned agent follows (focusWire / stationDefaultWire), so focused on the
-    // Overseer this picker sets the station default; focused on a specialist it pins that specialist only.
+    // pin IS the keep default every unpinned agent follows (focusWire / keepDefaultWire), so focused on the
+    // Overseer this picker sets the keep default; focused on a specialist it pins that specialist only.
     const head = currentEl && currentEl.parentElement;
     if (head) {
       let scope = el('model-dock-scope');
@@ -866,7 +866,7 @@ const ModelDock = (() => {
       let who = '', id = '';
       try { who = String((opts.agentName && opts.agentName()) || '').trim(); id = String((opts.identity && opts.identity()) || ''); } catch (_) {}
       scope.textContent = id === 'agent'
-        ? 'STATION DEFAULT · agents without their own model follow it'
+        ? 'KEEP DEFAULT · agents without their own model follow it'
         : 'MODEL FOR ' + (who ? who.toUpperCase() : 'THIS AGENT') + ' ONLY · same as its AGENTS › CONFIG';
     }
     const effort = ensureCurrentEffort();
@@ -950,8 +950,8 @@ const ModelDock = (() => {
   function openSubscription(event) {
     if (event) event.preventDefault();
     closeDock();
-    if (typeof StationUI !== 'undefined' && StationUI.notify) {
-      StationUI.notify('Eyehold billing is not configured. Connect your own provider key. Crowns track verified work and are not money.', 'warn');
+    if (typeof KeepUI !== 'undefined' && KeepUI.notify) {
+      KeepUI.notify('Eyehold billing is not configured. Connect your own provider key. Crowns track verified work and are not money.', 'warn');
     }
   }
 
@@ -1017,7 +1017,7 @@ const ModelDock = (() => {
   // provider is unconfigured, so the picker can always show + preselect it. Returns [{ id, name, provider, … }].
   async function computeCatalog(force, ensure) {
     // #93: 'eyehold' leads here exactly as in the dock — without it a per-agent picker offered managed credits only
-    // while the FOCUSED agent already ran on them. providerEnabled() drops it (empty list) when the station is unlinked.
+    // while the FOCUSED agent already ran on them. providerEnabled() drops it (empty list) when the keep is unlinked.
     const ids = ['eyehold', 'codex', 'grok', 'kimi', 'openrouter', 'openai', 'anthropic', 'gemini', 'xai', 'groq', 'mistral', 'deepseek', 'together', 'fireworks', 'perplexity', 'cerebras', 'ollama', 'claude-cli', 'custom'];
     const active = provider();
     if (ids.indexOf(active) < 0) ids.unshift(active);

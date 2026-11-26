@@ -337,7 +337,7 @@ a.quest:hover .q-title{ text-shadow:0 0 12px rgba(255,157,47,.45); }
 .gc .gc-p{ display:block; font-size:14px; letter-spacing:1.5px; color:var(--amber-d); margin:1px 0 6px; }
 .gc p{ margin:0; font-size:15.5px; line-height:1.5; color:var(--ink-d); }
 
-/* Guides share the station glass; schematic labels retain their authored scale. */
+/* Guides share the keep glass; schematic labels retain their authored scale. */
 .fm-hero{border-radius:12px;padding:24px;background:var(--menu-glass);box-shadow:var(--glass-rim);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
 .fm-hero .fh-kicker{font:16px/1.4 'VT323',monospace;letter-spacing:1px;color:var(--amber);margin-bottom:14px}
 .fm-hero .fh-sub{font:20px/1.5 'VT323',monospace;letter-spacing:0;color:var(--ink-d)}

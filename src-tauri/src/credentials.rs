@@ -266,7 +266,7 @@ pub(crate) fn read_credits_token() -> Option<String> {
 /// file without it. Returns whether a token now lives in the keychain (adopted just now or already
 /// there), so callers report the truth rather than assume success.
 ///
-/// Runs at every launch (migrating already-linked stations) AND on demand right after a link, so a
+/// Runs at every launch (migrating already-linked keeps) AND on demand right after a link, so a
 /// freshly minted token spends seconds on disk instead of until the next restart. Idempotent.
 pub(crate) fn migrate_credits_token_from_plaintext(workspaces: &Path) -> bool {
     let file = workspaces.join(".secrets").join("credits.json");

@@ -136,7 +136,7 @@ or real user-visible bug. **P2** = polish/hygiene. Each item: what, where, why i
   eliminated. **Decision required:** consent-gate `team.spawn`/`team.dispatch`, or accept-and-document.
 
 ### 1.8 OAuth & Spotify connect bypass the desktop-safe external-open helper
-- **Where:** `frontend/app/stationui.js:3650` (OAuth), `:3715` (Spotify) use raw `window.open`; the Tauri
+- **Where:** `frontend/app/keepui.js:3650` (OAuth), `:3715` (Spotify) use raw `window.open`; the Tauri
   `openExternal` helper (`open_external_url`) already exists at `:2106`.
 - **What:** In the desktop webview (strict CSP + Tauri window policy) the popup can silently fail; the UI
   then asserts "complete the sign-in in the popup window…" and polls for 5 minutes against a window that
@@ -162,7 +162,7 @@ or real user-visible bug. **P2** = polish/hygiene. Each item: what, where, why i
 - **`/api/version` blank in the packaged app** (`index.js:5117-5124`): version files aren't bundled resources,
   so the honesty/diagnostics surface can't tell support which build a desktop user is on. Bundle a
   build-stamp or read the Tauri version via IPC.
-- **Orphaned tests** `test/cron.run-now.test.js`, `test/station-authority.test.js` pass but are in no gate.
+- **Orphaned tests** `test/cron.run-now.test.js`, `test/keep-authority.test.js` pass but are in no gate.
   Add both to `test/fast.list` (one line each).
 - **Two different `REF_HARNESS_PARITY_PLAN.md`** (root untracked vs `docs/` tracked) — an agent told to read it
   lands on either. Rename/consolidate. Also `git add` the important untracked root docs (AGENTS.md,
@@ -194,7 +194,7 @@ or real user-visible bug. **P2** = polish/hygiene. Each item: what, where, why i
   air-gapped first boot — invited by the local-first pitch — silently drops the house typeface everywhere,
   DOM → Courier, canvas → default monospace, degrading the locked CRT look with no error. Ship a local woff.
 - **Blob-URL leak on deliverable open** (`chat.js:792-798`): `fileBlobUrl()` never `revokeObjectURL`s
-  (every other createObjectURL site does). A 24/7 station reviewing many/large deliverables leaks memory
+  (every other createObjectURL site does). A 24/7 keep reviewing many/large deliverables leaks memory
   proportional to files opened.
 - **Nine drifted HTML-escape helpers** (`app.js:8`, `modeldock.js:524`, `modelpicker.js:11`, `warroom.js:15`,
   … vs the complete `U.esc` at `util.js:67`): several don't escape quotes yet are used in attribute contexts

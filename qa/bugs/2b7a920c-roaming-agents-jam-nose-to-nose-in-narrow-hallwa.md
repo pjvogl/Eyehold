@@ -38,14 +38,14 @@ Source repair 54105ec6c adds advance right-of-way, reachable refuge paths, waiti
 
 `node dev/hallway-traffic.mjs --before` loads baseline 3ba5b8492 into the seeded browser: opposing walkers abandon both destinations in one-, two-, and four-tile corridors. The identical repaired scenarios complete both destinations with no abandonment and zero illegal foot segments. The normal animation loop also completes the two-tile route with Pikachu and Retro Astronaut skins: 458 observed frames, zero wall violations, both original destinations reached. Committed traces: qa/evidence/hallway-awareness-0917/before.json and after.json. Local screenshots: .dogfood/hallway/yielding.png and completed.png. This is source/browser proof, not installed-app proof.
 
-`test/hallway-traffic.test.js` executes the shipped avoidance, separation and gait against production world geometry: 27 assertions across widths 1/2/3/4, stationary and seated bodies, three-way traffic, work priority, command cancellation and slower walkers. Existing wall-route, containment, sightline and sprite-motion regressions pass. Customer journeys: 36/36 green.
+`test/hallway-traffic.test.js` executes the shipped avoidance, separation and gait against production world geometry: 27 assertions across widths 1/2/3/4, keepary and seated bodies, three-way traffic, work priority, command cancellation and slower walkers. Existing wall-route, containment, sightline and sprite-motion regressions pass. Customer journeys: 36/36 green.
 
 
 ## Sibling coverage
 
 {
-  "adapters": [{"target":"hero, roaming crew and workstation crew","state":"covered","test":"test/hallway-traffic.test.js","scenario":"shared traffic-step wiring, working state retained while opposite traffic finishes","gate":"fast"}],
-  "entrypoints": [{"target":"opposite routes, stationary bodies, occupied seats and following","state":"covered","test":"test/hallway-traffic.test.js","scenario":"hall widths 1/2/3/4, three walkers, seat anchors and faster follower","gate":"fast"}],
+  "adapters": [{"target":"hero, roaming crew and workkeep crew","state":"covered","test":"test/hallway-traffic.test.js","scenario":"shared traffic-step wiring, working state retained while opposite traffic finishes","gate":"fast"}],
+  "entrypoints": [{"target":"opposite routes, keepary bodies, occupied seats and following","state":"covered","test":"test/hallway-traffic.test.js","scenario":"hall widths 1/2/3/4, three walkers, seat anchors and faster follower","gate":"fast"}],
   "displays": [{"target":"browser world and larger skins","state":"covered","test":"test/hallway-traffic.test.js","scenario":"physical feet and wall clearance; visual skins separately verified by dev/hallway-traffic.mjs","gate":"fast"},{"target":"installed desktop","state":"blocked","reason":"No rebuilt installer was requested or tested; source proof does not update the installed application."}],
   "lifecycle": [{"target":"new movement command","state":"covered","test":"test/hallway-traffic.test.js","scenario":"changed target cancels both halves of the previous passing agreement","gate":"fast"},{"target":"restart persistence","state":"not-applicable","reason":"Passing agreements are transient WeakMap state and are never saved; normal navigation rebuilds them after load."}]
 }

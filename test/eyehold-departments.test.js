@@ -14,7 +14,7 @@ assert(html.indexOf('app/eyehold-departments.js')<html.indexOf('app/eyehold-work
 assert(board.includes('BUSINESS DEPARTMENTS'));
 assert(board.includes('CHECK LIVE CREW'));
 assert(board.includes('App.agents()'));
-assert(board.includes('station.serialize()'));
+assert(board.includes('keep.serialize()'));
 assert(board.includes("p.agentId===agent.id"));
 assert(board.includes('Live department'));
 assert(board.includes('CHECK LIVE CREW verifies the seated agent'));

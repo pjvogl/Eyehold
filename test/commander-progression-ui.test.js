@@ -4,25 +4,25 @@ const vm = require('node:vm');
 const fs = require('node:fs');
 const path = require('node:path');
 const nodes = {
-  'gt-station': { textContent: '' },
-  'tb-station': { classList: { remove() {}, add() {} } },
-  '#tb-station .tb-xp-fill': { style: {} },
-  '#tb-station .tb-xp': {}
+  'gt-keep': { textContent: '' },
+  'tb-keep': { classList: { remove() {}, add() {} } },
+  '#tb-keep .tb-xp-fill': { style: {} },
+  '#tb-keep .tb-xp': {}
 };
 let snapshot = null, sounds = 0;
 const ctx = vm.createContext({ module: { exports: {} }, setInterval() {},
   document: { readyState: 'loading', addEventListener() {}, getElementById: id => nodes[id], querySelector: id => nodes[id] },
   JourneyStore: { status: () => snapshot }, SFX: { level: () => sounds++ },
-  XpStore: { stationStats: () => { throw Error('Commander level must not read crew XP'); } }
+  XpStore: { keepStats: () => { throw Error('Commander level must not read crew XP'); } }
 });
 vm.runInContext(fs.readFileSync(path.join(__dirname, '../frontend/app/topbar.js'), 'utf8'), ctx);
 const paint = ctx.module.exports.Topbar._paintXp;
-paint(); assert.equal(nodes['gt-station'].textContent, '—');
+paint(); assert.equal(nodes['gt-keep'].textContent, '—');
 snapshot = { progression: { level: 1, points: 30, levelStartsAt: 0, nextLevelAt: 100, pointsToNextLevel: 70 } };
-paint(); assert.equal(nodes['gt-station'].textContent, 'Lv 1'); assert.equal(nodes['#tb-station .tb-xp-fill'].style.width, '30%'); assert.equal(sounds, 0);
+paint(); assert.equal(nodes['gt-keep'].textContent, 'Lv 1'); assert.equal(nodes['#tb-keep .tb-xp-fill'].style.width, '30%'); assert.equal(sounds, 0);
 snapshot = { progression: { level: 2, points: 130, levelStartsAt: 100, nextLevelAt: 200, pointsToNextLevel: 70 } };
-paint(); paint(); assert.equal(nodes['gt-station'].textContent, 'Lv 2'); assert.equal(sounds, 1);
-snapshot = null; paint(); assert.equal(nodes['gt-station'].textContent, '—');
+paint(); paint(); assert.equal(nodes['gt-keep'].textContent, 'Lv 2'); assert.equal(sounds, 1);
+snapshot = null; paint(); assert.equal(nodes['gt-keep'].textContent, '—');
 
 const mem = {};
 global.localStorage = { getItem: k => mem[k] || null, setItem: (k, v) => { mem[k] = v; }, removeItem: k => { delete mem[k]; } };

@@ -17,7 +17,7 @@ const { SidecarFixture } = require('./helpers/sidecar-fixture.js');
         return res.end(JSON.stringify({ error: { message: 'Codex quota exceeded', code: 'usage_limit_reached' } }));
       }
       res.writeHead(200, { 'Content-Type': 'text/event-stream' });
-      const delta = mode === 'text' ? { content: 'Fallback completed.' } : { tool_calls: [{ index: 0, id: 'cost-probe', type: 'function', function: { name: 'station_inspect', arguments: '{}' } }] };
+      const delta = mode === 'text' ? { content: 'Fallback completed.' } : { tool_calls: [{ index: 0, id: 'cost-probe', type: 'function', function: { name: 'keep_inspect', arguments: '{}' } }] };
       res.end('data: ' + JSON.stringify({ choices: [{ delta, finish_reason: mode === 'text' ? 'stop' : 'tool_calls' }], usage: { prompt_tokens: 12, completion_tokens: 4, ...(mode === 'unpriced' ? {} : { cost: 0.012 }) } }) + '\n\ndata: [DONE]\n\n');
     });
   });

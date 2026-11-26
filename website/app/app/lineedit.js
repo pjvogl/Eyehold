@@ -2,9 +2,9 @@
 
    Pure, zero-dep, UMD (node tests + the browser). The Workflow panel builds lines through this: every edit is a change
    to the line's GRAPH (its machines and the links between them), laid out by the layout engine (linelayout.js) and
-   written back by the station in ONE undo slot (worldmodel applyLineLayout).
+   written back by the keep in ONE undo slot (worldmodel applyLineLayout).
 
-     LineEdit.run(station, propId, op, args, opts)   -> { ok, focus, ids } | { ok: false, error, msg }
+     LineEdit.run(keep, propId, op, args, opts)   -> { ok, focus, ids } | { ok: false, error, msg }
        propId  any machine of the line (null for NEW_LINE)
        op      'insertStep' | 'appendStep' | 'addBranch' | 'addLoop' | 'addSorter' | 'removeStep' | 'removeLoop' |
                'moveStep' | 'tidy' | 'newLine'
@@ -38,7 +38,7 @@
   const insOf = (g, id) => g.links.filter(l => l.to.node === id && !isBack(g, l));
   const backsAt = (g, id) => g.links.filter(l => isBack(g, l) && (l.to.node === id || l.from.node === id));
   const drop = (g, ls) => { g.links = g.links.filter(l => ls.indexOf(l) < 0); };
-  // a fresh id for a new machine / link — '+' marks it new (the station numbers it for real when it is laid)
+  // a fresh id for a new machine / link — '+' marks it new (the keep numbers it for real when it is laid)
   function fresh(g) {
     let n = 0;
     const used = new Set(g.nodes.map(x => x.id).concat(g.links.map(x => x.id)));
@@ -384,7 +384,7 @@
     return fail('NO_ROUTE', 'a belt could not find a way round what stands there — clear a path, or TIDY LINE');
   }
 
-  /* ---------- run an edit on a station: graph → layout → one undo slot ---------- */
+  /* ---------- run an edit on a keep: graph → layout → one undo slot ---------- */
   const hasPath = l => Array.isArray(l.path) && l.path.length > 0;
   // the same graph with belts let go: the links named (ids), else every belt of a machine a changed link touches (the
   // round-the-change set), or all of them
@@ -394,12 +394,12 @@
     for (const l of h.links) if (hasPath(l) && (all || (named ? named.has(l.id) : (hot.has(l.from.node) || hot.has(l.to.node))))) delete l.path;
     return h;
   }
-  function run(station, propId, op, args, opts) {
+  function run(keep, propId, op, args, opts) {
     const LL = layoutModule();
     if (!LL) return fail('NO_ENGINE', 'the layout engine is not loaded');
     if (!OPS[op]) return fail('BAD_OP', 'no such edit');
-    if (!station || typeof station.lineGraph !== 'function') return fail('NO_STATION', 'this station cannot edit lines');
-    const g = station.lineGraph(op === 'newLine' ? null : propId);
+    if (!keep || typeof keep.lineGraph !== 'function') return fail('NO_KEEP', 'this keep cannot edit lines');
+    const g = keep.lineGraph(op === 'newLine' ? null : propId);
     if (!g || !g.ok) return g || fail('NOT_LINKED', 'this line cannot be edited here');
     const e = OPS[op](clone(g.graph), args || {}, opts || {});
     if (!e.ok) return e;
@@ -430,7 +430,7 @@
       if (!(opts && opts.tidy)) return Object.assign(fail('NEEDS_TIDY', 'there is no room for that with the line where it stands — TIDY LINE first, then try again'), { canTidy: true });
       graph = t.graph; L = T; tidied = true;
     }
-    const r = station.applyLineLayout(graph, L);
+    const r = keep.applyLineLayout(graph, L);
     if (!r || !r.ok) return r || fail('NOT_APPLIED', 'the edit could not be laid');
     return { ok: true, focus: (r.ids && r.ids[e.focus]) || e.focus, ids: r.ids, removed: r.removed || [], relaid, tidied };
   }
@@ -463,33 +463,33 @@
     }
     return U.error === 'NO_ROOM' ? U : last;   // (NO_ROOM carries the room the line needs — MAKE ROOM's size)
   }
-  function placeBlueprint(station, bpId, near, opts) {
+  function placeBlueprint(keep, bpId, near, opts) {
     const LL = layoutModule();
     if (!LL) return fail('NO_ENGINE', 'the layout engine is not loaded');
-    if (!station || typeof station.blueprintGraph !== 'function') return fail('NO_STATION', 'this station cannot lay out lines');
-    const b = station.blueprintGraph(bpId, opts && opts.stamp);
+    if (!keep || typeof keep.blueprintGraph !== 'function') return fail('NO_KEEP', 'this keep cannot lay out lines');
+    const b = keep.blueprintGraph(bpId, opts && opts.stamp);
     if (!b || !b.ok) return b || fail('NOT_FOUND', 'no such line');
-    const g = station.lineGraph(null);
+    const g = keep.lineGraph(null);
     if (!g || !g.ok) return g || fail('NOT_LINKED', 'this floor does not build by links');
     const L = layoutNear(LL, b.graph, g.floor, near, 12);
     if (!L.ok) return Object.assign(fail(L.error === 'NO_ROOM' ? 'NO_ROOM' : 'NO_FIT', 'there is no clear floor here this line can be laid out on — MAKE ROOM FOR IT, or clear some space'), L.needs ? { needs: L.needs } : {});
-    const r = station.applyLineLayout(b.graph, L);
+    const r = keep.applyLineLayout(b.graph, L);
     if (!r || !r.ok) return r || fail('NOT_APPLIED', 'the line could not be laid');
     return { ok: true, ids: b.graph.nodes.map(n => r.ids[n.id]).filter(Boolean), via: L.via };
   }
   // does it fit ANYWHERE, laid out? (the shelf card's answer when the drawn shape fits nowhere) — { ok, via, needs }
-  function canPlaceBlueprint(station, bpId, near) {
+  function canPlaceBlueprint(keep, bpId, near) {
     const LL = layoutModule();
-    if (!LL || !station || typeof station.blueprintGraph !== 'function') return fail('NO_ENGINE', 'the layout engine is not loaded');
-    const b = station.blueprintGraph(bpId), g = station.lineGraph(null);
+    if (!LL || !keep || typeof keep.blueprintGraph !== 'function') return fail('NO_ENGINE', 'the layout engine is not loaded');
+    const b = keep.blueprintGraph(bpId), g = keep.lineGraph(null);
     if (!b || !b.ok || !g || !g.ok) return fail('NOT_LINKED', 'this floor does not build by links');
     const L = layoutNear(LL, b.graph, g.floor, near, 6);
     return L.ok ? { ok: true, via: L.via } : Object.assign(fail(L.error, 'no clear floor for it'), L.needs ? { needs: L.needs } : {});
   }
 
   // the same edit, answered without laying anything (the panel greys out what would only fail)
-  function check(station, propId, op, args, opts) {
-    const g = station && typeof station.lineGraph === 'function' ? station.lineGraph(op === 'newLine' ? null : propId) : null;
+  function check(keep, propId, op, args, opts) {
+    const g = keep && typeof keep.lineGraph === 'function' ? keep.lineGraph(op === 'newLine' ? null : propId) : null;
     if (!g || !g.ok) return g || fail('NOT_LINKED', 'this line cannot be edited here');
     return OPS[op] ? OPS[op](clone(g.graph), args || {}, opts || {}) : fail('BAD_OP', 'no such edit');
   }

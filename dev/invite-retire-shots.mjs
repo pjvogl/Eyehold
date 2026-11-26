@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 /* dev/invite-retire-shots.mjs — live proof for the INVITE RETIRE lane (2026-08-07).
  *
- * The standalone "START A WORK LINE HERE" canvas invitation is GONE. STATION ORDERS is now the
+ * The standalone "START A WORK LINE HERE" canvas invitation is GONE. KEEP ORDERS is now the
  * only thing inviting a line, and arming LINES from its (4) still yields the candidate wash.
- *   01  a bare starter floor in REFIT: STATION ORDERS, and NO canvas invitation
+ *   01  a bare starter floor in REFIT: KEEP ORDERS, and NO canvas invitation
  *   02  clicking (4) STAMP A WORK LINE arms LINES — with the candidate wash painted on the deck,
  *       proved by PIXELS: the SAME field tiles sampled off the canvas before and after arming
  *   03  ONE VOICE, combined: a line stamped, the slot handed off to FINISH THE LINE, wash+ghost
@@ -35,7 +35,7 @@ const OPEN_REFIT = `(() => {
 // strip the seed's shipped line back to bare deck, and un-dismiss ORDERS (a dismissed checklist
 // would hide the very guidance these scenes are about)
 const FRESH_FLOOR = `(() => {
-  const st = Build.__test__.station();
+  const st = Build.__test__.keep();
   for (const b of st.belts()) st.removeBelt(b.x, b.y);
   const WF = { intake:1, bay:1, outbox:1, filter:1, splitter:1, merger:1 };
   for (const p of st.props().slice()) if (WF[p.t]) st.removeProp(p.id);
@@ -100,7 +100,7 @@ async function main() {
 
     // default text size (the shelf harness's known zoom trap) — pin + reload
     await evalJS(cdp, `(() => {
-      const KEY = 'eyehold.station.v1';
+      const KEY = 'eyehold.keep.v1';
       const r = JSON.parse(localStorage.getItem(KEY) || '{"v":1}');
       r.settings = Object.assign({}, r.settings, { textScale: 100 });
       localStorage.setItem(KEY, JSON.stringify(r));
@@ -120,7 +120,7 @@ async function main() {
     proof.deckBefore = await J(cdp, SAMPLE_FIELD);
     shots.push(await capture(cdp, OUT, '01-bare-floor-orders-no-invite'));
     if (proof.bare.canvasInvite !== 'undefined') throw new Error('the retired canvas invitation is still wired: ' + proof.bare.canvasInvite);
-    if (!proof.bare.orders) throw new Error('STATION ORDERS is not in the card slot: ' + JSON.stringify(proof.bare));
+    if (!proof.bare.orders) throw new Error('KEEP ORDERS is not in the card slot: ' + JSON.stringify(proof.bare));
     if (proof.bare.cards !== 1) throw new Error('one voice: ' + proof.bare.cards + ' guidance cards on a bare floor');
     if (!proof.bare.steps.some(s => s.ord === 'line')) throw new Error('ORDERS is not offering (4) STAMP A WORK LINE');
 
@@ -172,9 +172,9 @@ async function main() {
     }
     await sleep(900);
     proof.combined = await J(cdp, `({ slot: ${CARD_SLOT}, field: Build.__test__.lineField('sorting_office'),
-      degraded: Build.__test__.degradedLayers(), props: Build.__test__.station().props().length })`);
+      degraded: Build.__test__.degradedLayers(), props: Build.__test__.keep().props().length })`);
     if (proof.combined.slot.cards !== 1) throw new Error('one voice: ' + proof.combined.slot.cards + ' guidance cards at once');
-    if (proof.combined.slot.orders) throw new Error('STATION ORDERS never handed off after a line was stamped');
+    if (proof.combined.slot.orders) throw new Error('KEEP ORDERS never handed off after a line was stamped');
     if (proof.combined.degraded.length) throw new Error('a draw layer failed: ' + JSON.stringify(proof.combined.degraded));
     shots.push(await capture(cdp, OUT, '03-one-voice-combined'));
 

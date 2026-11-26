@@ -1,7 +1,7 @@
 'use strict';
 const path=require('node:path'),net=require('node:net'),{spawn}=require('node:child_process');
 const root=__dirname,port=8787,url='http://localhost:'+port;
-function freePort(){return new Promise((resolve,reject)=>{const s=net.createServer();s.once('error',()=>reject(Error('Port 8787 is already in use. Close the other local station before starting this package.')));s.listen(port,'127.0.0.1',()=>s.close(resolve));});}
+function freePort(){return new Promise((resolve,reject)=>{const s=net.createServer();s.once('error',()=>reject(Error('Port 8787 is already in use. Close the other local keep before starting this package.')));s.listen(port,'127.0.0.1',()=>s.close(resolve));});}
 async function main(){
  if(process.platform!=='win32'||!process.env.LOCALAPPDATA)throw Error('This launcher is for your Windows personal desktop.');
  await freePort();

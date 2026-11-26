@@ -8,21 +8,21 @@
    xp.js / ctxgauge.js.
 
    The shape of a zone (a tiny tagged union):
-     • { kind:'room', rect:{x1,y1,x2,y2} } — the agent's bay/workstation sits inside an
+     • { kind:'room', rect:{x1,y1,x2,y2} } — the agent's bay/workkeep sits inside an
        enclosing room rect; without `roamR`, roam that rect (the legacy behavior).
        OPTIONALLY carries `roam:{cx,cy,r,rects}` (see `roamR` below) — a Chebyshev radius around
-       the stable desk/spawn anchor, intersected with the station's floor rects. It is deliberately
+       the stable desk/spawn anchor, intersected with the keep's floor rects. It is deliberately
        independent of room identity, so nearby reachable floor in another room is admitted. The
        zone `kind` stays 'room' precisely so every
        existing consumer (world.js `zoneRect`, the D3 border-meeting geometry) keeps working.
      • { kind:'leash', cx,cy,r }           — no enclosing room found around the anchor; roam a
-       bounded leash radius (Chebyshev) around the workstation/bay foot tile.
+       bounded leash radius (Chebyshev) around the workkeep/bay foot tile.
      • { kind:'multi', rects:[...] }        — SOLE-OWNERSHIP widening (invariant A3/I2): when one
        agent effectively owns the whole space (no other bound bay/crew), its zone is the UNION of
        EVERY room rect — i.e. the whole reachable floor, exactly the set the pre-change idle
-       pickers drew from (geo.allRects). This is what keeps the solo hero's rich, station-wide
-       behavior un-regressed even in a multi-room built-out station (its desk room is NOT the whole
-       station, so a single 'room' zone would wrongly cage it).
+       pickers drew from (geo.allRects). This is what keeps the solo hero's rich, keep-wide
+       behavior un-regressed even in a multi-room built-out keep (its desk room is NOT the whole
+       keep, so a single 'room' zone would wrongly cage it).
      • null                                — unassigned / unplaced: NO zone, the agent does not
        roam (it stays put; callers treat null as "no in-zone candidate").
 
@@ -41,7 +41,7 @@
   const DEFAULT_LEASH = 5;   // Chebyshev tiles around the anchor when there is no enclosing room
   /* ROAM_RADIUS — the genuine stable-anchor idle leash (Chebyshev tiles). Fourteen tiles reaches
      beyond a typical 18x11 room from a centrally placed desk without opening the whole 64x48
-     station. Room plates do not alter the distance; geo.walkable/pathfinding still decide whether
+     keep. Room plates do not alter the distance; geo.walkable/pathfinding still decide whether
      a destination is physically reachable. */
   const ROAM_RADIUS = 14;
 
@@ -69,7 +69,7 @@
     };
   }
 
-  // ---- find the agent's anchor tile from its props (its bay/workstation foot) ----
+  // ---- find the agent's anchor tile from its props (its bay/workkeep foot) ----
   // Looks for a prop bound to this agent (p.agentId === agentId). Prefers a bay, then any bound
   // prop. Returns {x,y} of its top-left-ish tile, or null. (Caller usually passes anchorTile
   // explicitly — this is the fallback when only props are available.)
@@ -113,15 +113,15 @@
   //   props      : Array<{agentId,t,x,y,...}> LOCAL props (geo.props) — used only to locate the
   //                anchor when anchorTile is not supplied
   //   agentId    : the agent's id (to match bound props); may be null/undefined
-  //   anchorTile : {x,y} the agent's bay/workstation foot tile (preferred input)
+  //   anchorTile : {x,y} the agent's bay/workkeep foot tile (preferred input)
   //   leashR     : Chebyshev radius for the open-floor fallback (default DEFAULT_LEASH)
   //   roamR      : Chebyshev radius around the stable anchor. When present, it REPLACES room-plate
-  //                membership with radius ∩ station-floor membership. A room zone gains
+  //                membership with radius ∩ keep-floor membership. A room zone gains
   //                `roam:{cx,cy,r,rects}`; an open-floor leash widens to max(leashR, roamR).
   //   solo       : when truthy, this agent effectively OWNS the whole space (no other bound
   //                bay/crew). Per A3/I2 its zone widens to the UNION of all room rects (the whole
-  //                reachable floor) so its rich station-wide behavior is never caged — even in a
-  //                multi-room station where its desk room is only one of several. (Applies only
+  //                reachable floor) so its rich keep-wide behavior is never caged — even in a
+  //                multi-room keep where its desk room is only one of several. (Applies only
   //                when there IS an anchor and roamR is omitted; an explicit radius wins.)
   //
   // Resolution order (matches the plan A2/A3):
@@ -150,11 +150,11 @@
     // 3) sole-ownership widening: the whole reachable floor (union of every room rect). This is the
     // exact target set the pre-change idle pickers drew from (geo.allRects), so a SOLO agent keeps
     // every previously-valid cross-room target — invariant I2/A3 held for the realistic solo case
-    // (a built-out solo station where the desk room != the whole station).
+    // (a built-out solo keep where the desk room != the whole keep).
     const multi = roamR > 0 ? null : soloMulti(rects, opts.solo);
     if (multi) return multi;
 
-    // 4) enclosing room (+ optional true stable-anchor radius over all station floor rects)
+    // 4) enclosing room (+ optional true stable-anchor radius over all keep floor rects)
     const room = smallestEnclosing(rects, a.x, a.y);
     if (room) {
       const z = { kind: 'room', rect: room };

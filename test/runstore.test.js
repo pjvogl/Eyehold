@@ -293,7 +293,7 @@ const clock = { now: () => clk };
 }
 
 // ---- STREAM FILTER (conveyor sweep 2026-09-25): a trigger fire / sample reads back ITS rows by streamId ----
-// It used to read the station's newest 50 rows and filter — a busy station pushed the fire's own rows out of that
+// It used to read the keep's newest 50 rows and filter — a busy keep pushed the fire's own rows out of that
 // window, so a finished fire said "no run was recorded". list({ streamId }) scans the whole window for that stream.
 {
   const s = makeRunStore({ io: memIo(), clock });

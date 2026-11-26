@@ -11,7 +11,7 @@
      sessions.get(sid) / end(sid) / endDevice(deviceId) / sweep()
 
    Laws:
-     · A hello for a device that isn't paired (or was revoked) gets NO welcome. The station never derives keys
+     · A hello for a device that isn't paired (or was revoked) gets NO welcome. The keep never derives keys
        for a stranger, so there is nothing to probe.
      · Every inbound seq must be strictly greater than the last one on that session: a replayed or reordered
        frame is refused, not processed twice.
@@ -39,15 +39,15 @@ function makeSessions(deps) {
     if (!dev) return { ok: false, error: 'unknown device' };
     let keys, eph, nS;
     try {
-      const station = devices.stationKeys();
+      const keep = devices.keepKeys();
       eph = C.generateKeyPair();
       nS = C.newNonce();
       keys = C.deriveSessionKeys({
-        side: 'station',
-        myStaticPrivate: station.privateKey, myStaticPublic: station.publicRaw,
+        side: 'keep',
+        myStaticPrivate: keep.privateKey, myStaticPublic: keep.publicRaw,
         myEphPrivate: eph.privateKey, myEphPublic: eph.publicRaw,
         peerStaticPublic: dev.publicKey, peerEphPublic: String(h.eph || ''),
-        phoneNonce: String(h.nonce || ''), stationNonce: nS
+        phoneNonce: String(h.nonce || ''), keepNonce: nS
       });
     } catch (e) { return { ok: false, error: 'bad hello' }; }
     sweep();
@@ -108,7 +108,7 @@ function makeSessions(deps) {
     s.sink = fn;
     return () => { if (s.sink === fn) s.sink = null; };
   }
-  // onlyDevices: deliver to these phones only (the crew stream goes only to phones that are looking at the station)
+  // onlyDevices: deliver to these phones only (the crew stream goes only to phones that are looking at the keep)
   function broadcast(obj, onlyDevices) {
     let n = 0;
     const only = Array.isArray(onlyDevices) ? new Set(onlyDevices) : null;

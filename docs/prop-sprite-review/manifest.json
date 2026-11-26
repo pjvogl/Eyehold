@@ -28,7 +28,7 @@
       "catalog": {
         "id": "desk2",
         "label": "DESK \u00d72",
-        "cat": "workstation",
+        "cat": "workkeep",
         "tier": "functional",
         "w": 2,
         "h": 1,
@@ -62,7 +62,7 @@
       "catalog": {
         "id": "pixelrig",
         "label": "PIXEL RIG",
-        "cat": "workstation",
+        "cat": "workkeep",
         "tier": "functional",
         "w": 2,
         "h": 1,

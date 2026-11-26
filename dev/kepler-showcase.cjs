@@ -1,5 +1,5 @@
 'use strict';
-// A fresh review station. Never imports or rewrites another demo's save.
+// A fresh review keep. Never imports or rewrites another demo's save.
 function createPreset(P,M){
   M.setPropRules(id=>P.spec(id));
   const doc=M.defaultDoc();doc.rooms={};doc.order=[];doc.props=[];doc.belts={};doc.edges=[];doc._nid=1000;
@@ -54,13 +54,13 @@ function createPreset(P,M){
   add('lounge-sofa','couch',34,35);add('lounge-seat-left','recliner',40,33);add('lounge-seat-right','recliner_r',32,33);
   add('lounge-books','bookshelf',44,36);add('lounge-coffee-table','longtable',48,36);add('lounge-coffee','coffee',49,36);
   add('lounge-green-one','tallplant',32,36);add('lounge-green-two','industrial_planter',49,25);
-  const station=M.deserialize(doc),violations=[];
+  const keep=M.deserialize(doc),violations=[];
   for(let i=0;i<props.length;i++){
     const p=props[i],before=M.deserialize({...doc,props:props.slice(0,i)}),check=before.canPlaceProp(p.t,p.x,p.y,p.w,p.h);
     if(!check.ok)violations.push({id:p.id,...check});
   }
-  for(const [key,dir]of Object.entries(doc.belts)){const[x,y]=key.split(',').map(Number);const check=station.beltPlaceable?station.beltPlaceable(x,y):station.canPlaceBeltRun({tx:x,ty:y},{tx:x,ty:y});if(!check.ok)violations.push({belt:key,dir,...check});}
+  for(const [key,dir]of Object.entries(doc.belts)){const[x,y]=key.split(',').map(Number);const check=keep.beltPlaceable?keep.beltPlaceable(x,y):keep.canPlaceBeltRun({tx:x,ty:y},{tx:x,ty:y});if(!check.ok)violations.push({belt:key,dir,...check});}
   if(violations.length)throw Error(JSON.stringify(violations));
-  return {doc:station.serialize(),station};
+  return {doc:keep.serialize(),keep};
 }
 module.exports={createPreset};

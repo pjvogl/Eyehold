@@ -109,7 +109,7 @@ const mk = (extra) => makeShellHooks(Object.assign({ spawn, fsp, pathMod: path, 
       }
     }
 
-    // ---- 7. A WEDGED HOOK CANNOT HANG THE STATION ----
+    // ---- 7. A WEDGED HOOK CANNOT HANG THE KEEP ----
     {
       await fsp.rm(ALLOW, { force: true });
       await writeHooks([{ event: 'pre_tool_call', command: script('setTimeout(()=>{},60000)'), name: 'wedged' }]);
@@ -164,7 +164,7 @@ const mk = (extra) => makeShellHooks(Object.assign({ spawn, fsp, pathMod: path, 
     }
 
     // ---- 9c. AUTHORING. Without create() the feature was unreachable: "make a hook" meant "find a folder
-    //          and hand-write JSON". A hook TYPED INTO THE STATION is consented by the act of typing it. ----
+    //          and hand-write JSON". A hook TYPED INTO THE KEEP is consented by the act of typing it. ----
     {
       await fsp.rm(ALLOW, { force: true });
       await fsp.rm(HOOKS, { force: true });
@@ -193,7 +193,7 @@ const mk = (extra) => makeShellHooks(Object.assign({ spawn, fsp, pathMod: path, 
       const sh = makeShellHooks({ spawn, fsp, pathMod: path, hooksFile: path.join(DIR, 'nope.json'), allowFile: ALLOW, cwd: DIR });
       const { hooks, errors } = await sh.load();
       A.eq(hooks.length, 0, 'no hooks file -> no hooks');
-      A.eq(errors.length, 0, 'and no complaints — most stations will never write one');
+      A.eq(errors.length, 0, 'and no complaints — most keeps will never write one');
     }
   } finally { await fsp.rm(DIR, { recursive: true, force: true }); }
 

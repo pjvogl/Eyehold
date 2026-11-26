@@ -1,4 +1,4 @@
-/* EYEHOLD — quests.js : the PURE quest-skin engine. Dresses the station's EXISTING, honest progress as RPG
+/* EYEHOLD — quests.js : the PURE quest-skin engine. Dresses the keep's EXISTING, honest progress as RPG
    quests — without inventing anything. It is a read PROJECTION over three real sources:
      • xp.js MILESTONES   — real achievements (tasks shipped, memories reused…); earned = a done quest.
      • the Commander dossier — each still-blank dimension is a "get to know you" quest; known = done.
@@ -29,16 +29,16 @@
   //   ledgerQuests — (QUEST V2 §C) the sidecar-owned quest ledger (/api/quests), pre-shaped by QuestLedgerStore
   //                 as [{ id:'q:N', kind:'ledger', ledgerKind, title, desc, reward, status, contract, steps,
   //                 attest, declineNote, ... }]. Spliced right after the waiting idea. Absent input → unchanged.
-  //   stationGaps — (G1b) fix-it quests projected from StationQuests: [{ id, kind:'station-gap', title, desc,
+  //   keepGaps — (G1b) fix-it quests projected from KeepQuests: [{ id, kind:'keep-gap', title, desc,
   //                 reward, status }] — an agent reached for a tool its room can't grant. Already fully shaped
-  //                 by the pure StationQuests.project engine (the store owns the live reads); build() just splices
+  //                 by the pure KeepQuests.project engine (the store owns the live reads); build() just splices
   //                 them into the ordered list right after the waiting idea, so a real capability failure surfaces
   //                 as the most-actionable direction. Absent input → unchanged (older callers untouched).
   //   workQuests  — (G1c) accepted-idea builds projected from WorkQuests: [{ id, kind:'work', title, desc,
   //                 reward, status }] — a pitch/idea the Commander said "build it" to, with real step progress.
   //   maintQuests — (G1c) fix-it quests projected from MaintQuests: [{ id, kind:'maintenance', title, desc,
   //                 reward, status }] — a recurring slag cause or a jammed routine became actionable direction.
-  //                 All three (station/work/maint) are absent-input → unchanged (older callers untouched).
+  //                 All three (keep/work/maint) are absent-input → unchanged (older callers untouched).
   // OPEN quests (actionable now) come first, then DONE (the trophy shelf). Each quest names its REAL reward.
   function build(input) {
     input = input || {};
@@ -55,7 +55,7 @@
     //           (/api/quests). Pre-shaped by QuestLedgerStore (kind:'ledger', with contract/attest/steps/
     //           declineNote carried through); build() only sorts them into open/done so the honest ordering +
     //           the QuestState open→done celebration both hold for them free. They lead right after the waiting
-    //           idea because a personalized, agent-minted quest is the most actionable direction the station has.
+    //           idea because a personalized, agent-minted quest is the most actionable direction the keep has.
     //           Absent input → unchanged (older callers untouched — the established additive pattern).
     if (Array.isArray(input.ledgerQuests)) {
       for (const q of input.ledgerQuests) {
@@ -76,12 +76,12 @@
       }
     }
 
-    // 1a) STATION-GAP fix-it quests (G1b) — a real capdenied/capability-gap became playable direction. These are
-    //     pre-shaped by StationQuests.project (id 'sq:<agent>:<cap>', kind 'station-gap'); we only need to sort them
+    // 1a) KEEP-GAP fix-it quests (G1b) — a real capdenied/capability-gap became playable direction. These are
+    //     pre-shaped by KeepQuests.project (id 'sq:<agent>:<cap>', kind 'keep-gap'); we only need to sort them
     //     into the open/done buckets so the honest open-before-done ordering + the QuestState fold both hold. They
     //     lead the actionable set (right after the idea) because they name a WALL the agent just hit.
-    if (Array.isArray(input.stationGaps)) {
-      for (const q of input.stationGaps) {
+    if (Array.isArray(input.keepGaps)) {
+      for (const q of input.keepGaps) {
         if (!q || !q.id) continue;
         (q.status === 'done' ? done : open).push(q);
       }
@@ -89,7 +89,7 @@
 
     // 1a-i) WORK quests (G1c) — an accepted pitch/idea became a trackable multi-step build. Pre-shaped by
     //       WorkQuests.project (id 'wq:<n>', kind 'work'); each carries its own step progress in the desc. They
-    //       lead right after the station gaps: a build the Commander SAID YES to is the most actionable direction.
+    //       lead right after the keep gaps: a build the Commander SAID YES to is the most actionable direction.
     if (Array.isArray(input.workQuests)) {
       for (const q of input.workQuests) {
         if (!q || !q.id) continue;
@@ -99,7 +99,7 @@
 
     // 1a-ii) MAINTENANCE quests (G1c) — recurring wasted-spend (slag post-mortems) + a jammed routine became a
     //        fix-it. Pre-shaped by MaintQuests.project (id 'mq:<cause>', kind 'maintenance'). Sorted like the
-    //        station gaps; they name a recurring WALL the line keeps hitting, so they sit with the actionable set.
+    //        keep gaps; they name a recurring WALL the line keeps hitting, so they sit with the actionable set.
     if (Array.isArray(input.maintQuests)) {
       for (const q of input.maintQuests) {
         if (!q || !q.id) continue;
@@ -107,26 +107,26 @@
       }
     }
 
-    // 1b) THE STATION ARC — the "what do i build next" spine the tutorial hands off to (recruit → belts →
-    //     portals). Pure projections of the live floor (input.station = { crew, belts, connectors } counts);
+    // 1b) THE KEEP ARC — the "what do i build next" spine the tutorial hands off to (recruit → belts →
+    //     portals). Pure projections of the live floor (input.keep = { crew, belts, connectors } counts);
     //     absent input → no arc (older callers unchanged). Honest-loot: each names the real capability it
     //     cashes out in, and like everything here it gates NOTHING.
-    const st = input.station;
+    const st = input.keep;
     if (st && typeof st === 'object') {
       const arc = [
-        { id: 'st:crew', done: (st.crew || 0) >= 2, title: 'Add a second agent', doing: 'summon a second mind — it takes a station of its own and your lead starts delegating.', reward: 'a crew your lead can point' },
+        { id: 'st:crew', done: (st.crew || 0) >= 2, title: 'Add a second agent', doing: 'summon a second mind — it takes a keep of its own and your lead starts delegating.', reward: 'a crew your lead can point' },
         // completes on a LIVE ROUTE (intake → belt → agent-bound bay, the same energized set the floor
         // draws) — never on bare belts-laid, which rewarded a cold dead line and taught the wrong model.
         { id: 'st:belt', done: (st.liveRoute || 0) >= 1, title: 'Send work to an agent automatically', doing: 'in BUILD MODE: place an INBOX, drag a BELT (7) to a BAY, and click the bay to assign an agent — the line lights up when the route is complete.', reward: 'a live work route' },
         { id: 'st:connector', done: (st.connectors || 0) >= 1, title: 'Place your first service portal', doing: 'in BUILD MODE, place a connector portal, then connect a service to it in ABILITIES — its tools land in real hands.', reward: 'new real capabilities' }
       ];
       for (const a of arc) {
-        const q = { id: a.id, kind: 'station', title: a.title, desc: a.done ? 'done — it’s live on your floor.' : a.doing, reward: a.reward, status: a.done ? 'done' : 'open' };
+        const q = { id: a.id, kind: 'keep', title: a.title, desc: a.done ? 'done — it’s live on your floor.' : a.doing, reward: a.reward, status: a.done ? 'done' : 'open' };
         (a.done ? done : open).push(q);
       }
     }
 
-    // 2) get-to-know-you quests — one per dossier dimension. Each says what the station DOES with that
+    // 2) get-to-know-you quests — one per dossier dimension. Each says what the keep DOES with that
     //    dimension (all of these are true: the dossier rides every agent's system prompt), because nine
     //    cards repeating one generic sentence read as one wall — the reader can't tell why THIS one
     //    matters. Unknown/new dimensions keep the honest generic line rather than inventing a claim.
@@ -137,7 +137,7 @@
       style: 'agents match how you like work done — depth, pace, and format.',
       standing_orders: 'rules every agent follows on every run, without being reminded.',
       pain: 'the work that eats your time becomes the work agents offer to take.',
-      ambition: 'the things you never find time for become work the station can pick up.',
+      ambition: 'the things you never find time for become work the keep can pick up.',
       people: 'output lands in the right voice for whoever it’s really for.',
       schedule: 'work and check-ins land when you’re actually at the desk.'
     };
@@ -145,7 +145,7 @@
       if (!d || !d.key) continue;   // a dimension needs a real key — no key, no quest (never a 'dim:null')
       const label = String(d.label || d.key).trim();
       if (!label) continue;
-      const q = { id: 'dim:' + d.key, kind: 'dossier', title: 'Tell the station your ' + label.toLowerCase(), desc: DIM_WHY[d.key] || 'every agent on the station will know this about you.', reward: 'sharper, personalized agents', status: d.known ? 'done' : 'open' };
+      const q = { id: 'dim:' + d.key, kind: 'dossier', title: 'Tell the keep your ' + label.toLowerCase(), desc: DIM_WHY[d.key] || 'every agent on the keep will know this about you.', reward: 'sharper, personalized agents', status: d.known ? 'done' : 'open' };
       (d.known ? done : open).push(q);
     }
 

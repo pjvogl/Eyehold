@@ -75,7 +75,7 @@ const NightDraftNudge = (() => {
       // re-announces the same set. 'review' also opens the NIGHT SHIFT panel where the decision trail + report live.
       markSeen(newestAt);
       if (item && item.value === 'go') {
-        try { if (typeof StationUI !== 'undefined' && StationUI.openTerm) StationUI.openTerm('settings', 'autonomy'); } catch (_) {}
+        try { if (typeof KeepUI !== 'undefined' && KeepUI.openTerm) KeepUI.openTerm('settings', 'autonomy'); } catch (_) {}
       }
     });
     try { if (typeof World !== 'undefined' && World.say) World.say('◈ left ' + n + ' draft' + (n === 1 ? '' : 's') + ' on your desk'); } catch (_) {}

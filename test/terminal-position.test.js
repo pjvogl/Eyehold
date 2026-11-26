@@ -2,7 +2,7 @@
 const A = require('./_assert.js');
 const fs = require('fs');
 const path = require('path');
-const { visibleTerminalRect } = require('../frontend/app/stationui.js');
+const { visibleTerminalRect } = require('../frontend/app/keepui.js');
 
 function invariant(rect, viewport, label) {
   const padX = Math.min(8, viewport.width / 4);
@@ -84,7 +84,7 @@ A.eq(tallerThanBand.top, band.top + bandPad, 'an over-tall window keeps its titl
 const noBand = visibleTerminalRect({ left: 0, top: -50, width: 480, height: 320 }, { width: 1600, height: 900 });
 A.eq(noBand.top, bandPad, 'a viewport with no top offset still clamps to the plain 8px inset');
 
-const source = fs.readFileSync(path.join(__dirname, '../frontend/app/stationui.js'), 'utf8');
+const source = fs.readFileSync(path.join(__dirname, '../frontend/app/keepui.js'), 'utf8');
 A.ok((source.match(/visibleTerminalRect\(/g) || []).length >= 4, 'shared clamp drives drag, placement, and repair paths');
 
 // The band is MEASURED — hardcoding either bar's height is the bug this replaces (they are

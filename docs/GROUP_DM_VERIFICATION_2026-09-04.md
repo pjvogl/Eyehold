@@ -16,7 +16,7 @@ Shared files are immutable versions with hashes, authenticated previews/download
 and exact-version reads for other participants. Other controls include independent
 answers, lead comparison, session instructions, saved groups, branches, catch-up,
 membership changes, interruption, retries, pause/resume, and durable restart recovery.
-Station emergency stop includes group runs and queues. Direct chats remain available.
+Keep emergency stop includes group runs and queues. Direct chats remain available.
 
 ## Live browser proof
 
@@ -133,7 +133,7 @@ Full fast regression: 702 steps green (`dev/group-inline-fast.log`).
 
 ## Standard terminal picker
 
-Replaced the custom body-level picker with `StationUI.toggleTerm` / `closeTerm`.
+Replaced the custom body-level picker with `KeepUI.toggleTerm` / `closeTerm`.
 The old popup's z-index 50000 placed it above the CRT scanline layer at 950.
 The picker now mounts in `.term-body` under `#terms` (stacking layer 50), with the
 standard `.term` glass overlay, chrome, window sizing, power animation, focus/close

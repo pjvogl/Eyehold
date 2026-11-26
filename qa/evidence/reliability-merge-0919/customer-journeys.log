@@ -48,7 +48,7 @@ channels.telegram.e2e.test: OK (82 assertions)
 cron.run-now.e2e.test: OK (35 assertions)
 cron.session-transcript.e2e.test: OK (10 assertions)
 routing.persist.e2e: OK (44 assertions)
-station-recovery.e2e.test: OK (23 assertions)
+keep-recovery.e2e.test: OK (23 assertions)
 TAP version 13
 # Subtest: unlink wins over an unfinished pairing response and survives restart
 ok 1 - unlink wins over an unfinished pairing response and survives restart

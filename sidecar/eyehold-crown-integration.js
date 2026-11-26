@@ -1,6 +1,6 @@
 /* Trusted-only Eyehold acceptance integration.
  * Attach to the running sidecar's genuine internal event emitter and store
- * readers. There are no public credit or self-attestation methods here.
+ * readers. There are no public credit or self-attekeep methods here.
  */
 'use strict';
 const path=require('node:path');

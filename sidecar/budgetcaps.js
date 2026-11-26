@@ -79,11 +79,11 @@
 
   /* The refusal a MANAGED run gets when admission cannot reserve (index.js refuseManaged) -> { message, transient }.
        exhausted    the service REPORTED a balance and it could not cover a reservation (a number, not an unknown)
-       linkRefused  the service answered 401/403 for this station's link
-       held         credits.held(): { runs, usd, counted } — Eyehold runs THIS station has still working and the amount
+       linkRefused  the service answered 401/403 for this keep's link
+       held         credits.held(): { runs, usd, counted } — Eyehold runs THIS keep has still working and the amount
                     they reserve; `counted` = the backend itself books a reservation as a debit (proxy-off deploys).
        balanceUsd   the balance the service reported (what admission read)
-     A balance reported as $0 because this station's own running runs hold it is NOT an empty wallet: those holds
+     A balance reported as $0 because this keep's own running runs hold it is NOT an empty wallet: those holds
      come back when the runs settle (each refunds what it did not spend). That refusal says so and names the levers in
      order — wait, lower PER RUN so runs can share the balance (audit B11: PER RUN at/above the balance makes one run
      reserve all of it), or top up (kept: a small wallet's hold may come back as cents; worded "top up", not "add
@@ -102,7 +102,7 @@
         ' to finish, lower PER RUN in SETTINGS › SPENDING LIMITS so runs can share the balance, or top up under SETTINGS → AI & MODELS.' };
     }
     if (o.exhausted) return { transient: false, message: 'Out of managed credit — add credits in the STORE to keep running (or connect your own provider key).' };
-    if (o.linkRefused) return { transient: false, message: 'Managed credits are unavailable — your Eyehold account refused this station\'s link (it was unlinked, or belongs to another account). Relink it under SETTINGS → AI & MODELS → EYEHOLD MANAGED (or use your own provider key).' };
+    if (o.linkRefused) return { transient: false, message: 'Managed credits are unavailable — your Eyehold account refused this keep\'s link (it was unlinked, or belongs to another account). Relink it under SETTINGS → AI & MODELS → EYEHOLD MANAGED (or use your own provider key).' };
     return { transient: true, message: 'Managed credits are unavailable right now — the credits service did not answer (try again, or use your own provider key).' };
   }
 

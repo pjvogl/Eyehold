@@ -21,7 +21,7 @@
   'use strict';
 
   const KEY = 'eyehold.launchvals.v1';
-  const MAX_RECIPES = 40;     // LRU ceiling — a long-lived station keeps its recent recipes' inputs
+  const MAX_RECIPES = 40;     // LRU ceiling — a long-lived keep keeps its recent recipes' inputs
   const VALUE_MAX = 2000;     // per-value clip: a pasted wall of text is remembered by its head, never unbounded
   const KEY_MAX = 24;         // param keys are short identifiers (mirrors scout PARAM_KEY_RE's ceiling)
 

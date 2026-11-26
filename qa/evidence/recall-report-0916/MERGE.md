@@ -11,7 +11,7 @@ The source repair replaces corrections in place with revision history and stale-
 - Post-integration fast gate: **813/813 passed**. HTTP gate: **119/119 passed**. Both full commands exited 0 on the integrated source.
 - Syntax and new-symbol checks passed for the merged loop, memory tool, and server composition. Shared event/schema contracts and credentials were not changed.
 
-Live proof used an isolated `node dev/seed.js --keep` station with a deterministic local OpenAI-compatible provider. The actual MEMORY panel showed old → new requirements; clicking Keep left one active corrected pinned memory. The corrected memory and pending review metadata survived restart; a delayed review could not overwrite a newer edit. See [verification.json](verification.json) and the two linked bug records in `qa/BUGS.md`.
+Live proof used an isolated `node dev/seed.js --keep` keep with a deterministic local OpenAI-compatible provider. The actual MEMORY panel showed old → new requirements; clicking Keep left one active corrected pinned memory. The corrected memory and pending review metadata survived restart; a delayed review could not overwrite a newer edit. See [verification.json](verification.json) and the two linked bug records in `qa/BUGS.md`.
 
 Raw local gate logs and seeded-run receipts are archived at `C:\Users\andro\gen-trees\recall-report-0916-receipts`. The final follow-up commit adds only this verification digest; production source remains identical to the integrated tree tested above.
 

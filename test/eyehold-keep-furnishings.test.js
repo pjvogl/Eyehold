@@ -55,8 +55,8 @@ for (const [type, want] of Object.entries(FURNISHINGS)) {
     assert.ok(p.x >= 0 && p.y >= 0 && p.x + p.w - 1 <= 17 && p.y + p.h - 1 <= 10, type + ' stays inside the keep');
   }
 }
-assert.equal(props.filter(p => p.t === 'desk').length, 1, 'the workstation is still the one desk');
-assert.equal(props.some(p => p.t === 'eyehold_scribe'), true, 'a scribe desk furnishes the room without becoming a second workstation');
+assert.equal(props.filter(p => p.t === 'desk').length, 1, 'the workkeep is still the one desk');
+assert.equal(props.some(p => p.t === 'eyehold_scribe'), true, 'a scribe desk furnishes the room without becoming a second workkeep');
 
 const occupied = new Map();
 for (const p of props) {
@@ -73,10 +73,10 @@ for (let x = 0; x <= 17; x++) for (let y = 2; y <= 7; y++) {
 
 const st = WM.create(doc);
 assert.equal(st.canPlaceProp('intake', 4, 4, 2, 2).ok, true, 'the central workflow lane stays free');
-const hero = st.ensureWorkstation('agent');
+const hero = st.ensureWorkkeep('agent');
 assert.equal(hero.ok && hero.adopted, true, 'boot still adopts the prepared desk');
 assert.equal(st.props().filter(p => p.t === 'desk').length, 1, 'adopting the desk does not build another');
-const crew = st.ensureWorkstation('rex');
+const crew = st.ensureWorkkeep('rex');
 assert.equal(crew.ok, true, 'a second agent still finds a work spot: ' + (crew.error || crew.msg || 'ok'));
 assert.notEqual(crew.id, hero.id, 'the second agent does not take the prepared desk');
 

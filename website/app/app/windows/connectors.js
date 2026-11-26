@@ -1,15 +1,15 @@
-/* EYEHOLD — windows/connectors.js : the TOOLSETS & CONNECTORS window (extracted verbatim from stationui.js).
-   Loads AFTER stationui.js (see index.html) and registers itself via StationUI.registerWindow;
-   the only stationui internals it touches are the enumerated StationUI.h helper surface
+/* EYEHOLD — windows/connectors.js : the TOOLSETS & CONNECTORS window (extracted verbatim from keepui.js).
+   Loads AFTER keepui.js (see index.html) and registers itself via KeepUI.registerWindow;
+   the only keepui internals it touches are the enumerated KeepUI.h helper surface
    (esc/sfx/notify/fmtRel, mountConsole, and openSignIn for catalog OAuth flows). */
 'use strict';
 (() => {
-  if (typeof StationUI === 'undefined' || !StationUI.registerWindow) return;
-  const H = StationUI.h;
+  if (typeof KeepUI === 'undefined' || !KeepUI.registerWindow) return;
+  const H = KeepUI.h;
   const esc = H.esc, sfx = H.sfx, notify = H.notify, fmtRel = H.fmtRel;
   const mountConsole = H.mountConsole, openSignIn = H.openSignIn;
 
-  // CATALOG DEEP-LINK (tutorial lane 2, 2026-08-22): StationUI.connectorJump(id) opens ABILITIES on the CATALOG
+  // CATALOG DEEP-LINK (tutorial lane 2, 2026-08-22): KeepUI.connectorJump(id) opens ABILITIES on the CATALOG
   // rail and scrolls/flashes that connector's card (the same cc-jump flash the ▸ VIA action uses) — the
   // Commander still presses the card's OWN ▸ SIGN IN, so the existing OAuth path stays the only door. The id
   // parks here until ccRefresh has rendered the cards (the window builds async).
@@ -21,9 +21,9 @@
     target.classList.add('cc-jump');
     setTimeout(() => target.classList.remove('cc-jump'), 2500);
   }
-  StationUI.connectorJump = function (id) {
+  KeepUI.connectorJump = function (id) {
     ccJumpPending = String(id || '') || null;
-    if (typeof StationUI.openTerm === 'function') StationUI.openTerm('connectors', 'catalog');
+    if (typeof KeepUI.openTerm === 'function') KeepUI.openTerm('connectors', 'catalog');
   };
 
   /* ============== CONNECTORS — attach MCP servers so agents gain external tools ==============
@@ -199,11 +199,11 @@
         '<div class="mc-acts"><button class="bb sm" id="ky-add">+ SAVE KEY</button></div>' +
       '</div>' +
       '<div id="ky-msg" class="msg" role="status" aria-live="polite"></div>';
-    /* ---- EXTENSIONS: the Commander's OWN code, running inside the station ----
+    /* ---- EXTENSIONS: the Commander's OWN code, running inside the keep ----
        Sits in this console and not in SETTINGS because "MCP server", "hook" and "plugin" are one user intent —
-       things I plug into my station — and splitting them by which subsystem implements them is how a settings
+       things I plug into my keep — and splitting them by which subsystem implements them is how a settings
        screen becomes a junk drawer. The two lists stay SEPARATE inside the tab because they are not the same
-       promise: a hook is a script the station shells out to, a plugin is code loaded into the station itself.
+       promise: a hook is a script the keep shells out to, a plugin is code loaded into the keep itself.
 
        The PENDING rows are the reason this panel exists at all. Both gates are opt-in by design, so an
        unapproved extension is silently inert — and an extension you wrote that never ran, with nothing on
@@ -237,7 +237,7 @@
         </section>
         <section class="ext-editor mc-form" id="pl-form" aria-label="Create a plugin" hidden>
           <div class="ext-editor-head"><b>Create a plugin</b><button class="bb xs" data-ext-editor="">CANCEL</button></div>
-          <p class="mc-hint">Your starter comes with its own window, styled like the rest of the station, plus code that counts tool calls each run. Open the window, then edit its files to make it yours.</p>
+          <p class="mc-hint">Your starter comes with its own window, styled like the rest of the keep, plus code that counts tool calls each run. Open the window, then edit its files to make it yours.</p>
           <label for="pl-name">Plugin name</label>
           <input id="pl-name" class="key-input" placeholder="e.g. PR Radar" autocomplete="off" maxlength="60">
           <details class="ext-details" id="pl-options"><summary>Optional settings</summary>
@@ -260,7 +260,7 @@
 
     const frag = h => (el => { el.innerHTML = h; });
     // NAV CONDENSE 2 (2026-08-04): the standalone SKILLS window merged in here — one window owns
-    // the whole "what agents can do" axis. stationui.js pushes its skill-library/agent-skills lane
+    // the whole "what agents can do" axis. keepui.js pushes its skill-library/agent-skills lane
     // onto window.AbilityLanes ((body)=>({sections,wire}), the windows/automation.js shape); the
     // lanes' sections mount in THIS console and their wire() runs after ours, against the same body.
     const lanes = (window.AbilityLanes || []).map(fn => { try { return fn(body); } catch (_) { return null; } }).filter(l => l && Array.isArray(l.sections));
@@ -281,7 +281,7 @@
       { glyph: '⊞', to: 'catalog', title: 'Connect a service you use',
         blurb: 'Find services and platform APIs, including print-on-demand. See what they can do and follow their setup steps. <b>Start here.</b>' },
       { glyph: '⧉', to: 'mcp', title: 'Advanced: add a custom connection',
-        blurb: 'You already have an MCP endpoint and want to point the station at it.' },
+        blurb: 'You already have an MCP endpoint and want to point the keep at it.' },
       { glyph: '▤', to: 'toolsets', title: 'Switch a built-in on or off',
         blurb: 'Web, files, terminal, memory — inspect the selected agent’s tools and where its access comes from.' },
       // cross-window, and deliberately so: naming the wrong window is worse than naming none.
@@ -436,7 +436,7 @@
         const j = await r.json().catch(() => ({}));
         if (!r.ok) { extSay((j && j.error) || ('request failed (' + r.status + ')'), true); return false; }
         return true;
-      } catch (e) { extSay('could not reach the station: ' + ((e && e.message) || e), true); return false; }
+      } catch (e) { extSay('could not reach the keep: ' + ((e && e.message) || e), true); return false; }
       finally { if (btn) { btn.disabled = false; btn.classList.remove('busy'); } }
     }
 
@@ -464,7 +464,7 @@
       const hits = Array.isArray(f.hits) && f.hits.length ? ' — ' + f.hits.map(h => esc(String(h))).join(', ') : '';
       return '<div class="mc-hint">scanner: <b>' + esc(String(f.level)) + '</b>' + hits + '</div>';
     }
-    // A plugin's TOOLS (what its process actually registered) and its terminal in the station — the tools reach an
+    // A plugin's TOOLS (what its process actually registered) and its terminal in the keep — the tools reach an
     // agent only through that terminal (object = capability), so the row says where it stands or offers to place it.
     function extTools(p) {
       const tools = Array.isArray(p.tools) ? p.tools : [];
@@ -472,8 +472,8 @@
       const host = typeof PluginHost !== 'undefined' ? PluginHost : null;
       const term = host && host.terminalOf ? host.terminalOf(p.id) : null;
       return '<div class="mc-hint">Tools: ' + tools.map(t => '<code>' + esc(t) + '</code>').join(' ') + '<br>' +
-        (term ? 'Its terminal stands in the station: agents in that room can use these. Each call asks you first unless you choose Always or Full access.'
-          : 'No terminal in the station yet, so no agent can use these. <button class="bb xs" data-ext="plugin-place" data-id="' + esc(p.id) + '">PLACE TERMINAL</button>') +
+        (term ? 'Its terminal stands in the keep: agents in that room can use these. Each call asks you first unless you choose Always or Full access.'
+          : 'No terminal in the keep yet, so no agent can use these. <button class="bb xs" data-ext="plugin-place" data-id="' + esc(p.id) + '">PLACE TERMINAL</button>') +
         '</div>';
     }
     // A plugin's windows (plugin.json `screens`), openable only while it is approved and live.
@@ -527,7 +527,7 @@
       const plugins = results[1].status === 'fulfilled' ? results[1].value : null;
       // nothing left to approve: the bell's "extensions awaiting your approval" leaves NEEDS YOU (it stayed lit for good)
       if (hooks && plugins && !((hooks.pending || []).length + plugins.plugins.filter(x => x && x.pending).length)
-        && typeof StationUI !== 'undefined' && StationUI.settleNotifs) StationUI.settleNotifs('extensions-pending');
+        && typeof KeepUI !== 'undefined' && KeepUI.settleNotifs) KeepUI.settleNotifs('extensions-pending');
       extPluginDir = plugins ? plugins.dir || '' : '';
       body.querySelector('#pl-where').hidden = !extPluginDir || !plugins.plugins.length;
       const unavailable = label => '<div class="mc-hint">Could not load ' + label + '. <button class="bb xs" data-ext="retry">TRY AGAIN</button></div>';
@@ -564,7 +564,7 @@
           '<p class="mc-hint">Folder: <code>' + esc(p.id) + '</code> · Version ' + esc(p.version || '0') +
           '<br>Open its folder to edit the code. Starters use <code>index.js</code> and <code>ui/index.html</code>.</p>' +
           (p.active ? extFindings(p.findings) : (p.hasCode === false
-            ? '<p class="mc-hint">Window-only plugin: its pages run sandboxed inside their windows, with no access to your station or computer.</p>'
+            ? '<p class="mc-hint">Window-only plugin: its pages run sandboxed inside their windows, with no access to your keep or computer.</p>'
             : '<p class="mc-hint">Enabling loads this code with your computer’s permissions.</p>')) +
           '<div class="mc-acts"><button class="bb xs" data-ext="plugin-where" data-id="' + esc(p.id) + '">COPY FOLDER PATH</button>' +
           '<button class="bb xs danger" data-ext-remove="' + esc(p.id) + '">DELETE PLUGIN</button></div>' +
@@ -647,7 +647,7 @@
         if (ok) { openAfter = newId; done = 'Plugin created and its window opened. Find its code under Details & code.'; id.value = ''; nm.value = ''; ds.value = ''; pluginIdEdited = false; extEditor('', false); }
       }
       else if (kind === 'plugin-where') {
-        if (!extPluginDir) { extSay('the station has not reported a plugins folder yet', true); return; }
+        if (!extPluginDir) { extSay('the keep has not reported a plugins folder yet', true); return; }
         const path = extPluginDir + (btn.dataset.id ? '/' + btn.dataset.id : '');
         try { await navigator.clipboard.writeText(path); extSay('Path copied to your clipboard.'); }
         catch (_) { extSay(path); }   // no clipboard permission — show it rather than fail silently
@@ -784,7 +784,7 @@
     const tsAgentEl = body.querySelector('#ts-agent');
     const tsAuthorityEl = body.querySelector('#ts-authority');
     const agents = H.present || [];
-    tsAgentEl.innerHTML = agents.map(a => '<option value="' + esc(a.id) + '">' + esc(a.name || a.id) + '</option>').join('') || '<option value="">Station defaults</option>';
+    tsAgentEl.innerHTML = agents.map(a => '<option value="' + esc(a.id) + '">' + esc(a.name || a.id) + '</option>').join('') || '<option value="">Keep defaults</option>';
     if (agents[H.sel]) tsAgentEl.value = agents[H.sel].id;
     let tsRequest = 0;
     tsAgentEl.addEventListener('change', tsRefresh);
@@ -1033,17 +1033,17 @@
       } catch (_) {
         body.querySelector('#mc-overview').textContent = 'Service status unavailable';
         body.querySelector('#mc-notices').textContent = '';
-        listEl.innerHTML = '<div class="mc-detail">Could not read connections. Retry when the station is available.</div>';
+        listEl.innerHTML = '<div class="mc-detail">Could not read connections. Retry when the keep is available.</div>';
       }
     }
     const postJSON = (path, payload) => fetch(path, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
 
-    /* ⛔ AN ERRORED ENDPOINT IS NOT AN EMPTY ONE, AND A REFUSAL IS NOT AN OFFLINE STATION.
+    /* ⛔ AN ERRORED ENDPOINT IS NOT AN EMPTY ONE, AND A REFUSAL IS NOT AN OFFLINE KEEP.
        `(await fetch(u)).json()` resolves on 4xx/5xx: a JSON error body parses fine, `j.groups` comes back
        undefined, and the panel prints "no platform directory available" / "No keyed platform connected yet" —
        a CONFIRMED EMPTY over a read that never succeeded. A non-JSON error (the plain-text `forbidden token`
        a 403 returns) throws instead, and the catch printed "sidecar offline — start it", which is the opposite
-       of true: the station answered, it just refused. Both readings send a Commander to fix the wrong thing —
+       of true: the keep answered, it just refused. Both readings send a Commander to fix the wrong thing —
        or to re-add a key they already have.
 
        Returns {ok, json, status, offline} so a caller can say which of the three actually happened. */
@@ -1055,10 +1055,10 @@
       try { return { ok: true, offline: false, status: r.status, json: await r.json() }; }
       catch (_) { return { ok: false, offline: false, status: r.status, json: null }; }
     }
-    // the one honest sentence for a failed read: offline vs the station refusing/erroring.
+    // the one honest sentence for a failed read: offline vs the keep refusing/erroring.
     const readFailLine = (res, offlineMsg) => res.offline
       ? '<div class="mc-detail">' + esc(offlineMsg) + '</div>'
-      : '<div class="mc-detail">couldn\'t read this from the station' + (res.status ? ' (HTTP ' + res.status + ')' : '') + ' — it is running, so this is not a start-it problem. Retry, and check the station log if it persists.</div>';
+      : '<div class="mc-detail">couldn\'t read this from the keep' + (res.status ? ' (HTTP ' + res.status + ')' : '') + ' — it is running, so this is not a start-it problem. Retry, and check the keep log if it persists.</div>';
     async function removeConnector(id, btn) {
       if (btn) btn.disabled = true;
       try {
@@ -1263,7 +1263,7 @@
       const clientField = e.googleApi && e.signInAvailable === false
         ? '<div class="mc-hint">' + esc(e.signInMessage || 'Google sign-in is not available in this build. Eyehold needs to finish enabling it. No account setup is required from you.') + '</div>' : '';
       const home = e.homepage ? ' <a class="cc-home dim" href="' + esc(e.homepage) + '" target="_blank" rel="noopener">site ↗</a>' : '';
-      // data-search: the console search box (stationui.js doFilter) matches textContent + this attribute, so a
+      // data-search: the console search box (keepui.js doFilter) matches textContent + this attribute, so a
       // Commander typing "google drive" reaches the Google Workspace card even though those words are only in
       // its blurb by luck. Off-screen matching text only — never rendered.
       const alias = (Array.isArray(e.aliases) && e.aliases.length) ? ' data-search="' + esc(e.aliases.join(' ')) + '"' : '';
@@ -1417,7 +1417,7 @@
       const b = ev.target.closest('button[data-cc-filter]'); if (!b) return;
       ccSetFilter(b.dataset.ccFilter); sfx('tick');
     });
-    // SEARCH BEATS THE TIER FILTER. The console search (stationui doFilter) marks a matching card
+    // SEARCH BEATS THE TIER FILTER. The console search (keepui doFilter) marks a matching card
     // `.con-hit`, but a card this filter set `hidden` stays display:none — so searching "stripe" with
     // "▸ no setup" active lit the CATALOG rail and showed NOTHING (probed live: hit:true, painted:false).
     // The Commander who types a name has stated a stronger intent than a chip they clicked earlier, so
@@ -1757,7 +1757,7 @@
     }
     async function kyRefresh() {
       // same law as readJSON's banner above: an errored read must never render as a CONFIRMED
-      // empty key list, and a refusal (403 plain-text) is not an offline station.
+      // empty key list, and a refusal (403 plain-text) is not an offline keep.
       const res = await readJSON('/api/servicekeys');
       if (!res.ok) { kyListEl.innerHTML = readFailLine(res, 'sidecar offline — start it to manage keys.'); return; }
       const list = (res.json && res.json.keys) || [];
@@ -1776,7 +1776,7 @@
         // handled below) even on a 500, so only a key-less answer is a refusal.
         const r = await postJSON('/api/servicekeys', { name, key, docsUrl });
         const j = await r.json().catch(() => ({}));
-        if (!j.key && (!r.ok || j.error)) { kyMsgEl.textContent = '✕ ' + (j.error || ('the station refused (HTTP ' + r.status + ') — the key was NOT saved')); sfx('bad'); return; }
+        if (!j.key && (!r.ok || j.error)) { kyMsgEl.textContent = '✕ ' + (j.error || ('the keep refused (HTTP ' + r.status + ') — the key was NOT saved')); sfx('bad'); return; }
         // saved:false still means LIVE this session — surface the persistence truth instead of a flat "saved".
         kyMsgEl.classList.toggle('ok', j.saved !== false);
         kyMsgEl.textContent = j.saved === false
@@ -1796,7 +1796,7 @@
         try {
           const r = await postJSON('/api/servicekeys/remove', { id });
           const j = await r.json().catch(() => ({}));
-          if (!r.ok || (j.error && !j.ok)) { kyMsgEl.classList.remove('ok'); kyMsgEl.textContent = '✕ ' + (j.error || ('the station refused (HTTP ' + r.status + ') — the key was NOT removed')); sfx('bad'); }
+          if (!r.ok || (j.error && !j.ok)) { kyMsgEl.classList.remove('ok'); kyMsgEl.textContent = '✕ ' + (j.error || ('the keep refused (HTTP ' + r.status + ') — the key was NOT removed')); sfx('bad'); }
           else { sfx('tick'); notify('Key removed'); }
         } catch (_) { kyMsgEl.classList.remove('ok'); kyMsgEl.textContent = '✕ could not reach the sidecar — the key was NOT removed'; sfx('bad'); }
         ccRefresh(); kyRefresh();
@@ -1808,7 +1808,7 @@
       const isAutonomy = cb.dataset.kyAct === 'autonomy';
       cb.disabled = true;
       try {
-        // the unattended-grant switch: a ticked box the station never recorded is a false grant
+        // the unattended-grant switch: a ticked box the keep never recorded is a false grant
         // readout, so any non-ok answer reverts the checkbox to the state the harness can prove.
         const r = isAutonomy
           ? await postJSON('/api/servicekeys/autonomy', { id, autonomous: cb.checked })
@@ -1819,7 +1819,7 @@
           // box truthful to the live state and surface the persistence gap instead of reverting.
           sfx('bad'); notify('⚠ the switch is live for this session, but saving to disk failed — it may not survive a restart', 'warn');
         }
-        else if (!r.ok || (j.error && !j.ok)) { cb.checked = !cb.checked; sfx('bad'); notify('✕ ' + (j.error || ('the station refused (HTTP ' + r.status + ') — nothing changed'))); }
+        else if (!r.ok || (j.error && !j.ok)) { cb.checked = !cb.checked; sfx('bad'); notify('✕ ' + (j.error || ('the keep refused (HTTP ' + r.status + ') — nothing changed'))); }
         else sfx('tick');
       } catch (_) { cb.checked = !cb.checked; sfx('bad'); }
       cb.disabled = false;
@@ -1900,14 +1900,14 @@
       try {
         const out = await Harness.api.post('/api/spotify/disconnect');
         if (!out.ok || !out.j || out.j.ok === false) {
-          const why = (out.j && out.j.error) || 'the station did not confirm the change';
+          const why = (out.j && out.j.error) || 'the keep did not confirm the change';
           msgEl.textContent = '✕ ' + why;
           notify('Spotify was NOT disconnected', 'warn'); sfx('bad');
           return;
         }
         clearInterval(pollTimer); msgEl.textContent = 'disconnected'; notify('Spotify disconnected'); sfx('click');
       } catch (_) {
-        msgEl.textContent = '✕ could not reach the station — Spotify was not disconnected';
+        msgEl.textContent = '✕ could not reach the keep — Spotify was not disconnected';
         notify('Spotify was NOT disconnected', 'warn'); sfx('bad');
       } finally {
         disconnectBtn.disabled = false;
@@ -1919,5 +1919,5 @@
 
   // The title must match the dock button that opens it — a window whose chrome disagrees with the button you
   // pressed reads as the wrong window, and this console now covers more than toolsets and connectors.
-  StationUI.registerWindow('connectors', 'ABILITIES', buildConnectors, { console: true });
+  KeepUI.registerWindow('connectors', 'ABILITIES', buildConnectors, { console: true });
 })();

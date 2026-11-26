@@ -280,7 +280,7 @@ const GREEN_PROBE = {
   A.eq(io4.findings.length, 0, 'a GREEN run files NO ledger finding (nothing to report)');
 
   /* ---- H2. official is externally earned; custom can never be promoted ---- */
-  const verifier = () => ({ ok: true, authority: 'release-attestation-verifier', verificationId: 'attestation-123' });
+  const verifier = () => ({ ok: true, authority: 'release-attekeep-verifier', verificationId: 'attekeep-123' });
   const ioOfficial = memIo();
   const official = await makeSmoke({
     attach: async () => sessionWith(GREEN_PROBE), clock, expectedHead: SHA, expectedTree: TREE,
@@ -288,7 +288,7 @@ const GREEN_PROBE = {
   }).run();
   A.eq(official.result, RESULTS.GREEN, 'external official verification does not weaken installed behavior gates');
   A.eq(official.stamp.provenanceKind, 'official', 'exact externally verified commit/tree/artifact earns official');
-  A.ok(official.stamp.officialEvidence && official.stamp.officialEvidence.verificationId === 'attestation-123', 'official receipt records its external verification identity');
+  A.ok(official.stamp.officialEvidence && official.stamp.officialEvidence.verificationId === 'attekeep-123', 'official receipt records its external verification identity');
 
   const customProbe = Object.assign({}, GREEN_PROBE, { shell: Object.assign({}, GREEN_PROBE.shell, { provenanceKind: 'custom' }) });
   const custom = await makeSmoke({

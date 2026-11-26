@@ -96,7 +96,7 @@
     {
       "id": "scout",
       "name": "CANARY SCOUT",
-      "executionProfile": "station-gear"
+      "executionProfile": "keep-gear"
     }
   ],
   "props": [
@@ -144,7 +144,7 @@
       },
       {
         "role": "assistant",
-        "content": "Shell execution was denied. Here is what that means plainly:\n\n**What was verified:**\n- The file exists at the correct path (write tool confirmed 478 bytes written and read-back matched sha256 `3d5c8b0b26ac73720bd04976cd0c512d55e66a724a00350b51572c8d390ad56a`).\n- Static read-back confirmed: `<button onclick=\"...RELEASE_0112_TOOL_OK...\">Verify</button>` and `<div id=\"result\"></div>` are present in the file, 17 lines long.\n\n**What was NOT verified:**\n- The HTML was not parsed by an external validator or runtime.\n- The `onclick` handler was not executed in a browser — runtime behavior (the button actually setting `result.textContent`) remains unconfirmed by live execution.\n\nThe file's static content matches every stated requirement. Runtime execution in a browser is the one thing I cannot prove from this workstation in this run.",
+        "content": "Shell execution was denied. Here is what that means plainly:\n\n**What was verified:**\n- The file exists at the correct path (write tool confirmed 478 bytes written and read-back matched sha256 `3d5c8b0b26ac73720bd04976cd0c512d55e66a724a00350b51572c8d390ad56a`).\n- Static read-back confirmed: `<button onclick=\"...RELEASE_0112_TOOL_OK...\">Verify</button>` and `<div id=\"result\"></div>` are present in the file, 17 lines long.\n\n**What was NOT verified:**\n- The HTML was not parsed by an external validator or runtime.\n- The `onclick` handler was not executed in a browser — runtime behavior (the button actually setting `result.textContent`) remains unconfirmed by live execution.\n\nThe file's static content matches every stated requirement. Runtime execution in a browser is the one thing I cannot prove from this workkeep in this run.",
         "ts": 1789077623713
       }
     ]

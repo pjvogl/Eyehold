@@ -1,6 +1,6 @@
 /* node test/rec-one-memory.test.js — W1 of the recommendation perfection campaign: ONE MEMORY.
 
-   The audit found the station keeping TWO recommendation memories that never spoke to each other: the durable
+   The audit found the keep keeping TWO recommendation memories that never spoke to each other: the durable
    cross-surface LEDGER (written by the bay/scout, study, suggest and autojobs; read by six propose-time filters)
    and the browser QUALITY EWMA (read only by the spine). This suite holds the wire between them:
 
@@ -9,7 +9,7 @@
      2. THE WRITE — the spine's offers become `shown` rows; the Commander's answer becomes that row's terminal
         state; the channels that mint their own rows, and the two that are not offers at all, are refused.
      3. THE READ — an explicitly declined title is matched exactly (never fuzzily), and every failure mode of the
-        read leaves the station ranking as if this module did not exist.
+        read leaves the keep ranking as if this module did not exist.
      4. THE LEARNED PREFERENCE TERM — the ledger's own decayed weight reaches the spine, is bounded, is two-sided,
         and still cannot cross a priority band.
      5. THE WIRING — recAccept/recDecline really do reach the ledger, the pass really does drop a declined
@@ -77,7 +77,7 @@ A.eq(RecLedger.normKey('draft the q3 report') === RecLedger.normKey('draft the q
   A.eq(rows[0].kind, 'seed', 'the row carries the channel as its kind (so the ledger can learn a per-kind weight)');
   A.eq(rows[0].title, 'summarize my inbox', 'the row is titled with the PROPOSAL, which is what the declined memory matches on');
   A.eq(rows[0].evidence[0].type, 'rationale',
-    'the station-composed why line is typed RATIONALE, never a quote of the Commander (the W3 law, applied here)');
+    'the keep-composed why line is typed RATIONALE, never a quote of the Commander (the W3 law, applied here)');
   A.eq(rows[0].evidence[0].quote, undefined, '…and it never lands in the quote column');
   A.eq(rows[0].target, Ledger.fingerprint('summarize my inbox'),
     'the row target is the ledger’s OWN fingerprint shape, so replay can find it later');
@@ -91,7 +91,7 @@ A.eq(RecLedger.normKey('draft the q3 report') === RecLedger.normKey('draft the q
   const before = h.posts().length;
   A.eq(RecLedger.note({ kind: 'study', title: 'you prefer python' }), '', 'study mints its OWN rows — refused here');
   A.eq(RecLedger.note({ kind: 'suggest', title: 'an idea' }), '', 'suggest mints its OWN rows — refused here');
-  A.eq(RecLedger.note({ kind: 'rate', title: 'rate this run' }), '', 'the rating is not an offer the station chose to make — refused');
+  A.eq(RecLedger.note({ kind: 'rate', title: 'rate this run' }), '', 'the rating is not an offer the keep chose to make — refused');
   A.eq(RecLedger.note({ kind: 'memory', title: 'a belief' }), '', 'the reflection deck is not an offer either — refused');
   A.eq(RecLedger.note({ kind: 'curiosity', title: '' }), '', 'no title means no row (evidence-or-silence, applied to bookkeeping)');
   A.eq(RecLedger.note({ kind: '', title: 'orphan' }), '', 'no channel means no row');
@@ -227,7 +227,7 @@ STEPS.push(async () => {
   A.eq(RecLedger.preferenceOf('wild', []), 0, 'an unreadable weight is no reading at all');
 });
 
-// EVERY failure mode of the read leaves the station exactly as it was
+// EVERY failure mode of the read leaves the keep exactly as it was
 STEPS.push(async () => {
   for (const [label, resp, okExpected] of [
     ['a rejected request', 'reject', false], ['a non-ok response', 'error', false],
@@ -319,7 +319,7 @@ A.ok(/RecQualityStore\.noteAccept/.test(accept), '…without losing the browser 
 A.ok(/RecLedger\.declined\(channel, !!deferred\)/.test(decline), 'every decline reaches the one ledger, carrying whether it was a deferral');
 A.ok(/RecQualityStore\.noteDecline/.test(decline), '…without losing the browser quality loop');
 A.ok(/!deferred && RecLedger\.refresh/.test(decline),
-  'a real decline re-reads the shared memory (it changed what the station may propose); a deferral does not');
+  'a real decline re-reads the shared memory (it changed what the keep may propose); a deferral does not');
 
 const pass = A.fnBody(chatSrc, 'async function recommendPass(p, phase)');
 A.ok(/c\.preference = recPreferenceOf\(c\.kind, c\.dim\)/.test(pass), 'the pass attaches the learned preference to every candidate');

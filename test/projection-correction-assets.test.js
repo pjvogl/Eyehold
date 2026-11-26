@@ -1,9 +1,9 @@
 'use strict';
-// Packaging checks only. These cannot establish visual acceptance in the station.
+// Packaging checks only. These cannot establish visual acceptance in the keep.
 const fs=require('node:fs'),path=require('node:path'),crypto=require('node:crypto'),assert=require('node:assert/strict'),sharp=require('sharp');
 const root=path.resolve(__dirname,'..'),read=p=>fs.readFileSync(path.join(root,p)),json=p=>JSON.parse(read(p));
 const base='frontend/assets/industrial/approved-sheet/',candidate='frontend/assets/industrial/projection-correction/';
-const old=json(base+'manifest.json'),next=json(candidate+'manifest.json'),receipt=json('docs/station-remaster/projection-correction/exports.json');
+const old=json(base+'manifest.json'),next=json(candidate+'manifest.json'),receipt=json('docs/keep-remaster/projection-correction/exports.json');
 const keepArt=json('docs/eyehold-keep-art.json');
 const keepByPath=new Map(keepArt.assets.map(row=>[row.path,row]));
 const hash=b=>crypto.createHash('sha256').update(b).digest('hex');

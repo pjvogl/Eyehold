@@ -1,9 +1,9 @@
 /* sidecar/tools/builtin/voice.js — `voice_generate`: speech the agent MAKES, as a file it can hand over.
 
-   The station could already SPEAK (POST /api/tts — the keyed neural ladder, with Edge read-aloud as the free
+   The keep could already SPEAK (POST /api/tts — the keyed neural ladder, with Edge read-aloud as the free
    keyless floor). What no agent could do was PRODUCE audio: a voiceover for a video, a narrated summary, an
    audio message. Asked what Eyehold lacked, agents answered "voice generation" — and they were right about
-   the tool while the whole synthesis stack sat one seam away, wired only to the station's own mouth.
+   the tool while the whole synthesis stack sat one seam away, wired only to the keep's own mouth.
 
    This is the STUDIO's third skill, and it is deliberately the same shape as image_generate:
      • it WRITES into the agent's jailed workspace (so consent-gated, exactly like fs.write / image_generate);
@@ -14,8 +14,8 @@
      • it returns the saved path + the /api/file viewer URL.
 
    THE LADDER IS INJECTED, not rebuilt. deps.synth is the host's one-shot synthesizer (index.js reuses the
-   SAME ttsSynthKeyed chain + Edge floor that /api/tts drives), so a station with any voice-capable key gets
-   its keyed voice and a zero-key station still gets the free Edge neural floor. With no synth injected at
+   SAME ttsSynthKeyed chain + Edge floor that /api/tts drives), so a keep with any voice-capable key gets
+   its keyed voice and a zero-key keep still gets the free Edge neural floor. With no synth injected at
    all the tool says so honestly rather than writing a silent file.
 
    makeVoiceTools({ synth, fsp, pathMod, root, defaultVoice? }) -> { generateTool, register(reg), _internals }
@@ -72,9 +72,9 @@
       description: 'Speak text as neural audio and SAVE it into your workspace as a playable clip (returns the saved '
         + 'path + a viewer URL, and the clip appears in chat with a player). Use for any "record / narrate / read this '
         + 'aloud / make a voiceover" request, or to hand the Commander an audio version of something you wrote. This '
-        + 'is NOT how you talk in conversation — your spoken replies are already handled by the station. Optional '
+        + 'is NOT how you talk in conversation — your spoken replies are already handled by the keep. Optional '
         + '"voice" picks a named voice and "style" gives delivery direction (e.g. "calm and deliberate"); support for '
-        + 'both depends on which voice credential the station holds. Optional "path" sets the output filename. Long '
+        + 'both depends on which voice credential the keep holds. Optional "path" sets the output filename. Long '
         + 'scripts: split them into takes and call once per take — text over ' + MAX_TEXT + ' characters is refused, never truncated.',
       schema: {
         type: 'object', required: ['text'], properties: {
@@ -93,7 +93,7 @@
           throw new Error('text is ' + text.length + ' characters; the cap is ' + MAX_TEXT
             + '. Split the script into takes and call voice_generate once per take — a truncated voiceover is worse than a refused one.');
         }
-        if (!synth) throw new Error('this station has no speech synthesizer wired — voice_generate cannot produce audio here');
+        if (!synth) throw new Error('this keep has no speech synthesizer wired — voice_generate cannot produce audio here');
 
         const r = await synth({ text: text, voice: str(args.voice), style: str(args.style) });
         if (!r || r.ok === false || !r.buf || !r.buf.length) {

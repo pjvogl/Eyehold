@@ -1,4 +1,4 @@
-/* sidecar/tools/builtin/webreader.js — the station READER: a shared, headless, cookie-less real-Chrome
+/* sidecar/tools/builtin/webreader.js — the keep READER: a shared, headless, cookie-less real-Chrome
    fallback that web_fetch and web_search borrow when plain HTTP is bot-walled or throttled.
 
    WHY (2026-07-31, field data + the Hermes reach audit): the dominant real-world web failures are bot
@@ -16,7 +16,7 @@
        deps.idleMs    : teardown after this much idle (default 90s)
 
    POSTURE (do not weaken):
-     · ALWAYS headless, ALWAYS an ephemeral profile, NEVER the station's persistent (signed-in)
+     · ALWAYS headless, ALWAYS an ephemeral profile, NEVER the keep's persistent (signed-in)
        profile — web_fetch is a read-scope no-consent tool, so it must never ride the Commander's
        logins: an authenticated page leaking into a no-consent tool would be a real exfil channel.
        The plain-HTTP path carries no cookies; the reader must match it.
@@ -130,7 +130,7 @@
       const OS = req ? req('node:os') : null;
       driver = makeDriver({
         forceHeadless: true, headless: true, cdpPort: 0, env,
-        // ephemeral, reader-owned profile — never the station's signed-in one (see POSTURE above)
+        // ephemeral, reader-owned profile — never the keep's signed-in one (see POSTURE above)
         profileDir: P && OS ? P.join(OS.tmpdir(), 'eyehold-webreader-' + process.pid) : undefined,
         cleanupProfile: true
       });

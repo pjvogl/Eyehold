@@ -164,7 +164,7 @@ async function main() {
 
     const prompt = [
       'Phase 4 replacement proof task.',
-      'The room already contains FILES, MEMORY, and TERMINAL stations.',
+      'The room already contains FILES, MEMORY, and TERMINAL keeps.',
       'Use the file tool to write a Markdown file named phase4-proof.md.',
       'The file must contain these exact lines:',
       '# Phase 4 Proof',
@@ -216,7 +216,7 @@ async function main() {
       generatedAt: new Date().toISOString(),
       operator: process.env.USERNAME || process.env.USER || 'andro',
       sameWorkTrial: { passed: false, screenshots: [], runIds: [], transcriptIds: [], artifactPaths: [], ledgerRows: [], notes: '' },
-      soak: { freshPass: false, restartPass: false, transcriptPreserved: false, ledgerPreserved: false, artifactsPreserved: false, memoryPreserved: false, stationStatePreserved: false, notes: '' },
+      soak: { freshPass: false, restartPass: false, transcriptPreserved: false, ledgerPreserved: false, artifactsPreserved: false, memoryPreserved: false, keepStatePreserved: false, notes: '' },
       failureRecovery: { cancelPassed: false, budgetPassed: false, deniedConsentPassed: false, toolErrorPassed: false, checkpointRestorePassed: false, notes: '' }
     };
     existing.generatedAt = new Date().toISOString();
@@ -236,8 +236,8 @@ async function main() {
       ledgerPreserved: restartRuns.length > 0,
       artifactsPreserved: artifactDiskPaths.some(p => existsSync(p)),
       memoryPreserved: !!report.checks.memoryPreserved,
-      stationStatePreserved: REQUIRED_CAPS.every(c => Array.isArray(caps) && caps.includes(c)),
-      notes: 'Fresh UI proof was restarted on the same workspace/profile; run, transcript, artifacts, memory signal, and station caps were checked after restart.'
+      keepStatePreserved: REQUIRED_CAPS.every(c => Array.isArray(caps) && caps.includes(c)),
+      notes: 'Fresh UI proof was restarted on the same workspace/profile; run, transcript, artifacts, memory signal, and keep caps were checked after restart.'
     });
     writeJson(attendedFile, existing);
     writeJson(join(OUT, 'phase4-ui-proof-report.json'), report);

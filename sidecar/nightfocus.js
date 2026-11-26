@@ -79,14 +79,14 @@
 
   /* ---- the LEARNED-TOPIC TIE-BREAK (2026-07-28) ----
      Until now this resolver ranked purely on RECENCY: the most recently touched project won the night, whatever
-     the Commander actually keeps working ON. The station already learns that (interests.js — an evidence-backed
+     the Commander actually keeps working ON. The keep already learns that (interests.js — an evidence-backed
      topic histogram), and a focus that matches a warm topic is measurably more likely to be the thing worth
      moving. So a matched candidate gets a SMALL boost and cites the topic in its `why`.
 
      DELIBERATELY A TIE-BREAK, NOT A RE-RANKER. The cap is 0.2 against a recency term that spans a full 1.0, so
      it can only reorder candidates already within ~6 days of each other — a genuinely stale project can never
      be dragged over fresh work by a topic match. And TopicMatch's anchor rule means the boost is exactly 0
-     until a topic is WARM, so a cold station resolves the identical focus it resolved before this existed.
+     until a topic is WARM, so a cold keep resolves the identical focus it resolved before this existed.
 
      Applied ONLY to the three evidence-derived kinds with real subject text (project / thread / quest). The goal
      arc and the north star are the Commander's EXPLICIT direction with flat scores — boosting those by an
@@ -317,7 +317,7 @@
       cands.push({ order: 2, score, focus: { kind: 'goal', ref: 'goal', label: text, why, source: 'evidence', resolvedAt: now } });
     }
 
-    // the CONFIRMED inferred NORTH STAR — the station's long-term direction, evidence-cited. Only a confirmed
+    // the CONFIRMED inferred NORTH STAR — the keep's long-term direction, evidence-cited. Only a confirmed
     // (adopted, model-sourced, not-already-the-goal) star reaches here: the ambient half runs northStarEvidence()
     // first, so an unconfirmed proposal (consent law) or a goal-sourced star (no double count) is already null.
     const ns = inputs.northStar;

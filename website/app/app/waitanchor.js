@@ -8,7 +8,7 @@
      1. AIRLOCK  — a door-like isolation prop; the most legible "I'm waiting at the threshold" body. If the
                    catalog/bake has one placed, wait beside it.
      2. MISSION BOARD — the "needs you" surface; if no airlock, wait beside the board.
-     3. OWN DESK — the honest fallback: the agent stands at its own workstation seat, facing the camera (south).
+     3. OWN DESK — the honest fallback: the agent stands at its own workkeep seat, facing the camera (south).
 
    ZONE CONTAINMENT (the workforce-zones law): if the chosen anchor's approach tile is OUTSIDE the agent's
    zone, the agent waits at the in-zone tile NEAREST the anchor (never walks out of its area). The caller
@@ -39,7 +39,7 @@
   /* resolve(ctx) -> { tx, ty, face, source } | null
        ctx.props      : geo.props (placed prop rects, each { t, x, y, w, h })
        ctx.anchorOf   : (prop) -> { tx, ty, face } | null   — an approach tile beside the prop (PropAnchor.deriveAnchor)
-       ctx.seat       : { tx, ty, face } | null             — the agent's own workstation seat (the honest fallback)
+       ctx.seat       : { tx, ty, face } | null             — the agent's own workkeep seat (the honest fallback)
        ctx.zoneAllows : (tx, ty) -> bool                    — is this tile inside the agent's zone? (default: always yes)
        ctx.nearestInZone : (tile) -> { tx, ty } | null      — the nearest in-zone tile to `tile` when the anchor is out of zone
 

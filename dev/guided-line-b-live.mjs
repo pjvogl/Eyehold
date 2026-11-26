@@ -40,7 +40,7 @@ async function main() {
       if (!Build.isOpen()) Build.open();
       const card = document.querySelector('.refit-firstrun');
       if (card) { const go = card.querySelector('#refit-guide-go'); if (go) go.click(); }
-      const st = Build.__test__.station();
+      const st = Build.__test__.keep();
       for (const b of st.belts()) st.removeBelt(b.x, b.y);
       const WF = { intake:1, bay:1, outbox:1, filter:1, splitter:1, merger:1 };
       for (const p of st.props().slice()) if (WF[p.t]) st.removeProp(p.id);

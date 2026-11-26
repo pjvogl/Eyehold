@@ -36,8 +36,8 @@ cd src-tauri
 cargo run --example google-review -- C:\path\to\installed-client.json 9498 --with-model
 ```
 
-- Opens `http://127.0.0.1:9498` with a seeded, already-onboarded station.
-- `--with-model` uses the model/key from `dev/.env.dev` (or your shell). Without it the station runs the
+- Opens `http://127.0.0.1:9498` with a seeded, already-onboarded keep.
+- `--with-model` uses the model/key from `dev/.env.dev` (or your shell). Without it the keep runs the
   offline replay model and no agent can call Google tools.
 - State lives in `dev/.google-review-workspace` and is **kept between launches** (the demo shows restart
   continuity). Delete that folder to start clean.
@@ -67,7 +67,7 @@ cargo run --example google-review -- C:\path\to\installed-client.json 9498 --wit
 6. Gmail (send only): ask the agent to email the second test inbox; show the approval before sending and
    the received message. Point out the connector cannot read or search mail.
 7. Quit and relaunch the review build; show the services are still connected and working. Remove one
-   connection in Eyehold and show that Google access for it is gone from the station.
+   connection in Eyehold and show that Google access for it is gone from the keep.
 8. Upload as an **unlisted** YouTube video, confirm playback, paste the URL into the Data Access form, save,
    review the summary, submit.
 

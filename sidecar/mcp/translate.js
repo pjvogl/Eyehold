@@ -79,7 +79,7 @@
      on EVERY run that merely advertises the connector, before any call was ever made.
 
      WHY ADVERTISING DOES NOT TAINT. Full Power and every owner-trusted run project every configured connector
-     (index.js stationWithConnectors), so "advertised => tainted" would latch the lock on essentially every run a
+     (index.js keepWithConnectors), so "advertised => tainted" would latch the lock on essentially every run a
      Commander with one connector makes and strip the terminal from all of them — gutting the feature to defend one
      field. Instead the text is made unable to impersonate authority, which is what it was being used for:
        - control chars (incl. newlines, so no forged "SYSTEM:" line), zero-width and bidi overrides are removed;

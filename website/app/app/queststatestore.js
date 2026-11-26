@@ -2,9 +2,9 @@
    durable memory + the completion celebration.
 
    Self-persists to its own localStorage key (rides the backup prefix, like curiositystore/mintstore — no
-   save.js change). sync() is the heartbeat (driven by the station's existing 1s tick + every quest-log
+   save.js change). sync() is the heartbeat (driven by the keep's existing 1s tick + every quest-log
    render): it re-reads the honest projection (QuestStore.view), folds it through the engine, and on every
-   open→done edge fires the celebration — the quest sting (SFX.quest), ONE gold StationUI.notify toast
+   open→done edge fires the celebration — the quest sting (SFX.quest), ONE gold KeepUI.notify toast
    ('⚑ quest complete — …'), and a brief gold flourish on that quest's row in the QUEST LOG panel.
 
    Celebration is a MOMENT, not a lingering ask (the COMMS beat rules): nothing queues, nothing waits for
@@ -12,7 +12,7 @@
    feedback on real built work (xp.js law); a quest completing pays out sound + toast + flourish only.
 
    NEVER emits on U.bus (the frozen shared/events.js contract is owned elsewhere): celebration is a direct
-   call into SFX/StationUI, so the lint-emits gate has nothing to catch. */
+   call into SFX/KeepUI, so the lint-emits gate has nothing to catch. */
 'use strict';
 const QuestStateStore = (() => {
   const KEY = 'eyehold.queststate.v1';
@@ -50,7 +50,7 @@ const QuestStateStore = (() => {
     return r.completions;
   }
 
-  // sound + flourish + COMMS line. Direct calls only — no bus, no beat slot, no XP. NO StationUI.notify
+  // sound + flourish + COMMS line. Direct calls only — no bus, no beat slot, no XP. NO KeepUI.notify
   // (notification diet, 2026-08-18): the sting + gold row flash + broadcast carry the moment; the bell doesn't.
   function celebrate(q) {
     flourish[q.id] = Date.now() + FLOURISH_MS;
@@ -58,7 +58,7 @@ const QuestStateStore = (() => {
     // it, so the quest only flashes in its log (first-hour walk 2026-09-28: QUEST COMPLETE ×3 repeated TROPHY EARNED ×3).
     const mirrorsTrophy = q && (q.kind === 'milestone' || /^ms:/.test(String(q.id || '')));
     if (!mirrorsTrophy) { try { if (typeof SFX === 'object' && SFX.quest) SFX.quest(); } catch (_) {} }
-    if (typeof StationUI !== 'undefined' && StationUI.rerender) StationUI.rerender('quests', false);   // if the log is open, the row flashes gold NOW (rerender is a no-op when closed)
+    if (typeof KeepUI !== 'undefined' && KeepUI.rerender) KeepUI.rerender('quests', false);   // if the log is open, the row flashes gold NOW (rerender is a no-op when closed)
     if (mirrorsTrophy) return;
     // COMMS: the terse quest-complete broadcast — an ambient system line, not a beat-slot card (coalesced +
     // in-game-gated inside Chat.broadcast, so it never competes with the post-run ask chain).

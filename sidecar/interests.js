@@ -11,7 +11,7 @@
 
    TRUTHFUL TELEMETRY: every topic carries the evidence quotes that earned it (capped, newest-first) — a
    recommendation downstream may only ever cite THIS evidence, never a synthesized "users like you". A topic
-   with no real activity behind it cannot enter the histogram, and an idle station decays back toward empty.
+   with no real activity behind it cannot enter the histogram, and an idle keep decays back toward empty.
 
    DETERMINISM SPLIT (mirrors nightshift.js / contextpack.js): every function is a transform over
    (state, args) with `now` INJECTED — no Date.now / Math.random / fs / network — so it passes
@@ -121,7 +121,7 @@
   function buildDirective(ctx) {
     ctx = ctx || {};
     const lines = [];
-    lines.push('You are the station\'s intake analyst. From the Commander\'s REAL recent activity below, extract the');
+    lines.push('You are the keep\'s intake analyst. From the Commander\'s REAL recent activity below, extract the');
     lines.push('SPECIFIC recurring topics or domains they are working in — the kind of interest a tailored recipe or a');
     lines.push('specialist crew member could serve (e.g. "stock research", "songwriting", "kubernetes ops").');
     lines.push('');
@@ -223,7 +223,7 @@
     return rows.slice(0, Math.max(1, limit));
   }
 
-  // warm — does the station KNOW at least one real interest yet? (the scout's warm floor reads this).
+  // warm — does the keep KNOW at least one real interest yet? (the scout's warm floor reads this).
   function warm(state, now) {
     const s = normalize(state, now);
     for (const slug of Object.keys(s.topics)) if (decayedWeight(s.topics[slug], now) >= WARM_WEIGHT) return true;

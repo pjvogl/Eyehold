@@ -5,7 +5,7 @@
 
    ── WHY THIS IS A SEPARATE AUTH SEAM (read before changing) ────────────────────────────────────────────────
    The rest of the sidecar's /api/* routes are fenced by the per-LAUNCH token that index.js injects into the
-   served page (see apiauth.js). That token is for the STATION'S OWN browser UI. /v1/* is different: it is for
+   served page (see apiauth.js). That token is for the KEEP'S OWN browser UI. /v1/* is different: it is for
    external local clients (an OpenAI SDK, another harness, a CLI) that NEVER see the page and cannot read that
    token. So /v1 carries its OWN bearer key (env EYEHOLD_API_KEY / EYEHOLD_V1_KEY, or a persisted server config)
    compared timing-safe, exactly like the reference harness's API_SERVER_KEY.
@@ -23,9 +23,9 @@
    ── RUNS RIDE THE EXISTING AUTONOMOUS SEAM ─────────────────────────────────────────────────────────────────
    Every run goes through the SAME runOnce entrypoint the channels hub uses (channels/hub.js), with
    surface:'autonomous' (a headless HTTP caller has no browser to answer a permission.prompt, so an ungranted
-   mutation default-denies and the run continues — never stalls) and broadcast:true (so the station floor lights
+   mutation default-denies and the run continues — never stalls) and broadcast:true (so the keep floor lights
    up for an externally-triggered run — the product feature: a user SEES that an outside harness talked to their
-   station). Cost/billing reconciliation flows untouched through runOnce. Usage tokens in the OpenAI `usage`
+   keep). Cost/billing reconciliation flows untouched through runOnce. Usage tokens in the OpenAI `usage`
    object are summed from the run's REAL agent.cost token counters — never synthesized (truthful telemetry).
 
    This module is factored PURE/injected (like apiauth.js) so it is unit/e2e-testable without booting index.js:
@@ -286,7 +286,7 @@ function makeOpenAiCompat(deps) {
       // tells it to use them); the one-turn structured-output repair pass stays tool-less.
       isTask: !o.outputOnly, toolsOptional: true,   // a model known tool-less still answers in text (pre-#96 behavior)
       trigger: 'event', surface: 'autonomous',   // headless external caller: default-deny ungranted mutation, never stall
-      broadcast: true,                            // light the station floor — a user SEES the external harness's run
+      broadcast: true,                            // light the keep floor — a user SEES the external harness's run
       taskKey: 'v1:' + o.agentId, taskSource: 'api',
       // an externally-driven run is still this agent doing real work — it learns from it like any other, with each
       // record stamped origin:'api' so the Commander can tell it apart from their own conversation.
@@ -311,7 +311,7 @@ function makeOpenAiCompat(deps) {
     const key = apiKeyFn();
     if (!keyUsable(key)) {
       json(res, 403, openAiError(
-        'The Eyehold /v1 API is disabled. It dispatches terminal-capable agent work, so it refuses to run without a strong bearer key. Set EYEHOLD_API_KEY to a secret of at least ' + MIN_KEY_LEN + ' characters (e.g. `openssl rand -hex 32`) and restart the station to enable /v1.',
+        'The Eyehold /v1 API is disabled. It dispatches terminal-capable agent work, so it refuses to run without a strong bearer key. Set EYEHOLD_API_KEY to a secret of at least ' + MIN_KEY_LEN + ' characters (e.g. `openssl rand -hex 32`) and restart the keep to enable /v1.',
         { type: 'invalid_request_error', code: 'api_disabled' }), { 'WWW-Authenticate': 'Bearer' });
       return true;
     }
@@ -647,7 +647,7 @@ function makeOpenAiCompat(deps) {
     if (p === '/health' && method === 'GET') {
       // Unauthenticated by design (a liveness probe answers before auth) — but it still owes the loopback
       // Host pin. Without it /health sat ABOVE the one defence against DNS rebinding, so a rebound page could
-      // read the station's version. index.js's isApi gate covers only /api/*, so this route must pin itself.
+      // read the keep's version. index.js's isApi gate covers only /api/*, so this route must pin itself.
       if (!isAllowedHost(((req && req.headers) || {}).host)) { res.writeHead(403); res.end('forbidden host'); return true; }
       handleHealth(req, res); return true;
     }

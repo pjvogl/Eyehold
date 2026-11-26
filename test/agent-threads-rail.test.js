@@ -6,11 +6,11 @@
 
    1. GENUINE: Workstreams.hasAgent — the one rule for "is this session one of X's?".
    2. SOURCE-LOCKED wiring (the rail and roster need a live layout to drive): the crew row filters, a
-      one-agent station keeps crew-click = dossier, the dossier stays one step away (key + right-click),
+      one-agent keep keeps crew-click = dossier, the dossier stays one step away (key + right-click),
       the SESSIONS tab clears the filter, + NEW binds to the narrowed agent, search stays inside it.
 
    OUT OF HEADLESS SCOPE: the on-screen result (chip, the single lit row, empty state) was proven live on a
-   3-agent + 1-group station and a 1-agent station (lane notes: agent-threads-lane-1001). */
+   3-agent + 1-group keep and a 1-agent keep (lane notes: agent-threads-lane-1001). */
 'use strict';
 const A = require('./_assert.js');
 const fs = require('fs');
@@ -46,7 +46,7 @@ A.ok(!W.hasAgent(null, 'finn', membersOf) && !W.hasAgent(direct, '', membersOf),
 
 /* ---- 2. SOURCE-LOCKED wiring ---- */
 const read = p => fs.readFileSync(path.join(__dirname, '..', p), 'utf8');
-const app = read('frontend/app/app.js'), ui = read('frontend/app/stationui.js'), gc = read('frontend/app/group-chat.js');
+const app = read('frontend/app/app.js'), ui = read('frontend/app/keepui.js'), gc = read('frontend/app/group-chat.js');
 
 A.ok(/next = g\.members\.slice\(\);\s*membersById\.set\(g\.id, next\);/.test(gc) && /membersOf: id => membersById\.get\(id\) \|\| null/.test(gc),
   'GroupChat records each group\'s members from the backend and exposes membersOf');
@@ -72,7 +72,7 @@ A.ok(/if \(railAgentFilter && railAgentFilter !== id\) \{ railAgentFilter = null
 A.ok(!/localStorage\.setItem\([^)]*railAgentFilter/.test(app), 'the narrowed view is view state only — never persisted');
 
 A.ok(/if \(present\.length > 1 && typeof App !== 'undefined' && App\.filterRailByAgent\) App\.filterRailByAgent\(li\.dataset\.agentId\);\s*else openAgent\(\+li\.dataset\.i\);/.test(ui),
-  'a crew row narrows the rail; a one-agent station keeps crew-click = dossier');
+  'a crew row narrows the rail; a one-agent keep keeps crew-click = dossier');
 A.ok(/li\.addEventListener\('contextmenu', ev => \{ ev\.preventDefault\(\); sfx\('click'\); openAgent\(\+li\.dataset\.i\); \}\);/.test(ui),
   'right-click (and Shift+F10) on a crew row opens the dossier');
 A.ok(/present\.length > 1 \? '<button type="button" class="crew-dossier"/.test(ui), 'the DOSSIER key shows only when the click is a filter');
@@ -82,7 +82,7 @@ A.ok(/row\.classList\.toggle\('filtering', !!railFilter && a\.id === railFilter\
 A.ok(/ev\.key === 'ContextMenu' \|\| \(ev\.shiftKey && ev\.key === 'F10'\)\) \{ ev\.preventDefault\(\); sfx\('click'\); openAgent\(\+li\.dataset\.i\); \}/.test(ui),
   'Shift+F10 / the menu key open the dossier from the keydown too (WKWebView fires no contextmenu for it)');
 A.ok(/if \(railAttentionOnly && railAgentFilter\) \{ railAgentFilter = null;/.test(app),
-  '"Waiting for you" shows every waiting session — the station-wide count never opens a narrowed, blank rail');
+  '"Waiting for you" shows every waiting session — the keep-wide count never opens a narrowed, blank rail');
 const desk = read('frontend/app/deskscreen.js');
 A.ok(/deskAgentId = String\(agentId\);/.test(ui) && !/function openDesk\(agentId\) \{[^}]*\bsel = i;/.test(ui) && /get deskAgentId\(\) \{ return deskAgentId; \}/.test(ui),
   'opening a desk sets the desk\'s own target, never the dossier\'s selection');

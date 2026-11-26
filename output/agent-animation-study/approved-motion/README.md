@@ -1,6 +1,6 @@
 # Approved industrial agent motion
 
-The user approved readability-v1 Secret Agent proportions and requested all five revised skins moving in the actual dev station.
+The user approved readability-v1 Secret Agent proportions and requested all five revised skins moving in the actual dev keep.
 
 ## Included
 
@@ -16,11 +16,11 @@ Ultron north and Plague Doctor front/rear seat poses were rerolled for clearer b
 
 ## Runtime
 
-The same real seeded dev server at http://127.0.0.1:18814/agent-station-demo.html?propSet=projection now maps all five actual roster agents to approved_<skin>. These are moving pathfinding bodies, not the comparison mannequins. Front comparisons remain optional, hidden by default. Follow selects real camera tracking. No agent work events or provider runs were fabricated or triggered.
+The same real seeded dev server at http://127.0.0.1:18814/agent-keep-demo.html?propSet=projection now maps all five actual roster agents to approved_<skin>. These are moving pathfinding bodies, not the comparison mannequins. Front comparisons remain optional, hidden by default. Follow selects real camera tracking. No agent work events or provider runs were fabricated or triggered.
 
 Demo-only sprite rendering exposes observed frame indices. Demo world rendering records actual walk poses, frame changes and travel in the panel's data-motion attribute. Seated typing now uses its own foot padding and chair lift, just like seated idle.
 
-Live verification observed all five using approved_* walking tracks and changing position: Ultron15 distinct rendered walk frames/28.03 world units, Skeleton20/53.67, Plague Doctor17/33.94, Secret Agent40/43.27, Void Wizard34/26.83 in the first sample. Inspected the actual station and roster portraits. A startup readiness race found in the live check was fixed by waiting for SPRITES.ready before ensuring the required sets.
+Live verification observed all five using approved_* walking tracks and changing position: Ultron15 distinct rendered walk frames/28.03 world units, Skeleton20/53.67, Plague Doctor17/33.94, Secret Agent40/43.27, Void Wizard34/26.83 in the first sample. Inspected the actual keep and roster portraits. A startup readiness race found in the live check was fixed by waiting for SPRITES.ready before ensuring the required sets.
 
 ## Reproduction
 

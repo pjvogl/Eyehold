@@ -1,4 +1,4 @@
-// Run against an isolated node dev/seed.js --keep station. Never use a customer workspace.
+// Run against an isolated node dev/seed.js --keep keep. Never use a customer workspace.
 // First run: create/readback/refusal checks. After restarting that sidecar, run with --restart.
 import assert from 'node:assert/strict';
 import { mkdirSync, mkdtempSync } from 'node:fs';
@@ -14,13 +14,13 @@ try {
   const diagnostics = collectDiagnostics(cdp);
   await cdp.send('Page.navigate', { url: base });
   for (let i=0;i<100;i++) {
-    if (await evalJS(cdp, "typeof Build !== 'undefined' && !!Build.__test__ && typeof Harness !== 'undefined' && !!document.querySelector('#stage') && !!Build.__test__.station()").catch(()=>false)) break;
+    if (await evalJS(cdp, "typeof Build !== 'undefined' && !!Build.__test__ && typeof Harness !== 'undefined' && !!document.querySelector('#stage') && !!Build.__test__.keep()").catch(()=>false)) break;
     await sleep(100);
   }
   if (process.argv.includes('--restart')) {
     const result = await evalJS(cdp, `(async()=>{
       const state=await Harness.api.get('/api/cron');
-      StationUI.openTerm('automation','routines');
+      KeepUI.openTerm('automation','routines');
       await new Promise(r=>setTimeout(r,900));
       return { jobs:state.jobs.filter(j=>j.name==='EMAIL ONCE PERSISTENCE').map(j=>({id:j.id,runsLine:j.runsLine,kind:j.schedule.kind})),text:document.querySelector('#rt-list').innerText };
     })()`);
@@ -31,7 +31,7 @@ try {
     await evalJS(cdp, `(async()=>{
       await Harness.api.post('/api/cron/arm',{enabled:false});
       Build.open(); document.querySelector('#refit-guide-go')?.click();
-      const st=Build.__test__.station();
+      const st=Build.__test__.keep();
       if(!st.props().some(p=>p.t==='intake')) {
         const b=st.bounds(); let made=false;
         outer: for(const blueprint of ['research_line','front_desk']) for(let y=b.minTy-2;y<=b.maxTy+2;y++) for(let x=b.minTx-2;x<=b.maxTx+2;x++) {
@@ -47,7 +47,7 @@ try {
         const mode=${JSON.stringify(mode)};
         await Harness.api.post('/api/cron/arm',{enabled:mode==='stale-arm'});
         Build.open();
-        Build.openAssign(Build.__test__.station().props().find(p=>p.t==='intake').id);
+        Build.openAssign(Build.__test__.keep().props().find(p=>p.t==='intake').id);
         await new Promise(r=>setTimeout(r,500));
         document.querySelector('#trg-new').click();
         document.querySelector('#trg-when [data-mode="once"]').click();

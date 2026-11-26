@@ -64,9 +64,9 @@ try {
     const matrix=[];
     for (const width of [1,2,3,4]) for (const wallMat of ['bulkhead','viewport']) {
       const doc=WorldModel.starterDoc();doc.rooms[doc.meta.spawnRoomId].wallMat=wallMat;
-      const station=WorldModel.create(doc);
-      if(!station.placeHallway({rect:{x1:5,y1:-8,x2:4+width,y2:-1}}).ok)throw Error('Fixture failed');
-      const geo=station.projectGeometry(), bake=StationBake.bake(geo), d=bake.doorOccluders[0];
+      const keep=WorldModel.create(doc);
+      if(!keep.placeHallway({rect:{x1:5,y1:-8,x2:4+width,y2:-1}}).ok)throw Error('Fixture failed');
+      const geo=keep.projectGeometry(), bake=KeepBake.bake(geo), d=bake.doorOccluders[0];
       if(!d)throw Error('Missing doorway occluder');
       const r=geo.allRects.find(r=>geo.isCorridor(r.z)), X=r.x1*12, Y=(r.y2+1)*12;
       const empty=read(probe.render(geo,bake,null,false)), emptyNew=read(probe.render(geo,bake,null,true));

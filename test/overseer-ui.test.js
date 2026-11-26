@@ -13,7 +13,7 @@ const path = require('node:path');
     document:{addEventListener(){}, createElement(){throw new Error('No additional UI permitted');}},
     Workstreams:{generalId:()=> 'general',get:id=>rows.get(id),adopt:row=>{rows.set(row.id,row);return true;}},
     App:{persist(){persisted++;},refreshRail(){},openWorkstream(){throw new Error('Must not move focus');}},
-    StationCommands:{async reconcile(){reconciled++;}},
+    KeepCommands:{async reconcile(){reconciled++;}},
     fetch:async (_url,options)=>{
       if(hang) return new Promise((_resolve,reject)=>options.signal.addEventListener('abort',()=>reject(new Error('timeout'))));
       if(fail) throw new Error('offline');

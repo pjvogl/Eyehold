@@ -1,7 +1,7 @@
 'use strict';
 
 // Dragging the COMMS seam ran at 20-30fps on trunk (10-02) while 0.12.5 held 60. Three CSS shapes made
-// every drag frame and every 1s station tick re-style the WHOLE page (~1000 COMMS spans, ~16-20ms each
+// every drag frame and every 1s keep tick re-style the WHOLE page (~1000 COMMS spans, ~16-20ms each
 // time). Each looks harmless in review, so this file pins the cheap shape for all three.
 //
 // 1. The seam widths (--chat-w / --crew-w) are written on #screen-game every frame. An inheriting
@@ -85,6 +85,6 @@ A.eq(offenders.bareType, [], 'no non-subject :has() rule ends in a bare type sel
 const app = fs.readFileSync(path.join(cssDir, 'app.css'), 'utf8');
 for (const v of ['--chat-w', '--crew-w']) {
   A.ok(new RegExp('@property\\s+' + v + '\\s*\\{[^}]*inherits:\\s*false', 's').test(app),
-    v + ' is registered non-inheriting, so a seam drag re-styles one element, not the station');
+    v + ' is registered non-inheriting, so a seam drag re-styles one element, not the keep');
 }
 A.report("css-style-invalidation (" + hasRules + " :has() selectors)");

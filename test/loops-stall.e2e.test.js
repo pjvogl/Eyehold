@@ -2,11 +2,11 @@
 
    The incident: a customer's agent ("Pops") ran 98 overnight passes on a full-access loop. Every pass
    re-confirmed that the previous pass's files existed, reported it as work, and was auto-approved. Nothing
-   changed, ~$98 was spent, and nothing in the station stood between the loop and the card: every spend cap
+   changed, ~$98 was spent, and nothing in the keep stood between the loop and the card: every spend cap
    shipped at 0 (ungoverned), and the loop's only convergence signal was the model choosing to say NOTHING-TO-DO.
 
    This walks the REAL sidecar against a mock OpenRouter and proves, end to end:
-     · a fresh station (no env, nothing saved) reports the shipped $25/day rail on /api/budget/status, marked
+     · a fresh keep (no env, nothing saved) reports the shipped $25/day rail on /api/budget/status, marked
        as an environment default (not a saved value) — and it is a soft rail the Commander can dial to 0
      · a full-access loop whose passes keep reporting the same "verified the files exist" text parks itself
        PAUSED after stallStopAfter passes, with the reason in words, and then spends NOTHING more

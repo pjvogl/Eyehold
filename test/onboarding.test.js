@@ -21,11 +21,11 @@ const dimRefs = [...src.matchAll(/dossierDim:\s*'([^']+)'/g)].map(m => m[1]);
 A.ok(!/dossierDim: 'pain'|dossierDim: 'ambition'/.test(src), 'fixed pain and year questionnaire is retired');
 for (const k of dimRefs) A.ok(D.DIM_KEYS.indexOf(k) >= 0, 'awakening dossierDim "' + k + '" is a real dossier dimension');
 
-/* ---------- startQuestions routes a dossierDim answer straight to the station-wide dossier ---------- */
+/* ---------- startQuestions routes a dossierDim answer straight to the keep-wide dossier ---------- */
 A.ok(/s\.dossierDim\b[\s\S]{0,200}DossierStore\.upsert\(s\.dossierDim/.test(src),
   'startQuestions writes a dossierDim answer straight to DossierStore.upsert');
 
-/* ---------- a recruited (specialty) wake skips the pain beat (the dossier is station-wide, asked once) ---------- */
+/* ---------- a recruited (specialty) wake skips the pain beat (the dossier is keep-wide, asked once) ---------- */
 A.ok(/specialty\s*\?[\s\S]{0,200}!s\.dossierDim/.test(src),
   'a pre-specced wake filters out dossierDim beats (pain is asked once, at the orchestrator awakening)');
 
@@ -47,7 +47,7 @@ A.ok(optVals.indexOf('') >= 0, 'the cadence beat has a skip option (Decide later
 // startQuestions routes a posturePreset answer to AutonomyStore.applyPreset (the opening posture is written through)
 A.ok(/s\.posturePreset\b[\s\S]{0,220}AutonomyStore\.applyPreset\(text\)/.test(src),
   'startQuestions writes a posturePreset answer to AutonomyStore.applyPreset');
-// a recruited (specialty) wake skips the cadence beat too (posture is station-wide for now, asked once)
+// a recruited (specialty) wake skips the cadence beat too (posture is keep-wide for now, asked once)
 A.ok(/specialty\s*\?[\s\S]{0,200}!s\.posturePreset/.test(src),
   'a pre-specced wake filters out the posturePreset beat (asked once, at the orchestrator awakening)');
 
@@ -206,17 +206,17 @@ A.ok(!/ink\('identity', 'Chose to be figured out/.test(src) && /never inked/.tes
 
 A.report('onboarding.test');
 
-/* ---------- CHOOSE YOUR STATION (2026-09-28): the lead's last question, only over the untouched starter ---------- */
+/* ---------- CHOOSE YOUR KEEP (2026-09-28): the lead's last question, only over the untouched starter ---------- */
 {
   const sq = src.slice(src.indexOf('async function startQuestions'), src.indexOf('function finish()'));
-  A.ok(/await pickStation\(\);[\s\S]*finish\(\);/.test(sq), 'startQuestions asks the station question before the dawn (finish)');
+  A.ok(/await pickKeep\(\);[\s\S]*finish\(\);/.test(sq), 'startQuestions asks the keep question before the dawn (finish)');
   A.ok(/!specialty && role === 'orchestrator'/.test(sq), 'only the lead asks it, never a specialist wake');
-  const ps = src.slice(src.indexOf('async function pickStation'), src.indexOf('async function pickStation') + 2400);
-  A.ok(/!S\.fresh\(\)/.test(ps), 'it is offered only while the station is the untouched starter');
+  const ps = src.slice(src.indexOf('async function pickKeep'), src.indexOf('async function pickKeep') + 2400);
+  A.ok(/!S\.fresh\(\)/.test(ps), 'it is offered only while the keep is the untouched starter');
   A.ok(/S\.recommend\(purposeSaid\)/.test(ps), 'the recommendation reads the purpose they gave');
   A.ok(/Start with one room/.test(ps), 'one room is always an option');
   const od = src.slice(src.indexOf('function offerDeferred'), src.indexOf('function offerDeferred') + 1500);
-  A.ok(!/pickStation/.test(od), 'a deferred interview never reaches the station pick');
+  A.ok(!/pickKeep/.test(od), 'a deferred interview never reaches the keep pick');
   const app = require('node:fs').readFileSync(require('node:path').join(__dirname, '..', 'frontend', 'app', 'app.js'), 'utf8');
-  A.ok(/stations: [\s\S]{0,900}fresh: \(\) =>[\s\S]{0,400}station\.replaceLayout\(StationTemplates\.build\(id/.test(app), 'the app seam builds the preset through replaceLayout, guarded by fresh()');
+  A.ok(/keeps: [\s\S]{0,900}fresh: \(\) =>[\s\S]{0,400}keep\.replaceLayout\(KeepTemplates\.build\(id/.test(app), 'the app seam builds the preset through replaceLayout, guarded by fresh()');
 }

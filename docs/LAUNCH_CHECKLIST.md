@@ -30,7 +30,7 @@ Updater endpoint (baked into the app, `src-tauri/tauri.conf.json`):
 | 5 | **PRIVACY.md** | repo root | ✅ DRAFTED | Audited 2026-07-03. No telemetry; local-first; keychain vs plaintext honest. |
 | 6 | **TERMS.md** | repo root | ✅ DRAFTED | As-is, BYOK spend responsibility, not affiliated, **LICENSE-DECISION block open**. |
 | 7 | **Download page** | `docs/DOWNLOAD_PAGE.md` | ✅ DRAFTED | Paste into static host / release README. Links INSTALL/PRIVACY/TERMS. |
-| 8 | **Screenshots / demo clip** | — | ☐ TODO | Placeholder block in DOWNLOAD_PAGE.md. Real running-station media required. |
+| 8 | **Screenshots / demo clip** | — | ☐ TODO | Placeholder block in DOWNLOAD_PAGE.md. Real running-keep media required. |
 
 ## Blocking swaps before public launch
 

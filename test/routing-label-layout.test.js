@@ -61,10 +61,10 @@ const adapter = vm.runInNewContext(source.slice(start, drawEnd) + '\ndrawRouting
   routingNags: nags, T: 12, scale: 2, panX: 0, panY: 0, cv: { width: 600, height: 360 }, ctx,
   NAG_FONT: "8px 'VT323'", selectedRoutingTile: null, window: { devicePixelRatio: 2 },
   geo: { origin: { tx: 100, ty: 200 } }, roomOfLocalTile: () => 'r1',
-  station: { roomById: () => ({ rects: [{ x1: 110, y1: 205, x2: 121, y2: 213 }] }) }
+  keep: { roomById: () => ({ rects: [{ x1: 110, y1: 205, x2: 121, y2: 213 }] }) }
 });
 adapter(0);
 assert.equal(strokes.length, nags.length, 'every real finding keeps its warning bracket even at overview');
 assert.equal(paints.length, 1, 'DPI-adjusted overview uses one aggregate, not long per-prop labels');
-assert.ok(inside(paints[0], room), 'room bounds convert world coordinates back to local station coordinates');
+assert.ok(inside(paints[0], room), 'room bounds convert world coordinates back to local keep coordinates');
 console.log('routing-label-layout: overview aggregation, truthful counts, selection details, bounded pan/zoom and collisions PASS');

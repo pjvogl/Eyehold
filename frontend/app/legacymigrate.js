@@ -18,14 +18,31 @@ const LegacyMigrate = (() => {
 
   // pure: given a snapshot of [key, value] entries, return the [{ key, value }] writes needed to bring
   // every legacy `skynet.*` key forward — skipping any whose `eyehold.*` target already exists (never clobber).
+  // Layout saves used to say "station". The app now says "keep". Copy the old key
+  // forward and leave it in place. A newer keep key is never overwritten.
+  function keepName(key) {
+    return key
+      .replace(/(^|[^A-Za-z])STATION/g, '$1KEEP')
+      .replace(/(^|[^A-Za-z])Station/g, '$1Keep')
+      .replace(/(^|[^A-Za-z])station/g, '$1keep');
+  }
   function plan(entries) {
     const have = new Set(entries.map(e => e[0]));
     const writes = [];
-    for (const [k, v] of entries) {
-      if (typeof k !== 'string' || k.indexOf(LEGACY) !== 0) continue;
-      const nk = CURRENT + k.slice(LEGACY.length);
-      if (have.has(nk)) continue;
-      writes.push({ key: nk, value: v });
+    function add(key, value) {
+      if (have.has(key)) return;
+      have.add(key);
+      writes.push({ key, value });
+    }
+    const rows = entries.filter(e => typeof e[0] === 'string');
+    for (const [k, v] of rows) {
+      if (k.indexOf(CURRENT) !== 0) continue;
+      const nk = keepName(k);
+      if (nk !== k) add(nk, v);
+    }
+    for (const [k, v] of rows) {
+      if (k.indexOf(LEGACY) !== 0) continue;
+      add(keepName(CURRENT + k.slice(LEGACY.length)), v);
     }
     return writes;
   }

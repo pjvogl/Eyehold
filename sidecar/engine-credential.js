@@ -1,13 +1,13 @@
-/* sidecar/engine-credential.js — the station's OWN copy of a provider key saved in a browser page, and the ONE
-   sentence every unattended surface says when the station has no credential to run on (#89).
+/* sidecar/engine-credential.js — the keep's OWN copy of a provider key saved in a browser page, and the ONE
+   sentence every unattended surface says when the keep has no credential to run on (#89).
 
    THE GAP: in the browser/source build (npm start + a browser on :8787 — every Linux install) the page keeps the
    BYOK key in localStorage and sends it inside each interactive /api/run body, so chat works. Everything that runs
    with no page attached — a scheduled routine, Run Now, the night shift, the quest refresh, a line hop, a phone
-   task — resolves its key on the station (index.js providerRuntimeKey), which only ever knew the operator's env vars
+   task — resolves its key on the keep (index.js providerRuntimeKey), which only ever knew the operator's env vars
    and the desktop shell's keychain push. So routines answered "no usable credential" while chat worked.
 
-   THE FIX: the page hands the station a copy when the Commander saves or removes a key (and once per page boot for
+   THE FIX: the page hands the keep a copy when the Commander saves or removes a key (and once per page boot for
    keys it already holds) — POST /api/providers/engine-key, gated like every other /api/* mutation. This module is
    the store behind that route: one record per provider { key, keyPool, baseUrl, rev }, kept in
    WORKSPACES/.secrets/provider-keys.json (the protected sibling of the fs jail that pre-update backups skip).
@@ -16,16 +16,16 @@
        load()            -> the parsed file, or undefined (absent/unreadable/corrupt = nothing saved)
        persist(envelope) -> bool  ok ONLY when a read-back proved the write reached disk
        verify(envelope)  -> bool  whether the files on disk hold exactly this envelope (an unchanged push re-checks
-                                  it, so a file deleted behind the station's back is rewritten, not reported saved)
+                                  it, so a file deleted behind the keep's back is rewritten, not reported saved)
        store.get(id)            -> { key, keyPool, baseUrl } | null
-       store.revOf(id)          -> the record's revision ('' = the station holds nothing for this provider)
+       store.revOf(id)          -> the record's revision ('' = the keep holds nothing for this provider)
        store.put(id, input, o)  -> { ok, changed, applied, stale?, removing?, held?, invalid?, error? }
                                    input = the page's FULL config for that provider; all-empty is REMOVE.
-                                   Memory changes ONLY after persist() proved the write: what the station runs on is
+                                   Memory changes ONLY after persist() proved the write: what the keep runs on is
                                    always exactly what survives a restart, and a failed save (or a failed REMOVE —
-                                   `removing` says which; `held` says the station still holds a copy it will keep
+                                   `removing` says which; `held` says the keep still holds a copy it will keep
                                    using) leaves the old state in place and on disk.
-                                   o.boot + o.ifRev: a page BOOT re-hand-over. It applies only when the station holds
+                                   o.boot + o.ifRev: a page BOOT re-hand-over. It applies only when the keep holds
                                    nothing for that provider, or still holds the revision this page itself last saw
                                    (ifRev) — so an older origin's localStorage (localhost vs 127.0.0.1 are separate
                                    stores) can never put back a key the Commander rotated or removed in another page.
@@ -40,9 +40,9 @@
    Precedence (index.js): an explicit per-run key > the desktop keychain push / an operator env var
    (OPENROUTER_API_KEY …) > this page copy. A deployment that set an env var keeps it; the page copy only fills a gap.
    The page copy's endpoint and backup keys ride only with the page copy's own key (never with an env key or another
-   page's per-run key). Scope: the page copy is the station's key for that provider, exactly as the desktop keychain
-   push is — so besides unattended runs it also serves the station-held-key features (cross-provider dispatch workers,
-   the image tools' station OpenAI key, the /v1 OpenAI-compatible ingress, overseer reviews, the provider doctor).
+   page's per-run key). Scope: the page copy is the keep's key for that provider, exactly as the desktop keychain
+   push is — so besides unattended runs it also serves the keep-held-key features (cross-provider dispatch workers,
+   the image tools' keep OpenAI key, the /v1 OpenAI-compatible ingress, overseer reviews, the provider doctor).
    Pure — no clock, no fs; the host injects both. */
 'use strict';
 
@@ -131,7 +131,7 @@ function makeEngineKeys(deps) {
   function persistProven(envelope) {
     try { return typeof d.persist === 'function' && d.persist(envelope) === true; } catch (_) { return false; }
   }
-  // an unchanged push still proves the disk: a file deleted or torn behind the station's back is rewritten here
+  // an unchanged push still proves the disk: a file deleted or torn behind the keep's back is rewritten here
   // instead of being answered "saved" while a restart would lose it
   function onDisk() {
     const env = toEnvelope(map);
@@ -149,7 +149,7 @@ function makeEngineKeys(deps) {
     if (!n.ok) return { ok: false, invalid: true, error: n.error };
     const o = opts || {};
     const cur = map[id] || null;
-    // a boot hand-over never overwrites a change made since this page last saw the station's copy
+    // a boot hand-over never overwrites a change made since this page last saw the keep's copy
     if (o.boot && cur && cur.rev !== String(o.ifRev || '')) return { ok: true, changed: false, applied: false, stale: true };
     const want = n.record || { removed: true };
     if (contentOf(want) === contentOf(cur)) {
@@ -160,7 +160,7 @@ function makeEngineKeys(deps) {
     next[id] = n.record ? Object.assign({}, n.record, { rev: newRev() }) : { rev: newRev(), removed: true };   // the field order readProviders loads
     if (!persistProven(toEnvelope(next))) {
       // a half-landed write (main replaced, .bak not) would make the next boot load what this answer says was NOT
-      // adopted: put the files back to what the station runs on (best effort — the route reports the failure either way)
+      // adopted: put the files back to what the keep runs on (best effort — the route reports the failure either way)
       persistProven(toEnvelope(map));
       return { ok: false, changed: false, applied: false, removing: !n.record, held: !!(cur && !cur.removed), error: 'persist' };
     }
@@ -176,21 +176,21 @@ function makeEngineKeys(deps) {
 }
 
 /* credentialError({ id, label, kind, env, baseUrlEnv, what }) — why this unattended run cannot start, and the two real
-   ways out: the page (which now hands the station its copy on save) or the operator's environment. `kind` is the
+   ways out: the page (which now hands the keep its copy on save) or the operator's environment. `kind` is the
    provider's credential shape: key | baseUrl | codex | oauth | eyehold | other. */
 function credentialError(o) {
   o = o || {};
   const label = String(o.label || o.id || 'this provider');
   const what = String(o.what || 'this routine');
   switch (o.kind) {
-    case 'codex': return 'ChatGPT is not signed in on this station, so ' + what + ' can\'t run — sign in under ' + WHERE;
-    case 'oauth': return label + ' is not signed in on this station, so ' + what + ' can\'t run — sign in under ' + WHERE;
-    case 'eyehold': return 'this station is not linked to a Eyehold account, so ' + what + ' can\'t run on credits — link it under ' + WHERE + ' → EYEHOLD MANAGED';
-    case 'baseUrl': return 'no ' + label + ' base URL is saved on this station for ' + what + ' — set it under ' + WHERE +
+    case 'codex': return 'ChatGPT is not signed in on this keep, so ' + what + ' can\'t run — sign in under ' + WHERE;
+    case 'oauth': return label + ' is not signed in on this keep, so ' + what + ' can\'t run — sign in under ' + WHERE;
+    case 'eyehold': return 'this keep is not linked to a Eyehold account, so ' + what + ' can\'t run on credits — link it under ' + WHERE + ' → EYEHOLD MANAGED';
+    case 'baseUrl': return 'no ' + label + ' base URL is saved on this keep for ' + what + ' — set it under ' + WHERE +
       (o.baseUrlEnv ? ', or set ' + o.baseUrlEnv + ' in ' + ENV_HOME : '');
-    case 'key': return 'no ' + label + ' API key is saved on this station for ' + what + ' — connect or re-save it under ' + WHERE +
+    case 'key': return 'no ' + label + ' API key is saved on this keep for ' + what + ' — connect or re-save it under ' + WHERE +
       (o.env ? ', or set ' + o.env + ' in ' + ENV_HOME : '');
-    default: return label + ' is not set up on this station for ' + what + ' — set it up under ' + WHERE;
+    default: return label + ' is not set up on this keep for ' + what + ' — set it up under ' + WHERE;
   }
 }
 

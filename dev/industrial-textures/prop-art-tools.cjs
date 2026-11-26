@@ -58,6 +58,6 @@ async function prepare(source,id,version='props-v2',seedSpec=''){
  const crop={left:l,top:t,width:r-l+1,height:b-t+1};
  await sharp(data,{raw:{width:w,height:h,channels:4}}).extract(crop).png().toFile(path.join(out,id+'.png'));
  const meta={id,source,sourceWidth:w,sourceHeight:h,crop,sourceAlpha:hasAlpha,transparentSeeds,subjectRgbChanges:0,output:'frontend/assets/industrial/'+version+'/'+id+'.png'};
- const docs=path.join(root,'docs/station-remaster',version);fs.mkdirSync(docs,{recursive:true});fs.writeFileSync(path.join(docs,id+'.export.json'),JSON.stringify(meta,null,2)+'\n');console.log(JSON.stringify(meta));
+ const docs=path.join(root,'docs/keep-remaster',version);fs.mkdirSync(docs,{recursive:true});fs.writeFileSync(path.join(docs,id+'.export.json'),JSON.stringify(meta,null,2)+'\n');console.log(JSON.stringify(meta));
 }
 const command=process.argv[2];(command==='guides'?guides():command==='prepare'?prepare(process.argv[3],process.argv[4],process.argv[5],process.argv[6]):Promise.reject(Error('Use guides or prepare <source> <id> [props-v3] [x,y;x,y]'))).catch(e=>{console.error(e);process.exitCode=1;});

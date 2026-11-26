@@ -2,12 +2,12 @@
 // Reproducible packaging only: preserve every RGB value and retained alpha.
 const fs=require('node:fs'),crypto=require('node:crypto');
 const sharp=require('C:/Users/andro/Desktop/gen/node_modules/sharp');
-const docs='docs/station-remaster/catalog-command',out='frontend/assets/industrial/catalog-command';
+const docs='docs/keep-remaster/catalog-command',out='frontend/assets/industrial/catalog-command';
 const hash=b=>crypto.createHash('sha256').update(b).digest('hex');
 const rows=[
   [
     "console",
-    "docs/station-remaster/catalog-command/console-v2-source.png",
+    "docs/keep-remaster/catalog-command/console-v2-source.png",
     "9b16ec410d1f493787b7dea0248e98d6cf3691855ed1cc6b4f12026dab0f4005",
     [
       0,
@@ -28,7 +28,7 @@ const rows=[
   ],
   [
     "consoleL",
-    "docs/station-remaster/catalog-command/consoleL-final-source.png",
+    "docs/keep-remaster/catalog-command/consoleL-final-source.png",
     "0f0a663c4555fecd9120dd0703458f99e516d2117669db4e47b4940f69317810",
     [
       0,
@@ -49,7 +49,7 @@ const rows=[
   ],
   [
     "bench",
-    "docs/station-remaster/catalog-command/bench-final-source.png",
+    "docs/keep-remaster/catalog-command/bench-final-source.png",
     "7507ed20103d20abba395e8e21f1b4976f4dc13619f191350417dfef670e5eee",
     [
       0,
@@ -70,7 +70,7 @@ const rows=[
   ],
   [
     "bridge_consolebank",
-    "docs/station-remaster/catalog-command/sheet-v1-source.png",
+    "docs/keep-remaster/catalog-command/sheet-v1-source.png",
     "98daed3c08c8c53826c58876deed4898d474b34b65471ae7924d577cf031cabb",
     [
       0,
@@ -91,7 +91,7 @@ const rows=[
   ],
   [
     "bridge_equipmentbay",
-    "docs/station-remaster/catalog-command/bridge_equipmentbay-final-source.png",
+    "docs/keep-remaster/catalog-command/bridge_equipmentbay-final-source.png",
     "35eb9b38abd8165830400b51e534b1d27899527a52b83df566283fa2ce0ebea6",
     [
       0,
@@ -112,7 +112,7 @@ const rows=[
   ],
   [
     "bigscreen",
-    "docs/station-remaster/catalog-command/sheet-v1-source.png",
+    "docs/keep-remaster/catalog-command/sheet-v1-source.png",
     "98daed3c08c8c53826c58876deed4898d474b34b65471ae7924d577cf031cabb",
     [
       720,
@@ -133,7 +133,7 @@ const rows=[
   ],
   [
     "holotable",
-    "docs/station-remaster/catalog-command/holotable-final-source.png",
+    "docs/keep-remaster/catalog-command/holotable-final-source.png",
     "b249b6ce9585c27cfde9f8991f15dbe022b55c370a7435627ffe0a0ca2f9c559",
     [
       0,
@@ -154,7 +154,7 @@ const rows=[
   ],
   [
     "bridge_tacticaltable",
-    "docs/station-remaster/catalog-command/bridge_tacticaltable-final-source.png",
+    "docs/keep-remaster/catalog-command/bridge_tacticaltable-final-source.png",
     "730120434a1ce8d44f74c8ed3cd1cca9bcae3cbbe5b442655659574ec5dc3e7c",
     [
       0,

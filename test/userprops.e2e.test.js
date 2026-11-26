@@ -1,7 +1,7 @@
 'use strict';
-// Real sidecar, saved managed link. The journey a player takes: ask for a prop, the station polls the cloud in
-// the background, the prop lands in the station's own folder, it is listed and its PNG served, and it SURVIVES A
-// RESTART. Unlinked stations are told to link (200-always). Optional EYEHOLD_TEST_CLOUD_ROOT runs the same journey
+// Real sidecar, saved managed link. The journey a player takes: ask for a prop, the keep polls the cloud in
+// the background, the prop lands in the keep's own folder, it is listed and its PNG served, and it SURVIVES A
+// RESTART. Unlinked keeps are told to link (200-always). Optional EYEHOLD_TEST_CLOUD_ROOT runs the same journey
 // through the REAL cloud app (src/propgen.js pipeline + ledger) with a synthetic OpenRouter behind it.
 const test = require('node:test');
 const assert = require('node:assert/strict');
@@ -82,7 +82,7 @@ test('player props: generate on credits, land locally, list + serve, survive res
       assert.ok(deviceToken);
     }
 
-    // --- unlinked station: told to link, 200-always
+    // --- unlinked keep: told to link, 200-always
     await fixture.start();
     const unlinked = await fixture.json('POST', '/api/userprops/generate', { noun: 'a gumball machine' });
     assert.equal(unlinked.status, 200);
@@ -140,7 +140,7 @@ test('player props: generate on credits, land locally, list + serve, survive res
     if (store) {
       const d = store.db.prepare("SELECT usd, meta FROM ledger WHERE kind='debit' AND account=?").all(account);
       assert.equal(d.length, 3, 'real cloud: size + draw + check each billed once');
-      assert.equal(Math.round(d.reduce((s, r) => s + r.usd, 0) * 1e6) / 1e6, job.costUsd, 'real cloud: the station shows exactly what the ledger debited');
+      assert.equal(Math.round(d.reduce((s, r) => s + r.usd, 0) * 1e6) / 1e6, job.costUsd, 'real cloud: the keep shows exactly what the ledger debited');
     }
   } finally {
     await fixture.dispose().catch(() => {});

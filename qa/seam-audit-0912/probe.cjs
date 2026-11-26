@@ -80,7 +80,7 @@ function outboxAttribution() {
   results.push({id:'outbox-output-attributed-to-wrong-run',run:'A',ask:ctx.ask.textContent,output:ctx.out.textContent,kind:'unchanged rendering block with two-run transcript fixture; not a live paid run'});
 }
 function saveFailure() {
-  const source=read('frontend/app/stationui.js');
+  const source=read('frontend/app/keepui.js');
   const start=source.indexOf('  function save() {');
   const fn=source.slice(start,source.indexOf('\n',start));
   const ctx=vm.createContext({localStorage:{setItem:()=>{throw Error('QuotaExceededError');}},KEY:'audit',store:{settings:{sound:false}}});
@@ -97,6 +97,6 @@ function routineProvider() {
   const inherited=ctx.cronProviderFor({agentId:'specialist'});
   const fromUi=ctx.cronProviderFor({agentId:'specialist',provider:'openrouter'});
   assert.equal(inherited,'codex');assert.equal(fromUi,'openrouter');
-  results.push({id:'routine-station-provider-overrides-selected-agent',agentProvider:'codex',uiStationProvider:'openrouter',resolvedFromUi:fromUi,resolvedWithoutOverride:inherited,kind:'actual resolver + inspected UI request path; multi-provider live dispatch unverified'});
+  results.push({id:'routine-keep-provider-overrides-selected-agent',agentProvider:'codex',uiKeepProvider:'openrouter',resolvedFromUi:fromUi,resolvedWithoutOverride:inherited,kind:'actual resolver + inspected UI request path; multi-provider live dispatch unverified'});
 }
 (async()=>{await cancellation();await awayReadFailure();await liveRoutine();await stuckQuery();outboxAttribution();saveFailure();routineProvider();fs.writeFileSync(path.join(__dirname,'probe-results.json'),JSON.stringify({source:'091d6e7f3',results},null,2)+'\n');console.log(JSON.stringify(results,null,2));})().catch(e=>{console.error(e);process.exitCode=1;});

@@ -1,7 +1,7 @@
 /* sidecar/credits-link.js — device pairing client for Eyehold Cloud + the durable link-config store.
 
    Slice 2 of the subscriptions plan: turn a static CREDITS_ACCOUNT env var into a real, user-driven LINK
-   STATION flow. This module owns two things and NOTHING else (no billing, no admission — that stays in
+   KEEP flow. This module owns two things and NOTHING else (no billing, no admission — that stays in
    credits.js / billing.js):
 
      1. The cloud device-linking HTTP dance (mirrors the codex device-code shape):
@@ -12,7 +12,7 @@
         or persisted. Only the sidecar polls the cloud with it.
 
      2. Durable link config at WORKSPACES/.secrets/credits.json (same posture as spotify.json — atomic
-        tmp+rename, 0600) so a linked station survives a sidecar restart. The record is
+        tmp+rename, 0600) so a linked keep survives a sidecar restart. The record is
           { url, deviceToken?, accountId, linkedAt }
         and is read back at boot (loadSavedSync) to construct the live credits adapter. deviceToken is a
         re-issuable bearer credential (relinking mints a new one), so unlink deleting the file is safe
@@ -67,7 +67,7 @@
     // Unlink tombstone: written by clearSaved(), removed by persist() (a fresh link). It is what stops the
     // boot self-heal from resurrecting a link the Commander deliberately severed — the OS keychain can still
     // hold the old token after an unlink (the shell's clear is a separate call that can fail), and a heal
-    // that trusts the keychain alone would quietly re-link the station against their explicit choice.
+    // that trusts the keychain alone would quietly re-link the keep against their explicit choice.
     const tombstone = (P && DIR) ? P.join(DIR, 'credits.unlinked.json') : '';
     const requestTimeoutMs = (typeof deps.requestTimeoutMs === 'number' && isFinite(deps.requestTimeoutMs) && deps.requestTimeoutMs > 0)
       ? Math.floor(deps.requestTimeoutMs) : 8000;
@@ -80,7 +80,7 @@
     let lastTransition = null;
     let recovering = false;
     // Boot self-heal retry (issue #76, 2026-10-06): the heal used to be ONE-SHOT at boot, so a cloud that was slow
-    // or down at that moment left a paid, keychain-authorized station looking unlinked for the whole session —
+    // or down at that moment left a paid, keychain-authorized keep looking unlinked for the whole session —
     // hours — even after the cloud recovered. A TRANSIENT refusal (unreachable / 5xx / 429) now arms a retry the
     // host can take on the next credits read, at most once per healRetryMs. Definitive refusals never re-arm.
     const healRetryMs = (typeof deps.healRetryMs === 'number' && isFinite(deps.healRetryMs) && deps.healRetryMs >= 0)
@@ -130,7 +130,7 @@
       const ticket = ++generation;
       transition('pairing_started');
       pending.clear();
-      const payload = { deviceName: str(deviceName) || 'Eyehold Station' };
+      const payload = { deviceName: str(deviceName) || 'Eyehold Keep' };
       let j;
       try { j = await postJson('/v1/link/start', payload); }
       catch (e) {
@@ -210,7 +210,7 @@
     }); }
 
     // Unlink within this process must win over a token the desktop injected at spawn: process.env still
-    // holds it after the keychain entry is deleted, so without this the station would look linked until
+    // holds it after the keychain entry is deleted, so without this the keep would look linked until
     // the next restart. Set by clearSaved(), cleared by a fresh link.
     let unlinked = false;
 
@@ -298,7 +298,7 @@
 
     /* BOOT SELF-HEAL (2026-08-25 stranded-user incident). A reinstall (or workspace reset) deletes
        credits.json but the device token survives in the OS keychain and is injected back as envToken —
-       leaving a station that IS authorized but LOOKS unlinked: empty model catalog, refused runs, and a
+       leaving a keep that IS authorized but LOOKS unlinked: empty model catalog, refused runs, and a
        Commander with paid credit staring at "not linked". Rebuild the record from the one surviving half:
        ask the cloud /v1/whoami who this token belongs to, and persist the answer.
 
@@ -307,7 +307,7 @@
          · no saved record (a live link needs no heal) and no in-process unlink;
          · no unlink tombstone on disk (the Commander's explicit choice outranks the keychain);
          · the cloud ACCEPTS the token (a revoked/unknown token 401s and heals nothing).
-       Best-effort by contract: any failure returns { healed:false, reason } and the station simply stays
+       Best-effort by contract: any failure returns { healed:false, reason } and the keep simply stays
        honestly unlinked, exactly as before this existed. */
     async function healFromEnvInner() {
       if (!configured() || !doFetch) return { healed: false, reason: 'not_configured' };

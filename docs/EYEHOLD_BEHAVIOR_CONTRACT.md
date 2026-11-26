@@ -1,13 +1,13 @@
 # Eyehold: what the interface must explain
 
-The station is home. A user asks an agent for useful work in COMMS, reviews the answer or produced file, and can then customize how that work happens. Building equipment or a conveyor is not a prerequisite for asking a question. Preserve the existing categories and the full customization controls.
+The keep is home. A user asks an agent for useful work in COMMS, reviews the answer or produced file, and can then customize how that work happens. Building equipment or a conveyor is not a prerequisite for asking a question. Preserve the existing categories and the full customization controls.
 
 | Existing concept | Explain it in one sentence | Show at the decision |
 | --- | --- | --- |
 | Agent | The AI worker doing this task. | Name, current activity, configured access and model. |
 | Equipment prop | Provides an ability such as reading files. | Purpose, current access, equipment scope, equivalent appearances. |
-| Decoration | Changes the station's appearance. | Explicitly say it does not add tools. |
-| Room | Organizes the station and can define equipment scope for an assigned workflow agent. | The scope rules below; never imply every agent needs a complete kit. |
+| Decoration | Changes the keep's appearance. | Explicitly say it does not add tools. |
+| Room | Organizes the keep and can define equipment scope for an assigned workflow agent. | The scope rules below; never imply every agent needs a complete kit. |
 | Conveyor line | Passes a job through configured agent steps. | What starts it, who does each step, instructions, destination. |
 | Recipe | Starts a prepared task with your inputs. | Inputs, expected result, launch action; exact prompt remains inspectable. |
 | Skill | Reusable instructions for an agent. | Purpose and any required tools; instructions alone do not connect a service. |
@@ -16,24 +16,24 @@ The station is home. A user asks an agent for useful work in COMMS, reviews the 
 
 ## Equipment rules: use runtime authority
 
-`WorldModel.agentRoomId` determines equipment scope for bay-assigned agents: an owned desk's room takes precedence; without that desk, the owned bay's room is used. Without an owned bay it returns no room restriction. `bayObjects` projects that room's equipment. `World.heroCaps` follows this projection for the selected agent; `stationCaps` is the broader station/skill view and must not be substituted in an agent access explanation.
+`WorldModel.agentRoomId` determines equipment scope for bay-assigned agents: an owned desk's room takes precedence; without that desk, the owned bay's room is used. Without an owned bay it returns no room restriction. `bayObjects` projects that room's equipment. `World.heroCaps` follows this projection for the selected agent; `keepCaps` is the broader keep/skill view and must not be substituted in an agent access explanation.
 
 - One matching non-compute ability prop in the relevant scope suffices. A cabinet, safe and vault with the FILES badge are alternative appearances, not three prerequisites.
 - Agents using the same equipment room share its equipment. Each workflow agent needs an assigned desk (the runtime retains its legacy single-agent/unassigned-desk compatibility).
 - A desk in another room can change the equipment scope even when the bay is elsewhere. Do not describe the bay room as an unconditional scope.
-- An unassigned lead can draw on station equipment. Delegated/headless contexts have their own runtime projections; do not turn that into a blanket claim that every specialist receives every station prop.
+- An unassigned lead can draw on keep equipment. Delegated/headless contexts have their own runtime projections; do not turn that into a blanket claim that every specialist receives every keep prop.
 - Full Access or an execution profile can provide tools without equipment. `/api/toolsets` reports effective grant provenance. It does **not** prove an outside service is connected or a particular task is authorized.
 - A disabled toolset is fixed in Abilities, not by adding another copy. Full Access overrides are reported by the existing authority.
 - Moving/removing the last matching prop changes equipment in the affected room. Tools independently supplied by access settings may remain available. A connection portal may represent a different service, so portals are not interchangeable solely because they share a category.
 
-`frontend/app/equipmenthelp.js` is read-only presentation over these authorities. It must not become another permission engine. This delivery changes no grants, execution profiles, room restrictions, schema, or saved station geometry.
+`frontend/app/equipmenthelp.js` is read-only presentation over these authorities. It must not become another permission engine. This delivery changes no grants, execution profiles, room restrictions, schema, or saved keep geometry.
 
 ## Execution contexts and evidence
 
 | Context | Rule | Evidence / verification boundary |
 | --- | --- | --- |
-| Direct chat, no assigned bay | Existing station equipment plus runtime profile/authority. | Existing model/authority tests; live Full Access fixture shows FILES already available with zero cabinets. |
-| Workflow agent with bay, no desk | Bay room is the equipment source; the workflow still needs a usable assigned workstation. | `agentRoomId`, `bayObjects`, existing workstation/workflow tests. |
+| Direct chat, no assigned bay | Existing keep equipment plus runtime profile/authority. | Existing model/authority tests; live Full Access fixture shows FILES already available with zero cabinets. |
+| Workflow agent with bay, no desk | Bay room is the equipment source; the workflow still needs a usable assigned workkeep. | `agentRoomId`, `bayObjects`, existing workkeep/workflow tests. |
 | Workflow agent with bay and desk elsewhere | Desk room wins; a prop next to the remote bay is not implicitly available. | `effective-toolsets.test.js` uses a real two-room model to assert this. |
 | Multiple agents in one equipment room | Share non-compute equipment; retain individual desk assignments. | World model implementation and existing desk tests; not independently live-tested with multiple humans. |
 | Full Access | Authority may already supply tools even when no prop is placed. | Existing override tests and live preview. |

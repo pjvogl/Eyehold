@@ -1,9 +1,9 @@
 {
-  "url": "http://127.0.0.1:18814/agent-station-demo.html?propSet=projection",
+  "url": "http://127.0.0.1:18814/agent-keep-demo.html?propSet=projection",
   "standingHeight": 19,
   "groundGap": 0.25,
   "browserErrors": [],
-  "source": "Actual rendered data-motion telemetry; station screenshot inspected",
+  "source": "Actual rendered data-motion telemetry; keep screenshot inspected",
   "skins": [
     {
       "id": "caseyjones",

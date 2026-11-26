@@ -423,7 +423,7 @@
     new RegExp('\\b(' + CG_GERUNDS + ')\\b[^.!?\\n]{0,80}\\bnow\\b', 'i'),                                  // "Reading the full main.js now"
     new RegExp('\\bnow\\b[^.!?\\n]{0,40}\\b(' + CG_GERUNDS + ')\\b', 'i')                                   // "now fixing the death path"
   ];
-  /* VERIFY-ON-STOP (2026-07-27). The station's whole promise is that nothing is claimed unless it is proven,
+  /* VERIFY-ON-STOP (2026-07-27). The keep's whole promise is that nothing is claimed unless it is proven,
      and "fake done" — an edit shipped as finished without a single check run against it — is the failure this
      project pays for most. The system prompt already INSTRUCTS the model to verify after editing; nothing
      ENFORCED it, so an instruction was all it was. This turns the passive instruction into a bounded
@@ -1798,7 +1798,7 @@
         // MAX_STREAM_RETRIES so a persistently-failing backend still terminates. Honors the server-stated wait.
         // ⛔ the guard was `!cls.shouldFallback` alone, which contradicted the sentence above: a retryable
         // fallback class (overloaded/server_error) with an EMPTY or exhausted chain — every single-provider
-        // station, e.g. ChatGPT-login codex — fell straight to fatal on the first blip. The chain-exhausted
+        // keep, e.g. ChatGPT-login codex — fell straight to fatal on the first blip. The chain-exhausted
         // case the comment always promised is now real.
         // Adapters mark a fully exhausted pre-stream ladder. Re-running that ladder here once multiplied one outage
         // into 15 requests; refusing it outright killed runs on a 2s blip. Now the adapter's spend is counted
@@ -2068,7 +2068,7 @@
           // something — telling it "you ran nothing" would be a false statement from the host.
           const premise = vosFailedCheck
             ? 'and are ending although the last check you ran against it (' + vosFailedCheck + ') did NOT pass, and no passing check has run since. A failing check is evidence the change is not done. Fix the cause and rerun the check until it passes, then report what it actually returned. If it cannot be made to pass here, say so plainly: report the failure and state that the change is NOT verified.'
-            : 'and are ending without running anything against it. Code that compiles is not code that works, and an unverified claim of "done" is the one thing this station never ships. Run the narrowest real check that proves the change — the project\'s own test/build command via verify_run, or shell_exec if that fits better — then report what it actually returned. If you genuinely cannot run a check here, say so plainly and state what you did NOT verify.';
+            : 'and are ending without running anything against it. Code that compiles is not code that works, and an unverified claim of "done" is the one thing this keep never ships. Run the narrowest real check that proves the change — the project\'s own test/build command via verify_run, or shell_exec if that fits better — then report what it actually returned. If you genuinely cannot run a check here, say so plainly and state what you did NOT verify.';
           messages.push({ role: 'system', content: '<verify_before_done>You changed code in this run (' + touched + ') ' + premise + '</verify_before_done>' });
           continue;
         }

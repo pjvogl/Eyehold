@@ -1,6 +1,6 @@
 /* EYEHOLD — recledger.js : THE SPINE'S HALF OF THE ONE RECOMMENDATION MEMORY.
 
-   THE PROBLEM THIS CLOSES (audit, 2026-08-05). The station kept TWO recommendation memories that never spoke:
+   THE PROBLEM THIS CLOSES (audit, 2026-08-05). The keep kept TWO recommendation memories that never spoke:
 
      · the DURABLE, CROSS-SURFACE LEDGER (sidecar/recommendation-ledger.js) — what was shown, why it was allowed,
        what happened next. Written by four surfaces (scout/prospect, study, suggest, autojobs) and READ by six
@@ -12,7 +12,7 @@
    So a Commander who declined an idea at a COMMS card had declined it in localStorage only. The night shift could
    build it while they slept; the bay could shelve it the next morning; nothing outside chat.js ever learned that
    this channel's offers keep getting waved off. And the spine — the one place that decides who speaks — could not
-   see a single one of the verdicts the rest of the station had been recording for months.
+   see a single one of the verdicts the rest of the keep had been recording for months.
 
    This module is the missing wire, and it is deliberately THIN: the durable ledger already exists and already has
    the right shape. Everything here is either a write INTO it or a read FROM it.
@@ -29,13 +29,13 @@
       suppression — silently dropping a legitimately different idea — is worse than an occasional duplicate.
    2. FAIL-OPEN AT EVERY STEP. No fetch, no token, a 500, a hung request: the sets stay empty, isDeclined() answers
       false, preferenceOf() answers 0, and the spine ranks exactly as it did before this module existed. A memory
-      the station cannot read is never a reason to go quiet.
+      the keep cannot read is never a reason to go quiet.
    3. NO ROW WITHOUT A TITLE. A candidate that cannot name what it is proposing gets no ledger row — the same
       evidence-or-silence law the spine applies to its own citations, applied to its bookkeeping.
    4. THE CHANNELS THAT ALREADY WRITE THEIR OWN ROWS ARE LEFT ALONE. study (studystore.js) and suggest
       (suggeststore.js) mint their own ids with their own lifecycles; a second row from here would double-count
       every impression and halve their measured acceptance rate. OWN_LEDGER names them, and note() refuses them.
-   5. `rate` AND `memory` ARE NOT SUGGESTIONS. The run earns them — the station never chose to interrupt — which is
+   5. `rate` AND `memory` ARE NOT SUGGESTIONS. The run earns them — the keep never chose to interrupt — which is
       the same reason recommend.js exempts both from the ask budget and recqualitystore.js records no outcomes for
       them. They are not offered to the ledger either.
 
@@ -51,7 +51,7 @@ const RecLedger = (() => {
      clicked stayed a `shown` row forever, quietly depressing acceptanceRate for an offer nobody could act on any
      more. Every row this module mints now declares one. The sweep's own law is unchanged and matters here: an
      expiry is NEVER a verdict — only rows still sitting at `shown`/`opened` drop, and a dropped row feeds nothing
-     (it never enters the declined memory). 14 days matches the scout's draft TTL: the one other place the station
+     (it never enters the declined memory). 14 days matches the scout's draft TTL: the one other place the keep
      already decided how long an un-answered proposal stays answerable. */
   const SHOWN_TTL_MS = 14 * 86400000;
   /* Channels whose rows are minted elsewhere (law 4) and channels that are not offers at all (law 5). Both lists
@@ -141,7 +141,7 @@ const RecLedger = (() => {
      a channel that mints its own, or one of the two that are not offers at all).
 
      The row carries the candidate's OWN citation as `rationale`-typed evidence, never `quote`-typed: the why line
-     is composed by the station from real state, and W3 established that calling composed prose a quote is the
+     is composed by the keep from real state, and W3 established that calling composed prose a quote is the
      ledger lying about its own provenance. Where a channel really does carry the Commander's verbatim words it
      may pass evidenceKind:'verbatim' and the row says so honestly. */
   function note(candidate) {

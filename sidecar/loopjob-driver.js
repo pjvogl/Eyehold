@@ -19,7 +19,7 @@
      deps.newAbort()        -> AbortController
      deps.now()             -> int ms              // wall clock for COMPLETION timestamps (a run settles long
                                                    //   after applyTick's nowMs is stale)
-     deps.isHalted()        -> bool                // the durable station E-STOP
+     deps.isHalted()        -> bool                // the durable keep E-STOP
      deps.concurrencyFree(agentId) -> bool         // the agent's run mutex
      deps.agentExists(agentId)     -> bool         // a loop whose agent was deleted must STOP, never fire
      deps.precheck({loop})  -> {ok,reason}|bool    // OPTIONAL purely-local readiness (credential, workdir still
@@ -380,7 +380,7 @@
         streamId: 'loop-' + fresh.id,          // one durable stream per LOOP, so its iterations share a thread
         surface: 'autonomous',
         trigger: 'loop',
-        station: deps.stationFor ? deps.stationFor(fresh.agentId) : undefined,
+        keep: deps.keepFor ? deps.keepFor(fresh.agentId) : undefined,
         // a per-iteration USD ceiling, when the Commander set one. 0 = ungoverned (budgetcaps.js semantics).
         maxCostUsd: (fresh.budget && fresh.budget.perIterationUsd) || undefined,
         emit: sink

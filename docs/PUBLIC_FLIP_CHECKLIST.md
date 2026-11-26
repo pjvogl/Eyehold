@@ -127,7 +127,7 @@ Repo **Settings → General → Danger Zone → Change visibility → Public.** 
 ## Already done by this lane (2026-07-20)
 
 - GitHub: repo renamed to `eyehold`, description + homepage + topics set (both repos).
-- README.md rebuilt (wordmark hero, station render, badges, feature table, download table,
+- README.md rebuilt (wordmark hero, keep render, badges, feature table, download table,
   OpenClaw/the reference harness importer section).
 - All breaking `skynet-harness` references updated: `package.json` (repository/homepage/bugs),
   `CONTRIBUTING.md` clone lines, `.github/ISSUE_TEMPLATE/config.yml` advisory link,
@@ -136,7 +136,7 @@ Repo **Settings → General → Danger Zone → Change visibility → Public.** 
   MAC_UPDATE_TEST/CODE_MAP/DECISIONS). Dated audit docs keep their historical wording.
 - `publish.sh` (obsolete private-repo bootstrap) removed.
 - Local `origin` remote repointed at the new URL.
-- Marketing assets committed under `.github/media/` (wordmark, station render, OG card).
+- Marketing assets committed under `.github/media/` (wordmark, keep render, OG card).
 - Public hygiene: ALL Claude/agent-factory tooling is untracked + gitignored — `.claude/`
   (skills + launch.json), `CLAUDE.md`, `AGENTS.md`. They stay on disk as local-only files
   (the factory still runs on them); `gen-trees\new-agent-tree.ps1` copies them into new

@@ -1,12 +1,12 @@
 /* EYEHOLD — windows/rewind.js : the RESTORE lane of the AGENT DOSSIER (was the RESTORE POINTS window).
    NAV CONDENSE 2 (2026-08-04): restore points are agent-scoped, so they live in the dossier — this
-   file registers a DossierLane ((body)=>({sections,wire})) that stationui's buildAgents mounts as a
+   file registers a DossierLane ((body)=>({sections,wire})) that keepui's buildAgents mounts as a
    RESTORE section. The dossier roster rail drives agent switching (the lane reads H.present/H.sel
    on every rebuild), so the old in-window roster switcher is gone. */
 'use strict';
 (() => {
-  if (typeof StationUI === 'undefined' || !StationUI.h) return;
-  const H = StationUI.h;
+  if (typeof KeepUI === 'undefined' || !KeepUI.h) return;
+  const H = KeepUI.h;
   const esc = H.esc, sfx = H.sfx, fmtRel = H.fmtRel, notify = H.notify;
 
   /* ============== REWIND — restore points (the execution-spine checkpoint net) ==============
@@ -54,7 +54,7 @@
         // Tell the user what actually triggers a restore point under their current config, not an aspirational promise.
         const empty = (j && j.enabled)
           ? 'NO RESTORE POINTS YET.<br><span>They appear once this agent runs a command or edits a file at a WORKBENCH.</span>'
-          : 'NO RESTORE POINTS YET.<br><span>They appear once this agent runs a <b>shell command</b>. File-edit snapshots aren\'t enabled on this station.</span>';
+          : 'NO RESTORE POINTS YET.<br><span>They appear once this agent runs a <b>shell command</b>. File-edit snapshots aren\'t enabled on this keep.</span>';
         listEl.innerHTML = snaps.length ? snaps.map(row).join('') : '<div class="fb-empty">' + empty + '</div>';
       } catch (_) { listEl.innerHTML = '<div class="mc-detail">sidecar offline — start it to manage restore points.</div>'; }
     }

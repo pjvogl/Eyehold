@@ -222,7 +222,7 @@ const result = (extra) => Object.assign({ type: 'result', subtype: 'success', is
     const listed = await ok.listModels();
     const ids = listed.map(m => m.id);
     A.eq(ids.slice(0, 7), ['claude-opus-5-5', 'claude-sonnet-5-5', 'claude-haiku-4-5-20251001', 'claude-opus-5-5[1m]', 'claude-sonnet-5-5[1m]', 'claude-opus-4-8', 'claude-sonnet-4-6'], 'signed-in CLI lists the named models first');
-    A.ok(['opus', 'sonnet', 'haiku'].every(a => ids.indexOf(a) >= 0), 'the aliases stay listed, so a station already pinned to one keeps its model');
+    A.ok(['opus', 'sonnet', 'haiku'].every(a => ids.indexOf(a) >= 0), 'the aliases stay listed, so a keep already pinned to one keeps its model');
     A.ok(!ids.some(id => /fable/i.test(id)), 'Fable is not listed (an account without it is silently served Opus 4.8)');
     A.eq([listed.find(m => m.id === 'claude-opus-5-5[1m]').context_length, listed.find(m => m.id === 'claude-opus-5-5').context_length], [1000000, 200000], 'the 1M variants carry their real context window');
     A.eq([ok.contextLimit('claude-sonnet-5-5[1m]'), ok.contextLimit('sonnet'), ok.contextLimit('custom-m')], [1000000, 200000, 200000], 'contextLimit follows the model (and only a real [1m] suffix means 1M)');
@@ -232,7 +232,7 @@ const result = (extra) => Object.assign({ type: 'result', subtype: 'success', is
     const none = makeClaudeCliProvider({ spawn: fakeSpawn({}).spawn, fs: { statSync() { throw new Error('ENOENT'); } }, env: { PATH: path.join('nowhere') }, platform: 'linux' });
     err = null; try { await none.listModels(); } catch (e) { err = e; }
     A.ok(err && /not installed/.test(err.message), 'missing CLI lists nothing and says how to install it');
-    // (sweep 2026-10-02) macOS app opened from the Finder: bare PATH, Homebrew/npm `claude` → found, and its JS run by the station's Node
+    // (sweep 2026-10-02) macOS app opened from the Finder: bare PATH, Homebrew/npm `claude` → found, and its JS run by the keep's Node
     const brewCli = '/opt/homebrew/lib/node_modules/@anthropic-ai/claude-code/cli.js';
     const fsMac = { statSync(p) { if (String(p).replace(/\\/g, '/') === '/opt/homebrew/bin/claude') return { isFile: () => true }; throw new Error('ENOENT'); },
       realpathSync(p) { return String(p).replace(/\\/g, '/') === '/opt/homebrew/bin/claude' ? brewCli : p; }, writeFileSync() {}, unlinkSync() {} };
@@ -240,7 +240,7 @@ const result = (extra) => Object.assign({ type: 'result', subtype: 'success', is
     const mac = makeClaudeCliProvider({ spawn: fsp.spawn, fs: fsMac, env: { PATH: '/usr/bin:/bin:/usr/sbin:/sbin', HOME: '/Users/me' }, platform: 'darwin' });
     try { await mac.listModels(); } catch (_) {}
     const first = fsp.calls[0];
-    A.ok(first && first.file === process.execPath && String(first.args[0]).replace(/\\/g, '/') === brewCli, 'a Finder-launched Mac finds the Homebrew/npm claude and runs its cli.js with the station\'s Node: ' + JSON.stringify(first && [first.file, first.args && first.args[0]]));
+    A.ok(first && first.file === process.execPath && String(first.args[0]).replace(/\\/g, '/') === brewCli, 'a Finder-launched Mac finds the Homebrew/npm claude and runs its cli.js with the keep\'s Node: ' + JSON.stringify(first && [first.file, first.args && first.args[0]]));
   }
 
   // K. a lost sign-in (the CLI's real v2.1.284 shape) is an `auth` failure, never a retried `unknown`.
@@ -253,7 +253,7 @@ const result = (extra) => Object.assign({ type: 'result', subtype: 'success', is
     A.eq(cls.reason || cls.kind || cls.class, 'auth', 'errorClass files it as auth (no ~105s retry ladder)');
   }
 
-  // J. the CLI child never inherits station secrets, and its own auto-memory stays out of the turn.
+  // J. the CLI child never inherits keep secrets, and its own auto-memory stays out of the turn.
   {
     const env = { PATH: '', EYEHOLD_CREDITS_TOKEN: 'credits-secret', SKYNET_API_TOKEN: 'api-secret', CLAUDECODE: '1', HOME: '/h' };
     const { p, calls } = make({ lines: [init('none'), result({ result: 'ok' })] }, { env });

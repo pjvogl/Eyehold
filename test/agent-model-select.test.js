@@ -9,7 +9,7 @@
 const A = require('./_assert.js');
 const fs = require('fs'); const path = require('path');
 const app = (f) => fs.readFileSync(path.join(__dirname, '..', 'frontend', 'app', f), 'utf8');
-const appjs = app('app.js'), ui = app('stationui.js'), mkt = app('marketplace.js'), dock = app('modeldock.js'), world = app('world.js'), chat = app('chat.js');
+const appjs = app('app.js'), ui = app('keepui.js'), mkt = app('marketplace.js'), dock = app('modeldock.js'), world = app('world.js'), chat = app('chat.js');
 const html = fs.readFileSync(path.join(__dirname, '..', 'frontend', 'index.html'), 'utf8');
 const ModelDock = require('../frontend/app/modeldock.js');
 
@@ -30,7 +30,7 @@ A.ok(/toggle\.setAttribute\('aria-label',\s*selectorLabel\(current,\s*effort(?:,
 // ---- the shared picker component loads before its consumers ----
 A.ok(/app\/modelpicker\.js/.test(html), 'index.html loads the shared ModelPicker');
 A.ok(html.indexOf('app/modeldock.js') < html.indexOf('app/modelpicker.js'), 'modelpicker loads AFTER modeldock (its data source)');
-A.ok(html.indexOf('app/modelpicker.js') < html.indexOf('app/stationui.js'), 'modelpicker loads BEFORE the dossier that consumes it');
+A.ok(html.indexOf('app/modelpicker.js') < html.indexOf('app/keepui.js'), 'modelpicker loads BEFORE the dossier that consumes it');
 
 // ---- CREATION: the recruitment bay model picker → summon ----
 A.ok(/function summonModelBarHTML\(/.test(mkt), 'the bay renders a SUMMON model bar');
@@ -129,7 +129,7 @@ A.ok(/function setAgentModelPin[\s\S]{0,1500}Chat\.refreshIdBar\(\)/.test(appjs)
 
 // Execute the actual dossier handlers: a dropdown clear must not fall back to the
 // old pin in the collapsed advanced fields (v0.12.4 BYOK delegation escape).
-for (const file of ['frontend/app/stationui.js', 'website/app/app/stationui.js']) {
+for (const file of ['frontend/app/keepui.js', 'website/app/app/keepui.js']) {
   const source = fs.readFileSync(path.join(__dirname, '..', file), 'utf8');
   const start = source.indexOf("    const mSave = body.querySelector('#ag-model-save');");
   const end = source.indexOf('    // PERSONALITY chips', start);

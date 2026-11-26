@@ -41,7 +41,7 @@ const AutonomyStore = (() => {
         return { ok: !error, posture: get(), error };
       } catch (e) {
         if (generation === epoch) {
-          error = 'Autonomy could not be confirmed. ' + ((e && e.message) || 'Check the station connection and try again.');
+          error = 'Autonomy could not be confirmed. ' + ((e && e.message) || 'Check the keep connection and try again.');
           loaded = false;
           // A lost acknowledgement can follow a committed write. Reconcile before
           // claiming the old setting is current; failed readback means unknown.
@@ -57,7 +57,7 @@ const AutonomyStore = (() => {
   function refresh() { return enqueue(() => request()); }
   function write(transform, resumeHalt) { return enqueue(async () => {
     // Never combine a one-axis change with unverified axes from an old cache: the server's posture is read first every
-    // time, because the lead (station.power autonomy.set) or a phone can change it while this page holds its copy.
+    // time, because the lead (keep.power autonomy.set) or a phone can change it while this page holds its copy.
     const current = normalize((await request()).summary);
     return request({ posture: transform(current), resumeHalt: resumeHalt === true });
   }); }

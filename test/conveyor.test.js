@@ -10,7 +10,7 @@ const Conveyor = require('../frontend/app/conveyor.js');
 /* ---------- belt model ---------- */
 const s = WM.create();                                   // HAB-01 {0..17,0..10}
 const r = s.roomById(s.spawnRoomId()).rects[0];
-A.eq(s.belts().length, 0, 'fresh station has no belts');
+A.eq(s.belts().length, 0, 'fresh keep has no belts');
 
 const run = s.placeBeltRun({ tx: r.x1 + 2, ty: r.y1 + 2 }, { tx: r.x1 + 6, ty: r.y1 + 2 });
 A.ok(run.ok && run.dir === 'E' && run.count === 5, 'an eastward run lays 5 E belts');
@@ -54,7 +54,7 @@ A.eq(s.belts().length, before, 'ONE undo restores the whole batch (single snapsh
 A.ok(!s.removeBelts([[999, 999], [998, 998]]).ok, 'removeBelts on all-empty tiles is a no-op fail (caller flags "no belts")');
 
 // migrate() drops malformed belt entries without crashing
-const mig = WM.deserialize({ schema: 'eyehold.station', version: 1,
+const mig = WM.deserialize({ schema: 'eyehold.keep', version: 1,
   rooms: { rA: { id: 'rA', kind: 'hab', name: 'A', rects: [{ x1: 0, y1: 0, x2: 5, y2: 5 }] } }, order: ['rA'],
   belts: { '1,1': 'E', 'bad': 'E', '2,2': 'Z', '3,3': 'N' } });
 A.eq(mig.belts().length, 2, 'migrate keeps only well-formed "int,int"->E|W|N|S belt entries');
@@ -424,7 +424,7 @@ A.eq(Conveyor.weightForUsd(7.5), 1, 'mass clamps at 1 — a pricier run cannot o
 A.eq(Conveyor.weightForUsd(0.004), 0.004, 'a sub-cent run reads as a near-weightless crate, never estimated up');
 
 /* ---------- FRAME SHIFT (origin-move truth, 2026-08-11 audit #4): a floor edit that grows the
-   station bounds re-frames every belt tile; riding boxes and queued pending items must ride the
+   keep bounds re-frames every belt tile; riding boxes and queued pending items must ride the
    SAME shift or tick() reads "belt pulled out" and sinks paid work mid-ride. */
 {
   const laneAt = dy => [0, 1, 2, 3, 4, 5].map(x => ({ x, y: dy, dir: 'E' }));

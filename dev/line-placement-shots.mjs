@@ -5,7 +5,7 @@
  *   1. "where is this even legal?"  → 03-candidate-wash    (the dim candidate field under the ghost)
  *   2. "I clicked and got red"      → 04-snapped-ghost + 05-roughly-there-stamp
  *   3. "I can't see the whole line" → 06-autofit-frame     (zoom before/after, printed)
- *   plus 01/02  STATION ORDERS on a bare floor is the ONLY thing inviting a line (no canvas
+ *   plus 01/02  KEEP ORDERS on a bare floor is the ONLY thing inviting a line (no canvas
  *               invitation any more — retired 2026-08-07), and its ④ arms LINES
  *   plus 07     shelf honesty: a blueprint the deck cannot hold says so
  *   plus 08     ONE COMBINED SCENE — wash + ghost + nags + finish card at once (no text soup)
@@ -33,11 +33,11 @@ const OPEN_REFIT = `(() => {
   return Build.isOpen() ? 'open' : 'failed';
 })()`;
 
-/* A GENUINELY FRESH STATION HAS NEVER CARRIED A LINE. The dev seed ships one, so the floor is
-   stripped back to bare deck — and STATION ORDERS' dismiss latch is cleared with it, since a
+/* A GENUINELY FRESH KEEP HAS NEVER CARRIED A LINE. The dev seed ships one, so the floor is
+   stripped back to bare deck — and KEEP ORDERS' dismiss latch is cleared with it, since a
    dismissed checklist would hide the very guidance these first two scenes are about. */
 const FRESH_FLOOR = `(() => {
-  const st = Build.__test__.station();
+  const st = Build.__test__.keep();
   for (const b of st.belts()) st.removeBelt(b.x, b.y);
   const WF = { intake:1, bay:1, outbox:1, filter:1, splitter:1, merger:1 };
   for (const p of st.props().slice()) if (WF[p.t]) st.removeProp(p.id);
@@ -107,7 +107,7 @@ async function main() {
 
     // default text size (the shelf harness's known zoom trap) — pin + reload
     await evalJS(cdp, `(() => {
-      const KEY = 'eyehold.station.v1';
+      const KEY = 'eyehold.keep.v1';
       const r = JSON.parse(localStorage.getItem(KEY) || '{"v":1}');
       r.settings = Object.assign({}, r.settings, { textScale: 100 });
       localStorage.setItem(KEY, JSON.stringify(r));
@@ -122,14 +122,14 @@ async function main() {
     proof.freshFloor = await J(cdp, FRESH_FLOOR);
     await sleep(1200);
 
-    /* ---- 1. STATION ORDERS is the ONLY invitation on a bare floor ----
+    /* ---- 1. KEEP ORDERS is the ONLY invitation on a bare floor ----
        The standalone canvas prompt was retired (2026-08-07): two voices asking for the same act
        is exactly what the one-voice law forbids, and leading with the line read as "build mode is
        about conveyors". ORDERS sequences the whole mode and its ④ is the line's one invitation. */
     proof.ordersAtRest = await J(cdp, CARD_SLOT);
     shots.push(await capture(cdp, OUT, '01-empty-floor-orders'));
     if (proof.ordersAtRest.canvasInvite !== 'undefined') throw new Error('the retired canvas invitation is still wired: ' + proof.ordersAtRest.canvasInvite);
-    if (!proof.ordersAtRest.orders) throw new Error('STATION ORDERS is not in the card slot on a bare floor: ' + JSON.stringify(proof.ordersAtRest));
+    if (!proof.ordersAtRest.orders) throw new Error('KEEP ORDERS is not in the card slot on a bare floor: ' + JSON.stringify(proof.ordersAtRest));
     if (proof.ordersAtRest.cards !== 1) throw new Error('one voice: expected exactly one guidance card, got ' + proof.ordersAtRest.cards);
     if (!proof.ordersAtRest.steps.some(s => s.ord === 'line' && !s.done)) throw new Error('ORDERS is not offering ④ STAMP A WORK LINE: ' + JSON.stringify(proof.ordersAtRest.steps));
 
@@ -176,7 +176,7 @@ async function main() {
 
     // ---- 5. the SAME roughly-there click stamps ----
     proof.stamp = await J(cdp, `(() => {
-      const st = Build.__test__.station();
+      const st = Build.__test__.keep();
       const before = st.props().length;
       const cv = document.querySelector('.refit-canvas');
       const ev = Build.__test__._tileEvent([${aim.tx}, ${aim.ty}], 0);
@@ -193,7 +193,7 @@ async function main() {
 
     // ONE UNDO REMOVES THE WHOLE LINE (existing behaviour must survive the snap)
     proof.undo = await J(cdp, `(() => {
-      const st = Build.__test__.station(); const before = st.props().length;
+      const st = Build.__test__.keep(); const before = st.props().length;
       st.undo(); return { before, after: st.props().length };
     })()`);
     if (proof.undo.after !== proof.stamp.before) throw new Error('one undo did not remove the whole line: ' + JSON.stringify(proof.undo));
@@ -225,7 +225,7 @@ async function main() {
        carries a belt (ON_BELT — never bury a lane the Commander laid), so this is a genuinely
        full deck, not a doctored flag. */
     proof.nofit = await J(cdp, `(() => {
-      const st = Build.__test__.station(), b = st.bounds();
+      const st = Build.__test__.keep(), b = st.bounds();
       let n = 0;
       for (let ty = b.minTy; ty <= b.maxTy; ty += 2)
         for (let tx = b.minTx; tx <= b.maxTx; tx++)
@@ -246,7 +246,7 @@ async function main() {
 
     // ---- 8. THE COMBINED SCENE: wash + ghost + a stamped line's nags + the finish card ----
     proof.combined = await J(cdp, `(() => {
-      const st = Build.__test__.station();
+      const st = Build.__test__.keep();
       for (const b of st.belts()) st.removeBelt(b.x, b.y);   // clear the lattice back off
       return { belts: st.belts().length };
     })()`);
@@ -278,7 +278,7 @@ async function main() {
     // ONE VOICE, still: a line now exists, so the shared slot has handed ORDERS off to FINISH THE
     // LINE — one card, and nothing else on the canvas is asking for a line.
     if (proof.combinedScene.slot.cards !== 1) throw new Error('one voice: ' + proof.combinedScene.slot.cards + ' guidance cards at once');
-    if (proof.combinedScene.slot.orders) throw new Error('STATION ORDERS never handed off after a line was stamped');
+    if (proof.combinedScene.slot.orders) throw new Error('KEEP ORDERS never handed off after a line was stamped');
     shots.push(await capture(cdp, OUT, '08-combined-scene'));
 
     // ---- 9. THE FRAME-LOOP GUARD: make a draw layer throw, prove the canvas keeps painting ----
@@ -300,7 +300,7 @@ async function main() {
     })()`);
     if (!proof.guardAfter.degraded.includes('props')) throw new Error('the throwing layer was not recorded: ' + JSON.stringify(proof.guardAfter));
     if (proof.guardAfter.renderState !== 'ready') throw new Error('a single bad layer took the whole frame down: ' + JSON.stringify(proof.guardAfter));
-    // the canvas must still carry the station, not a black rectangle — sample real pixels
+    // the canvas must still carry the keep, not a black rectangle — sample real pixels
     proof.guardPixels = await J(cdp, `(() => {
       const cv = document.querySelector('.refit-canvas');
       const g = cv.getContext('2d');

@@ -1,4 +1,4 @@
-# dev/pngcrop.ps1 — nearest-neighbour crop/zoom out of a baked station PNG, for before/after
+# dev/pngcrop.ps1 — nearest-neighbour crop/zoom out of a baked keep PNG, for before/after
 # comparison without re-running the CDP probe. Coordinates are BAKE PIXELS.
 #   pwsh dev/pngcrop.ps1 -In a.png -Out a.crop.png -X 240 -Y 192 -W 72 -H 72 -Zoom 10
 param(

@@ -1,9 +1,9 @@
-/* node test/child-env.test.js — helper processes never inherit the station's secrets (audit 2026-09-25 #13).
+/* node test/child-env.test.js — helper processes never inherit the keep's secrets (audit 2026-09-25 #13).
 
-   Plants station secrets in THIS test process's env (the desktop-injected EYEHOLD_/SKYNET_ names, a service key
+   Plants keep secrets in THIS test process's env (the desktop-injected EYEHOLD_/SKYNET_ names, a service key
    the sidecar exported, a held secret value re-exported under an innocent name), then spawns REAL node children
    through the guarded child_process and asserts each child cannot see them while it still sees PATH, HOME and the
-   user's own vars (including the user's own NPM_TOKEN — theirs, not the station's). Also pins the rule that every
+   user's own vars (including the user's own NPM_TOKEN — theirs, not the keep's). Also pins the rule that every
    sidecar module reaching child_process goes through the guard or builds its own allowlisted env. */
 'use strict';
 const A = require('./_assert.js');
@@ -28,7 +28,7 @@ const PLANT = {
 };
 for (const k of Object.keys(PLANT)) process.env[k] = PLANT[k];
 if (!process.env.HOME && process.env.USERPROFILE) process.env.HOME = process.env.USERPROFILE;
-CE.setStationSecretSource({ names: () => ['ACME_API_KEY'], values: () => [HELD, 'short'] });
+CE.setKeepSecretSource({ names: () => ['ACME_API_KEY'], values: () => [HELD, 'short'] });
 
 const STRIPPED = ['SKYNET_API_TOKEN', 'EYEHOLD_API_TOKEN', 'SKYNET_IPC_TOKEN', 'SKYNET_OPENAI_API_KEY', 'SKYNET_KEY_POOL_OPENROUTER',
   'EYEHOLD_CREDITS_TOKEN', 'SKYNET_TELEGRAM_TOKEN', 'ACME_API_KEY', 'INNOCENT_LOOKING'];
@@ -44,21 +44,21 @@ function checkEnv(env, label) {
 
 (async () => {
   // ---- the builder itself ----
-  const built = CE.stationChildEnv(process.env);
-  checkEnv(built, 'stationChildEnv');
-  A.eq(built.NPM_TOKEN, 'npm-user-own-token-keep-me', 'stationChildEnv: the user\'s own NPM_TOKEN is kept for host helpers');
-  const withCfg = CE.stationChildEnv(process.env, { SERVER_API_KEY: 'configured-for-mcp', __proto__: { polluted: 1 } });
+  const built = CE.keepChildEnv(process.env);
+  checkEnv(built, 'keepChildEnv');
+  A.eq(built.NPM_TOKEN, 'npm-user-own-token-keep-me', 'keepChildEnv: the user\'s own NPM_TOKEN is kept for host helpers');
+  const withCfg = CE.keepChildEnv(process.env, { SERVER_API_KEY: 'configured-for-mcp', __proto__: { polluted: 1 } });
   A.eq(withCfg.SERVER_API_KEY, 'configured-for-mcp', 'explicit config env is layered on top');
   A.ok(({}).polluted === undefined, 'config env cannot pollute Object.prototype');
   // a held value equal to a runtime var never takes PATH down
-  CE.setStationSecretSource({ names: () => ['ACME_API_KEY'], values: () => [HELD, String(process.env.PATH || process.env.Path)] });
-  A.ok(!!(CE.stationChildEnv(process.env).PATH || CE.stationChildEnv(process.env).Path), 'PATH survives even when a held value collides with it');
-  CE.setStationSecretSource({ names: () => ['ACME_API_KEY'], values: () => [HELD] });
+  CE.setKeepSecretSource({ names: () => ['ACME_API_KEY'], values: () => [HELD, String(process.env.PATH || process.env.Path)] });
+  A.ok(!!(CE.keepChildEnv(process.env).PATH || CE.keepChildEnv(process.env).Path), 'PATH survives even when a held value collides with it');
+  CE.setKeepSecretSource({ names: () => ['ACME_API_KEY'], values: () => [HELD] });
   // a throwing source degrades to the name rules, never a crash
-  CE.setStationSecretSource({ names: () => { throw new Error('boom'); }, values: () => { throw new Error('boom'); } });
-  A.notThrows(() => CE.stationChildEnv(process.env), 'a throwing source does not crash the builder');
-  A.ok(!('SKYNET_API_TOKEN' in CE.stationChildEnv(process.env)), 'the name rule still strips with a broken source');
-  CE.setStationSecretSource({ names: () => ['ACME_API_KEY'], values: () => [HELD] });
+  CE.setKeepSecretSource({ names: () => { throw new Error('boom'); }, values: () => { throw new Error('boom'); } });
+  A.notThrows(() => CE.keepChildEnv(process.env), 'a throwing source does not crash the builder');
+  A.ok(!('SKYNET_API_TOKEN' in CE.keepChildEnv(process.env)), 'the name rule still strips with a broken source');
+  CE.setKeepSecretSource({ names: () => ['ACME_API_KEY'], values: () => [HELD] });
 
   // ---- REAL children through the guarded child_process, with NO env option ----
   const CP = CE.guardChildProcess(require('node:child_process'));
@@ -82,7 +82,7 @@ function checkEnv(env, label) {
 
   // ---- agent commands: sanitizeChildEnv is the shared strip PLUS the blanket secret-name strip ----
   const agent = sanitizeChildEnv(process.env);
-  A.ok(JSON.stringify(agent).indexOf('CANARY') < 0, 'sanitizeChildEnv: no planted station secret survives');
+  A.ok(JSON.stringify(agent).indexOf('CANARY') < 0, 'sanitizeChildEnv: no planted keep secret survives');
   A.ok(!('INNOCENT_LOOKING' in agent), 'sanitizeChildEnv: a held value under an innocent name is stripped');
   A.ok(!('NPM_TOKEN' in agent), 'sanitizeChildEnv: agent commands stay stricter (secret-shaped user names stripped too)');
   A.eq(agent.MY_USER_VAR, 'user-value-keep-me', 'sanitizeChildEnv: ordinary user vars kept');
@@ -106,7 +106,7 @@ function checkEnv(env, label) {
   })(SIDE);
   A.eq(offenders, [], 'every sidecar child_process require is wrapped in guardChildProcess (or builds its own allowlisted env)');
   const idx = fs.readFileSync(path.join(SIDE, 'index.js'), 'utf8');
-  A.ok(/setStationSecretSource\(\{ names: \(\) => Object\.keys\(serviceKeysOwnedEnv/.test(idx), 'index.js feeds the exported service-key names to the strip');
+  A.ok(/setKeepSecretSource\(\{ names: \(\) => Object\.keys\(serviceKeysOwnedEnv/.test(idx), 'index.js feeds the exported service-key names to the strip');
 
   for (const k of Object.keys(PLANT)) delete process.env[k];
   A.report('child-env.test');

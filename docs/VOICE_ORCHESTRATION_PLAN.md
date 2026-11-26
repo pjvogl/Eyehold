@@ -11,7 +11,7 @@ He is right, and it is missing rather than broken.
 
 The three tools (`get_eyehold_status`, `start_eyehold_task`, `interrupt_eyehold_task`) live in
 `sidecar/realtime-voice.js` and were only ever reachable on the **provider-native realtime path**,
-which was retired on 2026-07-30 in favour of one built-in engine for every station.
+which was retired on 2026-07-30 in favour of one built-in engine for every keep.
 
 On the built-in path the transcript goes to `Chat.send()` — an ordinary agent run. So the agent gets
 whatever tools it normally has and **nothing that knows about Eyehold's own structure**. There is no
@@ -27,7 +27,7 @@ agent*, *delegate*, or *report back when done*.
 `agent.save.json` written by the page. The agent's tools run in the **sidecar**. So this is not "add a
 tool file" — it needs a bridge, and choosing that bridge is the design decision:
 
-- **A — sidecar tools + a command channel to the page.** Add `sidecar/tools/builtin/station.js` with
+- **A — sidecar tools + a command channel to the page.** Add `sidecar/tools/builtin/keep.js` with
   the orchestration verbs; each one emits a `U.bus` event the page acts on, and resolves on the page's
   acknowledgement. Right shape long-term (works for cron, Night Shift and channels too, not just
   voice), but needs a request/response convention over the bus and an honest timeout when no page is
@@ -38,34 +38,34 @@ tool file" — it needs a bridge, and choosing that bridge is the design decisio
   decision just removed: voice would orchestrate through one path and everything else through another.
 
 **Recommendation: A.** It serves the other unattended surfaces, and it keeps one answer to "how does
-something ask the station to do a station thing".
+something ask the keep to do a keep thing".
 
 ## The verbs (what "orchestration" actually means here)
 
 | verb | does | already exists |
 |---|---|---|
-| `station.status` | open sessions, which is active, who is busy, what awaits approval | `VoiceLive.statusSnapshot()` — reuse verbatim |
-| `station.new_session` | create a workstream, optionally bound to an agent, optionally focus it | `App.openWorkstream` / `newWorkstream` |
-| `station.switch_session` | focus an existing workstream by title or id | `Workstreams.*` + `App.openWorkstream` |
-| `station.delegate` | hand an instruction to a NAMED crew member, in their own session | `App.selectAgent` + `Chat.sendOrQueue`; `App.summonAgent` when absent |
-| `station.crew` | who is on the roster and what each is for | `App.agents()` |
-| `station.report` | what finished since a marker — the "tell me when it's done" half | run ledger + `Channels.statusOf` |
+| `keep.status` | open sessions, which is active, who is busy, what awaits approval | `VoiceLive.statusSnapshot()` — reuse verbatim |
+| `keep.new_session` | create a workstream, optionally bound to an agent, optionally focus it | `App.openWorkstream` / `newWorkstream` |
+| `keep.switch_session` | focus an existing workstream by title or id | `Workstreams.*` + `App.openWorkstream` |
+| `keep.delegate` | hand an instruction to a NAMED crew member, in their own session | `App.selectAgent` + `Chat.sendOrQueue`; `App.summonAgent` when absent |
+| `keep.crew` | who is on the roster and what each is for | `App.agents()` |
+| `keep.report` | what finished since a marker — the "tell me when it's done" half | run ledger + `Channels.statusOf` |
 
-⛔ **`station.report` is the one that makes voice feel alive** and is the easiest to fake. It must read
+⛔ **`keep.report` is the one that makes voice feel alive** and is the easiest to fake. It must read
 real completion state, never narrate an expectation. A verb that says "your build finished" without a
 finished run is precisely the lie this product forbids.
 
 ## Sequencing
 
-1. `station.status` + `station.crew` (read-only) — proves the bridge with nothing to corrupt.
-2. `station.new_session` + `station.switch_session`.
-3. `station.delegate`.
-4. `station.report`, plus a spoken nudge when a delegated run completes while voice is live.
+1. `keep.status` + `keep.crew` (read-only) — proves the bridge with nothing to corrupt.
+2. `keep.new_session` + `keep.switch_session`.
+3. `keep.delegate`.
+4. `keep.report`, plus a spoken nudge when a delegated run completes while voice is live.
 
 ## Guardrails carried from tonight
 
 - ⛔ The tools must be reachable from the ORDINARY agent run, not a voice-only side channel — voice
-  should be one caller of a station-wide surface, or the divergence returns.
+  should be one caller of a keep-wide surface, or the divergence returns.
 - ⛔ Every verb reports refusal honestly (no page attached, no such agent, session busy). Silence or a
   cheerful confirmation for work that did not happen is the failure mode that cost this feature its
   credibility once already.
@@ -89,7 +89,7 @@ Commander explicitly named was ignored.
 
 ### What this changes about the plan
 
-`station.delegate` (verb 4) is no longer just "wire a bridge verb". Two halves:
+`keep.delegate` (verb 4) is no longer just "wire a bridge verb". Two halves:
 
 1. **Give the orchestration tool a session target.** Add an optional workstream/stream id to the
    delegate/subagent params and thread it through to where the run is bound. Without this the bridge
@@ -139,11 +139,11 @@ reading the run host showed the seam was one argument. Grep where state is PERSI
 rendered. `shared/events.js` was not touched.
 
 What shipped:
-- `session` on a worker in `team.dispatch`, resolved over the station bridge in three tiers (exact id,
+- `session` on a worker in `team.dispatch`, resolved over the keep bridge in three tiers (exact id,
   exact title, unique substring) — each needing a UNIQUE hit.
 - Unknown or ambiguous ⇒ that worker **does not run**, and the row names what exists so the model can
   correct itself. A failed page-fold is reported on the row too.
-- Two page verbs in `stationcommands.js`: `station.sessions` (resolution source) and `station.deliver`
+- Two page verbs in `keepcommands.js`: `keep.sessions` (resolution source) and `keep.deliver`
   (appends the finished answer, idempotent by runId, never replaces an existing thread).
 - Proof: `test/e2e.dispatch-session.test.js` boots the real sidecar and asserts against `/api/runs` and
   `/api/transcript` — the sidecar's own durable state — rather than the tool's account of itself.
@@ -153,13 +153,13 @@ What shipped:
 **`new_session` + `switch_session` SHIPPED** as agent tools `session.create` / `session.focus` (+
 `session.list`), over the bridge, orchestrator-gated, consent-free. Live-proven with a real model:
 create by name → delegate into it → answer lands there attributed; unknown name → refused by name →
-the agent recovered by creating it (nothing guessed). Only `station.report` remains unbuilt — background
+the agent recovered by creating it (nothing guessed). Only `keep.report` remains unbuilt — background
 dispatch + `team.subagents` cover the "is it done" question meanwhile.
 
 ⛔ **The capability registry is an ALLOWLIST** (`sidecar/capability/registry.js`): a tool registered with
 the host but not declared there is exposed to NOBODY. The session verbs shipped exactly that way on the
 first pass — every unit test green, live model blind. Registration and declaration land together; a test
-in `test/station-tools.test.js` now enforces it.
+in `test/keep-tools.test.js` now enforces it.
 
 ⛔ **A `local:true` TTS request must NEVER fall into the keyed provider chain.** On every installed build
 (no node_modules) the Kokoro engine cannot load, and the old fallthrough made live voice speak with the

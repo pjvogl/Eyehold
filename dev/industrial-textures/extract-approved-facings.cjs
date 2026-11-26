@@ -1,7 +1,7 @@
 'use strict';
 // Run from this worktree root with sharp on NODE_PATH, like extract-approved-sheet.cjs.
 const fs=require('node:fs'),path=require('node:path'),crypto=require('node:crypto'),sharp=require('sharp');
-const docs='docs/station-remaster/approved-sheet/crew',out='frontend/assets/industrial/approved-sheet';
+const docs='docs/keep-remaster/approved-sheet/crew',out='frontend/assets/industrial/approved-sheet';
 const map=JSON.parse(fs.readFileSync(docs+'/facings-cellmap.json','utf8'));
 const hash=b=>crypto.createHash('sha256').update(b).digest('hex');
 const overrides={
@@ -68,7 +68,7 @@ async function extract(cell){
     longtableRepair:'Dedicated bare east table replaces initial baked-chair assembly. Source override supplies bare same-style top/legs.',
     repairProvenance:{
       partition:{prompt:docs+'/partition-opposite.prompt.txt',primaryReference:'frontend/assets/industrial/complete-sheet/eyehold-props-full-sheet.png',secondaryReference:map.source},
-      longtable:{prompt:docs+'/longtable-e.prompt.txt',primaryReference:'frontend/assets/industrial/complete-sheet/eyehold-props-full-sheet.png',secondaryReference:'docs/station-remaster/approved-sheet/storage/repair-sheet-source.png',matchingCell:'top row far right bare longtable'}
+      longtable:{prompt:docs+'/longtable-e.prompt.txt',primaryReference:'frontend/assets/industrial/complete-sheet/eyehold-props-full-sheet.png',secondaryReference:'docs/keep-remaster/approved-sheet/storage/repair-sheet-source.png',matchingCell:'top row far right bare longtable'}
     },
     integrationNotes:[
       'Uniform fits are measured, not resized to match native bounds. Partition-e repair has a broader aspect than the native narrow 8x44 envelope, so it draws shorter than partition-w at equal width; do not stretch silently.',

@@ -1,5 +1,5 @@
 /* Eyehold departments. These seven rooms are the live org chart.
- * The seven-room station stamps the same ids. Authority limits still hold:
+ * The seven-room keep stamps the same ids. Authority limits still hold:
  * Iron Host must bring any account, outreach, payment, listing, or trade
  * to the owner. This file does not grant tools or open accounts.
  */

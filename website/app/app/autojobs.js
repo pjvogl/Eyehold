@@ -11,7 +11,7 @@
 
    THREE disciplines encoded so they can't rot:
      1. GROUNDING — every proposal MUST cite a specific dossier signal (a real goal / pain / ambition). No grounding,
-        no candidate. This is the anti-slop floor: the station never invents busywork.
+        no candidate. This is the anti-slop floor: the keep never invents busywork.
      2. ACHIEVABLE-NOW envelope — an unattended (autonomous-surface) run is default-denied tools/network/writes until
         a future Reach grant. So a Slice-2 job is REASONING/DRAFTING work the agent can do from what it knows and
         leave on the desk — never "search the web" / "send" / "write files" it can't actually do unattended yet. The
@@ -30,7 +30,7 @@
   'use strict';
 
   const REQUIRE_DIMS = ['goals'];   // can't propose useful standing work without knowing what the Commander wants
-  const MIN_KNOWN = 2;              // at least two dossier dimensions filled before the station dares to self-initiate
+  const MIN_KNOWN = 2;              // at least two dossier dimensions filled before the keep dares to self-initiate
   const MAX_PROPOSALS = 3;          // never a wall of jobs — a few high-signal proposals, the Commander stays in control
   const MAX_JOBS = 8;              // don't proactively offer more when the Commander already runs this many routines
   const NAME_CHARS = 80;           // cron job name cap (matches the routines form maxlength)
@@ -69,7 +69,7 @@
     try { return (Intl.DateTimeFormat().resolvedOptions().timeZone) || ''; } catch (_) { return ''; }
   }
 
-  // THE GATE — should the station PROACTIVELY offer standing-job proposals right now? Returns { go, reason } (honest
+  // THE GATE — should the keep PROACTIVELY offer standing-job proposals right now? Returns { go, reason } (honest
   // telemetry). Order: autonomy-on first, then fire-once, then graduation, then do-we-know-enough, then not-already-
   // -drowning-in-routines. The manual "propose jobs" button bypasses this (an explicit ask is always allowed).
   //   enabled        — autonomy Initiative is at least 'propose' (AutonomyStore.summary().enabled)
@@ -142,7 +142,7 @@
      format gate. A model that invented "you mentioned wanting a weekly competitor digest" cleared it word for
      word, and the proposal did not merely get shown — approving it WRITES A CRON JOB that wakes unattended
      forever, under a beat whose whole copy is "now that i KNOW you". The sibling engine already refuses this:
-     autopilot.js vetoes a candidate whose GROUNDS shares no significant token with anything the station knows.
+     autopilot.js vetoes a candidate whose GROUNDS shares no significant token with anything the keep knows.
      The evidence pool is the caller's obligation and the whole basis of the check — so, exactly like
      parseCandidates, a caller that supplies NO pool grounds NOTHING and every proposal dies. Fail-closed is the
      point: the failure mode this replaces was inventing standing work, not missing some.
@@ -163,7 +163,7 @@
     const raw = String(text == null ? '' : text);
     const max = (opts && Number.isFinite(opts.max)) ? opts.max : MAX_PROPOSALS;
     const V = veto();
-    // the evidence pool: every belief text the station actually holds, flattened. No engine → no veto is possible,
+    // the evidence pool: every belief text the keep actually holds, flattened. No engine → no veto is possible,
     // and a parse that cannot check its grounding must not pretend it did (see the fail-closed note above).
     const pool = V ? V.flattenBeliefs(opts && opts.beliefs) : null;
     const grab = (block, label) => {

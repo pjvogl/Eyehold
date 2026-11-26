@@ -1,4 +1,4 @@
-/* node test/agent-affinity.test.js — the station's social graph is DERIVED, never assigned.
+/* node test/agent-affinity.test.js — the keep's social graph is DERIVED, never assigned.
 
    The world biases who talks to whom during idle beats. That bias is only honest if every bond can be
    pointed back at real runs, so these assertions are all one law: a pair the run log cannot vouch for
@@ -133,7 +133,7 @@ const T = 1770000000000;   // fixed epoch — these fixtures are relative-orderi
   A.eq(list[0].strength > list[list.length - 1].strength, true, 'ordered by real strength');
 }
 
-/* ---- bounded: a busy station has a social graph, not a phone book ---- */
+/* ---- bounded: a busy keep has a social graph, not a phone book ---- */
 {
   const rows = [];
   for (let i = 0; i < 90; i++) rows.push(run({ runId: 'r' + i, agentId: 'ag' + i, startedAt: T + i * 100 }));

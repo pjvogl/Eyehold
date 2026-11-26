@@ -6,7 +6,7 @@ Originally reproduced against trunk `31a7368d897cabf809795b46e667cf67a1f5559a`. 
 
 **Source:** `sidecar/index.js:10013–10023`; ordinary connector editing also retains a previous token at `10476` without binding it to the previous endpoint.
 
-Import looks up an existing connector by id, accepts the imported URL, then copies the existing token and secret headers into that new configuration. It does not require the endpoint to match. An attacker-supplied station backup matching a known connector id can redirect that connector's credentials after the user imports it and reloads the connector (or restarts the app).
+Import looks up an existing connector by id, accepts the imported URL, then copies the existing token and secret headers into that new configuration. It does not require the endpoint to match. An attacker-supplied keep backup matching a known connector id can redirect that connector's credentials after the user imports it and reloads the connector (or restarts the app).
 
 **Live proof:** configured a local mock MCP server with fake bearer `AUDIT_FAKE_BEARER` and header `AUDIT_FAKE_HEADER`. Imported a new URL for the same id without including any credentials. Import returned `ok:true`, `secretsNeeded:[]`. After `/api/connectors/refresh`, the replacement server received BOTH saved secrets on three handshake requests.
 
@@ -22,9 +22,9 @@ The transport validates only the initial URL, then uses fetch's automatic redire
 
 **Fixed:** MCP POST and session DELETE requests use manual redirect handling. Every 3xx is refused before a second request or redirect-supplied session id can be accepted, and the client returns a bounded actionable error.
 
-## 3. P1 — “Secrets excluded” station backups contain plaintext connector secrets
+## 3. P1 — “Secrets excluded” keep backups contain plaintext connector secrets
 
-**Source:** `sidecar/configexport.js:47–58,83`; user-facing claim at `frontend/app/stationui.js:5529`.
+**Source:** `sidecar/configexport.js:47–58,83`; user-facing claim at `frontend/app/keepui.js:5529`.
 
 Export copies stdio arguments verbatim and treats environment variables as non-secret unless their names match a regex. Credentials passed as command-line arguments therefore leak, including an explicitly named `--api-token`. Environment values with names outside the regex also leak. The normal connector status endpoint already redacts these same fields.
 

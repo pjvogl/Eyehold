@@ -16,7 +16,7 @@ try {
   b.updatedAt = 9000; b.workstreams.push({ id: 'b', history: ['B'] });
   const conflict = save(b);
   assert.equal(conflict.conflict, true, 'a fresh timestamp cannot disguise a stale read');
-  assert.deepEqual(store.load('agent').workstreams, a.workstreams, 'current station remains unchanged');
+  assert.deepEqual(store.load('agent').workstreams, a.workstreams, 'current keep remains unchanged');
   assert.deepEqual(JSON.parse(fs.readFileSync(path.join(root, conflict.recovery))).workstreams, b.workstreams, 'conflicting work is durably recoverable');
   assert.equal(save({ ...baseline, updatedAt: 9999 }).conflict, true, 'unversioned old clients cannot bypass CAS');
   store = makeSaveStore(deps);

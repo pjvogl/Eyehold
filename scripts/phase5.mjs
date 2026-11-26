@@ -192,7 +192,7 @@ function phase4EvidenceComplete() {
   const soak = ev && ev.soak;
   const fr = ev && ev.failureRecovery;
   return !!(trial && trial.passed && hasItems(trial.screenshots) && hasItems(trial.runIds) && hasItems(trial.transcriptIds) && hasItems(trial.artifactPaths) && hasItems(trial.ledgerRows)
-    && soak && soak.freshPass && soak.restartPass && soak.transcriptPreserved && soak.ledgerPreserved && soak.artifactsPreserved && soak.memoryPreserved && soak.stationStatePreserved
+    && soak && soak.freshPass && soak.restartPass && soak.transcriptPreserved && soak.ledgerPreserved && soak.artifactsPreserved && soak.memoryPreserved && soak.keepStatePreserved
     && fr && fr.cancelPassed && fr.budgetPassed && fr.deniedConsentPassed && fr.toolErrorPassed && fr.checkpointRestorePassed);
 }
 

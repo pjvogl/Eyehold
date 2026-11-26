@@ -1,6 +1,6 @@
 /* node test/apps.http.test.js — APPS through the REAL sidecar's routes (2026-10-01).
 
-   test/apps.test.js proves sidecar/apps.js with injected parts; this boots the real station so the WIRING is proven
+   test/apps.test.js proves sidecar/apps.js with injected parts; this boots the real keep so the WIRING is proven
    too — the version digest index.js hands apps (a broken one emptied every app list on 10-01 while the module test
    stayed green), the routes, the served page and the app's own routine:
      - POST /api/apps creates an app; GET /api/apps lists it with a version (digest) and its building page is served
@@ -30,7 +30,7 @@ const { SidecarFixture } = require('./helpers/sidecar-fixture.js');
     const page = await fx.request('/app-ui/' + id + '/' + a0.digest + '/index.html');
     const html = await page.text();
     const csp = page.headers.get('content-security-policy') || '';
-    A.ok(page.status === 200 && /_eyehold\/kit\.js/.test(html) && /Your crew is building this app/.test(html), 'the app page is served with the station kit injected');
+    A.ok(page.status === 200 && /_eyehold\/kit\.js/.test(html) && /Your crew is building this app/.test(html), 'the app page is served with the keep kit injected');
     A.ok(/sandbox allow-scripts/.test(csp) && /connect-src 'none'/.test(csp) && /form-action 'none'/.test(csp), 'served under the network-less sandbox: ' + csp.slice(0, 120));
     const stale = await fx.request('/app-ui/' + id + '/' + 'f'.repeat(64) + '/index.html');
     A.eq(stale.status, 410, 'a stale version is refused (410)');
@@ -50,7 +50,7 @@ const { SidecarFixture } = require('./helpers/sidecar-fixture.js');
     // a real page change moves the version (the window follows)
     const appDir = path.join(fx.workspace, 'apps', id);
     fs.writeFileSync(path.join(appDir, 'index.html'), '<!doctype html><div class="sn-panel">v2</div>');
-    await new Promise((r) => setTimeout(r, 1700));   // the station caches a version for 1.5 s (a crew write clears it at once)
+    await new Promise((r) => setTimeout(r, 1700));   // the keep caches a version for 1.5 s (a crew write clears it at once)
     list = await fx.json('GET', '/api/apps');
     A.ok(list.body.apps.find((a) => a.id === id).digest !== a0.digest, 'a page change moves the version');
 

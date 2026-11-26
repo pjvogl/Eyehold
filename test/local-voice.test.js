@@ -87,7 +87,7 @@ function packageOnDisk(name) {
   /* ---- THE SHIPPED FALLBACK IDENTITY: every catalogue voice maps to a real Edge neural ------------------
      An installed build carries no node_modules, so the Kokoro engine can never load there. Before this
      mapping, /api/tts silently fell through to the KEYED provider voice — the picker was inert and the
-     station spoke with a different identity than the one chosen (found by ear, 2026-07-30). The mapping
+     keep spoke with a different identity than the one chosen (found by ear, 2026-07-30). The mapping
      lives ON the catalogue row precisely so this test can refuse any future voice added without one. */
   {
     const voices = localVoice.voices();

@@ -2,9 +2,9 @@
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const vm = require('node:vm');
-const { makeStationTools } = require('../sidecar/tools/builtin/station.js');
+const { makeKeepTools } = require('../sidecar/tools/builtin/keep.js');
 const app = fs.readFileSync(require.resolve('../frontend/app/app.js'), 'utf8');
-const commands = fs.readFileSync(require.resolve('../frontend/app/stationcommands.js'), 'utf8');
+const commands = fs.readFileSync(require.resolve('../frontend/app/keepcommands.js'), 'utf8');
 const extract = name => app.match(new RegExp('  function ' + name + '\\([^]*?\\n  \\}'))[0];
 
 function boot(failure) {
@@ -33,8 +33,8 @@ function boot(failure) {
     agents: () => [...agents.values()], applyConfig: context.applyAgentConfig,
     configSynced: async () => failure !== 'roster'
   };
-  const S = vm.runInContext(commands + '\nStationCommands;', context);
-  const tools = makeStationTools({ station: { request: async (verb, args) => {
+  const S = vm.runInContext(commands + '\nKeepCommands;', context);
+  const tools = makeKeepTools({ keep: { request: async (verb, args) => {
     await S.run('request-' + acks.length, verb, args);
     return acks.at(-1);
   } } });
@@ -77,7 +77,7 @@ function boot(failure) {
     broken.recover();
     assert.equal(JSON.parse((await broken.tools.agentConfigureTool.run(edit)).content).durable, true, 'retry confirms the same edit after recovery');
   }
-  assert.match((await makeStationTools({}).agentConfigureTool.run(edit)).content, /^REFUSED:/);
+  assert.match((await makeKeepTools({}).agentConfigureTool.run(edit)).content, /^REFUSED:/);
   assert.equal(env.tools.agentConfigureTool.requiresConsent, true);
   assert.equal(env.tools.agentConfigureTool.capability, 'orchestrator');
   const registered = [];

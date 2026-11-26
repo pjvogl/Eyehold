@@ -78,7 +78,7 @@ const OVERLAP = `(() => {
     await cdp.send('Page.navigate', { url: URL });
     for (let i = 0; i < 80; i++) { await sleep(250); try { if (await evalJS(cdp, `!!document.getElementById('chat-input') && !!window.Chat`)) break; } catch (_) {} }
     await sleep(2500);
-    // object = capability: a seeded station has no props, so fs tools come back withheld — present a cabinet to /api/run
+    // object = capability: a seeded keep has no props, so fs tools come back withheld — present a cabinet to /api/run
     await evalJS(cdp, `(() => { const f = window.fetch; window.fetch = (u, o) => { try { if (String(u).indexOf('/api/run') >= 0 && o && typeof o.body === 'string') { const b = JSON.parse(o.body); b.placed = Array.from(new Set([].concat(b.placed || [], ['cabinet']))); o = Object.assign({}, o, { body: JSON.stringify(b) }); } } catch (_) {} return f(u, o); }; return 1; })()`);
     for (const m of MSGS) console.log('  sent →', await evalJS(cdp, SEND(m)), 'rows');
     await sleep(800);

@@ -1,4 +1,4 @@
-/* sidecar/remote/approvals.js — every open approval on this station, in one place.
+/* sidecar/remote/approvals.js — every open approval on this keep, in one place.
 
    Before this, an approval lived only with whoever started the run: a desktop run's prompt sat in
    pendingByRun (answerable only by the page holding that run's stream), a Telegram run's prompt sat in

@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-/* scripts/qa/guardian.mjs — the Self-Testing Station's GREEN GUARDIAN (lane Q1).
+/* scripts/qa/guardian.mjs — the Self-Testing Keep's GREEN GUARDIAN (lane Q1).
  *
  * WHY THIS EXISTS: five-plus sessions merge into trunk in parallel and breakage is
  * currently discovered by Andrew using the app. The Guardian answers ONE question on a

@@ -159,7 +159,7 @@ function currentSave(overrides = {}) {
     workstreams: [{ id: 'general', title: 'General', messages: [{ role: 'user', content: 'post-update state check' }] }],
     activeId: 'general',
     generalId: 'general',
-    stationStats: { xp: 42, level: 3 },
+    keepStats: { xp: 42, level: 3 },
     profile: { v: 1, tags: { beta: 1 }, seed: null, enabled: true, total: 1 },
     dossier: { v: 1, dims: { identity: ['builder'], stack: ['desktop'], goals: ['replace legacy harness'], style: [], standing_orders: [], pain: [], ambition: [] }, seededFrom: {}, updatedAt: 0 }
   }, overrides);

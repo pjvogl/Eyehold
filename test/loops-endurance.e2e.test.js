@@ -1,7 +1,7 @@
 /* node test/loops-endurance.e2e.test.js — process-level endurance proof for standing autonomy.
 
    Safe local fixture only: a localhost OpenRouter double performs a two-turn read-only run
-   (station.inspect -> final synthesis) and deliberately leaves the synthesis stream hung. The test kills and
+   (keep.inspect -> final synthesis) and deliberately leaves the synthesis stream hung. The test kills and
    restarts the real sidecar around that durable boundary, then proves:
      - restart never auto-replays the provider call or leaves a false RUNNING row;
      - the run journal preserves provider-valid context and exposes no false completed run;
@@ -50,7 +50,7 @@ function startProvider() {
       const hasToolResult = messages.some(message => message && message.role === 'tool');
       if (!hasToolResult) {
         res.write('data: ' + JSON.stringify({ choices: [{ delta: { tool_calls: [{
-          index: 0, id: 'inspect-1', type: 'function', function: { name: 'station_inspect', arguments: '{}' }
+          index: 0, id: 'inspect-1', type: 'function', function: { name: 'keep_inspect', arguments: '{}' }
         }] } }] }) + '\n\n');
         res.write('data: ' + JSON.stringify({ choices: [{ delta: {}, finish_reason: 'tool_calls' }], usage: { prompt_tokens: 5, completion_tokens: 3, total_tokens: 8 } }) + '\n\n');
         res.write('data: [DONE]\n\n');
@@ -106,7 +106,7 @@ async function until(fixture, predicate, label, timeoutMs) {
 
   try {
     await fixture.start();
-    const restartObjective = 'inspect local station state in multiple steps and report once';
+    const restartObjective = 'inspect local keep state in multiple steps and report once';
     const cancelObjective = 'inspect then wait for cancellation';
     const loopCalls = objective => provider.state.calls.filter(call => {
       const users = call.messages.filter(message => message && message.role === 'user');

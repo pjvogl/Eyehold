@@ -46,14 +46,14 @@ function probe(PS,p){
   classicBox:{w:baseline.w,h:baseline.h},remasterBox:{w:p.w,h:p.h},tilePixels:PS.TILE,
   orientation:{facings:views,canMirror:PS.canMirror(p.id),classicFacings:classic.facings(p.id)},
   geometry:{blocks:!!p.blocks,flat:!!p.flat,tableSurface:!!p.surface,requiredMount:p.mount||null,optionalSurfaceMount:!!p.stack,surfaceRisePixels:8},
-  assignedWorkstation:!!p.seat,leisureUse:p.use||null,capabilityObjectType:cap[p.id]||null,
+  assignedWorkkeep:!!p.seat,leisureUse:p.use||null,capabilityObjectType:cap[p.id]||null,
   animatedCatalogFlag:!!p.animated,light:PS.EMIT[p.id]||null,
   sampledAnimation:{remaster:probe(PS,p),classic:probe(classic,baseline)},
  };
  });
  const rasterArt={
-  desk:['workstation.png','workstation-compact.png','remaster/workstation-e.png','remaster/workstation-n.png','remaster/workstation-compact-n.png'],
-  desk2:['workstation.png','workstation-compact.png','remaster/workstation-e.png','remaster/workstation-n.png','remaster/workstation-compact-n.png'],
+  desk:['workkeep.png','workkeep-compact.png','remaster/workkeep-e.png','remaster/workkeep-n.png','remaster/workkeep-compact-n.png'],
+  desk2:['workkeep.png','workkeep-compact.png','remaster/workkeep-e.png','remaster/workkeep-n.png','remaster/workkeep-compact-n.png'],
   chair:['chair-s.png','chair-e.png','chair-n.png'],
   bridge_consolebank:['console-bank.png'],bridge_tacticaltable:['tactical-table.png'],
   bridge_equipmentbay:['equipment-bay.png'],bridge_deckperimeter:['deck-perimeter.png']
@@ -70,7 +70,7 @@ function probe(PS,p){
   bay:['Assigned agent binding and dock name alter physical label.','Hero working flag or a non-awaiting crew workUntil > now lights its assigned bay.'],
   outbox:['Real reply delivery flashes for 600 ms after the outbound crate reaches the chute.','ReturnStore pending count renders uncollected result crates (capped visible stack and count).'],
   airlock:['Saved live door state selects open, closed or jammed iris geometry; jam sparks use the frame clock.'],
-  missionboard:['Real open quest count, station-gap flag, routine jam flag and pending autojob proposal count drive pins and warnings.'],
+  missionboard:['Real open quest count, keep-gap flag, routine jam flag and pending autojob proposal count drive pins and warnings.'],
   trophycase:['Real earned trophy count fills the case; JourneyStore reached-goal stage drives crown beacons.'],
   bunk:['Actual sleeping body sets sleeper, splits quilt into drawOver, and preserves pillow/blanket body occlusion.']
  };
@@ -83,12 +83,12 @@ function probe(PS,p){
    completion:'baseline-audited; comprehensive prop pass not accepted'
   };
   row.liveAnimationTriggers=[...(specialTriggers[row.id]||[])];
-  if(row.assignedWorkstation)row.liveAnimationTriggers.push('world.workstationLit: assigned hero.working or assigned crew.working with compute eligibility; real token/tool heat and only a published progress fraction. At this baseline this is work-state gating, not strict physical occupancy.');
+  if(row.assignedWorkkeep)row.liveAnimationTriggers.push('world.workkeepLit: assigned hero.working or assigned crew.working with compute eligibility; real token/tool heat and only a published progress fraction. At this baseline this is work-state gating, not strict physical occupancy.');
   if(pulseToolFamilies[row.capabilityObjectType])row.liveAnimationTriggers.push('Real '+pulseToolFamilies[row.capabilityObjectType].join(', ')+' tool completion chooses the granting prop instance and overlays a 900 ms success accent or red failure surge.');
   if(row.leisureUse)row.liveAnimationTriggers.push('Actual leisure usingProp / watchProp can set work on this prop; body approach and use animation follow leisureUse. In the baseline draw work expression this leisure trigger directly checks the hero, not a separate crew leisure flag.');
   if(row.sampledAnimation.remaster.idleFrameVariants>1)row.liveAnimationTriggers.push('Autonomous sprite clock animation is present in the sampled default state; cosmetic motion is not evidence of provider work, route decisions or external state.');
   if(!row.liveAnimationTriggers.length)row.liveAnimationTriggers.push('No direct event-driven or sampled default sprite animation. Preserve static art; no invented status or progress.');
-  row.anchorContract=row.assignedWorkstation?'deskSeat: adjacent walkable center-out approach; desk/desk2 respect remaster facing, others stay south. Fractional render center shifts at most half a tile; separate generated seatchair.':
+  row.anchorContract=row.assignedWorkkeep?'deskSeat: adjacent walkable center-out approach; desk/desk2 respect remaster facing, others stay south. Fractional render center shifts at most half a tile; separate generated seatchair.':
    row.id==='bunk'?'planBedSleep: separate mattress claim and lying pose; frame/pillow below body, quilt above.':
    ['recliner','recliner_r'].includes(row.id)?'planCouchSit with SIDE_SEAT: fixed west/east view, dx -2/+2 px, lift 2 px, near-arm overlay above body.':
    row.leisureUse?.kind==='seat'?'planSeat: one occupant claim, walk to an adjacent tile, render on the seat tile at bottom minus 1 px plus per-type seat lift; explicit rotated facing beats counter inference.':
@@ -101,7 +101,7 @@ function probe(PS,p){
   row.directionalArtNeed=row.geometry.flat?'No elevated projection needed; exact integer quarter-turn of flat pattern is valid.':
    row.family==='workflow'?'Do not offer cosmetic rotation: mouth/arrow direction belongs to real routing. Directional art needs a matching route contract.':
    row.orientation.facings.length>1?'Keep offered authored projections and mirror semantics. Verify contact, standing height, occlusion and seat/mount geometry in every offered facing.':
-   row.assignedWorkstation?'Author east and north views plus grounded mirrored west, then extend actual front approach and seat contracts before enabling rotation.':
+   row.assignedWorkkeep?'Author east and north views plus grounded mirrored west, then extend actual front approach and seat contracts before enabling rotation.':
    row.geometry.requiredMount==='wall'?'Author wall-specific profiles only for supported mounting walls; never rotate an upright panel bitmap.':
    'South-only at baseline. For free placement, author side/rear projections rather than rotate the elevation; preserve upright box unless footprint is genuine plan.';
   const needle='id: "'+row.id+'"';

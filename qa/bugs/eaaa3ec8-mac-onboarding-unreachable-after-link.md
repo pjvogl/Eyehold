@@ -25,7 +25,7 @@ Engineering work closed for the reproduced pairing/keychain recovery races that 
 
 ## Symptom
 
-Paid onboarding enters reload/unlink recovery and leaves the station unreachable.
+Paid onboarding enters reload/unlink recovery and leaves the keep unreachable.
 
 ## Repro
 
@@ -33,7 +33,7 @@ Customer path: complete linking on Mac, reload, then follow unlink/relink recove
 
 ## Evidence
 
-docs/EMAIL_BUG_FOLLOWUP_2026-09-04.md; test/station-recovery.e2e.test.js
+docs/EMAIL_BUG_FOLLOWUP_2026-09-04.md; test/keep-recovery.e2e.test.js
 
 ## Verdict
 
@@ -41,7 +41,7 @@ Current disposition: Engineering work closed for the reproduced pairing/keychain
 
 Historical investigation notes (superseded for engineering closure):
 
-Keep open in engineering intake despite upstream issue closure. Related station-recovery fixes and tag ancestry do not prove this customer path. Requires physical Mac, exact installer and link-state receipts.
+Keep open in engineering intake despite upstream issue closure. Related keep-recovery fixes and tag ancestry do not prove this customer path. Requires physical Mac, exact installer and link-state receipts.
 
 Release verification 2026-09-06: CI 34070924471 built and notarized both Mac architectures for bd65c7737. Intel installed acceptance passed Finder launch, sidecar startup, legacy-state preservation and restart. That fixture does not exercise a paid account or the affected Apple Silicon keychain/relink path. The exact current fast/HTTP gates also pass the paid-link regressions. Physical affected-account acceptance remains outstanding.
 
@@ -50,7 +50,7 @@ Release verification 2026-09-06: CI 34070924471 built and notarized both Mac arc
 2026-09-06: owner reports no available Mac tester and requests work from known evidence.
 The three pending cloud repairs, including magic-link SameSite session recovery, are now
 deployed and verified as documented in `docs/RELEASE_FOLLOWTHROUGH_2026-09-06.md`. Issue #2
-was re-read: the original symptom is the native STATION DATA UNREACHABLE screen after
+was re-read: the original symptom is the native KEEP DATA UNREACHABLE screen after
 reload/unlink, not merely a browser sign-in redirect. Therefore the cloud cookie repair
 is not relabeled as this report's proven cause. Source recovery regressions pass; affected
 Apple Silicon recovery remains unconfirmed.

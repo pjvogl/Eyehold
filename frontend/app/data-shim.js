@@ -38,7 +38,7 @@ DATA.SKINS = {
   pepe: {"name":"Pepe","set":"approved_pepe","scale":0.25,"sourceStandingHeight":76},
   capybara: {"name":"Capybara","set":"approved_capybara","scale":0.25,"sourceStandingHeight":76},
   vaultboy: {"name":"Vault Boy","set":"approved_vaultboy","scale":0.25,"sourceStandingHeight":76},
-  station_minion: {"name":"Clean Cadet","set":"approved_station_minion","scale":0.25,"sourceStandingHeight":76},
+  keep_minion: {"name":"Clean Cadet","set":"approved_keep_minion","scale":0.25,"sourceStandingHeight":76},
   blank_blue: {"name":"Blank Blue","set":"approved_blank_blue","scale":0.25,"sourceStandingHeight":76},
   blank_green: {"name":"Blank Green","set":"approved_blank_green","scale":0.25,"sourceStandingHeight":76},
   blank_red: {"name":"Blank Red","set":"approved_blank_red","scale":0.25,"sourceStandingHeight":76},
@@ -72,5 +72,5 @@ DATA.SKINS = {
   elonmusk: {"name":"Elon Musk","set":"approved_elonmusk","scale":0.25,"sourceStandingHeight":76},
 };
 // Keep the retired duplicate readable in old saves without offering it in the picker.
-Object.defineProperty(DATA.SKINS, 'minionchar', { value: DATA.SKINS.station_minion });
+Object.defineProperty(DATA.SKINS, 'minionchar', { value: DATA.SKINS.keep_minion });
 DATA.DEFAULT_SKIN = 'blank';

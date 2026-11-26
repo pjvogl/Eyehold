@@ -1,7 +1,7 @@
 #!/usr/bin/env node
-// dev/shellshots.mjs — ANDREW'S OWN STATION, shell reach before vs after.
+// dev/shellshots.mjs — ANDREW'S OWN KEEP, shell reach before vs after.
 //
-// Left: the shipped bake (stationbake.before.js, trunk's copy). Right: this branch.
+// Left: the shipped bake (keepbake.before.js, trunk's copy). Right: this branch.
 // Both are shot un-clad AND with four rooms clad in different skins, because the defect only
 // shows when you compare a clad room against the shell around it.
 //
@@ -41,10 +41,10 @@ const PROBE = `(() => {
     o.g.drawImage(lit.c, 0, 0, bk.W * 2, bk.H * 2);
     return o.c.toDataURL('image/png').split(',')[1];
   }
-  const B = window.StationBakeBefore;
+  const B = window.KeepBakeBefore;
   return JSON.stringify({ crops: {
-    before_unclad: shot(B, false), after_unclad: shot(StationBake, false),
-    before_mixed:  shot(B, true),  after_mixed:  shot(StationBake, true)
+    before_unclad: shot(B, false), after_unclad: shot(KeepBake, false),
+    before_mixed:  shot(B, true),  after_mixed:  shot(KeepBake, true)
   } });
 })()`;
 
@@ -64,11 +64,11 @@ if (!(await waitDevReady(cdp, evalJS, { url: URL }))) {
   try { side.kill(); } catch {}
   process.exit(2);
 }
-/* THE SHIPPED BAKE, LOADED BESIDE THE BRANCH'S. Trunk's stationbake.js, rebound to a second global
+/* THE SHIPPED BAKE, LOADED BESIDE THE BRANCH'S. Trunk's keepbake.js, rebound to a second global
    and evaluated in the same page, so before/after are the same geometry through the same canvas —
    the shim pattern the hull and wall lanes both used. */
-const beforeSrc = execFileSync('git', ['show', 'HEAD:frontend/app/stationbake.js'], { encoding: 'utf8', maxBuffer: 1 << 26 })
-  .replace('const StationBake = (() =>', 'window.StationBakeBefore = (() =>')
+const beforeSrc = execFileSync('git', ['show', 'HEAD:frontend/app/keepbake.js'], { encoding: 'utf8', maxBuffer: 1 << 26 })
+  .replace('const KeepBake = (() =>', 'window.KeepBakeBefore = (() =>')
   .replace(/if \(typeof module[\s\S]*$/, '');
 await evalJS(cdp, beforeSrc + '\n;"ok"');
 const data = JSON.parse(await evalJS(cdp, PROBE));

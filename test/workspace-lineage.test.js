@@ -21,14 +21,14 @@ try {
   A.eq(v.onboardingAllowed, true, 'onboarding is allowed only with zero evidence');
 
   // E-STOP/scheduler bookkeeping (2026-08-25): the desktop shell fires POST /api/halt on EVERY clean quit,
-  // which writes these files even on a station that was never created. They stranded a fresh install on the
-  // recovery gate after one open+quit. They are INFRA — a file the sidecar writes stationlessly is never
-  // proof a Commander created a station.
+  // which writes these files even on a keep that was never created. They stranded a fresh install on the
+  // recovery gate after one open+quit. They are INFRA — a file the sidecar writes keeplessly is never
+  // proof a Commander created a keep.
   for (const f of ['loops.halt.json', 'nightshift.state.json', 'cron.halt.json', 'nightshift.state.json.bak']) {
     fs.writeFileSync(path.join(current, f), '{"halted":true}');
   }
   v = inspectWorkspaceLineage({ fs, path, workspaceRoot: current, candidateRoots: [legacy], snapshotsRoot: snapshots, platform: process.platform });
-  A.eq(v.priorInstallEvidence, false, 'quit-path E-STOP bookkeeping (loops/nightshift/cron halt state) is not prior-station evidence');
+  A.eq(v.priorInstallEvidence, false, 'quit-path E-STOP bookkeeping (loops/nightshift/cron halt state) is not prior-keep evidence');
   A.eq(v.onboardingAllowed, true, 'a fresh install that was opened and closed once still onboards');
   for (const f of ['loops.halt.json', 'nightshift.state.json', 'cron.halt.json', 'nightshift.state.json.bak']) {
     fs.unlinkSync(path.join(current, f));
@@ -36,12 +36,12 @@ try {
 
   fs.writeFileSync(path.join(current, 'future-cache-v2.json'), '{"cache":true}');
   v = inspectWorkspaceLineage({ fs, path, workspaceRoot: current, candidateRoots: [legacy], snapshotsRoot: snapshots, platform: process.platform });
-  A.eq(v.priorInstallEvidence, false, 'unknown cache files cannot become prior-station evidence by denylist omission');
+  A.eq(v.priorInstallEvidence, false, 'unknown cache files cannot become prior-keep evidence by denylist omission');
   fs.unlinkSync(path.join(current, 'future-cache-v2.json'));
 
   fs.writeFileSync(path.join(current, 'ledger.jsonl'), '{"event":"prior-work"}\n');
   v = inspectWorkspaceLineage({ fs, path, workspaceRoot: current, candidateRoots: [legacy], snapshotsRoot: snapshots, platform: process.platform });
-  A.eq(v.priorInstallEvidence, true, 'known durable station ledgers still block destructive first-run inference when the save is missing');
+  A.eq(v.priorInstallEvidence, true, 'known durable keep ledgers still block destructive first-run inference when the save is missing');
   fs.unlinkSync(path.join(current, 'ledger.jsonl'));
 
   fs.mkdirSync(legacy, { recursive: true });
@@ -80,10 +80,10 @@ try {
   A.ok(fn.includes('/api/lineage/recover') && fn.includes('/api/lineage/report'), 'Recovery Mode wires both actions to authenticated sidecar truth');
   // START FRESH is NOT a bypass: it is sidecar-backed (quarantine + marker, never a delete) and the page still
   // has no route into startCreation. The lock is the SHAPE — the button exists, it is wired to the sidecar
-  // route, and nothing on the screen creates a station client-side.
+  // route, and nothing on the screen creates a keep client-side.
   A.ok(screen.includes('btn-lineage-fresh'), 'Recovery Mode offers START FRESH (the third exit)');
   A.ok(fn.includes('/api/lineage/start-fresh'), 'START FRESH is wired to the sidecar quarantine route, never a client-side wipe');
-  A.eq(/CREATE.*STATION/i.test(screen), false, 'Recovery Mode exposes no client-side create-station bypass');
+  A.eq(/CREATE.*KEEP/i.test(screen), false, 'Recovery Mode exposes no client-side create-keep bypass');
 
   // startFresh(): quarantines current-workspace state (never deletes), acknowledges external roots, and the
   // next inspection allows onboarding.
@@ -121,8 +121,8 @@ try {
   fs.unlinkSync(path.join(current, '.fresh-start.json'));
 
   // START FRESH DRAINS PAST THE LISTING PAGE: meaningfulEntries caps each listing at 40 (bounded gate
-  // evidence), but a real station with a full roster easily exceeds 40 state files. Moving one page and
-  // returning ok left the remainder as live evidence — the gate stayed shut and the station was torn.
+  // evidence), but a real keep with a full roster easily exceeds 40 state files. Moving one page and
+  // returning ok left the remainder as live evidence — the gate stayed shut and the keep was torn.
   {
     const many = [];
     for (let i = 0; i < 23; i++) { many.push('crew' + String(i).padStart(2, '0') + '.notebook.json', 'crew' + String(i).padStart(2, '0') + '.todo.json'); }
@@ -130,7 +130,7 @@ try {
     for (const f of many) fs.writeFileSync(path.join(current, f), '{"v":1}');
     A.ok(many.length > 40, 'fixture exceeds one 40-entry listing page (' + many.length + ' files)');
     const big = startFresh({ fs, path, workspaceRoot: current, candidateRoots: [], snapshotsRoot: snapshots, platform: process.platform, now: () => Date.UTC(2026, 7, 28, 12, 0, 0) });
-    A.eq(big.ok, true, 'start fresh succeeds on a >40-file station');
+    A.eq(big.ok, true, 'start fresh succeeds on a >40-file keep');
     A.eq(big.moved.length, many.length, 'EVERY state file moved (' + big.moved.length + '/' + many.length + '), not just the first listing page');
     const bigAfter = inspectWorkspaceLineage({ fs, path, workspaceRoot: current, candidateRoots: [], snapshotsRoot: snapshots, platform: process.platform });
     A.eq(bigAfter.onboardingAllowed, true, 'the gate opens — no current-workspace evidence remains');

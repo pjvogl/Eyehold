@@ -108,7 +108,7 @@ function makeUpdatePreparation(deps) {
         snapshot: { file: bundleFile, bytes: written.bytes, sha256: written.sha256, manifestSha256: written.manifestSha256 },
         semanticFingerprint: fingerprint,
         requirements: readBack.report && readBack.report.requirements || [],
-        // entries the capture could not read (#91: vanished/locked/unresolvable) — the receipt never implies a byte-complete station
+        // entries the capture could not read (#91: vanished/locked/unresolvable) — the receipt never implies a byte-complete keep
         unreadable: (readBack.report && Array.isArray(readBack.report.skipped) ? readBack.report.skipped : []).filter(s => /^unreadable: /.test(String(s && s.reason))),
         browserKeys: Array.isArray(readBack.browser) ? readBack.browser.length : 0
       };
@@ -118,7 +118,7 @@ function makeUpdatePreparation(deps) {
         throw new Error('update receipt read-back mismatch');
       }
       // Integrity hashes are authoritative; read-only mode adds a practical guard against accidental rewrites.
-      try { fs.chmodSync(bundleFile, 0o400); } catch (_) {}   // owner-only: the bundle holds the whole station (0o444 was world-readable)
+      try { fs.chmodSync(bundleFile, 0o400); } catch (_) {}   // owner-only: the bundle holds the whole keep (0o444 was world-readable)
       try { fs.chmodSync(receiptFile, 0o400); } catch (_) {}
       nextReceipt.receiptFile = receiptFile;
       receipt = nextReceipt;

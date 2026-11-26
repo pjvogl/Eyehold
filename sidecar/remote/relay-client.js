@@ -1,7 +1,7 @@
-/* sidecar/remote/relay-client.js — the station dials OUT to the relay, so phones can reach it from anywhere.
+/* sidecar/remote/relay-client.js — the keep dials OUT to the relay, so phones can reach it from anywhere.
 
    No port forwarding and no inbound connection: this is an ordinary outgoing TLS WebSocket (Node's built-in
-   WebSocket, no package). The relay only switches sealed frames between this station and its paired phones
+   WebSocket, no package). The relay only switches sealed frames between this keep and its paired phones
    (relay/server.js); every phone request still goes through the same sessions → gateway path as the LAN door.
 
      const rc = makeRelayClient({ url, devices, sessions, gateway, crypto, WebSocketImpl, log, now })
@@ -15,7 +15,7 @@
      { t:'pair', pairingId, publicKey, name, proof } -> { t:'paired', deviceId, relayToken, fingerprint } | { t:'error' }
      { t:'hello', v, deviceId, eph, nonce }          -> { t:'welcome', welcome } | { t:'error' }
      { t:'call', frame }                             -> { t:'res', frame } | { t:'error' }
-     (station push)                                  -> { t:'ev', frame } */
+     (keep push)                                  -> { t:'ev', frame } */
 'use strict';
 
 const { note, swallow } = require('../failopen.js');
@@ -35,7 +35,7 @@ function makeRelayClient(d) {
   const url = String(d.url || '').replace(/\/+$/, '');
   let ws = null, state = 'off', rid = null, since = null, lastError = null;
   let retryMs = 1000, retryTimer = null, pingTimer = null, pongTimer = null, stopped = true;
-  /* the backoff resets only after the link has HELD (sweep 2026-10-02): reset on every 'ready', two stations sharing one
+  /* the backoff resets only after the link has HELD (sweep 2026-10-02): reset on every 'ready', two keeps sharing one
      key (an orphaned old process) replaced each other at the relay (4410) once a second forever, and every phone was
      dropped each cycle — now a link that dies within STABLE_MS keeps backing off. */
   const STABLE_MS = 30000;
@@ -67,9 +67,9 @@ function makeRelayClient(d) {
       if (!r.ok) return toPhone(conn, { t: 'error', error: r.error });
       const tok = devices.issueRelayToken(r.device.id);
       if (!tok.ok) return toPhone(conn, { t: 'error', error: 'paired, but the relay pass could not be saved — pair again from the desk' });
-      let st = null; try { st = devices.stationKeys(); } catch (e) { note('remote.relay-client.stationKeys', e); }
+      let st = null; try { st = devices.keepKeys(); } catch (e) { note('remote.relay-client.keepKeys', e); }
       log('paired ' + r.device.name + ' (' + r.device.id + ') over the relay');
-      toPhone(conn, { t: 'paired', deviceId: r.device.id, relayToken: tok.token, stationId: st && st.id, fingerprint: r.device.fingerprint });
+      toPhone(conn, { t: 'paired', deviceId: r.device.id, relayToken: tok.token, keepId: st && st.id, fingerprint: r.device.fingerprint });
       syncTokens();
       return;
     }
@@ -88,7 +88,7 @@ function makeRelayClient(d) {
     }
     if (msg.t === 'call') {
       const o = sessions.openRequest(c.sid, msg.frame);
-      // the frame's seq is plaintext, so the phone can tell WHICH request failed without the station opening it
+      // the frame's seq is plaintext, so the phone can tell WHICH request failed without the keep opening it
       if (!o.ok) return toPhone(conn, { t: 'error', error: o.error, seq: msg.frame && msg.frame.seq });
       const m = o.msg || {};
       const out = await gateway.call(m, { deviceId: o.session.deviceId, sessionId: o.session.id });
@@ -101,7 +101,7 @@ function makeRelayClient(d) {
     if (!m) return;
     if (m.t === 'challenge') {
       try {
-        const st = devices.stationKeys();
+        const st = devices.keepKeys();
         const sig = nodeCrypto.sign('sha256', Buffer.from(LABEL + '|' + String(m.nonce)), st.privateKey);
         send({ t: 'auth', pub: st.publicRaw, sig: C.b64u(sig) });
       } catch (e) { lastError = 'could not sign the relay challenge: ' + ((e && e.message) || e); }
@@ -124,7 +124,7 @@ function makeRelayClient(d) {
     if (!url || typeof WS !== 'function') { set('offline', !url ? 'no relay address set' : 'this runtime has no WebSocket'); return; }
     set('connecting');
     let sock;
-    try { sock = new WS(url + '/v1/station'); } catch (e) { return fail('could not open the relay connection: ' + ((e && e.message) || e)); }
+    try { sock = new WS(url + '/v1/keep'); } catch (e) { return fail('could not open the relay connection: ' + ((e && e.message) || e)); }
     ws = sock;
     sock.onmessage = (ev) => { if (ws === sock) onMessage(ev); };
     sock.onopen = () => {
@@ -163,7 +163,7 @@ function makeRelayClient(d) {
     clearTimers();
     for (const conn of Array.from(conns.keys())) drop(conn);
     const s = ws; ws = null;
-    if (s) { try { s.close(1000, 'station stopped'); } catch (e) { note('remote.relay-client.s.close', e); } }
+    if (s) { try { s.close(1000, 'keep stopped'); } catch (e) { note('remote.relay-client.s.close', e); } }
     set('off', null);
   }
   function info() { return { state, url: url || null, rid, since, lastError, phones: conns.size, retryInMs: state === 'offline' && retryTimer ? retryMs / 2 : null }; }

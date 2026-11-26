@@ -53,7 +53,7 @@ installer and customer outcomes in the existing durable register.
   attempt crashed allocating 4 KB of WebAssembly code memory on the resource-constrained
   host. No loop/shell assertions or fixture deadlines were weakened.
 - Live UI proof was repeated after the platform/UI integrations. The compact starter
-  station requires the proof to fall back from the 17-tile research line to the smaller
+  keep requires the proof to fall back from the 17-tile research line to the smaller
   complete front-desk line. All save/readback/duplicate/restart assertions remain intact.
   `.tmp/reliability-live-hermes.log` records the final combined-source repetition of all
   five scenarios and the matching ONCE id `63632b79-40f4-47b0-832b-1f7bef173046`

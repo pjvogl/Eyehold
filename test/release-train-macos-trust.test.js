@@ -17,7 +17,7 @@ const nativeScript = fs.readFileSync(path.join(root, 'scripts', 'sign-macos-nati
 
 A.ok(/os: macos-15-intel[\s\S]{0,120}target: darwin-x64/.test(yml),
   'public Intel release runs on an actual x86_64 hosted runner');
-A.ok(/Verify v0\.8\.5 station recovery on Intel macOS[\s\S]{0,220}uname -m[\s\S]{0,120}upgrade-085-090\.test\.js/.test(yml),
+A.ok(/Verify v0\.8\.5 keep recovery on Intel macOS[\s\S]{0,220}uname -m[\s\S]{0,120}upgrade-085-090\.test\.js/.test(yml),
   'public Intel release proves the released workspace upgrade on x86_64 hardware');
 
 const requiredStep = yml.match(

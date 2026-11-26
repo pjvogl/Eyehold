@@ -1,5 +1,5 @@
 /* test/channels.sse.test.js — the SSE fan-out that forwards channel/work-item telemetry to the
-   live station HUD. Pure + headless: a "client" is any object with .write(string); we drive it
+   live keep HUD. Pure + headless: a "client" is any object with .write(string); we drive it
    with a fake res (no node:http, no socket). Guards the two things that matter — every client gets
    each event, and disconnected/dead clients are removed so the Set never leaks.
    ALSO (G2.1): the runTeeView egress policy for broadcast-opted server-initiated runs — every
@@ -261,7 +261,7 @@ A.eq(runTeeView('agent.reasoning', { agentId: 'a1', runId: 'r1', on: true }), nu
   first.onerror();
   A.eq(bridge.source(), resumed, 'an obsolete source error cannot close its replacement');
   first.onmessage({ data: JSON.stringify({ name: 'queue.status', payload: { depth: 99 } }), lastEventId: 'a:1' });
-  A.eq(bridge.emitted.length, 0, 'obsolete source messages cannot mutate the station');
+  A.eq(bridge.emitted.length, 0, 'obsolete source messages cannot mutate the keep');
   const message = { data: JSON.stringify({ name: 'queue.status', payload: { depth: 2 } }), lastEventId: 'a:2' };
   resumed.onmessage(message); resumed.onmessage(message);
   A.eq(bridge.emitted.length, 1, 'a replayed duplicate is applied only once');

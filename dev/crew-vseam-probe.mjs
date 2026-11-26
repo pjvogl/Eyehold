@@ -3,7 +3,7 @@
  *
  * The ask: "users should have the option to raise the sessions way higher if they want more space
  * to see their sessions." The roster window measured a good default split and offered no lever.
- * This drives the new horizontal seam end to end on a real 6-agent, 12-session station and records
+ * This drives the new horizontal seam end to end on a real 6-agent, 12-session keep and records
  * at every step:
  *   where the handle sits (it must cover the gap the eye reads, between the WORKING/IDLE strip and
  *   the SESSIONS module) · the roster height and whole-row count · SESSIONS' height · that the px
@@ -127,7 +127,7 @@ const DBLCLICK = `(() => {
 // TEXT SIZE cannot be driven by writing body.style.zoom — applySettings re-derives it from the
 // store. Write the setting the app actually reads, then reload.
 const setScale = (v) => `(() => {
-  const KEY = 'eyehold.station.v1';
+  const KEY = 'eyehold.keep.v1';
   const r = JSON.parse(localStorage.getItem(KEY) || '{"v":1}');
   r.settings = Object.assign({}, r.settings, { textScale: ${v} });
   localStorage.setItem(KEY, JSON.stringify(r));

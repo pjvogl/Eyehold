@@ -43,7 +43,7 @@ const env = Object.assign({}, process.env, {
   SKYNET_WORKSPACES: SCRATCH,
   SKYNET_PORT: port
 });
-console.log('[onboard-fresh] FRESH first-run station: http://127.0.0.1:' + port
+console.log('[onboard-fresh] FRESH first-run keep: http://127.0.0.1:' + port
   + '  key ' + (key ? 'server-held' : 'NOT SET') + '  ws=' + SCRATCH + (KEEP ? ' [kept]' : ' [wiped]'));
 
 const child = spawn(process.execPath, [path.join(REPO, 'sidecar', 'index.js')], { cwd: REPO, env, stdio: 'inherit' });

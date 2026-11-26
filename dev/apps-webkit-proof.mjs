@@ -1,12 +1,12 @@
 // APPS in WEBKIT — the engine the macOS app runs (WKWebView), proven on Windows (2026-10-01).
 //   PW_CORE=<path to a playwright-core whose WebKit build is installed> node dev/apps-webkit-proof.mjs [port]
-//   (playwright-core@1.54.2 ↔ the installed webkit-2191; against a RUNNING station, default 8871)
+//   (playwright-core@1.54.2 ↔ the installed webkit-2191; against a RUNNING keep, default 8871)
 // The mac recipe that has held every release: the native shell is shared code (the CSP pin, the opener and the
 // sidecar are not platform-gated, and tauri://localhost is an allowed frame ancestor), so what can differ on a Mac is
 // the ENGINE. This drives real WebKit through the whole APPS surface: the glass keys and fields as WebKit computes
 // them, the dock menu's layout, a sandboxed app frame with the kit, the bridge store round-trip, auto height, a link
 // leaving through the opener (window.open here; Tauri's opener on the desktop), a frame that navigates itself away
-// being thrown out with the app put back, and the app window under the station's TEXT SIZE body zoom (the WebKit
+// being thrown out with the app put back, and the app window under the keep's TEXT SIZE body zoom (the WebKit
 // zoom quirk that broke build mode on a customer's M2 in 09-26).
 import { createRequire } from 'node:module';
 import { mkdirSync, writeFileSync, readdirSync, existsSync } from 'node:fs';
@@ -16,7 +16,7 @@ const PW_CORE = process.env.PW_CORE;
 if (!PW_CORE) throw new Error('set PW_CORE to a playwright-core folder');
 const { webkit } = createRequire(import.meta.url)(PW_CORE);
 const PORT = Number(process.argv[2] || 8871);
-const WS = process.env.STATION_WS || '';   // the station's workspaces folder (to write the test app's page)
+const WS = process.env.KEEP_WS || '';   // the keep's workspaces folder (to write the test app's page)
 const out = '.worldshots/apps-webkit';
 mkdirSync(out, { recursive: true });
 let failed = 0;
@@ -40,10 +40,10 @@ try {
   if (TRACE) { page.on('framenavigated', (f) => { if (f !== page.mainFrame()) console.log('  [' + (Date.now() - T0) + '] frame nav ' + f.url().slice(-50)); }); page.on('framedetached', () => console.log('  [' + (Date.now() - T0) + '] frame detached')); }
   await page.goto('http://127.0.0.1:' + PORT + '/');
   await page.waitForFunction(() => !!document.querySelector('#screen-game.active') && typeof window.AppsUI === 'object' && typeof window.PluginHost === 'object', null, { timeout: 90000 });
-  check('the station runs in WebKit', true, await browser.version());
+  check('the keep runs in WebKit', true, await browser.version());
   await page.evaluate(() => { const c = document.getElementById('nav-coach'); if (c) c.hidden = true; window.__opened = []; window.open = (u) => { window.__opened.push(String(u)); return null; }; });
   await page.evaluate(() => window.AppsUI.load());
-  if (TRACE) await page.evaluate(() => { const n = window.StationUI && StationUI.notify; if (n) StationUI.notify = function (m) { console.log('NOTIFY ' + String(m).slice(0, 120)); return n.apply(this, arguments); }; });
+  if (TRACE) await page.evaluate(() => { const n = window.KeepUI && KeepUI.notify; if (n) KeepUI.notify = function (m) { console.log('NOTIFY ' + String(m).slice(0, 120)); return n.apply(this, arguments); }; });
   if (TRACE) page.on('console', (m) => { if (/NOTIFY/.test(m.text())) console.log('  [' + (Date.now() - T0) + '] ' + m.text()); });
   // ---- the glass, as WebKit computes it ----
   await page.evaluate(() => window.AppsUI.openNew());
@@ -55,14 +55,14 @@ try {
   });
   check('WebKit draws the glass keys and fields (8px, 34px+, 16px; fields never black)', keys.build && keys.build.radius === '8px' && keys.build.h >= 34 && keys.build.font === '16px' && keys.chip.radius === '8px' && keys.name.radius === '8px' && !/rgb\(0, 0, 0\)/.test(keys.name.bg), JSON.stringify(keys));
   await page.screenshot({ path: join(out, '01-apps-window.png') });
-  // ---- a test app: created through the station, its page written beside it ----
+  // ---- a test app: created through the keep, its page written beside it ----
   const made = await page.evaluate(() => fetch('/api/apps', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name: 'WebKit Test', description: 'webkit proof' }) }).then((r) => r.json()));
   check('the app is created from WebKit', !!(made && made.ok), JSON.stringify(made).slice(0, 80));
   const id = made.app.id; testAppId = id;
   const appDir = WS ? join(WS, 'apps', id) : '';
-  check('its folder is on the station (STATION_WS)', !!appDir && existsSync(join(appDir, 'app.json')));
+  check('its folder is on the keep (KEEP_WS)', !!appDir && existsSync(join(appDir, 'app.json')));
   writeFileSync(join(appDir, 'index.html'), PAGE);
-  await sleep(2000);   // the station caches an app's version for 1.5 s; the crew's own write clears it at once
+  await sleep(2000);   // the keep caches an app's version for 1.5 s; the crew's own write clears it at once
   await page.evaluate((i) => window.AppsUI.onReload(i), id);
   // ---- the dock menu's layout in WebKit ----
   await page.evaluate(() => { const t = document.querySelector('#bottombar .bb-group[data-group="apps"] .bb-grp'); if (t) t.click(); });
@@ -83,7 +83,7 @@ try {
   const appFrame = async () => { for (let i = 0; i < 40; i++) { const f = page.frames().find((x) => /\/app-ui\//.test(x.url())); if (f) { try { if (await f.evaluate(() => /WebKit Test/.test(document.body.innerText))) return f; } catch (_) { /* reloading */ } } await sleep(500); } return null; };
   let fr = await appFrame();
   check('the app page renders in a sandboxed WebKit frame', !!fr);
-  check('the station kit is in the frame (bridge + glass classes)', !!fr && await fr.evaluate(() => !!(window.eyehold && window.eyehold.__kit) && getComputedStyle(document.querySelector('.sn-panel')).borderTopStyle === 'solid'));
+  check('the keep kit is in the frame (bridge + glass classes)', !!fr && await fr.evaluate(() => !!(window.eyehold && window.eyehold.__kit) && getComputedStyle(document.querySelector('.sn-panel')).borderTopStyle === 'solid'));
   await fr.fill('#t', 'hello from webkit');
   await fr.click('#save');
   await sleep(1500);
@@ -96,7 +96,7 @@ try {
   await fr.click('#out');
   await sleep(1500);
   const opened = await page.evaluate(() => window.__opened);
-  check('an outside link opens through the station (not inside the frame)', opened.length === 1 && opened[0] === 'https://example.com/apps-webkit-proof', JSON.stringify(opened));
+  check('an outside link opens through the keep (not inside the frame)', opened.length === 1 && opened[0] === 'https://example.com/apps-webkit-proof', JSON.stringify(opened));
   check('…and the frame stayed on its page', /\/app-ui\//.test(fr.url()));
   // ---- the frame that leaves ----
   await fr.evaluate(() => { setTimeout(() => { location.href = 'https://example.com/?leak=1'; }, 50); });
@@ -117,7 +117,7 @@ try {
   await page.screenshot({ path: join(out, '04-zoomed.png') });
 } catch (e) { console.error(String((e && e.stack) || e)); failed++; }
 finally {
-  // never leave the test app on the station, pass or fail
-  if (page && testAppId) { try { await page.evaluate((i) => fetch('/api/apps/delete', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: i }) }), testAppId); } catch (_) { /* the station is gone */ } }
+  // never leave the test app on the keep, pass or fail
+  if (page && testAppId) { try { await page.evaluate((i) => fetch('/api/apps/delete', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: i }) }), testAppId); } catch (_) { /* the keep is gone */ } }
   await browser.close(); process.exit(failed ? 1 : 0);
 }

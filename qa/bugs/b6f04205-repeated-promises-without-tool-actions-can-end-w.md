@@ -26,7 +26,7 @@ A customer reports agents starting tasks and repeatedly stopping without explana
 
 1. Boot the seeded app with `node dev/seed.js --keep` in an isolated worktree and use a local OpenAI-compatible provider advertising tool support.
 2. Have the provider return `I'll work on that.` with finish reason `stop` for every model call, without tool calls.
-3. POST authenticated `/api/run` with `isTask:true`, a fresh stream, and `Please inspect the station and report what you find.`
+3. POST authenticated `/api/run` with `isTask:true`, a fresh stream, and `Please inspect the keep and report what you find.`
 4. Observe the continuation nudge, repeated promise, zero tool actions, and final `agent.run.end` with `reason:done` and no blocker explanation.
 
 ## Evidence

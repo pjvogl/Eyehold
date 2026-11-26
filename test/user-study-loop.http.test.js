@@ -55,7 +55,7 @@ const plan = status => ({
     const stale = await host.json('POST', '/api/goals', { goal: plan('open') });
     assert.equal(stale.body.goal.milestoneId, 'g_news:m2', 'a stale webview push can never walk the plan backwards');
 
-    // What the station learned while the window was closed: study batches from runs the browser never watched
+    // What the keep learned while the window was closed: study batches from runs the browser never watched
     // (a cron run on a crew agent, a channel run on the hero) are listed for the consent card, oldest first.
     await host.stop();
     const studyFile = require('node:path').join(host.workspace, 'study.state.json');

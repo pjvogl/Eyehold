@@ -4,11 +4,11 @@ Status: approved plan. The 2026-09-05 implementation makes an incremental clarit
 
 ## Objective
 
-Make the existing station understandable through normal use. A beginner should know what they can do now, what each visible object is for, whether they need it, who it affects, and how to get from an intention to a useful result. A power user should retain direct control over the same system.
+Make the existing keep understandable through normal use. A beginner should know what they can do now, what each visible object is for, whether they need it, who it affects, and how to get from an intention to a useful result. A power user should retain direct control over the same system.
 
 The central concern is understanding the operating model. Invalid placement feedback is a supporting fix, not the organizing priority. Success is users correctly predicting what Eyehold will do and completing useful work with little help.
 
-The station remains home. Preserve its pixel-art world, crew, meaningful equipment, conveyors, existing categories, and customization. Retire the duplicate My Work destination after transferring any unique useful actions into their existing category. Preserve saved work and configuration. Guidance should use existing selection panels, COMMS, and tutorial machinery.
+The keep remains home. Preserve its pixel-art world, crew, meaningful equipment, conveyors, existing categories, and customization. Retire the duplicate My Work destination after transferring any unique useful actions into their existing category. Preserve saved work and configuration. Guidance should use existing selection panels, COMMS, and tutorial machinery.
 
 ## Grounding and a correction to the earlier audit
 
@@ -18,7 +18,7 @@ Current trunk source was checked during planning at the observed `e9e210a24` rev
 
 - `docs/DECISIONS.md:35` says specialists own only their desk and other equipment is shared through the overseer; it explicitly rejects per-agent prop kits.
 - `frontend/app/tutorial.js:906` tells users to put the same gear in a crew agent's room.
-- `frontend/app/world.js:9366` distinguishes a bay-assigned room's tool reach from the station-wide equipment used for skill availability at `stationCaps`.
+- `frontend/app/world.js:9366` distinguishes a bay-assigned room's tool reach from the keep-wide equipment used for skill availability at `keepCaps`.
 - `sidecar/capability/resolve.js` resolves tools from an assigned room. `office.js` gives interactive and headless contexts different starting objects. `sidecar/index.js` adds execution-profile, unattended, and Full Access grants.
 - `sidecar/capability/effective-toolsets.js` already describes effective grants and their source. Its own header correctly says it does not establish service availability or a particular run's task policy.
 
@@ -34,7 +34,7 @@ For each concept, write one functional description, then identify the exact info
 |---|---|---|
 | Agent | The AI worker doing the task | Who will do this, and what can they use now? |
 | Props | Equipment that represents particular abilities, plus clearly marked decoration | What does this provide? Is it needed? Is an equivalent already available? |
-| Room | A space organizing the station, with any real scope effects shown explicitly | Does putting this here change who can use it? |
+| Room | A space organizing the keep, with any real scope effects shown explicitly | Does putting this here change who can use it? |
 | Conveyor | A reusable sequence of work steps | When does this run, who does each step, and where does the result go? |
 | Recipe | A ready-made job to start | What do I supply, and what will I get? |
 | Skill | Reusable instructions an agent follows | Does it already apply, and does it require anything else? |
@@ -47,7 +47,7 @@ For equipment, explicitly settle and prove: when one instance suffices; which va
 
 **Done when:** the product contract, runtime checks, and displayed explanations agree across the matrix. A read-only, run-aware explanation should reuse existing capability/connection authorities; it must not become another permission system or a second independent grant calculation.
 
-## 2. Make the station and its objects explain themselves
+## 2. Make the keep and its objects explain themselves
 
 **Deliverable:** an incremental update to the existing agent, prop, room, and workflow selection panels plus the prop palette.
 
@@ -65,7 +65,7 @@ Highlight affected agents/rooms on selection or placement preview. Keep hover a 
 
 **Done when:** a user can inspect a prop and correctly explain its purpose, necessity, recipients, and duplication rule without visiting Abilities or a manual. Selecting an existing object and previewing the same object teach identical rules.
 
-## 3. Make the first useful action obvious in the existing station
+## 3. Make the first useful action obvious in the existing keep
 
 **Deliverable:** a revised first-use COMMS/coach sequence and cleaner navigation hierarchy.
 
@@ -77,11 +77,11 @@ Replace the general construction-first lesson with a short, skippable sequence t
 
 Introduce additional equipment, another agent, or a conveyor only when it helps explain or accomplish the chosen task. For users who choose Build first, explain the selected tool and its effect directly; customization remains immediately available.
 
-Use one contextual COMMS/coach message at a time. Completed or dismissed help stays dismissed; help remains reachable later. Do not add a large permanent guidance panel over the station.
+Use one contextual COMMS/coach message at a time. Completed or dismissed help stays dismissed; help remains reachable later. Do not add a large permanent guidance panel over the keep.
 
 Give the existing categories crisp responsibilities: Tasks tracks work, Deliverables opens produced files/builds, Recipes starts prepared jobs, Automation manages repeated work, Quests tracks meaningful goals/progress, and Commander owns editable knowledge about the user. Link records across these categories with the current context preserved. Remove the My Work menu entry and hub after moving its unique source controls to Commander and relevant start/repeat/result actions to their established surfaces. Existing discovery data and work records survive.
 
-**Done when:** on a fresh configured station, a novice can choose an action, start it, understand its progress, and find the result without being taught the menu hierarchy or placing unnecessary equipment.
+**Done when:** on a fresh configured keep, a novice can choose an action, start it, understand its progress, and find the result without being taught the menu hierarchy or placing unnecessary equipment.
 
 ## 4. Make setup a continuous part of doing the work
 
@@ -117,7 +117,7 @@ This applies established recognition cues and progressive disclosure: make relev
 
 ## 6. Make the game teach useful work and make personalization useful
 
-**Deliverable:** refine the current station activity, coach, recommendation, and quest behavior. Reuse the existing recommendation arbiter and its single visible message slot.
+**Deliverable:** refine the current keep activity, coach, recommendation, and quest behavior. Reuse the existing recommendation arbiter and its single visible message slot.
 
 The repeated experience should be: ask or accept useful work, see its real execution, receive a result, give a correction, and see a better next suggestion. Show spatial cause and effect when it corresponds to real activity. Do not require room expansion or specialist recruitment just to complete a beginner lesson.
 
@@ -136,7 +136,7 @@ Ship in small reviewable passes, testing the same journeys after each pass:
 | Pass | Scope | Exit condition |
 |---|---|---|
 | A: coherent rules | Step 1; highest-impact prop/room wording and runtime mismatches from step 2 | Effective behavior and explanations agree; no duplicate-kit instructions contradict the intended model. |
-| B: understandable station | Remainder of step 2, first-use/navigation from step 3, essential information hierarchy from step 5 | A beginner can start work and explain objects without developer help. |
+| B: understandable keep | Remainder of step 2, first-use/navigation from step 3, essential information hierarchy from step 5 | A beginner can start work and explain objects without developer help. |
 | C: continuous work | Step 4 and completion/result clarity | Missing setup is resolved in context; workflow, routine, and result paths are completed. |
 | D: useful return visits | Step 6 and remaining expert refinements | Suggestions are understandable/useful and customization remains efficient. |
 
@@ -151,7 +151,7 @@ Proposed release targets for these journeys, to calibrate against the baseline:
 - No observed misunderstanding of access scope, whether a routine is active, or whether an action sends/publishes versus merely marks completion. Any such misunderstanding blocks that journey's sign-off.
 - Experienced participants can still change prompts, assignments, connection details, and routine settings; compare time and wrong turns with the baseline.
 
-Record provider/connection setup separately so authentication time does not conceal interface friction. Test fresh and existing stations, solo and multiple rooms, restricted and Full Access modes, direct and scheduled work, disconnected services, and narrow and wide windows. Include keyboard/focus checks; essential relationships cannot depend on color or hover alone.
+Record provider/connection setup separately so authentication time does not conceal interface friction. Test fresh and existing keeps, solo and multiple rooms, restricted and Full Access modes, direct and scheduled work, disconnected services, and narrow and wide windows. Include keyboard/focus checks; essential relationships cannot depend on color or hover alone.
 
 For implementation, run the repository's required test gates and verify the edited behavior in the live app. Add focused behavior coverage where rules/state transitions change; visual wording changes are reviewed through live journeys. No claim of universal ease of use follows from a green automated suite.
 
@@ -176,11 +176,11 @@ The ongoing rule is: each addition must fit the model users already learned, or 
 These are starting points, not claims that only these files require changes. Recheck current trunk before implementation.
 
 - Rules and availability: `sidecar/capability/{resolve,office,effective-toolsets}.js`, `sidecar/index.js`, `frontend/app/world.js`, existing execution-profile and permission authorities.
-- Station and equipment: `frontend/app/build.js`, `frontend/app/tutorial.js`, `frontend/app/windows/connectors.js`, current selected-object cards and world labels.
+- Keep and equipment: `frontend/app/build.js`, `frontend/app/tutorial.js`, `frontend/app/windows/connectors.js`, current selected-object cards and world labels.
 - First useful task: `frontend/app/onboarding.js`, `frontend/app/chat.js`, `frontend/app/firstvalue.js`, existing marketplace/recipe launch.
-- Category cleanup: current station navigation and `frontend/app/workhub.js`; preserve discovery/source data while relocating unique controls.
+- Category cleanup: current keep navigation and `frontend/app/workhub.js`; preserve discovery/source data while relocating unique controls.
 - Proactive help: `frontend/app/recommend.js`, `beatcard.js`, current Commander, quest, and recommendation stores. Preserve one evidence-backed voice.
 
-The implementation preserves the runtime and station: read-only equipment explanations, purpose-based prop search, corrected optional tour, existing-category navigation, draft creation in Recipes, sources in Commander, clearer workflow/routine/completion labels and expandable technical details. The duplicate My Work destination is retired. The new behavior contract and PR-review prompts keep these explanations consistent.
+The implementation preserves the runtime and keep: read-only equipment explanations, purpose-based prop search, corrected optional tour, existing-category navigation, draft creation in Recipes, sources in Commander, clearer workflow/routine/completion labels and expandable technical details. The duplicate My Work destination is retired. The new behavior contract and PR-review prompts keep these explanations consistent.
 
 This does not constitute sign-off on every exit condition above. Fresh-user sessions remain outstanding. Automatic return from every connector setup, affected-agent canvas highlights and broader quest refinements remain follow-through; this pass reuses the existing supported connection and workflow mechanisms. Matching service names now share one catalog entry with an expandable alternative API connection. Record tested journeys in the implementation receipt rather than treating this plan as proof of completed behavior.

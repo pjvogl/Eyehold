@@ -7,7 +7,7 @@ here says "ensure that."
 
 **The one law (READY-GATE):** no version gets cut, and no session/doc claims Eyehold is "ready" or
 "go-public-able", without a fresh `npm run qa:ready` printing **READY** next to the claim. Lane-green is
-not project-green. "Lane X verified" only ever means lane X — station-wide status is whatever
+not project-green. "Lane X verified" only ever means lane X — keep-wide status is whatever
 `qa:ready` says, nothing softer.
 
 **Why this exists (session audit 2026-07-07):** the EL loop fixed *detection* but not the *repeat* —

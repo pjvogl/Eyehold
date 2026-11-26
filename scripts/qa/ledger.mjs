@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-/* scripts/qa/ledger.mjs — the Self-Testing Station's findings spine (lane Q0).
+/* scripts/qa/ledger.mjs — the Self-Testing Keep's findings spine (lane Q0).
  *
  * WHY THIS EXISTS: five-plus sessions build in parallel and breakage is currently
  * found by Andrew using the app. The QA crew (Green Guardian / Beginner Run / Truth

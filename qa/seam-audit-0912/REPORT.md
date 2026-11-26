@@ -6,7 +6,7 @@ Audit date: September 12–13, 2026. Source: `091d6e7f312e08ca9e813e94f7b8863d1a
 
 The most urgent cleanup is consolidating lifecycle and state handling across entry points. Safer implementations already exist beside older copies. Nine actionable findings emerged: three reproduced through the running UI, and six reproduced using unchanged source functions with controlled dependencies. Those evidence classes are kept separate below. None is an installed-desktop reproduction or an affected-customer recovery claim.
 
-The audit changed no product code. It created a separate seeded station, ran read/failure probes, and restarted that station. No paid model run, real channel message, production profile edit, merge, or release was performed. The model name `replay` was only a keyless placeholder here; the launcher correctly rejected it as an unavailable live model. These receipts do not claim a provider replay run occurred.
+The audit changed no product code. It created a separate seeded keep, ran read/failure probes, and restarted that keep. No paid model run, real channel message, production profile edit, merge, or release was performed. The model name `replay` was only a keyless placeholder here; the launcher correctly rejected it as an unavailable live model. These receipts do not claim a provider replay run occurred.
 
 ## Findings, ordered for repair
 
@@ -15,7 +15,7 @@ The audit changed no product code. It created a separate seeded station, ran rea
 | A1 | P1 | Failed startup history read permanently skips away-work review recovery | Actual ReturnStore/Returns code, two simulated page boots |
 | A2 | P1 | Agent-command loop Pause/Stop leaves an aborted iteration running and its lease held | Actual command function and loop driver, controlled provider settlement |
 | A3 | P1 | Follow-up checkbox can save a routine that its scheduler refuses to run | Real UI save, live API read, sidecar restart, actual preflight |
-| A4 | P1 | Routine creation pins the station provider instead of inheriting the selected agent's provider | Actual backend resolver; UI request path traced |
+| A4 | P1 | Routine creation pins the keep provider instead of inheriting the selected agent's provider | Actual backend resolver; UI request path traced |
 | A5 | P2 | Loop refresh destroys a rejection explanation while the user types | Running UI, controlled candidate fixture |
 | A6 | P2 | Loop Pause/Resume silently ignores refused requests | Running UI, injected HTTP 409, request receipt |
 | A7 | P2 | Outbox labels one run with another run's answer | Actual rendering block, two-run transcript fixture |
@@ -58,11 +58,11 @@ Repair: capture the intended conversation whenever follow-up is requested, or di
 
 Source: [routines.js](../../frontend/app/windows/routines.js) lines 467–474 and 622–643; [harness.js](../../frontend/app/harness.js) line 456; [index.js](../../sidecar/index.js) lines 2035–2038 and 2243–2250.
 
-The form selects a roster agent, but gets `provider` from the global `Harness.getProv()`. That value becomes an explicit saved job override. The executor prefers `job.provider` over the selected agent's provider, while the model can still come from that agent. A Codex specialist can therefore inherit an OpenRouter job provider simply because that was the station selection when the routine was saved. Later agent provider changes also lose to this saved override.
+The form selects a roster agent, but gets `provider` from the global `Harness.getProv()`. That value becomes an explicit saved job override. The executor prefers `job.provider` over the selected agent's provider, while the model can still come from that agent. A Codex specialist can therefore inherit an OpenRouter job provider simply because that was the keep selection when the routine was saved. Later agent provider changes also lose to this saved override.
 
 Actual resolver probe: the same Codex agent resolves to `codex` without an override and to `openrouter` with the UI-shaped override. No live request using real multi-provider credentials was made, so the precise external failure depends on the model/provider pair.
 
-Repair: inherit the selected agent's complete runtime configuration by default; only persist a provider override if the form explicitly offers and explains one. Include model, base URL, reasoning, credential identity and subsequent agent-setting edits in parity tests. Goal-loop creation at `loops.js:611` also sends the station provider and is a sibling to examine.
+Repair: inherit the selected agent's complete runtime configuration by default; only persist a provider override if the form explicitly offers and explains one. Include model, base URL, reasoning, credential identity and subsequent agent-setting edits in parity tests. Goal-loop creation at `loops.js:611` also sends the keep provider and is a sibling to examine.
 
 ### A5 — A four-second poll erases loop review input
 
@@ -94,11 +94,11 @@ Repair: resolve a bounded run transcript or a run-owned output summary. Use `sou
 
 ### A8 — “Saved” feedback does not depend on successful settings persistence
 
-Source: [stationui.js](../../frontend/app/stationui.js) lines 180, 5515 and 6319–6329.
+Source: [keepui.js](../../frontend/app/keepui.js) lines 180, 5515 and 6319–6329.
 
 The local settings `save()` swallows every `localStorage.setItem` error. Appearance and notification handlers then call `flashSaved()` unconditionally. A quota/storage denial can therefore apply a preference in memory, say it was saved, and revert on reload.
 
-The unchanged save function swallowed an injected storage exception. The unconditional confirmation is source-verified; an actual full-disk or browser-quota UI scenario was not run. This finding concerns these local preferences, not provider credentials or all station persistence.
+The unchanged save function swallowed an injected storage exception. The unconditional confirmation is source-verified; an actual full-disk or browser-quota UI scenario was not run. This finding concerns these local preferences, not provider credentials or all keep persistence.
 
 Repair: return an explicit persistence result. Distinguish “applied for this session” from durable save, retain an unsaved marker, and retry safely. A single shared save-result contract should cover appearance and notifications.
 
@@ -118,7 +118,7 @@ Repair: add a bounded whole-response deadline for ordinary JSON reads, plus expl
 | --- | --- | --- |
 | Pause | Routines: “DISABLE”/enable with errors. Goal loops: “PAUSE”/resume without errors. Agent loop command uses weaker cancellation than the HTTP button. | Same action semantics, pending state and explicit failure. Separate pause from destructive stop. |
 | Schedule | Navigation says “Scheduled jobs”/“New schedule”; prose and errors say “Active Routines”/“Create Routine”; success says “routine.” | Choose a primary name and preserve it in navigation, help and errors. |
-| Agent settings | Routine picker chooses agent; provider comes from station; model can come from agent. | Show and execute one resolved agent configuration. |
+| Agent settings | Routine picker chooses agent; provider comes from keep; model can come from agent. | Show and execute one resolved agent configuration. |
 | Conversation delivery | “Keep in Eyehold” still exposes follow-up “in that conversation”; no conversation identity is shown. | Bind and display the destination; reject impossible combinations before save. |
 | Script-only work | Backend accepts script without prompt; routine form requires a prompt regardless of “without a model.” | Script-only form validation should match execution requirements. |
 | Finished work | Outbox, Library, Deliverables and Agent Record overlap; files are run-owned, expanded history is session-owned. | Explicitly label output vs conversation history; keep all actions anchored to the same run. |
@@ -132,7 +132,7 @@ The script-only and terminology rows are source-traced parity gaps, not addition
 1. **Stop rebuilding loop review DOM every four seconds.** This directly fixes A5 and removes repeated HTML parsing/layout and control churn. Keep polling for fallback recovery, but render only changed rows. The poll checks `body.isConnected`, so switching to a different automation tab does not make it stop.
 2. **Bound Outbox work before optimizing the canvas.** `Returns.PENDING_CAP` is now 10,000 (`returns.js:27`), but `buildOutbox()` still renders all rows and starts a transcript request per row before expansion. Its comment still says “pending is capped at 24.” With N pending rows that have stream IDs, opening the panel can issue N transcript requests, plus the Library join. Use pagination/windowing, bounded fetch concurrency and lazy transcript loading. This is a source-derived scaling risk; no 10,000-row browser benchmark or FPS claim was made.
 3. **Deduplicate transcript reads and query ownership.** Multiple Outbox rows in one stream repeat the same GET. Reuse a bounded read keyed by the correct output identity, then retire it on close/restart. A9 must be fixed before widening shared caching.
-4. **Extract shared operations after pinning behavior.** Highest-return extractions are loop control, resolved run configuration, JSON request lifecycle and save receipts. Avoid a broad hotfile rewrite: `index.js` and `stationui.js` have many unrelated owners and integrations.
+4. **Extract shared operations after pinning behavior.** Highest-return extractions are loop control, resolved run configuration, JSON request lifecycle and save receipts. Avoid a broad hotfile rewrite: `index.js` and `keepui.js` have many unrelated owners and integrations.
 5. **Test transitions rather than just source shapes.** `test/outbox-window.test.js` explicitly asserts the first-user/last-assistant rendering pattern, which cannot establish run attribution. Add behavioral cases for delayed responses, repeated clicks, restart after failed reads, failed persistence, same-session multiple runs and cross-provider agent selection.
 
 Additional investigation candidates: `windows/messaging.js:429–438` parses HTTP error JSON without checking status, so old card state may survive a 500; `windows/loops.js:314` replaces the list on read failure but leaves the old gate banner untouched. Both deserve live stale-status tests before being filed as separate confirmed findings.

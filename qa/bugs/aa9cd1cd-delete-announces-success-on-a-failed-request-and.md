@@ -14,7 +14,7 @@ fix: 8e68bf5c
 
 ## Symptom
 
-The two-step ✕ DELETE confirms, the station says "routine deleted" / "loop deleted" / "Connector "x" removed", and the row is still there after the list refreshes.
+The two-step ✕ DELETE confirms, the keep says "routine deleted" / "loop deleted" / "Connector "x" removed", and the row is still there after the list refreshes.
 
 ## Repro
 

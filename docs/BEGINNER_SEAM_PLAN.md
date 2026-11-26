@@ -19,7 +19,7 @@ read-back proves it (see connector read-back lane).
   `suggestFor(goalText)` so the lead can name the right connector when NO tool call
   happened yet (e.g. "send my newsletter" → gmail / resend).
 - **Frontend:** a COMMS chip in the post-run slot (chips are ONE layer — see memory law)
-  reading `⇄ CONNECT GMAIL — 2 clicks` → `StationUI.openTerm('connectors')` pre-routed
+  reading `⇄ CONNECT GMAIL — 2 clicks` → `KeepUI.openTerm('connectors')` pre-routed
   to that id via the existing router (`frontend/app/windows/connectors.js:247`). Reuse
   the friendlyerror `OPEN ABILITIES` button style; do not invent a new one.
 - **Tests:** `test/connector-required.test.js` (+ fast.list row) proving the event FIRES

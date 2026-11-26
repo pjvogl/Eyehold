@@ -1,6 +1,6 @@
 /* Eyehold reference-authored industrial materials, September 2026.
  * Image-authored albedo; geometry, lighting, seats and live activity remain owned
- * by the station renderer. The industrial set is the default; ?textures=classic
+ * by the keep renderer. The industrial set is the default; ?textures=classic
  * retains the original renderer for comparison and recovery.
  * A failed or pending asset keeps the complete existing material set visible.
  */
@@ -23,14 +23,14 @@ const IndustrialTextures = (() => {
   let loaded = false;
   const floorIds = 'spine alloy plate panel tile tread soft grate hex plank turf diamond resin ceramic cargo runner treadway meshway basalt parquet rubber slotted terrazzo octile'.split(' ');
   const wallIds = 'bulkhead courses service plating ribbed panelled pipework'.split(' ');
-  const names = ['floor', 'wall', 'shell', 'workstation', 'workstation-compact', 'chair-s', 'chair-e', 'chair-n',
+  const names = ['floor', 'wall', 'shell', 'workkeep', 'workkeep-compact', 'chair-s', 'chair-e', 'chair-n',
     'tactical-table', 'console-bank', 'equipment-bay', 'deck-perimeter',
     ...floorIds.map(id => 'remaster/floors/' + id), ...wallIds.map(id => 'remaster/walls/' + id),
-    'remaster/shell', 'remaster/workstation-e', 'remaster/workstation-n', 'remaster/workstation-compact-n',
+    'remaster/shell', 'remaster/workkeep-e', 'remaster/workkeep-n', 'remaster/workkeep-compact-n',
     'calibration/crate'];
   // The references are already lit pictures. These measured albedo gains keep
   // the existing light simulation from applying a second exposure to the art.
-  const gain = { floor: 1.25, wall: 1.65, shell: 2.05, workstation: 1.5, 'workstation-compact': 1.5,
+  const gain = { floor: 1.25, wall: 1.65, shell: 2.05, workkeep: 1.5, 'workkeep-compact': 1.5,
     'chair-s': 1.3, 'chair-e': 1.3, 'chair-n': 1.3,
     'tactical-table': 1.5, 'console-bank': 1.5, 'equipment-bay': 1.5, 'deck-perimeter': 1.0,
     'calibration/crate': 1.5 };
@@ -254,11 +254,11 @@ const IndustrialTextures = (() => {
     ctx.drawImage(im, im.width * .035, im.height * .035, im.width * .18, im.height * .18, x, y, w, h);
     ctx.restore(); return true;
   }
-  function workstationFit(x, y, w, h, facing) {
+  function workkeepFit(x, y, w, h, facing) {
     const compact = Math.max(w, h) < 30, side = facing === 'e';
-    const name = side ? 'remaster/workstation-e' : facing === 'n'
-      ? 'remaster/workstation' + (compact ? '-compact' : '') + '-n'
-      : compact ? 'workstation-compact' : 'workstation';
+    const name = side ? 'remaster/workkeep-e' : facing === 'n'
+      ? 'remaster/workkeep' + (compact ? '-compact' : '') + '-n'
+      : compact ? 'workkeep-compact' : 'workkeep';
     const im = images[name];
     // The side cabinet occupies 75% of the source silhouette width. Its monitor
     // overhang is real height above the walkable footprint, not a wider base.
@@ -271,9 +271,9 @@ const IndustrialTextures = (() => {
   // A screen's authored cyan phosphor is the only mutable part of its raster.
   // Keep the bezel, brass controls, silhouette and camera projection untouched.
   // Three front/side sources are cached once; rear views have no visible glass.
-  const workstationScreens = new Map();
-  function workstationScreen(fit) {
-    if (workstationScreens.has(fit.name)) return workstationScreens.get(fit.name);
+  const workkeepScreens = new Map();
+  function workkeepScreen(fit) {
+    if (workkeepScreens.has(fit.name)) return workkeepScreens.get(fit.name);
     const im = fit.im, g = im.getContext('2d');
     if (!g || !g.getImageData) return null;
     const data = g.getImageData(0, 0, im.width, im.height);
@@ -296,9 +296,9 @@ const IndustrialTextures = (() => {
     }
     og.putImageData(dim, 0, 0);
     const value = { off, x: x0, y: y0, w: x1-x0+1, h: y1-y0+1, frames: new Map(), original };
-    workstationScreens.set(fit.name, value); return value;
+    workkeepScreens.set(fit.name, value); return value;
   }
-  function workstationSweep(screen, fit, phase) {
+  function workkeepSweep(screen, fit, phase) {
     if (screen.frames.has(phase)) return screen.frames.get(phase);
     const cv = document.createElement('canvas'); cv.width = screen.w; cv.height = screen.h;
     const g = cv.getContext('2d'), patch = g.createImageData(cv.width, cv.height), d = patch.data;
@@ -316,16 +316,16 @@ const IndustrialTextures = (() => {
     }
     g.putImageData(patch,0,0); screen.frames.set(phase,cv); return cv;
   }
-  function workstation(ctx, x, y, w, h, facing = 's', state) {
+  function workkeep(ctx, x, y, w, h, facing = 's', state) {
     if (!enabled()) return false;
-    const fit = workstationFit(x, y, w, h, facing);
+    const fit = workkeepFit(x, y, w, h, facing);
     ctx.save(); ctx.imageSmoothingEnabled = true; ctx.imageSmoothingQuality = 'high';
     const occupied = state ? (typeof state.occupied === 'boolean' ? state.occupied : !!state.work) : true;
-    const screen = facing === 'n' ? null : workstationScreen(fit);
+    const screen = facing === 'n' ? null : workkeepScreen(fit);
     ctx.drawImage(!occupied && screen ? screen.off : fit.im, fit.x, fit.y, fit.w, fit.h);
     if (state && occupied && screen && screen.w > 0 && screen.h > 0 && !(state && state.still)) {
       const phase = Math.floor((Math.max(0, Number(state && state.now) || 0) % 2800) / 175);
-      const patch = workstationSweep(screen, fit, phase);
+      const patch = workkeepSweep(screen, fit, phase);
       ctx.globalCompositeOperation = 'source-atop';
       ctx.globalAlpha *= state && state.work ? .8 + .2*Math.min(1, Math.max(0, state.heat || 0)) : .65;
       ctx.drawImage(patch, fit.x + screen.x / fit.im.width * fit.w, fit.y + screen.y / fit.im.height * fit.h,
@@ -333,9 +333,9 @@ const IndustrialTextures = (() => {
     }
     ctx.restore(); return true;
   }
-  function workstationEmitter(x, y, w, h, facing = 's') {
+  function workkeepEmitter(x, y, w, h, facing = 's') {
     if (!enabled() || facing === 'n') return null;
-    const fit = workstationFit(x, y, w, h, facing);
+    const fit = workkeepFit(x, y, w, h, facing);
     if (!emitters.has(fit.name)) {
       const d = fit.im.getContext('2d').getImageData(0, 0, fit.im.width, fit.im.height).data;
       let sx = 0, sy = 0, weight = 0;
@@ -386,7 +386,7 @@ const IndustrialTextures = (() => {
     ctx.drawImage(im, x + (w - dw) / 2, y + h - dh, dw, dh);
     ctx.restore(); return true;
   }
-  return Object.freeze({ ready, enabled, isRemaster, lighting, detailContext, drawBase, floor, wall, wallStrip, wallPatch, shell, shellPlate, propPanel, workstation, workstationEmitter, chair, crate,
+  return Object.freeze({ ready, enabled, isRemaster, lighting, detailContext, drawBase, floor, wall, wallStrip, wallPatch, shell, shellPlate, propPanel, workkeep, workkeepEmitter, chair, crate,
     furniture,
     status: () => ({ requested, loaded, failed: failed.slice(), assets: Object.keys(images) }) });
 })();

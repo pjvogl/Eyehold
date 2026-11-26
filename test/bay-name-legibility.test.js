@@ -17,7 +17,7 @@ for (const dpr of [1, 1.25, 2]) for (const zoom of [.5, 1, 2, 4, 8]) {
   const out = paint([bay], zoom, dpr);
   assert.equal(out.text.map(t => t.s).join(''), 'ULTRON', 'the sixth character is not silently discarded');
   assert.equal(out.text[0].fontPx, 6 * zoom / dpr, 'the physical tag shrinks with the bay; there is no screen-size floor');
-  assert.deepEqual(out.boxes, paint([bay], 1).boxes, 'zoom and DPI never enlarge or move the tag in station space');
+  assert.deepEqual(out.boxes, paint([bay], 1).boxes, 'zoom and DPI never enlarge or move the tag in keep space');
 }
 assert.equal(paint([{ ...bay, dockName: 'Nova' }], 2).text[0].s, 'NOVA', 'rename reads current roster projection');
 assert.equal(paint([{ ...bay, agentId: 'tg_other', dockName: null }], 2).text[0].s, 'OTHER', 'missing roster name uses the real binding');

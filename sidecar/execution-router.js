@@ -19,7 +19,7 @@ function makeExecutionRouter(deps) {
   deps = deps || {};
   const environments = deps.environments || {};
   const defaultBackendId = String(deps.defaultBackendId || 'local');
-  const profileForAgent = typeof deps.profileForAgent === 'function' ? deps.profileForAgent : (() => 'station-gear');
+  const profileForAgent = typeof deps.profileForAgent === 'function' ? deps.profileForAgent : (() => 'keep-gear');
   const forceLocalForAgent = typeof deps.forceLocalForAgent === 'function' ? deps.forceLocalForAgent : (() => false);
   if (!environments[defaultBackendId]) throw new Error('execution router missing default backend "' + defaultBackendId + '"');
 
@@ -41,7 +41,7 @@ function makeExecutionRouter(deps) {
   }
   const UNUSABLE = { absent: true, unavailable: true, 'configuration-required': true };
   function resolveBackend(profileId, agentId) {
-    profileId = String(profileId || 'station-gear');
+    profileId = String(profileId || 'keep-gear');
     const want = profileId === 'safe-cell' ? 'docker' : profileId === 'remote-ssh' ? 'ssh'
       : (profileId === 'trusted-project' || profileId === 'this-computer') ? 'local' : defaultBackendId;
     const avail = availabilityOf(want, agentId);
@@ -63,7 +63,7 @@ function makeExecutionRouter(deps) {
     const id = String(agentId || 'agent');
     try {
       if (environments.local && forceLocalForAgent(id) === true) {
-        return { id: 'local', requested: 'local', matched: true, reason: null, profileId: String(profileForAgent(id) || 'station-gear'), forcedLocal: true, availability: 'ready' };
+        return { id: 'local', requested: 'local', matched: true, reason: null, profileId: String(profileForAgent(id) || 'keep-gear'), forcedLocal: true, availability: 'ready' };
       }
     } catch (_) {}
     return resolveBackend(profileForAgent(id), id);
@@ -147,7 +147,7 @@ function makeExecutionRouter(deps) {
     const effectiveBackend = String(backend.backendId || backend.id || res.id);
     return Object.assign({}, backend.describe(agentId), {
       routed: true,
-      executionProfile: String(profileForAgent(String(agentId || 'agent')) || 'station-gear'),
+      executionProfile: String(profileForAgent(String(agentId || 'agent')) || 'keep-gear'),
       effectiveBackend,
       requestedBackend: res.requested,
       backendMatched: res.matched !== false,

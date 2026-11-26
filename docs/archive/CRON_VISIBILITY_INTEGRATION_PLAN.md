@@ -13,11 +13,11 @@ Already shipped:
 | Capability | Current anchor | Keep / reuse |
 |---|---|---|
 | Server-owned cron jobs | `sidecar/cron.js`, `sidecar/cron-store.js`, `sidecar/cron-driver.js` | Keep the scheduler, math, lock, retry, DST, and at-most-once behavior. |
-| Routines CRUD and run-now | `sidecar/index.js` `/api/cron*`; `frontend/app/stationui.js` `buildRoutines` | Extend the data shape and UI; do not replace the panel. |
+| Routines CRUD and run-now | `sidecar/index.js` `/api/cron*`; `frontend/app/keepui.js` `buildRoutines` | Extend the data shape and UI; do not replace the panel. |
 | Live cron events | `cron.fire`, `cron.result`, `cron.skipped`, `cron.tick` in `shared/events.js` | Reuse these as the live trigger. Avoid new event rungs unless the existing events cannot support the UX. |
 | Floor visibility | `workitem.placed` from `placeWorkitem`; `frontend/app/world.js` listens to cron events | Keep this for "working now"; enrich with routine names/status from server state. |
 | Persistent job outcome | `CronJob.lastRunAt`, `lastRunId`, `lastStatus`, `lastReason`, `lastError` | Keep as the compact row summary, but add a real activity/history layer. |
-| Browser notifications | `StationUI.notify()` persisted in browser localStorage | Keep as the visual notification sink, but feed it from durable server receipts. |
+| Browser notifications | `KeepUI.notify()` persisted in browser localStorage | Keep as the visual notification sink, but feed it from durable server receipts. |
 
 The gap:
 
@@ -97,9 +97,9 @@ Retention:
 
 Cursor / notification dedupe:
 
-- Add browser-local cursor: `StationUI` stores `lastCronActivityNotifiedId` or `lastCronActivityNotifiedTs`.
+- Add browser-local cursor: `KeepUI` stores `lastCronActivityNotifiedId` or `lastCronActivityNotifiedTs`.
 - The server remains source of truth for receipts; browser localStorage is only the notification cursor.
-- On app open and Routines panel open, fetch unseen receipts and call `StationUI.notify()` once per receipt.
+- On app open and Routines panel open, fetch unseen receipts and call `KeepUI.notify()` once per receipt.
 - If localStorage is reset, old receipts may show again; that is acceptable for v1. A server-side ack file can be a later hardening if needed.
 
 ---
@@ -212,7 +212,7 @@ Add a sub-view inside the existing Routines panel rather than a separate top-lev
 
 ### Notification Reconciliation
 
-Add `StationUI.reconcileCronActivity()`:
+Add `KeepUI.reconcileCronActivity()`:
 
 1. Fetch `/api/cron/activity?since=<cursor>`.
 2. Filter for user-notifiable records:
@@ -232,7 +232,7 @@ Notification copy:
 
 Trigger reconciliation from:
 
-- app boot after `StationUI` starts
+- app boot after `KeepUI` starts
 - opening the Routines panel
 - receiving live `cron.result` over SSE
 - receiving live `cron.skipped` over SSE for actionable skip reasons
@@ -327,7 +327,7 @@ Goal: user gets notified about cron runs that finished while the app was open or
 
 Files:
 
-- `frontend/app/stationui.js`
+- `frontend/app/keepui.js`
 - `frontend/app/world.js`
 - `test/autonomy-ui.test.js` or a new focused UI test if existing coverage fits
 
@@ -351,7 +351,7 @@ Goal: users can inspect schedule, current work, and results in one place.
 
 Files:
 
-- `frontend/app/stationui.js`
+- `frontend/app/keepui.js`
 - `frontend/css/app.css` or existing relevant CSS file if needed
 - UI test if available
 
@@ -375,7 +375,7 @@ Goal: receipts can open the underlying run/transcript/artifact when that data ex
 Files:
 
 - `sidecar/index.js`
-- `frontend/app/stationui.js`
+- `frontend/app/keepui.js`
 - `test/runstore.test.js` or cron API test
 
 Tests:

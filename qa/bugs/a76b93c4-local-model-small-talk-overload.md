@@ -20,7 +20,7 @@ recovery: unconfirmed
 
 ## Symptom
 
-On Windows 0.11.2 with Ollama llama3.2:3b, a greeting reportedly waits about 2.5 minutes before a long technical reply takes roughly ten minutes to finish. The station also has scheduled research and a goal loop. The report asks for brief conversation and appropriate model assignment.
+On Windows 0.11.2 with Ollama llama3.2:3b, a greeting reportedly waits about 2.5 minutes before a long technical reply takes roughly ten minutes to finish. The keep also has scheduled research and a goal loop. The report asks for brief conversation and appropriate model assignment.
 
 ## Repro
 

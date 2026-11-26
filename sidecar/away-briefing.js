@@ -191,7 +191,7 @@ function compose(input) {
 function contextBlock(briefing) {
   const items = briefing && Array.isArray(briefing.items) ? briefing.items : [];
   if (!items.length) return '';
-  const L = ['[AWAY BRIEFING CONTEXT] This session is the station\'s "' + TITLE + '" report. The Commander is replying to it. What each item refers to:'];
+  const L = ['[AWAY BRIEFING CONTEXT] This session is the keep\'s "' + TITLE + '" report. The Commander is replying to it. What each item refers to:'];
   for (const it of items.slice(0, 16)) {
     if (it.kind === 'build') L.push('- build "' + it.title + '": files in your workspace at workshop/' + it.runId + '/ (deliverable.json lists them). Still undecided — the Commander keeps/discards it from its session; you may read, extend, or copy it where they ask.');
     else if (it.kind === 'build-failed') L.push('- unfinished build "' + it.title + '" (run ' + it.runId + '): ' + it.why + '. Partial files may be in workshop/' + it.runId + '/.');

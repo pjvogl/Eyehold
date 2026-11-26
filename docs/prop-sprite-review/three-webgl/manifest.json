@@ -21,7 +21,7 @@
   "samples": [
     {
       "id": "desk2",
-      "label": "Legged workstation",
+      "label": "Legged workkeep",
       "footprint": {
         "width": 2,
         "height": 1

@@ -28,7 +28,7 @@
      deps.hasCredential(provider, key, job)
                            -> bool               // OAuth providers can be runnable without a BYOK key
      deps.credentialError(provider, job)
-                           -> string             // the station's ONE no-credential sentence (index.js engineCredentialError)
+                           -> string             // the keep's ONE no-credential sentence (index.js engineCredentialError)
      deps.defaultModel     -> string             // boot-frozen SKYNET_DEFAULT_MODEL fallback when job.model is null
      deps.identityForAgent -> (agentId, job) -> { system?, model? } | null
                                                  // optional selected-agent identity (browser roster / persisted mirror)
@@ -103,10 +103,10 @@
     // determinism-clean — a getter is just an injected dep, exactly like getKey/getJobs.
     const personaOf = typeof d.persona === 'function' ? d.persona : function () { return d.persona || ''; };
     const placeWorkitem = typeof d.placeWorkitem === 'function' ? d.placeWorkitem : function () {};
-    // B5 parity (2026-07-06 audit): a routine's run gets the SAME per-bay capability station a routed channel
-    // message gets — resolveStation(agentId) -> the bay room's objects, else null -> the host's default office.
+    // B5 parity (2026-07-06 audit): a routine's run gets the SAME per-bay capability keep a routed channel
+    // message gets — resolveKeep(agentId) -> the bay room's objects, else null -> the host's default office.
     // Optional + injected so this module stays determinism-clean; absent -> pre-fix behavior.
-    const resolveStation = typeof d.resolveStation === 'function' ? d.resolveStation : null;
+    const resolveKeep = typeof d.resolveKeep === 'function' ? d.resolveKeep : null;
     // THE DOCK'S STANDING BRIEF (inbox-trigger, 2026-08-05): stageBriefFor(agentId) -> the standing job brief
     // of the dock this agent crews (index.js injects router.stageBrief — the SAME seam hub entry runs and
     // chain handoffs read), or null. A scheduled fire was the ONE entry-run path that never briefed its dock:
@@ -486,7 +486,7 @@
       // (multi-bay) a routine that FIRES AT one of several bays is briefed with THAT bay's brief (job.dockId)
       if (stageBriefFor) { try { dockBrief = job.dockId ? stageBriefFor(job.agentId, job.dockId) : stageBriefFor(job.agentId); } catch (_) { dockBrief = null; } }
       const system = ((ident.system && String(ident.system)) || personaOf(job.agentId, job))
-        + (dockBrief ? '\n\nYOUR STANDING BRIEF FOR THIS STATION:\n' + String(dockBrief).slice(0, 2000) : '');
+        + (dockBrief ? '\n\nYOUR STANDING BRIEF FOR THIS KEEP:\n' + String(dockBrief).slice(0, 2000) : '');
 
       const messages = [{ role: 'user', content: assembledPrompt }];
       // launch the run SYNCHRONOUSLY (so the fire is ordered with the lease/cron.fire), but route both a
@@ -503,10 +503,10 @@
           // reconstructs a stream when messages<=1), so cron behavior is byte-identical — the frontend
           // autosessions module reads GET /api/transcript?stream=cron-<runId> to surface the output as a session.
           runId: runId, streamId: 'cron-' + runId, surface: 'autonomous', trigger: 'schedule', provider: provider,
-          // "Follow station default": an unpinned agent's routine runs on the Overseer's model AND effort (the
+          // "Follow keep default": an unpinned agent's routine runs on the Overseer's model AND effort (the
           // identity resolver supplies both), exactly as a channel hop does. A pinned agent or an explicit routine
           // model leaves this undefined, so the run's own roster effort applies unchanged.
-          reasoningEffort: (!(job.model && String(job.model).trim()) && ident.followsStation) ? ident.reasoningEffort : undefined,
+          reasoningEffort: (!(job.model && String(job.model).trim()) && ident.followsKeep) ? ident.reasoningEffort : undefined,
           // Host-minted recovery identity. The active-run journal can now tie an interrupted headless run back
           // to the routine that launched it without trusting model text or guessing from the stream id.
           cronJobId: job.id, cronJobName: job.name || '',
@@ -538,7 +538,7 @@
           recipeId: (job.meta && job.meta.recipeId) || undefined,
           // per-bay capability isolation (B5): a bay-docked agent's routine runs with ITS room's objects,
           // never the default office — same contract as a routed channel message. undefined -> office.
-          station: (resolveStation ? (job.dockId ? resolveStation(job.agentId, job.dockId) : resolveStation(job.agentId)) : null) || undefined
+          keep: (resolveKeep ? (job.dockId ? resolveKeep(job.agentId, job.dockId) : resolveKeep(job.agentId)) : null) || undefined
         });
       } catch (e) { p = Promise.reject(e); }
       Promise.resolve(p).then(
@@ -722,7 +722,7 @@
       //     the cron.tick.deferred count, so a night of quietly-deferred routines is finally observable.
       // Only LIVE runs occupy a slot: a settlement receipt is a FINISHED run awaiting a durable write, not
       // in-flight spend — counting it starved every routine behind a stuck persist (maxParallel=1 froze the
-      // whole station on one read-only-disk settlement).
+      // whole keep on one read-only-disk settlement).
       let liveLeases = 0;
       for (const l of leases.values()) if (!l.settlement) liveLeases++;
       let slotsLeft = maxParallel > 0 ? maxParallel - liveLeases : Infinity;

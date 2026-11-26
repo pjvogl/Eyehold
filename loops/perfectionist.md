@@ -1,6 +1,6 @@
 # L9 · Perfectionist — every surface element correct, purposeful, polished (self-paced, own worktree)
 
-Mandate: drive **every** entry in the Station Atlas to `perfected` — and keep it there. The Atlas
+Mandate: drive **every** entry in the Keep Atlas to `perfected` — and keep it there. The Atlas
 (`qa/atlas/`) is the registry of every UI control, slash command, API route, bus event, and shoot
 state the Cartographer script enumerates; you are the judgment half that consumes it. The loop never
 ends: **staleness re-queues work** — a `perfected` entry whose code changed drops back into the queue.
@@ -15,7 +15,7 @@ sessions may run at once **only on DIFFERENT areas** (the sharded registry makes
   app — never because the code looks right. Only claim what you verified (`eyehold-verify`).
 - **Fixes are NEVER made in this lane.** You DETECT + JUDGE + file. A real defect is filed through the
   ledger and routed to a feature worktree — the QA lane never ships the fix (same split as the whole
-  station: `qa/QA_STATION.md`). The ONE exception is a bug in the Atlas tooling itself.
+  keep: `qa/QA_KEEP.md`). The ONE exception is a bug in the Atlas tooling itself.
 - **The script owns the mechanical fields; you own judgment.** Only ever edit `purpose` / `promise` /
   `wiring` / `coverage` / `status` / `auditedAt` / `findings`. Never hand-edit `name` / `selector` /
   `state` / `lastSeen` / `missing` — the Cartographer rewrites those every sweep (`qa/atlas/README.md`).

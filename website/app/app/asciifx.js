@@ -1,7 +1,7 @@
 /* EYEHOLD — asciifx.js : the ASCII-MOTION KIT.
 
    A small, reusable vocabulary of terminal-flavored motion primitives — the "decode / materialize
-   from static" language the CRT station has always begged for but never had. Additive over
+   from static" language the CRT keep has always begged for but never had. Additive over
    motion.css; every effect here is:
      · rAF-driven and self-cleaning (no dangling timers, restores any DOM it mutates),
      · phosphor/VT323-native (uses the page's existing type + colour — no hardcoded palette),
@@ -14,8 +14,8 @@
        content). Every primitive therefore carries a setTimeout backstop — timeouts still fire
        when hidden — that force-resolves to the final state. Whichever completes first wins.
 
-   The register is EERIE, not cute: a station signal resolving out of noise, never confetti.
-   Consumers: stationui.js (window-open title decode + section-swap materialize + toast decode)
+   The register is EERIE, not cute: a keep signal resolving out of noise, never confetti.
+   Consumers: keepui.js (window-open title decode + section-swap materialize + toast decode)
    and chat.js (level-up / quest / trophy broadcast decode). The kit names its own surfaces so a
    new caller reuses the SAME language instead of inventing a one-off.
 

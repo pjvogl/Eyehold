@@ -132,7 +132,7 @@ A.eq(CP.dayTag(ago(1), T), 'yesterday', '1 day → yesterday');
 A.eq(CP.dayTag(ago(3), T), '3d ago', '3 days → Nd ago');
 A.eq(CP.dayTag(0, T), '', 'undated → empty tag');
 
-// USER-STUDY LOOP — the station's own reason-only calls are not the Commander's activity: the internal run is
+// USER-STUDY LOOP — the keep's own reason-only calls are not the Commander's activity: the internal run is
 // excluded AND its directive row (which the transcript files as a 'user' line on the Commander's stream) drops too.
 {
   const selfTalk = 'INTERNAL — GOAL DECOMPOSITION. Do not run any tools. Reason only, then reply in the exact format below.';

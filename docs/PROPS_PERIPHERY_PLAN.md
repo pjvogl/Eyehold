@@ -1,6 +1,6 @@
 # Periphery Props — Design & Build Plan
 
-> The placeable-prop families that give the station **real harness function** beyond decor —
+> The placeable-prop families that give the keep **real harness function** beyond decor —
 > distinct from the conveyor system (which wires the work *pipeline*). This doc is the spec the
 > parallel build agents execute against. Every signal named here is verified against the real
 > files in `frontend/app` + `sidecar` on `feat/harness-backend`.
@@ -43,13 +43,13 @@ failure mode — 7–10 agents clobbering each other — and makes isolation *vi
   every seam between two different zones (the `addDoor` loop), and `canStep()` gates the path BFS
   on `doorSet`. So **sealing a room = skip its boundary doors** → `canStep` is false across its
   edge → the room is unreachable, using the *existing* pathing with zero new movement code.
-- The seal visual is **automatic**: `stationbake.js buildEdges()` sets `e.door` from `canStep`,
+- The seal visual is **automatic**: `keepbake.js buildEdges()` sets `e.door` from `canStep`,
   and `bakeWalls()` renders a threshold only when `e.door` is true — so a sealed seam re-bakes as
-  a solid wall for free. **No `stationbake.js` change is needed for v1.**
+  a solid wall for free. **No `keepbake.js` change is needed for v1.**
 - Door state lives **on the airlock prop** (`prop.door`), exactly like a BAY carries `agentId` —
   no parallel registry to desync. `setDoorState(propId, state)` mirrors `assignPropAgent`.
 - A `closed`/`jammed` airlock seals **its containing room**. `meta.trunkRoomId` (the integration
-  hub) **never seals**, so the station can't be severed from its core.
+  hub) **never seals**, so the keep can't be severed from its core.
 
 **Interaction (REFIT mode):** PROP tool → ISOLATION category → AIRLOCK → click in a room to place
 (defaults to `closed`, immediately sealing). Click an existing airlock to cycle
@@ -100,7 +100,7 @@ central **LOADING DOCK** near trunk is where merged work ships out.
 `fs.write` (`sidecar/tools/builtin/fs.js emitDeliverable`) and `notebook.write`, and already
 crosses the bus to `chat.js`. The printer subscribes the same way in `world.js`; on the event the
 bound agent walks to its printer (a new `goal='print'` mirroring `planProp`) and `arrive()` spawns
-the artifact via `station.addProp({t:'artifact',block:false})`. Clicking it opens the already-live
+the artifact via `keep.addProp({t:'artifact',block:false})`. Clicking it opens the already-live
 jailed route `GET /api/file?agent=&path=`. The dock's "shipped on merge" beat consumes the doors
 `merge.result` signal.
 

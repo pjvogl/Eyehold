@@ -27,7 +27,7 @@ project's "truthful telemetry" constitution: real spend, real tool-activity, rea
 consent — no fakery.)
 
 ### Five places the mockup currently violates it (fix, don't ship)
-1. **Crew dots show one global activity on every row** — `stationui.js` `crewTick()`
+1. **Crew dots show one global activity on every row** — `keepui.js` `crewTick()`
    (~L149) writes the same `crewStatus(act)` (L67) to every agent → a fake "instrument cluster."
 2. **Single-slot approval** silently drops approvals #2–9 (invisible loss).
 3. **Desk screen** cycles fake green hues; **belts** sell "task flow" that doesn't exist.
@@ -99,7 +99,7 @@ git diff --name-only $(git merge-base feat/harness-backend agent/<x>)..agent/<x>
 | --- | --- | --- |
 | `frontend/app/chat.js` | **comms-channels** (the GATE) | `agent/voice` ⚠ land/freeze first |
 | `frontend/app/app.js` | **frontend-hud** (wiring) | `agent/voice` |
-| `frontend/app/stationui.js` | **frontend-hud** (owns `crewTick`/`crewStatus`) | — (others REQUEST hooks) |
+| `frontend/app/keepui.js` | **frontend-hud** (owns `crewTick`/`crewStatus`) | — (others REQUEST hooks) |
 | `frontend/app/workstreams.js` | *(Workstreams owner)* — read-only for us | — |
 | `frontend/index.html` | **frontend-hud** (structural markup) | `agent/design-system`, `agent/voice` |
 | `frontend/css/app.css` | **frontend-hud** (shared layout, fenced blocks) | `agent/design-system`, `agent/voice` |
@@ -270,7 +270,7 @@ Now honest, because the channels + projection exist:
   projection; ordered, newest-blocking-first, every type; row = agent dot + verb + inline action;
   visible cap 3 then `+N`; `Alt+A` advances to next item of any type.
 - **Per-agent TRUE status** on the crew rail — drive each row from its own channel state (kill the
-  global `crewStatus(act)` broadcast in `stationui.js`): working / thinking / idle / **ERROR** /
+  global `crewStatus(act)` broadcast in `keepui.js`): working / thinking / idle / **ERROR** /
   **AWAITING-YOU**, encoded **glyph + label + color** (redundant, not hue-alone).
 - **Per-agent burn indicator** + per-agent soft cap → drops a "PAUSED — over budget?" item into the queue.
 - **Desk monitor shows the real current tool** (`chat.js` streams `onToolCall ev.name`): `WEB`/`FS`/`GIT`,

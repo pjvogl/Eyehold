@@ -1,20 +1,20 @@
 /* eyehold-kit.js — the `eyehold` bridge for plugin windows (plugin extensions phase 1, 2026-09-29).
 
    Injected first thing in every plugin page's <head> by the sidecar, so `window.eyehold` exists before any of the
-   plugin's own scripts run. The page is a sandboxed frame with an OPAQUE origin: it cannot read the station, its
-   token, or its API. Everything it may ask of the station goes through postMessage to the page host
+   plugin's own scripts run. The page is a sandboxed frame with an OPAQUE origin: it cannot read the keep, its
+   token, or its API. Everything it may ask of the keep goes through postMessage to the page host
    (frontend/app/pluginhost.js), which knows WHICH plugin this frame belongs to and answers only for that plugin.
 
      await eyehold.ready                    → { plugin: {id, name, version}, screen: {id, title} }
      eyehold.store.get(key) / set(key, v) / delete(key) / keys()      the plugin's own durable data (JSON values)
      eyehold.backend.call(name, args)                                   the plugin's own code: api.handle(name, fn)
-     eyehold.ui.toast(text, 'ok'|'warn'|'bad')                          a station notification
+     eyehold.ui.toast(text, 'ok'|'warn'|'bad')                          a keep notification
      eyehold.ui.setTitle(text)                                          this window's title (plain text)
      eyehold.ui.open(screenId)                                          open another of THIS plugin's screens
      eyehold.ui.close()                                                 close this window
      eyehold.ui.openLink(url)                                           an https:// link in the real browser
      eyehold.ui.setHeight(px) / eyehold.ui.autoHeight(true|false)       the window follows content by default
-     eyehold.theme.vars / eyehold.theme.onChange(fn)                   the station's live look (already applied)
+     eyehold.theme.vars / eyehold.theme.onChange(fn)                   the keep's live look (already applied)
      eyehold.onData(fn)                                                 an APP: the crew just published new data
 
    Every call returns a Promise; a refused call rejects with an Error whose message says why. */
@@ -29,10 +29,10 @@
   const themeListeners = [];
   const dataListeners = [];   // an APP: the crew published new data (app.publish) — re-read and re-render
   const theme = { vars: {} };
-  // The host gave THIS page a nonce (in the URL fragment); every call carries it, so the station only ever answers
+  // The host gave THIS page a nonce (in the URL fragment); every call carries it, so the keep only ever answers
   // the page it loaded — never whatever a link might navigate this frame to.
   const NONCE = (/(?:^#|&)sn=([0-9a-f]{16,64})/.exec(location.hash || '') || [])[1] || '';
-  // A window call runs the plugin's own code (up to 30 s in the station, plus a cold start): wait longer for it.
+  // A window call runs the plugin's own code (up to 30 s in the keep, plus a cold start): wait longer for it.
   const TIMEOUT = { 'backend.call': 45000 };
 
   function call(method, args) {
@@ -44,7 +44,7 @@
       // instead. '*' is the only target an opaque origin can name; nothing sent here is secret.
       parentWin.postMessage({ __sn: 1, n: NONCE, id, m: String(method), a: args === undefined ? null : args }, '*');
       setTimeout(() => {
-        if (pending.has(id)) { pending.delete(id); reject(new Error('the station did not answer ' + method)); }
+        if (pending.has(id)) { pending.delete(id); reject(new Error('the keep did not answer ' + method)); }
       }, TIMEOUT[method] || 15000);
     });
   }
@@ -110,7 +110,7 @@
     }
     ev.preventDefault();
     ev.stopImmediatePropagation();
-    if (u.protocol === 'http:') u.protocol = 'https:';   // the station opens https only
+    if (u.protocol === 'http:') u.protocol = 'https:';   // the keep opens https only
     if (u.protocol === 'https:') call('ui.link', { url: u.href }).catch(() => {});
   }, true);
   function schedule() { if (!raf) raf = requestAnimationFrame(measure); }
@@ -129,7 +129,7 @@
       get vars() { return theme.vars; },
       onChange(fn) { if (typeof fn === 'function') themeListeners.push(fn); return () => { const i = themeListeners.indexOf(fn); if (i >= 0) themeListeners.splice(i, 1); }; }
     },
-    // the plugin's own code in the station (api.handle(name, fn) in its main file)
+    // the plugin's own code in the keep (api.handle(name, fn) in its main file)
     backend: {
       call: (fn, args) => call('backend.call', { fn: String(fn || ''), args: args === undefined ? null : args })
     },

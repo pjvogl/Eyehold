@@ -99,5 +99,5 @@ survived. Not "the unit tests pass".
 
 Full desktop control (`sidecar/tools/builtin/computer.js` is an inert contract with no driver) and
 disposable container sandboxes are separate, larger builds. Persistent signed-in browsing is **already
-shipped** — `browserProfileLeaseFor()` in `sidecar/index.js` leases a durable station profile per run,
+shipped** — `browserProfileLeaseFor()` in `sidecar/index.js` leases a durable keep profile per run,
 with the tmpdir profile as the ephemeral fallback when another run holds the lease.

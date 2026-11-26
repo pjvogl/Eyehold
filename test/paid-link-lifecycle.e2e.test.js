@@ -55,7 +55,7 @@ for (const mode of ['pairing', 'keychain-recovery']) {
         while (!/credits link self-heal/.test(fixture.output()) && Date.now() < until) await new Promise(r => setTimeout(r, 20));
       }
       const current = await fixture.json('GET', '/api/credits?history=0');
-      assert.equal(current.body.configured, false, 'the running station stays unlinked');
+      assert.equal(current.body.configured, false, 'the running keep stays unlinked');
       await fixture.stop(); await fixture.start();
       assert.equal((await fixture.json('GET', '/api/credits?history=0')).body.configured, false, 'restart respects unlink');
     } finally {
@@ -213,7 +213,7 @@ test('managed HTTP 400 keeps local, relay and upstream correlation through resta
 });
 
 // Issue #76 (2026-10-06): the boot self-heal met a degraded account service (502/timeouts) and gave up for the whole
-// session — a keychain-authorized station stayed "not linked" on the RESUME screen until the app was restarted, even
+// session — a keychain-authorized keep stayed "not linked" on the RESUME screen until the app was restarted, even
 // after the cloud recovered. The credits status read now takes a spaced retry of a TRANSIENT heal failure.
 test('a boot self-heal that met a down cloud retries on the next credits read once the cloud is back', { timeout: 30000 }, async () => {
   let healthy = false, whoamiCalls = 0, balanceCalls = 0;
@@ -243,14 +243,14 @@ test('a boot self-heal that met a down cloud retries on the next credits read on
     balanceCalls = 0;
     const after = await fixture.json('GET', '/api/credits?history=0');
     assert.equal(after.status, 200, after.text);
-    assert.equal(after.body.configured, true, 'the station relinked itself without a restart');
+    assert.equal(after.body.configured, true, 'the keep relinked itself without a restart');
     assert.equal(after.body.balanceUsd, 12.5, 'and reads the real balance');
     // The heal's rebuild already read /v1/balance on the new adapter; a second sequential read on the same request
     // chained whoami + balance + balance (3 × 8s worst case) past WAKE's wait.
     assert.equal(balanceCalls, 1, 'the healing read makes exactly one balance read');
     const calls = whoamiCalls;
     await fixture.json('GET', '/api/credits?history=0');
-    assert.equal(whoamiCalls, calls, 'a healed station never asks whoami again');
+    assert.equal(whoamiCalls, calls, 'a healed keep never asks whoami again');
     assert.equal(balanceCalls, 2, 'a normal read still refreshes the balance');
   } finally {
     await fixture.dispose(); server.closeAllConnections(); await new Promise(resolve => server.close(resolve));

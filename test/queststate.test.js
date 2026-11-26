@@ -79,7 +79,7 @@ A.eq(r.completions, [], 'the same projection folded again is silent — one cele
 A.eq(QS.stateOf(s, 'dim:goals').completedAt, 2000, 'completedAt is not re-stamped by a repeat fold');
 
 /* ---------- FIX 3: several gaps closing in ONE fold each celebrate individually (fast placement burst) ----
-   two station gaps first seen open, then both done in the same fold — the fold must return BOTH as separate
+   two keep gaps first seen open, then both done in the same fold — the fold must return BOTH as separate
    completions (never coalesced into one), so each rides its own celebrate() call. This is why a placement can
    drive pokeQuests() the instant a prop lands even when a burst closes several quests together. */
 (() => {
@@ -105,15 +105,15 @@ r = QS.fold(s, [q('dim:goals', 'done')], 5600);
 A.eq(r.completions, [], 'reappearing still-done is not a new completion');
 
 /* ---------- dismissibility (GB-24 — dismiss everywhere): QuestState owns the kinds with no external denylist ----
-   dossier/milestone/station now all take here; the kinds with their OWN store denylist (station-gap/work/
+   dossier/milestone/keep now all take here; the kinds with their OWN store denylist (keep-gap/work/
    maintenance/ledger) and the coupled/owned kinds (idea, arc-goal, arc-step) are excluded on purpose. */
 A.eq(QS.dismissible({ kind: 'dossier' }), true, 'get-to-know-you quests are dismissible');
 A.eq(QS.dismissible({ kind: 'milestone' }), true, 'GB-24: milestones are now dismissible (QuestState is their denylist)');
-A.eq(QS.dismissible({ kind: 'station' }), true, 'GB-24: station-arc quests are now dismissible');
+A.eq(QS.dismissible({ kind: 'keep' }), true, 'GB-24: keep-arc quests are now dismissible');
 A.eq(QS.dismissible({ kind: 'idea' }), false, 'the idea quest is owned by the COMMS suggestion cadence — not dismissible here');
 A.eq(QS.dismissible({ kind: 'arc-goal' }), false, 'the goal-arc header is a coupled path, not a standalone nag — not dismissible');
 A.eq(QS.dismissible({ kind: 'arc-step' }), false, 'a goal-arc step retires on drift, never a wave-off — not dismissible');
-A.eq(QS.dismissible({ kind: 'station-gap' }), false, 'station-gap owns its own store denylist — not routed through QuestState');
+A.eq(QS.dismissible({ kind: 'keep-gap' }), false, 'keep-gap owns its own store denylist — not routed through QuestState');
 A.eq(QS.dismissible({ kind: 'work' }), false, 'work owns its own store denylist — not routed through QuestState');
 A.eq(QS.dismissible({ kind: 'maintenance' }), false, 'maintenance owns its own store denylist — not routed through QuestState');
 A.eq(QS.dismissible({ kind: 'ledger' }), false, 'a ledger quest dismisses on the sidecar backend — not routed through QuestState');

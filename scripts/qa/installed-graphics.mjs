@@ -1,5 +1,5 @@
 // Candidate-bound graphics and responsiveness proof against the real installed WebView.
-// Passive observation only: never opens panels, steals focus, or alters the station.
+// Passive observation only: never opens panels, steals focus, or alters the keep.
 // node scripts/qa/installed-graphics.mjs <port> <full-head> <exe> <out-dir> [minutes=10]
 import fs from 'node:fs';
 import path from 'node:path';
@@ -101,7 +101,7 @@ try {
   const receipt = { at:new Date().toISOString(), head, artifact, identity, minutes,
     actualSeconds:(Date.now()-started)/1000, frames, longTasks, health, checks,
     pass:Object.values(checks).every(Boolean),
-    scope:'Passive observation of the installed Windows WebView on this machine and populated station. Frame timing and engine health; does not exercise panels or Refit and makes no provider workload or cross-hardware performance claim.' };
+    scope:'Passive observation of the installed Windows WebView on this machine and populated keep. Frame timing and engine health; does not exercise panels or Refit and makes no provider workload or cross-hardware performance claim.' };
   fs.writeFileSync(path.join(out, 'receipt.json'), JSON.stringify(receipt,null,2));
   fs.writeFileSync(path.join(out, 'samples.json'), JSON.stringify(samples));
   console.log(JSON.stringify(receipt,null,2));

@@ -66,7 +66,7 @@ function eventsOf(text) {
       body: JSON.stringify({
         provider: 'openrouter', key: 'sk-or-v1-tool-fallback-fake', model: 'plain/chat',
         fallbackModels: ['tools/worker'], agentId: 'agent', isTask: true,
-        messages: [{ role: 'user', content: 'Inspect the station and complete this task.' }]
+        messages: [{ role: 'user', content: 'Inspect the keep and complete this task.' }]
       })
     });
     A.eq(response.status, 200, 'the production /api/run path admits the task');

@@ -3,7 +3,7 @@ const fs=require('node:fs'),path=require('node:path'),crypto=require('node:crypt
 const repo=path.join(__dirname,'..'),read=p=>fs.readFileSync(path.join(repo,p)),json=p=>JSON.parse(read(p));
 const sha=b=>crypto.createHash('sha256').update(b).digest('hex');
 (async()=>{
- const primary=json('docs/station-remaster/approved-sheet/extraction.json'),facing=json('docs/station-remaster/approved-sheet/crew/facings-extraction.json'),repair=json('docs/station-remaster/approved-sheet/storage/repair-extraction.json');
+ const primary=json('docs/keep-remaster/approved-sheet/extraction.json'),facing=json('docs/keep-remaster/approved-sheet/crew/facings-extraction.json'),repair=json('docs/keep-remaster/approved-sheet/storage/repair-extraction.json');
  const manifest=json('frontend/assets/industrial/approved-sheet/manifest.json'),structure=json('dev/industrial-textures/prop-structure-manifest.json');
  assert.equal(sha(read(primary.source)),primary.sourceSha256,'approved master is immutable');
  const records=new Map();for(const r of primary.records)records.set(r.output,{...r,source:primary.source,sourceSha256:primary.sourceSha256});for(const r of [...facing.records,...repair.records])records.set(r.output,r);

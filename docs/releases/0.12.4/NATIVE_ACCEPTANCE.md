@@ -19,7 +19,7 @@ Do not label process-local APPDATA redirection a fresh installed profile. `scrip
 | Journey | Required observation on each native platform |
 | --- | --- |
 | Clean install and first run | Exact artifact launches, bundled catalog loads, overseer creation completes, real supported provider authenticates, a first directive returns visible output, and restart preserves identity/history. |
-| Existing 0.12.3 station | Upgrade preserves agents, projects, conversations, drafts, schedules, permissions, station layout and credentials. Reopen the exact old station; a fresh empty station is not migration proof. |
+| Existing 0.12.3 keep | Upgrade preserves agents, projects, conversations, drafts, schedules, permissions, keep layout and credentials. Reopen the exact old keep; a fresh empty keep is not migration proof. |
 | Conversations and projects | Open ordinary and project conversations, switch while a worker runs, steer/stop work, read returned results, and restart. Identical project crew settings retain their controls; failed/revoked opens retain the actual conversation identity. |
 | Conveyors and approvals | Exercise at least one real filtered/merged delivery, tool approval pause/resume, and exactly-once output; verify durable outcomes after restart. |
 | Authentication and integrations | Real account pairing, expiry/re-authentication, disconnect/reconnect and selected-Google-file consent/picker/readback. Broad Workspace activation remains deferred. Observe failure without losing the last credential copy. |
@@ -27,7 +27,7 @@ Do not label process-local APPDATA redirection a fresh installed profile. `scrip
 | Connection and error recovery | Healthy idle stays UP for more than 40 seconds; actual service/connection loss shows DOWN; reconnect restores state. Exercise crash/restart, interrupted replies, failed saves, malformed state and last-good recovery. |
 | Native UI | Check short windows, high DPI/text zoom, focus, project activity, file picker/drop/paste, dialogs, WebView caching and startup errors. Reproduce the affected Mac boot issue `2f156837` on the affected configuration before closing it. |
 | Updates | Exact signed artifact installs, relaunches and upgrades through a controlled non-public update path; snapshot/recovery works and credentials persist. Verify rollback/failed-update behavior without publishing release metadata. |
-| Large stations | Run the unchanged 3,000-conversation budgets, including a genuinely cold installed start. Retain failures as well as retries; the earlier cold-start variance is not waived. |
+| Large keeps | Run the unchanged 3,000-conversation budgets, including a genuinely cold installed start. Retain failures as well as retries; the earlier cold-start variance is not waived. |
 
 Windows native CUA has live production-path proof in this audit. macOS native CUA is explicitly unavailable in this candidate; verify the truthful unsupported state rather than presenting it as supported.
 

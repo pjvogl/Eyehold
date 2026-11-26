@@ -1,5 +1,5 @@
 /* node test/remote-sessions.test.js — frontend/app/remotesessions.js with the desk's globals faked.
-   A conversation held from a phone must become a desk session, show busy only while the station says its run is
+   A conversation held from a phone must become a desk session, show busy only while the keep says its run is
    live, and reload the open session when a phone turn lands in it — and never resurrect a deleted session. */
 'use strict';
 const A = require('./_assert.js');
@@ -39,7 +39,7 @@ const I = RemoteSessions._internals;
   A.eq(ws && ws.title, 'tighten the hero copy', 'titled with what the Commander said');
   A.eq(ws && ws.agentId, 'forge', 'bound to the agent that ran it');
   A.eq(ws && ws.history, [], 'no dialogue is invented: the transcript comes from the normal session load');
-  A.ok(busy.has('remote_forge_a1'), 'it shows busy while the station says the run is live');
+  A.ok(busy.has('remote_forge_a1'), 'it shows busy while the keep says the run is live');
   A.ok(/phone/.test(busy.get('remote_forge_a1').status), 'and says where the work came from');
   A.eq(loads.length, 0, 'adopting never steals focus');
   A.ok(railRefreshes >= 1 && persists >= 1, 'the rail repaints and the session is persisted');
@@ -48,7 +48,7 @@ const I = RemoteSessions._internals;
   activeId = 'remote_forge_a1';
   routes['/api/remote/recent'] = { ok: true, runs: [{ runId: 'r1', agentId: 'forge', streamId: 'remote_forge_a1', title: 'tighten the hero copy', startedAt: 1000, endedAt: 9000, live: false }] };
   await I.sync(false);
-  A.ok(!busy.has('remote_forge_a1'), 'busy clears when the station says the run ended');
+  A.ok(!busy.has('remote_forge_a1'), 'busy clears when the keep says the run ended');
   A.eq(loads, ['remote_forge_a1'], 'the open session is reloaded so the reply appears');
   A.eq(ws.lastActiveAt, 9000, 'its last-active time is the run end');
   await I.sync(false);
@@ -97,7 +97,7 @@ const I = RemoteSessions._internals;
   routes = {};
   const n = sessions.size;
   await I.sync(true);
-  A.eq(sessions.size, n, 'an unreachable station changes nothing');
+  A.eq(sessions.size, n, 'an unreachable keep changes nothing');
 
   A.eq(I.titleOf(''), 'From your phone', 'an empty title still reads honestly');
 

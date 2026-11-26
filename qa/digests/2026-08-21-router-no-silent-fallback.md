@@ -36,7 +36,7 @@ then tried to route around — by opening a host terminal.
 - **C3 `terminal.start`**: refuses the sandbox mismatch the same way, and refuses ANY non-local effective
   backend with precondition `terminal_requires_local_backend`: *"interactive terminals run on the host; this
   agent is sandboxed (profile safe-cell → docker)…"*.
-- **C4 UI**: `sandboxChip(row)` in stationui.js renders a red `▲ SANDBOX UNAVAILABLE` chip + fix line from
+- **C4 UI**: `sandboxChip(row)` in keepui.js renders a red `▲ SANDBOX UNAVAILABLE` chip + fix line from
   `environment.backendMatched === false` on both the dossier truth line and the Settings crew row. Theme-var
   paint (`--bad`), no native control. `sync:website` mirrored; claims re-locked (`94f50c439`).
 - **C5 checkpoints default ON**: `checkpointsEnabledFromEnv` — empty → on; `0|false|no|off` → off. Fail-open

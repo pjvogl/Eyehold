@@ -6,17 +6,17 @@ test('Kepler preview has legal props, reachable rooms and an intake-to-outbox cr
   const P=require('../frontend/app/propsprites.js'),M=require('../frontend/app/worldmodel.js');
   await IndustrialTextures.ready;
   // Construction checks each footprint, mount, facing and belt against the placement model.
-  const {doc,station}=require('../dev/kepler-showcase.cjs').createPreset(P,M);
-  const table=station.propById('chart-table');
+  const {doc,keep}=require('../dev/kepler-showcase.cjs').createPreset(P,M);
+  const table=keep.propById('chart-table');
   assert.deepEqual([table.x,table.y,table.w,table.h],[24,9,5,3]);
-  assert.equal(station.propById('chart-left').x,table.x-1);
-  assert.equal(station.propById('chart-right').x,table.x+table.w);
-  assert.equal(station.propById('command-chair'),null,'assigned desk owns its one automatic seat');
-  assert.equal(station.propById('navigation-chair').y,station.propById('navigation-desk').y+1);
-  assert(station.propById('lounge-seat-right').x<station.propById('lounge-table').x,'east-facing recliner sits west of the table');
-  assert(station.propById('lounge-seat-left').x>station.propById('lounge-table').x,'west-facing recliner sits east of the table');
+  assert.equal(keep.propById('chart-left').x,table.x-1);
+  assert.equal(keep.propById('chart-right').x,table.x+table.w);
+  assert.equal(keep.propById('command-chair'),null,'assigned desk owns its one automatic seat');
+  assert.equal(keep.propById('navigation-chair').y,keep.propById('navigation-desk').y+1);
+  assert(keep.propById('lounge-seat-right').x<keep.propById('lounge-table').x,'east-facing recliner sits west of the table');
+  assert(keep.propById('lounge-seat-left').x>keep.propById('lounge-table').x,'west-facing recliner sits east of the table');
   assert.equal(doc.order.filter(id=>doc.rooms[id].kind!=='corridor').length,3);
-  const geo=station.projectGeometry();
+  const geo=keep.projectGeometry();
   const plan=require('../frontend/app/pipeline.js').compileRoutingPlan(geo);
   assert.deepEqual(plan.errors,[]);
   assert.equal(plan.reach.agent,true);

@@ -1,6 +1,6 @@
 /* Run-origin authority: which runs may inherit the Commander's standing Full Power.
 
-   Full Access (per-agent approvalMode:'full') and the station-wide master bypass are the OWNER's authority.
+   Full Access (per-agent approvalMode:'full') and the keep-wide master bypass are the OWNER's authority.
    A run that a chat-channel sender started carries two host-minted fields set by sidecar/channels/hub.js:
      channelSender: true           — a person on a messaging channel originated this run
      channelSenderOwner: boolean   — that person is the bound owner, in a direct chat
@@ -38,7 +38,7 @@ function entryUntrusted(o) {
 }
 
 /* STANDING WORK FROM A WITHHELD RUN (sweep 2026-10-02). A run whose host power is withheld (a paired phone, a non-owner
-   channel sender, or any worker they delegate to) could still CREATE or RESTART work that runs later under the station's
+   channel sender, or any worker they delegate to) could still CREATE or RESTART work that runs later under the keep's
    standing authority — a routine, a loop, a line trigger, a line test — and that later run fires with the agent's Full
    Access: "a routine that runs in a minute: run this command", approved once on a lost phone, ran with every capability.
    Nothing about who asked is saved on the job, so the safe line is here: such a run may not set standing work up or
@@ -48,15 +48,15 @@ const STANDING_ESCALATES = {
   'routine.manage': (a) => ['update', 'resume', 'run_now'].indexOf(String(a && a.action || '')) >= 0,
   'loop.create': () => true,
   'loop.manage': (a) => ['update', 'resume', 'approve'].indexOf(String(a && a.action || '')) >= 0,
-  'station.start_line': (a) => !(a && a.off),
-  'station.test_line': () => true,
-  // widening the station's leash (Full Power, FULL agents, caps, trusted folders, hook code) is the desk's call
-  'station.power': () => true,
+  'keep.start_line': (a) => !(a && a.off),
+  'keep.test_line': () => true,
+  // widening the keep's leash (Full Power, FULL agents, caps, trusted folders, hook code) is the desk's call
+  'keep.power': () => true,
   // pointing the night shift at a project (or back at one) sets up work that runs later under standing authority
-  'station.control': (a) => (a && a.action === 'nightshift.focus' && !(a.args && a.args.clear)) || (a && a.action === 'nightshift.avoid' && !!(a.args && a.args.allow))
+  'keep.control': (a) => (a && a.action === 'nightshift.focus' && !(a.args && a.args.clear)) || (a && a.action === 'nightshift.avoid' && !!(a.args && a.args.allow))
 };
 function standingWorkEscalates(name, args) {
-  const n = String(name || '').replace(/_/g, '.').replace(/^station\.start\.line$/, 'station.start_line').replace(/^station\.test\.line$/, 'station.test_line').replace(/^routine\.run\.now$/, 'routine.run_now');
+  const n = String(name || '').replace(/_/g, '.').replace(/^keep\.start\.line$/, 'keep.start_line').replace(/^keep\.test\.line$/, 'keep.test_line').replace(/^routine\.run\.now$/, 'routine.run_now');
   const rule = STANDING_ESCALATES[n] || STANDING_ESCALATES[String(name || '')];
   return !!(rule && rule(args && typeof args === 'object' ? args : {}));
 }

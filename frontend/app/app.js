@@ -24,7 +24,7 @@ const App = (() => {
   let pickedApproval = 'ask';   // the APPROVAL mode — 'ask' (consent-gated) | 'full' (auto-approve). Drives the REAL consent broker (sidecar bypass), not a cosmetic toggle.
   let pickedProvider = 'openai';   // BEGINNER-FIRST funnel: the EYEHOLD hero is the promoted start, but it only exists once the cloud seam is proven (revealEyeholdGenesis auto-picks it on a fresh create). Until then OPENAI leads — its card carries BOTH paths (ChatGPT sign-in or an API key). initConnect() still honours a returning agent's saved provider.
   // POWER-USER LOOP PL-03 — entry is a four-surface truth transaction. World opens its EventSource
-  // before Chat/StationUI finish mounting, and their independent timers used to expose an impossible
+  // before Chat/KeepUI finish mounting, and their independent timers used to expose an impossible
   // mixture during reload: unreachable + STANDBY + ONLINE + "COMMS online". Hold every idle claim at
   // CONNECTING until the bridge itself proves OPEN; a sustained failure then converges to one DOWN state.
   let bridgeAuthorityTimer = null;
@@ -50,11 +50,11 @@ const App = (() => {
   }
   function paintBridgeUnavailable() {
     const chat = el('chat-status');
-    if (chat) { chat.textContent = 'station unreachable'; chat.className = 'status-down'; }
+    if (chat) { chat.textContent = 'keep unreachable'; chat.className = 'status-down'; }
     const pill = el('status-pill');
     if (pill) { pill.textContent = 'DARK'; pill.className = 'down'; }
     const empty = document.querySelector('.cmsg-empty-line');
-    if (empty) empty.textContent = 'MISSIVES unavailable — reconnecting to the station.';
+    if (empty) empty.textContent = 'MISSIVES unavailable — reconnecting to the keep.';
     const sig = el('sig'), bars = sig && sig.querySelector('b');
     if (sig && bars) { sig.classList.remove('standby'); sig.classList.add('down'); sig.childNodes[0].nodeValue = 'LINK DOWN '; bars.textContent = '▁▁▁▁'; }
   }
@@ -62,7 +62,7 @@ const App = (() => {
     if (bridgeAuthorityTimer) clearTimeout(bridgeAuthorityTimer);
     if (bridgeAuthorityObserver) { bridgeAuthorityObserver.disconnect(); bridgeAuthorityObserver = null; }
     const beganAt = Date.now();
-    // StationUI and Topbar have independent repaint cadences. During the gate, synchronously fold any
+    // KeepUI and Topbar have independent repaint cadences. During the gate, synchronously fold any
     // attempted status mutation back into CONNECTING before the browser paints a contradictory frame.
     if (typeof MutationObserver !== 'undefined') {
       bridgeAuthorityObserver = new MutationObserver(() => { if (bridgeAuthorityTimer && !bridgeAuthorityProven()) paintBridgeConnecting(); });
@@ -99,9 +99,9 @@ const App = (() => {
   // The OTHER keyless device-code OAuth providers on the genesis screen (grok/kimi) — same gate, per provider.
   // Codex keeps its own literal variable above (source-locks pin it); refreshCodexStatus mirrors into this map.
   const oauthConnected = { codex: false, grok: false, kimi: false };
-  let station = null;         // the canonical WorldModel station (the builder's source of truth)
-  let pendingStationDoc = null; // a saved station doc awaiting enterGame()
-  let pendingStationStats = null; // a saved station-growth rollup (XP/level/confidence) awaiting enterGame()
+  let keep = null;         // the canonical WorldModel keep (the builder's source of truth)
+  let pendingKeepDoc = null; // a saved keep doc awaiting enterGame()
+  let pendingKeepStats = null; // a saved keep-growth rollup (XP/level/confidence) awaiting enterGame()
   let pendingGrowthSyncAt = 0;    // durable-run catch-up floor (server snapshot; legacy saves use their write time once)
   let pendingRatingSyncAt = 0;    // authoritative work-rating ledger floor (repairs stale/rolled-back XP projections)
   let pendingProfile = null;      // a saved user-affinity profile slice awaiting ProfileStore.init() in enterGame()
@@ -137,8 +137,8 @@ const App = (() => {
     // the ResizeObserver below re-seats the moment the mark renders again.
     if (!logo.getClientRects().length) return;
     anchor.style.width = logo.offsetWidth + 'px';
-    // TEXT SIZE coordinate law (stationui.js uiZoom): rects are VISUAL px, but #logo's style.left/
-    // top are its OWN layout px — divide by whatever zoom it actually renders at, or on any station
+    // TEXT SIZE coordinate law (keepui.js uiZoom): rects are VISUAL px, but #logo's style.left/
+    // top are its OWN layout px — divide by whatever zoom it actually renders at, or on any keep
     // where AUTO resolves ≠100% the mark lands off by that factor (worst in windowed mode, where
     // the titlebar strip makes b.top large; the 2026-07-20 misaligned-logo report on other
     // hardware). That factor is no longer just U.uiZoom(): the mark is CABINET, so app.css
@@ -244,10 +244,10 @@ const App = (() => {
     // sidecar/capability/office.js + capgate F1). So the identity must NOT promise web/files unconditionally; it
     // tells the agent to use whatever it's actually been granted and to SAY when a tool is missing (that's the
     // signal that teaches the Commander what to place next), never to pretend a reach it doesn't have.
-    let s = 'You are ' + name + ', an AI agent operating from a workstation aboard the EYEHOLD station — a room '
+    let s = 'You are ' + name + ', an AI agent operating from a workkeep aboard the EYEHOLD keep — a room '
       + 'your Commander (the user) is building for you. Address the user as "Commander" and keep a spark of personality. '
-      + 'Your workstation grants you REAL tools — exactly the ones the Commander has placed in your room (web search/read, '
-      + 'file read/write, a terminal, memory, and more as the station grows; compute to think is always yours). When the '
+      + 'Your workkeep grants you REAL tools — exactly the ones the Commander has placed in your room (web search/read, '
+      + 'file read/write, a terminal, memory, and more as the keep grows; compute to think is always yours). When the '
       + 'Commander assigns a TASK, use the tools you actually have to do the real work and report what you find. If a job '
       + 'needs a tool you have not been granted yet, say so plainly and tell the Commander what to place — never pretend a '
       + 'reach you do not have, and never claim a tool is missing when it is in your room. When you are just chatting out '
@@ -256,14 +256,14 @@ const App = (() => {
     if (role === 'orchestrator') s += orchestratorClause();
     return s;
   }
-  // The ORCHESTRATOR is the station's founding agent. This clause is TIMELESS on purpose: identity.md is written
+  // The ORCHESTRATOR is the keep's founding agent. This clause is TIMELESS on purpose: identity.md is written
   // once into the save (and is Commander-editable), so any crew-size claim baked here would freeze and turn into
   // an app-lie the moment the roster changes — exactly the bug the old "right now its only agent" wording had.
   // The LIVE crew truth rides rosterClause() (derived fresh each compose) + the sidecar's per-run [ORCHESTRATION]
   // block, which alone grants/lists the delegation tools. Extracted so stripLegacySoloClause can migrate old saves
   // onto the exact same text (keeping setAgentName's untouched-default detection working).
   function orchestratorClause() {
-    return ' You are this station\'s OVERSEER — its orchestrating lead and first agent. When there is a crew, you are '
+    return ' You are this keep\'s OVERSEER — its orchestrating lead and first agent. When there is a crew, you are '
       + 'the one who breaks a big job into pieces and hands them out; when there is not, you do the work yourself. '
       + 'Never assume either from memory: your live crew and your delegation tools are stated fresh in each run\'s '
       + 'briefing — trust that briefing, and never claim a crew member or a delegation tool it does not show. '
@@ -294,7 +294,7 @@ const App = (() => {
   // EXACT old block for the new timeless clause on resume. Literal-match-guarded so it's idempotent and never
   // touches an identity the Commander hand-reworded; producing exactly orchestratorClause() keeps the result
   // byte-equal to a fresh baseIdentity, so setAgentName's untouched-default detection still works after migration.
-  const LEGACY_SOLO_CLAUSE = ' You are this station\'s OVERSEER — its orchestrating lead, its first agent, and right now its only agent. For now '
+  const LEGACY_SOLO_CLAUSE = ' You are this keep\'s OVERSEER — its orchestrating lead, its first agent, and right now its only agent. For now '
     + 'you simply do the work yourself. As the Commander recruits specialists over time, you grow into the one who '
     + 'breaks a big job into pieces and hands them out — you gain a team.dispatch tool to delegate the moment there '
     + 'is a crew to delegate to, and not before. Until then, never speak as if you command a crew you do not yet have; '
@@ -308,13 +308,13 @@ const App = (() => {
   // the APPROVAL clause folded into the system prompt — it MUST match the real consent broker (sidecar) so the
   // agent's words and its actual behaviour never diverge (truthful-telemetry law). 'full' = the broker bypasses
   // the consent gate; 'ask' = the broker prompts the Commander on any mutation/network call.
-  const EXECUTION_PROFILE_IDS = ['station-gear', 'safe-cell', 'remote-ssh', 'trusted-project', 'this-computer'];
+  const EXECUTION_PROFILE_IDS = ['keep-gear', 'safe-cell', 'remote-ssh', 'trusted-project', 'this-computer'];
   function executionProfileOf(a) {
     const id = String((a && a.executionProfile) || '');
     if (EXECUTION_PROFILE_IDS.indexOf(id) >= 0) return id;
     // Legacy saves had only approvalMode. Preserve their exact object=capability behavior; choosing one of the
     // new named profiles is the explicit act that adds its advertised baseline tools and scope.
-    return 'station-gear';
+    return 'keep-gear';
   }
   function approvalClause(a) {
     const full = a && a.approvalMode === 'full';
@@ -348,14 +348,14 @@ const App = (() => {
     if (!a || a.role !== 'orchestrator') return '';
     const crew = liveAgents().filter(x => x && x.id !== a.id);
     if (!crew.length) {
-      return '\n\nYOUR CREW: none yet — right now you are this station\'s only agent, so you do the work yourself. '
-        + 'Never speak as if you command a crew you do not yet have; you grow into delegation as specialists join the station.';
+      return '\n\nYOUR CREW: none yet — right now you are this keep\'s only agent, so you do the work yourself. '
+        + 'Never speak as if you command a crew you do not yet have; you grow into delegation as specialists join the keep.';
     }
     const names = crew.map(x => (x.name || x.id) + ' — ' + rosterRole(x)).join('; ');
     // lead-conditional on purpose: this same base prompt also runs the orchestrator as a dispatched WORKER, where
     // no delegation briefing (or tools) exists — it must not instruct delegation unconditionally (see pushRoster).
     return '\n\nYOUR CREW: ' + crew.length + ' specialist' + (crew.length === 1 ? '' : 's') + ' work' + (crew.length === 1 ? 's' : '')
-      + ' under your lead: ' + names + '. When you run as the station\'s lead, your run briefing lists the live crew '
+      + ' under your lead: ' + names + '. When you run as the keep\'s lead, your run briefing lists the live crew '
       + 'and your delegation tools — hand real subtasks to the right specialist through them and synthesize the '
       + 'results for the Commander.';
   }
@@ -387,15 +387,15 @@ const App = (() => {
     if (context) p += '\n\nABOUT YOUR COMMANDER & THEIR WORLD (context.md):\n' + context;
     const manual = (d.manual || '').trim();
     if (manual) p += '\n\nSTANDING ORDERS (operating-manual.md) — always follow these:\n' + manual;
-    // THE COMMANDER DOSSIER: the station-wide model of the user, folded in so every agent knows the
+    // THE COMMANDER DOSSIER: the keep-wide model of the user, folded in so every agent knows the
     // Commander (durable beliefs only → the prefix stays byte-stable for the cache). '' until something
-    // is known, so a cold station adds nothing here.
+    // is known, so a cold keep adds nothing here.
     if (typeof DossierStore !== 'undefined') {
       const cd = DossierStore.composeBlock();
       if (cd) p += '\n\n' + cd;
     }
     // R1 MID-TASK FORK: the fork instruction rides ONLY while the style model's confidence is low
-    // (Fork.shouldOffer over the live understanding read) — self-retiring: once the station knows how the
+    // (Fork.shouldOffer over the live understanding read) — self-retiring: once the keep knows how the
     // Commander likes work done, this block vanishes and forks stop appearing. Fail-closed on any hiccup.
     if (typeof Fork !== 'undefined' && typeof UnderstandingStore !== 'undefined') {
       try { if (Fork.shouldOffer(UnderstandingStore.read())) p += '\n\n' + Fork.directive(); } catch (_) {}
@@ -492,7 +492,7 @@ const App = (() => {
         if (p && typeof Harness !== 'undefined' && Harness.setProv) Harness.setProv(p);
         if (hasEffort && a.reasoningEffort && typeof Harness !== 'undefined' && Harness.setReasoningEffort) Harness.setReasoningEffort(a.reasoningEffort);
       } else {
-        applyWire(focusWire(a));   // a CLEARED pin follows the station default now, not the pin it just dropped (#24)
+        applyWire(focusWire(a));   // a CLEARED pin follows the keep default now, not the pin it just dropped (#24)
       }
       if (typeof ModelDock !== 'undefined' && ModelDock.reflect) ModelDock.reflect();
     }
@@ -543,7 +543,7 @@ const App = (() => {
       .then(r => r.json().catch(() => null))
       .then(j => {
         const ok = !!(j && j.ok);
-        if (!ok) { a.workshop = !on; pushRoster(); persist(); }   // revert local truth: the station didn't record it
+        if (!ok) { a.workshop = !on; pushRoster(); persist(); }   // revert local truth: the keep didn't record it
         return ok;
       })
       .catch(() => { a.workshop = !on; pushRoster(); persist(); return false; });
@@ -603,7 +603,7 @@ const App = (() => {
     }
     if (typeof World !== 'undefined' && World.relabel) World.relabel(a.id, a.name);   // the floor nameplate follows
     recomposeOrchestrators();   // a crew rename must reach the lead's YOUR CREW clause (it names specialists)
-    if (typeof StationUI !== 'undefined' && StationUI.setRoster) StationUI.setRoster(liveAgents());
+    if (typeof KeepUI !== 'undefined' && KeepUI.setRoster) KeepUI.setRoster(liveAgents());
     renderRail();
     pushRoster();
     persist();
@@ -623,7 +623,7 @@ const App = (() => {
     if (!sk || typeof DATA === 'undefined' || !DATA.SKINS || !DATA.SKINS[sk]) return false;   // must be a real catalog skin
     a.skin = sk;
     if (typeof World !== 'undefined' && World.setSkin) World.setSkin(a.id, sk);   // live-update the sprite on the floor
-    if (typeof StationUI !== 'undefined' && StationUI.setRoster) StationUI.setRoster(liveAgents());   // repaint the dossier portrait/picker
+    if (typeof KeepUI !== 'undefined' && KeepUI.setRoster) KeepUI.setRoster(liveAgents());   // repaint the dossier portrait/picker
     persist();
     return true;
   }
@@ -638,7 +638,7 @@ const App = (() => {
     if (!a) return Promise.resolve(false);
     if (id === 'agent' || (agent && agent.id === 'agent' && a.role === 'orchestrator')) return Promise.resolve(false);   // never the hero
     if (a.role === 'orchestrator') return Promise.resolve(false);   // the overseer is the founder — undeletable
-    if (agents.size <= 1) return Promise.resolve(false);   // never the last agent on station
+    if (agents.size <= 1) return Promise.resolve(false);   // never the last agent on keep
     // if the deleted agent is currently focused, hand COMMS back to the hero BEFORE dropping it.
     return fetch('/api/agent/delete', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ agentId: id }) })
       .then(r => (r && r.ok) ? r.json().catch(() => null) : null)
@@ -652,10 +652,10 @@ const App = (() => {
         if (typeof World !== 'undefined' && World.despawnAgent) World.despawnAgent(id);   // pull its floor body
         // unbind every prop still assigned to the gone agent (its bay above all): a stale bay→agentId binding
         // re-mints a floor body for a DELETED agent on the next floor rederive (ghost crew) and keeps claiming
-        // the dock in BUILD MODE. assignPropAgent fires station.onChange, so the world rederives on its own.
+        // the dock in BUILD MODE. assignPropAgent fires keep.onChange, so the world rederives on its own.
         try {
-          if (station && station.propsByAgent && station.assignPropAgent) {
-            for (const p of station.propsByAgent(id)) station.assignPropAgent(p.id, '');
+          if (keep && keep.propsByAgent && keep.assignPropAgent) {
+            for (const p of keep.propsByAgent(id)) keep.assignPropAgent(p.id, '');
           }
         } catch (_) {}
         // retire workstreams bound to the gone agent so the rail can't reopen a stream with no agent behind it.
@@ -663,7 +663,7 @@ const App = (() => {
           if (typeof Workstreams !== 'undefined' && Workstreams.removeByAgent) Workstreams.removeByAgent(id);
         } catch (_) {}
         recomposeOrchestrators();   // the lead's YOUR CREW clause must drop the removed specialist
-        if (typeof StationUI !== 'undefined' && StationUI.setRoster) StationUI.setRoster(liveAgents());
+        if (typeof KeepUI !== 'undefined' && KeepUI.setRoster) KeepUI.setRoster(liveAgents());
         renderRail();
         pushRoster();   // the surviving crew replaces the whole server roster
         persist();
@@ -678,12 +678,12 @@ const App = (() => {
      focus follows whichever workstream is active (switchWorkstream calls it with the stream's agentId). */
   function liveAgents() { return [...agents.values()]; }
   // Canvas bodies carry stable agent ids, while the dossier owns a roster index. Resolve at click time from
-  // the same live registry StationUI receives so a summoned specialist opens its own record without changing
+  // the same live registry KeepUI receives so a summoned specialist opens its own record without changing
   // COMMS focus. Unknown/stale bodies fail closed instead of silently opening the Overseer.
   function openWorldAgent(agentId) {
     const i = liveAgents().findIndex(a => a && a.id === agentId);
-    if (i < 0 || typeof StationUI === 'undefined' || !StationUI.openAgent) return false;
-    StationUI.openAgent(i);
+    if (i < 0 || typeof KeepUI === 'undefined' || !KeepUI.openAgent) return false;
+    KeepUI.openAgent(i);
     return true;
   }
   function registerHero(a) { agents.clear(); agents.set(a.id, a); }   // wake/resume: the hero founds the registry
@@ -698,23 +698,23 @@ const App = (() => {
       if (agent && agent.id === a.id && typeof Chat !== 'undefined' && Chat.setSystem) Chat.setSystem(a.systemPrompt);   // focused: the live COMMS session follows
     }
   }
-  /* THE STATION DEFAULT IS THE OVERSEER'S WIRE (issue #24). Focusing an agent writes its model/provider/effort into
+  /* THE KEEP DEFAULT IS THE OVERSEER'S WIRE (issue #24). Focusing an agent writes its model/provider/effort into
      the ONE global wire every COMMS run reads (Harness). A pinned agent brings its own wire; an agent with no pin
-     ("Follow station default") must get the Overseer's, because nothing else resets the global. Before this, a
-     specialist summoned while the station ran on Eyehold credits kept a `eyehold` pin; the Commander switched the
-     station to OpenRouter, focused that specialist, cleared its pin, and every run after that still went out as
-     `eyehold` — refused at 0s with "Out of managed credit" on a funded BYOK station. */
-  function stationDefaultWire() {
+     ("Follow keep default") must get the Overseer's, because nothing else resets the global. Before this, a
+     specialist summoned while the keep ran on Eyehold credits kept a `eyehold` pin; the Commander switched the
+     keep to OpenRouter, focused that specialist, cleared its pin, and every run after that still went out as
+     `eyehold` — refused at 0s with "Out of managed credit" on a funded BYOK keep. */
+  function keepDefaultWire() {
     const hero = agents.get('agent') || null;
     return { model: (hero && hero.model) || '', provider: (hero && hero.provider) || '', effort: (hero && hero.reasoningEffort) || '' };
   }
-  // A save's top-level `prov` used to record the FOCUSED agent's pin; the hero's own provider is the station's truth.
-  function savedStationProv(saved) { return (saved && saved.agent && saved.agent.provider) || (saved && saved.prov) || ''; }
+  // A save's top-level `prov` used to record the FOCUSED agent's pin; the hero's own provider is the keep's truth.
+  function savedKeepProv(saved) { return (saved && saved.agent && saved.agent.provider) || (saved && saved.prov) || ''; }
   /* 0.12.5 REASONING MIGRATION, once per save (persist() writes `reasoningMigrated` on every save from the first
      0.12.5 persist, so an explicit 0.12.5 choice is never touched). 0.12.4's model dock could not read a reasoning
      dial for OpenAI-API, xAI/Grok, DeepSeek or Eyehold Managed models: it showed them locked at OFF and saved that,
      while the adapter sent no reasoning_effort at all. 0.12.5 reads their real dials and sends the saved level, which
-     would silently change what an upgraded station runs:
+     would silently change what an upgraded keep runs:
        - OpenAI-API / xAI / Grok / DeepSeek ran at the MODEL's default reasoning. The inherited 'none' would now turn it
          off, so it is dropped and the provider default applies (the dock clamps it to a level the model accepts).
        - Eyehold Managed sent nothing. The Overseer's onboarding MEDIUM would now switch paid thinking on, so a Managed
@@ -723,9 +723,9 @@ const App = (() => {
   const LEGACY_DIAL_LOCKED = ['openai', 'xai', 'grok', 'deepseek'];
   function migrateLegacyReasoning(saved) {
     if (!saved || typeof saved !== 'object' || saved.reasoningMigrated === REASONING_MIGRATION) return false;
-    const station = normalizeProviderId(savedStationProv(saved) || 'openrouter');
+    const keep = normalizeProviderId(savedKeepProv(saved) || 'openrouter');
     const settle = (prov, effort) => {
-      const p = normalizeProviderId(prov || station);
+      const p = normalizeProviderId(prov || keep);
       const e = String(effort || '').trim().toLowerCase();
       if (LEGACY_DIAL_LOCKED.indexOf(p) >= 0) return (e === 'none' || e === 'off') ? null : (effort || null);
       if (p === 'eyehold') return 'none';
@@ -735,7 +735,7 @@ const App = (() => {
     fix(saved.agent);
     if (Array.isArray(saved.agents)) saved.agents.forEach(fix);
     if (saved.reasoningEffort != null) {
-      const top = settle(station, saved.reasoningEffort);
+      const top = settle(keep, saved.reasoningEffort);
       if (top == null) delete saved.reasoningEffort; else saved.reasoningEffort = top;
     }
     // the page's own per-provider wire (localStorage) inherited the same OFF from 0.12.4's locked dock
@@ -745,16 +745,16 @@ const App = (() => {
     return true;
   }
   function focusWire(a) {
-    const station = stationDefaultWire();
-    if (!(a && a.model)) return station;
-    return { model: a.model, provider: a.provider || station.provider, effort: a.reasoningEffort || '' };
+    const keep = keepDefaultWire();
+    if (!(a && a.model)) return keep;
+    return { model: a.model, provider: a.provider || keep.provider, effort: a.reasoningEffort || '' };
   }
-  // SETTINGS -> PROVIDERS picks the STATION's provider, and the station default IS the Overseer's pin
-  // (stationDefaultWire). The card used to move only the global wire, so the Overseer kept the provider the station
+  // SETTINGS -> PROVIDERS picks the KEEP's provider, and the keep default IS the Overseer's pin
+  // (keepDefaultWire). The card used to move only the global wire, so the Overseer kept the provider the keep
   // had just left: unpinned agents, their roster rows and a restore all followed it (the #24 "Out of managed credit"
   // symptom through a Settings switch from Eyehold credits to a BYOK key). An invalid model under the new provider is
   // reconciled by the dock the next time the Overseer is focused, exactly as a dock provider pick is.
-  function setStationProvider(p) {
+  function setKeepProvider(p) {
     const hero = agents.get('agent');
     const next = p ? normalizeProviderId(p) : '';
     if (!hero || !next || hero.provider === next) return false;
@@ -789,7 +789,7 @@ const App = (() => {
     agent = a;
     // #4: provider + reasoning-effort are PER-AGENT, not one global — restore them on focus so switching to an
     // Anthropic agent right after a Codex one doesn't run the Anthropic model through the codex provider (and the
-    // dock label match). An agent with no pin FOLLOWS THE STATION DEFAULT (issue #24): it gets the Overseer's wire,
+    // dock label match). An agent with no pin FOLLOWS THE KEEP DEFAULT (issue #24): it gets the Overseer's wire,
     // never the leftover pin of whichever agent was focused before it.
     const wire = focusWire(a);
     applyWire(wire);
@@ -901,7 +901,7 @@ const App = (() => {
       fireworks: 'https://fireworks.ai/account/api-keys',
       perplexity: 'https://www.perplexity.ai/settings/api',
       cerebras: 'https://cloud.cerebras.ai',
-      // not a key page: managed credits are obtained by LINKING a station in the STORE
+      // not a key page: managed credits are obtained by LINKING a keep in the STORE
       eyehold: 'https://account.eyehold.com',
       openrouter: 'https://openrouter.ai/keys'
     };
@@ -938,7 +938,7 @@ const App = (() => {
     if (typeof ModelDock !== 'undefined' && ModelDock.reflect) ModelDock.reflect();
     if (typeof Chat !== 'undefined' && Chat.refreshIdBar) Chat.refreshIdBar();   // keep the COMMS header model readout in sync with the footer dock change
     if (typeof KeyCTA !== 'undefined' && KeyCTA.refresh) KeyCTA.refresh();   // a provider switch can change key state — keep the keyless-brain banner honest
-    if (typeof StationUI !== 'undefined' && StationUI.notify) {
+    if (typeof KeepUI !== 'undefined' && KeepUI.notify) {
       const msg = catalogInvalid
         ? 'MODEL UNAVAILABLE: ' + String(sel.previousModel || 'saved model') + ' is not in the ' + providerLabel(provider) + ' catalog — pick a model to continue'
         : sel.reason === 'catalog_reconcile'
@@ -946,7 +946,7 @@ const App = (() => {
           : sel.reason === 'effort'
             ? 'REASONING: ' + effortLabel(effort)
             : 'MODEL: ' + providerLabel(provider) + ' / ' + shortModelLabel(model) + ' / ' + effortLabel(effort);
-      StationUI.notify(msg, 'good');
+      KeepUI.notify(msg, 'good');
     }
   }
   // the persisted shape of a crew member (systemPrompt is derived, recomposed on rehydrate).
@@ -963,7 +963,7 @@ const App = (() => {
     if (!Array.isArray(savedAgents)) return;
     for (const s of savedAgents) {
       if (!s || !s.id || s.id === 'agent' || agents.has(s.id)) continue;   // hero already registered; skip dups (so the 'specialist' default below is always correct here — the orchestrator never routes through this path)
-      // An empty model is the durable "Follow station default" choice, not a missing pin
+      // An empty model is the durable "Follow keep default" choice, not a missing pin
       // to replace with a snapshot of the hero. Preserve it across reload/provider changes.
       const a = { id: s.id, name: s.name,
                   // a saved suit tint lands in style attrs: hex only, else a palette suit (security audit 2026-09-23)
@@ -998,7 +998,7 @@ const App = (() => {
       // Commander is working with. Falls back to 'agent' (the default cron agentId) if no active stream.
       agentId: ((typeof Workstreams !== 'undefined' && Workstreams.active && Workstreams.active()) || {}).agentId || 'agent',
       currentSpecialtyId: agent.specialtyId || null,   // lets the bay flag which card is already DEPLOYED
-      notify: (typeof StationUI !== 'undefined') ? StationUI.notify : null,
+      notify: (typeof KeepUI !== 'undefined') ? KeepUI.notify : null,
       draftFromAgent: () => (typeof Specialties !== 'undefined') ? Specialties.fromAgent(agent) : null,
       onDeploy: deploySpecialty,
       onLaunch: launchRecipe   // the RECIPES tab hands a filled mission back here to run
@@ -1018,7 +1018,7 @@ const App = (() => {
       agentName: agent.name,
       agentId: ((typeof Workstreams !== 'undefined' && Workstreams.active && Workstreams.active()) || {}).agentId || 'agent',
       currentSpecialtyId: agent.specialtyId || null,
-      notify: (typeof StationUI !== 'undefined') ? StationUI.notify : null,
+      notify: (typeof KeepUI !== 'undefined') ? KeepUI.notify : null,
       draftFromAgent: () => (typeof Specialties !== 'undefined') ? Specialties.fromAgent(agent) : null,
       onDeploy: deploySpecialty,
       onLaunch: launchRecipe,
@@ -1035,7 +1035,7 @@ const App = (() => {
     agent.specialtyId = spec.id;
     const patch = Specialties.compose(spec);
     if (patch) applyAgentConfig(patch);   // folds purpose + manual (+ any new persona) into the live prompt, persists, syncs channels
-    if (typeof StationUI !== 'undefined' && StationUI.rerender) StationUI.rerender('agents');   // refresh an open dossier
+    if (typeof KeepUI !== 'undefined' && KeepUI.rerender) KeepUI.rerender('agents');   // refresh an open dossier
   }
 
   /* ---------- SUMMON: wake a NEW live agent onto the crew ----------
@@ -1060,11 +1060,11 @@ const App = (() => {
      any of them per-agent afterward. */
   // Resolve a specialty's model TIER ('reasoning'|'balanced'|'fast') to a CONCRETE model id. The Commander can
   // OPTIONALLY map each tier to a specific model in SETTINGS → MODELS → CLASS TIER MODELS (persisted per-machine
-  // in localStorage under TIER_MODELS_KEY). An unset tier ('(station default)') falls back to the base model the
+  // in localStorage under TIER_MODELS_KEY). An unset tier ('(keep default)') falls back to the base model the
   // summon already inherits (the woken hero's model / the model dock's primary), so the default behaviour is
   // exactly as before — the class only changes the model when the Commander has deliberately pinned that tier.
   // Everything downstream (roster / pushRoster / runOnce) already honors a per-agent model id.
-  const TIER_MODELS_KEY = 'eyehold.tierModels.v1';   // { reasoning?, balanced?, fast? } -> concrete model id (shared with stationui SETTINGS)
+  const TIER_MODELS_KEY = 'eyehold.tierModels.v1';   // { reasoning?, balanced?, fast? } -> concrete model id (shared with keepui SETTINGS)
   function tierModelMap() {
     try {
       if (typeof localStorage === 'undefined') return {};
@@ -1078,8 +1078,8 @@ const App = (() => {
     return baseModel || ((typeof Harness !== 'undefined' && Harness.getModel) ? Harness.getModel() : null) || null;
   }
   // fold the class loadout (model tier + effort + skills) onto an agent record. A class's `kit` is NOT placed
-  // per-agent — it names the shared STATION gear the class draws on under the overseer (informational, shown in
-  // the dossier). The only per-agent object is the agent's own desk; capabilities are station-level shared gear.
+  // per-agent — it names the shared KEEP gear the class draws on under the overseer (informational, shown in
+  // the dossier). The only per-agent object is the agent's own desk; capabilities are keep-level shared gear.
   function applyLoadout(a, spec, pin) {
     if (!a || !spec) return;
     // an EXPLICIT creation-time pick (bay modelPin) beats the class-tier default — the class supplies
@@ -1136,22 +1136,22 @@ const App = (() => {
     agents.set(id, a);
     registerAgent(id, a.color);                                // sprite tint shim
     // ITS DESK COMES WITH IT (opts.desk): a specialist created because the Commander ASKED for one has
-    // nowhere to sit, so it stands where work is delivered instead of walking to a workstation — the
+    // nowhere to sit, so it stands where work is delivered instead of walking to a workkeep — the
     // "you also have to go build it a desk" step nobody asked for. When the summon is the answer to a
     // direct request (the overseer's team.summon), seed the ONE per-agent prop the same way the hero's
-    // starter desk is seeded (ensureWorkstation: idempotent, spawn room first, real placed prop). This is
+    // starter desk is seeded (ensureWorkkeep: idempotent, spawn room first, real placed prop). This is
     // NOT a general "the agent can place props" power — only this one desk, only on this one path, and
     // only for the agent being created. Deliberately BEFORE World.spawnAgent so the desk exists as the
     // body arrives (containBody re-homes the body next tick in the rare case the two pick the same tile).
-    const desk = (opts.desk === true && station && typeof station.ensureWorkstation === 'function')
-      ? station.ensureWorkstation(id) : null;
-    const deskRoom = (desk && desk.ok && desk.roomId && station.roomById) ? (station.roomById(desk.roomId) || {}).name : null;
+    const desk = (opts.desk === true && keep && typeof keep.ensureWorkkeep === 'function')
+      ? keep.ensureWorkkeep(id) : null;
+    const deskRoom = (desk && desk.ok && desk.roomId && keep.roomById) ? (keep.roomById(desk.roomId) || {}).name : null;
     if (opts.desk === true && !(desk && desk.ok)) console.warn('[summon] no desk seeded for', id, desk && desk.error);
     const _spawned = (typeof World !== 'undefined' && !!World.spawnAgent);
     if (_spawned) World.spawnAgent(a);                          // Phase C: a real floor body
     else console.warn('[summon] World.spawnAgent missing — no floor body for', id);
-    if (typeof StationUI !== 'undefined' && StationUI.setRoster) StationUI.setRoster(liveAgents());
-    else console.warn('[summon] StationUI.setRoster missing — crew manifest not refreshed');
+    if (typeof KeepUI !== 'undefined' && KeepUI.setRoster) KeepUI.setRoster(liveAgents());
+    else console.warn('[summon] KeepUI.setRoster missing — crew manifest not refreshed');
     try { if (window.__EYEHOLD_DEV__) console.log('[summon]', JSON.stringify({ id, name: a.name, skin: a.skin, hadHero: !!agent, worldSpawn: _spawned, crew: (typeof World !== 'undefined' && World.crewCount) ? World.crewCount() : '?', roster: agents.size })); } catch (e) {}
     // a fresh workstream BOUND to the new agent, but inactive by default. Activation is the explicit
     // "talk to this specialist directly" action; summon itself only expands the crew/roster.
@@ -1168,16 +1168,16 @@ const App = (() => {
     recomposeOrchestrators();   // the lead's YOUR CREW clause must include the new worker before the roster push
     refreshUsage(); renderRail(); persist();
     pushRoster();   // the new worker is now delegatable by the lead
-    const _notify = (typeof StationUI !== 'undefined' && StationUI.notify) ? StationUI.notify : (m) => console.log('[summon]', m);
+    const _notify = (typeof KeepUI !== 'undefined' && KeepUI.notify) ? KeepUI.notify : (m) => console.log('[summon]', m);
     if (activate) {
       // ACTIONABLE FOLLOW-UP (audit B-1): a summoned specialist can't take FLOOR work until it has its own DESK
-      // (a seated workstation). The old copy buried this required step in a passing remark ("give it its OWN PC")
+      // (a seated workkeep). The old copy buried this required step in a passing remark ("give it its OWN PC")
       // with no way to act. Now the agent says it plainly — "desk", never "OWN PC" — and a chip opens BUILD MODE with
       // desk placement teed up. FINALE (Lane D): the toast is ONE line now — the desk requirement + its door move
       // into the diegetic line + chip below (the standing record no longer duplicates the whole instruction).
       _notify(a.name + ' summoned — type to task it now.', 'good');
       // WHERE THAT LINE COMES FROM (2026-08-03): the Chat.load(ws) above opened the new agent's session, and the
-      // desk prompt is now a property of THAT SESSION (chat.js maybeDeskPrompt → App.needsWorkstation), not a
+      // desk prompt is now a property of THAT SESSION (chat.js maybeDeskPrompt → App.needsWorkkeep), not a
       // one-shot printed here. It used to be printed once, DOM-only: the first stream switch (or any reload) wiped
       // the only place the required step was ever stated, and a live beat could drop it outright — leaving a brand
       // new agent's session showing nothing but the generic starter hint. Re-derived from the live floor on every
@@ -1190,13 +1190,13 @@ const App = (() => {
     } else {
       // say WHERE its desk landed when one was seeded — the Commander needs to be able to go look at it (and
       // move it in BUILD MODE). Only claimed when the placement actually returned ok; a failed seed says nothing.
-      // "took the free desk" vs "desk placed": ensureWorkstation may ADOPT an unbound workstation instead of
+      // "took the free desk" vs "desk placed": ensureWorkkeep may ADOPT an unbound workkeep instead of
       // building one, and saying "placed" for a desk that was already there is a small lie about the floor.
       const deskLine = (desk && desk.ok) ? ((desk.adopted ? 'took the free desk' : 'desk placed') + (deskRoom ? ' in ' + deskRoom : '') + '. ') : '';
       _notify(a.name + ' summoned — ' + deskLine + 'switch to its stream to task it, or let the overseer delegate.', 'good');
     }
     // ONE loadout beat: state plainly what the class summon actually applied — the skills enabled, the effort
-    // applied, and the STATION GEAR the class draws on (honest present/missing under the overseer, NOT per-agent
+    // applied, and the KEEP GEAR the class draws on (honest present/missing under the overseer, NOT per-agent
     // props). Skipped for a plain persona-only class (no gear/skills/effort) so it never adds noise. Mirrors the
     // dossier so the two never drift.
     const lo = loadoutSummary(a, spec);
@@ -1204,20 +1204,20 @@ const App = (() => {
     return a;
   }
   // DOES THIS CREW MEMBER STILL HAVE NOWHERE TO SIT? A truthful read of the LIVE FLOOR, never a flag: a
-  // specialist owns exactly one prop — its workstation (capForProp === 'computer') — so "no such prop bound to
+  // specialist owns exactly one prop — its workkeep (capForProp === 'computer') — so "no such prop bound to
   // it" IS "no desk". Re-derived every time it's asked, which is what lets the COMMS prompt stand until the desk
   // exists and then vanish for good, in the same tick the Commander places it. Excludes the hero (its starter
   // desk is seeded at wake, and its stream owns the first-run hint) and any id that isn't on the live roster.
-  // Fails CLOSED on a missing station: the app must never claim a floor state it cannot prove.
-  function needsWorkstation(agentId) {
+  // Fails CLOSED on a missing keep: the app must never claim a floor state it cannot prove.
+  function needsWorkkeep(agentId) {
     const id = String(agentId || '');
     if (!id || id === 'agent' || !agents.has(id)) return false;
-    if (!station || typeof station.propsByAgent !== 'function' || typeof station.capForProp !== 'function') return false;
-    try { return !station.propsByAgent(id).some(p => station.capForProp(p.t) === 'computer'); } catch (_) { return false; }
+    if (!keep || typeof keep.propsByAgent !== 'function' || typeof keep.capForProp !== 'function') return false;
+    try { return !keep.propsByAgent(id).some(p => keep.capForProp(p.t) === 'computer'); } catch (_) { return false; }
   }
   // OPEN BUILD MODE WITH DESK PLACEMENT TEED UP — the target of the post-summon "PLACE ITS DESK" chip. Opens the
   // builder (the same door the ⚒ BUILD dock opens) and, once its DOM is up, drives it to the PROP tool on the
-  // WORKSTATIONS category so the very next floor-click drops a desk (a workstation is editable, so it can't be
+  // WORKKEEPS category so the very next floor-click drops a desk (a workkeep is editable, so it can't be
   // auto-requisitioned — it opens the agent-binding picker on placement; the Commander places + binds it by hand,
   // which is the honest one desk-per-agent path). Degrades safely: if any control isn't found we still leave BUILD MODE
   // open on its default tool, which is already a real improvement over the old unclickable "Open BUILD MODE" sentence.
@@ -1236,25 +1236,25 @@ const App = (() => {
       if (propTool && !propTool.classList.contains('active')) propTool.click();
       const fnTier = q('.refit-tier-functional'), curTier = q('.refit-tier.active');
       if (fnTier && curTier && curTier !== fnTier) fnTier.click();
-      const wsCat = q('.refit-propcat[data-cat="workstation"]');
+      const wsCat = q('.refit-propcat[data-cat="workkeep"]');
       if (wsCat && !wsCat.classList.contains('active')) wsCat.click();
       const armed = wsCat && wsCat.classList.contains('active') && propTool && propTool.classList.contains('active');
       if (!armed && ++tries < 8) requestAnimationFrame(arm);
     };
     requestAnimationFrame(arm);
   }
-  // The capability objectTypes the STATION currently has placed anywhere (station-wide shared gear), deduped.
+  // The capability objectTypes the KEEP currently has placed anywhere (keep-wide shared gear), deduped.
   // Under Andrew's model a specialist owns only its desk and uses these shared caps under the overseer — so a
-  // class's declared gear is checked against the whole station, never the agent's own room. Reads the same live
-  // station-wide source the run's skill availability uses (World.stationCaps); [] on any hiccup (never throws).
-  function stationGearTypes() {
+  // class's declared gear is checked against the whole keep, never the agent's own room. Reads the same live
+  // keep-wide source the run's skill availability uses (World.keepCaps); [] on any hiccup (never throws).
+  function keepGearTypes() {
     try {
-      const caps = (typeof World !== 'undefined' && World.stationCaps) ? World.stationCaps() : [];
+      const caps = (typeof World !== 'undefined' && World.keepCaps) ? World.keepCaps() : [];
       return caps.map(c => (typeof c === 'string' ? c : c && c.objectType)).filter(Boolean);
     } catch (_) { return []; }
   }
   // Compose the one-line summon loadout beat from what was ACTUALLY applied: the skills enabled, the effort, and
-  // — honestly — the STATION GEAR the class draws on that the station is MISSING (add it in BUILD MODE for the class to
+  // — honestly — the KEEP GEAR the class draws on that the keep is MISSING (add it in BUILD MODE for the class to
   // work its best). Present gear needs no callout (it just works). Reads skills/effort off the record applyLoadout
   // wrote. Returns '' when there is nothing to say.
   function loadoutSummary(a, spec) {
@@ -1264,9 +1264,9 @@ const App = (() => {
     if (a && a.reasoningEffort) parts.push(a.reasoningEffort + ' reasoning effort applied');
     const gear = (spec && Array.isArray(spec.kit)) ? spec.kit : [];
     if (gear.length) {
-      const have = new Set(stationGearTypes());
+      const have = new Set(keepGearTypes());
       const missing = gear.filter(g => !have.has(g));
-      if (missing.length) parts.push('station lacks ' + missing.join(', ') + ' — add ' + (missing.length === 1 ? 'it' : 'them') + ' in BUILD MODE for its full toolkit');
+      if (missing.length) parts.push('keep lacks ' + missing.join(', ') + ' — add ' + (missing.length === 1 ? 'it' : 'them') + ' in BUILD MODE for its full toolkit');
     }
     return parts.join(' · ');
   }
@@ -1292,7 +1292,7 @@ const App = (() => {
     const go = () => Marketplace.open({
       mode: 'pick', summon: true, concurrentCap: concurrentCap,
       classSeed: classSeed || null,   // one-shot: the bay focuses this class's dossier on open (maybeConsumeClassSeed)
-      notify: (typeof StationUI !== 'undefined') ? StationUI.notify : null,
+      notify: (typeof KeepUI !== 'undefined') ? KeepUI.notify : null,
       onPick: summonAgent,
       // deploy-to-current context (the merged ROSTER verb): who the current agent is + what it
       // already runs as, so the bay can flag DEPLOYED and re-spec honestly.
@@ -1368,7 +1368,7 @@ const App = (() => {
       tab: 'recipes',
       recipeMint: proposal,                 // ← the R2 editor opens pre-filled from this draft (additive ctx seed)
       agentName: agent.name,
-      notify: (typeof StationUI !== 'undefined') ? StationUI.notify : null,
+      notify: (typeof KeepUI !== 'undefined') ? KeepUI.notify : null,
       onLaunch: launchRecipe
     });
   }
@@ -1453,7 +1453,7 @@ const App = (() => {
   let rosterPushFailed = false;
   /* S3 — MAKE THE METERS LOAD-BEARING (without gating anything).
      Until now every reader of an agent's stats was a display surface: the level chip, the dossier, /whoami.
-     Nothing in the station ACTED on them, so a TRUSTED veteran and a stranger were identical to delegation —
+     Nothing in the keep ACTED on them, so a TRUSTED veteran and a stranger were identical to delegation —
      which is what made the whole leveling system feel cosmetic. This publishes each agent's EARNED track
      record onto the roster, where the sidecar renders it on the lead's team.dispatch briefing, so the lead
      picks a worker on evidence instead of on nothing.
@@ -1474,9 +1474,9 @@ const App = (() => {
   }
   function pushRoster() {
     try {
-      // An unpinned row follows the STATION DEFAULT (the Overseer's provider), never the global wire — that is the
+      // An unpinned row follows the KEEP DEFAULT (the Overseer's provider), never the global wire — that is the
       // focused agent's pin, and stamping it onto every unpinned agent sent their routines/channel runs to it (#24).
-      const fallbackProv = stationDefaultWire().provider || ((typeof Harness !== 'undefined' && Harness.getProv) ? Harness.getProv() : 'openrouter');
+      const fallbackProv = keepDefaultWire().provider || ((typeof Harness !== 'undefined' && Harness.getProv) ? Harness.getProv() : 'openrouter');
       const list = liveAgents().map(a => ({ agentId: a.id, system: a.systemPrompt || '', name: a.name || a.id, model: a.model || '', provider: a.provider || fallbackProv, role: rosterRole(a), approvalMode: (a.approvalMode === 'full' ? 'full' : 'ask'), executionProfile: executionProfileOf(a),
         track: rosterTrack(a),    // S3: this agent's EARNED track record, so the lead's dispatch briefing can pick on evidence (see rosterTrack)
         workshop: !!a.workshop,   // W3: the away-build grant travels with the roster so the consent broker can honor it
@@ -1510,7 +1510,7 @@ const App = (() => {
     } catch (_) { return Promise.resolve(false); }
   }
 
-  // BACKEND-INITIATED SUMMON (crew.summon.request): the orchestrator's team.summon tool asked the station to
+  // BACKEND-INITIATED SUMMON (crew.summon.request): the orchestrator's team.summon tool asked the keep to
   // create a worker for the Commander. Run the SAME summonAgent() the Recruitment Bay uses (single source of
   // truth — sprite, workstream, system prompt, roster push), resolving the new id ONLY AFTER the roster POST
   // lands so the lead's immediate team.dispatch finds the worker. Returns null if it couldn't summon.
@@ -1536,31 +1536,31 @@ const App = (() => {
     try { rosterLanded = (await lastRosterPush) === true; } catch (_) {}
     if (!rosterLanded) return null;   // fail closed: never tell the Commander it can dispatch an unregistered worker
     // READ BACK what actually landed, so the ack can tell the lead where the desk is. Deliberately a PURE
-    // read (propsByAgent), never a second ensureWorkstation call: re-running the seeder here could place a
+    // read (propsByAgent), never a second ensureWorkkeep call: re-running the seeder here could place a
     // desk AFTER summonAgent's persist() — a floor change that would not be saved until the next write.
     // Blank when nothing was placed, and the tool then says nothing about a desk.
     let deskWhere = '';
     try {
-      const mine = (station && station.propsByAgent) ? station.propsByAgent(a.id) : [];
-      const seat = mine.find(p => station.capForProp && station.capForProp(p.t) === 'computer');
-      if (seat) { const rm = station.roomById ? station.roomById(station.roomAt(seat.x, seat.y)) : null; deskWhere = (rm && rm.name) ? String(rm.name) : 'the station'; }
+      const mine = (keep && keep.propsByAgent) ? keep.propsByAgent(a.id) : [];
+      const seat = mine.find(p => keep.capForProp && keep.capForProp(p.t) === 'computer');
+      if (seat) { const rm = keep.roomById ? keep.roomById(keep.roomAt(seat.x, seat.y)) : null; deskWhere = (rm && rm.name) ? String(rm.name) : 'the keep'; }
     } catch (_) { deskWhere = ''; }
     return { agentId: a.id, desk: deskWhere };
   }
 
-  let unsubscribeStationSave = null;
-  let stationSaveQueued = false;
-  function watchStationSave() {
-    if (unsubscribeStationSave) unsubscribeStationSave();
-    const watched = station;
-    unsubscribeStationSave = watched.onChange(() => {
-      if (stationSaveQueued) return;
-      stationSaveQueued = true;
+  let unsubscribeKeepSave = null;
+  let keepSaveQueued = false;
+  function watchKeepSave() {
+    if (unsubscribeKeepSave) unsubscribeKeepSave();
+    const watched = keep;
+    unsubscribeKeepSave = watched.onChange(() => {
+      if (keepSaveQueued) return;
+      keepSaveQueued = true;
       // Coalesce the synchronous mutations of one gesture (e.g. place + assign a desk),
       // but save before the next browser event. Do not wait for SAVE & EXIT or a chat turn.
       queueMicrotask(() => {
-        stationSaveQueued = false; persist();
-        // a desk that just landed (a WHO SITS HERE chip, PLACE ITS DESK, the overseer's station op) retires the open
+        keepSaveQueued = false; persist();
+        // a desk that just landed (a WHO SITS HERE chip, PLACE ITS DESK, the overseer's keep op) retires the open
         // COMMS "nowhere to sit" line now, not only when BUILD MODE closes: it is a derived floor claim (chat.js re-reads it)
         if (typeof Chat !== 'undefined' && Chat.retireDeskPrompt) { try { Chat.retireDeskPrompt(); } catch (_) {} }
       });
@@ -1573,25 +1573,25 @@ const App = (() => {
     // the save ROOT is ALWAYS the hero ('agent'), never the transiently-FOCUSED crew member — otherwise a
     // persist while a summoned agent is focused would overwrite the hero identity and corrupt resume.
     const hero = agents.get('agent') || agent;
-    const stationStats = (typeof XpStore !== 'undefined') ? XpStore.stationStats() : undefined;
+    const keepStats = (typeof XpStore !== 'undefined') ? XpStore.keepStats() : undefined;
     // persist the provider so a codex agent resumes without a key prompt after a wipe/origin-reset. Like the root, it is
-    // the STATION's (the hero's), never the focused crew member's pin — a saved pin reloaded as the station provider (#24).
+    // the KEEP's (the hero's), never the focused crew member's pin — a saved pin reloaded as the keep provider (#24).
     const prov = (hero && hero.provider) || ((typeof Harness !== 'undefined' && Harness.getProv) ? Harness.getProv() : undefined);
     const reasoningEffort = (typeof Harness !== 'undefined' && Harness.getReasoningEffort) ? Harness.getReasoningEffort() : undefined;
     const profile = (typeof ProfileStore !== 'undefined') ? ProfileStore.serialize() : undefined;
     const worksignal = (typeof WorkSignalStore !== 'undefined') ? WorkSignalStore.serialize() : undefined;   // the capability-usage histogram (adaptive recruitment)
     const roster = liveAgents();
-    const dossier = (typeof DossierStore !== 'undefined') ? DossierStore.serialize() : undefined;   // the station-wide Commander model
-    const doc = Save.write(Object.assign({ _saveDirty: true, _saveRevision: typeof CloudSave !== 'undefined' && CloudSave.revision ? CloudSave.revision() : 0, agent: hero, agents: roster.length > 1 ? roster.map(serializeAgentLite) : undefined, usage: Harness.totals(), prov, reasoningEffort, reasoningMigrated: '0125' /* = REASONING_MIGRATION; a literal so persist() also runs when lifted alone */, station: station ? station.serialize() : undefined, stationStats, profile, worksignal, dossier }, Workstreams.serialize()));
+    const dossier = (typeof DossierStore !== 'undefined') ? DossierStore.serialize() : undefined;   // the keep-wide Commander model
+    const doc = Save.write(Object.assign({ _saveDirty: true, _saveRevision: typeof CloudSave !== 'undefined' && CloudSave.revision ? CloudSave.revision() : 0, agent: hero, agents: roster.length > 1 ? roster.map(serializeAgentLite) : undefined, usage: Harness.totals(), prov, reasoningEffort, reasoningMigrated: '0125' /* = REASONING_MIGRATION; a literal so persist() also runs when lifted alone */, keep: keep ? keep.serialize() : undefined, keepStats, profile, worksignal, dossier }, Workstreams.serialize()));
     if (doc && typeof CloudSave !== 'undefined') CloudSave.push(doc);   // durable write-through to the sidecar (debounced, best-effort)
     if (rosterPushFailed) pushRoster();   // a prior roster POST failed — retry it opportunistically on this persist
     if (!doc) {
-      if (!saveFailureNotified && typeof StationUI !== 'undefined') StationUI.notify('Could not save station changes. Keep this window open and free storage before trying again.', 'warn', undefined, { kind: 'alert', key: 'save-failed' });
+      if (!saveFailureNotified && typeof KeepUI !== 'undefined') KeepUI.notify('Could not save keep changes. Keep this window open and free storage before trying again.', 'warn', undefined, { kind: 'alert', key: 'save-failed' });
       saveFailureNotified = true;
       return false;
     }
     saveFailureNotified = false;
-    if (typeof StationUI !== 'undefined') StationUI.flashSave();
+    if (typeof KeepUI !== 'undefined') KeepUI.flashSave();
     return true;
   }
 
@@ -1660,7 +1660,7 @@ const App = (() => {
       genesisOffline = true;
       // #39: a stale-token 403 after a sidecar restart is NOT an offline catalog — say the one thing that fixes it.
       countEl.textContent = (Harness.sessionStale && Harness.sessionStale())
-        ? '(the station restarted — reload this page to load the catalog)'
+        ? '(the keep restarted — reload this page to load the catalog)'
         : '(catalog offline — type or pick a slug)';
       if (!inp.value) inp.value = defId || FALLBACK[0];   // default-fill even offline so WAKE works; the Commander can overtype
       inp.placeholder = 'type a model slug — e.g. ' + (defId || 'gpt-5.5');
@@ -1745,9 +1745,9 @@ const App = (() => {
     ]
   });
   /* ---------- PHOSPHOR tint picker (the console-wide theme, surfaced at commission) ----------
-     The station already ships four CRT phosphors (style.css body.theme-*) persisted by StationUI. We
-     surface that choice up-front so the Commander sets the whole station's colour the moment they build
-     it — picking a swatch recolours live AND writes through StationUI.setTheme so it survives enterGame
+     The keep already ships four CRT phosphors (style.css body.theme-*) persisted by KeepUI. We
+     surface that choice up-front so the Commander sets the whole keep's colour the moment they build
+     it — picking a swatch recolours live AND writes through KeepUI.setTheme so it survives enterGame
      and stays in lockstep with the in-game Settings panel. No new state, no fakery. */
   const PHOSPHOR = Object.freeze([['amber', '#ffaa33'], ['green', '#3dff70'], ['blue', '#46c8ff'], ['purple', '#b46bff'], ['red', '#ff4136'], ['white', '#e8f0e8']]);
   // THE APPROVAL MODE — the crucial pick for the everything-orchestrator: how much it can do on its own. This is
@@ -1762,13 +1762,13 @@ const App = (() => {
     document.body.classList.remove('theme-amber', 'theme-green', 'theme-blue', 'theme-purple', 'theme-red', 'theme-white', 'theme-custom');
     document.body.classList.add('theme-' + t);
     // 'custom' carries no palette in CSS — its derived vars are inline on <body>, set by
-    // StationUI.applySettings at init and cleared by StationUI.setTheme when a preset is picked here.
+    // KeepUI.applySettings at init and cleared by KeepUI.setTheme when a preset is picked here.
   }
   function buildPhosphor() {
     const wrap = el('phosphor-swatches'); if (!wrap) return;
     let cur = 'amber';
-    try { if (typeof StationUI !== 'undefined' && StationUI.getTheme) cur = StationUI.getTheme() || 'amber'; } catch (_) {}
-    applyTheme(cur);   // reflect a previously-saved tint on the create screen too (StationUI hasn't entered yet)
+    try { if (typeof KeepUI !== 'undefined' && KeepUI.getTheme) cur = KeepUI.getTheme() || 'amber'; } catch (_) {}
+    applyTheme(cur);   // reflect a previously-saved tint on the create screen too (KeepUI hasn't entered yet)
     wrap.innerHTML = '';
     PHOSPHOR.forEach(([t, c]) => {
       const b = document.createElement('button'); b.type = 'button';
@@ -1777,7 +1777,7 @@ const App = (() => {
       b.setAttribute('aria-pressed', String(t === cur));
       b.onclick = () => {
         applyTheme(t);
-        try { if (typeof StationUI !== 'undefined' && StationUI.setTheme) StationUI.setTheme(t); } catch (_) {}   // persist + keep Settings in sync
+        try { if (typeof KeepUI !== 'undefined' && KeepUI.setTheme) KeepUI.setTheme(t); } catch (_) {}   // persist + keep Settings in sync
         SFX.click();
         [...wrap.children].forEach(x => { const on = x === b; x.classList.toggle('sel', on); x.setAttribute('aria-pressed', String(on)); });
       };
@@ -1983,7 +1983,7 @@ const App = (() => {
 
   // The genesis screen's keyless device-code OAuth providers. Codex keeps its literal path below (source-locks
   // pin refreshCodexStatus/startCodexSignIn); grok/kimi ride ONE generic path parameterized by this copy table —
-  // the same split stationui.js uses (codex literal + OAUTH_EXTRA shared), so the two surfaces stay twins.
+  // the same split keepui.js uses (codex literal + OAUTH_EXTRA shared), so the two surfaces stay twins.
   const OAUTH_GENESIS = Object.freeze({
     codex: Object.freeze({ name: 'ChatGPT', sub: 'ChatGPT subscription' }),
     grok:  Object.freeze({ name: 'Grok',    sub: 'SuperGrok / X Premium+ subscription' }),
@@ -2469,7 +2469,7 @@ const App = (() => {
 
   /* ---------- EYEHOLD MANAGED on the genesis screen ----------
      The subscription path for people who never want to see an API key: buy on eyehold.com, then the
-     connect screen links this station to that account with ONE confirmed code — the same sidecar engine
+     connect screen links this keep to that account with ONE confirmed code — the same sidecar engine
      the STORE uses (/api/credits/link/*), painted into #eyehold-block. The chip itself stays HIDDEN
      until the sidecar reports a cloud seam (linked or linkable): a build with no cloud must not offer
      a subscription it cannot link, so a CLOUD_LIVE=false install keeps a eyehold-free connect screen. */
@@ -2542,7 +2542,7 @@ const App = (() => {
     if (pickedProvider !== 'eyehold') { stopEyeholdBalancePoll(); return result(); }   // pick moved on — don't repaint another provider's block
     if (eyeholdLinked && eyeholdLinkStatus === 'unavailable') {
       stopEyeholdBalancePoll();
-      statusEl.textContent = 'link saved on this station, but Eyehold could not verify it right now — check your connection and try again.';
+      statusEl.textContent = 'link saved on this keep, but Eyehold could not verify it right now — check your connection and try again.';
       statusEl.className = 'codex-status bad';
       if (linkBtn) linkBtn.classList.add('hidden');
       if (creditsBtn) creditsBtn.classList.add('hidden');
@@ -2569,14 +2569,14 @@ const App = (() => {
       if (creditsBtn) creditsBtn.classList.add('hidden');
       if (switchBtn) switchBtn.classList.add('hidden');
       statusEl.textContent = eyeholdLinkStatus === 'revoked' || eyeholdLinkStatus === 'link_revoked'
-        ? 'this station’s previous link was removed from your account — link it again to reconnect your credits.'
+        ? 'this keep’s previous link was removed from your account — link it again to reconnect your credits.'
         : 'not linked — connect the subscription you bought on eyehold.com (takes one click + a code)';
       statusEl.className = 'codex-status' + (eyeholdLinkStatus === 'revoked' || eyeholdLinkStatus === 'link_revoked' ? ' bad' : '');
       if (linkBtn) linkBtn.classList.remove('hidden');
     }
     return result();
   }
-  // A station can be linked to a DIFFERENT Eyehold login than the browser account that owns the purchase.
+  // A keep can be linked to a DIFFERENT Eyehold login than the browser account that owns the purchase.
   // Genesis used to auto-recognize that old device and offer only ADD CREDITS, trapping a paid beginner on
   // the wrong account. Switching clears both credential halves, re-reads provider truth, and starts the normal
   // pairing flow immediately — no Terminal, logs, reinstall, or trip through Settings required.
@@ -2614,10 +2614,10 @@ const App = (() => {
     if (progress) { progress.className = 'msg'; progress.textContent = 'Opening your Eyehold account…'; }
     const fail = t => { statusEl.textContent = t; statusEl.className = 'codex-status bad'; codeEl.classList.add('hidden'); openBtn.classList.add('hidden'); if (progress) { progress.className = 'msg bad'; progress.textContent = t; } };
     statusEl.textContent = 'requesting a link code…'; statusEl.className = 'codex-status';
-    // A failure keeps WHAT failed (Friendly.linkStartFailure words it): the station's own POST never answering is a
+    // A failure keeps WHAT failed (Friendly.linkStartFailure words it): the keep's own POST never answering is a
     // local-engine fault, not "the link service"; a sidecar reply carries its classification of the cloud failure.
     const startFail = info => Object.assign(new Error('start failed'), { linkStart: info });
-    Harness.api.post('/api/credits/link/start', { deviceName: 'Eyehold Station' })
+    Harness.api.post('/api/credits/link/start', { deviceName: 'Eyehold Keep' })
       .then(r => { if (generation !== _eyeholdLinkGeneration) return null; if (!r || !r.ok) throw startFail({ status: r && r.status, j: r && r.j }); return r.j; },
         () => { throw startFail({ local: true }); })
       .then(j => {
@@ -2790,7 +2790,7 @@ const App = (() => {
 
   // initConnect(prefillName, isRecovery, savedAgent)
   //  - fresh first run: initConnect() -> CREATE YOUR OVERSEER (everything live).
-  //  - RESUME / recovery (saved station, missing creds, or a disconnect re-entry): pass isRecovery=true and the
+  //  - RESUME / recovery (saved keep, missing creds, or a disconnect re-entry): pass isRecovery=true and the
   //    savedAgent so the screen becomes a RESUME console: a phosphor banner, the model pre-filled, and the
   //    identity fields (name · skin · voice · approval) shown READ-ONLY so resume can't silently re-spec the
   //    agent. The key/provider section stays live so the Commander can re-enter a key and continue.
@@ -2870,7 +2870,7 @@ const App = (() => {
     el('btn-codex-signin').onclick = () => (codexHere() ? startCodexSignIn() : startOAuthSignIn(pickedProvider));
     wireClaudeCliTile();
     el('btn-codex-logout').onclick = () => (codexHere() ? codexLogout() : oauthGenesisLogout(pickedProvider));
-    // EYEHOLD MANAGED: reveal the hero only when this station actually has a cloud seam, and wire its link
+    // EYEHOLD MANAGED: reveal the hero only when this keep actually has a cloud seam, and wire its link
     // flow. On a fresh create the revealed hero also becomes the default pick (the promoted easiest start);
     // a resume keeps the agent's saved provider.
     userPickedProvider = false;
@@ -2900,7 +2900,7 @@ const App = (() => {
     }, 0);
   }
 
-  // RESUME mode dressing for the connect screen. Recovery = an existing station re-entering (missing creds or a
+  // RESUME mode dressing for the connect screen. Recovery = an existing keep re-entering (missing creds or a
   // disconnect): swap the GENESIS header for a RESUME banner, lock the identity fields (name · skin · voice ·
   // approval) READ-ONLY so resume can't re-spec the agent, and keep the key/provider section + WAKE live. A
   // fresh first run passes recovery=false, which clears all of this back to the CREATE YOUR OVERSEER console.
@@ -2927,18 +2927,18 @@ const App = (() => {
         banner.innerHTML = '▮ RESUMING <b>' + U.esc(nm) + '</b> — your agent is safe. Enter your key to continue.';
       }
       if (title) title.textContent = '▮ RESUME ' + nm.toUpperCase();
-      if (sub) sub.innerHTML = 'your station is intact — this only re-connects the <b>brain</b>. Identity stays as you left it.';
+      if (sub) sub.innerHTML = 'your keep is intact — this only re-connects the <b>brain</b>. Identity stays as you left it.';
       if (mode) mode.textContent = 'RESUME';
-      if (wake) wake.textContent = '⏼ RESUME STATION ▸';
+      if (wake) wake.textContent = '⏼ RESUME KEEP ▸';
       // BACK here doesn't go "back" — onConnectBack() re-runs auto-resume (a fresh credential check may now pass
-      // straight into the station). Label it for what it does so it doesn't read as a dead retreat button.
+      // straight into the keep). Label it for what it does so it doesn't read as a dead retreat button.
       if (back) back.textContent = '↻ RETRY AUTO-RESUME';
       locked.forEach(id => { const n = el(id); if (n) { n.classList.add('field-locked'); n.setAttribute('aria-disabled', 'true'); } });
       const nameIn = el('in-name'); if (nameIn) { nameIn.readOnly = true; nameIn.tabIndex = -1; }
     } else {
       if (banner) { banner.classList.add('hidden'); banner.innerHTML = ''; }
       if (title) title.textContent = 'Create your Overseer';
-      if (sub) sub.textContent = 'One mind to run your station. Build your crew from here.';
+      if (sub) sub.textContent = 'One mind to run your keep. Build your crew from here.';
       if (mode) mode.textContent = 'GENESIS';
       if (wake) wake.textContent = '⏼ WAKE OVERSEER ▸';
       locked.forEach(id => { const n = el(id); if (n) { n.classList.remove('field-locked'); n.removeAttribute('aria-disabled'); } });
@@ -2953,10 +2953,10 @@ const App = (() => {
     SFX.click(); stopCodexPoll();
     const saved = Save.has() ? Save.load() : null;
     if (saved && saved.agent) {
-      // RETRY must re-ask, not re-read. A Eyehold station's "configured" flag is read ONCE at boot; when the
+      // RETRY must re-ask, not re-read. A Eyehold keep's "configured" flag is read ONCE at boot; when the
       // account service was down then (issue #76), retry kept consulting that stale false and bounced straight
       // back to this screen even after the link was healthy again. Re-read the sidecar's live answer first.
-      if (savedStationProv(saved) === 'eyehold' && Harness.refreshCreditsConfigured) {
+      if (savedKeepProv(saved) === 'eyehold' && Harness.refreshCreditsConfigured) {
         const back = el('btn-back'); if (back) back.disabled = true;
         try { await Harness.refreshCreditsConfigured(); } catch (_) {}
         finally { if (back) back.disabled = false; }
@@ -2968,7 +2968,7 @@ const App = (() => {
 
   // The single re-entry point that replaces the old title screen for any "leave the game / lost creds" path
   // (disconnect, recovery, back). Preserves the agent ALWAYS: if creds are in hand it resumes straight into the
-  // station; otherwise it shows the connect screen in RESUME mode. Only a genuine no-save state falls through
+  // keep; otherwise it shows the connect screen in RESUME mode. Only a genuine no-save state falls through
   // to a fresh creation.
   function reentry() {
     // FORWARD-VERSION GATE (P0.3): a re-entry (disconnect / back / recovery) must not fall through to a fresh
@@ -2978,7 +2978,7 @@ const App = (() => {
     const saved = Save.has() ? Save.load() : null;
     if (saved && saved.agent) {
       migrateLegacyReasoning(saved);   // before any saved effort reaches the wire (0.12.5 reasoning migration)
-      if (savedStationProv(saved) && Harness.setProv) Harness.setProv(savedStationProv(saved));
+      if (savedKeepProv(saved) && Harness.setProv) Harness.setProv(savedKeepProv(saved));
       if (saved.reasoningEffort && Harness.setReasoningEffort) Harness.setReasoningEffort(saved.reasoningEffort);
       if (Harness.getKey() || (Harness.configured && Harness.configured()) || Harness.getProv() === 'codex') {
         resumingSaved = null; resumeInto(saved); return;
@@ -3011,7 +3011,7 @@ const App = (() => {
       waking = false; wakeBtnBusy(false);
       // #39: after a sidecar restart the refusal surfaced as "Failed to fetch", which reads like the user's own network.
       const stale = !!(Harness.sessionStale && Harness.sessionStale());
-      const msg = el('connect-msg'); if (msg) { msg.className = 'msg bad'; msg.textContent = 'could not start — ' + (stale ? 'the station restarted; reload this page' : ((e && e.message) || 'try again')); }
+      const msg = el('connect-msg'); if (msg) { msg.className = 'msg bad'; msg.textContent = 'could not start — ' + (stale ? 'the keep restarted; reload this page' : ((e && e.message) || 'try again')); }
     }
   }
   // THE WIRE PREFLIGHT — one real reason-only round-trip through the exact path the awakening will use
@@ -3033,14 +3033,14 @@ const App = (() => {
     } catch (e) { return { ok: false, why: String((e && e.message) || e).slice(0, 140) }; }
   }
 
-  // Returns TRUE once it commits to entering the station (WAKING latched), FALSE on any validation bounce.
+  // Returns TRUE once it commits to entering the keep (WAKING latched), FALSE on any validation bounce.
   async function onWakeAttempt() {
     SFX.boot(); SFX.open();
     stopCodexPoll();   // leaving the connect screen — drop any in-flight sign-in poll
     stopEyeholdLinkPoll();   // …and any in-flight Eyehold pairing poll (same screen-exit rule)
     stopEyeholdBalancePoll();   // …and the empty-wallet balance poll
     // single funnel for agent.name → honor the 18-char design cap (covers the roster-pick path too).
-    // A blank/sentinel name mints a station codename (never the bland 'AGENT'), matching the awakening
+    // A blank/sentinel name mints a keep codename (never the bland 'AGENT'), matching the awakening
     // speaker — dialogue.js owns the generator so both surfaces stay consistent.
     let rawName = el('in-name').value.trim();
     if (typeof Dialogue !== 'undefined' && Dialogue.isUnnamed && Dialogue.isUnnamed(rawName)) rawName = Dialogue.codename();
@@ -3105,11 +3105,11 @@ const App = (() => {
       wireVia = 'your ChatGPT sign-in';
     } else {
       const key = el('in-key').value.trim();
-      // #89 (browser build): each save also hands the station its copy for routines; when it could not, the same
+      // #89 (browser build): each save also hands the keep its copy for routines; when it could not, the same
       // warning SETTINGS shows says so — the wake goes on (chat carries its key), but routines would not have it
-      const warnStation = res => { if (typeof StationUI !== 'undefined' && StationUI.warnIfStationLacksKey) StationUI.warnIfStationLacksKey(res); };
+      const warnKeep = res => { if (typeof KeepUI !== 'undefined' && KeepUI.warnIfKeepLacksKey) KeepUI.warnIfKeepLacksKey(res); };
       if (providerNeedsBaseUrl(pickedProvider)) {
-        if (Harness.setBaseUrl) warnStation(await Harness.setBaseUrl(baseUrl, pickedProvider));
+        if (Harness.setBaseUrl) warnKeep(await Harness.setBaseUrl(baseUrl, pickedProvider));
       }
       // DEV auto-resume eligibility is not proof of a credential for the chosen provider.
       const configured = !!(Harness.hasStoredCredential && Harness.hasStoredCredential(pickedProvider));
@@ -3131,14 +3131,14 @@ const App = (() => {
       // (a no-op replace) so it never trips; a blank field keeps the stored key (handled below) so it never trips.
       if (prefilledKey && key && key !== prefilledKey && !keyOverwriteConfirmed) {
         keyOverwriteConfirmed = true;   // arm: this same WAKE press now goes through; a second press confirms
-        msg.textContent = 'this replaces the key already stored on this station. press WAKE again to confirm — or restore the old key to keep it.';
+        msg.textContent = 'this replaces the key already stored on this keep. press WAKE again to confirm — or restore the old key to keep it.';
         return false;
       }
       // Only (re)store when a key was actually typed — desktop keeps the existing keychain key on blank.
       // setKey is async in desktop (writes the keychain + pushes it to the sidecar); await so the run has it.
-      if (key) warnStation(await (Harness.validateAndSetKey ? Harness.validateAndSetKey(key, pickedProvider) : Harness.setKey(key, pickedProvider)));
+      if (key) warnKeep(await (Harness.validateAndSetKey ? Harness.validateAndSetKey(key, pickedProvider) : Harness.setKey(key, pickedProvider)));
       Harness.setModel(model); Harness.setProv(pickedProvider);
-      if (pickedProvider === 'openai') wireVia = key ? 'the OpenAI API key you typed' : 'the OpenAI API key stored on this station';
+      if (pickedProvider === 'openai') wireVia = key ? 'the OpenAI API key you typed' : 'the OpenAI API key stored on this keep';
     }
 
     // V3 LAW — THE WIRE IS PROVEN AT THE DOOR (Andrew, 2026-07-19): the awakening AUTHORS this agent's whole
@@ -3155,18 +3155,18 @@ const App = (() => {
       // a BILLING refusal is not a model failure: managed admission refused the run before any model was
       // reached. Name the real cause and the real fix; "your model didn't answer" sends people model-hopping.
       if (/managed credit|Managed credits/i.test(wire.why)) {
-        // the account REFUSED this station's link: retrying can't fix it and the wallet isn't empty — relink is the
+        // the account REFUSED this keep's link: retrying can't fix it and the wallet isn't empty — relink is the
         // door (friendlyerror's managed_credit_link; `.?` because a quote in a regex mis-slices the fnBody test helper)
-        if (/refused this station.?s link|relink/i.test(wire.why)) {
-          msg.textContent = 'your Eyehold account no longer accepts this station’s link (it was unlinked, or belongs to another account) — your credits are safe. '
-            + (pickedProvider === 'eyehold' ? 'Press CONNECT EYEHOLD ACCOUNT above, then WAKE again.' : 'Relink this station to your Eyehold account, or use your own provider key.');
+        if (/refused this keep.?s link|relink/i.test(wire.why)) {
+          msg.textContent = 'your Eyehold account no longer accepts this keep’s link (it was unlinked, or belongs to another account) — your credits are safe. '
+            + (pickedProvider === 'eyehold' ? 'Press CONNECT EYEHOLD ACCOUNT above, then WAKE again.' : 'Relink this keep to your Eyehold account, or use your own provider key.');
           refreshEyeholdGenesisStatus();
           return false;
         }
-        // the balance is HELD by this station's own running Eyehold runs (friendlyerror's managed_credit_held, audit
+        // the balance is HELD by this keep's own running Eyehold runs (friendlyerror's managed_credit_held, audit
         // B11): it reads $0 but it was read, so it is neither "no credits" nor "couldn't read" — waiting frees it
         if (/Managed credits are held|balance is held by/i.test(wire.why)) {
-          msg.textContent = 'your Eyehold balance is held by runs still working on this station — each refunds what it doesn’t spend. Wait for them to finish, then WAKE again'
+          msg.textContent = 'your Eyehold balance is held by runs still working on this keep — each refunds what it doesn’t spend. Wait for them to finish, then WAKE again'
             + (pickedProvider === 'eyehold' ? ' (or press ＄ ADD CREDITS above).' : ', or use your own provider key.');
           refreshEyeholdGenesisStatus();
           return false;
@@ -3193,8 +3193,8 @@ const App = (() => {
     }
 
     // LOCK DOWN before the NEW hero or any of its local stores are committed. A failed durable revoke rejects,
-    // leaves the prior station intact, and keeps its confirmed grant visible instead of commissioning a fresh
-    // Commander who silently inherited cabinet:write. Saved-station resume returns above and keeps its grants.
+    // leaves the prior keep intact, and keeps its confirmed grant visible instead of commissioning a fresh
+    // Commander who silently inherited cabinet:write. Saved-keep resume returns above and keeps its grants.
     if (typeof PermissionsStore !== 'undefined') await PermissionsStore.reset();
     if (typeof AutonomyStore !== 'undefined') {
       const autonomyReset = await AutonomyStore.reset();
@@ -3211,7 +3211,7 @@ const App = (() => {
       }
     }
 
-    // the FIRST agent is always the station's OVERSEER — the orchestrating lead the Commander commissions before
+    // the FIRST agent is always the keep's OVERSEER — the orchestrating lead the Commander commissions before
     // any specialist. Its voice is the archetype + fine-tune dials + free-text note; its APPROVAL mode (ask vs
     // full access) drives the real consent broker, while the mission/context/orders are authored in the awakening.
     agent = { id: 'agent', name, role: 'orchestrator', color: pickedColor, skin: pickedSkin || DATA.DEFAULT_SKIN, model,
@@ -3233,11 +3233,11 @@ const App = (() => {
     if (typeof CuriosityStore !== 'undefined') CuriosityStore.reset();   // …no inherited waved-off dimensions (own key)
     if (typeof RecQualityStore !== 'undefined') RecQualityStore.reset();   // …and no inherited recommendation-quality history (own key)
     if (typeof StudyStore !== 'undefined') StudyStore.reset();   // …and a fresh STUDY state — a new Commander never inherits the prior hero's studyDeclined denylist / ignore tallies / rating streaks (own key)
-    if (typeof ThreadStore !== 'undefined') ThreadStore.reset();   // …and a fresh THREAD turn-in gate — a new Commander never inherits the prior hero's resolved/ignored mined ideas (the ledger itself is server-side, station-wide)
+    if (typeof ThreadStore !== 'undefined') ThreadStore.reset();   // …and a fresh THREAD turn-in gate — a new Commander never inherits the prior hero's resolved/ignored mined ideas (the ledger itself is server-side, keep-wide)
     if (typeof QuestStateStore !== 'undefined') QuestStateStore.reset();   // …and a fresh quest memory — a new Commander never inherits dismissed/completed quest history (own key)
-    if (typeof QuestLedgerStore !== 'undefined') QuestLedgerStore.reset();  // …and a clean ledger cache — the sidecar ledger is station-wide, but the session cache/notify set starts empty
-    if (typeof QuestRefreshStore !== 'undefined') QuestRefreshStore.reset();  // …and a clean refresh-status cache — the engine state is station-wide/server-side, but the session cache starts empty
-    if (typeof StationQuestStore !== 'undefined') StationQuestStore.reset();   // …and no inherited station-gap fix-it quests — a new Commander never sees the prior hero's capdenied backlog / dismissals (own key)
+    if (typeof QuestLedgerStore !== 'undefined') QuestLedgerStore.reset();  // …and a clean ledger cache — the sidecar ledger is keep-wide, but the session cache/notify set starts empty
+    if (typeof QuestRefreshStore !== 'undefined') QuestRefreshStore.reset();  // …and a clean refresh-status cache — the engine state is keep-wide/server-side, but the session cache starts empty
+    if (typeof KeepQuestStore !== 'undefined') KeepQuestStore.reset();   // …and no inherited keep-gap fix-it quests — a new Commander never sees the prior hero's capdenied backlog / dismissals (own key)
     if (typeof WorkQuestStore !== 'undefined') WorkQuestStore.reset();   // …and no inherited accepted-build work quests — a new Commander never inherits the prior hero's in-flight builds (own key)
     if (typeof GoalStore !== 'undefined') GoalStore.reset();   // …and a fresh goal tree — a new Commander never inherits the prior hero's goals/milestones/progress (own key)
     if (typeof UnderstandingStore !== 'undefined' && UnderstandingStore.reset) UnderstandingStore.reset();   // …and no inherited rating corroboration — a new Commander never inherits the prior hero's 👍/👎 confidence signal (own key)
@@ -3249,15 +3249,15 @@ const App = (() => {
     if (typeof ReturnStore !== 'undefined') ReturnStore.reset();   // …and no inherited return-ritual trail — a fresh Commander gets no prior hero's pending OUTBOX crates or attendance stamp (own key)
     if (typeof NightDraftNudge !== 'undefined') NightDraftNudge.reset();   // …and no inherited night-shift seen-stamp / spent nudge — a fresh Commander re-earns the unseen-drafts nudge (own key)
     if (typeof WorkshopStore !== 'undefined') WorkshopStore.reset();   // W3: no inherited "later" list or seen-ledger for a fresh Commander (own key)
-    if (typeof PrideStore !== 'undefined') PrideStore.reset();   // …and a brand-new station record — a fresh Commander founds their OWN colony, inheriting no prior hero's lifetime tasks/deliverables/routines/founding-date (own key)
+    if (typeof PrideStore !== 'undefined') PrideStore.reset();   // …and a brand-new keep record — a fresh Commander founds their OWN colony, inheriting no prior hero's lifetime tasks/deliverables/routines/founding-date (own key)
     if (typeof SeedReuseStore !== 'undefined') SeedReuseStore.reset();   // …and no inherited seed-usage tally — a fresh Commander's living-tools shelf starts empty; the 5×/week callout is re-earned (own key)
     if (typeof ConfBeats !== 'undefined') ConfBeats.reset();   // …and both confidence narrative moments re-arm — a fresh hero's meter starts over, so its calibration/TRUSTED beats must be re-earned, never inherited (own key)
     if (typeof BottleStore !== 'undefined') BottleStore.reset();   // …and R5's per-run bottle-decision denylist clears — a fresh hero re-earns every "bottle it?" offer (own key)
     if (typeof ResummonStore !== 'undefined') ResummonStore.reset();   // …and P3.1's per-run re-summon-decision denylist clears — a fresh hero re-earns every "run it again?" offer (own key)
     if (typeof TrustStore !== 'undefined') TrustStore.reset();   // GROWTH Tier 3: …and a fresh EARNED-AUTONOMY track record — a new Commander never inherits the prior hero's earned rungs / declined-offer state / streak (own key); the earned dial rung must be re-earned from scratch
     if (typeof Harness !== 'undefined' && Harness.memoryReset) Harness.memoryReset(agent.id);   // …and wipe SERVER-SIDE memory (notebook/declined/todo) so no prior Commander's kept or rejected beliefs bleed into the fresh hero
-    pendingStationDoc = null;   // a brand-new station (one shabby starter room) for a new agent
-    pendingStationStats = null; // fresh growth meters — XpStore.init seeds them on enterGame
+    pendingKeepDoc = null;   // a brand-new keep (one shabby starter room) for a new agent
+    pendingKeepStats = null; // fresh growth meters — XpStore.init seeds them on enterGame
     pendingGrowthSyncAt = 0;
     pendingRatingSyncAt = 0;
     enterGame({ awaitingPurpose: true, wake: true });   // the Orchestrator authors its mission in the awakening (no pre-spec)
@@ -3269,7 +3269,7 @@ const App = (() => {
   function resumeInto(saved) {
     agent = saved.agent;
     // A legacy hero without createdAt already belongs to growth epoch 1 on the sidecar.
-    // Resuming is not founding a new station: inventing a timestamp here rejects every crew rating
+    // Resuming is not founding a new keep: inventing a timestamp here rejects every crew rating
     // until the debounced save lands, and can strand existing epoch-1 feedback on another generation.
     // Keep the missing date unknown. Only onWake creates a new Commander identity.
     if (!agent.role) agent.role = 'orchestrator';  // older hero saves predate the role field — the first agent is the lead
@@ -3283,23 +3283,23 @@ const App = (() => {
     registerHero(agent);                           // found the registry with the hero…
     rehydrateRoster(saved.agents);                 // …then restore any summoned crew (older saves: no-op)
     recomposeOrchestrators();                      // …and only NOW does the hero's YOUR CREW clause see them (composing above sees an empty registry)
-    if (savedStationProv(saved) && Harness.setProv) Harness.setProv(savedStationProv(saved));   // keep the provider with the agent (codex vs openrouter)
+    if (savedKeepProv(saved) && Harness.setProv) Harness.setProv(savedKeepProv(saved));   // keep the provider with the agent (codex vs openrouter)
     if (saved.reasoningEffort && Harness.setReasoningEffort) Harness.setReasoningEffort(saved.reasoningEffort);
     if (!agent.provider && saved.prov) agent.provider = saved.prov;   // #4: older hero saves stored provider only at the top level — stamp it onto the hero object so focusAgent restores it
     if (!agent.reasoningEffort && saved.reasoningEffort) agent.reasoningEffort = saved.reasoningEffort;
     Harness.setModel(agent.model || Harness.getModel());
     Harness.setTotals(saved.usage || { tokens: 0, cost: 0, calls: 0 });
     Workstreams.init({ workstreams: saved.workstreams, activeId: saved.activeId, generalId: saved.generalId, sessionUndo: saved.sessionUndo, deletedIds: saved.deletedIds });
-    pendingStationDoc = saved.station || null;   // restore the built station (if any)
-    pendingStationStats = saved.stationStats || null;   // restore the station-growth rollup (XP/level/confidence)
-    pendingGrowthSyncAt = Math.max(0, Number((saved.stationStats && saved.stationStats.runSyncAt) || saved.updatedAt || 0));
-    // A legacy/stale projection with no dedicated rating watermark must replay this station generation from
+    pendingKeepDoc = saved.keep || null;   // restore the built keep (if any)
+    pendingKeepStats = saved.keepStats || null;   // restore the keep-growth rollup (XP/level/confidence)
+    pendingGrowthSyncAt = Math.max(0, Number((saved.keepStats && saved.keepStats.runSyncAt) || saved.updatedAt || 0));
+    // A legacy/stale projection with no dedicated rating watermark must replay this keep generation from
     // its beginning. Using save.updatedAt here can skip a rating that the server accepted before that stale
     // local document was written (the exact multi-tab clobber this ledger exists to repair).
-    pendingRatingSyncAt = Math.max(1, Number(saved.stationStats && saved.stationStats.ratingSyncAt) || 1);
+    pendingRatingSyncAt = Math.max(1, Number(saved.keepStats && saved.keepStats.ratingSyncAt) || 1);
     pendingProfile = saved.profile || null;   // restore the learned user-affinity profile
     pendingWorkSignal = saved.worksignal || null;   // restore the capability-usage histogram (adaptive recruitment)
-    pendingDossier = saved.dossier || null;   // restore the station-wide Commander dossier
+    pendingDossier = saved.dossier || null;   // restore the keep-wide Commander dossier
     // gate the awakening on the explicit onboarded flag (new saves), falling back to the old !purpose heuristic
     // for pre-flag saves. This fixes the strand where a refresh AFTER the first (purpose) answer — which persists
     // agent.purpose immediately — used to skip the rest of the awakening (context/manual/dawn/tutorial never ran).
@@ -3318,12 +3318,12 @@ const App = (() => {
     World.init(el('stage'));
     World.spawn(agent);
     World.setOnClick(openWorldAgent);
-    World.setOnArcade(() => { if (typeof StationUI !== 'undefined' && StationUI.openArcade) StationUI.openArcade(); });   // click a cabinet → BREACH PROTOCOL
+    World.setOnArcade(() => { if (typeof KeepUI !== 'undefined' && KeepUI.openArcade) KeepUI.openArcade(); });   // click a cabinet → BREACH PROTOCOL
     // A FLOOR OUTBOX IS ITS OWN LINE'S (Andrew 10-03): the click opens the workflow that ships into THAT OUTBOX — its
-    // newest result, its last jobs — never DELIVERABLES (every finished run on the station) and never another line's work.
+    // newest result, its last jobs — never DELIVERABLES (every finished run on the keep) and never another line's work.
     if (World.setOnOutbox) World.setOnOutbox(ob => { if (typeof WorkflowsWindow !== 'undefined' && WorkflowsWindow.openOutbox) WorkflowsWindow.openOutbox(ob && ob.id); });
-    if (World.setOnMissionBoard) World.setOnMissionBoard(() => { if (typeof StationUI !== 'undefined' && StationUI.openTerm) StationUI.openTerm('quests'); });   // G1b: click the MISSION BOARD → the QUEST LOG (the board is a projection, never a gate)
-    if (World.setOnTrophyCase) World.setOnTrophyCase(() => { if (typeof StationUI !== 'undefined' && StationUI.openTerm) StationUI.openTerm('trophies'); });   // G3b: click the TROPHY CASE → the TROPHY surface (a projection of real completions, never a gate)
+    if (World.setOnMissionBoard) World.setOnMissionBoard(() => { if (typeof KeepUI !== 'undefined' && KeepUI.openTerm) KeepUI.openTerm('quests'); });   // G1b: click the MISSION BOARD → the QUEST LOG (the board is a projection, never a gate)
+    if (World.setOnTrophyCase) World.setOnTrophyCase(() => { if (typeof KeepUI !== 'undefined' && KeepUI.openTerm) KeepUI.openTerm('trophies'); });   // G3b: click the TROPHY CASE → the TROPHY surface (a projection of real completions, never a gate)
     // a PLUGIN TERMINAL is the plugin's body: a click opens its window. An unbound or turned-off one says so and opens
     // EXTENSIONS, where plugins are approved — never a dead click.
     if (World.setOnPluginTerminal) World.setOnPluginTerminal(async (p) => {
@@ -3331,16 +3331,16 @@ const App = (() => {
       const host = typeof PluginHost !== 'undefined' ? PluginHost : null;
       if (pid && host) { try { await host.refresh(); } catch (_) { /* open() below still uses the last known list */ } }
       if (pid && host && host.open(pid)) return;
-      if (typeof StationUI === 'undefined') return;
+      if (typeof KeepUI === 'undefined') return;
       const info = pid && host ? host.list().find(x => x.id === pid) : null;
       const say = !pid ? 'This terminal is not bound to a plugin yet. Bind it in BUILD MODE, or create a plugin in ABILITIES → EXTENSIONS.'
         : !info ? 'This terminal\'s plugin was removed. Rebind it in BUILD MODE or remove the terminal.'
         : !info.active ? (info.name || pid) + ' is off' + (info.pending ? ' — it changed since you approved it' : '') + '. Turn it on in ABILITIES → EXTENSIONS.'
         : (info.name || pid) + ' has no window. Its tools are available to agents in this room.';
-      if (StationUI.notify) StationUI.notify(say, info && info.active ? 'good' : 'warn');
-      if (!(info && info.active) && StationUI.openTerm) StationUI.openTerm('connectors', 'extensions');
+      if (KeepUI.notify) KeepUI.notify(say, info && info.active ? 'good' : 'warn');
+      if (!(info && info.active) && KeepUI.openTerm) KeepUI.openTerm('connectors', 'extensions');
     });
-    // DESK SCREEN: click an agent's workstation → the DESK SCREEN window (docked from the bottom like every window) on
+    // DESK SCREEN: click an agent's workkeep → the DESK SCREEN window (docked from the bottom like every window) on
     // that agent's computer. The fold starts here so a desk opened mid-run already holds every step this page has seen.
     if (typeof DeskScreen !== 'undefined' && World.setOnDesk) {
       DeskScreen.init({
@@ -3350,51 +3350,51 @@ const App = (() => {
       World.setOnDesk(o => DeskScreen.open(o.agentId));
     }
     if (World.setOnBayAssign) World.setOnBayAssign(pid => { if (typeof Build !== 'undefined' && Build.openAssign) Build.openAssign(pid); });   // belt legibility: click an unbound BAY's "NO AGENT" nag → BUILD MODE opens straight into its agent picker
-    if (World.setOnIntakeFeed) World.setOnIntakeFeed(() => { if (typeof StationUI !== 'undefined' && StationUI.openTerm) StationUI.openTerm('messaging'); });   // belt legibility: click a starved INTAKE's "NO FEED" nag → the CHANNELS panel (wire a real feed)
+    if (World.setOnIntakeFeed) World.setOnIntakeFeed(() => { if (typeof KeepUI !== 'undefined' && KeepUI.openTerm) KeepUI.openTerm('messaging'); });   // belt legibility: click a starved INTAKE's "NO FEED" nag → the CHANNELS panel (wire a real feed)
     if (World.setOnIntakeSample) World.setOnIntakeSample(o => { if (typeof Chat !== 'undefined' && Chat.sampleCard) Chat.sampleCard(o); });   // guided workflow Phase 4: click the INBOX on a COMPLETE line → the RUN-A-SAMPLE-JOB card (POST /api/routing/sample)
     if (opts.awaitingPurpose) World.beginAwakening();        // wake in darkness — the awakening lifts the room to first light (set BEFORE start so there's no flash of the lit room)
     else if (opts.wake) { World.wakeIn(); SFX.level(); }
-    // the canonical station the builder edits — restored from the save, or a fresh starter room. LOAD it
+    // the canonical keep the builder edits — restored from the save, or a fresh starter room. LOAD it
     // BEFORE World.start() so the first painted frame renders THIS agent's floor — a NEW AGENT must never
-    // flash the previous agent's built station (start() paints synchronously off the live geo/cache).
-    // MOUNT RULES: teach the station model which prop types hang on a wall / stand on a table, and which
+    // flash the previous agent's built keep (start() paints synchronously off the live geo/cache).
+    // MOUNT RULES: teach the keep model which prop types hang on a wall / stand on a table, and which
     // types ARE tables. The model deliberately never imports the catalog, so this injection is the single
-    // seam between the two — installed before the station exists so the very first placement is validated.
+    // seam between the two — installed before the keep exists so the very first placement is validated.
     if (typeof PropSprites !== 'undefined' && WorldModel.setPropRules) {
       // ruleFor keeps a player-made prop (user_…) even before its art registers, so a slow boot fetch can never
       // prune paid work out of the save; retired built-in types still come back null and are dropped.
       WorldModel.setPropRules((t) => PropSprites.ruleFor(t));
     }
-    // STATION IDENTITY: did the save we are loading already carry one? (worldmodel stamps meta.createdAt
+    // KEEP IDENTITY: did the save we are loading already carry one? (worldmodel stamps meta.createdAt
     // at create AND backfills it on migrate — a stamp that is never SAVED would re-roll on every reload,
-    // and every per-station BUILD MODE latch keyed on it would be lost. Read before deserialize mutates it.)
-    const hadStationId = !!(pendingStationDoc && pendingStationDoc.meta && pendingStationDoc.meta.createdAt);
-    station = (pendingStationDoc && pendingStationDoc.rooms) ? WorldModel.deserialize(pendingStationDoc) : WorldModel.create(WorldModel.starterDoc());
-    pendingStationDoc = null;
-    watchStationSave();
-    // THE OVERSEER'S DESK IS A REAL PROP: materialize the starter workstation the world used to merely
+    // and every per-keep BUILD MODE latch keyed on it would be lost. Read before deserialize mutates it.)
+    const hadKeepId = !!(pendingKeepDoc && pendingKeepDoc.meta && pendingKeepDoc.meta.createdAt);
+    keep = (pendingKeepDoc && pendingKeepDoc.rooms) ? WorldModel.deserialize(pendingKeepDoc) : WorldModel.create(WorldModel.starterDoc());
+    pendingKeepDoc = null;
+    watchKeepSave();
+    // THE OVERSEER'S DESK IS A REAL PROP: materialize the starter workkeep the world used to merely
     // DRAW (synthetic auto-desk) as a real hero-assigned desk in the doc, BEFORE the world derives its
     // floor — so bayObjects/BUILD MODE/dossier see the same PC the player sees (kills the fresh-install
     // "NO COMPUTE beside the visible PC" lie). Idempotent per load; world keeps its synthetic fallback
     // only for the pathological no-space floor.
-    if (agent && agent.id && typeof station.ensureWorkstation === 'function') {
-      const seeded = station.ensureWorkstation(agent.id);
-      // a real floor change, OR a save that just received its station id — either way the doc on disk is
-      // now behind the doc in memory, and the id in particular MUST be durable (see hadStationId above).
-      if (!hadStationId || (seeded && seeded.ok && !seeded.existing)) persist();
+    if (agent && agent.id && typeof keep.ensureWorkkeep === 'function') {
+      const seeded = keep.ensureWorkkeep(agent.id);
+      // a real floor change, OR a save that just received its keep id — either way the doc on disk is
+      // now behind the doc in memory, and the id in particular MUST be durable (see hadKeepId above).
+      if (!hadKeepId || (seeded && seeded.ok && !seeded.existing)) persist();
     }
-    if (typeof World.loadStation === 'function') World.loadStation(station);   // the live world IS the built station
-    // give resumed summoned crew their real floor bodies now that the station/geo is loaded (no-op for a
+    if (typeof World.loadKeep === 'function') World.loadKeep(keep);   // the live world IS the built keep
+    // give resumed summoned crew their real floor bodies now that the keep/geo is loaded (no-op for a
     // single-agent save; summon-during-game spawns its own body directly).
     for (const a of liveAgents()) if (a.id !== agent.id && typeof World.spawnAgent === 'function') World.spawnAgent(a);
     World.start();   // first frame now paints the fresh floor + crew, never a stale frame of the prior world
     if (World.resumeBridge) World.resumeBridge();   // re-arm the channel SSE + connector poll if a prior disconnect released them (no-op on first entry)
     if (typeof Build !== 'undefined') {
       // agents: the live multi-agent roster the BAY agent-picker / builder offer. The bay->agent binding
-      // persists via station.serialize (prop.agentId round-trips), so the routing floor is saved per agent.
-      Build.init({ getStation: () => station, persist: persist, world: World,
+      // persists via keep.serialize (prop.agentId round-trips), so the routing floor is saved per agent.
+      Build.init({ getKeep: () => keep, persist: persist, world: World,
         agents: () => liveAgents().map(a => ({ id: a.id, name: a.name, color: a.color, model: a.model, skin: a.skin || DATA.DEFAULT_SKIN })),   // skin: the Workflow panel shows each agent by its body
-        // A workstation can be placed while its owning COMMS stream stays open. Reconcile the derived
+        // A workkeep can be placed while its owning COMMS stream stays open. Reconcile the derived
         // "nowhere to sit" row after BUILD MODE commits so the transcript cannot outlive the floor truth.
         onClose: () => { if (typeof Chat !== 'undefined' && Chat.retireDeskPrompt) Chat.retireDeskPrompt(); } });
       const bbBuild = el('bb-build');
@@ -3411,8 +3411,8 @@ const App = (() => {
 
     const bbMissions = el('bb-missions');
     if (bbMissions) bbMissions.onclick = () => openDeployBay('recipes');   // straight to the RECIPES (mission) library tab
-    if (typeof StationUI !== 'undefined') {
-      StationUI.enter(liveAgents(), {
+    if (typeof KeepUI !== 'undefined') {
+      KeepUI.enter(liveAgents(), {
         totals: () => Harness.totals(),
         // CONTEXT is a property of the conversation ON SCREEN, not of the primary agent: ask Chat which
         // workstream is open and hand the gauge that stream's own agent + message array. Binding this to
@@ -3428,19 +3428,19 @@ const App = (() => {
         comms: { openWorkstream: openWorkstream }   // the while-you're-away card's "review" jumps straight to a deliverable's session (2026-07-15)
       });
       // Presence is already proven by the live roster, link indicator, and COMMS state. Do not
-      // create a fresh persistent notification every time an existing station is reloaded.
+      // create a fresh persistent notification every time an existing keep is reloaded.
     }
-    // STATION SYSTEMS ONLINE: a station whose awakening starts now grows its dock as it is used; one that was
+    // KEEP SYSTEMS ONLINE: a keep whose awakening starts now grows its dock as it is used; one that was
     // already awake opens with everything online. Keyed by the hero's epoch so a fresh start grows again.
     if (typeof Systems !== 'undefined' && Systems.init) {
       try { Systems.init({ epoch: agent && agent.createdAt != null ? agent.createdAt : 'legacy', fresh: !!(opts && opts.awaitingPurpose), crewCount: () => agents.size }); } catch (e) { console.warn('[systems] init failed', e); }
     }
     // AGENT GROWTH: subscribe XP/Level/Confidence to the real run-outcome bus. Seeds agent.stats +
-    // the station rollup, pushes the live numbers to the world HUD, and fires level-up celebrations.
+    // the keep rollup, pushes the live numbers to the world HUD, and fires level-up celebrations.
     // S3: onCredential fires only on a coarse track-record change (tier crossing / band flip), and re-pushes
     // the roster so the lead's next dispatch briefing describes its crew truthfully. Rare by construction.
     // S4: `agents` lets the boot-time trophy reconcile reach every specialist's case, not just the hero's.
-    if (typeof XpStore !== 'undefined') { XpStore.init({ getAgent: (id) => agents.get(id || 'agent') || null, agents: () => Array.from(agents.values()), station: pendingStationStats, syncSince: pendingGrowthSyncAt, syncRatingsSince: pendingRatingSyncAt, persist: persist, onCredential: () => pushRoster() }); pendingStationStats = null; pendingGrowthSyncAt = 0; pendingRatingSyncAt = 0; }
+    if (typeof XpStore !== 'undefined') { XpStore.init({ getAgent: (id) => agents.get(id || 'agent') || null, agents: () => Array.from(agents.values()), keep: pendingKeepStats, syncSince: pendingGrowthSyncAt, syncRatingsSince: pendingRatingSyncAt, persist: persist, onCredential: () => pushRoster() }); pendingKeepStats = null; pendingGrowthSyncAt = 0; pendingRatingSyncAt = 0; }
     // PERSONALIZATION: the local user-affinity profile — folds the interest tag of each task + shipped work
     // into a tiny histogram (profile.js engine). Resume the saved slice, else start fresh + seed cold-start
     // from the agent's deployed specialty domain so day-one suggestions aren't blank.
@@ -3477,7 +3477,7 @@ const App = (() => {
       MintStore.init();
       if (typeof ProfileStore !== 'undefined' && ProfileStore.enabled && MintStore.setEnabled) MintStore.setEnabled(ProfileStore.enabled());
     }
-    // COMMANDER DOSSIER: the one station-wide model of the user (dossier.js engine). Resume the saved slice,
+    // COMMANDER DOSSIER: the one keep-wide model of the user (dossier.js engine). Resume the saved slice,
     // seed it once from the onboarding docs the Commander authored, and fold it into EVERY agent's system
     // prompt so a freshly-deployed agent already knows the Commander. A panel edit recomposes the live prompt.
     if (typeof DossierStore !== 'undefined') {
@@ -3488,19 +3488,19 @@ const App = (() => {
       pendingDossier = null;
       agent.systemPrompt = composeSystemPrompt(agent);   // include the dossier block before Chat.init reads it below
     }
-    // GROWTH Tier 1 — STUDY (dossier Phase B): after a salient run, the station proposes DOSSIER belief updates
+    // GROWTH Tier 1 — STUDY (dossier Phase B): after a salient run, the keep proposes DOSSIER belief updates
     // (goals/pain/style/… ADD or RETIRE), consented at the turn-in beat. Self-persists its own key (declined
     // denylist + per-belief ignore tallies + per-archetype rating streaks). Init AFTER DossierStore (its accept()
     // folds into it); the per-session shown-cap resets here.
     if (typeof StudyStore !== 'undefined') StudyStore.init({ now: () => Date.now() });
-    // NS-6 — THREAD turn-in: after a mined task run, the station offers ideas the Commander floated but never
+    // NS-6 — THREAD turn-in: after a mined task run, the keep offers ideas the Commander floated but never
     // acted on for Keep/Edit/Discard at the turn-in beat (chat.js). Self-persists its own key (resolved
     // fingerprints + per-idea ignore tallies); the per-session shown-cap resets here.
     if (typeof ThreadStore !== 'undefined') ThreadStore.init({ now: () => Date.now() });
     // CURIOSITY: the gentle one-per-session "tell me about X" nudge (curiosity.js). Self-persists its
     // dismissals to its own key (rides the backup prefix); init just hydrates + resets the session budget.
     if (typeof CuriosityStore !== 'undefined') CuriosityStore.init();
-    // THE RECOMMENDATION QUALITY LOOP (outcome attribution): per-channel EWMA weights over what the station's
+    // THE RECOMMENDATION QUALITY LOOP (outcome attribution): per-channel EWMA weights over what the keep's
     // accepted offers actually PRODUCED — read by the spine's scorer, moved only by real attributed outcomes
     // (a clean run, the Commander's 👍/👌/👎, an explicit decline). Self-persists its own key; read-only bus
     // citizen. Init here, alongside the other proactive-channel stores, so the first pass already sees it.
@@ -3526,14 +3526,14 @@ const App = (() => {
     // the tick) for the north star + attempt ledger + due state, and owns the manual REFRESH QUESTS write.
     if (typeof QuestRefreshStore !== 'undefined') QuestRefreshStore.init();
     // COMMANDER JOURNEY: the durable sidecar-owned loop connecting goal metrics + verified outcomes to
-    // agent-domain mastery, visible adaptation receipts, and expressive station evolution. Separate from XP;
+    // agent-domain mastery, visible adaptation receipts, and expressive keep evolution. Separate from XP;
     // never grants capabilities. Init before GoalStore so a just-folded milestone can post immediately.
     if (typeof JourneyStore !== 'undefined') JourneyStore.init({ epoch: () => agent && agent.createdAt });
-    // G1b STATION-QUEST GENERATOR: subscribe to agent.tool_call and mint a fix-it quest when an agent reaches
-    // for a tool its room can't grant (capdenied → playable direction). Init AFTER World.loadStation (its gap
+    // G1b KEEP-QUEST GENERATOR: subscribe to agent.tool_call and mint a fix-it quest when an agent reaches
+    // for a tool its room can't grant (capdenied → playable direction). Init AFTER World.loadKeep (its gap
     // check + resolution read World.heroCaps / the live floor) and after QuestStateStore so a resumed save's
     // already-closed gaps are a quiet baseline. Self-persists to its own key; never emits on U.bus.
-    if (typeof StationQuestStore !== 'undefined') StationQuestStore.init();
+    if (typeof KeepQuestStore !== 'undefined') KeepQuestStore.init();
     // G1c WORK-QUEST GENERATOR: an accepted pitch/idea ("build it") becomes a trackable multi-step build,
     // completing on the launched run finishing (rides QuestState's celebration). Subscribes to run.start/end;
     // self-persists (own key); never emits. Init AFTER QuestStateStore so its completion folds cleanly.
@@ -3555,7 +3555,7 @@ const App = (() => {
       launchDirective: (text) => { const ws = (typeof Workstreams !== 'undefined') ? Workstreams.create((Workstreams.deriveTitle && Workstreams.deriveTitle(text)) || 'Goal milestone', { kind: 'task' }) : null; if (ws && typeof Chat !== 'undefined' && Chat.load) Chat.load(ws); let sent = false; if (typeof Chat !== 'undefined' && Chat.send && !Chat.isBusy()) { Chat.send(text); sent = true; } persist(); return sent; },
       getRunSummary: (runId) => { const m = (runId && typeof Chat !== 'undefined' && Chat.runMeta) ? Chat.runMeta(runId) : null; return (m && m.title) ? m.title : ''; }
     });
-    // UNDERSTANDING: the one honest, adaptive "how well the station understands the Commander" read
+    // UNDERSTANDING: the one honest, adaptive "how well the keep understands the Commander" read
     // (understanding.js engine) composed from the live dossier beliefs + work-observation count + active goal.
     // No surface of its own — it AIMS the earned curiosity question at the weakest dimension and upgrades the
     // COMMANDER panel's familiarity meter. Init AFTER DossierStore/ProfileStore/GoalStore (it reads all three).
@@ -3577,11 +3577,11 @@ const App = (() => {
       });
     }
     // G1c MAINTENANCE-QUEST GENERATOR: recurring slag causes (World.slagPostmortems ring) + a jammed routine
-    // (cron.skipped streak) become fix-it quests, clearing when the signal clears. Init AFTER World.loadStation
+    // (cron.skipped streak) become fix-it quests, clearing when the signal clears. Init AFTER World.loadKeep
     // (it reads the live SlagLog ring) and after QuestStateStore. Self-persists (own key); never emits.
     if (typeof MaintQuestStore !== 'undefined') MaintQuestStore.init();
     if (typeof SeedStore !== 'undefined') SeedStore.init();   // SELF-GROWING SEED: reset the one-offer-per-session budget
-    if (typeof AutonomyStore !== 'undefined') AutonomyStore.init();   // AUTONOMY POSTURE: hydrate the "alive between sessions" dial (own key; the awakening cadence beat + the station dial are its writers)
+    if (typeof AutonomyStore !== 'undefined') AutonomyStore.init();   // AUTONOMY POSTURE: hydrate the "alive between sessions" dial (own key; the awakening cadence beat + the keep dial are its writers)
     // FIRST PITCH: once the agent has done one real task and knows enough about the Commander, it proactively
     // proposes ONE buildable thing to make next (pitch.js engine). Read-only bus citizen; self-persists its own
     // fire-once flag (no save.js change). It reasons the pitch from the LIVE system prompt (which already carries
@@ -3603,7 +3603,7 @@ const App = (() => {
       launchRecipe: launchRecipe,
       /* THE EVIDENCE POOL the suggestion's quote is vetoed against (rec perfection W2). The SAME shape and the
          same dimensions AutoJobStore reads for its own grounding veto — one accessor idiom, so the two channels
-         can never disagree about what the station "knows". A cold dossier returns {}, which grounds nothing:
+         can never disagree about what the keep "knows". A cold dossier returns {}, which grounds nothing:
          fail-closed is the point (the failure it replaces was quoting the Commander words they never said). */
       getBeliefs: () => {
         const out = {};
@@ -3688,7 +3688,7 @@ const App = (() => {
       }).catch(() => ({ ok: false })),
       // G4 feature 2: is a MISSION BOARD placed? When it is, a proposal gets a BODY (agent walks + pins an amber
       // card on the board) instead of the inline Dialogue approval. No board → the Dialogue flow is untouched.
-      boardPlaced: () => { try { const d = World.stationDoc && World.stationDoc(); return !!(d && d.props && d.props.some(p => p && p.t === 'missionboard')); } catch (_) { return false; } }
+      boardPlaced: () => { try { const d = World.keepDoc && World.keepDoc(); return !!(d && d.props && d.props.some(p => p && p.t === 'missionboard')); } catch (_) { return false; } }
     });
     // PERMISSIONS (autonomy Stage B / B1): the Permissions Panel store. It reads/sets the standing capability
     // grants over the token-gated /api/permissions routes (harness.js hardens window.fetch to attach the token, so
@@ -3729,7 +3729,7 @@ const App = (() => {
       grantable: (typeof SK !== 'undefined' && SK.permgrants && Array.isArray(SK.permgrants.GRANTABLE)) ? SK.permgrants.GRANTABLE.slice() : (typeof Permissions !== 'undefined' && Permissions.grantableKeys ? Permissions.grantableKeys() : ['cabinet:write']),
       getGrants: () => { try { return (typeof PermissionsStore !== 'undefined' && PermissionsStore.snapshot) ? (PermissionsStore.snapshot().grants || []) : []; } catch (_) { return []; } },
       grant: (key) => (typeof PermissionsStore !== 'undefined' && PermissionsStore.grant) ? PermissionsStore.grant(key) : false,
-      notify: (text, kind) => { if (typeof StationUI !== 'undefined' && StationUI.notify) StationUI.notify(text, kind || 'warn'); }
+      notify: (text, kind) => { if (typeof KeepUI !== 'undefined' && KeepUI.notify) KeepUI.notify(text, kind || 'warn'); }
     });
     Chat.init({ system: agent.systemPrompt, name: agent.name, ws: Workstreams.active(), onTurn: persist });
     beginBridgeAuthorityGate();   // Chat mounted the four boot claims; hold them together until the bridge proves itself
@@ -3762,14 +3762,14 @@ const App = (() => {
     // unattended outcome (routines, builds, loops, drafts, failures) and deliver it into ONE pinned session. The
     // older per-surface return beats (digest, morning report, drafts nudge, workshop reveal) stand down while it is live.
     if (typeof Briefing !== 'undefined') Briefing.init({ enabled: !opts.awaitingPurpose, agentId: agent.id });
-    if (typeof RemoteView !== 'undefined') RemoteView.init();   // the station picture a paired phone sees (drawn only while one is looking)
+    if (typeof RemoteView !== 'undefined') RemoteView.init();   // the keep picture a paired phone sees (drawn only while one is looking)
     if (typeof RemoteSessions !== 'undefined') RemoteSessions.init();   // phone conversations show up as desk sessions
     // Delegated-session recovery: if no page received the live delivery (or another open page won the ACK race
     // with a divergent local id), fold the durable run envelope into the matching named session exactly once.
-    if (typeof StationCommands !== 'undefined' && StationCommands.reconcile) StationCommands.reconcile();
-    // G3a PRIDE LAYER: arm the durable lifetime STATION RECORD — folds real completed runs / delivered
+    if (typeof KeepCommands !== 'undefined' && KeepCommands.reconcile) KeepCommands.reconcile();
+    // G3a PRIDE LAYER: arm the durable lifetime KEEP RECORD — folds real completed runs / delivered
     // work-items / fired routines / summed run durations into counters that persist across sessions (own key,
-    // read-only on the bus). The COMMANDER DOSSIER panel renders snapshot() as the STATION RECORD block.
+    // read-only on the bus). The COMMANDER DOSSIER panel renders snapshot() as the KEEP RECORD block.
     if (typeof PrideStore !== 'undefined') PrideStore.init();
     // G3b SEED-REUSE AGGREGATE: arm the durable per-seed run tally (own key). The digest feeds it the
     // provenance-matched while-away rows; it powers the TROPHY CASE's living-tools shelf + the once-per-window
@@ -3777,7 +3777,7 @@ const App = (() => {
     // init lands before the first digest can feed it — the first while-away digest is tallied.
     if (typeof SeedReuseStore !== 'undefined') SeedReuseStore.init();
     // AUTOPILOT (autonomy Slice A — the idle self-direction driver): when the Commander goes idle with autonomy
-    // enabled, the station either EARNS context (asks one gentle get-to-know-you question — A1) or, once the dial
+    // enabled, the keep either EARNS context (asks one gentle get-to-know-you question — A1) or, once the dial
     // permits acting AND the dossier is hot AND today's leash has budget, it ACTS — runs the anti-slop pipeline as
     // two SILENT reason-only runs (no tools → safe) and leaves a draft on the desk (A2). The decision is pure
     // (autopilot.js); this is the edge — the live clock, the activity listeners + idle tick (installed once), the
@@ -3810,7 +3810,7 @@ const App = (() => {
         // (no Chat yet), so the same draft is never announced twice (toast + nudge was the "pushy" double).
         // World.say stays: an ambient in-world cue, not a popup. The return digest recaps everything anyway.
         const canNudge = typeof Chat !== 'undefined' && Chat.nudge;
-        if (!canNudge && typeof StationUI !== 'undefined' && StationUI.notify) StationUI.notify((didWrite ? 'wrote a file while you were away: ' : 'drafted while you were away: ') + d.title, 'gold', 'cronDigest', { go: { term: 'automation', section: 'away' } });   // P1-8 category: autonomous run
+        if (!canNudge && typeof KeepUI !== 'undefined' && KeepUI.notify) KeepUI.notify((didWrite ? 'wrote a file while you were away: ' : 'drafted while you were away: ') + d.title, 'gold', 'cronDigest', { go: { term: 'automation', section: 'away' } });   // P1-8 category: autonomous run
         if (typeof World !== 'undefined' && World.say) World.say(didWrite ? '✦ saved a file to your workspace' : '✦ left a draft on your desk');
         if (canNudge) Chat.nudge(
           didWrite
@@ -3828,7 +3828,7 @@ const App = (() => {
         );
       },
       // the WELCOME-BACK digest (A3): on the first interaction after a real absence, one gold beat truthfully
-      // recapping what the station did while away — composed from the draft log, no new events.
+      // recapping what the keep did while away — composed from the draft log, no new events.
       digest: (info) => {
         const mins = Math.max(1, Math.round(info.awayMs / 60000));
         // B3 — report what was WRITTEN vs drafted, and offer a one-tap UNDO. The headline + the ✎/▸ lines compose
@@ -3864,7 +3864,7 @@ const App = (() => {
               if (item.value === 'show') return reveal();
               if (item.value !== 'undo' || !canUndo) return;
               restore(sum.undoSnapshot).then(ok => {
-                if (typeof StationUI !== 'undefined' && StationUI.notify) StationUI.notify(ok ? 'rolled back the files i wrote while you were away' : 'could not roll back — the snapshot is gone', ok ? 'gold' : 'warn');
+                if (typeof KeepUI !== 'undefined' && KeepUI.notify) KeepUI.notify(ok ? 'rolled back the files i wrote while you were away' : 'could not roll back — the snapshot is gone', ok ? 'gold' : 'warn');
                 if (ok && typeof World !== 'undefined' && World.say) World.say('✦ rolled back my away-writes');
               });
             });
@@ -3873,7 +3873,7 @@ const App = (() => {
         // richer than a toast (show me / undo) and it fires at the same instant the toast used to, saying the
         // SAME sentence. The toast is now only the FALLBACK when the nudge can't render (no Chat), so the
         // Commander's first interaction back is greeted once, not twice.
-        if ((typeof Chat === 'undefined' || !Chat.nudge) && typeof StationUI !== 'undefined' && StationUI.notify) StationUI.notify('while you were away (' + mins + 'm): ' + headline, 'gold', 'cronDigest', { go: { term: 'deliverables', section: 'review' } });   // P1-8 category: autonomous digest
+        if ((typeof Chat === 'undefined' || !Chat.nudge) && typeof KeepUI !== 'undefined' && KeepUI.notify) KeepUI.notify('while you were away (' + mins + 'm): ' + headline, 'gold', 'cronDigest', { go: { term: 'deliverables', section: 'review' } });   // P1-8 category: autonomous digest
         // DEFERRED a beat: this fires from the capture phase of the Commander's first pointerdown/keydown back.
         // Posting the nudge synchronously would clearNudge()/clearChoices() an in-flight answer on a live beat
         // (e.g. the per-draft "show me" chip) mid-press — the very tap that woke the digest would be eaten.
@@ -3889,7 +3889,7 @@ const App = (() => {
     if (typeof Voice !== 'undefined') Voice.init({ name: agent.name, personaId: agent.personaId, resumeCue: !opts.awaitingPurpose });   // mic + this agent's per-persona voice; offer hands-free resume except during the awakening
     if (typeof ModelDock !== 'undefined') ModelDock.init({ apply: applyQuickModel, identity: () => (agent && agent.id) || '', agentName: () => (agent && agent.name) || '' });
     syncChannels();   // if a Telegram bot auto-started from saved config, refresh it to THIS agent's live identity
-    pushRoster();     // Stage 2: seed the sidecar with the live crew so the lead can delegate (no-op for a solo station)
+    pushRoster();     // Stage 2: seed the sidecar with the live crew so the lead can delegate (no-op for a solo keep)
     renderRail();
     el('ws-new').onclick = newWorkstream;
     wireRailSearch();
@@ -3904,33 +3904,33 @@ const App = (() => {
       // while the room rises from dark to first light. Replaces the old single "what is my purpose?" beat.
       Onboarding.start({
         name: agent.name,
-        role: agent.role || 'orchestrator',                  // the first agent wakes as the station's ORCHESTRATOR — the ceremony frames it as the lead
+        role: agent.role || 'orchestrator',                  // the first agent wakes as the keep's ORCHESTRATOR — the ceremony frames it as the lead
         docs: agentDocs(agent),
         wake: !!opts.wake,
         persona: (typeof Personas !== 'undefined') ? Personas.get(agent.personaId) : null,   // the voice was chosen on the create screen — the awakening acknowledges it instead of re-asking
         specialty: opts.specialty || null,                   // (reserved) a pre-specced wake skips re-asking the mission; the orchestrator authors it live
         commit: applyAgentConfig,                            // each answer folds a real doc into the live prompt + persists
-        /* CHOOSE YOUR STATION (2026-09-28): the awakening's last question builds a work preset over the UNTOUCHED
-           starter room, through the same StationTemplates.build + replaceLayout path Build mode's Presets use
+        /* CHOOSE YOUR KEEP (2026-09-28): the awakening's last question builds a work preset over the UNTOUCHED
+           starter room, through the same KeepTemplates.build + replaceLayout path Build mode's Presets use
            (one undo slot; the lead keeps its desk). fresh() = still the one-room starter no preset has built. */
-        stations: (typeof StationTemplates !== 'undefined' && typeof WorldModel !== 'undefined' && typeof PropSprites !== 'undefined') ? {
-          catalog: () => StationTemplates.catalog,
-          recommend: text => (StationTemplates.recommend ? StationTemplates.recommend(text) : null),
-          fresh: () => { const d = station && station.doc(); return !!d && !(d.meta && d.meta.templateId) && station.rooms().filter(r => r.kind !== 'corridor').length === 1; },
+        keeps: (typeof KeepTemplates !== 'undefined' && typeof WorldModel !== 'undefined' && typeof PropSprites !== 'undefined') ? {
+          catalog: () => KeepTemplates.catalog,
+          recommend: text => (KeepTemplates.recommend ? KeepTemplates.recommend(text) : null),
+          fresh: () => { const d = keep && keep.doc(); return !!d && !(d.meta && d.meta.templateId) && keep.rooms().filter(r => r.kind !== 'corridor').length === 1; },
           apply: id => {
-            try { return station.replaceLayout(StationTemplates.build(id, WorldModel, PropSprites, station.doc()._nid + 100)); }
+            try { return keep.replaceLayout(KeepTemplates.build(id, WorldModel, PropSprites, keep.doc()._nid + 100)); }
             catch (e) { return { ok: false, msg: e && e.message }; }
           }
         } : null,
         getSystem: () => agent ? agent.systemPrompt : '',    // Interview 2.0: the generated beats (wakemind.js) reason on the LIVE prompt (persona + dossier already folded in)
         done: () => { if (agent) agent.onboarded = true; persist(); if (typeof KeyCTA !== 'undefined' && KeyCTA.arm) KeyCTA.arm(); },   // the awakening landed — mark onboarded so a later refresh resumes into the game, not back into the ceremony; arm the keyless-brain CTA (shows only if no key is truly stored)
-        notify: (typeof StationUI !== 'undefined') ? StationUI.notify : null,
+        notify: (typeof KeepUI !== 'undefined') ? KeepUI.notify : null,
         // FIRST COMMAND — once the awakening lands, the agent itself teaches the Commander the one real loop (tutorial.js)
         taught: () => { if (typeof Tutorial !== 'undefined' && Tutorial.firstCommand) Tutorial.firstCommand({ name: agent.name }); }
       });
     }
     // A returning (already-onboarded) hero skips the awakening, so its `done` callback never re-fires — arm the
-    // keyless-brain CTA here so a station saved without a key still surfaces the honest "add a key" banner on boot.
+    // keyless-brain CTA here so a keep saved without a key still surfaces the honest "add a key" banner on boot.
     // (It's a pure state projection: it stays hidden when a key IS stored.) The awakening path arms it in `done`.
     if (!opts.awaitingPurpose && typeof KeyCTA !== 'undefined' && KeyCTA.arm) KeyCTA.arm();
     // V3 S5: a keyless wake banked an interview IOU — the first session that boots with a LIVE brain offers
@@ -3942,12 +3942,12 @@ const App = (() => {
         commit: applyAgentConfig,
         getSystem: () => agent ? agent.systemPrompt : '',
         persona: (typeof Personas !== 'undefined' && agent) ? Personas.get(agent.personaId) : null,
-        notify: (typeof StationUI !== 'undefined') ? StationUI.notify : null
+        notify: (typeof KeepUI !== 'undefined') ? KeepUI.notify : null
       }); } catch (_) {} }, 4000);
     }
     // P3: arm the first-steps briefing's bus ticks; re-offer the checklist to a returning user mid-progress
     if (typeof Tutorial !== 'undefined' && Tutorial.onEnterGame) Tutorial.onEnterGame();
-    // G1c: the deferred BUILD-dock glow — a soft standing hint on the BUILD dock while a station quest is open
+    // G1c: the deferred BUILD-dock glow — a soft standing hint on the BUILD dock while a keep quest is open
     // (the fix is one click away). Stands down while the tutorial is coaching (tutorial wins). Started here so
     // it only ever runs on the floor; disconnect() stops it.
     if (typeof DockGlow !== 'undefined' && DockGlow.start) DockGlow.start();
@@ -3984,7 +3984,7 @@ const App = (() => {
     if (id) railAttentionOnly = false;
     renderSessionSearch();   // a typed search re-scopes to (or back out of) the chosen agent
     renderRail();
-    if (typeof StationUI !== 'undefined' && StationUI.refreshCrew) StationUI.refreshCrew();
+    if (typeof KeepUI !== 'undefined' && KeepUI.refreshCrew) KeepUI.refreshCrew();
     return railAgentFilter;
   }
   // the chip under the rail head names whose sessions are showing; clicking it shows every session again
@@ -4123,7 +4123,7 @@ const App = (() => {
   // Compact excerpt of the latest visible turn; never an invented completion claim.
   // Share search/export filtering so hidden tool/system chatter stays hidden.
   // The rail's 1s heartbeat asks this twice per row (the receipt line and the hover tip): read the newest message
-  // from the end of the history and re-excerpt only when that message's text changed (a 26-agent station spent
+  // from the end of the history and re-excerpt only when that message's text changed (a 26-agent keep spent
   // ~18ms of every second copying whole histories and re-running these regexes over the same text).
   const railExcerpts = new WeakMap();
   function railReceipt(w) {
@@ -4178,7 +4178,7 @@ const App = (() => {
     if (oldFocus && oldFocus.dataset.id) railFocusId = oldFocus.dataset.id;
     const pending = railPendingIds();
     syncRailAttention(pending);
-    if (railAgentFilter && !agents.has(railAgentFilter)) railAgentFilter = null;   // that agent left the station
+    if (railAgentFilter && !agents.has(railAgentFilter)) railAgentFilter = null;   // that agent left the keep
     const allRows = Workstreams.list({ includeArchived: true }).filter(w =>
       (!railAgentFilter || railHasAgent(w, railAgentFilter))
       && (railAttentionOnly ? pending.has(w.id) : (!w.archived || railShowArchived || pending.has(w.id))));
@@ -4274,12 +4274,12 @@ const App = (() => {
     }
     updateArchivedToggle();
     armRailTicker();
-    if (typeof StationUI !== 'undefined' && StationUI.refreshBoard) StationUI.refreshBoard();
+    if (typeof KeepUI !== 'undefined' && KeepUI.refreshBoard) KeepUI.refreshBoard();
   }
   // ONE always-on 1s heartbeat keeps the rail truthful while in-game: the busy elapsed counts up AND the idle
   // "last worked" stamps age (2m → 3m) even when nothing is running. It's cheap — every write is change-detected,
   // so a quiet rail does a handful of string compares a second and touches no DOM. It self-stops the moment the
-  // rail is gone or the station screen is left (and disconnect() stops it outright); renderRail re-arms on re-entry.
+  // rail is gone or the keep screen is left (and disconnect() stops it outright); renderRail re-arms on re-entry.
   // Refreshes each row IN PLACE (no innerHTML rebuild) so a click or the scroll position is never reset; the
   // pulsing dot itself is pure CSS — this only swaps the dot CLASS, the right-edge time token, and the row classes.
   function updateRailLive() {
@@ -4304,14 +4304,14 @@ const App = (() => {
       // approval/resume/completion cannot leave the previous state on hover or focus.
       const tip = railRowTip(w, st, project), tipAttr = li.hasAttribute('title') ? 'title' : 'data-tip';
       if (li.getAttribute(tipAttr) !== tip) li.setAttribute(tipAttr, tip);
-      const card = el('station-tip');
-      if (card && !card.hidden && li.getAttribute('aria-describedby') === 'station-tip' && card.textContent !== tip) card.textContent = tip;
+      const card = el('keep-tip');
+      if (card && !card.hidden && li.getAttribute('aria-describedby') === 'keep-tip' && card.textContent !== tip) card.textContent = tip;
     });
   }
   function armRailTicker() { if (!railTicker) railTicker = setInterval(updateRailLive, 1000); }
   function stopRailTicker() { if (railTicker) { clearInterval(railTicker); railTicker = 0; } }
   // A backgrounded tab FREEZES/intensively-throttles its timers, so the live clock stalls while you're away. The
-  // instant the station is visible again, snap every row back to truth (and re-arm the heartbeat) so the elapsed
+  // instant the keep is visible again, snap every row back to truth (and re-arm the heartbeat) so the elapsed
   // and "last worked" stamps are never caught stale — they jump straight to correct, not after the next tick.
   // Registered once for the page lifetime; the in-game guard keeps it inert on the title/connect screens.
   if (typeof document !== 'undefined' && document.addEventListener) {
@@ -4324,18 +4324,18 @@ const App = (() => {
   // switching mid-run is fine now: each workstream keeps its own run-state in Channels (channels.js) and
   // Chat.load re-renders the in-flight stream on switch — the run you left keeps streaming in the background.
   function switchWorkstream(id) {
-    if (typeof StationUI !== 'undefined' && StationUI.seenSession) StationUI.seenSession(id);   // you're in it now: its notifications are read
+    if (typeof KeepUI !== 'undefined' && KeepUI.seenSession) KeepUI.seenSession(id);   // you're in it now: its notifications are read
     if (typeof ProjectHome !== 'undefined') ProjectHome.onSession(id);
     if (id === Workstreams.activeId()) return;
     const ws = Workstreams.switch(id); if (!ws) return;
     // opened from elsewhere (a notification, the COMMS picker, the HUD) onto a session the narrowed rail
     // doesn't list: show every session again, so the open one is never missing from the rail
-    if (railAgentFilter && !railHasAgent(ws, railAgentFilter)) { railAgentFilter = null; if (typeof StationUI !== 'undefined' && StationUI.refreshCrew) StationUI.refreshCrew(); }
+    if (railAgentFilter && !railHasAgent(ws, railAgentFilter)) { railAgentFilter = null; if (typeof KeepUI !== 'undefined' && KeepUI.refreshCrew) KeepUI.refreshCrew(); }
     SFX.click();
     focusAgent(ws.agentId || 'agent');   // the focused agent follows the stream's binding (multi-agent COMMS)
     if (typeof World !== 'undefined' && World.lockBody) World.lockBody(ws.agentId || 'agent');   // Commander PICKED this session → the camera follow-locks its agent (any wheel/drag releases it)
     Chat.load(ws); refreshUsage(); renderRail(); persist();
-    if (typeof StationCommands !== 'undefined' && StationCommands.reconcile) StationCommands.reconcile(id);
+    if (typeof KeepCommands !== 'undefined' && KeepCommands.reconcile) KeepCommands.reconcile(id);
     if (railView === 'projects') renderProjects();   // keep the entered-project selection truthful
   }
   function openWorkstream(id) { switchWorkstream(id); }
@@ -4368,7 +4368,7 @@ const App = (() => {
   function exportSession(id, format) {
     const w = Workstreams.get(id), bundle = w && Workstreams.exportConversation(id, format);
     const ok = sessionDownload(bundle); if (ok) SFX.click(); else SFX.bad();
-    if (typeof StationUI !== 'undefined' && StationUI.notify) StationUI.notify(ok ? ('exported “' + ((w && w.title) || 'General') + '” — hidden data and secrets excluded') : 'nothing to export in “' + ((w && w.title) || 'General') + '”', ok ? '' : 'warn', undefined, { transient: true });
+    if (typeof KeepUI !== 'undefined' && KeepUI.notify) KeepUI.notify(ok ? ('exported “' + ((w && w.title) || 'General') + '” — hidden data and secrets excluded') : 'nothing to export in “' + ((w && w.title) || 'General') + '”', ok ? '' : 'warn', undefined, { transient: true });
   }
   function renderSessionSearch() {
     const input = el('ws-search'), out = el('ws-search-results'), sessions = el('workstreams'); if (!input || !out) return;
@@ -4400,9 +4400,9 @@ const App = (() => {
     const attention = el('ws-attention');
     if (attention) attention.onclick = () => {
       railAttentionOnly = !railAttentionOnly;
-      // the count is station-wide, so its list must be too: kept narrowed to one agent, "Waiting for you · 2" for
+      // the count is keep-wide, so its list must be too: kept narrowed to one agent, "Waiting for you · 2" for
       // another agent's sessions opened a BLANK rail with no empty-state line (sweep 2026-10-01)
-      if (railAttentionOnly && railAgentFilter) { railAgentFilter = null; if (typeof StationUI !== 'undefined' && StationUI.refreshCrew) StationUI.refreshCrew(); }
+      if (railAttentionOnly && railAgentFilter) { railAgentFilter = null; if (typeof KeepUI !== 'undefined' && KeepUI.refreshCrew) KeepUI.refreshCrew(); }
       q.value = ''; renderSessionSearch(); renderRail(); SFX.click();
     };
   }
@@ -4427,7 +4427,7 @@ const App = (() => {
         && !(typeof Channels !== 'undefined' && Channels.isBusy(cur.id))
         && Workstreams.setAgent(cur.id, id)) {
       focusAgent(id); if (typeof World !== 'undefined' && World.lockBody) World.lockBody(id);   // explicit agent pick → camera follow-lock
-      if (railAgentFilter && railAgentFilter !== id) { railAgentFilter = null; if (typeof StationUI !== 'undefined' && StationUI.refreshCrew) StationUI.refreshCrew(); }   // the open line must stay on the rail
+      if (railAgentFilter && railAgentFilter !== id) { railAgentFilter = null; if (typeof KeepUI !== 'undefined' && KeepUI.refreshCrew) KeepUI.refreshCrew(); }   // the open line must stay on the rail
       Chat.load(cur); refreshUsage(); renderRail(); persist();
       return cur.id;
     }
@@ -4523,16 +4523,16 @@ const App = (() => {
       const wasActive = (id === Workstreams.activeId());
       const nowArchived = !w.archived, label = w.title || 'General';
       if (nowArchived && w.conversationMode === 'group' && typeof GroupChat !== 'undefined') {
-        try { await GroupChat.pause(id); } catch (e) { StationUI.notify(e.message, 'bad'); return; }
+        try { await GroupChat.pause(id); } catch (e) { KeepUI.notify(e.message, 'bad'); return; }
       }
       if (!Workstreams.archive(id, nowArchived)) { SFX.bad(); return; }
       SFX.close();
       if (wasActive && Workstreams.activeId() !== id) loadActiveStream();   // archiving the OPEN stream falls back to General
       renderRail(); persist();
-      if (typeof StationUI !== 'undefined' && StationUI.notify) StationUI.notify((nowArchived ? 'archived ' : 'restored ') + '“' + label + '”', '', undefined, { transient: true });
+      if (typeof KeepUI !== 'undefined' && KeepUI.notify) KeepUI.notify((nowArchived ? 'archived ' : 'restored ') + '“' + label + '”', '', undefined, { transient: true });
     }
   }
-  /* SESSION CONTROL for the lead's station.control: the rail's ⋯ menu without the clicks. Same store calls, the same
+  /* SESSION CONTROL for the lead's keep.control: the rail's ⋯ menu without the clicks. Same store calls, the same
      group-chat pause/rename/remove first, the same busy guard on delete, then the rail repaints and the save persists.
      Each returns true only when the store accepted the change; the caller proves it durable by reading the save back. */
   async function renameSession(id, title) {
@@ -4570,14 +4570,14 @@ const App = (() => {
   function deleteWorkstream(id, groupDeleted) {
     const w = Workstreams.get(id); const label = w ? (w.title || 'General') : '';
     if (w && w.conversationMode === 'group' && !groupDeleted && typeof GroupChat !== 'undefined') {
-      GroupChat.remove(id).then(() => deleteWorkstream(id, true)).catch(e => StationUI.notify(e.message, 'bad'));
+      GroupChat.remove(id).then(() => deleteWorkstream(id, true)).catch(e => KeepUI.notify(e.message, 'bad'));
       return false;
     }
     const agentId = w ? (w.agentId || 'agent') : 'agent';
     // Recheck after the destructive-confirmation click: a session may have started while its menu was open.
     if (w && typeof Channels !== 'undefined' && Channels.isBusy && Channels.isBusy(id)) {
       SFX.bad();
-      if (typeof StationUI !== 'undefined' && StationUI.notify) StationUI.notify('stop this session before deleting it', 'bad');
+      if (typeof KeepUI !== 'undefined' && KeepUI.notify) KeepUI.notify('stop this session before deleting it', 'bad');
       return false;
     }
     const wasActive = (id === Workstreams.activeId());
@@ -4591,7 +4591,7 @@ const App = (() => {
     if (String(id).indexOf('workshop-') === 0 && typeof WorkshopStore !== 'undefined' && WorkshopStore.discardIfPending) {
       WorkshopStore.discardIfPending(agentId, String(id).slice('workshop-'.length)).catch(() => {});
     }
-    if (typeof StationUI !== 'undefined' && StationUI.notify) StationUI.notify('deleted “' + label + '”', 'warn', undefined, { transient: true });
+    if (typeof KeepUI !== 'undefined' && KeepUI.notify) KeepUI.notify('deleted “' + label + '”', 'warn', undefined, { transient: true });
     return true;
   }
   // re-open whatever the store now treats as active (after archive/delete bumps the open stream to General)
@@ -4621,7 +4621,7 @@ const App = (() => {
       if (save) {
         const v = input.value.trim();
         if (v && w.conversationMode === 'group' && typeof GroupChat !== 'undefined') {
-          try { await GroupChat.rename(id, v); } catch (e) { StationUI.notify(e.message, 'bad'); renderRail(); return; }
+          try { await GroupChat.rename(id, v); } catch (e) { KeepUI.notify(e.message, 'bad'); renderRail(); return; }
         }
         if (v || id === Workstreams.generalId()) changed = Workstreams.rename(id, v);   // empty on a normal stream = cancel
       }
@@ -4705,7 +4705,7 @@ const App = (() => {
     // the SESSIONS tab is also the way back from one agent's sessions to the full list
     if (railAgentFilter && !(opts && opts.keepAgentFilter)) {
       railAgentFilter = null;
-      if (typeof StationUI !== 'undefined' && StationUI.refreshCrew) StationUI.refreshCrew();
+      if (typeof KeepUI !== 'undefined' && KeepUI.refreshCrew) KeepUI.refreshCrew();
       if (view === railView) { SFX.click(); renderRail(); renderSessionSearch(); return; }
       syncRailAgentChip(0);
     }
@@ -4987,10 +4987,10 @@ const App = (() => {
       .then(res => res.ok ? res.json() : { ok: false })
       .then(j => {
         SFX.bad();
-        if (typeof StationUI !== 'undefined' && StationUI.notify) {
+        if (typeof KeepUI !== 'undefined' && KeepUI.notify) {
           const success = isForget ? 'forgot “' : 'trust revoked for “';
           const failure = isForget ? 'could not forget “' : 'could not revoke trust for “';
-          StationUI.notify((j && j.ok ? success : failure) + r.name + '”', j && j.ok ? 'warn' : 'bad');
+          KeepUI.notify((j && j.ok ? success : failure) + r.name + '”', j && j.ok ? 'warn' : 'bad');
         }
         renderProjects();
       })
@@ -5017,7 +5017,7 @@ const App = (() => {
           if (typeof onErr === 'function') onErr((j && j.reason) || 'no folder picker available — type the path instead');
           return null;
         })
-        .catch(() => { if (typeof onErr === 'function') onErr('could not reach the station'); return null; });
+        .catch(() => { if (typeof onErr === 'function') onErr('could not reach the keep'); return null; });
     if (core && core.invoke) {
       return Promise.resolve(core.invoke('eyehold_pick_folder', {}))
         .then(dir => (dir ? String(dir) : null))
@@ -5056,10 +5056,10 @@ const App = (() => {
       fetch('/api/projects/bless', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ path: p }) })
         .then(res => res.json().then(j => ({ ok: res.ok, j })).catch(() => ({ ok: false, j: null })))
         .then(({ ok, j }) => {
-          if (ok && j && j.ok) { SFX.open(); if (typeof StationUI !== 'undefined' && StationUI.notify) StationUI.notify('added “' + (j.root || p) + '”', '', undefined, { transient: true }); renderProjects(); }
+          if (ok && j && j.ok) { SFX.open(); if (typeof KeepUI !== 'undefined' && KeepUI.notify) KeepUI.notify('added “' + (j.root || p) + '”', '', undefined, { transient: true }); renderProjects(); }
           else { showHint((j && j.reason) || 'could not add that folder', true); SFX.bad(); }
         })
-        .catch(() => { showHint('could not reach the station', true); SFX.bad(); });
+        .catch(() => { showHint('could not reach the keep', true); SFX.bad(); });
     };
     input.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); submit(); } else if (e.key === 'Escape') { e.preventDefault(); cancel(); } });
     { const g = li.querySelector('.proj-add-go'); if (g) g.onclick = submit; }
@@ -5096,7 +5096,7 @@ const App = (() => {
             discovered.querySelectorAll('.proj-discover-pick').forEach(b => { b.onclick = () => { input.value = b.dataset.path || ''; showHint('Candidate selected. ADD grants this folder to Eyehold.', false); input.focus(); }; });
             showHint('Found ' + rows.length + ' candidate' + (rows.length === 1 ? '' : 's') + '. Select one, then ADD to grant access.' + (j.truncated ? ' Search stopped at its safety limit.' : ''), false);
           })
-          .catch(() => showHint('could not reach the station', true))
+          .catch(() => showHint('could not reach the keep', true))
           .finally(() => { if (db.isConnected) db.disabled = false; });
       };
     }
@@ -5105,14 +5105,14 @@ const App = (() => {
   }
 
   // disconnect() — the teardown path: tears down the live game but NEVER wipes data and NEVER lands on a dead
-  // title screen — it persists, then re-enters via reentry(): straight back into the station if creds are still
+  // title screen — it persists, then re-enters via reentry(): straight back into the keep if creds are still
   // in hand, otherwise the RESUME-mode connect screen. The agent is always preserved. (The old user-facing ⏏
   // DISCONNECT topbar button was removed; recovery / resume / error paths still reuse this teardown.)
-  function disconnect() { if (typeof Onboarding !== 'undefined' && Onboarding.stop && Onboarding.isRunning && Onboarding.isRunning()) Onboarding.stop(); if (typeof Tutorial !== 'undefined' && Tutorial.teardown) Tutorial.teardown(); if (typeof DockGlow !== 'undefined' && DockGlow.stop) DockGlow.stop(); if (typeof Intake !== 'undefined' && Intake.stop) Intake.stop(); SFX.close(); Chat.abort(); stopRailTicker(); World.stop(); if (World.pauseBridge) World.pauseBridge(); persist(); if (typeof StationUI !== 'undefined') StationUI.leave(); reentry(); }
+  function disconnect() { if (typeof Onboarding !== 'undefined' && Onboarding.stop && Onboarding.isRunning && Onboarding.isRunning()) Onboarding.stop(); if (typeof Tutorial !== 'undefined' && Tutorial.teardown) Tutorial.teardown(); if (typeof DockGlow !== 'undefined' && DockGlow.stop) DockGlow.stop(); if (typeof Intake !== 'undefined' && Intake.stop) Intake.stop(); SFX.close(); Chat.abort(); stopRailTicker(); World.stop(); if (World.pauseBridge) World.pauseBridge(); persist(); if (typeof KeepUI !== 'undefined') KeepUI.leave(); reentry(); }
 
   /* ---------- first-boot splash ---------- */
   // The key-art boot card: shown ONLY from init()'s first-run branch (no save anywhere), never on
-  // resume/recovery/re-entry — a returning Commander must land in their station, not a title card.
+  // resume/recovery/re-entry — a returning Commander must land in their keep, not a title card.
   // Any key / click / tap advances into CREATE YOUR OVERSEER. The starfield is a tiny self-owned
   // canvas loop that stops the moment the screen is left (no orphan rAF behind the game).
   let splashRaf = 0;
@@ -5214,7 +5214,7 @@ const App = (() => {
     const hasUpdater = (typeof Updates !== 'undefined') && (typeof window !== 'undefined' && window.__TAURI__ && window.__TAURI__.core);
     // #91: Updates.install() PAUSES by RETURNING its snapshot (a failed pre-update recovery point, an unverified save,
     // an agent still working) instead of throwing, and the Update Center is unreachable from this gate. Name the pause
-    // here; when the in-app path failed, offer the full installer beside UPDATE EYEHOLD (reinstalling keeps the station).
+    // here; when the in-app path failed, offer the full installer beside UPDATE EYEHOLD (reinstalling keeps the keep).
     const offerInstaller = () => {
       let dl = el('btn-future-download');
       if (!dl && btn && btn.parentNode) {
@@ -5228,7 +5228,7 @@ const App = (() => {
       if (!msg) return;
       const runs = (snap && snap.confirmRuns) | 0;
       if (thrown || (snap && snap.error)) {
-        msg.textContent = 'the update could not install' + (snap && snap.error ? ' — ' + snap.error : '') + '. Download the full installer instead: reinstalling over the top keeps your station.';
+        msg.textContent = 'the update could not install' + (snap && snap.error ? ' — ' + snap.error : '') + '. Download the full installer instead: reinstalling over the top keeps your keep.';
         offerInstaller();
       } else if (runs > 0) msg.textContent = (runs === 1 ? '1 agent is' : runs + ' agents are') + ' still working — installing now would kill ' + (runs === 1 ? 'its run' : 'their runs') + '. Try again when ' + (runs === 1 ? 'it finishes.' : 'they finish.');
       else if (snap && /^(downloading|installing|restarting)$/.test(String(snap.phase || ''))) msg.textContent = 'installing the update — Eyehold restarts on its own when it is done.';
@@ -5265,7 +5265,7 @@ const App = (() => {
   // EL-11 FIX 2 — DAMAGED-SAVE DISCLOSURE GATE: the sidecar quarantined an UNRECOVERABLE durable save (main +
   // .bak both bad) and no usable save exists anywhere else. Without this, boot silently presents the pristine
   // first-run ceremony — weeks of state gone with zero disclosure (the worst kind of app lie). Blocking, honest,
-  // and names the forensic copy's path; the single action acks the notice and continues into a fresh station.
+  // and names the forensic copy's path; the single action acks the notice and continues into a fresh keep.
   function showSaveRecoveryGate(rec) {
     gateActive = true;
     try { if (World && World.stop) World.stop(); } catch (_) {}
@@ -5293,18 +5293,18 @@ const App = (() => {
     gateActive = true;
     try { if (World && World.stop) World.stop(); } catch (_) {}
     const sub = el('unreachable-sub');
-    if (sub) sub.textContent = reason === 'forbidden' ? 'station service refused this window (stale session) — a relaunch usually clears it' : 'station service not answering';
-    if (sub && reason === 'unreadable') sub.textContent = 'saved station temporarily unreadable — retry without resetting';
-    if (sub && reason === 'cache') sub.textContent = 'saved station could not be restored into this window — retry without resetting';
+    if (sub) sub.textContent = reason === 'forbidden' ? 'keep service refused this window (stale session) — a relaunch usually clears it' : 'keep service not answering';
+    if (sub && reason === 'unreadable') sub.textContent = 'saved keep temporarily unreadable — retry without resetting';
+    if (sub && reason === 'cache') sub.textContent = 'saved keep could not be restored into this window — retry without resetting';
     // Screenshot-readable diagnosis for a stranded beginner: support can distinguish an alive sidecar refusing
     // stale window auth from a fetch that died after the page loaded without asking for Terminal logs.
     const diagnosis = reason === 'forbidden'
-      ? { code: 'SAVE-403 · STALE WINDOW SESSION', text: 'the station service is running, but it refused this app window' }
+      ? { code: 'SAVE-403 · STALE WINDOW SESSION', text: 'the keep service is running, but it refused this app window' }
       : reason === 'unreadable'
-        ? { code: 'SAVE-READ · STATION FILE UNAVAILABLE', text: 'the station service is running, but could not read the saved station; your existing files are preserved' }
+        ? { code: 'SAVE-READ · KEEP FILE UNAVAILABLE', text: 'the keep service is running, but could not read the saved keep; your existing files are preserved' }
         : reason === 'cache'
-          ? { code: 'SAVE-CACHE · LOCAL RESTORE FAILED', text: 'the saved station was received, but this window could not store or read it; the durable station is preserved' }
-          : { code: 'SAVE-NET · SAVE REQUEST LOST', text: 'the app loaded, but its saved-station request did not return' };
+          ? { code: 'SAVE-CACHE · LOCAL RESTORE FAILED', text: 'the saved keep was received, but this window could not store or read it; the durable keep is preserved' }
+          : { code: 'SAVE-NET · SAVE REQUEST LOST', text: 'the app loaded, but its saved-keep request did not return' };
     const code = el('unreachable-code');
     if (code) code.innerHTML = '<b>RECOVERY CODE: ' + diagnosis.code + '</b><br>' + diagnosis.text + '. Send a screenshot of this code to support.';
     const reportBtn = el('btn-unreachable-report'), reportHost = el('unreachable-report');
@@ -5336,19 +5336,19 @@ const App = (() => {
       try { reason = String(((await Harness.engineState()) || {}).reason || ''); } catch (_) { reason = ''; }
       if (reason === degradedReason) return reason;
       degradedReason = reason;
-      if (sub) { if (reason) sub.textContent = reason; else if (/^(degraded|station service halted)/i.test(sub.textContent)) sub.textContent = 'station service not answering'; }
-      if (code && reason) code.innerHTML = '<b>RECOVERY CODE: ' + (/owner unavailable/i.test(reason) ? 'SAVE-OWNER · WORKSPACE OWNED BY ANOTHER PROCESS' : /crash-loop/i.test(reason) ? 'SAVE-LOOP · STATION SERVICE CRASH LOOP' : 'SAVE-DEGRADED · STATION SERVICE DEGRADED') + '</b><br>' + reason.replace(/</g, '&lt;') + '<br>Send a screenshot of this code to support.';
+      if (sub) { if (reason) sub.textContent = reason; else if (/^(degraded|keep service halted)/i.test(sub.textContent)) sub.textContent = 'keep service not answering'; }
+      if (code && reason) code.innerHTML = '<b>RECOVERY CODE: ' + (/owner unavailable/i.test(reason) ? 'SAVE-OWNER · WORKSPACE OWNED BY ANOTHER PROCESS' : /crash-loop/i.test(reason) ? 'SAVE-LOOP · KEEP SERVICE CRASH LOOP' : 'SAVE-DEGRADED · KEEP SERVICE DEGRADED') + '</b><br>' + reason.replace(/</g, '&lt;') + '<br>Send a screenshot of this code to support.';
       return reason;
     };
     // BROWSER MODE (no desktop shell): there is no sidecar to restart and no workspace to quarantine, so this
     // screen used to offer nothing but the 5s poll — a dead end (audit: "first run fails silently"). Say plainly
     // where the service lives, on the subtitle AND on every poll line, so the exit is never a mystery.
     const core = tauriCore();
-    const BROWSER_HINT = 'the station service isn\'t answering. if you launched with `npm start`, check that terminal; otherwise open the desktop app.';
+    const BROWSER_HINT = 'the keep service isn\'t answering. if you launched with `npm start`, check that terminal; otherwise open the desktop app.';
     if (!core) {
-      if (sub && reason !== 'forbidden' && reason !== 'unreadable' && reason !== 'cache') sub.textContent = 'station service not answering (browser mode)';
+      if (sub && reason !== 'forbidden' && reason !== 'unreadable' && reason !== 'cache') sub.textContent = 'keep service not answering (browser mode)';
       if (reason === 'cache') setStatus('Your durable save is untouched. Retry after browser storage becomes available.');
-      else if (reason === 'unreadable') setStatus('Your save is untouched. Retry when the station file becomes readable.');
+      else if (reason === 'unreadable') setStatus('Your save is untouched. Retry when the keep file becomes readable.');
       else setStatus(BROWSER_HINT);
     }
     probeDegraded().then(r => { if (r) setStatus(r); });   // a live-but-degraded sidecar names its reason before the first poll
@@ -5370,12 +5370,12 @@ const App = (() => {
       }
       const degraded = await probeDegraded();
       const unreadable = r.reason === 'unreadable', cacheFailed = r.reason === 'cache';
-      setStatus((degraded ? degraded + ' — ' : unreadable ? 'saved station still unreadable — ' : cacheFailed ? 'local restore still unavailable — ' : 'still unreachable — ') + 'retrying every 5s (attempt ' + attempts + '). Your save is untouched.' + (core || unreadable || cacheFailed ? '' : ' ' + BROWSER_HINT));
+      setStatus((degraded ? degraded + ' — ' : unreadable ? 'saved keep still unreadable — ' : cacheFailed ? 'local restore still unavailable — ' : 'still unreachable — ') + 'retrying every 5s (attempt ' + attempts + '). Your save is untouched.' + (core || unreadable || cacheFailed ? '' : ' ' + BROWSER_HINT));
       checking = false;
     };
     const btn = el('btn-unreachable-retry');
     if (btn) btn.onclick = () => { SFX.click && SFX.click(); attempt(); };
-    // RESTART STATION SERVICE — the desktop shell kills and respawns the sidecar on the same port. This is
+    // RESTART KEEP SERVICE — the desktop shell kills and respawns the sidecar on the same port. This is
     // the exit the retry loop can never reach on its own: a sidecar that is alive-but-wedged, or one that
     // exits before listening on every spawn, answers no poll ever (a macOS user sat at attempt 15+ with no
     // way out, 2026-08-22). Browser mode (no shell) has nothing to restart; the button stays hidden there.
@@ -5385,11 +5385,11 @@ const App = (() => {
       if (restarting || resetting || browserResetBlocked || !core || !core.invoke) return;
       restarting = true;
       if (restartBtn) restartBtn.disabled = true;
-      setStatus((auto ? 'still unreachable — ' : '') + 'restarting the station service…');
+      setStatus((auto ? 'still unreachable — ' : '') + 'restarting the keep service…');
       let up = false;
       try { up = await Harness.restartEngine(); } catch (_) { up = false; }   // the same single-flight door the LINK DOWN chip uses
-      if (up) { setStatus('station service restarted — reconnecting…'); attempt(); }
-      else setStatus('the station service could not be restarted — quit Eyehold fully (Cmd+Q / tray → Quit) and open it again. Your save is untouched.');
+      if (up) { setStatus('keep service restarted — reconnecting…'); attempt(); }
+      else setStatus('the keep service could not be restarted — quit Eyehold fully (Cmd+Q / tray → Quit) and open it again. Your save is untouched.');
       restarting = false;
       if (restartBtn) restartBtn.disabled = false;
     };
@@ -5413,7 +5413,7 @@ const App = (() => {
           if (!retryingBrowserClear && !armed) {
             armed = true;
             freshBtn.textContent = '✦ CONFIRM — START COMPLETELY FRESH';
-            setStatus('your old local station will be moved to a quarantine folder. Your Eyehold account link and purchased credits are not removed. Press again to confirm.');
+            setStatus('your old local keep will be moved to a quarantine folder. Your Eyehold account link and purchased credits are not removed. Press again to confirm.');
             setTimeout(() => {
               if (armed && !resetting) { armed = false; freshBtn.textContent = '✦ START COMPLETELY FRESH'; }
             }, 12000);
@@ -5424,11 +5424,11 @@ const App = (() => {
           freshBtn.disabled = true;
           if (btn) btn.disabled = true;
           if (restartBtn) restartBtn.disabled = true;
-          setStatus(retryingBrowserClear ? 'retrying the browser-state clear; the preserved station will not be moved again…' : 'preserving the old station and preparing a clean one…');
+          setStatus(retryingBrowserClear ? 'retrying the browser-state clear; the preserved keep will not be moved again…' : 'preserving the old keep and preparing a clean one…');
           try {
             // Once native preservation has succeeded, a browser-clear retry must reuse that exact receipt.
             // Running the native transaction again would quarantine the new empty generation and obscure the
-            // path containing the user's real old station.
+            // path containing the user's real old keep.
             const result = retryingBrowserClear
               ? FreshStart.retryBrowserClear(preservedReset)
               : await FreshStart.resetDesktop(core);
@@ -5441,16 +5441,16 @@ const App = (() => {
               freshBtn.textContent = '✦ START COMPLETELY FRESH';
               if (btn) btn.disabled = true;
               if (restartBtn) restartBtn.disabled = true;
-              setStatus('the old station was safely preserved, but this window could not clear its browser data. Do not reload. Press START COMPLETELY FRESH again to retry.' + where);
+              setStatus('the old keep was safely preserved, but this window could not clear its browser data. Do not reload. Press START COMPLETELY FRESH again to retry.' + where);
               return;
             }
             browserResetBlocked = false;
             preservedReset = null;
             if (result.listening) {
-              setStatus('clean station ready — reopening now. Your account link and purchased credits were kept.' + where);
+              setStatus('clean keep ready — reopening now. Your account link and purchased credits were kept.' + where);
               try { location.reload(); } catch (_) {}
             } else {
-              setStatus('clean station prepared, but the station service is still blocked. Fully quit Eyehold and reopen it. Your account link and purchased credits were kept.' + where);
+              setStatus('clean keep prepared, but the keep service is still blocked. Fully quit Eyehold and reopen it. Your account link and purchased credits were kept.' + where);
             }
           } catch (error) {
             resetting = false;
@@ -5458,7 +5458,7 @@ const App = (() => {
             freshBtn.textContent = '✦ START COMPLETELY FRESH';
             if (btn) btn.disabled = browserResetBlocked;
             if (restartBtn) restartBtn.disabled = browserResetBlocked;
-            setStatus((browserResetBlocked ? 'the clean station is still protected from the uncleared window cache — retry START COMPLETELY FRESH. ' : 'nothing was reset — ') + String(error && error.message || error));
+            setStatus((browserResetBlocked ? 'the clean keep is still protected from the uncleared window cache — retry START COMPLETELY FRESH. ' : 'nothing was reset — ') + String(error && error.message || error));
           }
         };
       } else if (!core && typeof FreshStart !== 'undefined' && FreshStart.clearBrowserState) {
@@ -5476,7 +5476,7 @@ const App = (() => {
           if (!armed) {
             armed = true;
             freshBtn.textContent = '✦ CONFIRM — CLEAR BROWSER STATE';
-            setStatus('this clears only this browser\'s Eyehold state (cached settings, any stale session) and reloads. The station service\'s own save files are not touched. Press again to confirm.');
+            setStatus('this clears only this browser\'s Eyehold state (cached settings, any stale session) and reloads. The keep service\'s own save files are not touched. Press again to confirm.');
             setTimeout(() => { if (armed && !resetting) { armed = false; freshBtn.textContent = LABEL; } }, 12000);
             return;
           }
@@ -5512,7 +5512,7 @@ const App = (() => {
   // PRIOR-INSTALL LINEAGE GATE: both active save sources are definitively empty, yet the sidecar found bounded
   // evidence in a legacy workspace, a pending migration, the current profile, or a verified update snapshot.
   // This is read-only Recovery Mode: no path reaches startCreation(), and therefore onboarding cannot create a
-  // replacement station while prior state remains unaccounted for. Restore uses the existing validated backup
+  // replacement keep while prior state remains unaccounted for. Restore uses the existing validated backup
   // importer; retry reloads the entire boot chain after an external/manual recovery.
   function showPriorStateGate(lineage) {
     gateActive = true;
@@ -5534,11 +5534,11 @@ const App = (() => {
         const size = row && row.bytes ? Math.max(1, Math.ceil(row.bytes / 1024)) + ' KB' : 'size unavailable';
         const on = !!(row && row.id === selected);
         return '<button class="lineage-candidate' + (on ? ' on' : '') + '" data-candidate-id="' + U.esc(row && row.id || '') + '" aria-pressed="' + (on ? 'true' : 'false') + '"' + (row && row.recoverable ? '' : ' disabled') + '>' +
-          '<b>' + U.esc(row && row.stationName || 'Prior station') + '</b>' +
+          '<b>' + U.esc(row && row.keepName || 'Prior keep') + '</b>' +
           '<span>' + U.esc(row && row.displayRoot || 'local Eyehold storage') + '</span>' +
           '<small>' + U.esc(row && row.recoverable ? when + ' · ' + size : row && row.reason || 'unreadable save') + '</small></button>';
       }).join('');
-      box.innerHTML = evidenceHtml + (candidateHtml ? '<div class="lineage-candidates" aria-label="Recoverable stations">' + candidateHtml + '</div>' : '');
+      box.innerHTML = evidenceHtml + (candidateHtml ? '<div class="lineage-candidates" aria-label="Recoverable keeps">' + candidateHtml + '</div>' : '');
     }
     const status = el('lineage-status');
     const recover = el('btn-lineage-recover');
@@ -5547,7 +5547,7 @@ const App = (() => {
       if (!recover) return;
       recover.hidden = validCandidates.length === 0;
       recover.disabled = !selected;
-      recover.textContent = validCandidates.length === 1 ? '⟳ RECOVER AUTOMATICALLY' : '⟳ RECOVER SELECTED STATION';
+      recover.textContent = validCandidates.length === 1 ? '⟳ RECOVER AUTOMATICALLY' : '⟳ RECOVER SELECTED KEEP';
     };
     if (box) Array.from(box.querySelectorAll('.lineage-candidate')).forEach(btn => {
       btn.onclick = () => {
@@ -5570,7 +5570,7 @@ const App = (() => {
         const result = await response.json().catch(() => ({}));
         if (!response.ok || !result.ok) throw new Error(result.error || 'recovery request refused');
         if (status) status.textContent = result.desktopWillRestart
-          ? '＋ recovery accepted — station service restarting now…'
+          ? '＋ recovery accepted — keep service restarting now…'
           : '＋ recovery accepted — restart the manual sidecar; this screen will resume automatically';
         const timer = setInterval(async () => {
           try {
@@ -5593,7 +5593,7 @@ const App = (() => {
       if (status) status.textContent = '＋ preparing redacted recovery report…';
       try {
         const response = await fetch('/api/lineage/report', { cache: 'no-store' });
-        if (!response.ok) throw new Error((Harness.sessionStale && Harness.sessionStale()) ? 'the station restarted; reload this page' : 'report unavailable');
+        if (!response.ok) throw new Error((Harness.sessionStale && Harness.sessionStale()) ? 'the keep restarted; reload this page' : 'report unavailable');
         const blob = await response.blob();
         const url = URL.createObjectURL(blob), a = document.createElement('a');
         a.href = url; a.download = 'eyehold-recovery-report.json'; a.style.display = 'none';
@@ -5619,9 +5619,9 @@ const App = (() => {
         if (next && (next.priorInstallEvidence === false || nextRec.some(row => row && row.recoverable))) { location.reload(); return; }
         if (status) status.textContent = next
           ? '＋ checked again — still nothing recoverable here. START FRESH sets the leftovers aside; RESTORE BACKUP loads a backup file.'
-          : '＋ could not check again — ' + ((Harness.sessionStale && Harness.sessionStale()) ? 'the station restarted; reload this page' : 'the station service did not answer');
+          : '＋ could not check again — ' + ((Harness.sessionStale && Harness.sessionStale()) ? 'the keep restarted; reload this page' : 'the keep service did not answer');
       } catch (_) {
-        if (status) status.textContent = '＋ could not check again — the station service did not answer';
+        if (status) status.textContent = '＋ could not check again — the keep service did not answer';
       }
       retry.disabled = false;
     };
@@ -5634,7 +5634,7 @@ const App = (() => {
     // START FRESH — the third exit. When nothing here is recoverable (a first run whose overseer never woke,
     // then a manual reset — 2026-08-22 report) RESTORE is dead and RETRY loops forever; this is the way out.
     // Sidecar-backed: prior state is MOVED to a quarantine folder (never deleted) and external evidence is
-    // acknowledged, then the station service restarts into clean onboarding. Two clicks, never one.
+    // acknowledged, then the keep service restarts into clean onboarding. Two clicks, never one.
     const freshBtn = el('btn-lineage-fresh');
     if (freshBtn) {
       let armed = false;
@@ -5642,10 +5642,10 @@ const App = (() => {
         SFX.click && SFX.click();
         if (!armed) {
           armed = true;
-          freshBtn.textContent = '✦ CONFIRM — START A NEW STATION';
+          freshBtn.textContent = '✦ CONFIRM — START A NEW KEEP';
           if (status) status.textContent = validCandidates.length
-            ? '＋ a recoverable station exists above — START FRESH sets it aside in a quarantine folder (nothing is deleted). Press again to confirm.'
-            : '＋ nothing here is recoverable. START FRESH moves the leftover files to a quarantine folder (nothing is deleted) and opens a new station. Press again to confirm.';
+            ? '＋ a recoverable keep exists above — START FRESH sets it aside in a quarantine folder (nothing is deleted). Press again to confirm.'
+            : '＋ nothing here is recoverable. START FRESH moves the leftover files to a quarantine folder (nothing is deleted) and opens a new keep. Press again to confirm.';
           setTimeout(() => { if (armed) { armed = false; freshBtn.textContent = '✦ START FRESH'; } }, 12000);
           return;
         }
@@ -5657,7 +5657,7 @@ const App = (() => {
           const result = await response.json().catch(() => ({}));
           if (!response.ok || !result.ok) throw new Error(result.error || 'start-fresh request refused');
           if (status) status.textContent = (result.moved && result.moved.length ? '＋ ' + result.moved.length + ' file(s) set aside in ' + result.quarantine + ' — ' : '＋ ') +
-            (result.desktopWillRestart ? 'station service restarting — opening your new station…' : 'restart the manual sidecar; this screen will continue automatically');
+            (result.desktopWillRestart ? 'keep service restarting — opening your new keep…' : 'restart the manual sidecar; this screen will continue automatically');
           // poll until the respawned sidecar answers, then reload: boot re-runs every gate and, with the
           // evidence gone, lands on the first-run ceremony.
           const timer = setInterval(async () => {
@@ -5684,15 +5684,15 @@ const App = (() => {
   /* ---------- boot ---------- */
   async function init() {
     if (Harness.init) await Harness.init();   // desktop: load the keychain "configured?" flag first
-    if (typeof StationUI !== 'undefined') StationUI.init();   // applies saved theme/CRT settings, wires the bottom bar
-    if (typeof Updates !== 'undefined' && typeof StationUI !== 'undefined') Updates.init({ notify: StationUI.notify, rerender: StationUI.rerender });
+    if (typeof KeepUI !== 'undefined') KeepUI.init();   // applies saved theme/CRT settings, wires the bottom bar
+    if (typeof Updates !== 'undefined' && typeof KeepUI !== 'undefined') Updates.init({ notify: KeepUI.notify, rerender: KeepUI.rerender });
 
     /* EXTENSIONS AWAITING APPROVAL. Hooks and plugins are opt-in by design: an unapproved one is silently
        inert. That is the correct security posture and the worst possible UX if it is never surfaced — the
        Commander writes a hook, nothing happens, and there is nothing on screen that says why. So the gate
        announces itself through the SAME channel an agent's approval prompt uses (category 'needsApproval', so
        the existing mute honors it), and clicking lands directly on the tab that resolves it. Fire-and-forget:
-       a station with no extensions is the common case and must stay completely silent. */
+       a keep with no extensions is the common case and must stay completely silent. */
     (async () => {
       try {
         const [h, p] = await Promise.all([
@@ -5700,16 +5700,16 @@ const App = (() => {
           fetch('/api/plugins').then(r => r.ok ? r.json() : null).catch(() => null)
         ]);
         const waiting = ((h && h.pending) || []).length + (((p && p.plugins) || []).filter(x => x && x.pending).length);
-        if (!h || !p || typeof StationUI === 'undefined' || !StationUI.notify) return;   // a failed read says nothing either way
-        if (!waiting) { if (StationUI.settleNotifs) StationUI.settleNotifs('extensions-pending'); return; }   // approved since: it leaves NEEDS YOU
-        StationUI.notify(
+        if (!h || !p || typeof KeepUI === 'undefined' || !KeepUI.notify) return;   // a failed read says nothing either way
+        if (!waiting) { if (KeepUI.settleNotifs) KeepUI.settleNotifs('extensions-pending'); return; }   // approved since: it leaves NEEDS YOU
+        KeepUI.notify(
           waiting + ' extension' + (waiting === 1 ? '' : 's') + ' awaiting your approval — click to review',
           'warn', 'needsApproval',
           { kind: 'needs', key: 'extensions-pending', go: { term: 'connectors', section: 'extensions' } }
         );
-      } catch (_) { /* a station that cannot answer is a station with nothing to approve yet */ }
+      } catch (_) { /* a keep that cannot answer is a keep with nothing to approve yet */ }
     })();
-    // (the title screen — RESUME / NEW STATION / the destructive NEW AGENT wipe — is gone; boot auto-resumes,
+    // (the title screen — RESUME / NEW KEEP / the destructive NEW AGENT wipe — is gone; boot auto-resumes,
     //  see the three-way at the foot of init(). Re-entry is handled by reentry()/startCreation().)
 
     // data portability — the safety net for the localStorage-fragile agent. Export bundles nonsecret
@@ -5729,7 +5729,7 @@ const App = (() => {
       if (!f) return;
       const r = await Backup.importFile(f);
       // bad(), not a bespoke error() — that cue never existed, so the `&&` guard silently swallowed
-      // the only audible signal a restore had failed. bad() is the station's negative-outcome voice.
+      // the only audible signal a restore had failed. bad() is the keep's negative-outcome voice.
       if (!r.ok) { dataStatus('import failed — ' + r.error); SFX.bad(); return; }
       SFX.boot();
       const mem = (typeof r.memoriesRestored === 'number') ? r.memoriesRestored
@@ -5776,31 +5776,31 @@ const App = (() => {
         ? 'Recovered your save from its backup copy — the main save file was damaged. Nothing to do; this is just the honest record.'
         : 'The durable backup of your save was damaged and could not be recovered — a copy was kept at ' +
           (recovery.quarantinedTo || 'the workspaces folder') + '. Your local save is intact and is re-seeding the backup now.';
-      // after the station is up (resume/connect below) so the notice lands in the real NOTIFICATIONS record.
+      // after the keep is up (resume/connect below) so the notice lands in the real NOTIFICATIONS record.
       setTimeout(() => {
-        try { if (typeof StationUI !== 'undefined' && StationUI.notify) StationUI.notify(line, recovery.kind === 'recovered' ? 'warn' : 'bad'); } catch (_) {}
+        try { if (typeof KeepUI !== 'undefined' && KeepUI.notify) KeepUI.notify(line, recovery.kind === 'recovered' ? 'warn' : 'bad'); } catch (_) {}
         try { if (typeof CloudSave !== 'undefined' && CloudSave.ackRecovery) CloudSave.ackRecovery(); } catch (_) {}
       }, 1500);
     }
     // restore the provider BEFORE the credential check so a codex agent (tokens server-side) jumps straight
     // in after a wipe/origin-reset instead of being misrouted to an OpenRouter key prompt.
     if (saved && saved.agent) migrateLegacyReasoning(saved);   // before any saved effort reaches the wire (0.12.5 reasoning migration)
-    if (saved && savedStationProv(saved) && Harness.setProv) Harness.setProv(savedStationProv(saved));
+    if (saved && savedKeepProv(saved) && Harness.setProv) Harness.setProv(savedKeepProv(saved));
     if (saved && saved.reasoningEffort && Harness.setReasoningEffort) Harness.setReasoningEffort(saved.reasoningEffort);
     if (saved && saved.agent) {
-      // AUTO-RESUME: a saved station goes STRAIGHT back into the world when creds are available — an OpenRouter
+      // AUTO-RESUME: a saved keep goes STRAIGHT back into the world when creds are available — an OpenRouter
       // key in hand, the desktop keychain holds one (configured, incl. the DEV fast-path), OR the Codex provider
       // (OAuth tokens live server-side; a missing/expired one surfaces as a run error that prompts re-sign-in).
       // NEVER gate reaching the floor on the model catalog: listModels() proxies a LIVE external OpenRouter fetch
       // and if that is slow/blocked, awaiting it here strands boot on the connect screen forever (the seeded DEV
       // shoot regression). The catalog is cosmetic for resume (dropdown/pricing/context gauge), so fire it in the
-      // BACKGROUND and enter the station immediately — pricing fills in a beat later, the floor never waits.
+      // BACKGROUND and enter the keep immediately — pricing fills in a beat later, the floor never waits.
       const canResume = !!(Harness.getKey() || (Harness.configured && Harness.configured()) || Harness.getProv() === 'codex');
       if (canResume) {
         if (Harness.getProv && Harness.getProv() !== 'codex' && Harness.listModels) { Promise.resolve(Harness.listModels()).catch(() => {}); }
         resumeInto(saved); return;
       }
-      // saved station, but the credentials are gone (cache/origin wipe). RESUME-mode recovery screen: a banner,
+      // saved keep, but the credentials are gone (cache/origin wipe). RESUME-mode recovery screen: a banner,
       // the model pre-filled, identity locked read-only — the agent is preserved, only the brain re-connects.
       // Here the model dropdown DOES want the catalog, but bound the wait so a hung network can't strand the
       // recovery screen either — a timeout just yields an empty dropdown the Commander can still type a slug into.
@@ -5821,8 +5821,8 @@ const App = (() => {
   }
   init();
 
-  // crewCount: the live crew size (hero + summoned minds) — read by the quest log's station arc.
-  // agentName/heroId (G1b): the station-quest generator names the acting agent from the LIVE roster
+  // crewCount: the live crew size (hero + summoned minds) — read by the quest log's keep arc.
+  // agentName/heroId (G1b): the keep-quest generator names the acting agent from the LIVE roster
   // (never an id in the UI) and keys its standing candidates against the focused hero.
   // currentAgent/agents/applyConfig (slash-plan): the slash-command suite reads/writes the live roster
   // and per-agent config (/agents, /model, /personality, …).
@@ -5839,22 +5839,22 @@ const App = (() => {
     filterRailByAgent: setRailAgentFilter,
     railAgentFilter: () => railAgentFilter,
     // THE POST-SUMMON DESK STEP, owned by the session (chat.js maybeDeskPrompt): the read that decides whether a
-    // stream still owes its agent a workstation, and the door its chip opens (BUILD MODE, armed on WORKSTATIONS).
-    needsWorkstation: needsWorkstation,
+    // stream still owes its agent a workkeep, and the door its chip opens (BUILD MODE, armed on WORKKEEPS).
+    needsWorkkeep: needsWorkkeep,
     openDeskPlacement: openDeskPlacement,
-    openRecipes: () => openDeployBay('recipes'),   // WORK › MY WORK › RECIPES tab (stationui FAMILIES)
+    openRecipes: () => openDeployBay('recipes'),   // WORK › MY WORK › RECIPES tab (keepui FAMILIES)
     openSummonBay: openSummonBay,   // adaptive-recruitment beat: accepting the recruit nudge deep-links into the bay's summon flow
     openClassDossier: openClassDossier,   // intent-offer beat: accepting a class offer opens the bay ON that class's dossier
     openRecipeLaunch: openRecipeLaunch,   // routine-nudge beat (lane D): accepting deep-links into the recipe's SCHEDULE IT form
     applyConfig: applyAgentConfig,
     // Model-facing edits wait for the same roster write used by the Dossier UI.
     configSynced: () => lastRosterPush,
-    // The live WorldModel station, for model-facing READS of the floor (station.layout). Readers never mutate it.
-    station: () => station,
+    // The live WorldModel keep, for model-facing READS of the floor (keep.layout). Readers never mutate it.
+    keep: () => keep,
     setApproval: setAgentApproval,
     setExecutionProfile: setAgentExecutionProfile,
-    setStationProvider: setStationProvider,
-    // station.control (the lead changes the station for the Commander): the Dossier CONFIG card's own setters and the
+    setKeepProvider: setKeepProvider,
+    // keep.control (the lead changes the keep for the Commander): the Dossier CONFIG card's own setters and the
     // session rail's ⋯ menu, so a change asked for in chat takes the exact path the buttons take
     agentConfig: { setModel: setAgentModelPin, setPersona: setAgentPersona, setName: setAgentName, setSkin: setAgentSkin, setWorkshop: setAgentWorkshop, deleteAgent: deleteAgent },
     sessionControl: { rename: renameSession, pin: pinSession, archive: archiveSession, remove: removeSession } };

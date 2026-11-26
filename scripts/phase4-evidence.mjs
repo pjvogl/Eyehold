@@ -56,7 +56,7 @@ function attendedTemplate() {
       ledgerPreserved: false,
       artifactsPreserved: false,
       memoryPreserved: false,
-      stationStatePreserved: false,
+      keepStatePreserved: false,
       notes: ''
     },
     failureRecovery: {
@@ -105,7 +105,7 @@ function validateAttended() {
   addMissing(missing, 'sameWorkTrial.ledgerRows[]', hasItems(s.ledgerRows));
 
   const soak = doc.soak || {};
-  for (const key of ['freshPass', 'restartPass', 'transcriptPreserved', 'ledgerPreserved', 'artifactsPreserved', 'memoryPreserved', 'stationStatePreserved']) {
+  for (const key of ['freshPass', 'restartPass', 'transcriptPreserved', 'ledgerPreserved', 'artifactsPreserved', 'memoryPreserved', 'keepStatePreserved']) {
     addMissing(missing, 'soak.' + key, boolTrue(soak[key]));
   }
 

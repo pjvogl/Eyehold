@@ -18,7 +18,7 @@ P1: Add agents converts a direct conversation to a group but silently removes ev
 
 ## Repro
 
-1. Recruit a second participant in a disposable seeded station.
+1. Recruit a second participant in a disposable seeded keep.
 2. In a direct NOVA conversation attach conversion-proof.txt and send 'Keep this document available for everyone who joins this conversation.'
 3. Verify COMMS displays the file link. Wait for the run to finish.
 4. Click Add agents, add QA TESTER, and choose START GROUP CHAT.

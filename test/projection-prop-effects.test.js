@@ -2,7 +2,7 @@
 const assert=require('node:assert/strict'),fs=require('node:fs'),crypto=require('node:crypto');
 const fx=require('../frontend/app/projection-prop-effects.js');
 const manifest=require('../frontend/assets/industrial/projection-correction/manifest.json');
-const coverage=require('../docs/station-remaster/projection-effects/coverage.json');
+const coverage=require('../docs/keep-remaster/projection-effects/coverage.json');
 let reads=0,allocations=0;
 function record(id,state={},overrides={},view='s'){
  const binding=fx.classify(id,view)?.binding;
@@ -38,7 +38,7 @@ for(const id of ['intake','bay','merger','rack','fabricator','comms_beacon','pub
 }
 assert.deepEqual(record('filter',{now:900,work:true}),record('filter',{now:900}), 'generic work cannot fake parcel scan');
 assert.notDeepEqual(record('filter',{now:900,scanning:true}),record('filter',{now:900}));
-assert.deepEqual(record('console',{now:500,occupied:false,work:true}),record('console',{now:500,occupied:false}), 'vacant workstation stays off');
+assert.deepEqual(record('console',{now:500,occupied:false,work:true}),record('console',{now:500,occupied:false}), 'vacant workkeep stays off');
 assert.notDeepEqual(record('console',{now:500,occupied:true}),record('console',{now:500,occupied:false}));
 for(const id of ['bridge_consolebank','bridge_tacticaltable']){
  assert.equal(record(id,{occupied:false}).calls.some(c=>c[0]==='fillRect'),false,id+' idle preserves painted glass');

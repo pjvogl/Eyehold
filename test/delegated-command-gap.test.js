@@ -35,8 +35,8 @@ const { withheldCommandTools, commandGap } = require('../sidecar/capability/with
     description: 'List the open browser tabs.', schema: { type: 'object', properties: {} }, run: async () => ({ content: 'x', summary: 'x' }) });
 
   // the worker's floor: a WORKBENCH (orchestration.js WORKER_KIT) + a dish
-  const station = { rooms: { r: { id: 'r', objects: [{ instanceId: 'wb', objectType: 'workbench' }, { instanceId: 'd', objectType: 'dish' }] } }, agents: { designer: { id: 'designer', room: 'r' } } };
-  const floor = resolveTools('designer', station);
+  const keep = { rooms: { r: { id: 'r', objects: [{ instanceId: 'wb', objectType: 'workbench' }, { instanceId: 'd', objectType: 'dish' }] } }, agents: { designer: { id: 'designer', room: 'r' } } };
+  const floor = resolveTools('designer', keep);
   A.ok(floor.tools.indexOf('shell.exec') >= 0, 'the WORKBENCH grants shell.exec on the floor');
 
   // ---- 1. the dispatched worker's projection: ASK mode, surface autonomous (what team.dispatch passes) ----
@@ -77,7 +77,7 @@ const { withheldCommandTools, commandGap } = require('../sidecar/capability/with
   A.ok(/DELEGATED worker run for supervisor/.test(note), 'the note says DELEGATED (not "UNATTENDED routine"): ' + note);
   A.ok(!/per-routine/.test(note), 'it no longer sends the worker to a per-routine grant');
   A.ok(/shell_bg_\* tools you see only inspect or stop/.test(note), 'it explains the surviving shell_bg_* tools cannot run a command');
-  A.ok(/Do NOT report that the station has no shell/.test(note) && /result for supervisor/.test(note), 'it forbids the false "no shell" conclusion and names the route');
+  A.ok(/Do NOT report that the keep has no shell/.test(note) && /result for supervisor/.test(note), 'it forbids the false "no shell" conclusion and names the route');
   const routineNote = summarizeCapabilities(worker, { surface: 'autonomous' });
   A.ok(/UNATTENDED run/.test(routineNote) && /per-routine grant/.test(routineNote), 'a non-delegated unattended run keeps its existing note');
   const fullNote = summarizeCapabilities(full, { surface: 'autonomous', delegatedBy: 'supervisor' });

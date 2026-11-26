@@ -112,17 +112,17 @@ const ENV = { perRun: 3, perAgent: 5, perDay: 40, global: 100 };   // a fully-go
 
 // ---------- 5. SOURCE GUARD: the frontend Budget panel ----------
 {
-  const station = fs.readFileSync(path.join(__dirname, '..', 'frontend', 'app', 'stationui.js'), 'utf8');
+  const keep = fs.readFileSync(path.join(__dirname, '..', 'frontend', 'app', 'keepui.js'), 'utf8');
   const css = fs.readFileSync(path.join(__dirname, '..', 'frontend', 'css', 'app.css'), 'utf8');
-  A.ok(/>Spending limits </.test(station), 'BUDGET section header present in SETTINGS');
-  A.ok(/function wireBudget/.test(station) && /wireBudget\(body\)/.test(station), 'wireBudget builder present and called');
-  A.ok(/id="bg-perRun"/.test(station) && /id="bg-perAgent"/.test(station) && /id="bg-perDay"/.test(station) && /id="bg-global"/.test(station), 'all four cap inputs present');
-  A.ok(/id="bg-save"/.test(station) && /id="bg-reset"/.test(station), 'SAVE + RESET controls present');
-  A.ok(/\/api\/budget\/caps/.test(station), 'the panel posts to the caps endpoint');
-  A.ok(/\/api\/budget\/status/.test(station), 'the panel reads live status');
-  A.ok(/id="budget-spend"/.test(station) && /SPENT TODAY/.test(station) && /LIFETIME/.test(station), 'spend readout (today + lifetime) present');
-  A.ok(/blank or 0 = no cap/i.test(station) && /leave blank or 0 for no cap/i.test(station), 'the "blank/0 = no cap" semantics are surfaced to the user');
-  A.ok(/class="mc-hint"/.test(station), 'one-line inline help under each cap field (reuses the connector-form idiom)');
+  A.ok(/>Spending limits </.test(keep), 'BUDGET section header present in SETTINGS');
+  A.ok(/function wireBudget/.test(keep) && /wireBudget\(body\)/.test(keep), 'wireBudget builder present and called');
+  A.ok(/id="bg-perRun"/.test(keep) && /id="bg-perAgent"/.test(keep) && /id="bg-perDay"/.test(keep) && /id="bg-global"/.test(keep), 'all four cap inputs present');
+  A.ok(/id="bg-save"/.test(keep) && /id="bg-reset"/.test(keep), 'SAVE + RESET controls present');
+  A.ok(/\/api\/budget\/caps/.test(keep), 'the panel posts to the caps endpoint');
+  A.ok(/\/api\/budget\/status/.test(keep), 'the panel reads live status');
+  A.ok(/id="budget-spend"/.test(keep) && /SPENT TODAY/.test(keep) && /LIFETIME/.test(keep), 'spend readout (today + lifetime) present');
+  A.ok(/blank or 0 = no cap/i.test(keep) && /leave blank or 0 for no cap/i.test(keep), 'the "blank/0 = no cap" semantics are surfaced to the user');
+  A.ok(/class="mc-hint"/.test(keep), 'one-line inline help under each cap field (reuses the connector-form idiom)');
   A.ok(/#budget-form .set-row/.test(css) && /input\[type=number\]\.key-input/.test(css), 'budget panel styles present (number-input phosphor + row layout)');
 }
 
@@ -146,8 +146,8 @@ const ENV = { perRun: 3, perAgent: 5, perDay: 40, global: 100 };   // a fully-go
   A.eq(B.evaluate({ day: shipped.perDay }, { day: 24 }).blocked, null, 'and not before');
   A.eq(B.evaluate({ day: shipped.perDay }, { day: 21 }).warn, ['day'], 'with the 80% warn band ahead of it');
   // the SETTINGS → BUDGET copy still tells the truth: a value that is not saved reads as the environment default
-  const station = require('fs').readFileSync(require('path').join(__dirname, '..', 'frontend', 'app', 'stationui.js'), 'utf8');
-  A.ok(/environment default/.test(station), 'the panel badges an unsaved cap as the default, so $25 never reads as something the user set');
+  const keep = require('fs').readFileSync(require('path').join(__dirname, '..', 'frontend', 'app', 'keepui.js'), 'utf8');
+  A.ok(/environment default/.test(keep), 'the panel badges an unsaved cap as the default, so $25 never reads as something the user set');
 }
 
 // ---- issue #53: a Eyehold-credit run never reserves the whole wallet by default ------------------------------
@@ -179,8 +179,8 @@ const ENV = { perRun: 3, perAgent: 5, perDay: 40, global: 100 };   // a fully-go
   A.ok(!/runCapUsd = \(isFinite\(avail\) && avail > 0\) \? avail : 0/.test(idx), 'the reserve-the-whole-wallet line is gone');
   A.ok(/MANAGED_PER_RUN_DEFAULT = num\(ENV\('BUDGET_MANAGED_PER_RUN'\), budgetCaps\.DEFAULT_MANAGED_PER_RUN_USD\)/.test(idx), 'the default is env-tunable (SKYNET_BUDGET_MANAGED_PER_RUN)');
   // truthful UI: "0 = no cap" must not be the whole story on Eyehold credits, and a run stop never says "remove"
-  const station = require('fs').readFileSync(require('path').join(__dirname, '..', 'frontend', 'app', 'stationui.js'), 'utf8');
-  A.ok(/id="bg-managed-hint"/.test(station) && /st\.managedRunDefaultUsd/.test(station), 'the Budget panel paints the managed default from /api/budget/status');
+  const keep = require('fs').readFileSync(require('path').join(__dirname, '..', 'frontend', 'app', 'keepui.js'), 'utf8');
+  A.ok(/id="bg-managed-hint"/.test(keep) && /st\.managedRunDefaultUsd/.test(keep), 'the Budget panel paints the managed default from /api/budget/status');
   const chat = require('fs').readFileSync(require('path').join(__dirname, '..', 'frontend', 'app', 'chat.js'), 'utf8');
   A.ok(/scope === 'run' \? ' — raise it' : ' — raise or remove it'/.test(chat), 'a per-run budget stop says "raise it", never a "remove" that would do nothing on credits');
 }

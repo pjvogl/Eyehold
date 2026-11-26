@@ -100,7 +100,7 @@ A.eq(J.parseProposals(messy, { max: 3, beliefs: POOL }).length, 3, 'parse is cas
 A.eq(J.parseProposals('no jobs here', { beliefs: POOL }), [], 'an unparseable reply → [] (caller handles gracefully)');
 A.eq(J.parseProposals('', { beliefs: POOL }), [], 'empty reply → []');
 
-/* THE VETO ITSELF — a perfectly-formatted block whose GROUNDS the station has never heard of. This is the whole
+/* THE VETO ITSELF — a perfectly-formatted block whose GROUNDS the keep has never heard of. This is the whole
    point: the block below is INDISTINGUISHABLE from a good one by shape, and approving it would have written a
    cron job that wakes unattended forever under a beat that says "now that i know you". */
 const invented = ['JOB: Competitor digest', 'WHY: keeps you ahead',

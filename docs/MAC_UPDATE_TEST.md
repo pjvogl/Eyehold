@@ -1,7 +1,7 @@
 # macOS update test — the proof before Mac users exist
 
 Goal: prove, on a real Mac, that an **older installed Eyehold updates itself to a newer one and
-the user's station survives** — before anyone outside tests it. Windows is proven end-to-end
+the user's keep survives** — before anyone outside tests it. Windows is proven end-to-end
 (the local update canary caught + fixed a real hang). Mac is architecturally sound but has ZERO
 end-to-end runs; this runbook closes that.
 
@@ -56,7 +56,7 @@ updater artifacts + `.dmg` installers, assembles `latest.json`, and stages a **d
 - **Update mechanism:** Settings → UPDATES shows `current v0.5.1`; the app relaunched itself with
   no manual step, no stuck installer, no error.
 - **Setups survived (the important one):** the agent from step 2 is still there by name, the extra
-  agent / setting change is intact, the station looks like it did before. Nothing reset to
+  agent / setting change is intact, the keep looks like it did before. Nothing reset to
   first-run.
 
 If step 5 passes, Mac auto-update is proven end-to-end AND update-safe for existing setups.
@@ -80,7 +80,7 @@ data**, because user state lives OUTSIDE the `.app` bundle the installer replace
   on macOS anyway (`purge_stale_webview_cache_on_version_change`, `src-tauri/src/main.rs`).
 
 So the guarantee is layered: auto-update is the happy path; if it ever fails, the manual reinstall
-always works and never costs the user their station. Have the tester confirm the manual path too:
+always works and never costs the user their keep. Have the tester confirm the manual path too:
 trigger it (there's a `download manually` link in the footer) and check it opens the releases page.
 
 ---

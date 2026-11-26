@@ -1,13 +1,13 @@
-  /* ============ v46 WORKSTATION KIT (2026-09-02) ============
+  /* ============ v46 WORKKEEP KIT (2026-09-02) ============
      The six seats + the workbench rebuilt as one family. What the v45 set lacked was never joinery —
      it was VALUE and LOCAL COLOUR: every slab sat on MAT.steel's dark blue-grey band with a 12px CRT
-     on it, so seven different stations read as seven small grey boxes on a grey deck.
+     on it, so seven different keeps read as seven small grey boxes on a grey deck.
        ⛔ THE SLAB IS A BIG PALE PLANE, EDGE TO EDGE. Warm-neutral laminate authored HIGH (top ~L 0.68)
           so the ceiling strip has something to land on; the deck is dark, so the desk separates by
           being the brightest flat thing in the room, not by an outline.
        ⛔ THE FRAME IS NEAR-BLACK AND YOU CAN SEE THE DECK THROUGH IT. Two legs, no pedestal, no
           cross-rail in the void — a desk is a plane held up (the v9c law, still binding).
-       ⛔ ONE HUGE FEATURE PER STATION: the CRT. Beige case, black glass, green phosphor, 14x12 — it
+       ⛔ ONE HUGE FEATURE PER KEEP: the CRT. Beige case, black glass, green phosphor, 14x12 — it
           eats the back half of the slab. Everything else on the desk is a 2-3px accent.
        ⛔ THE OUTLINE IS A DARK TINT OF THE OBJECT'S OWN HUE (each ramp carries its own `ink`). */
   const LAM = { ink: '#35322b', ao: '#5a564b', dk: '#7a7568', face: '#a09a8c', top: '#aea89a', mid: '#bab4a5', lit: '#c8c2b3', hi: '#d5cfc0', sheen: '#e0dbcd' };
@@ -95,7 +95,7 @@
   };
 
   F.desk = (x, y, w, h, f) => {
-    /* v46 DESK (2x1) — the ordinary office desk, rebuilt on the workstation kit: pale laminate slab on
+    /* v46 DESK (2x1) — the ordinary office desk, rebuilt on the workkeep kit: pale laminate slab on
        a near-black frame, a BIG beige CRT east, a slim mini-PC west, keyboard and mug in front. */
     const on = !!f.work, ph = f.x || 0;
     shadow2(x + 1, y + h - 1, w - 2);
@@ -124,7 +124,7 @@
   };
 
   F.pixelrig = (x, y, w, h, f) => {
-    /* v46 PIXEL RIG (2x1) — the art station. Same slab; the kit is a wide beige display pushed back,
+    /* v46 PIXEL RIG (2x1) — the art keep. Same slab; the kit is a wide beige display pushed back,
        a big TILTED drawing tablet across the front, and a stylus. Its glow is MAGENTA, not green. */
     const on = !!f.work, ph = f.x || 0, P = ACC.lounge;
     shadow2(x + 1, y + h - 1, w - 2);
@@ -149,7 +149,7 @@
   };
 
   F.console = (x, y, w, h, f) => {
-    /* v46 OPS CONSOLE (2x1) — the instrument station: a near-black instrument bank BUILT INTO the
+    /* v46 OPS CONSOLE (2x1) — the instrument keep: a near-black instrument bank BUILT INTO the
        back of the slab (not a monitor stood on it), one wide green scope in it, a bar-graph beside,
        and physical dials on the working surface. The bank is the dark focal mass on the pale plane. */
     const on = !!f.work, ph = f.x || 0, G = ACC.work;
@@ -235,7 +235,7 @@
   };
 
   F.bench = (x, y, w, h, f) => {
-    /* v46 BENCH (4x1) — one long pale slab, TWO unlike stations with real empty top between them.
+    /* v46 BENCH (4x1) — one long pale slab, TWO unlike keeps with real empty top between them.
        ⛔ 48px IS A HORIZON UNLESS YOU BREAK ITS RHYTHM — the gap does the work. Four legs. */
     const on = !!f.work, ph = f.x || 0, G = ACC.work;
     shadow2(x + 1, y + h - 1, w - 2);
@@ -244,13 +244,13 @@
     wsLegs(x, y, w, h);
     for (const lx of [x + 15, x + 30]) { px(lx, y + 8, 3, h - 8, FRM.ink); px(lx, y + 8, 1, h - 9, FRM.lit); }
     wsSlab(x, y, w);
-    // station A, west: CRT + keyboard
+    // keep A, west: CRT + keyboard
     wsCrt(x + 1, y - 16, 13, 11, y, on, ph, null);
     wsKeys(x + 2, y + 1, 11);
     // the gap: a mug and a coiled lead, nothing else
     wsMug(x + 20, y);
     px(x + 24, y + 2, 5, 1, FRM.face); px(x + 25, y + 1, 3, 1, FRM.mid);
-    // station B, east: a black terminal tower with a bar-graph — no keyboard
+    // keep B, east: a black terminal tower with a bar-graph — no keyboard
     const tX = x + 33, tW = 13, tT = y - 12;
     chamf(tX - 1, tT - 1, tW + 2, 13, FRM.ink, 1);
     px(tX, tT, tW, 11, FRM.face);

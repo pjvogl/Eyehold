@@ -8,7 +8,7 @@
    WHAT A TOKEN MAY MATCH — the rule is: anything the palette PUTS ON SCREEN for that prop.
    A word the user can read off a tile and not search by is a worse failure than no search at all.
      - the prop's label and id;
-     - its category id AND the category's display label (so "workstations", the text on the tab);
+     - its category id AND the category's display label (so "workkeeps", the text on the tab);
      - its tier key AND the tier's display label (so "systems" finds all 29 functional props,
        even though the internal key is `functional`);
      - its GRANT word — the badge printed on the tile (COMPUTE, WEB, FILES, MEMORY, …). Supplied by
@@ -25,7 +25,7 @@
      0. the prop's LABEL starts with the first token   — what you almost certainly meant
      1. matched on a NAME-ish field (label/id/cat/tier/grant)
      2. matched ONLY inside `desc`
-   Descriptions share stock phrasing ("WORKSTATION — assign an agent here…"), so a desc hit is a
+   Descriptions share stock phrasing ("WORKKEEP — assign an agent here…"), so a desc hit is a
    hint, never a headline. Array#sort is stable, so catalog order (functional before cosmetic)
    survives inside every band.
 

@@ -144,7 +144,7 @@
 
        A DM is untouched: it is already owner-only, and requiring the Commander to @-mention a bot in their own
        private chat would be absurd. */
-    /* botUsername may be a STRING or a FUNCTION. The station bot learns its own @name from getMe() at connect,
+    /* botUsername may be a STRING or a FUNCTION. The keep bot learns its own @name from getMe() at connect,
        which resolves AFTER the adapter is constructed — a string captured here would be '' forever and the
        mention gate would sit permanently dormant (a flag with no reader, the exact bug class this project
        keeps re-finding). Reading it lazily means the gate arms the moment the name is known. */

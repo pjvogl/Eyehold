@@ -22,7 +22,7 @@
         "test/runtimeinfo.test.js",
         "test/harness-snapshot.test.js",
         "test/harness-stream-completion.test.js",
-        "test/station-inspect.test.js",
+        "test/keep-inspect.test.js",
         "test/diagnostics.test.js",
         "test/diagnostics-support-email.test.js",
         "test/diagnostics-build.test.js",
@@ -415,8 +415,8 @@
         "test/queststore.test.js",
         "test/queststate.test.js",
         "test/queststatestore.test.js",
-        "test/stationquests.test.js",
-        "test/stationqueststore.test.js",
+        "test/keepquests.test.js",
+        "test/keepqueststore.test.js",
         "test/workquests.test.js",
         "test/workqueststore.test.js",
         "test/maintquests.test.js",
@@ -425,7 +425,7 @@
         "test/kitout.test.js",
         "test/coach-dodge.test.js",
         "test/tutorial-connect-beat.test.js",
-        "test/tutorial-equipped-station.test.js",
+        "test/tutorial-equipped-keep.test.js",
         "test/field-manual-accessibility.test.js",
         "test/class-loadouts.test.js",
         "test/intent-offer.test.js",
@@ -580,7 +580,7 @@
         "test/worldmodel.test.js",
         "test/path-smoothing.test.js",
         "test/run-truth.test.js",
-        "test/station-authority.test.js",
+        "test/keep-authority.test.js",
         "test/zones.test.js",
         "test/idle-life-regressions.test.js",
         "test/social-border.test.js",
@@ -588,7 +588,7 @@
         "test/sightline.test.js",
         "test/agent-affinity.test.js",
         "test/agent-affinity-weight.test.js",
-        "test/station-gathering.test.js",
+        "test/keep-gathering.test.js",
         "test/crew-containment.test.js",
         "test/prop-awareness.test.js",
         "test/chat-stare-throttle.test.js",
@@ -596,11 +596,11 @@
         "test/glyph-speech.test.js",
         "test/g1bprops.test.js",
         "test/g3btrophy.test.js",
-        "test/stationbake.chunk.test.js",
-        "test/stationbake.materials.test.js",
-        "test/stationbake.seam.test.js",
-        "test/stationbake.connections.test.mjs",
-        "test/stationbake.hull.test.js",
+        "test/keepbake.chunk.test.js",
+        "test/keepbake.materials.test.js",
+        "test/keepbake.seam.test.js",
+        "test/keepbake.connections.test.mjs",
+        "test/keepbake.hull.test.js",
         "test/canvas-loss-recovery.test.js",
         "test/stage-context-loss.test.js",
         "test/conveyor.test.js",
@@ -703,7 +703,7 @@
         "test/sprite-loading.test.js",
         "test/textsize-screen-space.test.js",
         "test/mobile-control-reachability.test.js",
-        "test/station-tooltip.test.js",
+        "test/keep-tooltip.test.js",
         "test/toast-live-region.test.js",
         "test/toast-seat.test.js",
         "test/channels.discord-wire.test.js",
@@ -748,13 +748,13 @@
         "test/lint-gate-can-fail.js",
         "test/lint-emits.js",
         "test/lint-determinism.js",
-        "test/station-bridge.test.js",
-        "test/station-commands.test.js",
-        "test/station-tools.test.js",
+        "test/keep-bridge.test.js",
+        "test/keep-commands.test.js",
+        "test/keep-tools.test.js",
         "test/code-mode.test.js",
         "test/output-artifacts.test.js",
-        "test/station-recovery.test.js",
-        "test/station-recovery-cli.test.js",
+        "test/keep-recovery.test.js",
+        "test/keep-recovery-cli.test.js",
         "test/execution-profiles.test.js",
         "test/execution-settings.test.js",
         "test/execution-router.test.js",
@@ -809,7 +809,7 @@
         "test/world-texture-ready.test.js",
         "test/qa-claims-blob-batch.test.js",
         "test/qa-claims-search-batch.test.js",
-        "test/workstation-screen-state.test.js",
+        "test/workkeep-screen-state.test.js",
         "test/prop-remaster-contract.test.js",
         "test/authored-prop-content.test.js",
         "test/authored-prop-motion.test.js",
@@ -824,7 +824,7 @@
         "test/projection-load-geometry.test.js",
         "dev/industrial-textures/prop-catalog-review.test.cjs",
         "test/projection-depth-rendering.test.js",
-        "test/station-templates.test.js",
+        "test/keep-templates.test.js",
         "test/remaster-physical-fit.test.js",
         "test/arrival.test.js",
         "test/genesis-wake-credential.test.js",
@@ -833,7 +833,7 @@
         "test/refit-bake-reuse.test.js",
         "test/hallway-traffic.test.js",
         "test/cloudsave-timeout.test.js",
-        "test/station-autosave.test.js",
+        "test/keep-autosave.test.js",
         "test/durable-store-faults.test.js",
         "test/permissions-authority.test.js",
         "test/api-json-lifecycle.test.js",
@@ -868,7 +868,7 @@
         "test/github-device.http.test.js",
         "test/workspace-owner.e2e.test.js",
         "test/workspace-lineage.http.test.js",
-        "test/lineage-stationless-halt.http.test.js",
+        "test/lineage-keepless-halt.http.test.js",
         "test/update-preparation.http.test.js",
         "test/codex-status.e2e.test.js",
         "test/oauth-status.e2e.test.js",
@@ -952,13 +952,13 @@
         "test/routes-coverage.http.test.js",
         "test/atlas-events.emit.e2e.test.js",
         "test/openai-compat.e2e.test.js",
-        "test/station-recovery.e2e.test.js",
+        "test/keep-recovery.e2e.test.js",
         "test/paid-link-lifecycle.e2e.test.js",
         "test/routing.persist.e2e.test.js",
         "test/run-recovery.api.test.js",
         "test/routing.sample.e2e.test.js",
         "test/routing.sample-provider.e2e.test.js",
-        "test/station-template-example.e2e.test.js",
+        "test/keep-template-example.e2e.test.js",
         "test/route-honesty.e2e.test.js",
         "test/effective-toolsets.e2e.test.js",
         "test/discovery-documents.http.test.js",
@@ -1002,7 +1002,7 @@
         "test/cron.run-now.e2e.test.js",
         "test/cron.session-transcript.e2e.test.js",
         "test/routing.persist.e2e.test.js",
-        "test/station-recovery.e2e.test.js",
+        "test/keep-recovery.e2e.test.js",
         "test/paid-link-lifecycle.e2e.test.js",
         "test/credits-link.test.js",
         "test/credits.test.js",
@@ -1228,7 +1228,7 @@
       "coverage": "change mapped; behavior and acceptance limits in AUDIT.md"
     },
     {
-      "path": "frontend/agent-station-demo.html",
+      "path": "frontend/agent-keep-demo.html",
       "category": "frontend",
       "sha256": "080c1018e3efbd468eafa1553b37dea42fa11c44456a8f49999e1a7c45b355f3",
       "coverage": "change mapped; behavior and acceptance limits in AUDIT.md"
@@ -1318,7 +1318,7 @@
       "sha256": "248875733cc8b4c355202e8cb96b24db22c77af6727add2796e8192c936dd604"
     },
     {
-      "path": "frontend/app/stationui.js",
+      "path": "frontend/app/keepui.js",
       "category": "frontend",
       "sha256": "d899ece3c34aaca2ed1ffe339780670e52b5d17eacb6a8269b1ab012e8bde8da",
       "coverage": "change mapped; behavior and acceptance limits in AUDIT.md"
@@ -1498,7 +1498,7 @@
       "coverage": "historical; not candidate acceptance"
     },
     {
-      "path": "qa/bugs/34c58f4f-unreadable-station-save-is-reported-empty-and-it.md",
+      "path": "qa/bugs/34c58f4f-unreadable-keep-save-is-reported-empty-and-it.md",
       "category": "prior-evidence-and-triage",
       "sha256": "fcf7a23f2df2fb782a9fb181c9909478cb7281ee1e65d3eae7a7697150090670",
       "coverage": "historical; not candidate acceptance"
@@ -1594,7 +1594,7 @@
       "coverage": "historical; not candidate acceptance"
     },
     {
-      "path": "qa/bugs/996e399b-station-design-edits-disappear-when-build-is-int.md",
+      "path": "qa/bugs/996e399b-keep-design-edits-disappear-when-build-is-int.md",
       "category": "prior-evidence-and-triage",
       "sha256": "a5be66a84855d450162dc66e1f016cf08d59b2d7982cc3a0905c5d4876155f5d",
       "coverage": "historical; not candidate acceptance"
@@ -1756,7 +1756,7 @@
       "coverage": "historical; not candidate acceptance"
     },
     {
-      "path": "qa/digests/2026-09-19-station-autosave.md",
+      "path": "qa/digests/2026-09-19-keep-autosave.md",
       "category": "prior-evidence-and-triage",
       "sha256": "09b2f62d4d76d9e13876e9ed475211a32e816d9e9e1f36c5d74700495d8e9d3e",
       "coverage": "historical; not candidate acceptance"
@@ -2638,7 +2638,7 @@
       "coverage": "change mapped; behavior and acceptance limits in AUDIT.md"
     },
     {
-      "path": "sidecar/station-recovery.js",
+      "path": "sidecar/keep-recovery.js",
       "category": "backend",
       "sha256": "9cb99af1f2efa3a78396cb595636b4875ebfb58ef595a480c860603793d38d35",
       "coverage": "change mapped; behavior and acceptance limits in AUDIT.md"
@@ -3190,13 +3190,13 @@
       "coverage": "manifest or targeted test execution; see validation receipt"
     },
     {
-      "path": "test/station-autosave.test.js",
+      "path": "test/keep-autosave.test.js",
       "category": "regression-test",
       "sha256": "8dd15b100eec35228f8ab81e1d9a218629f0624e7c40b10ff3fae5e01741b885",
       "coverage": "manifest or targeted test execution; see validation receipt"
     },
     {
-      "path": "test/stationbake.connections.test.mjs",
+      "path": "test/keepbake.connections.test.mjs",
       "category": "regression-test",
       "sha256": "f980b56d1565b5a8fed14cb49bc2e162e3a9aad39661e51f55a4377d765d4b57",
       "coverage": "manifest or targeted test execution; see validation receipt"
@@ -3250,7 +3250,7 @@
       "coverage": "manifest or targeted test execution; see validation receipt"
     },
     {
-      "path": "website/app/agent-station-demo.html",
+      "path": "website/app/agent-keep-demo.html",
       "category": "frontend-mirror",
       "sha256": "080c1018e3efbd468eafa1553b37dea42fa11c44456a8f49999e1a7c45b355f3",
       "coverage": "byte parity with frontend required"
@@ -3340,7 +3340,7 @@
       "sha256": "248875733cc8b4c355202e8cb96b24db22c77af6727add2796e8192c936dd604"
     },
     {
-      "path": "website/app/app/stationui.js",
+      "path": "website/app/app/keepui.js",
       "category": "frontend-mirror",
       "sha256": "d899ece3c34aaca2ed1ffe339780670e52b5d17eacb6a8269b1ab012e8bde8da",
       "coverage": "byte parity with frontend required"

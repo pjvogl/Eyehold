@@ -15,13 +15,13 @@ origin: audit
 
 ## Symptom
 
-A plan step the station settled because every quest planned for it was finished shows in the QUESTS proof list as "StarNet recorded", even when every one of those quests was the Commander's own report (attest). The app claims a harness verification that never happened. Found in branch code (agent/user-study-loop) before merge.
+A plan step the keep settled because every quest planned for it was finished shows in the QUESTS proof list as "StarNet recorded", even when every one of those quests was the Commander's own report (attest). The app claims a harness verification that never happened. Found in branch code (agent/user-study-loop) before merge.
 
 ## Repro
 
 1. Push a goal plan to the sidecar (POST /api/goals with milestones).
 2. Mint two attest quests bound to the current milestone; report one done (POST /api/quests/report) and dismiss the other.
-3. GET /api/journey: the settled milestone outcome carried `verifiedBy: 'harness-contract'`, which `frontend/app/stationui.js` proofLabel renders as "StarNet recorded".
+3. GET /api/journey: the settled milestone outcome carried `verifiedBy: 'harness-contract'`, which `frontend/app/keepui.js` proofLabel renders as "StarNet recorded".
 
 ## Evidence
 

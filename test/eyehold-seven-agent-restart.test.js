@@ -1,10 +1,10 @@
-/* Real sidecar persistence: roster, seven physical workstations and sessions.
+/* Real sidecar persistence: roster, seven physical workkeeps and sessions.
  * No /api/run calls, provider credentials or completed-work claims.
  */
 'use strict';
 const assert=require('node:assert/strict');
 const {SidecarFixture}=require('./helpers/sidecar-fixture.js');
-const {buildEyeholdStation}=require('../scripts/eyehold-seven-room-starter.cjs');
+const {buildEyeholdKeep}=require('../scripts/eyehold-seven-room-starter.cjs');
 const WorldModel=require('../frontend/app/worldmodel.js');
 const Workstreams=require('../frontend/app/workstreams.js');
 const ids=['agent','raven','sages','iron','deepforge','silver','treasury'];
@@ -17,20 +17,20 @@ async function run(){
  await fixture.start();
  assert.equal((await fixture.request('/api/eyehold/crew',{headers:{'X-Eyehold-Token':''}})).status,403);
  const registered=await fixture.json('POST','/api/roster',{agents:roster,updatedAt:Date.now()});assert.equal(registered.body.ok,true);await crew();
- const blueprint=buildEyeholdStation(),station=WorldModel.deserialize(blueprint.doc);
- const home=station.roomById(blueprint.homeId);
- const homeDesk=station.props().find(p=>p.t==='desk'&&home.rects.some(r=>p.x>=r.x1&&p.x<=r.x2&&p.y>=r.y1&&p.y<=r.y2));
- assert(station.assignDesk(homeDesk.id,'agent').ok);
- for(let i=0;i<blueprint.placed.length;i++)assert(station.assignDesk(blueprint.placed[i].deskId,ids[i+1]).ok);
+ const blueprint=buildEyeholdKeep(),keep=WorldModel.deserialize(blueprint.doc);
+ const home=keep.roomById(blueprint.homeId);
+ const homeDesk=keep.props().find(p=>p.t==='desk'&&home.rects.some(r=>p.x>=r.x1&&p.x<=r.x2&&p.y>=r.y1&&p.y<=r.y2));
+ assert(keep.assignDesk(homeDesk.id,'agent').ok);
+ for(let i=0;i<blueprint.placed.length;i++)assert(keep.assignDesk(blueprint.placed[i].deskId,ids[i+1]).ok);
  Workstreams.reset();const sessions=ids.map((agentId,i)=>Workstreams.create(['command','research','strategy','operations','engineering','quality','finance'][i],{agentId,activate:false}));
- const saved=await fixture.json('POST','/api/save',{schema:'eyehold.save',version:6,updatedAt:Date.now(),agent:{id:'agent',name:names[0]},agents:roster.map(a=>({id:a.agentId,name:a.name,specialtyId:a.specialtyId})),station:station.serialize(),...Workstreams.serialize()});assert.equal(saved.body.ok,true);
+ const saved=await fixture.json('POST','/api/save',{schema:'eyehold.save',version:6,updatedAt:Date.now(),agent:{id:'agent',name:names[0]},agents:roster.map(a=>({id:a.agentId,name:a.name,specialtyId:a.specialtyId})),keep:keep.serialize(),...Workstreams.serialize()});assert.equal(saved.body.ok,true);
  await fixture.restart();
  // No re-registration: this reads the host's actual restored in-memory roster.
  await crew();
  const recovered=await fixture.json('GET','/api/save?agent=agent');assert.equal(recovered.status,200);
  const doc=recovered.body.save;assert.equal(doc.agents.length,7);
- const restored=WorldModel.deserialize(doc.station);assert.equal(restored.rooms().filter(r=>r.kind!=='corridor').length,7);
- for(const id of ids)assert.equal(restored.props().filter(p=>p.t==='desk'&&p.agentId===id).length,1,id+' workstation survived');
+ const restored=WorldModel.deserialize(doc.keep);assert.equal(restored.rooms().filter(r=>r.kind!=='corridor').length,7);
+ for(const id of ids)assert.equal(restored.props().filter(p=>p.t==='desk'&&p.agentId===id).length,1,id+' workkeep survived');
  Workstreams.reset();Workstreams.init(doc);
  for(const session of sessions){const restoredSession=Workstreams.get(session.id);assert(restoredSession);assert.equal(restoredSession.agentId,session.agentId);assert.equal(restoredSession.title,session.title);}
  console.log('PASS: real sidecar restores seven-agent roster without re-registration, seven staffed rooms, and seven named sessions after restart; no paid inference');

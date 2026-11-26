@@ -1,6 +1,6 @@
 /* node test/render-pacing.test.js — #69 "Windows laggy after leaving eyehold open".
 
-   Eyehold is meant to stay open all day so routines run. Measured on the seeded station (headless Chromium on the
+   Eyehold is meant to stay open all day so routines run. Measured on the seeded keep (headless Chromium on the
    real GPU, 240 Hz panel, window visible but NOT focused — the reporter's exact state):
        before   world drawn 237-240x/s, GPU process ~1.12 cores, renderer ~0.65 cores (10 min soak)
        after    world drawn 4.9x/s, GPU process 0.05-0.09 cores, renderer 0.03-0.04 cores
@@ -8,7 +8,7 @@
      1. RENDER PACING (world.js): the world loop draws at most 30x/s focused, PACE_BLUR_MS apart when visible but
         unfocused, and the simulation advances in real-time slices while throttled so nothing walks slower.
      2. The compositor: an `infinite` CSS animation repaints the window every vsync. The 7s screen flicker on
-        #screen-game becomes a one-shot dip on a clock, and StationUI's MOTION REST holds decorative infinite
+        #screen-game becomes a one-shot dip on a clock, and KeepUI's MOTION REST holds decorative infinite
         loops still while the window is unfocused and untouched.
 
    The world is a browser-flow IIFE (no module.exports), so the pacing helpers are lifted out of the source and run
@@ -21,7 +21,7 @@ const vm = require('vm');
 
 const root = path.join(__dirname, '..');
 const world = fs.readFileSync(path.join(root, 'frontend/app/world.js'), 'utf8');
-const stationui = fs.readFileSync(path.join(root, 'frontend/app/stationui.js'), 'utf8');
+const keepui = fs.readFileSync(path.join(root, 'frontend/app/keepui.js'), 'utf8');
 const appCss = fs.readFileSync(path.join(root, 'frontend/css/app.css'), 'utf8');
 const styleCss = fs.readFileSync(path.join(root, 'frontend/css/style.css'), 'utf8');
 const strip = s => s.replace(/\/\*[\s\S]*?\*\//g, '').replace(/(^|[^:'"\\])\/\/.*$/gm, '$1');
@@ -135,11 +135,11 @@ A.ok(/finally \{\s*noteDrawCost\(performance\.now\(\) - drawStart\)/.test(frameS
 
 // ---- 3. compositor: no infinite full-screen flicker; decorative loops rest while unfocused --------------------
 const appCode = strip(appCss);
-A.ok(!/#screen-game\.active\s*\{[^}]*animation:[^}]*infinite/.test(appCode), 'the station screen carries no infinite animation');
+A.ok(!/#screen-game\.active\s*\{[^}]*animation:[^}]*infinite/.test(appCode), 'the keep screen carries no infinite animation');
 A.ok(/body:not\(\.no-flicker\) #screen-game\.active \{ isolation: isolate; \}/.test(appCode), 'flicker-on keeps the stacking context the running animation always made');
 A.ok(/#screen-game\.active\.flick-dip \{ animation: flick-dip 280ms 1; \}/.test(appCode), 'the dip is a one-shot');
 A.ok(/@keyframes flick-dip \{ 0%,100% \{ opacity: 1; \} 25% \{ opacity: 0\.84; \} 50% \{ opacity: 0\.95; \} \}/.test(styleCss), 'flick-dip is the old 96..100% tail (same opacities)');
-const ui = strip(stationui);
+const ui = strip(keepui);
 const clock = A.fnBody(ui, 'function armFlickerClock()');
 A.ok(/setInterval\([\s\S]*7000\)/.test(clock) && /classList\.add\('flick-dip'\)/.test(clock) && /no-flicker/.test(clock), 'the flicker clock plays one dip per 7s and honours SCREEN FLICKER off');
 const sweep = A.fnBody(ui, 'function motionSweep()');

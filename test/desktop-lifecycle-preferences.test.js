@@ -34,7 +34,7 @@ const read = rel => fs.readFileSync(path.join(ROOT, rel), 'utf8');
 
   const main = read('src-tauri/src/main.rs');
   const prefs = read('src-tauri/src/lifecycle_preferences.rs');
-  const settings = read('frontend/app/stationui.js');
+  const settings = read('frontend/app/keepui.js');
   A.ok(/mod lifecycle_preferences;/.test(main), 'desktop shell owns one focused lifecycle-preference module');
   A.ok(/eyehold_set_start_minimized[\s\S]*eyehold_set_close_to_tray/.test(main), 'both native preference commands are registered');
   A.ok(/StartupReveal::new\(start_minimized\)/.test(main), 'stored start-minimized choice gates initial window reveal');

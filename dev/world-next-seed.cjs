@@ -1,4 +1,4 @@
-/* DEV ONLY — composed station for the World Next renderer acceptance scene.
+/* DEV ONLY — composed keep for the World Next renderer acceptance scene.
  * node dev/world-next-seed.cjs                 validates, writes nothing
  * node dev/world-next-seed.cjs --write         creates dev/.scratch-workspace
  * node dev/world-next-seed.cjs --write --refresh  resets ONLY this marked fixture
@@ -25,7 +25,7 @@ function accepted(result, label) {
   return result;
 }
 
-function createStation(now = Date.now()) {
+function createKeep(now = Date.now()) {
   // Start with the canonical schema, then author the spawn room before it becomes mutable.
   const doc = WorldModel.defaultDoc(now);
   doc.meta.name = 'KEPLER / WORLD NEXT';
@@ -33,24 +33,24 @@ function createStation(now = Date.now()) {
   Object.assign(doc.rooms[spawn], { name: 'COMMAND', kind: 'bridge',
     rects: [{ x1: 0, y1: 0, x2: 15, y2: 10 }], floorStyle: 'cobalt', floorMat: 'alloy' });
   WorldModel.setPropRules(PropSprites.spec);
-  const station = WorldModel.create(doc);
-  const workshop = accepted(station.addRoom({ name: 'FABRICATION', kind: 'lab',
+  const keep = WorldModel.create(doc);
+  const workshop = accepted(keep.addRoom({ name: 'FABRICATION', kind: 'lab',
     rect: { x1: 20, y1: 0, x2: 38, y2: 10 }, floorStyle: 'rust', floorMat: 'diamond' }), 'workshop').id;
-  const garden = accepted(station.addRoom({ name: 'THE CONSERVATORY', kind: 'quarters',
+  const garden = accepted(keep.addRoom({ name: 'THE CONSERVATORY', kind: 'quarters',
     rect: { x1: 8, y1: 14, x2: 31, y2: 21 }, floorStyle: 'oak', floorMat: 'plank' }), 'conservatory').id;
   for (const [name, rect] of [
     ['TRANSFER', { x1: 16, y1: 4, x2: 19, y2: 6 }],
     ['WEST WALK', { x1: 8, y1: 11, x2: 10, y2: 13 }],
     ['EAST WALK', { x1: 27, y1: 11, x2: 29, y2: 13 }]
-  ]) accepted(station.placeHallway({ name, rect, floorStyle: 'teal', floorMat: 'runner' }), name);
+  ]) accepted(keep.placeHallway({ name, rect, floorStyle: 'teal', floorMat: 'runner' }), name);
   for (const [id, style, material] of [[spawn, 'cobalt', 'panelled'], [workshop, 'rust', 'service'], [garden, 'verdant', 'wainscot']])
-    accepted(station.setWalls(id, { style, mat: material }), 'wall palette');
+    accepted(keep.setWalls(id, { style, mat: material }), 'wall palette');
 
   const put = (t, x, y, agentId) => {
     const spec = PropSprites.spec(t);
     assert.ok(spec, 'catalog prop exists: ' + t);
-    const result = accepted(station.addProp({ t, x, y, w: spec.w, h: spec.h, block: !!spec.blocks }), t + '@' + x + ',' + y);
-    if (agentId) accepted(station.assignPropAgent(result.id, agentId), 'assign ' + t);
+    const result = accepted(keep.addProp({ t, x, y, w: spec.w, h: spec.h, block: !!spec.blocks }), t + '@' + x + ',' + y);
+    if (agentId) accepted(keep.assignPropAgent(result.id, agentId), 'assign ' + t);
     return result.id;
   };
   // Command: a blue observation room, central holographic table, warm work terminals.
@@ -68,7 +68,7 @@ function createStation(now = Date.now()) {
   put('tank', 30, 0); put('arc_floorlight', 37, 9);
   const emberBay = put('bay', 23, 7, 'world-ember'), outbox = put('outbox', 34, 7);
   const airlock = put('airlock', 20, 5);
-  accepted(station.setDoorState(airlock, 'open'), 'open workshop airlock');
+  accepted(keep.setDoorState(airlock, 'open'), 'open workshop airlock');
 
   // Conservatory: warm timber underfoot, cool botanical glass, sofa back to camera.
   put('couch', 10, 17); put('rug', 10, 18); put('bar', 17, 15);
@@ -82,8 +82,8 @@ function createStation(now = Date.now()) {
 
   // Real routes: command intake -> NOVA -> EMBER -> FERN -> dispatch.
   for (const [a, b] of [[intake, novaBay], [novaBay, emberBay], [emberBay, fernBay], [fernBay, outbox]])
-    accepted(station.connectBelt(a, b), 'conveyor connection');
-  const geo = station.projectGeometry();
+    accepted(keep.connectBelt(a, b), 'conveyor connection');
+  const geo = keep.projectGeometry();
   const plan = Pipeline.compileRoutingPlan(geo);
   const fatal = (plan.errors || []).filter(e => !e.warn);
   assert.equal(fatal.length, 0, 'routing errors: ' + JSON.stringify(plan.errors));
@@ -94,17 +94,17 @@ function createStation(now = Date.now()) {
     const end = local(x, y);
     assert.ok(geo.path(start.x, start.y, end.x, end.y), 'connected crew route to ' + x + ',' + y);
   }
-  return { station: station.serialize(), report: { name: doc.meta.name, rooms: 3, corridors: 3,
+  return { keep: keep.serialize(), report: { name: doc.meta.name, rooms: 3, corridors: 3,
     grid: [geo.COLS, geo.ROWS], props: geo.props.length, belts: geo.belts.length,
     doorways: geo.doorDefs.length, warnings: plan.errors || [], agentBays: [novaBay, emberBay, fernBay] } };
 }
 
 function createSave(now = Date.now()) {
   const wrapper = JSON.parse(fs.readFileSync(path.join(FIXTURE, 'agent.save.json'), 'utf8'));
-  const { station, report } = createStation(now);
+  const { keep, report } = createKeep(now);
   const base = wrapper.doc.agent;
   const agents = [
-    ['agent', 'NOVA', 'blank_blue', '#80bfd6', 'orchestrator', 'Coordinate real work and keep station telemetry truthful.'],
+    ['agent', 'NOVA', 'blank_blue', '#80bfd6', 'orchestrator', 'Coordinate real work and keep keep telemetry truthful.'],
     ['world-ember', 'EMBER', 'blank_amber', '#efae68', 'specialist', 'Build and verify useful local artifacts in fabrication.'],
     ['world-fern', 'FERN', 'blank_green', '#a2caa0', 'specialist', 'Research and organize notes from the conservatory.']
   ].map(([id, name, skin, color, role, purpose]) => ({ ...structuredClone(base), id, name, skin, color, role, purpose,
@@ -112,9 +112,9 @@ function createSave(now = Date.now()) {
     approvalMode: 'ask', executionProfile: 'trusted-project', skills: [],
     docs: { identity: `You are ${name}, a real agent in an explicitly local development fixture.`,
       purpose, manual: 'Report only actual tool results. This fixture uses a scripted local model.',
-      context: 'World Next renderer acceptance station. No production data or credentials.' } }));
+      context: 'World Next renderer acceptance keep. No production data or credentials.' } }));
   Object.assign(wrapper, { updatedAt: now, savedAt: now });
-  Object.assign(wrapper.doc, { updatedAt: now, agent: agents[0], agents, station });
+  Object.assign(wrapper.doc, { updatedAt: now, agent: agents[0], agents, keep });
   const roster = { version: 1, updatedAt: now, agents: agents.map(a => ({ agentId: a.id, name: a.name,
     system: a.docs.identity + '\n' + a.docs.manual, role: a.role, model: MODEL, provider: 'openrouter' })) };
   return { wrapper, roster, report };
@@ -170,5 +170,5 @@ async function main(args) {
   console.log('Start node dev/world-next-model.cjs, use its printed environment, then node dev/seed.js --keep.');
 }
 
-module.exports = { createStation, createSave, assertScratchPath };
+module.exports = { createKeep, createSave, assertScratchPath };
 if (require.main === module) main(process.argv.slice(2)).catch(error => { console.error(error.message); process.exitCode = 1; });

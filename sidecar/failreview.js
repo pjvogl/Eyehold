@@ -1,6 +1,6 @@
-/* sidecar/failreview.js — the FAILURE-REVIEW aux pass: a PURE "what should the station learn from a run
+/* sidecar/failreview.js — the FAILURE-REVIEW aux pass: a PURE "what should the keep learn from a run
    that FAILED?" producer. The six existing post-run learning passes all gate on reason 'done', so a run that
-   ended error/max_iters/budget/refusal taught the station nothing — even though the run store already persists
+   ended error/max_iters/budget/refusal taught the keep nothing — even though the run store already persists
    rich failure data (failureStage/failureCode, the tool trace, recovery attempts, uncertain mutations). This
    module closes that loop: given the failed run's outcome + transcript tail and an INJECTED aux-model
    `propose(prompt) -> text`, it builds a bounded prompt asking for at most 3 durable LESSONS, parses the tagged
@@ -159,7 +159,7 @@
       'the failure, never blame. Skip one-off transient noise (a single network blip) unless a recovery ' +
       'pattern is visible across attempts. The Commander reads these lessons: write them in plain words about ' +
       'the task, never internal tool names, schemas or error codes. Never advise skipping, bypassing or treating ' +
-      'as optional a step the station requires (the task brief, an approval, consent, a permission) — if such a ' +
+      'as optional a step the keep requires (the task brief, an approval, consent, a permission) — if such a ' +
       'step kept failing, the lesson is how to satisfy it. If nothing durable can be learned, reply NONE.\n\n' +
       head.join('\n') + (body ? ('\n\nTRANSCRIPT TAIL:\n' + body) : '');
   }

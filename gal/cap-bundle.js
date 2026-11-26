@@ -1,5 +1,5 @@
   /* ============ v46 CAPABILITY KIT (2026-09-02) ============
-     The capability objects rebuilt on the same finding as the workstations: the casings were all
+     The capability objects rebuilt on the same finding as the workkeeps: the casings were all
      MAT.steel's dark band, so eight capabilities read as eight dark grey boxes. STL is the same steel
      hue authored HIGH — a big pale mass edge to edge, the way the approved VAULT reads — over the
      near-black FRM frame, with ONE saturated element per capability doing the work (cyan = web,

@@ -11,7 +11,7 @@ The six canonical personalities from the personality upgrade are integrated: Com
 - Frozen candidate ec6f2cd5d: `npm run test:fast` passed all 759 steps; log `dev/overseer-personality-final-fast.log`.
 - `scripts/qa/overseer-setup-live.cjs`: passed against the seeded running sidecar. Covers six personality labels, confirmation without layout shift, no horizontal overflow or mobile section overlap, all 16 local provider logos, account-window opening and duplicate guard, failure/retry, identity preservation, custom endpoints, keyboard model selection and Escape restoration, reasoning persistence, theming and recovery.
 - Viewports: 1280×800, 1024×600, 700×650 and 390×740; model dialog bounds and 145% UI scaling checked. No unstyled native controls or page errors observed.
-- Model catalogs and account-link responses use isolated browser fixtures; a real paid subscription and external OAuth completion were not exercised. The underlying seeded sidecar and saved-station recovery are real. No installer or public deployment was performed by this UI task.
+- Model catalogs and account-link responses use isolated browser fixtures; a real paid subscription and external OAuth completion were not exercised. The underlying seeded sidecar and saved-keep recovery are real. No installer or public deployment was performed by this UI task.
 
 The source was informed by the accepted controls and flow in “Optimize deliverable purpose” and “Expand glass UI identity.” Final integration evidence is recorded separately after the dependency merges land.
 

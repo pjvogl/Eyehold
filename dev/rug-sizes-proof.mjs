@@ -1,8 +1,8 @@
 /* dev/rug-sizes-proof.mjs — LIVE proof for the 3x3 + 5x5 rugs.
  *
  * The render sheet (dev/rug-sheet.mjs) draws a rug into a scratch canvas, which proves the ART and
- * nothing else. This drives the REAL station: it lays all three rugs through the validated
- * station.addProp API, stands a prop on each, stands the HERO on the 5x5, and reads pixels back off
+ * nothing else. This drives the REAL keep: it lays all three rugs through the validated
+ * keep.addProp API, stands a prop on each, stands the HERO on the 5x5, and reads pixels back off
  * the live stage canvas — the three things a decal can silently fail at (placement exemption, the
  * floor pass drawing it UNDER the body, and the footprint actually covering its tiles).
  *
@@ -62,8 +62,8 @@ try {
 
   // ---- 1. lay all three rugs, each with a solid prop standing on it (the decal placement exemption)
   const laid = await say('laid:', `(() => {
-    const st = Build.__test__.station();
-    if (!st) return { error: 'no station' };
+    const st = Build.__test__.keep();
+    if (!st) return { error: 'no keep' };
     const b = st.bounds();
     const fit = (t, w, h, free) => {
       for (let ty = b.minTy; ty <= b.maxTy; ty++) for (let tx = b.minTx; tx <= b.maxTx; tx++)
@@ -80,8 +80,8 @@ try {
       const at = fit(t, w, h, free);
       if (!at) { out[t] = { error: 'nowhere for a ' + t }; continue; }
       taken.push({ x: at.tx, y: at.ty, w, h });
-      /* WALKABILITY DELTA, not absolute walkability. The seed station already has walls and machinery
-         under some of these tiles, so "are all N tiles walkable" answers a question about the STATION.
+      /* WALKABILITY DELTA, not absolute walkability. The seed keep already has walls and machinery
+         under some of these tiles, so "are all N tiles walkable" answers a question about the KEEP.
          The question about the RUG is whether unrolling it takes anything away — count before, count
          after, and they must match. */
       const count = () => {
@@ -108,14 +108,14 @@ try {
 
   // ---- 2. the FOOTPRINT proof: geo carries each decal at its own w/h and never blocks a tile
   await say('geo props:', `(() => {
-    const geo = Build.__test__.station().projectGeometry();
+    const geo = Build.__test__.keep().projectGeometry();
     return (geo.props || []).filter(p => /^rug/.test(p.t)).map(p => ({ t: p.t, w: p.w, h: p.h, block: p.block }));
   })()`);
   await say('soft-cross set:', `(() => {
     /* a rug an agent STEPS AROUND is a rug that failed. beltUnion() soft-blocks every non-blocking prop
        footprint except SOFT_CROSS, so a new rug id missing from that set is invisible to every other
        check here — the prop places, renders and stays walkable, and bodies still route around it. */
-    const st = Build.__test__.station();
+    const st = Build.__test__.keep();
     return st.props().filter(p => /^rug/.test(p.t)).map(p => [p.t, World._dbgSoftCross ? World._dbgSoftCross(p.t) : 'no hook']);
   })()`);
 

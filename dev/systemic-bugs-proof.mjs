@@ -62,14 +62,14 @@ try {
     await new Promise(r=>setTimeout(r,350));
     const catalog={firstCalls,afterRecoveryCalls:catalogCalls,panelPresent:!!document.getElementById('mkt-dossier')};
     Marketplace.close();window.fetch=original;
-    StationUI.openTerm('settings','permissions');
+    KeepUI.openTerm('settings','permissions');
     for(let i=0;i<40&&!document.querySelector('[data-exec-policy-save]');i++)await new Promise(r=>setTimeout(r,100));
     const control=document.querySelector('[data-exec-policy-save]');
     if(!control)throw new Error('execution policy control missing');
     window.fetch=(url,opts)=>String(url)==='/api/execution/policy' ? Promise.resolve(new Response(JSON.stringify({ok:false,error:'AUDIT durable write refused'}),{status:200})) : original(url,opts);
     control.click();await new Promise(r=>setTimeout(r,1600));
     const execution={refusal:document.getElementById('toast-stack')?.textContent||''};
-    window.fetch=original;StationUI.closeTerm('settings');
+    window.fetch=original;KeepUI.closeTerm('settings');
     return {staleRead,malformedBypass,routine,catalog,execution};
   })()`);
   result.exceptions = diagnostics.exceptions;

@@ -20,12 +20,12 @@
 
 const Onboarding = (() => {
   let docs = null, commit = null, doneCb = null, notifyFn = null, NAME = 'AGENT';
-  let stationsApi = null, purposeSaid = '';   // CHOOSE YOUR STATION: the app's preset seam (opts.stations) + the purpose they gave
+  let keepsApi = null, purposeSaid = '';   // CHOOSE YOUR KEEP: the app's preset seam (opts.keeps) + the purpose they gave
   let taughtCb = null;    // fired once the awakening's closing line lands — hands off to the FIRST COMMAND tutorial
   let steps = [], i = 0, ignited = false, kindleTimer = null;
   let running = false;   // true between start() and finish()/stop() — lets other COMMS flows (the intake interview) avoid hijacking the awakening's input handler
   let specialty = null;   // if recruited from the Roster, purpose.md + manual.md are pre-authored — skip those beats
-  let role = 'orchestrator';   // the first agent wakes as the station's lead — the ceremony frames it that way
+  let role = 'orchestrator';   // the first agent wakes as the keep's lead — the ceremony frames it that way
   let persona = null;          // the voice chosen on the create screen — acknowledged here, never re-asked
   let getSystem = null;        // accessor for the LIVE system prompt (persona + dossier already folded in) — powers the generated beats
   let beatN = 0, beatTotal = 5;   // truth-beat progress (light/audio arc) — beats vary per path, so count them, don't index steps
@@ -77,7 +77,7 @@ const Onboarding = (() => {
   // immediately visible answer box. The existing specialist wake remains separate.
   function buildSteps() {
     const all = [
-      // a recruited specialist still introduces itself the old way (the station-wide dossier is already
+      // a recruited specialist still introduces itself the old way (the keep-wide dossier is already
       // known by then, so its wake keeps exactly one beat: who this new mind is for).
       { field: 'context', optional: true, specialtyOnly: true,
         prompt: 'your turn — who are you, and what are you building?',
@@ -86,11 +86,11 @@ const Onboarding = (() => {
         build: t => ({ context: t }),
         ack: t => t ? 'noted. i can picture it now.' : 'fine. i’ll read the room as we go.' },
 
-      // AUTONOMY CADENCE — sets the OPENING posture: how much the station runs on its own while you're away. Not a
+      // AUTONOMY CADENCE — sets the OPENING posture: how much the keep runs on its own while you're away. Not a
       // dossier dim and not a .md doc — the picked option's value is a cadence-preset id written straight to
       // AutonomyStore.applyPreset (autonomy.js). Concrete, picture-able choices only (the awakening-question rule);
       // even 'run free' caps Reach at sandbox there. Asked once, at the orchestrator awakening (the posture is
-      // station-wide for now), and always retunable from the station SETTINGS panel.
+      // keep-wide for now), and always retunable from the keep SETTINGS panel.
       { posturePreset: true, optional: true,
         prompt: 'one more thing — while you’re away, how much should i run on my own?',
         options: [
@@ -105,7 +105,7 @@ const Onboarding = (() => {
           ? 'set — and you can retune that any time in SETTINGS › AUTONOMY.'
           : 'no rush — until you decide, i’ll only line up suggestions for you to approve. nothing runs on its own.' }
     ];
-    // Recruited specialists inherit the station posture and keep only their context beat.
+    // Recruited specialists inherit the keep posture and keep only their context beat.
     return specialty ? all.filter(s => s.field !== 'purpose' && s.field !== 'manual' && !s.dossierDim && !s.posturePreset) : all.filter(s => !s.specialtyOnly);
   }
 
@@ -126,7 +126,7 @@ const Onboarding = (() => {
       custom: true, placeholder: 'in your own words — what’s the purpose?',
       build: t => ({ purpose: t }),
       ack: lead
-        ? 'there it is — your station’s purpose, in ink. that’s what this station’s for.'
+        ? 'there it is — your keep’s purpose, in ink. that’s what this keep’s for.'
         : 'there it is. now the firepower has a target.' };
   }
 
@@ -139,7 +139,7 @@ const Onboarding = (() => {
     specialty = opts.specialty || null;
     role = opts.role || 'orchestrator';
     persona = opts.persona || null;
-    stationsApi = opts.stations || null; purposeSaid = '';
+    keepsApi = opts.keeps || null; purposeSaid = '';
     getSystem = opts.getSystem || null;
     steps = buildSteps(); i = 0; beatN = 0; ignited = false; running = true;
     // THE FIRST WORDS, LIVE (full birth script): kick ONE prefetched call the moment the wake begins — the
@@ -484,7 +484,7 @@ const Onboarding = (() => {
 
   // NS VISIBILITY (2026-07-13) — the honest dial-raise line for the AWAKENING cadence beat. The moment the Commander
   // picks a run-on-my-own posture, a build-capable pick ('build'/'free') SILENTLY degrades to reason-only drafts on a
-  // cold-start station (no away-workshop grant + a dossier too thin to act) — the exact "it never does anything"
+  // cold-start keep (no away-workshop grant + a dossier too thin to act) — the exact "it never does anything"
   // invisibility the Settings NIGHT SHIFT panel already fixes but onboarding never did. We push the just-set posture to
   // the server and AWAIT it (AutonomyStore.applyPreset's own sync is fire-and-forget, so a bare status read could see
   // the stale/floor posture), then read /api/nightshift/status back and speak ONE line composed by the pure engine —
@@ -538,12 +538,12 @@ const Onboarding = (() => {
       }
       const text = isSkip ? '' : String(res.value).trim();
       if (!isSkip && commit) { const patch = s.build(text); if (patch) commit(patch); }
-      if (!isSkip && s.field === 'purpose') purposeSaid = text;   // the station pick reads what they said they want help with
-      // a beat that targets a dossier dimension (not a config .md) writes its answer STRAIGHT to the station-wide
+      if (!isSkip && s.field === 'purpose') purposeSaid = text;   // the keep pick reads what they said they want help with
+      // a beat that targets a dossier dimension (not a config .md) writes its answer STRAIGHT to the keep-wide
       // dossier — same authoring path the COMMANDER panel uses (recomposes the live prompt + persists at the edge).
       if (!isSkip && s.dossierDim && typeof DossierStore !== 'undefined' && DossierStore.upsert) { DossierStore.upsert(s.dossierDim, { text, source: 'onboarding', weight: 'stated' }); ink(s.dossierDim, text); }   // V3: always the Commander's own words now (steer chips can't write); the ink stamp shows the write landing
       // the autonomy cadence beat writes the chosen OPENING posture straight to AutonomyStore (the option value is a
-      // cadence-preset id). Skipping ('Decide later') leaves the new-station default — PROPOSE: suggestions to
+      // cadence-preset id). Skipping ('Decide later') leaves the new-keep default — PROPOSE: suggestions to
       // approve, never an unattended act (Autonomy.fresh).
       if (!isSkip && s.posturePreset && typeof AutonomyStore !== 'undefined' && AutonomyStore.applyPreset) {
         const saved = await AutonomyStore.applyPreset(text);
@@ -632,7 +632,7 @@ const Onboarding = (() => {
     const pace = await Dialogue.node({
       lines: [seg(interviewOnly
         ? 'let’s fill in the picture. a few questions about your work, or a deeper conversation about your goals? you can review and change what we save in your dossier.'
-        : 'i’m awake. let’s give this station a direction. start with two setup questions, or take time to tell me about your work. you can edit what we save in your dossier — the COMMANDER file of what the station knows about you.', 46, 0)],
+        : 'i’m awake. let’s give this keep a direction. start with two setup questions, or take time to tell me about your work. you can edit what we save in your dossier — the COMMANDER file of what the keep knows about you.', 46, 0)],
       options: [
         ...(!interviewOnly ? [{ label: 'Quick setup — two questions', value: 'quick' }] : []),
         { label: 'A short conversation', value: 'loose' },
@@ -756,7 +756,7 @@ const Onboarding = (() => {
         if (!running) return;
         if (pick && /^o\d$/.test(String(pick.value))) {
           grabbedMove = mir.offers[Number(String(pick.value).slice(1))] || '';
-          if (grabbedMove && typeof DossierStore !== 'undefined' && DossierStore.upsert) { DossierStore.upsert('goals', { text: 'Wants the station to: ' + grabbedMove, source: 'onboarding', weight: 'synth' }); ink('goals', 'Wants the station to: ' + grabbedMove); }
+          if (grabbedMove && typeof DossierStore !== 'undefined' && DossierStore.upsert) { DossierStore.upsert('goals', { text: 'Wants the keep to: ' + grabbedMove, source: 'onboarding', weight: 'synth' }); ink('goals', 'Wants the keep to: ' + grabbedMove); }
           bumpTruth();
           await Dialogue.say([seg('then that’s the one i keep my eye on.', 44, 340)]);
           break;
@@ -813,7 +813,7 @@ const Onboarding = (() => {
           const own = await Dialogue.node({
             lines: [seg('then say it straight — what are we actually here to do?', 46, 0)],
             options: [{ label: 'Keep your version', value: '', skip: true }],
-            allowCustom: true, customFirst: true, customLabel: 'the mission, in my own words', customPlaceholder: 'what this station is for…'
+            allowCustom: true, customFirst: true, customLabel: 'the mission, in my own words', customPlaceholder: 'what this keep is for…'
           });
           if (!running) return;
           if (own && own.value != null && String(own.value).trim()) purposeT = String(own.value).trim();
@@ -845,7 +845,7 @@ const Onboarding = (() => {
         if (syn.stack && typeof DossierStore !== 'undefined' && DossierStore.upsert) DossierStore.upsert('stack', { text: syn.stack, source: 'onboarding', weight: 'synth' });
         if (typeof ProfileStore !== 'undefined' && typeof Classify !== 'undefined') ProfileStore.seed(Classify.getTag(purposeT));
         bumpTruth();
-        await Dialogue.say([seg('there it is — your station’s purpose, in ink. that’s what this station’s for.', 44, 360)]);
+        await Dialogue.say([seg('there it is — your keep’s purpose, in ink. that’s what this keep’s for.', 44, 360)]);
         if (!running) return;
         purposeDone = true;
       }
@@ -882,27 +882,27 @@ const Onboarding = (() => {
     if (specialty) { beatTotal = Math.max(1, steps.length); await runSteps(steps); }
     else { beatTotal = 6; await runLeadMeeting(); }   // pain, its follow-up, ambition, its follow-up, purpose, cadence
     if (!running) return;
-    if (!specialty && role === 'orchestrator') { await pickStation(); if (!running) return; }
+    if (!specialty && role === 'orchestrator') { await pickKeep(); if (!running) return; }
     finish();
   }
 
-  /* CHOOSE YOUR STATION (2026-09-28): the lead's last question, asked while the room is still dark so the dawn reveals
-     the station they chose. The recommendation reads the purpose they just gave (StationTemplates.recommend: the five
+  /* CHOOSE YOUR KEEP (2026-09-28): the lead's last question, asked while the room is still dark so the dawn reveals
+     the keep they chose. The recommendation reads the purpose they just gave (KeepTemplates.recommend: the five
      purpose chips map one to one onto the five work presets); no clear match recommends one room, never a guess. It
-     is offered only over the untouched starter room (stations.fresh()), so a resumed briefing after a pick, or any
-     station already built, never has its floor swapped. A deferred interview (offerDeferred) never reaches it. Every
-     question stays: this ADDS a beat. The app's seam (opts.stations) builds the preset through the same
-     StationTemplates.build + replaceLayout path Build mode's Presets use. */
+     is offered only over the untouched starter room (keeps.fresh()), so a resumed briefing after a pick, or any
+     keep already built, never has its floor swapped. A deferred interview (offerDeferred) never reaches it. Every
+     question stays: this ADDS a beat. The app's seam (opts.keeps) builds the preset through the same
+     KeepTemplates.build + replaceLayout path Build mode's Presets use. */
   const titleCase = s => String(s || '').toLowerCase().replace(/\b\w/g, c => c.toUpperCase());
-  async function pickStation() {
-    const S = stationsApi;
+  async function pickKeep() {
+    const S = keepsApi;
     if (!S || typeof S.fresh !== 'function' || !S.fresh() || typeof Dialogue === 'undefined') return;
     const works = (S.catalog() || []).filter(c => c && c.group === 'work');
     if (!works.length) return;
     const recId = S.recommend ? S.recommend(purposeSaid) : null, rec = works.find(c => c.id === recId) || null;
     const ordered = rec ? [rec].concat(works.filter(c => c !== rec)) : works;
-    stage('YOUR STATION', 'Where the work happens');
-    const ask = 'one more question: which station should i build for you? '
+    stage('YOUR KEEP', 'Where the work happens');
+    const ask = 'one more question: which keep should i build for you? '
       + (rec ? 'from what you told me, i’d start with the ' + rec.name.toLowerCase() + ': ' + rec.pitch + '.'
              : 'pick the kind of work you’ll do most, or start with one room and build it yourself.')
       + ' you can change it any time in BUILD › Presets.';
@@ -915,13 +915,13 @@ const Onboarding = (() => {
     if (!running) return;
     const id = res && !res.skip ? String(res.value || '') : '';
     const pick = works.find(c => c.id === id);
-    if (!pick) { await Dialogue.say([seg('one room it is. you can pick a station any time in BUILD › Presets.', 44, 360)]); return; }
+    if (!pick) { await Dialogue.say([seg('one room it is. you can pick a keep any time in BUILD › Presets.', 44, 360)]); return; }
     let r = null;
     try { r = S.apply(pick.id); } catch (_) { r = null; }
     if (!running) return;
     await Dialogue.say([seg(r && r.ok
       ? 'done. the ' + pick.name.toLowerCase() + ' is built, and its line is waiting for a crew: WORK › AUTOMATE › WORKFLOWS walks you through who works each step.'
-      : 'i couldn’t build that station here, so we’ll keep one room. you can try again in BUILD › Presets.', 44, 360)]);
+      : 'i couldn’t build that keep here, so we’ll keep one room. you can try again in BUILD › Presets.', 44, 360)]);
   }
 
   // DAWN — the pull-back reveals its whole world, the light blooms, and it speaks its first WHOLE sentences
@@ -946,7 +946,7 @@ const Onboarding = (() => {
     Dialogue.open({ name: NAME });
     stage('READY TO BEGIN', 'Choose your first step');
     const readyLine = role === 'orchestrator'
-      ? 'i’m ' + NAME + '. the station is yours. give me one task to start with — we can build the rest around the work. your setup stays editable in the dossier.'
+      ? 'i’m ' + NAME + '. the keep is yours. give me one task to start with — we can build the rest around the work. your setup stays editable in the dossier.'
       : 'i’m ' + NAME + '. ready for my first assignment. you can change my setup in the agent dossier.';
     await Dialogue.say([seg(readyLine, 46, 0)]);
     if (birthFailed) {

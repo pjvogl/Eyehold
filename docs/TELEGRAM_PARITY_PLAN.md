@@ -298,7 +298,7 @@ That is a nuance, not a gap.
 | N6 | ~~**`edited_message` never arrives**~~ **DONE** — see below. | Fixing a typo in your question does nothing; the bot answers the typo. | S |
 | N7 | ~~**`channel_post` never arrives**~~ **DONE** — see below. | The bot is **completely deaf** when added to a broadcast channel. | S |
 | N8 | ~~**No reactions**~~ **DONE** — see below. | The cheapest possible "I heard you" — one API call, no message, no chunking. | S |
-| N9 | ~~**No status indicator**~~ **DONE** — `setShortDescription` on the transport + adapter, written on connect/disconnect. Opt-in via `TELEGRAM_STATUS_INDICATOR` (with `TELEGRAM_STATUS_ONLINE` / `_OFFLINE`), **off by default exactly as in Hermes**, because it overwrites a public profile field the member may have written themselves. Capped at Telegram's 120 chars. | The bot's profile card never says whether the station is up. | S |
+| N9 | ~~**No status indicator**~~ **DONE** — `setShortDescription` on the transport + adapter, written on connect/disconnect. Opt-in via `TELEGRAM_STATUS_INDICATOR` (with `TELEGRAM_STATUS_ONLINE` / `_OFFLINE`), **off by default exactly as in Hermes**, because it overwrites a public profile field the member may have written themselves. Capped at Telegram's 120 chars. | The bot's profile card never says whether the keep is up. | S |
 | N10 | **No link-preview control** (`disable_link_previews` / `_link_preview_kwargs`). | Any URL in a reply drags a full unfurl card. | XS |
 | N11 | **No `deleteMessage`.** Hermes deletes its own transient progress/status messages. | Prerequisite for P4 streaming cleanup. | XS |
 | N12 | **No `getChat` / `username → chat_id`.** | A member can only be reached by numeric id. | S |
@@ -312,7 +312,7 @@ That is a nuance, not a gap.
 
 - **DM topics / home channel** (`_create_dm_topic`, `ensure_dm_topic`, `rename_dm_topic`, `_setup_dm_topics`,
   `create_handoff_thread`, `TELEGRAM_HOME_CHANNEL`) — Hermes mirrors every DM into a topic of one operator
-  supergroup. That is a *fleet-operator* shape; Eyehold's member owns their own station. Refuse on product
+  supergroup. That is a *fleet-operator* shape; Eyehold's member owns their own keep. Refuse on product
   grounds, not capability.
 - **`sendRichMessage` / `sendRichMessageDraft`** — §3 already says probe-and-degrade, never a dependency.
 - **Free-form outbound addressing** — known-targets-only stays law whatever Hermes does.
@@ -485,7 +485,7 @@ the lesson is that a hand-rolled binary fixture is worth generating rather than 
 ### THE INBOUND HALF — PROVEN LIVE (2026-07-30)
 
 Closed with a **real sidecar polling real `api.telegram.org`**, booted from env onto an isolated workspace with
-a local zero-cost model, so it touched neither the station's config nor a paid provider. A real message
+a local zero-cost model, so it touched neither the keep's config nor a paid provider. A real message
 ("what can u do") sent from a phone produced, in order:
 
 - `telegram auto-started from env` → `telegram channel connecting…` — the poll loop, with the new six-kind
@@ -503,7 +503,7 @@ platform**, not only against fakes.
 ### Historical — what this section said while it was still open
 
 The outbound half is now done. What remains is the inbound half, and it is blocked on something simpler than
-it looks: **nothing in Eyehold is polling this token.** The bot has never been added to a station (no
+it looks: **nothing in Eyehold is polling this token.** The bot has never been added to a keep (no
 `telegram.token` in any channel-secrets file), so a message to it reaches no hub and gets no reply. Open until
 it is connected in the app's Messaging tab: inbound admission end to end, a real run and its reaction ack,
 streaming on real model output, voice-note STT, album batching, `edited_message`, `channel_post` + the echo

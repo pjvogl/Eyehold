@@ -1,6 +1,6 @@
 'use strict';
 
-/* Station media composition. The HTTP routes, agent voice tool, and messaging-channel
+/* Keep media composition. The HTTP routes, agent voice tool, and messaging-channel
    voice-note ingest all use this one implementation so their provider/fallback ladders
    cannot drift. Ambient state is injected by sidecar/index.js. */
 
@@ -330,7 +330,7 @@ function makeMediaService(options) {
         reasons.push('edge: empty audio');
       } catch (error) { reasons.push('edge: ' + ((error && error.message) || error)); }
     } else reasons.push('edge: disabled');
-    return { ok: false, reason: reasons.join('; ') || 'this station holds no voice-capable credential' };
+    return { ok: false, reason: reasons.join('; ') || 'this keep holds no voice-capable credential' };
   }
   // CERTAIN-availability probe for voice_generate (runOnce's tool footprint): false only when synthesizeForAgent
   // above has no leg it could even try — no keyed TTS provider AND the keyless Edge floor switched off. Reads the

@@ -55,7 +55,7 @@
     // cure, so a stored reason carrying that advice is read back with the current wording.
     const reason = /run `codex` in your terminal/i.test(d.reason)
       ? 'Codex refresh token was already consumed by another client (the Codex CLI, the VS Code extension, or a copy of '
-        + 'this station on another computer). Sign in with ChatGPT again: ⏼ RECONNECT on the ChatGPT card in SETTINGS › AI & MODELS.'
+        + 'this keep on another computer). Sign in with ChatGPT again: ⏼ RECONNECT on the ChatGPT card in SETTINGS › AI & MODELS.'
       : d.reason;
     return { reason: scrubReason(reason), code: String(d.code || 'codex_relogin_required'), at: String(d.at || '') };
   }

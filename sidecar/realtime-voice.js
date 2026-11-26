@@ -1,7 +1,7 @@
 'use strict';
 
 const DEFAULT_MODEL = 'gpt-realtime-2.1';
-const DEFAULT_VOICE = 'ash';   // MALE by default: the station voice is written as a low American male, and the crew sprites read male
+const DEFAULT_VOICE = 'ash';   // MALE by default: the keep voice is written as a low American male, and the crew sprites read male
 /* The provider's own voice set. It was hardcoded to one name, which read as "you cannot change the voice" —
    that limit was OURS, not the provider's. Validated against this list rather than passed through, so a
    caller cannot push an arbitrary string into the session payload. */
@@ -51,7 +51,7 @@ function sessionConfig(opts) {
     model: opts.model || DEFAULT_MODEL,
     output_modalities: ['audio'],
     /* PLACEHOLDER ONLY. The page replaces these over the data channel the instant it opens, with the selected
-       agent's own composed prompt and the live station context — only the page knows who is selected. Written
+       agent's own composed prompt and the live keep context — only the page knows who is selected. Written
        so that even this first second does not claim a separate identity: the previous text opened with "You
        are Eyehold Voice, a control layer", which is exactly the separate-entity feel being fixed. */
     instructions: [

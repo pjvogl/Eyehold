@@ -4,7 +4,7 @@ const A = require('./_assert.js');
 const fs = require('node:fs');
 const os = require('node:os');
 const path = require('node:path');
-const Recovery = require('../sidecar/station-recovery.js');
+const Recovery = require('../sidecar/keep-recovery.js');
 const { writeFileDurable } = require('../sidecar/durable-write.js');
 const { makeUpdatePreparation } = require('../sidecar/update-preparation.js');
 
@@ -105,7 +105,7 @@ const { makeUpdatePreparation } = require('../sidecar/update-preparation.js');
     }
 
     // A run that ignores the abort never gets durable writes frozen under it: the bounded drain times out and the
-    // station stays fully writable (no recovery point, no install).
+    // keep stays fully writable (no recovery point, no install).
     {
       const events = [];
       let clockC = 9000;

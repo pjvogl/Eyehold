@@ -86,7 +86,7 @@
 
     addRoot(opts.currentWorkspaces);
     // A workspace root that is not one of the app's own homes is a deliberate isolation boundary (a test, a dev
-    // seed, a second station): its OWN codex/tokens.json is still read, but nothing is pulled ACROSS into it.
+    // seed, a second keep): its OWN codex/tokens.json is still read, but nothing is pulled ACROSS into it.
     if (!isRecognizedWorkspaceRoot(opts.currentWorkspaces, opts)) return files;
     for (const root of knownWorkspaceRoots(opts)) addRoot(root);
     return files;

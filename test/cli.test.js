@@ -1,6 +1,6 @@
 /* node test/cli.test.js — the PURE decisions of the `eyehold` CLI (bin/lib/cli-core.js), no I/O.
 
-   Locks: argument parsing + env fallbacks · the attach-vs-spawn choice (never spawn beside a live station,
+   Locks: argument parsing + env fallbacks · the attach-vs-spawn choice (never spawn beside a live keep,
    never boot into a workspace a live desktop owns, a NAMED port that is dead is an error not a spawn) · the
    desktop port-discovery parsers · agent/model selection · the run-event reducer (text = the real token deltas,
    reason ONLY from agent.run.end, a dropped stream is never "done") · exit codes · the bootstrap documents the
@@ -44,12 +44,12 @@ const lineage = require('../sidecar/workspace-lineage.js');
   A.ok(/Exit codes: 0 done/.test(core.USAGE), 'usage text documents the exit codes');
 }
 
-// ---- chooseStation ------------------------------------------------------------------------------
+// ---- chooseKeep ------------------------------------------------------------------------------
 {
-  const c = core.chooseStation;
+  const c = core.chooseKeep;
   A.eq(c({ candidates: [{ source: 'default', port: 8787, reachable: true }] }).mode, 'attach', 'a reachable default attaches');
   const d = c({ candidates: [{ source: 'default', port: 8787, reachable: false }, { source: 'desktop', port: 64769, reachable: true }], desktop: { ownerAlive: true, port: 64769 } });
-  A.eq(d.mode + ':' + d.port + ':' + d.source, 'attach:64769:desktop', 'the desktop station is attached when the default is dead');
+  A.eq(d.mode + ':' + d.port + ':' + d.source, 'attach:64769:desktop', 'the desktop keep is attached when the default is dead');
   const named = c({ candidates: [{ source: 'flag', port: 9, reachable: false }] });
   A.eq(named.mode, 'refuse', 'a NAMED dead port is an error, never a spawn'); A.ok(/--port/.test(named.reason), 'and names the flag');
   const envNamed = c({ candidates: [{ source: 'env', port: 9, reachable: false }] });
@@ -60,7 +60,7 @@ const lineage = require('../sidecar/workspace-lineage.js');
   A.eq(ownedOverride.mode, 'spawn', '…unless the operator picked another workspace');
   A.eq(c({ candidates: [{ source: 'default', port: 8787, reachable: false }], desktop: { ownerAlive: false } }).mode, 'spawn', 'nothing reachable, no live owner → spawn');
   A.eq(c({ candidates: [{ source: 'default', port: 8787, reachable: false }], noSpawn: true }).mode, 'refuse', '--no-spawn refuses');
-  A.eq(c({ candidates: [{ source: 'default', port: 8787, reachable: true }], forceSpawn: true }).mode, 'spawn', '--spawn boots even when a station answers');
+  A.eq(c({ candidates: [{ source: 'default', port: 8787, reachable: true }], forceSpawn: true }).mode, 'spawn', '--spawn boots even when a keep answers');
   A.eq(c({ forceSpawn: true, noSpawn: true }).mode, 'refuse', '--spawn + --no-spawn refuses');
 }
 
@@ -105,7 +105,7 @@ const lineage = require('../sidecar/workspace-lineage.js');
   const unknown = core.pickAgent(rt, { agent: 'ghost' });
   A.ok(!unknown.ok && /unknown agent "ghost"/.test(unknown.error) && /researcher, agent/.test(unknown.error), 'unknown agent lists the roster');
   const bare = core.pickAgent({ provider: 'openrouter', model: 'env/default', agents: [] }, {});
-  A.eq(bare.agentId + '/' + bare.model, 'agent/env/default', 'an empty roster runs the bare agent on the station default model');
+  A.eq(bare.agentId + '/' + bare.model, 'agent/env/default', 'an empty roster runs the bare agent on the keep default model');
   const none = core.pickAgent({ agents: [{ agentId: 'agent', name: 'X', model: '', provider: 'openrouter' }] }, {});
   A.ok(!none.ok && /--model/.test(none.error), 'no model anywhere → an actionable error');
   const body = core.buildRunBody(d, 'do it', { cwd: '/proj' });
@@ -157,9 +157,9 @@ const lineage = require('../sidecar/workspace-lineage.js');
   const cs = c.summary();
   A.ok(cs.reason === 'cancelled' && cs.timedOut && !cs.proven, 'an unsettled stream after our own cancel → cancelled (timedOut flagged)');
   A.eq(core.exitCodeForReason('cancelled'), 4, 'cancelled → exit 4');
-  // …but the station's own verdict wins when it arrives
+  // …but the keep's own verdict wins when it arrives
   c.feed({ name: 'agent.run.end', payload: { runId: 'r3', reason: 'cancelled', turns: 1, usd: 0 } });
-  A.ok(c.summary().proven && c.summary().reason === 'cancelled', 'the station\'s agent.run.end{cancelled} is the proven reason');
+  A.ok(c.summary().proven && c.summary().reason === 'cancelled', 'the keep\'s agent.run.end{cancelled} is the proven reason');
 
   // an unknown reason string never passes through as a claim
   const u = core.makeRunTracker();
@@ -194,8 +194,8 @@ const lineage = require('../sidecar/workspace-lineage.js');
   A.eq(d.save.doc.agent.id + ':' + d.save.doc.agent.name + ':' + d.save.doc.agent.model, 'agent:ATLAS:anthropic/claude-haiku-4.5', 'save.agent mirrors the roster');
   A.eq(d.save.doc.prov, 'openrouter', 'the provider rides doc.prov (the desktop restores it before the credential check)');
   A.eq(d.save.updatedAt + ':' + d.save.doc.updatedAt, '1700000000123:1700000000123', 'timestamps come from the injected clock');
-  A.ok(Array.isArray(d.save.doc.agents) && d.save.doc.station === null && d.save.doc.workstreams.length === 0, 'the rest of the golden shape is present');
-  // the recovery gate must see these as a REAL station, never as an empty root to recover into
+  A.ok(Array.isArray(d.save.doc.agents) && d.save.doc.keep === null && d.save.doc.workstreams.length === 0, 'the rest of the golden shape is present');
+  // the recovery gate must see these as a REAL keep, never as an empty root to recover into
   const STATE_EVIDENCE = lineage._internals.STATE_EVIDENCE;
   A.ok(STATE_EVIDENCE.test('agent.save.json') && STATE_EVIDENCE.test('agent.roster.json'), 'both bootstrap files are STATE_EVIDENCE to workspace-lineage');
   const long = core.bootstrapDocs({ name: 'X'.repeat(80) });
@@ -226,8 +226,8 @@ const lineage = require('../sidecar/workspace-lineage.js');
   t.feed({ name: 'agent.token', payload: { delta: 'ok' } });
   t.feed({ name: 'agent.run.end', payload: { reason: 'done', turns: 1, usd: 0.5 } });
   const j = core.jsonResult(t.summary(), { agentId: 'agent', agentName: 'X', provider: 'openrouter', baseUrl: 'http://127.0.0.1:1', mode: 'attached', workspace: null, version: 'v1', startedAt: 10, endedAt: 25 });
-  for (const k of ['ok', 'reason', 'proven', 'exitCode', 'text', 'runId', 'agentId', 'agentName', 'model', 'provider', 'station', 'usd', 'turns', 'tokens', 'toolCalls', 'errors', 'timedOut', 'startedAt', 'endedAt', 'durationMs']) A.ok(k in j, 'receipt carries ' + k);
-  A.eq(j.exitCode + ':' + j.durationMs + ':' + j.station.mode + ':' + j.text, '0:15:attached:ok', 'receipt values');
+  for (const k of ['ok', 'reason', 'proven', 'exitCode', 'text', 'runId', 'agentId', 'agentName', 'model', 'provider', 'keep', 'usd', 'turns', 'tokens', 'toolCalls', 'errors', 'timedOut', 'startedAt', 'endedAt', 'durationMs']) A.ok(k in j, 'receipt carries ' + k);
+  A.eq(j.exitCode + ':' + j.durationMs + ':' + j.keep.mode + ':' + j.text, '0:15:attached:ok', 'receipt values');
   const sp = core.splitNdjson('{"a":1}\r\n\n{"b":2}\n{"c"');
   A.eq(sp.lines.length + ':' + sp.rest, '2:{"c"', 'ndjson split keeps the partial tail and drops keep-alive blanks');
 }

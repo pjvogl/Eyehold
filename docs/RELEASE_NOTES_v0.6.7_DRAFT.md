@@ -6,7 +6,7 @@
 > - Covers trunk `feat/harness-backend` from tag `v0.6.6` through **10d837d0**
 >   (142 substantive commits; qa/claims/status commits excluded).
 >   The body through `62706fb9` was written 2026-07-25; the delta `62706fb9..10d837d0`
->   (browser instrument, request cost, Commander commands, station defaults) was appended
+>   (browser instrument, request cost, Commander commands, keep defaults) was appended
 >   2026-07-26.
 > - **DELTA `10d837d0..91f3c5b1` WRITTEN UP 2026-07-26** — security sweep, delegation +
 >   conveyor honesty, idle continuity, props/tables, the FOR YOU shelf, and the MIT/branding
@@ -24,18 +24,18 @@
 
 # Eyehold v0.6.7
 
-The station gets places to be, and your phone gets real control of it.
+The keep gets places to be, and your phone gets real control of it.
 
-## The station is a place now
+## The keep is a place now
 
-- **Four skies to park under.** The backdrop behind the station is a choice: **THE VOID**
+- **Four skies to park under.** The backdrop behind the keep is a choice: **THE VOID**
   (the default, unchanged), **THE NURSERY** (inside the gas cloud instead of looking at it
   from outside), **OCEAN**, and **NIGHT CITY**. Pick one in the world settings; the camera
-  parallax follows the station the way it always did.
-- **Your station will look different the first time you open it, on purpose.** The default
+  parallax follows the keep the way it always did.
+- **Your keep will look different the first time you open it, on purpose.** The default
   deck moved from **PLATE** to **SPINE** (big staggered plates with a real hierarchy instead of
   a uniform grid of identical slabs), and the default wall moved from **PLATING** to
-  **BULKHEAD**. Both changes reach stations that already exist, because a station that never
+  **BULKHEAD**. Both changes reach keeps that already exist, because a keep that never
   picked a floor was showing the old default — and the old default had aged. **Nothing was
   removed:** PLATE and PLATING are still in the palette as the classics, one click away in the
   build menu if you preferred them.
@@ -46,7 +46,7 @@ The station gets places to be, and your phone gets real control of it.
   panelled.
 - **Walls got the same treatment.** Per-room colour, taller wall faces, and new wall materials
   including **VIEWPORT** — which doesn't paint the wall, it cuts a hole in it, so the live
-  drifting starfield behind the station shows through.
+  drifting starfield behind the keep shows through.
 - **Rounded corners are actually round.** Every rounded corner is drawn from one shared
   integer curve now, so the wall and the deck agree on where the corner is: no jog where the
   curve hands off to the straight wall, no bright one-pixel seam beside the side walls, no
@@ -81,7 +81,7 @@ The station gets places to be, and your phone gets real control of it.
   message the agent you actually want instead of routing everything through one bot.
 - **Thirteen commands, not six.** `/stop` ends the run in progress, `/new` forgets the chat's
   history, `/status` says what the chat is doing right now — plus `/usage` and `/tools`
-  answering from the station's real ledger, and `/routine` and `/away` for scheduling and
+  answering from the keep's real ledger, and `/routine` and `/away` for scheduling and
   queueing work. They run through the same command registry the desktop app uses, so a
   command can't quietly mean two different things in two places.
 - **Tappable choices and approvals.** When an agent asks you to pick something, Telegram shows
@@ -100,7 +100,7 @@ The station gets places to be, and your phone gets real control of it.
 
 ## Commands that don't lie
 
-- Slash commands execute on the station instead of being guessed at in the browser, and
+- Slash commands execute on the keep instead of being guessed at in the browser, and
   `/routine`, `/away` and `/loop` join the set.
 - `/usage` and `/tools` answer from the sidecar — real spend, and the tools this agent can
   genuinely call.
@@ -156,13 +156,13 @@ The agent's browser stopped being a page-loader with a screenshot button.
 - **Tool results are treated as data, not instructions.** Text an agent reads off a web page
   or a tool result can no longer act as a command to that agent.
 
-## Nothing can hang the station, and nothing can talk it into things
+## Nothing can hang the keep, and nothing can talk it into things
 
 An adversarial sweep went looking for ways to freeze Eyehold or steer an agent using nothing but
 content it was asked to read. Everything below was a real hole, and every one of them is now
 pinned by a regression test.
 
-- **A hostile page can't freeze the station for minutes any more.** `web_fetch` had no bound on
+- **A hostile page can't freeze the keep for minutes any more.** `web_fetch` had no bound on
   how long a page could hold it; a search result could stall the whole process. Both it and the
   search-result reader are bounded now.
 - **A model-supplied regex can't lock the process.** `fs.search` accepted a pattern straight from
@@ -186,7 +186,7 @@ pinned by a regression test.
   partial results survive, instead of one straggler taking the batch down with it.
 - **The full crew gets used.** Asking more workers than the fan-out could take used to refuse half
   of them outright; the dispatch runs in waves instead.
-- **A delegated worker is told its real approval posture**, so it stops trying things the station
+- **A delegated worker is told its real approval posture**, so it stops trying things the keep
   was always going to deny.
 - **A MERGER funnels lanes instead of faking a combine.** The conveyor's merge step claimed to
   combine its inputs and didn't — what came out was one lane's work wearing the label of all of
@@ -195,7 +195,7 @@ pinned by a regression test.
 
 ## Runs cost less, and the number is honest
 
-- **Roughly a third less is sent on every single request.** The station used to describe all
+- **Roughly a third less is sent on every single request.** The keep used to describe all
   72 of its tools to the model every turn (37.7 KB); it now advertises the ones that matter and
   lets an agent look the rest up on demand (29.7 KB). Nothing was taken away — the tools are
   all still there and still callable.
@@ -205,7 +205,7 @@ pinned by a regression test.
   if they were fresh, which would have inflated the figure; that fix shipped alongside caching
   itself, so no build ever showed you the inflated number. The under-reporting was real, though,
   and this release ends it:
-  - **The station could record $0 for a run that genuinely cost money.** If it ever started
+  - **The keep could record $0 for a run that genuinely cost money.** If it ever started
     without a working connection, three of the four providers cached the failed price lookup as
     permanent — so for the rest of that session every turn was "unpriced", the ledger logged
     nothing, and **your daily and global spend caps never fired**. The lookup now retries.
@@ -227,7 +227,7 @@ pinned by a regression test.
   `.md` editors in a crew member's dossier were the one per-agent control that never said
   *which* agent it was editing — so edits landed on whichever agent was focused and
   overwrote that one's document. This is the "context always erases to zero" report. Solo
-  stations were never affected; it needed a crew to reproduce.
+  keeps were never affected; it needed a crew to reproduce.
 - **Re-purposing a specialist updates the lead's crew line** instead of leaving a stale
   description behind.
 - The per-agent cards in the dossier's CONFIG tab had no card styling and ran together.
@@ -240,16 +240,16 @@ pinned by a regression test.
 - The "my read" card in COMMS no longer renders in the tool-line register.
 - The KEYS and CATALOG panes went through an honesty pass — including a platform directory
   that answers "what can I connect this to?"
-- **Crew move smoothly.** Agents walking the station were snapping between whole tiles; they
+- **Crew move smoothly.** Agents walking the keep were snapping between whole tiles; they
   now draw at sub-tile positions with an eased gait and smoothed paths. The sprites never
   changed — the movement did.
 - **Inert scenery stopped faking telemetry.** Props that do no work had blinking status lamps
-  on them. A blinking light on this station means something is running; spending that signal
+  on them. A blinking light on this keep means something is running; spending that signal
   on a shelf made it meaningless. The lamps are gone from decor that isn't doing anything.
 - **Gemini models stop rejecting tool calls.** Tool schemas are sanitized for Gemini's wire
   format, including no-argument tools, which that API refuses in the standard shape.
 - **You're warned before your balance runs out**, not after a run has already been refused —
-  and only if you're on managed credits; a bring-your-own-key station never sees it.
+  and only if you're on managed credits; a bring-your-own-key keep never sees it.
 - Two corner-drawing fixes: the ambient room shadow no longer darkens bare space at a corner,
   and the crown where two walls meet is tapered instead of blunt.
 - **Telling the FOR YOU shelf what you don't like no longer empties it.** Enough honest negative
@@ -268,7 +268,7 @@ Your overseer is the likeliest place to find something you wrote for a specialis
 
 - Windows installers are code-signed (CN=Eyehold), continuing from v0.6.5.
 - **Windows: update from inside Eyehold.** It installs over your existing copy — your crew,
-  sessions, keys and station stay exactly where they are.
+  sessions, keys and keep stay exactly where they are.
 - **macOS: download the installer manually this one time.** In-app updating has never actually
   worked on macOS — the feed advertised builds that weren't published, so INSTALL UPDATE failed.
   This release publishes them, so from v0.6.7 onward the Mac updater works like the Windows one.

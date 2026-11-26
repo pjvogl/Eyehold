@@ -9,7 +9,7 @@ reviewed renderer source lock `9c9f788d0`). No shared event/schema changes.
 - SSE transport retains at most 1,024 observations / 2 MiB. Boot-scoped sequence IDs
   recover events missed while disconnected. Expired, invalid, future or old-boot cursors
   trigger snapshot recovery. Renderer commands are excluded from replay.
-- The station ignores duplicate events and callbacks from obsolete connections. A
+- The keep ignores duplicate events and callbacks from obsolete connections. A
   reconnect stays visibly degraded until authoritative snapshot reconciliation succeeds.
 - `browser.network` can derive up to eight GET Fetch/XHR client candidates from observed
   successful requests. It does not execute them or capture headers, cookies or bodies.
@@ -67,7 +67,7 @@ on port 8897, plus real headless Chromium/CDP. Observed state:
 
 The generated client was saved via the production `skill.manage` tool and package store;
 a separate Node process read back the exact support-file source. The library procedure
-was opened in the running station and its text was present in the DOM.
+was opened in the running keep and its text was present in the DOM.
 
 ## Sweep and limits
 
@@ -77,7 +77,7 @@ client error paths, durable skill files, and the identical website renderer mirr
 source hashes were refreshed after review without changing any claim verdicts.
 
 This is verification of the source app, not a rebuilt installed desktop binary or a
-station-wide readiness verdict. Website capture covers read-only JSON lookups; authenticated
+keep-wide readiness verdict. Website capture covers read-only JSON lookups; authenticated
 and mutating workflow replay is outside this slice. The seed server stopped after proof.
 Automatic approval review blocked removal of the temporary browser profiles, so they remain
 only in the isolated worktree and are not committed. The integration tree's pre-existing

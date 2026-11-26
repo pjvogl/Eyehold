@@ -83,7 +83,7 @@ the reference harness's memory is four things we lack: a **user-profile surface*
 **Phase B — Surface results.**
 
 - **B1. `sidecar/cron-deliver.js`** — strict `=== '[SILENT]'` suppression (copy the reference harness exactly), **always deliver failures**. Three sinks, all reusing frozen rungs: local deliverable file (`deliverable` + `GET /api/file`), in-app `notify` (server-side, reconciled on panel open), channel push (`adapter.send` + `channel.delivery`). Plus a **per-run `.md` output archive** under `WORKSPACES/cron/output/{jobId}/{ts}.md` with path-traversal guard — the audit trail the reference harness has and we lack. Emit `cron.result`.
-- **B2. `/api/cron*` + `buildRoutines` in `stationui.js`** — CRUD + preview (`planTick` dry-run) + run-now (set `nextRunAt=now`). Panel reconciles unseen results into browser `notifs`.
+- **B2. `/api/cron*` + `buildRoutines` in `keepui.js`** — CRUD + preview (`planTick` dry-run) + run-now (set `nextRunAt=now`). Panel reconciles unseen results into browser `notifs`.
 
 **Phase C — Surpass (the two holes the reference harness flags itself).**
 
@@ -142,7 +142,7 @@ The loop itself (`loop.js:99-196`) is the strong part — deterministic, cap-gat
 
 Concretely:
 
-- **All state lives in core/sidecar.** Memory records, cron jobs, the ledger, budgets, checkpoints — every byte of truth is in `sidecar/` + `WORKSPACES/`, behind the capability gate. The world (`world.js`, `stationui.js`) holds *no* authoritative state.
+- **All state lives in core/sidecar.** Memory records, cron jobs, the ledger, budgets, checkpoints — every byte of truth is in `sidecar/` + `WORKSPACES/`, behind the capability gate. The world (`world.js`, `keepui.js`) holds *no* authoritative state.
 - **The only interface is the frozen `shared/events.js` bus** (SCHEMA_VERSION 1, validated + redacted). Every new capability surfaces through an **additive** event (CLAUDE.md rule 4 — requested from the cortex-memory owner, never self-edited). If a feature needs a new beat, it adds a rung — it does not reach into the world.
 - **Animations may never gate engine progress.** Events fire immediately; the cosmetic layer catches up asynchronously. The audio/voice work already learned this — a slow VFX must never stall a run. A scheduled fire emits `cron.fire` and `runOnce` proceeds whether or not the sprite has finished walking to its bay.
 - **The hard import rule:** core modules (`cron.js`, the tick driver, `context.js`, `ledger.js`, the memory store) must never `import` `world.js` or UI code. The dependency arrow points one way only: world → events ← engine. If you find yourself importing the world into the engine, stop and emit a richer event instead.

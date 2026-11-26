@@ -23,7 +23,7 @@ const ModelPicker = (() => {
   function shellHTML(opts) {
     opts = opts || {};
     const id = opts.id || 'mp';
-    const inherit = opts.inheritLabel || 'Follow station default';
+    const inherit = opts.inheritLabel || 'Follow keep default';
     let h = '<span class="mp-wrap" data-mp="' + esc(id) + '">';
     h += '<select class="mp-model" id="' + esc(id) + '-model" aria-label="' + esc(opts.ariaLabel || 'Model') + '">';
     h += '<option value="">' + esc(inherit) + '</option>';
@@ -71,7 +71,7 @@ const ModelPicker = (() => {
     catch (_) { list = []; }
     root._mpList = list;   // stash the full items so onChange can recompute effort options accurately
 
-    const inheritLabel = opts.inheritLabel || (sel.querySelector('option[value=""]') ? sel.querySelector('option[value=""]').textContent : 'Follow station default');
+    const inheritLabel = opts.inheritLabel || (sel.querySelector('option[value=""]') ? sel.querySelector('option[value=""]').textContent : 'Follow keep default');
     sel.innerHTML = '';
     sel.appendChild(new Option(inheritLabel, ''));
     let group = '', og = null;
@@ -107,9 +107,9 @@ const ModelPicker = (() => {
   // Open Settings on the PROVIDERS (key entry) section — the same door friendlyerror routes no-key/auth errors to.
   // Prefers Lane C's openTerm(key, section) when it ships (arity ≥ 2); falls back to the bare settings window today.
   function openKeyEntry() {
-    if (typeof StationUI === 'undefined' || !StationUI.openTerm) return;
-    try { if (StationUI.openTerm.length >= 2) { StationUI.openTerm('settings', 'providers'); return; } } catch (_) {}
-    try { StationUI.openTerm('settings'); } catch (_) {}
+    if (typeof KeepUI === 'undefined' || !KeepUI.openTerm) return;
+    try { if (KeepUI.openTerm.length >= 2) { KeepUI.openTerm('settings', 'providers'); return; } } catch (_) {}
+    try { KeepUI.openTerm('settings'); } catch (_) {}
   }
 
   // Show/hide the stranded-state door — a `.mp-none` row (button) rendered as a sibling of the <select> inside the

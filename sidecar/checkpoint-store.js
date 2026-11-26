@@ -171,7 +171,7 @@
       let names = [];
       try { names = fs.readdirSync(pathMod.join(root, '.checkpoints', aid, 'roots')); } catch (_) {}
       for (const name of names) {
-        // Rebuilding the index reads only the station-owned shadow git + scope metadata. Keep revoked roots in
+        // Rebuilding the index reads only the keep-owned shadow git + scope metadata. Keep revoked roots in
         // the list as unavailable restore points; do not erase their recoverable history just because authority
         // is currently absent. Actual restore still re-checks readScope() and fails closed.
         const scope = readScopeSaved(aid, String(name));

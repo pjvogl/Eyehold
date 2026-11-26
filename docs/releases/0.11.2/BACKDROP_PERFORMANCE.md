@@ -2,7 +2,7 @@
 
 The owner's lag report exposed gaps in the earlier small-viewport idle check. Large sky artwork was generated synchronously, and the ground renderer repainted every overlapping tree on each frame. Source repair: `2c041bbe69124eda1f60a6eb5a11cc44676028cb`; follow-up `0152b2f16` updates the exact release-surface ledger only.
 
-Sky artwork now builds in a worker. Ground scenery uses a full-resolution, overscanned world-space plate that moves with the camera and rebuilds for zoom, viewport and station-footprint changes. Each renderer permits one active worker request and one latest queued request; cancellation and stale replies dispose transferred bitmaps. Scene artwork, parallax and animation remain in the existing renderers. The compatibility path retains direct sky generation and cached ground drawing when workers are unavailable.
+Sky artwork now builds in a worker. Ground scenery uses a full-resolution, overscanned world-space plate that moves with the camera and rebuilds for zoom, viewport and keep-footprint changes. Each renderer permits one active worker request and one latest queued request; cancellation and stale replies dispose transferred bitmaps. Scene artwork, parallax and animation remain in the existing renderers. The compatibility path retains direct sky generation and cached ground drawing when workers are unavailable.
 
 | Measurement | Before | After |
 | --- | --- | --- |

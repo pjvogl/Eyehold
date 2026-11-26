@@ -5,20 +5,20 @@ gates. Author-edit before publishing; keep only user-meaningful bullets.
 
 ## Highlights
 
-- **Onboarding, rebuilt (V3).** The station now *earns* its understanding of you: intake chips
+- **Onboarding, rebuilt (V3).** The keep now *earns* its understanding of you: intake chips
   steer instead of answering for you, a guided-discovery interview digs into your real week, and
-  no recommendation fires until the station is genuinely ready. Blitzing through setup no longer
-  poisons your dossier. Keyless stations wake honestly and offer the real interview once a brain
+  no recommendation fires until the keep is genuinely ready. Blitzing through setup no longer
+  poisons your dossier. Keyless keeps wake honestly and offer the real interview once a brain
   is connected.
 - **COMMS decluttered.** Run machinery folds into a single collapsible "RUN COMPLETE" line,
-  station broadcasts stack into one block, and passive beats whisper instead of shouting.
+  keep broadcasts stack into one block, and passive beats whisper instead of shouting.
   Timestamps appear on hover.
 - **Import your agent from the reference harness or OpenClaw.** One click in the Recruitment Bay migrates a
   persona, instructions, memory, and model pin — API keys never transfer (re-enter in KEYS).
 - **Your save is protected at boot.** If the app can't *prove* what's on disk, it shows a
   blocking "your save has NOT been deleted" screen with auto-retry — first-run setup can no
   longer render over an intact save.
-- **Station voice & sound.** Licensed per-cue interface bleeps across the UI (governed by the
+- **Keep voice & sound.** Licensed per-cue interface bleeps across the UI (governed by the
   TERMINAL AUDIO setting); voice mode no longer reads choice-marker syntax aloud; dictation can
   no longer wipe text you typed; Whisper-based transcription preferred over the censored
   browser recognizer.

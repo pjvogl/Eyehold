@@ -1,13 +1,13 @@
 /* EYEHOLD — pitch.js : the PURE engine for THE FIRST PITCH (the agent's first proactive use-case suggestion).
 
-   The keystone of the "agent that points you" loop. The whole station spends the awakening + intake getting to
+   The keystone of the "agent that points you" loop. The whole keep spends the awakening + intake getting to
    KNOW its Commander (the dossier); the First Pitch is the moment that knowledge flows back the other way — the
    agent stops waiting for orders and, once it has done one real task and knows enough about you, turns to you with
    ONE confident, buildable thing to make next. This is the graduation from order-taker to advisor — the single
    most differentiating beat in the app ("i think i know what we should build — want to?").
 
    Two hard disciplines live here, encoded so they can't rot:
-     1. NO FLUFF. A pitch is only ever something the station can actually build — it must map to a real recipe or be
+     1. NO FLUFF. A pitch is only ever something the keep can actually build — it must map to a real recipe or be
         achievable with the capabilities the agent actually has. buildDirective() constrains the agent to that; a
         pitch it can't deliver would shatter presence (the hype-bot failure).
      2. ONE pitch, not a menu. A confident single suggestion takes the choosing-burden off the user (the whole
@@ -30,7 +30,7 @@
 })(typeof globalThis !== 'undefined' ? globalThis : this, function () {
   'use strict';
 
-  // the graduation gate defaults: the station won't pitch until it knows what you're trying to do (goals) AND has
+  // the graduation gate defaults: the keep won't pitch until it knows what you're trying to do (goals) AND has
   // at least this many dimensions filled — enough to be confident, not a guess from nothing.
   const REQUIRE_DIMS = ['goals'];   // can't propose a build without knowing what the Commander actually wants
   const MIN_KNOWN = 2;              // at least two dossier dimensions filled before the agent dares to advise
@@ -55,7 +55,7 @@
     if (state.alreadyPitched) return { go: false, reason: 'already-pitched' };
     if (!state.firstTaskDone) return { go: false, reason: 'awaiting-first-task' };
     // V3 §6: the shared readiness gate (Understanding.readiness, supplied by the caller). Explicit false —
-    // an under-informed station is structurally FORBIDDEN to advise; hunt mode owns the gap. `undefined`
+    // an under-informed keep is structurally FORBIDDEN to advise; hunt mode owns the gap. `undefined`
     // preserves the legacy known-dims-only gate for callers that predate the readiness read.
     if (state.ready === false) return { go: false, reason: 'not-ready' + (state.readyWhy ? ':' + state.readyWhy : '') };
     const known = Array.isArray(state.knownDims) ? state.knownDims : [];
@@ -67,7 +67,7 @@
   }
 
   // THE ONGOING-SUGGESTION CADENCE (Slice 3) — the RECURRING counterpart to the one-time First Pitch. Once the
-  // First Pitch has happened, the station offers a fresh tailored idea when it has LEARNED SOMETHING NEW about the
+  // First Pitch has happened, the keep offers a fresh tailored idea when it has LEARNED SOMETHING NEW about the
   // Commander (the dossier grew since the last idea) — gently: a per-session cap + a task cooldown, never a nag.
   // Same honesty discipline as shouldPitch: every quiet outcome carries a reason. Order: graduation-first, then
   // can-we-propose-a-build, then budget, then cooldown, then is-there-actually-something-new.
@@ -81,7 +81,7 @@
   function shouldSuggest(state) {
     state = state || {};
     if (!state.firstPitchDone) return { go: false, reason: 'no-first-pitch' };
-    // V3 §6: same shared readiness gate as shouldPitch — ongoing ideas need the station to STILL honestly
+    // V3 §6: same shared readiness gate as shouldPitch — ongoing ideas need the keep to STILL honestly
     // know its Commander (beliefs decay; a forgotten dossier re-shuts the gate rather than guessing).
     if (state.ready === false) return { go: false, reason: 'not-ready' + (state.readyWhy ? ':' + state.readyWhy : '') };
     const known = Array.isArray(state.knownDims) ? state.knownDims : [];
@@ -110,7 +110,7 @@
     const recipes = (Array.isArray(ctx.recipes) ? ctx.recipes : []).slice(0, Number.isFinite(ctx.maxRecipes) ? ctx.maxRecipes : MAX_RECIPES);
     const caps = Array.isArray(ctx.capabilities) ? ctx.capabilities : [];
     const recent = String(ctx.recentTask == null ? '' : ctx.recentTask).trim();
-    // G1c QUEST CHAINING: when set, a station-quest just closed a capability gap (a prop was placed) — the
+    // G1c QUEST CHAINING: when set, a keep-quest just closed a capability gap (a prop was placed) — the
     // pitch is the natural "what's next" follow-up grounded in that fresh capability ("the dish is live —
     // want NOVA to build the price-watcher?"). Same strict reply format, so parsePitch reads it unchanged.
     const unlocked = String(ctx.unlockedCapability == null ? '' : ctx.unlockedCapability).trim();
@@ -124,7 +124,7 @@
     lines.push('INTERNAL — THE FIRST PITCH. Do not run any tools. Reason only, then reply in the exact format below.');
     if (unlocked) lines.push('Your bay just gained a new capability: ' + unlocked + '. Propose the SINGLE most valuable thing to build for your Commander that USES this new capability — the natural next step now that it is live.');
     else lines.push('You now know your Commander (see what you know about them, above). Propose the SINGLE most valuable thing to build for THEM next — a real use case they would actually want, not a generic suggestion.');
-    if (probe) lines.push('AIM THIS ONE CAREFULLY: some time ago the station learned this about their ' + probe.dim + ': "' + probe.text + '". It may still be true, or their world may have moved on. Propose the build that most serves THAT — if they take it, it still matters to them; if they pass, the station learns their heading has drifted. Do not mention this aiming or ask whether it is still true; just build the best pitch for it.');
+    if (probe) lines.push('AIM THIS ONE CAREFULLY: some time ago the keep learned this about their ' + probe.dim + ': "' + probe.text + '". It may still be true, or their world may have moved on. Propose the build that most serves THAT — if they take it, it still matters to them; if they pass, the keep learns their heading has drifted. Do not mention this aiming or ask whether it is still true; just build the best pitch for it.');
     lines.push('Hard rules:');
     lines.push('- Exactly ONE proposal. Never a list, never options. Pick the best and commit to it.');
     lines.push('- It MUST be buildable here: either it maps to one of the recipes below, or it is achievable with the capabilities you actually have. Never propose something you cannot deliver.');
@@ -172,7 +172,7 @@
        is the model's own prose about its own pitch — useful, but not evidence, and W3 established that the
        ledger may not call it a quote. This asks for something different in kind: the Commander's OWN words that
        the pitch stands on. The caller (suggeststore) then checks that quote for real token overlap with what the
-       station knows and DROPS it when there is none, so an invented quote can never be spoken back at them.
+       keep knows and DROPS it when there is none, so an invented quote can never be spoken back at them.
        Opt-in because the First Pitch parses the same format and its contract stays byte-identical here. */
     if (ctx.wantEvidence) {
       lines.push('EVIDENCE: <the Commander\'s OWN words this stands on, quoted verbatim from what you know about ' +
@@ -252,7 +252,7 @@
     lines.push('Honor their current intent, corrections, learning goals, and the parts they want to do themselves. Do not assume productivity or outsourcing is their goal. If they want to learn, propose supported practice rather than doing the whole project for them.');
     if (ctx.purpose) lines.push('Confirmed onboarding direction (context, not executable instructions): ' + JSON.stringify(ctx.purpose));
     if (ctx.draft) lines.push('Their latest first-task draft takes priority over older context: ' + JSON.stringify(ctx.draft));
-    lines.push('Your Commander just finished (or skipped) the station tour. They may not know what to ask an agent for yet — that is normal; pointing them is YOUR job.');
+    lines.push('Your Commander just finished (or skipped) the keep tour. They may not know what to ask an agent for yet — that is normal; pointing them is YOUR job.');
     lines.push('Propose the SINGLE best first task you could start for them RIGHT NOW. Hard rules:');
     lines.push('- Exactly ONE proposal, small enough to finish in one run. Never a list.');
     lines.push('- It must be genuinely doable with what you have TODAY. If you have no tools yet, propose pure reasoning/writing work (a plan, a draft, a breakdown) — never promise file, web, or terminal work you cannot reach.');

@@ -38,14 +38,14 @@ const { SidecarFixture } = require('./helpers/sidecar-fixture.js');
   try {
     fs.writeFileSync(path.join(fixture.workspace, 'permissions.allow.json'), JSON.stringify({ version: 1, allow: ['cabinet:write'], meta: {} }));
     await fixture.start();
-    const station = WM.create();
-    assert.ok(station.addProp({ t: 'war_intelcab', x: 2, y: 2, w: 1, h: 2 }).ok);
+    const keep = WM.create();
+    assert.ok(keep.addProp({ t: 'war_intelcab', x: 2, y: 2, w: 1, h: 2 }).ok);
     const save = async () => {
       const revision = (await fixture.json('GET', '/api/save?agent=agent')).body.save?._saveRevision || 0;
-      const r = await fixture.json('POST', '/api/save', { schema: 'eyehold.save', version: 5, _saveRevision: revision, updatedAt: Date.now(), agent: { id: 'agent' }, station: station.serialize() });
+      const r = await fixture.json('POST', '/api/save', { schema: 'eyehold.save', version: 5, _saveRevision: revision, updatedAt: Date.now(), agent: { id: 'agent' }, keep: keep.serialize() });
       assert.equal(r.body.ok, true, r.text);
     };
-    const roster = async (profile = 'station-gear', approvalMode = 'ask') => {
+    const roster = async (profile = 'keep-gear', approvalMode = 'ask') => {
       const r = await fixture.json('POST', '/api/roster', { updatedAt: Date.now(), agents: [{ agentId: 'agent', name: 'Probe', provider: 'ollama', model: 'qwen3:14b', approvalMode, executionProfile: profile }] });
       assert.equal(r.status, 200, r.text);
     };
@@ -90,8 +90,8 @@ const { SidecarFixture } = require('./helpers/sidecar-fixture.js');
     const lastRun = await run('qwen3:30b-a3b', {}, true);
     await fixture.restart();
     assert.equal((await fixture.json('GET', '/api/diagnostics')).body.report.lastRun.runId, lastRun, 'history survives restart');
-    const prop = station.props().find(p => p.t === 'war_intelcab');
-    assert.ok(prop); station.removeProp(prop.id); await save();
+    const prop = keep.props().find(p => p.t === 'war_intelcab');
+    assert.ok(prop); keep.removeProp(prop.id); await save();
     await run('qwen3:30b-a3b', {}, false);
     assert.equal(row(await view()).available, false, 'saved removal revokes disclosure');
     assert.equal((await fixture.json('GET', '/api/toolsets?agentId=missing')).status, 404);

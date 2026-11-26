@@ -13,12 +13,12 @@ async function load(review){
  const p={document,U,IndustrialTextures:pack,module:{exports:{}}};vm.runInNewContext(src('frontend/app/propsprites.js'),p);return {pack,props:p.module.exports};
 }
 (async()=>{
- const before=await load(false),after=await load(true),body=await loadImage(fs.readFileSync(path.join(root,'frontend/assets/sprites/station_minion/rot_south.png')));
+ const before=await load(false),after=await load(true),body=await loadImage(fs.readFileSync(path.join(root,'frontend/assets/sprites/keep_minion/rot_south.png')));
  const bc=createCanvas(body.width,body.height),bg=bc.getContext('2d');bg.drawImage(body,0,0);const bd=bg.getImageData(0,0,bc.width,bc.height).data;let foot=0;
  for(let i=3;i<bd.length;i+=4)if(bd[i]>50)foot=Math.max(foot,Math.floor((i/4)/bc.width)+1);
  const cv=createCanvas(1024,510),g=cv.getContext('2d');g.fillStyle='#101516';g.fillRect(0,0,cv.width,cv.height);
- g.font='18px sans-serif';g.fillStyle='#d0c6ae';g.fillText('CRATE / original proportions, new station materials',24,32);
- g.font='13px sans-serif';g.fillStyle='#989e97';g.fillText('Both panels use identical world scale. Approved workstation and unchanged white agent are the reference.',24,58);
+ g.font='18px sans-serif';g.fillStyle='#d0c6ae';g.fillText('CRATE / original proportions, new keep materials',24,32);
+ g.font='13px sans-serif';g.fillStyle='#989e97';g.fillText('Both panels use identical world scale. Approved workkeep and unchanged white agent are the reference.',24,58);
  for(const [index,{pack,props}]of[before,after].entries()){
   const X=24+index*502;g.fillStyle='#c5bdad';g.font='15px sans-serif';g.fillText(index?'NEW CRATE / REVIEW':'PREVIOUS CRATE',X,96);
   g.save();g.translate(X,110);g.scale(2.8,2.8);

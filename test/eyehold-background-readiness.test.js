@@ -15,7 +15,7 @@ async function run(){
  assert.equal((await f.request('/api/line-jobs',{headers:{'X-Eyehold-Token':''}})).status,403);
  const read=async id=>(await f.json('GET','/api/line-jobs/'+id)).body.job;
  let interrupted=await read('job-aaaaaaaaaaaa');
- assert.equal(interrupted.status,'interrupted');assert.match(interrupted.error,/station stopped/);
+ assert.equal(interrupted.status,'interrupted');assert.match(interrupted.error,/keep stopped/);
  assert.equal((await read('job-bbbbbbbbbbbb')).output,'Saved fixture output');
  await f.restart();
  assert.deepEqual(await read('job-aaaaaaaaaaaa'),interrupted,'interrupted work is retained, never silently replayed');

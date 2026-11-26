@@ -1,6 +1,6 @@
 /* node test/loop.verify-on-stop.test.js — VERIFY-ON-STOP.
 
-   The station's promise is that nothing is claimed unless it is proven, and "fake done" — an edit shipped as
+   The keep's promise is that nothing is claimed unless it is proven, and "fake done" — an edit shipped as
    finished with no check ever run against it — is the failure this project pays for most. The system prompt
    already INSTRUCTED the model to verify after editing; nothing ENFORCED it. This proves the enforcement:
    a run that mutated CODE and then tries to end without evidence buys exactly one more turn, and every

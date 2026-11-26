@@ -25,7 +25,7 @@ const doc = (updatedAt) => ({ schema: 'eyehold.save', version: 3, updatedAt, age
 (async () => {
   for (const body of [null, {}, { error: 'unavailable' }, { save: { broken: true } }, { save: null, ok: false }]) {
     nextPull = () => Promise.resolve({ ok: true, status: 200, json: () => Promise.resolve(body) });
-    A.ok(CloudSave.isUnknownSentinel(await CloudSave.reconcile(null)), 'malformed 200 is unknown, never a proven empty station');
+    A.ok(CloudSave.isUnknownSentinel(await CloudSave.reconcile(null)), 'malformed 200 is unknown, never a proven empty keep');
   }
   // ---- 1. auth-refused pull (403) + NO local cache → save-unknown sentinel, reason 'forbidden' ----
   nextPull = () => Promise.resolve({ ok: false, status: 403, json: () => Promise.resolve({}) });
@@ -63,7 +63,7 @@ const doc = (updatedAt) => ({ schema: 'eyehold.save', version: 3, updatedAt, age
   nextPull = () => Promise.resolve({ ok: false, status: 503, json: () => Promise.resolve({ unreadable: true }) });
   A.eq((await CloudSave.reconcile(null)).reason, 'unreadable', 'file read failure retains its specific recovery diagnosis');
 
-  // A valid remote whose cache/migration adoption fails is still an existing station.
+  // A valid remote whose cache/migration adoption fails is still an existing keep.
   nextPull = () => Promise.resolve({ ok: true, status: 200, json: () => Promise.resolve({ save: doc(200) }) });
   global.localStorage = { getItem() { return null; }, setItem() { throw new Error('quota exceeded'); }, removeItem() {} };
   const cacheFailure = await CloudSave.reconcile(null);

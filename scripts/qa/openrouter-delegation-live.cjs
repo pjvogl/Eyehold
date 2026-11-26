@@ -45,14 +45,14 @@ const root = path.resolve(__dirname, '../..');
     browser = await chromium.launch({ headless: true, channel: 'msedge' });
     const page = await browser.newPage({ viewport: { width: 1440, height: 1000 } });
     if (receipt.phase === 'before') {
-      const original = require('node:child_process').execFileSync('git', ['show', 'f00aa04df:frontend/app/stationui.js'], { cwd: root, encoding: 'utf8', maxBuffer: 4 * 1024 * 1024 });
-      await page.route('**/app/stationui.js*', route => route.fulfill({ contentType: 'application/javascript', body: original }));
+      const original = require('node:child_process').execFileSync('git', ['show', 'f00aa04df:frontend/app/keepui.js'], { cwd: root, encoding: 'utf8', maxBuffer: 4 * 1024 * 1024 });
+      await page.route('**/app/keepui.js*', route => route.fulfill({ contentType: 'application/javascript', body: original }));
       const originalApp = require('node:child_process').execFileSync('git', ['show', 'f00aa04df:frontend/app/app.js'], { cwd: root, encoding: 'utf8', maxBuffer: 4 * 1024 * 1024 });
       await page.route('**/app/app.js*', route => route.fulfill({ contentType: 'application/javascript', body: originalApp }));
     }
     await page.goto(fixture.baseUrl);
     await page.waitForFunction(() => typeof App !== 'undefined' && App.agents().some(a => a.id === 'worker'));
-    await page.evaluate(() => StationUI.openAgent(App.agents().findIndex(a => a.id === 'worker')));
+    await page.evaluate(() => KeepUI.openAgent(App.agents().findIndex(a => a.id === 'worker')));
     await page.locator('[data-goconfig="ag-model-card"]').first().click();
     await page.waitForFunction(() => document.querySelector('#ag-model-pick-model')?.value.includes('fixture/managed'));
     await page.locator('#ag-model-pick-model').selectOption('');
@@ -82,7 +82,7 @@ const root = path.resolve(__dirname, '../..');
       await page.evaluate(() => App.pushRoster());
       const workaround = await run('DISPATCH_PROBE');
       assert.ok(workaround.split('\n').filter(Boolean).map(JSON.parse).some(e => e.name === 'agent.run.end' && e.payload.agentId === 'worker' && e.payload.reason === 'done'));
-      receipt.checks.push('Dedicated FOLLOW STATION DEFAULT button restores BYOK delegation');
+      receipt.checks.push('Dedicated FOLLOW KEEP DEFAULT button restores BYOK delegation');
     } else {
       assert.ok(workers.some(e => e.name === 'agent.run.end' && e.payload.reason === 'done'));
       assert.ok(!workers.some(e => e.name === 'agent.run.error'));

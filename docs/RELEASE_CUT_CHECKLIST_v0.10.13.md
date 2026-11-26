@@ -66,7 +66,7 @@ genesis `USE A DIFFERENT ACCOUNT` action clears a wrong Eyehold account link in-
 runtime proof is still owed; Windows tests and source inspection are not a substitute.
 
 Live Windows proof used the real seeded sidecar and an isolated worktree scratch workspace. After a
-process stop, the restarted app encountered an absent `station.widgets.json` plus a corrupt orphan
+process stop, the restarted app encountered an absent `keep.widgets.json` plus a corrupt orphan
 `.bak`, quarantined that exact backup, and served `GET /api/widgets` as HTTP 200 with an empty list.
 The live UI also rendered the recovery-report and `USE A DIFFERENT ACCOUNT` surfaces. This is not the
 still-owed physical macOS recovery proof.
@@ -120,7 +120,7 @@ still-owed physical macOS recovery proof.
 
 ### High-value fixes
 
-1. **BYOK billing:** linked stations no longer require or debit Eyehold credits for user-funded provider runs.
+1. **BYOK billing:** linked keeps no longer require or debit Eyehold credits for user-funded provider runs.
 2. **Routines/cron:** one-shot truth, leases, cancellation, retry anchors, DST/midnight gaps, bad schedule
    inputs, clock shifts, zombie settlement, and sparse-date search performance.
 3. **Durability/recovery:** transactional or rollback-safe writes across saves, backups, checkpoints,
@@ -146,7 +146,7 @@ Other owed work:
 - hosted T0 clean-install and G1 packaged-lifecycle proofs are owed against the staged draft;
 - the full RC.2 soak duration is explicitly waived for this same-night cut; RC.1 time is not credited;
 - physical macOS recovery proof still requires a real-Mac pass or a separate explicit owner waiver;
-- updater-key backup to two offline locations requires human attestation;
+- updater-key backup to two offline locations requires human attekeep;
 - `qa/STATUS.md` must be committed separately or stashed before tagging;
 - the 212 candidate commits and the final tag must both reach origin for the train to build the intended bytes.
 
@@ -179,7 +179,7 @@ required artifact returns HTTP 200. The existing fleet feed is healthy before th
 4. Run a fresh full Guardian cycle and `npm run qa:ready`; stop unless it prints READY.
 5. Run post-bump preflight and inspect every warning. The duration waiver is documentary, not a false
    machine PASS.
-6. Require explicit resolution of physical macOS recovery proof and human attestation of two usable
+6. Require explicit resolution of physical macOS recovery proof and human attekeep of two usable
    offline updater-key copies before pushing the tag.
 7. Push `feat/harness-backend` and `v0.10.13` together, supervise the signed train, and inspect both
    notarized Mac legs plus signed Windows artifacts in the staged draft.
@@ -190,7 +190,7 @@ required artifact returns HTTP 200. The existing fleet feed is healthy before th
 ## Intentionally not done in this preparation pass
 
 - version pins are bumped to `0.10.13`;
-- local `v0.10.13` exists but remains unpushed until the final gates and attestations;
+- local `v0.10.13` exists but remains unpushed until the final gates and attekeeps;
 - no push, release-train dispatch, draft, publish, website deploy, or credential action;
 - no claim that `0.10.13` is release-ready;
 - no reuse of pre-bump gates as the post-bump or packaged-artifact receipts.
@@ -202,10 +202,10 @@ both notarized macOS legs; hosted T0 and G1 passed against the staged draft firs
 sequence above were NOT satisfied at Publish time and the record must say so:
 
 - **Physical macOS recovery proof — WAIVED retroactively, owner-directed.** No real-Mac pass of the
-  unreachable-station → START COMPLETELY FRESH / SAVE-403 / SAVE-NET path was performed; the train's
+  unreachable-keep → START COMPLETELY FRESH / SAVE-403 / SAVE-NET path was performed; the train's
   `macos-15-intel installed-acceptance` job is a CI runner, not that check. Andrew directed the
   2026-09-03 audit's item 2 to execute, whose stated alternative to a borrowed-Mac pass was to write
   this waiver so the checklist stops lying. The waiver covers 0.10.13 only. **The physical Mac pass
   is the first MUST of the next cut** (see NEXT.md); no further cut may publish on a CI-runner Mac
   leg alone without a fresh, separately written owner waiver.
-- **Updater-key two-offline-copies attestation** — still unattested at publish; owed by the owner.
+- **Updater-key two-offline-copies attekeep** — still unattested at publish; owed by the owner.

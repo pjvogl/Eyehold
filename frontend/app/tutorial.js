@@ -1,19 +1,19 @@
 /* EYEHOLD — tutorial.js : THE FIRST COMMAND + coachmarks + Field Manual (diegetic onboarding, P0–P3).
 
-   The default station starts furnished with five essential capability props. The
-   optional tour explains the workstation, reads the actual equipment in the agent's
+   The default keep starts furnished with five essential capability props. The
+   optional tour explains the workkeep, reads the actual equipment in the agent's
    scope, and offers a real file task. It never asks for duplicate prop placements.
-   Existing edited stations are described from their current floor, not from the
+   Existing edited keeps are described from their current floor, not from the
    starter template. Runtime access and provider availability remain separate facts.
    Bus-timed beats narrate agent.run.start / permission.prompt / agent.run.end.
 
    Lifecycle: fires once, right after the awakening lands (app.js passes Onboarding.start({ taught })).
    Fully skippable; a self-owned localStorage flag (eyehold.tutorial.v1) means it never repeats.
-   P2 = just-in-time coachmarks (seen()/markSeen()); P3 = the Field Manual codex + Station Briefing. */
+   P2 = just-in-time coachmarks (seen()/markSeen()); P3 = the Field Manual codex + Keep Briefing. */
 'use strict';
 
 /* DON'T BURY THE MAP — pure geometry, hoisted out of the IIFE so the gate can actually exercise it
-   (test/coach-dodge.test.js), the same shape stationui.js uses for clampTerminalSize.
+   (test/coach-dodge.test.js), the same shape keepui.js uses for clampTerminalSize.
 
    finishUp() spawns BOTH the FIRST STEPS brief and the ⚑ QUESTS coachmark, and both want the bottom-left:
    the brief clamps against #left/#chat-panel, the coach clamps against the viewport, and neither knew the
@@ -165,9 +165,9 @@ const Tutorial = (() => {
   // when its prop lands; `prop` is the catalog id we point at. The display LABEL and the CATEGORY tab are resolved
   // from the LIVE catalog at runtime (resolveKit) so the coach can never name a prop or tab that doesn't exist —
   // the root of the old "the CABINET"/"BUILD MODE button" drift. FILES is first so the fs demo that follows is honest.
-  // (COMPUTE isn't here — always-on freebie + a synthetic desk; a SEATED workstation is editable so it doesn't
+  // (COMPUTE isn't here — always-on freebie + a synthetic desk; a SEATED workkeep is editable so it doesn't
   // fire onPropPlaced, but the WORKBENCH does, which is why TERMINAL can ride the placement loop. Note the
-  // workbench lives under WORKSTATIONS, the other three under CAPABILITY — resolveKit carries that, so the loop
+  // workbench lives under WORKKEEPS, the other three under CAPABILITY — resolveKit carries that, so the loop
   // guides the category switch instead of stranding the Commander.)
   const KIT_SPEC = [
     { grant: 'FILES',    prop: 'war_intelcab',    label: 'INTEL CAB',   power: 'FILES',      got: 'files equipment placed. it supports reading and writing files within your allowed folders.' },
@@ -201,9 +201,9 @@ const Tutorial = (() => {
     if (replayMode) { beatShowAround(); return; }
     if (typeof PitchStore !== 'undefined' && PitchStore.offerHandoff) { presentHandoff(true); return; }
     Dialogue.open({ name: agentName, tour: true });
-    if (Dialogue.setStage) Dialogue.setStage('FIRST TASK', 'Your station is ready');
+    if (Dialogue.setStage) Dialogue.setStage('FIRST TASK', 'Your keep is ready');
     Dialogue.node({
-      lines: [seg('let’s take one real burden off your list. give me notes, messages, or an approved folder and i’ll make a useful draft you can review. you can also take the optional station tour.', 44, 0)],
+      lines: [seg('let’s take one real burden off your list. give me notes, messages, or an approved folder and i’ll make a useful draft you can review. you can also take the optional keep tour.', 44, 0)],
       options: [
         ...(typeof FirstValue !== 'undefined' ? [{ label: '▸ MAKE SOMETHING USEFUL (recommended)', value: 'value' }] : []),
         { label: 'SHOW ME AROUND', value: 'tour' },
@@ -236,10 +236,10 @@ const Tutorial = (() => {
     else { state.firstCommandDone = true; state.briefDismissed = true; save(); if (hasDialogue() && Dialogue.isOpen()) Dialogue.close(); }
     if (result.action === 'start') {
       if (!PitchStore.startHandoff(result.task) && hasChat()) Chat.localLine('your task is saved. check your model connection or finish the current run, then send it from COMMS.');
-    } else if (hasChat()) Chat.localLine('the station is yours. type in COMMS whenever you want to begin. the tour and connection guides are in the field manual.');
+    } else if (hasChat()) Chat.localLine('the keep is yours. type in COMMS whenever you want to begin. the tour and connection guides are in the field manual.');
   }
 
-  /* Orientation describes the real station without manufacturing a task/activity state. */
+  /* Orientation describes the real keep without manufacturing a task/activity state. */
   function beatShowAround() {
     if (!active) return;
     try { if (typeof World !== 'undefined' && World.camPushIn) World.camPushIn(); } catch (_) {}
@@ -259,27 +259,27 @@ const Tutorial = (() => {
   function beatKitInvite() {
     if (!active) return;
     if (!hasDialogue()) return finishOrientation();
-    // heroCaps is room-scoped for an assigned agent, not a station-wide inventory.
+    // heroCaps is room-scoped for an assigned agent, not a keep-wide inventory.
     const caps = equipmentInScope();
     const purposes = { cabinet: 'FILES — read and write files', dish: 'WEB — search and browse', workbench: 'TERMINAL — run commands and checks', notebook: 'MEMORY — save and retrieve notes', studio: 'MEDIA — create and analyze images' };
     const placed = Object.keys(purposes).filter(c => caps && caps.includes(c));
     const summary = caps === null ? 'i couldn’t read the equipment in my area. check BUILD › CONNECT › ABILITIES for current access.'
       : placed.length === 5 ? 'all five essentials are already placed in my area.'
-      : placed.length ? 'here’s the equipment currently in my area. this station has been customized; you can start with what’s here.'
+      : placed.length ? 'here’s the equipment currently in my area. this keep has been customized; you can start with what’s here.'
       : 'there’s no essential equipment in my area. you can still chat with me; BUILD › CONNECT › ABILITIES shows current access.';
     Dialogue.open({ name: agentName, tour: true });
     if (Dialogue.setStage) Dialogue.setStage('QUICK TOUR · 1 OF 2', 'Your equipment');
     Dialogue.node({
       lines: [seg(summary + '\n' + placed.map(c => purposes[c]).join('\n') + '\n\nEquipment supports these tools. Connected services and your access settings determine what can run.', 64, 0)],
-      options: [{ label: 'NEXT · USING YOUR STATION', value: 'next' }, { label: resumeFirstTask ? 'Back to my first task' : 'Finish tour', value: 'done', skip: true }]
-    }).then(res => { if (!active) return; if (res.skip) return finishOrientation(); beatStationUse(); });
+      options: [{ label: 'NEXT · USING YOUR KEEP', value: 'next' }, { label: resumeFirstTask ? 'Back to my first task' : 'Finish tour', value: 'done', skip: true }]
+    }).then(res => { if (!active) return; if (res.skip) return finishOrientation(); beatKeepUse(); });
   }
-  function beatStationUse() {
+  function beatKeepUse() {
     if (!active || !hasDialogue()) return;
     const caps = equipmentInScope();
     if (Dialogue.setStage) Dialogue.setStage('QUICK TOUR · 2 OF 2', 'Start with a task');
     Dialogue.node({
-      lines: [seg('Ask for work in COMMS. Review the reply and files.\nBUILD › BUILD MODE: pick a prop, click a clear tile. Press Esc to cancel. Select a placed prop to move it.\nPresets build a whole station, and the work ones come with a line ready to staff. To chain agents step by step, open WORK › AUTOMATE › WORKFLOWS: belts carry the job from one agent to the next.', 64, 0)],
+      lines: [seg('Ask for work in COMMS. Review the reply and files.\nBUILD › BUILD MODE: pick a prop, click a clear tile. Press Esc to cancel. Select a placed prop to move it.\nPresets build a whole keep, and the work ones come with a line ready to staff. To chain agents step by step, open WORK › AUTOMATE › WORKFLOWS: belts carry the job from one agent to the next.', 64, 0)],
       options: [
         ...(resumeFirstTask ? [{ label: '▸ CONTINUE MY FIRST TASK', value: 'handoff', yield: true }]   // the tour's way out when a first task is waiting (Dialogue.yieldTour)
           : typeof FirstValue !== 'undefined' ? [{ label: '▸ CHOOSE MY FIRST TASK', value: 'value' }] : []),
@@ -310,7 +310,7 @@ const Tutorial = (() => {
      REAL catalog label. A category switch, a placement, or closing BUILD MODE all advance it cleanly: no stale copy,
      no covered buttons, no freeze. resolveKit() pins the labels/categories to the live catalog so they can't drift. */
   const q = sel => document.querySelector(sel);
-  const CATLABEL = { workstation: 'WORKSTATIONS', workflow: 'WORKFLOW', capability: 'CAPABILITY', isolation: 'ISOLATION' };
+  const CATLABEL = { workkeep: 'WORKKEEPS', workflow: 'WORKFLOW', capability: 'CAPABILITY', isolation: 'ISOLATION' };
   function resolveKit() {
     const cat = (typeof PropSprites !== 'undefined' && PropSprites.CATALOG) ? PropSprites.CATALOG : [];
     const grantOf = id => (typeof WorldModel !== 'undefined' && WorldModel.grantLabelForProp) ? WorldModel.grantLabelForProp(id) : null;
@@ -347,9 +347,9 @@ const Tutorial = (() => {
 
   // OUTSIDE BUILD MODE: light the REAL path into the builder — the BUILD dock, then BUILD MODE once that dock opens.
   function kitGuideToRefit() {
-    const station = q('#bb-build');
-    const menuOpen = !!(station && station.getClientRects().length);   // BUILD MODE is only visible once its dock is open
-    if (menuOpen) kitFocus(station, 'now hit ⌂ BUILD MODE — that opens BUILD MODE, where you build my floor.', 'to-refit-station', { scrim: true, zone: 'bottom' });
+    const keep = q('#bb-build');
+    const menuOpen = !!(keep && keep.getClientRects().length);   // BUILD MODE is only visible once its dock is open
+    if (menuOpen) kitFocus(keep, 'now hit ⌂ BUILD MODE — that opens BUILD MODE, where you build my floor.', 'to-refit-keep', { scrim: true, zone: 'bottom' });
     else kitFocus(q('.bb-group[data-group="build"] .bb-grp'), 'open the ⚒ BUILD dock down in the bar, then ⌂ BUILD MODE — that’s where you kit me out.', 'to-refit-grp', { scrim: true, zone: 'bottom' });
   }
 
@@ -370,7 +370,7 @@ const Tutorial = (() => {
       return kitFocus(core, 'choose ' + k.power + ' (' + k.label + '), then click a clear tile in my room to place it.', 'step-tile-' + k.prop + (offerReq ? '-req' : ''),
         offerReq ? { action: { label: '⚡ requisition the rest', onClick: runRequisition } } : undefined);
     }
-    // all capability + workstation gear is on the ⚙ SYSTEMS tier; if they wandered into ✦ DECOR, bring them back
+    // all capability + workkeep gear is on the ⚙ SYSTEMS tier; if they wandered into ✦ DECOR, bring them back
     const tierActive = q('.refit-tier.active'), tierFn = q('.refit-tier-functional');
     if (tierFn && tierActive && tierActive !== tierFn)
       return kitFocus(tierFn, 'switch to ⚙ SYSTEMS — the gear that grants powers lives here, not in DECOR.', 'step-tier');
@@ -390,7 +390,7 @@ const Tutorial = (() => {
       offerReq ? { action: { label: '⚡ requisition the rest', onClick: runRequisition } } : undefined);
   }
   // "requisition the rest" — the agent places its own remaining gear through the REAL placement path
-  // (Build.requisition → station.addProp at a validated tile). Each landing fires the normal placement hook
+  // (Build.requisition → keep.addProp at a validated tile). Each landing fires the normal placement hook
   // (build.js → onPropPlaced → kitOnPropPlaced), so the loop scores/flashes/completes exactly as if the
   // Commander dropped it by hand. Staggered so each ✓ + chime reads; a floor with no clear tile for a piece
   // degrades honestly back to hand placement (the tick re-lights that tile).
@@ -468,7 +468,7 @@ const Tutorial = (() => {
   /* THE BAIL — the kit-out is opt-IN, so it must be opt-OUT-able at any moment (sandbox law: never a mode the
      Commander can't leave). Before this, the only exits were "place all four" or "open BUILD MODE then close it":
      a Commander who accepted the tour and changed their mind at the very first step — the BUILD-dock glow,
-     OUTSIDE BUILD MODE — had no dismiss button and no Esc, just a permanent half-dimmed station.
+     OUTSIDE BUILD MODE — had no dismiss button and no Esc, just a permanent half-dimmed keep.
      Inside BUILD MODE we simply close it and let the tick take the normal exit (BUILD MODE owns Esc there); outside, we
      run the same accounting directly. Either way the Commander lands on kitClosedDuringPlace's honest
      "here's what's wired, here's what's still dark — keep going or stop here" choice, never a dead end. */
@@ -481,7 +481,7 @@ const Tutorial = (() => {
   }
 
   // FULLY EQUIPPED — the completion beat. Every capability prop is placed; the agent is whole. Offer the
-  // optional "watch me actually use it" demo, then hand the Commander the free station. This is where the
+  // optional "watch me actually use it" demo, then hand the Commander the free keep. This is where the
   // tutorial ENDS (the user's bar: end the tour when full capability is placed).
   function beatFullyEquipped() {
     if (!active) return;
@@ -554,7 +554,7 @@ const Tutorial = (() => {
     if (!active) return;
     const line = (why === 'brain')
       ? 'the file example hasn’t started. choose a model in COMMS and check its connection in SYSTEM › SETTINGS, then try again. adding more equipment won’t fix a model connection.'
-      : 'the file example hasn’t started because the local service isn’t responding. reconnect or restart Eyehold, then try again. your station does not need rebuilding.';
+      : 'the file example hasn’t started because the local service isn’t responding. reconnect or restart Eyehold, then try again. your keep does not need rebuilding.';
     say([seg(line, 52, 0)], () => finishOrientation(true));
   }
   /* ---- the kit-out spotlight: a coach bubble PINNED to a safe zone (.tut-coach.kit — so it can never cover the
@@ -591,7 +591,7 @@ const Tutorial = (() => {
     // Esc bails too — but only when nothing else claims the key, matching briefKey's guard below. Inside
     // BUILD MODE, build.js's own Esc closes the builder and kitTick reads that close as the very same exit
     // (double-handling would fire kitClosedDuringPlace twice and stack two dialogue nodes); over an open
-    // station panel, Esc belongs to the panel — the bottom bar stays live under the scrim, so a Commander
+    // keep panel, Esc belongs to the panel — the bottom bar stays live under the scrim, so a Commander
     // really can open one mid-kit-out, and one keypress must not both close it and end the tour.
     const onKey = e => {
       if (e.key !== 'Escape') return;
@@ -652,7 +652,7 @@ const Tutorial = (() => {
   function clearStall() { if (stallTimer) { clearTimeout(stallTimer); stallTimer = null; } }
   // armed right after Chat.send(TASK): if neither run.start nor run.end has fired, the run never reached the
   // sidecar (it isn't running, or the key's bad) — so the agent NEVER walked. Own that honestly and finish the
-  // lesson in words instead of leaving the Commander staring at a frozen "i'm heading to my station".
+  // lesson in words instead of leaving the Commander staring at a frozen "i'm heading to my keep".
   function armStall() {
     clearStall();
     stallTimer = setTimeout(() => {
@@ -704,7 +704,7 @@ const Tutorial = (() => {
     spotlight('#left');
     say([
       seg('one honest thing, because i won’t lie to you: right now it’s just me.', 42, 360),
-      seg('  the others in that crew list are echoes — minds you haven’t recruited yet. recruit one and it takes a station of its own — and i start handing it the pieces. that’s the real job: i grow the crew, then i point it.', 42, 0)
+      seg('  the others in that crew list are echoes — minds you haven’t recruited yet. recruit one and it takes a keep of its own — and i start handing it the pieces. that’s the real job: i grow the crew, then i point it.', 42, 0)
     ], () => { clearSpot(); beatWork(); });
   }
   // UX audit finding 6 (2026-07-15): the tour taught capabilities/consent/crew/quests but never the WORK
@@ -721,7 +721,7 @@ const Tutorial = (() => {
     if (!active) return;
     say([seg('that’s the shape of it: ask, i work, i prove it, you stay in control.', 44, 420)], () => {
       if (!active) return;
-      // THE GRADUATION HANDOFF. The demo was a real completed task, so if the station also knows enough about
+      // THE GRADUATION HANDOFF. The demo was a real completed task, so if the keep also knows enough about
       // its Commander, the agent ends the tour by POINTING — the First Pitch fires right here instead of the
       // dead-end "go on, i'm yours to point" (a beginner has no idea where to point; that's the whole reason
       // the pitch exists). The auto pitch path correctly stood down while the tour's panel was up
@@ -790,7 +790,7 @@ const Tutorial = (() => {
         if (!item || item.skip) return done();
         if (item.value === 'guide') { showPlatformConnections(); return; }
         // the CLICK proves nothing — the FIRST STEPS connector step ticks only from the read-back (watchConnectors).
-        try { if (typeof StationUI !== 'undefined' && StationUI.connectorJump) StationUI.connectorJump(item.value); } catch (_) {}
+        try { if (typeof KeepUI !== 'undefined' && KeepUI.connectorJump) KeepUI.connectorJump(item.value); } catch (_) {}
         watchConnectors();
         done();
       });
@@ -900,7 +900,7 @@ const Tutorial = (() => {
     // EXCEPT a one-shot whose trigger never re-fires (level-up): show it over the panel rather than lose it forever.
     // Same rule for BUILD MODE's first-run card (.refit-firstrun): it now waits for the tour to finish, so the very
     // open that finally shows it is also the one that fires the 'build' coachmark — defer rather than stack.
-    // (.refit-firstrun, not .refit-guide: the bay/workstation/flow/junction/connector editors share that class,
+    // (.refit-firstrun, not .refit-guide: the bay/workkeep/flow/junction/connector editors share that class,
     // and the WORKFLOW coaches fire from commitPropStamp BEFORE openPropEditor runs — suppressing on the bare
     // class would silently kill the whole belt-teach chain.)
     if (!opts.overTerms && (document.querySelector('#terms .term') || document.querySelector('.refit-firstrun'))) return;
@@ -929,7 +929,7 @@ const Tutorial = (() => {
   function onBuildOpen() {
     if (kitMode) return;   // during the guided kit-out, kitTick drives BUILD MODE — don't stack the generic coachmark on top
     showCoach('build', '#refit-tools',
-      'this is BUILD MODE. PROP adds equipment or decoration. ROOMS organize your station. LINES connect agents into repeatable workflows. choose what your work needs — you can already ask for help in COMMS.');
+      'this is BUILD MODE. PROP adds equipment or decoration. ROOMS organize your keep. LINES connect agents into repeatable workflows. choose what your work needs — you can already ask for help in COMMS.');
   }
   function onEquipmentInspect() { if (!kitMode) clearCoach(); }
   /* WORKFLOW COACHES (2026-07-05 belt-teach): each routing prop teaches ITS role in the two-trip story the
@@ -950,11 +950,11 @@ const Tutorial = (() => {
     if (WF_COACH[propType]) { tickBrief('build'); showCoach('wf-' + propType, '#refit-palette', WF_COACH[propType]); return; }
     tickBrief('build');
     let msg;
-    // HONEST (truthful-telemetry): a fresh solo station is COMPUTE-ONLY, so placing a cap-prop genuinely UNLOCKS
+    // HONEST (truthful-telemetry): a fresh solo keep is COMPUTE-ONLY, so placing a cap-prop genuinely UNLOCKS
     // that power for the hero (heroCaps picks it up) — it did NOT "already come with it". Frame it as a real unlock.
     if (grant === 'COMPUTE') {                   // compute is the always-on freebie; a desk just gives the body a real seat to work at
-      msg = 'that’s a workstation — compute’s already mine (i can always think), so this just gives my body a real desk to walk to and work at. other equipment supports files, web, commands and memory. add what your work needs.';
-    } else if (grant) {                          // cabinet/dish/workbench/server: a REAL unlock on the solo station
+      msg = 'that’s a workkeep — compute’s already mine (i can always think), so this just gives my body a real desk to walk to and work at. other equipment supports files, web, commands and memory. add what your work needs.';
+    } else if (grant) {                          // cabinet/dish/workbench/server: a REAL unlock on the solo keep
       msg = 'that placed ' + grant + ' equipment. one matching prop covers that ability in its workspace; you don’t need every variant. select it to see who can use it and whether access is already available.';
     } else {                                     // inert decor
       msg = 'nice. the gear that grants a power wears its name — a workbench gives me a TERMINAL, a dish reaches the WEB, a cabinet opens FILES. the rest is yours to decorate.';
@@ -974,12 +974,12 @@ const Tutorial = (() => {
   }
   function onLevelUp() {
     tickBrief('level');
-    showCoach('levelup', '#tb-station',
+    showCoach('levelup', '#tb-keep',
       'my crew level grew from your feedback. your COMMANDER level here tracks recorded progress toward your goals. open QUEST LOG for your journey, or my dossier → GROWTH for my track record.',
       { overTerms: true });   // a level transition fires exactly once — show it even over an open panel rather than drop it
   }
 
-  /* ================= P3 — STATION BRIEFING (first-steps checklist) =================
+  /* ================= P3 — KEEP BRIEFING (first-steps checklist) =================
      A small, dismissible in-game checklist that ticks off REAL first actions. NOT a gate — a soft map,
      skippable, sandbox-friendly. Auto-completes and bows out; reopenable from the Field Manual. */
 
@@ -1074,7 +1074,7 @@ const Tutorial = (() => {
     }
     if (briefAll() && !state.briefComplete) {
       state.briefComplete = true; save();
-      if (typeof StationUI !== 'undefined' && StationUI.notify) StationUI.notify('first steps complete — you’ve got the controls', 'gold');
+      if (typeof KeepUI !== 'undefined' && KeepUI.notify) KeepUI.notify('first steps complete — you’ve got the controls', 'gold');
       if (briefEl) {
         briefEl.classList.add('complete');
         const t = briefEl.querySelector('.tut-brief-title'); if (t) t.textContent = '✓ FIRST STEPS COMPLETE';
@@ -1084,7 +1084,7 @@ const Tutorial = (() => {
   }
 
   /* ================= P3 — FIELD MANUAL (the reopenable handbook) =================
-     SYSTEM dock → stationui window → this chapter renderer. Equipment labels come from
+     SYSTEM dock → keepui window → this chapter renderer. Equipment labels come from
      WorldModel; examples are instructions to try, never badges claiming completed work. */
 
   const fmEsc = v => String(v == null ? '' : v).replace(/[&<>"']/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[ch]);
@@ -1114,18 +1114,18 @@ const Tutorial = (() => {
   let manualStartChapter = 'FIRST MISSION';
   let guidedPlatform = null;
   function showPlatformConnections() {
-    if (typeof StationUI === 'undefined') return false;
+    if (typeof KeepUI === 'undefined') return false;
     hideBrief();
     manualStartChapter = 'CONNECT PLATFORMS';
-    StationUI.openTerm('manual', 'platforms');
+    KeepUI.openTerm('manual', 'platforms');
     return true;
   }
   function openPlatformSetup(kind) {
-    if (typeof StationUI === 'undefined' || !['apps', 'messaging'].includes(kind)) return false;
+    if (typeof KeepUI === 'undefined' || !['apps', 'messaging'].includes(kind)) return false;
     hideBrief();
     guidedPlatform = kind;
-    StationUI.closeTerm('manual');
-    StationUI.openTerm(kind === 'apps' ? 'connectors' : 'messaging', kind === 'apps' ? 'catalog' : 'overview');
+    KeepUI.closeTerm('manual');
+    KeepUI.openTerm(kind === 'apps' ? 'connectors' : 'messaging', kind === 'apps' ? 'catalog' : 'overview');
     if (kind === 'apps') watchConnectors();
     return true;
   }
@@ -1152,7 +1152,7 @@ const Tutorial = (() => {
   const FM_TABS = ['FIRST MISSION', 'CONNECT PLATFORMS', 'CONTROLS', 'CREW', 'GEAR', 'LINES', 'PROGRESS', 'HELP'];
   function fmContent(tab) {
     if (tab === 'CONNECT PLATFORMS') {
-      return '<p class="fm-lead">Bring the apps you already use into your station. What would you like to connect?</p>'
+      return '<p class="fm-lead">Bring the apps you already use into your keep. What would you like to connect?</p>'
         + '<div class="fm-map">'
         + fmEntry('WORK APPS', 'Let your agent work with your apps', 'Use your mail, calendar, documents and other services from COMMS. Browse the current catalog to see what is available.<br><b>BUILD › CONNECT › ABILITIES › CATALOG</b><div class="fm-actions"><button type="button" class="fm-action" data-platform-start="apps">SHOW ME WHERE TO CONNECT APPS ↗</button></div>')
         + fmEntry('MESSAGING', 'Talk to your agent from another platform', 'Connect a messaging platform so you can chat with your agent there. Each platform has its own setup guide.<br><b>BUILD › CONNECT › CHANNELS</b><div class="fm-actions"><button type="button" class="fm-action" data-platform-start="messaging">SHOW ME WHERE TO CONNECT MESSAGING ↗</button></div>')
@@ -1161,25 +1161,25 @@ const Tutorial = (() => {
         + fmAction('comms', 'I’LL CONNECT LATER');
     }
     if (tab === 'FIRST MISSION') {
-      return '<p class="fm-lead">You command the station. Your crew does real work on your computer. Start with one useful result.</p>'
+      return '<p class="fm-lead">You command the keep. Your crew does real work on your computer. Start with one useful result.</p>'
         + '<div class="fm-route" aria-label="The work cycle"><span>GIVE A JOB</span><i aria-hidden="true">→</i><span>FOLLOW THE RUN</span><i aria-hidden="true">→</i><span>CHECK THE RESULT</span></div>'
         + fmEntry('01', 'Choose your objective', 'Open <b>COMMS</b>, the chat panel, and pick the agent on the line. Say what you want, give the material to work from, and describe the finished result.')
         + fmMission('Turn rough notes into a plan', '<b>“Turn these notes into a checklist for tomorrow. Put the most important task first. Keep it under ten items: [paste your notes].”</b> Replace the bracketed text with your notes, then send. This first job needs no connector or production line.')
-        + fmEntry('02', 'Stay on the channel', 'Watch the reply and tool activity in COMMS. If the agent needs context, answer in the conversation. If an approval appears, read the proposed action and choose whether to allow it. Movement around the station accompanies activity; the run details tell you what actually happened.')
+        + fmEntry('02', 'Stay on the channel', 'Watch the reply and tool activity in COMMS. If the agent needs context, answer in the conversation. If an approval appears, read the proposed action and choose whether to allow it. Movement around the keep accompanies activity; the run details tell you what actually happened.')
         + fmEntry('03', 'Inspect the payoff', 'Read the checklist and ask for a revision if it misses the mark. For jobs that create files or apps, use <b>WORK › MY WORK › DELIVERABLES</b> and <b>OPEN</b> the result. A finished run is your cue to inspect the work.')
         + '<div class="fm-actions">' + fmAction('comms', 'GO TO COMMS') + fmAction('deliverables', 'OPEN DELIVERABLES') + '</div>'
         + '<p class="fm-note">Need an idea? <b>WORK › MY WORK › RECIPES</b> has ready-made jobs. Every chapter is available now; read in any order. The quick tour below is optional.</p>'
-        // STATION SYSTEMS: on a growing dock some paths below are not buttons yet — say where every one of them is
-        + ((typeof Systems !== 'undefined' && Systems.staged && Systems.staged()) ? '<p class="fm-note">Your dock adds buttons as you use the station. Any place named here that is not in your dock yet opens from <b>WORK › QUESTS › Progress</b>, which lists every station system.</p>' : '');
+        // KEEP SYSTEMS: on a growing dock some paths below are not buttons yet — say where every one of them is
+        + ((typeof Systems !== 'undefined' && Systems.staged && Systems.staged()) ? '<p class="fm-note">Your dock adds buttons as you use the keep. Any place named here that is not in your dock yet opens from <b>WORK › QUESTS › Progress</b>, which lists every keep system.</p>' : '');
     }
     if (tab === 'CONTROLS') {
       const keys = [['0', 'Select / inspect'], ['1', 'Room'], ['2', 'Hallway'], ['3', 'Surface'], ['4', 'Move'], ['5', 'Delete'], ['6', 'Props'], ['7', 'Belt'], ['8', 'Copy'], ['9', 'Layouts']];
-      return '<p class="fm-lead">Your control deck: chat to give orders, the bottom menus to manage the station, BUILD MODE to build.</p>'
+      return '<p class="fm-lead">Your control deck: chat to give orders, the bottom menus to manage the keep, BUILD MODE to build.</p>'
         + fmEntry('CHAT', 'Send a command', '<kbd>Enter</kbd> sends. <kbd>Shift + Enter</kbd> adds a line. Type <kbd>/</kbd> to browse slash commands. Use the agent picker in COMMS to choose who receives your message.')
-        + '<div class="fm-map"><div><b>CREW</b><span>Agents, recruitment, your Commander dossier.</span></div><div><b>WORK</b><span>Tasks, deliverables, recipes, automation, quests.</span></div><div><b>BUILD</b><span>Refit the station, manage abilities, connect channels.</span></div><div><b>SYSTEM</b><span>This manual, settings, updates, notifications.</span></div></div>'
+        + '<div class="fm-map"><div><b>CREW</b><span>Agents, recruitment, your Commander dossier.</span></div><div><b>WORK</b><span>Tasks, deliverables, recipes, automation, quests.</span></div><div><b>BUILD</b><span>Refit the keep, manage abilities, connect channels.</span></div><div><b>SYSTEM</b><span>This manual, settings, updates, notifications.</span></div></div>'
         + '<h3 class="fm-subhead">BUILD › BUILD MODE</h3><p class="fm-note">These keys work while BUILD MODE is open and you are not typing in a field.</p>'
         + '<dl class="fm-keys">' + keys.map(([key, label]) => '<div><dt><kbd>' + key + '</kbd></dt><dd>' + label + '</dd></div>').join('') + '</dl>'
-        + fmEntry(null, 'Camera &amp; editing', '<kbd>Space + drag</kbd> pans; the scroll wheel zooms. <kbd>F</kbd> fits the station. <kbd>R</kbd> rotates supported props; <kbd>Shift + R</kbd> rotates back; <kbd>M</kbd> mirrors. <kbd>Ctrl / ⌘ + Z</kbd> undoes; add <kbd>Shift</kbd> to redo. <kbd>Esc</kbd> backs out of the current card, placement, or tool before leaving BUILD MODE.')
+        + fmEntry(null, 'Camera &amp; editing', '<kbd>Space + drag</kbd> pans; the scroll wheel zooms. <kbd>F</kbd> fits the keep. <kbd>R</kbd> rotates supported props; <kbd>Shift + R</kbd> rotates back; <kbd>M</kbd> mirrors. <kbd>Ctrl / ⌘ + Z</kbd> undoes; add <kbd>Shift</kbd> to redo. <kbd>Esc</kbd> backs out of the current card, placement, or tool before leaving BUILD MODE.')
         + fmMission('Make room for an idea', 'Open BUILD MODE, press <kbd>1</kbd> and drag out a room. Press <kbd>6</kbd>, choose a prop, then click the floor to place it. Use Undo to reverse an edit.')
         + fmAction('refit', 'ENTER BUILD MODE');
     }
@@ -1189,12 +1189,12 @@ const Tutorial = (() => {
         + fmEntry('COMMS', 'Direct messages &amp; group work', 'Choose an agent in COMMS for a direct conversation. Use <b>Add agents</b> to bring crew into a group conversation. Use <b>Sessions</b> to return to an earlier conversation and its run history.')
         + fmEntry('WORK', 'Know where a job lives', '<b>TASKS</b> holds planned board work. Chats, routines, and while-away runs live as <b>Sessions in COMMS</b>; not every conversation becomes a board task. <b>DELIVERABLES</b> is where you find produced outputs.')
         + fmEntry('VOICE', 'Talk to your crew', 'Use the microphone in COMMS to speak, or the hands-free control for a live conversation. <b>SYSTEM › SETTINGS › LOOK &amp; SOUND</b> configures voice and microphone options, including different voices for individual agents.')
-        + '<p class="fm-note">every crew member you recruit is a real, separate agent with its own identity, workspace, memory, and sessions. Specialists own their desk; other equipment is shared through the station’s overseer.</p>'
+        + '<p class="fm-note">every crew member you recruit is a real, separate agent with its own identity, workspace, memory, and sessions. Specialists own their desk; other equipment is shared through the keep’s overseer.</p>'
         + '<div class="fm-actions">' + fmAction('agents', 'INSPECT CREW') + fmAction('tasks', 'OPEN TASKS') + '</div>';
     }
     if (tab === 'GEAR') {
       const gear = [
-        ['desk', 'WORKSTATION', 'A desk, console, or pixel rig gives an agent a work position. A routed BAY needs a computer in its room.'],
+        ['desk', 'WORKKEEP', 'A desk, console, or pixel rig gives an agent a work position. A routed BAY needs a computer in its room.'],
         ['war_intelcab', 'CABINET', 'File tools: read and write within the agent’s configured reach. Includes safes, vaults, racks, and shelves.'],
         ['comms_dish', 'DISH', 'Web search and page access. Uplinks and beacons provide the same capability.'],
         ['gigs_servercart', 'SERVER', 'Persistent notebook and reusable skill procedures. Relay stacks and cores also provide memory.'],
@@ -1203,9 +1203,9 @@ const Tutorial = (() => {
         ['studio', 'MEDIA STUDIO', 'Image generation and image analysis. Available providers and their configuration determine which operations can run.'],
         ['jukebox', 'JUKEBOX', 'Spotify search and playback controls. Requires Spotify to be connected in ABILITIES.']
       ];
-      return '<p class="fm-lead">Equipment gives the station abilities. Inspect a prop’s capability label before you place it.</p>'
+      return '<p class="fm-lead">Equipment gives the keep abilities. Inspect a prop’s capability label before you place it.</p>'
         + '<div class="fm-gear-grid">' + gear.map(([prop, title, text]) => fmEntry(typeof WorldModel !== 'undefined' ? WorldModel.grantLabelForProp(prop) : null, title, text)).join('') + '</div>'
-        + fmEntry('DECOR', 'Make the station yours', 'Plants, rugs, and other decoration shape the atmosphere. They do not grant tools. Workflow machines such as bays and splitters have their own job: see LINES.')
+        + fmEntry('DECOR', 'Make the keep yours', 'Plants, rugs, and other decoration shape the atmosphere. They do not grant tools. Workflow machines such as bays and splitters have their own job: see LINES.')
         + fmEntry('ACCESS', 'Equipment &amp; permission are separate', 'A prop grants a CAPABILITY — what an agent can attempt, not blanket consent. Profiles, shared equipment, and Full Power can also supply abilities. Check the agent’s actual tool readout in <b>AGENTS</b> and the settings in <b>ABILITIES</b>. Settings &gt; Permissions decides whether an action asks or runs without another prompt.')
         + fmEntry('ASK / FULL POWER', 'Choose how much control to hand over', 'In restricted modes, local file reads and private notebook saves do not prompt. Other actions may ask unless already approved or FULL ACCESS is on. ASK and narrower reach modes retain their restrictions. <b>FULL POWER is host-wide</b>: protected files, arbitrary commands, visible apps, and screen/input control are in scope. It does not supply missing credentials, disconnected services, or OS privileges.')
         + fmAction('connectors', 'OPEN ABILITIES');
@@ -1215,7 +1215,7 @@ const Tutorial = (() => {
       const junctions = R.machines.filter(m => m.junction);
       return '<p class="fm-lead">Turn repeatable work into a production line. You can still give ordinary jobs in COMMS without building belts.</p>'
         + '<div class="fm-route"><span>INBOX<small>work arrives</small></span><i aria-hidden="true">→</i><span>BAY<small>agent + instructions</small></span><i aria-hidden="true">→</i><span>OUTBOX<small>output leaves</small></span></div>'
-        + fmEntry('01', 'Place the stations', 'In BUILD MODE, open <b>' + e(R.tab) + ' › ' + e(R.machinesShelf) + '</b> and place an INBOX, BAY, and OUTBOX. Click the BAY: the <b>Workflow panel</b> docks beside the floor — assign an agent and define its step. Its room needs a computer.')
+        + fmEntry('01', 'Place the keeps', 'In BUILD MODE, open <b>' + e(R.tab) + ' › ' + e(R.machinesShelf) + '</b> and place an INBOX, BAY, and OUTBOX. Click the BAY: the <b>Workflow panel</b> docks beside the floor — assign an agent and define its step. Its room needs a computer.')
         + fmEntry('02', 'Connect the route', 'Press <kbd>' + e(R.beltKey) + '</kbd> for ' + e(R.belt) + '. <b>Click one machine, then another</b> to lay a connection automatically; dragging lays tiles by hand. Connect INBOX → BAY, then BAY → OUTBOX. Inspect the route and fix any flagged breaks.')
         + fmEntry('03', 'Give the line a source', 'Click the INBOX: its Workflow panel answers <b>What starts this line?</b> — add a schedule there, or a message on a connected channel (<b>BUILD › CONNECT › CHANNELS</b> connects the platforms; <b>WORK › AUTOMATE</b> manages routines and loops). An inbox marked <b>NO FEED</b> has nothing feeding it yet.')
         + fmEntry('TEST', 'Rehearse, then test for real', '<b>' + e(R.preview) + '</b> in the BUILD MODE top bar (or in any line’s Workflow panel) opens one TEST with three modes. <b>WATCH IT</b> is free: a crate rides the route and no agent runs. <b>STEP THROUGH</b> runs the real agents one step at a time and pauses at every hand-off so you can read or edit what moves on; nothing is delivered. <b>RUN ONE REAL JOB</b> runs it end to end and the result lands in the OUTBOX.')
@@ -1229,10 +1229,10 @@ const Tutorial = (() => {
         + fmEntry('YOU', 'Commander progress', 'Open <b>WORK › QUESTS</b> to reach the QUEST LOG. Define a life goal and what success means. Record completed actions and metrics as you go. Confirm the outcome when it actually happens: finishing the plan alone does not complete the goal.')
         + fmMission('Name a finish line you can recognize', '<b>Goal:</b> play a song for a friend. <b>Success:</b> play the whole song without stopping. <b>First step:</b> practise the chorus. Record the practice now; confirm the goal after the performance.')
         + fmEntry('CREW', 'Agent experience', 'Positive feedback on agent work grows that agent’s XP. Your Commander journey and the crew’s track record are separate. Neither level locks capabilities behind a grind.')
-        + fmEntry('NEXT STEP', 'Keep the plan useful', 'Use the QUEST LOG to report progress, extend a plan, or defer a suggestion that does not fit. The station can suggest a next action; you decide whether it belongs in your life.')
+        + fmEntry('NEXT STEP', 'Keep the plan useful', 'Use the QUEST LOG to report progress, extend a plan, or defer a suggestion that does not fit. The keep can suggest a next action; you decide whether it belongs in your life.')
         + fmAction('quests', 'OPEN QUEST LOG');
     }
-    return '<p class="fm-lead">When the station stalls, follow the evidence. Start with the message beside the job.</p>'
+    return '<p class="fm-lead">When the keep stalls, follow the evidence. Start with the message beside the job.</p>'
       + fmEntry('NO REPLY', 'Check the connection', 'Open <b>SYSTEM › SETTINGS</b> and check the selected provider’s sign-in or key. Check the agent’s model in COMMS. Read the error before retrying; a missing connection needs fixing first.')
       + fmEntry('WAITING', 'Look for a decision', 'Return to the job’s COMMS session. Answer a context question or approve or deny the pending action. An unanswered question is not a running tool.')
       + fmEntry('MISSING TOOL', 'Check ability &amp; reach', 'Inspect the agent in <b>CREW › AGENTS</b>. In <b>BUILD › CONNECT › ABILITIES</b>, check toolsets and connector status. Equipment, permissions, service sign-in, and operating-system access each affect what can run.')
@@ -1249,12 +1249,12 @@ const Tutorial = (() => {
     const render = () => {
       const page = FM_TABS.indexOf(curTab);
       body.innerHTML =
-        '<header class="fm-cover"><h2>Your station guide</h2><p>Pick a topic. Find the next step and open the menu you need.</p></header>'
+        '<header class="fm-cover"><h2>Your keep guide</h2><p>Pick a topic. Find the next step and open the menu you need.</p></header>'
         + '<nav class="fm-tabs" aria-label="Manual chapters">' + FM_TABS.map((t, i) => '<button type="button" class="fm-tab' + (t === curTab ? ' on' : '') + '" aria-pressed="' + (t === curTab ? 'true' : 'false') + '" data-t="' + t + '">' + t + '</button>').join('') +
         '</nav><article class="fm-content" aria-label="' + curTab + '"><div class="fm-chapter"><span class="fm-eyebrow">CHAPTER ' + (page + 1) + ' / ' + FM_TABS.length + '</span><h2>' + curTab + '</h2></div>' + fmContent(curTab)
         + (curTab === 'FIRST MISSION' ? '<button class="fm-action fm-replay" type="button">REPLAY QUICK TOUR</button>' : '')
         + '</article><nav class="fm-pager" aria-label="Chapter navigation">'
-        + (page > 0 ? '<button type="button" class="fm-action" data-fm-page="' + (page - 1) + '">← ' + FM_TABS[page - 1] + '</button>' : '<span>YOUR STATION. YOUR PACE.</span>')
+        + (page > 0 ? '<button type="button" class="fm-action" data-fm-page="' + (page - 1) + '">← ' + FM_TABS[page - 1] + '</button>' : '<span>YOUR KEEP. YOUR PACE.</span>')
         + (page < FM_TABS.length - 1 ? '<button type="button" class="fm-action" data-fm-page="' + (page + 1) + '">' + FM_TABS[page + 1] + ' →</button>' : '') + '</nav>';
       const turn = t => {
         curTab = t; sfx('click'); render(); body.scrollTop = 0;
@@ -1265,12 +1265,12 @@ const Tutorial = (() => {
       body.querySelectorAll('[data-fm-page]').forEach(b => { b.onclick = () => turn(FM_TABS[Number(b.dataset.fmPage)]); });
       body.querySelectorAll('[data-platform-start]').forEach(b => { b.onclick = () => openPlatformSetup(b.dataset.platformStart); });
       body.querySelectorAll('[data-fm-open]').forEach(b => { b.onclick = () => {
-        if (typeof StationUI === 'undefined') return;
+        if (typeof KeepUI === 'undefined') return;
         const target = b.dataset.fmOpen;
-        StationUI.closeTerm('manual');
+        KeepUI.closeTerm('manual');
         if (target === 'comms') { const input = document.getElementById('chat-input'); if (input) input.focus(); }
         else if (target === 'refit') { const build = document.getElementById('bb-build'); if (build) build.click(); }
-        else StationUI.openTerm(target);
+        else KeepUI.openTerm(target);
       }; });
       const replay = body.querySelector('.fm-replay');
       if (replay) replay.onclick = () => { sfx('click'); replayFirstCommand(); };
@@ -1282,8 +1282,8 @@ const Tutorial = (() => {
     if (active) return false;
     hideBrief(); clearCoach(); clearSpot();
     // The manual is a real floating window; close it before opening the Dialogue tour so it cannot cover the lesson.
-    try { if (typeof StationUI !== 'undefined' && StationUI.closeTerm) StationUI.closeTerm('manual'); } catch (_) {}
-    // Returning users have no in-memory onboarding name; resolve the current station identity.
+    try { if (typeof KeepUI !== 'undefined' && KeepUI.closeTerm) KeepUI.closeTerm('manual'); } catch (_) {}
+    // Returning users have no in-memory onboarding name; resolve the current keep identity.
     firstCommand({ name: agentLabel(), replay: true });
     return active;
   }
@@ -1330,5 +1330,5 @@ const Tutorial = (() => {
   };
 })();
 
-// browser-safe node shim (guarded exactly like stationui.js) so the gate can unit-test the pure geometry
+// browser-safe node shim (guarded exactly like keepui.js) so the gate can unit-test the pure geometry
 if (typeof module !== 'undefined' && module.exports) module.exports = { dodgeRect, connectOffers, connectorUp };

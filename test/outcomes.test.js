@@ -105,7 +105,7 @@ A.eq(O.successPrior(null, 'x'), null, '…and leans nothing');
     '…verbatim, labeled TRACK RECORD');
   A.ok(out.indexOf('TRACK RECORD: xxx') >= 0 && out.indexOf('x'.repeat(201)) < 0, 'each line is clipped');
   A.eq(CC.compose({ trackRecord: [] }).indexOf('TRACK RECORD'), -1, 'no record, no section — never an empty header');
-  // THE TRUNCATION LAW (consistency sweep, 2026-08-30): on a WARM station the 20-line evidence cap must drop
+  // THE TRUNCATION LAW (consistency sweep, 2026-08-30): on a WARM keep the 20-line evidence cap must drop
   // the statistic, never the grounding — every RECENT ACTIVITY line survives a full house; TRACK RECORD yields.
   const warm = CC.compose({
     topics: [1, 2, 3, 4, 5, 6].map(i => ({ label: 'topic ' + i, count: i })),
@@ -130,9 +130,9 @@ A.eq(O.successPrior(null, 'x'), null, '…and leans nothing');
   const fs = require('fs');
   const path = require('path');
   const idx = fs.readFileSync(path.join(__dirname, '..', 'sidecar', 'index.js'), 'utf8');
-  A.ok(/function stationTrackRecord\(\)/.test(idx) && /personalizationStore\.read\(\)\.enabled\) return null/.test(A.fnBody(idx, 'function stationTrackRecord()')),
+  A.ok(/function keepTrackRecord\(\)/.test(idx) && /personalizationStore\.read\(\)\.enabled\) return null/.test(A.fnBody(idx, 'function keepTrackRecord()')),
     'the shared read exists and the personalization PAUSE returns null before any fold');
-  A.ok(/const trackRecord = stationTrackRecordLines\(\);/.test(A.fnBody(idx, 'function commanderEvidenceInputs()')),
+  A.ok(/const trackRecord = keepTrackRecordLines\(\);/.test(A.fnBody(idx, 'function commanderEvidenceInputs()')),
     'the evidence composer consumes the shared read (every evidence:true generator now sees the record)');
   A.ok(/learn, trackRecord, redact \}, \{ now \}\);/.test(idx),
     'the night-shift context pack consumes the SAME read');

@@ -2,7 +2,7 @@
    Retain this module path and the saved discovery data when retiring the duplicate hub. */
 'use strict';
 (() => {
-  const esc = StationUI.h.esc;
+  const esc = KeepUI.h.esc;
   async function post(path, body) {
     const r = await Harness.apiFetch(path, {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
     const j = await r.json();
@@ -10,7 +10,7 @@
     return j;
   }
   function openDraft(options) {
-    StationUI.closeTerm('commander');
+    KeepUI.closeTerm('commander');
     Marketplace.open({tab:'recipes',firstValue:options || {},onLaunch:App.launchRecipe});
     return true;
   }
@@ -44,7 +44,7 @@
     detail.addEventListener('click',async ev=>{
       const b=ev.target.closest('button'); if(!b || !detail.contains(b))return;
       if(b.hasAttribute('data-sample')){openDraft();return;}
-      if(b.hasAttribute('data-projects')){StationUI.closeTerm('commander');document.getElementById('ws-tab-projects')?.click();return;}
+      if(b.hasAttribute('data-projects')){KeepUI.closeTerm('commander');document.getElementById('ws-tab-projects')?.click();return;}
       if(b.dataset.finding!==undefined){const f=findings[Number(b.dataset.finding)];if(f)openDraft({findingId:f.id,root:f.root,intent:'client-update',pain:f.title,reason:'Suggested from evidence in your selected folder'});return;}
       const source=sources && sources.sources.find(s=>s.kind==='client-update'); b.disabled=true;
       try {
@@ -57,6 +57,6 @@
       }catch(e){say(e.message);}finally{if(b.isConnected)b.disabled=false;}
     });
   }
-  window.WorkHub={mountSources,open:(pane,options)=>pane==='draft' || pane==='start'?openDraft(options):StationUI.openTerm(pane==='sources'?'commander':pane==='station'?'quests':'tasks')};
+  window.WorkHub={mountSources,open:(pane,options)=>pane==='draft' || pane==='start'?openDraft(options):KeepUI.openTerm(pane==='sources'?'commander':pane==='keep'?'quests':'tasks')};
   FirstValue.configure({onOpen:openDraft});
 })();

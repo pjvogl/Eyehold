@@ -41,7 +41,7 @@ test" has NOVA, RESEARCHER, ENGINEER and the proof transcript.
 - "I actually liked the top bar before you changed it" -> the identity PILL was REVERTED. The
   `▪ NAME ▪ NAME · N agents · + Add agents` row is the keeper. Do not re-pill it.
 - "not a huge fan of the scroll wheel" -> names row is ONE ellipsized line, no scrollbar; hover =
-  station tip with all names, click = picker.
+  keep tip with all names, click = picker.
 
 ## Grok Bot comparison (Andrew asked 09-05) — inspiration queue, cheapest first
 

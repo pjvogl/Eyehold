@@ -126,9 +126,9 @@
         "ok": true
       },
       {
-        "name": "build-station",
+        "name": "build-keep",
         "kb": 794,
-        "driveResult": "opened:REFIT STATION",
+        "driveResult": "opened:REFIT KEEP",
         "ok": true
       },
       {
@@ -216,7 +216,7 @@
     "No physical audio or Mac verification",
     "No fresh soak run",
     "No automatic update canary",
-    "No station-wide READY claim"
+    "No keep-wide READY claim"
   ],
   "logs": [
     {
@@ -302,7 +302,7 @@
       "sha256": "db7bc1a600ead0152d6a52b4b22187773c7d412f703e70506a50ef8b1920ba0e"
     },
     {
-      "path": ".dogfood/release-0112/surfaces/build-station.png",
+      "path": ".dogfood/release-0112/surfaces/build-keep.png",
       "size": 812845,
       "sha256": "ce3ff14575fd3a5dd4631257c67953f8851309652ce56dc2b3ae1e74918f427f"
     },

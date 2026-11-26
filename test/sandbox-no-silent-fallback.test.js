@@ -25,7 +25,7 @@ const local = {
   startBackground: () => { spawned++; return { ok: true, bgId: 'bg_x' }; }
 };
 const profiles = { a1: 'safe-cell', r1: 'remote-ssh', t1: 'trusted-project' };
-const router = makeExecutionRouter({ environments: { local }, defaultBackendId: 'local', profileForAgent: id => profiles[id] || 'station-gear', env: {} });
+const router = makeExecutionRouter({ environments: { local }, defaultBackendId: 'local', profileForAgent: id => profiles[id] || 'keep-gear', env: {} });
 
 (async () => {
   const reg = makeRegistry();
@@ -63,7 +63,7 @@ const router = makeExecutionRouter({ environments: { local }, defaultBackendId: 
   const calls = [];
   const manager = { start(o) { calls.push(o); return { ok: true, persisted: true, session: { sessionId: 'term_1', name: o.name, state: 'running', pid: 1, cols: 120, rows: 30, cwd: ws } }; } };
   const docker = Object.assign({}, local, { id: 'docker', backendId: 'docker', describe: () => ({ backend: 'docker', availability: { state: 'ready' } }) });
-  const withDocker = makeExecutionRouter({ environments: { local, docker }, defaultBackendId: 'local', profileForAgent: id => profiles[id] || 'station-gear', env: {} });
+  const withDocker = makeExecutionRouter({ environments: { local, docker }, defaultBackendId: 'local', profileForAgent: id => profiles[id] || 'keep-gear', env: {} });
   const fam = makeTerminalTools({ manager, environment: withDocker, fs, pathMod: path, root, platform: process.platform, envFor: () => ({}) });
   const start = fam.tools.find(t => t.name === 'terminal.start');
   let err = null;

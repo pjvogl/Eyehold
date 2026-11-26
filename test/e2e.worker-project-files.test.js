@@ -123,7 +123,7 @@ function toolResultFor(requests, callId) {
     A.ok(toolNames.indexOf('image_generate') >= 0 && toolNames.indexOf('tool_search') >= 0, 'image_generate and tool_search are advertised');
     const sys = systemOf(first);
     A.ok(/DELEGATED worker run for supervisor/.test(sys), 'its capability note says DELEGATED for the Supervisor, not an unattended routine');
-    A.ok(/Do NOT report that the station has no shell/.test(sys) && /result for supervisor/.test(sys), 'and names the route: hand the command back to the Supervisor');
+    A.ok(/Do NOT report that the keep has no shell/.test(sys) && /result for supervisor/.test(sys), 'and names the route: hand the command back to the Supervisor');
     A.ok(!/per-routine grant/.test(sys), 'it is never sent to a per-routine grant');
 
     // ---- discovery + the withheld call: truthful and actionable ----

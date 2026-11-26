@@ -312,8 +312,8 @@
     },
     "desk": {
       "label": "DESK",
-      "family": "workstation",
-      "description": "WORKSTATION — assign an agent here and it walks over and sits to work whenever it gets a task.",
+      "family": "workkeep",
+      "description": "WORKKEEP — assign an agent here and it walks over and sits to work whenever it gets a task.",
       "flat": false,
       "views": {
         "s": {
@@ -384,8 +384,8 @@
     },
     "desk2": {
       "label": "DESK ×2",
-      "family": "workstation",
-      "description": "WORKSTATION — assign an agent here and it walks over and sits to work whenever it gets a task.",
+      "family": "workkeep",
+      "description": "WORKKEEP — assign an agent here and it walks over and sits to work whenever it gets a task.",
       "flat": false,
       "views": {
         "s": {
@@ -456,8 +456,8 @@
     },
     "console": {
       "label": "CONSOLE",
-      "family": "workstation",
-      "description": "WORKSTATION — assign an agent here and it walks over and sits to work whenever it gets a task.",
+      "family": "workkeep",
+      "description": "WORKKEEP — assign an agent here and it walks over and sits to work whenever it gets a task.",
       "flat": false,
       "views": {
         "s": {
@@ -480,8 +480,8 @@
     },
     "consoleL": {
       "label": "CONSOLE L",
-      "family": "workstation",
-      "description": "WORKSTATION — assign an agent here and it walks over and sits to work whenever it gets a task.",
+      "family": "workkeep",
+      "description": "WORKKEEP — assign an agent here and it walks over and sits to work whenever it gets a task.",
       "flat": false,
       "views": {
         "s": {
@@ -504,8 +504,8 @@
     },
     "pixelrig": {
       "label": "PIXEL RIG",
-      "family": "workstation",
-      "description": "WORKSTATION — assign an agent here and it walks over and sits to work whenever it gets a task.",
+      "family": "workkeep",
+      "description": "WORKKEEP — assign an agent here and it walks over and sits to work whenever it gets a task.",
       "flat": false,
       "views": {
         "s": {
@@ -528,8 +528,8 @@
     },
     "bench": {
       "label": "BENCH",
-      "family": "workstation",
-      "description": "WORKSTATION — assign an agent here and it walks over and sits to work whenever it gets a task.",
+      "family": "workkeep",
+      "description": "WORKKEEP — assign an agent here and it walks over and sits to work whenever it gets a task.",
       "flat": false,
       "views": {
         "s": {
@@ -552,8 +552,8 @@
     },
     "workbench": {
       "label": "WORKBENCH",
-      "family": "workstation",
-      "description": "WORKBENCH — grants the room's agent shell + verify, so it can run and test real code. Pair it with a workstation in the same room.",
+      "family": "workkeep",
+      "description": "WORKBENCH — grants the room's agent shell + verify, so it can run and test real code. Pair it with a workkeep in the same room.",
       "flat": false,
       "views": {
         "s": {
@@ -745,7 +745,7 @@
     "outbox": {
       "label": "OUTBOX",
       "family": "workflow",
-      "description": "OUTBOX — the dispatch chute where an agent's finished reply leaves the station. Click it to read and rate every finished run waiting for you.",
+      "description": "OUTBOX — the dispatch chute where an agent's finished reply leaves the keep. Click it to read and rate every finished run waiting for you.",
       "flat": false,
       "views": {
         "s": {
@@ -1129,7 +1129,7 @@
     "trophycase": {
       "label": "TROPHY CASE",
       "family": "command",
-      "description": "TROPHY CASE — the station's real achievements made permanent. Earned milestones, completed quests, and your living tools stand behind glass; click to open the case. It grants nothing — it remembers.",
+      "description": "TROPHY CASE — the keep's real achievements made permanent. Earned milestones, completed quests, and your living tools stand behind glass; click to open the case. It grants nothing — it remembers.",
       "flat": false,
       "views": {
         "s": {

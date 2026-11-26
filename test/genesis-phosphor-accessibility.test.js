@@ -48,11 +48,11 @@ const document = {
   createElement(tag) { A.eq(tag, 'button', 'the picker creates only button controls'); return button(); }
 };
 let savedTheme = '', clicks = 0;
-const StationUI = { getTheme: () => 'amber', setTheme: t => { savedTheme = t; } };
+const KeepUI = { getTheme: () => 'amber', setTheme: t => { savedTheme = t; } };
 const SFX = { click: () => { clicks++; } };
-const picker = Function('document', 'StationUI', 'SFX',
+const picker = Function('document', 'KeepUI', 'SFX',
   "'use strict'; const el = id => document.getElementById(id);\n" + src.slice(start, end) + '\nreturn { buildPhosphor };'
-)(document, StationUI, SFX);
+)(document, KeepUI, SFX);
 
 picker.buildPhosphor();
 A.eq(wrap.children.length, 6, 'all six phosphor choices render');
@@ -64,9 +64,9 @@ A.eq(wrap.children.filter(b => b.className.split(/\s+/).includes('sel')).length,
 const green = wrap.children.find(b => b.dataset.t === 'green');
 A.ok(green && typeof green.onclick === 'function', 'the green phosphor choice is interactive');
 green.onclick();
-A.eq(savedTheme, 'green', 'selection still persists through StationUI');
+A.eq(savedTheme, 'green', 'selection still persists through KeepUI');
 A.ok(body.className.includes('theme-green'), 'selection still recolors the live screen');
-A.eq(clicks, 1, 'selection still emits one station click');
+A.eq(clicks, 1, 'selection still emits one keep click');
 A.eq(wrap.children.map(b => b.getAttribute('aria-pressed')), ['false', 'true', 'false', 'false', 'false', 'false'],
   'accessible selection moves to green with the visual selection');
 A.eq(wrap.children.filter(b => b.className.split(/\s+/).includes('sel')).map(b => b.dataset.t), ['green'],

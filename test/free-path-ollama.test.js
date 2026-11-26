@@ -35,12 +35,12 @@ global.Harness = {
   hasStoredCredential: p => !!stored[p],
   probeProvider: () => { calls.probes++; return Promise.resolve(probeResult); }
 };
-global.StationUI = { openTerm: (k, s) => calls.openTerm.push([k, s]), notify: (m, k) => calls.notify.push([m, k]), rerender: () => {} };
+global.KeepUI = { openTerm: (k, s) => calls.openTerm.push([k, s]), notify: (m, k) => calls.notify.push([m, k]), rerender: () => {} };
 global.ModelDock = { reconcile: () => Promise.resolve(), reflect: () => {} };
 
 const KeyCTA = require('../frontend/app/keycta.js');
 
-// 1. an UNLINKED eyehold station is a LINK gap, never a "key" gap
+// 1. an UNLINKED eyehold keep is a LINK gap, never a "key" gap
 prov = 'eyehold'; eyeholdConfigured = false;
 eq(KeyCTA.gapOf() && KeyCTA.gapOf().kind, 'unlinked', 'eyehold + not linked → gap kind is unlinked (there is no EYEHOLD key to add)');
 eyeholdConfigured = true;
@@ -85,7 +85,7 @@ global.App.currentAgent = () => ({ name: 'NOVA', onboarded: true });
   ok(/RUN FREE LOCALLY \(OLLAMA\)/.test(keycta) && /SET UP OLLAMA/.test(keycta), 'the free door has a proven label and an honest unproven label');
   ok(/ollamaReady \? '◇ RUN FREE LOCALLY/.test(keycta), 'the "run free" label is gated on the sidecar probe verdict (truthful telemetry)');
   ok(/Harness\.probeProvider\('ollama'\)/.test(keycta), 'the verdict comes from the sidecar probe route, not a local guess');
-  ok(/LINK EYEHOLD/.test(keycta), 'an unlinked eyehold station is offered a LINK, not a key');
+  ok(/LINK EYEHOLD/.test(keycta), 'an unlinked eyehold keep is offered a LINK, not a key');
   ok(/openTerm\('settings', 'providers'\)/.test(keycta), 'every door lands on the PROVIDERS section of settings');
 
   const index = read('frontend/index.html');

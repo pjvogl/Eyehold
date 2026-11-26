@@ -8,7 +8,7 @@
         fire it, or every run POSTs every agent's whole composed system prompt back to the sidecar.
      2. NO GATE, NO RANK — an agent that has proved nothing is described exactly as it is today. No
         "unproven" label, no threshold anywhere near the dispatch path.
-     3. THE BRIEFING TELLS THE TRUTH — the sidecar renders what the browser published, and a station with no
+     3. THE BRIEFING TELLS THE TRUTH — the sidecar renders what the browser published, and a keep with no
         proven crew produces a byte-identical briefing to the pre-S3 one (no dangling legend).
 
    Layer 1+2 run the REAL XpStore against the real Xp engine; layer 3 is a source guard on sidecar/index.js

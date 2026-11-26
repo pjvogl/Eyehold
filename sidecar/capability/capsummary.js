@@ -54,7 +54,7 @@ function summarizeCapabilities(resolved, opts) {
   // host-minted (runOnce o.delegatedBy): the lead that dispatched this worker run; '' for every other run
   const delegatedBy = String(opts.delegatedBy || '').trim();
   // host-minted (runOnce `!isTask`): a conversational turn is sent with NO tool declarations. The grant set below is
-  // still the station's truth, but "You CAN: search/fetch the web" on a turn with nothing to call told the model it
+  // still the keep's truth, but "You CAN: search/fetch the web" on a turn with nothing to call told the model it
   // had powers it could not reach -- it then wrote tool-call markup as text or claimed it had searched (the
   // claude-cli adapter's "No tools are available in this turn" is the same fact for that one provider).
   const toolless = opts.toolless === true;
@@ -83,10 +83,10 @@ function summarizeCapabilities(resolved, opts) {
   let note = '\n<capabilities_ground_truth>\n' +
     (unrestrictedHost
       ? 'FULL POWER is active: the Commander authorized the whole local computer. Eyehold policy must not refuse a host task; only report real unavailable OS, hardware, credential, account, or service prerequisites. '
-      : 'These are your REAL powers this run, decided by the objects placed on your station floor and host-granted station roles -- not aspirational. ') +
+      : 'These are your REAL powers this run, decided by the objects placed on your keep floor and host-granted keep roles -- not aspirational. ') +
     'This block is AUTHORITATIVE: if anything earlier in your instructions implies you always have web or file access, ignore it -- what follows is what you ACTUALLY have right now:\n' +
     (toolless && havePhrases.length
-      ? '- Your station grants: ' + haveStr + '. NONE of these tools are attached to THIS reply (a conversational turn): ' +
+      ? '- Your keep grants: ' + haveStr + '. NONE of these tools are attached to THIS reply (a conversational turn): ' +
         'do not write tool-call markup, and never claim you searched, fetched, browsed, read, ran or saved anything in this reply. ' +
         'If the Commander wants one of these done, say you can do it and ask them to say exactly what to do; the tools attach to that message.\n'
       : '- You CAN: ' + haveStr + '.\n');
@@ -99,11 +99,11 @@ function summarizeCapabilities(resolved, opts) {
   if (missing.length) {
     note += '- You do NOT have: ' + missing.join(', ') + '.\n';
     if (interactive) {
-      // the LEAD holds the station builder (2026-10-02): it places the missing object itself rather than sending the
+      // the LEAD holds the keep builder (2026-10-02): it places the missing object itself rather than sending the
       // Commander into Build mode — the builder's own approval card is the Commander's yes, and the power arrives on
       // the next run (the floor decides each run's grants)
       note += 'If the Commander asks for something you lack, do NOT claim, promise, or pretend to do it. Say plainly you can\'t yet, ' +
-        (capIds.has('orchestrator') ? 'and offer to place it yourself (station builder add; they approve; works from their next message): ' : 'and name the object to place to grant it: ') +
+        (capIds.has('orchestrator') ? 'and offer to place it yourself (keep builder add; they approve; works from their next message): ' : 'and name the object to place to grant it: ') +
         lackCore.map((c) => c.have + ' -> place ' + c.object).join('; ') + '. ' +
         'You can always think and reply; that needs nothing.\n';
     } else if (delegatedBy) {
@@ -117,7 +117,7 @@ function summarizeCapabilities(resolved, opts) {
         (lacksCommands
           ? 'Commands: ' + gap.why + '. ' +
             (toolNames.some((t) => /^shell\.bg\./.test(String(t))) ? 'The shell_bg_* tools you see only inspect or stop processes you already started; they cannot run a command. ' : '') +
-            'Do NOT report that the station has no shell. Instead, ' + gap.enable + '. '
+            'Do NOT report that the keep has no shell. Instead, ' + gap.enable + '. '
           : '') +
         'Do NOT claim, promise, or pretend to do what you lack. Do everything you genuinely can, then state plainly what is left for ' + delegatedBy + '.\n';
     } else if (ownerTrusted) {

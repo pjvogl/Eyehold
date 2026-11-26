@@ -63,11 +63,11 @@ async function main() {
     await evalJS(cdp, `location.href = ${JSON.stringify(URL)}`);
     if (!(await waitDevReady(cdp, evalJS, { url: URL }))) throw new Error('never reached game');
     await sleep(2000);
-    await evalJS(cdp, `(() => { const K='eyehold.station.v1'; const r=JSON.parse(localStorage.getItem(K)||'{"v":1}'); r.settings=Object.assign({},r.settings,{textScale:100}); localStorage.setItem(K,JSON.stringify(r)); location.reload(); return 1; })()`);
+    await evalJS(cdp, `(() => { const K='eyehold.keep.v1'; const r=JSON.parse(localStorage.getItem(K)||'{"v":1}'); r.settings=Object.assign({},r.settings,{textScale:100}); localStorage.setItem(K,JSON.stringify(r)); location.reload(); return 1; })()`);
     if (!(await waitDevReady(cdp, evalJS, { url: URL }))) throw new Error('never came back');
     await sleep(2000);
     mkdirSync(OUT, { recursive: true });
-    await evalJS(cdp, `StationUI.openAgent(0)`);
+    await evalJS(cdp, `KeepUI.openAgent(0)`);
     await sleep(1600);
 
     // TAB ORDER is a deliberate choice (Andrew: GROWTH belongs right after BRIEF), so assert the RENDERED
@@ -128,7 +128,7 @@ async function main() {
 
     // no leaked spec letters anywhere in the dossier
     await evalJS(cdp, pick('growth')); await sleep(900);
-    console.log('gx-ref chips:', await evalJS(cdp, `(() => { const w = ${WIN}; return [...w.querySelectorAll('.gx-ref, .gx-station .badge')].map(e => e.textContent); })()`));
+    console.log('gx-ref chips:', await evalJS(cdp, `(() => { const w = ${WIN}; return [...w.querySelectorAll('.gx-ref, .gx-keep .badge')].map(e => e.textContent); })()`));
     await capture(cdp, OUT, 'growth-top');
     console.log('EXCEPTIONS:', JSON.stringify(diag.exceptions).slice(0, 800));
   } finally {

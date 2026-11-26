@@ -60,9 +60,9 @@ class SidecarFixture {
   constructor(options) {
     const opts = options || {};
     this.workspace = fs.mkdtempSync(path.join(os.tmpdir(), opts.prefix || 'eyehold-sidecar-'));
-    // HERMETIC PROFILE: the sidecar's boot-time station auto-recovery scans the REAL per-user
-    // app-data roots (%APPDATA%/%LOCALAPPDATA%/XDG/~) for a lost station, and a fresh temp
-    // workspace looks exactly like one — so a machine with an installed Eyehold station had its
+    // HERMETIC PROFILE: the sidecar's boot-time keep auto-recovery scans the REAL per-user
+    // app-data roots (%APPDATA%/%LOCALAPPDATA%/XDG/~) for a lost keep, and a fresh temp
+    // workspace looks exactly like one — so a machine with an installed Eyehold keep had its
     // real save COPIED INTO every test workspace (2026-08-20: broke schema-stamp on the dev box
     // the day the desktop app was first installed there). Point every profile root the candidate
     // scan reads at an empty scratch sibling so fixture boots never see, or touch, real user data.

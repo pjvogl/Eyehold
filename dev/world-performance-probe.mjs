@@ -22,7 +22,7 @@ try {
       }
       await cdp.send('Fetch.fulfillRequest',{requestId:p.requestId,responseCode:200,responseHeaders:[{name:'Content-Type',value:'text/javascript'}],body:Buffer.from(body).toString('base64')});
     });
-    await cdp.send('Fetch.enable',{patterns:['world.js','propsprites.js','stationbake.js'].map(n=>({urlPattern:'*/app/'+n+'*',requestStage:'Request'}))});
+    await cdp.send('Fetch.enable',{patterns:['world.js','propsprites.js','keepbake.js'].map(n=>({urlPattern:'*/app/'+n+'*',requestStage:'Request'}))});
   }
   await cdp.send('Page.addScriptToEvaluateOnNewDocument',{source:String.raw`
     (()=>{

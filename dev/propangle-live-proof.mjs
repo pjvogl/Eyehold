@@ -2,7 +2,7 @@
 // dev/propangle-live-proof.mjs — the bookshelf + fishtank projection fix, proved in the LIVE app.
 //
 // It boots a seeded sidecar, opens the real page, places both props through the same validated
-// mutation API REFIT uses (Build.__test__.station().addProp), and then makes TWO claims:
+// mutation API REFIT uses (Build.__test__.keep().addProp), and then makes TWO claims:
 //
 //   A. THE LIVE APP DRAWS THEM. Both props land on the real deck, the stage canvas carries real
 //      pixel structure where each one sits, and the console stays clean.
@@ -38,8 +38,8 @@ const URL = `http://127.0.0.1:${PORT}/`;
 /* ---- A: place both props on open deck through the REAL mutation API, then rebake ---- */
 const PLACE = `(() => {
   const B = (typeof Build !== 'undefined' && Build.__test__) ? Build.__test__ : null;
-  const st = B && B.station();
-  if (!st) return JSON.stringify({ error: 'no live station (Build.__test__ unavailable)' });
+  const st = B && B.keep();
+  if (!st) return JSON.stringify({ error: 'no live keep (Build.__test__ unavailable)' });
   const b = st.bounds(), out = {};
   const y1 = b.minTy, x0 = b.maxTx + 3;
   st.addRoom({ kind: 'hab', rects: [{ x1: x0, y1, x2: x0 + 11, y2: y1 + 7 }] });
@@ -58,7 +58,7 @@ const PLACE = `(() => {
    blue-grey under a cool lightmap, so warm timber (bookshelf) and the tank's cold tube (fishtank)
    are both things that simply cannot come from an empty floor. */
 const STRUCTURE = (tx, ty, w, kind) => `(() => {
-  const st = Build.__test__.station();
+  const st = Build.__test__.keep();
   const geo = st.projectGeometry(), T = geo.TILE, cam = World.cameraDbg();
   const lx = ${tx} - geo.origin.tx, ly = ${ty} - geo.origin.ty;
   const cv = document.getElementById('stage'), g = cv.getContext('2d');

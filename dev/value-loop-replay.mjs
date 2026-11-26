@@ -16,7 +16,7 @@ export const MODEL = 'replay/value-loop-fixture';
 export const SAMPLE = 'VALUE_LOOP_FIXTURE — synthetic client notes\nCompleted: homepage draft delivered.\nBlocker: client approval is pending.\nNext step: revise the draft after client feedback.\nOwner and deadline: not recorded.';
 export const DRAFT = '# Weekly client update — replay fixture\n\n## Progress\nThe homepage draft was delivered.\n\n## Blocker\nClient approval is pending.\n\n## Next step\nRevise the draft after client feedback.\n\n## Missing facts\nOwner and deadline were not recorded. The source does not establish a reporting date range.\n\n## Evidence\nSynthetic source: “Completed: homepage draft delivered.” “Blocker: client approval is pending.” “Next step: revise the draft after client feedback.”\n\nThis draft was produced by a deterministic local replay for application verification.\n';
 
-// Read-only validation. A resume must retain the exact station state and source bytes being tested.
+// Read-only validation. A resume must retain the exact keep state and source bytes being tested.
 export function validateResume(input) {
   if (typeof input !== 'string' || !isAbsolute(input)) throw new Error('Resume requires an absolute replay scratch root.');
   const scratch = resolve(input), workspace = join(scratch, 'workspace'), source = join(scratch, 'client-notes');
@@ -32,7 +32,7 @@ export function validateResume(input) {
   }
   const roster = JSON.parse(readFileSync(join(workspace, 'agent.roster.json'), 'utf8'));
   const save = JSON.parse(readFileSync(join(workspace, 'agent.save.json'), 'utf8'));
-  if (!save.doc || !Array.isArray(roster.agents) || !roster.agents.length || roster.agents.some(a => a.model !== MODEL)) throw new Error('Resume requires a station configured for the local replay model.');
+  if (!save.doc || !Array.isArray(roster.agents) || !roster.agents.length || roster.agents.some(a => a.model !== MODEL)) throw new Error('Resume requires a keep configured for the local replay model.');
   if (!readFileSync(join(source, 'weekly-notes.md'), 'utf8').includes('VALUE_LOOP_FIXTURE')) throw new Error('Resume source is not the replay fixture.');
   return { scratch, workspace, source };
 }
@@ -98,7 +98,7 @@ async function main() {
   const port = Number(arg ? arg.slice(7) : 8964);
   if (!Number.isInteger(port) || port < 1024 || port > 65535) throw new Error('Choose an unprivileged local port.');
   const url = 'http://127.0.0.1:' + port + '/';
-  // Refuse an occupied port: verification must not quietly attach to somebody else's running station.
+  // Refuse an occupied port: verification must not quietly attach to somebody else's running keep.
   try { const res = await fetch(url, { signal: AbortSignal.timeout(700) }); if (res) throw new Error('PORT_OCCUPIED'); }
   catch (e) { if (e.message === 'PORT_OCCUPIED') throw new Error('Port ' + port + ' is already in use.'); }
   const resumeArg = process.argv.find(v => v.startsWith('--resume='));

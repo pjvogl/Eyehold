@@ -21,7 +21,7 @@ BLUEPRINTS catalog entries (RESEARCHER "digs sources", WRITER "drafts the result
 specialists, CREW workers, SHIPPER). The bay's placard/hover shows the role while unbound.
 Clicking an unbound role-carrying bay offers **"SUMMON A RESEARCHER HERE"** — one click creates
 an agent with that purpose (reuse the existing summon/recruit machinery + class loadouts; model
-inherits the station default) and binds it to the dock. Manual pick stays available (the role is
+inherits the keep default) and binds it to the dock. Manual pick stays available (the role is
 a suggestion, not a gate). *Answers: who does each step?*
 
 ## Phase 2 — PATH: the finish-the-line card
@@ -32,7 +32,7 @@ line, each item honest, clickable, and derived from the COMPILED PLAN + real har
      two real paths (connect a channel / create a routine). Skips itself when a feed exists.
   ③ RUN A SAMPLE JOB → enabled only when ① is done; fires Phase 4's sample.
 The card retires permanently for that line when its first real crate DELIVERS (event-driven, not
-time-driven). Never blocks editing; dismissible; per-station persistence beside the first-ride
+time-driven). Never blocks editing; dismissible; per-keep persistence beside the first-ride
 flag. *Answers: what do I do next?*
 
 ## Phase 3 — PICTURE: ghost projection
@@ -48,7 +48,7 @@ A button (checklist item ③ + on the line's INBOX card) that feeds ONE real, ch
 work item through the whole line via the REAL dispatch path: unaddressed inbound → router
 resolveTarget (filter/splitter decide) → dock run → chain hops → OUTBOX delivery. New small
 sidecar seam (POST /api/routing/sample): production-gated like any API route, one-in-flight per
-station, sample text canned per blueprint role family, runs through runOnce (real budget governor,
+keep, sample text canned per blueprint role family, runs through runOnce (real budget governor,
 real ledger, real cost = real crate mass). The reply lands in the OUTBOX like any delivered run,
 labeled SAMPLE. *Answers: does my system work?*
 

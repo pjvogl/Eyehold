@@ -1,6 +1,6 @@
 /* EYEHOLD — seedcredit.js : the PURE seed-callout helper (Game session, Phase G3a / Layer 6).
 
-   Closes the mint→pitch narrative loop out loud: when the station reuses a recipe the Commander SAVED as a
+   Closes the mint→pitch narrative loop out loud: when the keep reuses a recipe the Commander SAVED as a
    seed (an agent-authored, seedborn custom — seedstore.save marks it), the moment says so. Three call sites,
    all direct-call wiring (no new events, no new beats — a credit LINE, never a separate ask):
      • a First Pitch / ongoing suggestion that proposes a seedborn recipe appends creditForRecipe()'s line;

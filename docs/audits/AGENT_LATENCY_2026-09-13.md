@@ -50,7 +50,7 @@ Without an explicitly configured auxiliary tier, summaries use the active run mo
 
 **Live measured; performance penalty not benchmarked.**
 
-A short greeting with a 14-character supplied system instruction became a 26,506-character system prompt with no tools. Task mode became 40,594 system characters plus 88 tool definitions. These measurements came from the dev-seeded full-access station; other capability profiles differ. They are character counts, not measured model tokens.
+A short greeting with a 14-character supplied system instruction became a 26,506-character system prompt with no tools. Task mode became 40,594 system characters plus 88 tool definitions. These measurements came from the dev-seeded full-access keep; other capability profiles differ. They are character counts, not measured model tokens.
 
 `sidecar/index.js:16862` adds the interactive manual, and the final prompt assembly adds runtime, capability, skill and other context. This increases uncached input processing and amplifies finding 1.
 

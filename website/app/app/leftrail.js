@@ -18,7 +18,7 @@
   /* ================= ROSTER WINDOW (2026-08-07) =================
      The roster used to be capped at a flat max-height:40% of the column, and a percentage is never
      a whole number of rows — so the cap landed MID-ROW and sliced the last agent in half. Measured
-     on a 6-agent station that is 10px of a row at 1440x900, 18px at 780, 25px at 660: enough to
+     on a 6-agent keep that is 10px of a row at 1440x900, 18px at 780, 25px at 660: enough to
      read as BROKEN rather than as scrollable, which is exactly how it was reported.
 
      So the window is measured instead, and it always ends flush under a row:
@@ -300,7 +300,7 @@
      Mirrors chatresize.js exactly (visual px, rAF-coalesced writes, per-machine persistence,
      double-click to reset) with one difference: COMMS is allowed to swallow the stage whole,
      the rail is NOT. The rail is a fixed-content column — a Commander widens it to read long
-     session titles, not to hide the station — so it stops at WMAX, and never at a width that
+     session titles, not to hide the keep — so it stops at WMAX, and never at a width that
      would leave the stage thinner than STAGE_MIN. */
   const WKEY = 'eyehold.crewrail.w';
   const seam = document.getElementById('crew-resizer');

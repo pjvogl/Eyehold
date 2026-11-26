@@ -83,7 +83,7 @@ const run = (o) => Object.assign({ runId: '', parentRunId: '', agentId: 'agent',
   A.notThrows(() => makeProvenanceIndex(null), 'a null run log builds an empty index');
   A.notThrows(() => makeProvenanceIndex([null, undefined, {}, { runId: 'ok' }]), 'garbage rows are skipped');
   const ix = makeProvenanceIndex([{ runId: 'ok' }]);
-  A.eq(ix.contributorsOf('ok').map(c => c.agentId), ['agent'], 'a row with no agentId falls back to the station agent');
+  A.eq(ix.contributorsOf('ok').map(c => c.agentId), ['agent'], 'a row with no agentId falls back to the keep agent');
 }
 
 A.report('deliverable-provenance.test');

@@ -18,7 +18,7 @@ const run=s=>evalJS(cdp,s);
 async function until(s){for(let i=0;i<150;i++){if(await run(s))return;await sleep(200);}throw Error('Timed out: '+s);}
 async function check(name,s){assert.ok(await run(s),name);report.checks.push(name);}
 async function shot(name){await sleep(200);await capture(cdp,out,name);const clip=await run(`(()=>{const r=document.querySelector('#topbar .tb-stats').getBoundingClientRect();return{x:Math.max(0,r.x-5),y:Math.max(0,r.y-5),width:r.width+10,height:r.height+10,scale:2}})()`);const r=await cdp.send('Page.captureScreenshot',{format:'png',clip,captureBeyondViewport:false});writeFileSync(join(out,name+'-detail.png'),Buffer.from(r.data,'base64'));}
-const fits=`(()=>{const bar=document.querySelector('#topbar').getBoundingClientRect();return ['.tb-connection','#tb-station'].every(s=>{const e=document.querySelector(s),r=e.getBoundingClientRect();return !r.width||(r.left>=bar.left&&r.right<=bar.right+1&&r.top>=bar.top&&r.bottom<=bar.bottom+1&&e.scrollWidth<=e.clientWidth+1)})})()`;
+const fits=`(()=>{const bar=document.querySelector('#topbar').getBoundingClientRect();return ['.tb-connection','#tb-keep'].every(s=>{const e=document.querySelector(s),r=e.getBoundingClientRect();return !r.width||(r.left>=bar.left&&r.right<=bar.right+1&&r.top>=bar.top&&r.bottom<=bar.bottom+1&&e.scrollWidth<=e.clientWidth+1)})})()`;
 try{
   side=boot();assert.ok(await waitUp('http://127.0.0.1:9490/'));
   chrome=spawn(findChrome(),['--headless=new','--enable-gpu','--no-first-run','--no-default-browser-check','--hide-scrollbars','--mute-audio','--remote-debugging-port=9491','--window-size=1440,1000','--user-data-dir='+join(scratch,'chrome'),'about:blank'],{stdio:'ignore',windowsHide:true});
@@ -28,8 +28,8 @@ try{
   await cdp.send('Page.navigate',{url:'http://127.0.0.1:9490/'});assert.ok(await waitDevReady(cdp,evalJS,{url:'http://127.0.0.1:9490/'}));
   await until(`document.querySelector('#status-pill').textContent==='ONLINE'&&!World.linkState().down`);
   await until(`document.querySelector('.tb-xp-fill').style.width!==''`);
-  await until(`JourneyStore.status()?.progression&&document.querySelector('#gt-station').textContent.startsWith('Lv ')`);
-  await check('Commander level and progress match the server-owned Journey snapshot',`(()=>{const g=JourneyStore.status().progression;const pct=Math.max(0,Math.min(100,Math.round(100*(g.points-g.levelStartsAt)/(g.nextLevelAt-g.levelStartsAt))));return document.querySelector('#tb-station .tb-lbl').textContent==='COMMANDER'&&document.querySelector('#gt-station').textContent==='Lv '+g.level&&document.querySelector('.tb-xp-fill').style.width===pct+'%'})()`);
+  await until(`JourneyStore.status()?.progression&&document.querySelector('#gt-keep').textContent.startsWith('Lv ')`);
+  await check('Commander level and progress match the server-owned Journey snapshot',`(()=>{const g=JourneyStore.status().progression;const pct=Math.max(0,Math.min(100,Math.round(100*(g.points-g.levelStartsAt)/(g.nextLevelAt-g.levelStartsAt))));return document.querySelector('#tb-keep .tb-lbl').textContent==='COMMANDER'&&document.querySelector('#gt-keep').textContent==='Lv '+g.level&&document.querySelector('.tb-xp-fill').style.width===pct+'%'})()`);
   await check('E-STOP moved out of the header into SYSTEM',`!document.querySelector('#topbar #estop-btn')&&document.querySelector('[data-group=system] #estop-btn small').textContent==='halt all runs · Alt+H'`);
   await check('The connection display replaces the old signal glyph and rounded pill',`getComputedStyle(document.querySelector('#sig b')).display==='none'&&getComputedStyle(document.querySelector('#status-pill')).borderRadius==='0px'&&document.querySelector('.tb-link-mark')`);
   await check('Desktop instruments fit within the top bar',fits);await shot('01-online');
@@ -46,8 +46,8 @@ try{
   await check('Header instruments fit with enlarged text',fits);await shot('02-large-text');
   await run(`document.body.style.zoom='';document.body.style.removeProperty('--sn-unzoom')`);
   for(const theme of ['green','blue','purple','red','white','amber']){
-    await run(`StationUI.setTheme(${JSON.stringify(theme)})`);await sleep(150);
-    await check('Instruments keep theme-derived colors in '+theme,`getComputedStyle(document.querySelector('#status-pill')).color===getComputedStyle(document.querySelector('#gt-station')).color&&getComputedStyle(document.querySelector('#estop-btn')).color!==getComputedStyle(document.querySelector('#status-pill')).color`);
+    await run(`KeepUI.setTheme(${JSON.stringify(theme)})`);await sleep(150);
+    await check('Instruments keep theme-derived colors in '+theme,`getComputedStyle(document.querySelector('#status-pill')).color===getComputedStyle(document.querySelector('#gt-keep')).color&&getComputedStyle(document.querySelector('#estop-btn')).color!==getComputedStyle(document.querySelector('#status-pill')).color`);
     if(theme==='blue')await shot('03-blue-theme');
   }
   await run(`document.querySelector('[data-group=system] .bb-grp').click()`);await shot('system-menu');

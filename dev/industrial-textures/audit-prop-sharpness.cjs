@@ -2,7 +2,7 @@
 const fs=require('node:fs');
 const root='frontend/assets/industrial/projection-correction/',m=JSON.parse(fs.readFileSync(root+'manifest.json'));
 const geo=JSON.parse(fs.readFileSync(root+'runtime-geometry.json'));
-const restored=new Set(JSON.parse(fs.readFileSync('docs/station-remaster/sharpness-restoration/integration.json')).records.map(r=>r.id+':'+r.view));
+const restored=new Set(JSON.parse(fs.readFileSync('docs/keep-remaster/sharpness-restoration/integration.json')).records.map(r=>r.id+':'+r.view));
 const notes={
  'industrial_partition:w':'Narrow authored diagonal has crisp contour/trim at source. Limited close-zoom sampling; retain for comparison.',
  'desk:n':'Source outline and monitor arms read cleanly. Rear view still needs the separate camera/embedded-seat room check.',
@@ -18,7 +18,7 @@ const records=Object.entries(m.props).flatMap(([id,p])=>Object.entries(p.views).
  reason:restored.has(key)?'Under-resolved source replaced with a generated fidelity restoration. Same world bounds and footprint. Compare before/after and inspect in Kepler.':notes[key]||'Contour, primary shapes and material boundaries inspected on the source contact sheet; no obvious baked blur found. This is not room/camera approval.'};
 }));
 const counts={};for(const r of records)counts[r.status]=(counts[r.status]||0)+1;
-const data={date:'2026-09-15',method:'184 source views inspected on eight labeled plates, seven low-resolution sources additionally inspected individually. Alpha bounds measured for every PNG. Source pixel budget uses the actual uniform fit; 6x is the supported camera maximum. Resolution is triage, not an automatic visual pass. Restored sources receive a separate in-station check. CRT/grain retained.',cacheDensity:6,counts,records};
-fs.writeFileSync('docs/station-remaster/sharpness-restoration/audit.json',JSON.stringify(data,null,2)+'\n');
+const data={date:'2026-09-15',method:'184 source views inspected on eight labeled plates, seven low-resolution sources additionally inspected individually. Alpha bounds measured for every PNG. Source pixel budget uses the actual uniform fit; 6x is the supported camera maximum. Resolution is triage, not an automatic visual pass. Restored sources receive a separate in-keep check. CRT/grain retained.',cacheDensity:6,counts,records};
+fs.writeFileSync('docs/keep-remaster/sharpness-restoration/audit.json',JSON.stringify(data,null,2)+'\n');
 fs.writeFileSync('frontend/assets/industrial/sharpness-restoration/audit.json',JSON.stringify(data,null,2)+'\n');
 console.log(counts);

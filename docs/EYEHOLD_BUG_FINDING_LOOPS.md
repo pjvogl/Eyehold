@@ -86,7 +86,7 @@ status files.
 | --- | --- | --- |
 | App lies | UI says a thing is true that the event log, ledger, routing plan, or sidecar cannot prove. | `audit.mjs` truth assertions; HUD/logbook reductions from frozen events. |
 | Lifecycle residue | Module singleton state, timers, streams, panels, audio, or bodies survive WAKE/RESUME/DISCONNECT/NEW AGENT/REFIT. | Browser transition fuzzer plus state probes. |
-| Renderer authority | Renderer-posted station/capability data grants tools or routes that the sidecar did not derive. | Forged HTTP/save payload tests. |
+| Renderer authority | Renderer-posted keep/capability data grants tools or routes that the sidecar did not derive. | Forged HTTP/save payload tests. |
 | Visual incoherence | Panel overlap, native controls, stale scrims, off-center modals, unreadable layers, unreviewed baseline drift. | `golden.mjs` plus visual inspection of flagged frames only. |
 | Scheduler/autonomy drift | Cron math, DST, locks, retry claims, disabled scheduler, or unattended run state goes stale or lies. | Pure cron tests plus seeded UI routine scenario. |
 | Spend/model dishonesty | Unknown model, unmetered run shown as free, fallback model lost, managed/BYOK ledgers mixed. | Provider replay, ledger, insights, and live smoke with real env. |
@@ -140,7 +140,7 @@ Next scenarios to add:
   and ledger match.
 - Workstream switch during/after a run -> COMMS identity, run metadata, and
   title/status stay scoped.
-- Summon -> assign station role -> body reaches own desk and never borrows the
+- Summon -> assign keep role -> body reaches own desk and never borrows the
   hero voice.
 
 Rule: every added audit scenario should fail on a known or plausible bug class,
@@ -170,13 +170,13 @@ Goal: make "renderer requested it" worthless as authority.
 
 Cycle:
 
-1. Generate invalid Station/SaveDoc/routing/run payloads.
+1. Generate invalid Keep/SaveDoc/routing/run payloads.
 2. Try to grant web/files/shell/connectors from forged `placed`, forged legacy
    routing plans, missing connector ids, or sealed room handoffs.
 3. Assert sidecar refuses or keeps last-good state.
 4. Add every new exploit attempt as a unit or HTTP regression.
 
-This should wake whenever `sidecar/index.js`, routing, station-store, or
+This should wake whenever `sidecar/index.js`, routing, keep-store, or
 worldmodel serialization changes. Current coordination status shows
 `sidecar/index.js` is still the main hot integration file.
 

@@ -326,7 +326,7 @@ export function runPreflight(ctx, io) {
     const kf = ctx.keyFile;
     if (io.exists(kf)) rows.push(row('updater-key', 'updater signing key present', 'PASS', 'file exists (contents never read or printed)'));
     else rows.push(row('updater-key', 'updater signing key present', 'FAIL', 'missing: ' + kf, 'restore ~/.tauri/eyehold-updater.key from an OFFLINE backup (runbook §4). Without it no installed Eyehold can ever update again. The train signs on CI with the TAURI_SIGNING_PRIVATE_KEY secret — local presence is your proof you still hold it'));
-    rows.push(row('updater-key-backup', 'updater key backed up offline (≥2 copies)', 'SKIP', 'unverifiable by machine — human attestation', 'runbook §4.1: confirm two offline copies exist before you push the tag'));
+    rows.push(row('updater-key-backup', 'updater key backed up offline (≥2 copies)', 'SKIP', 'unverifiable by machine — human attekeep', 'runbook §4.1: confirm two offline copies exist before you push the tag'));
   }
 
   // ── release notes ──

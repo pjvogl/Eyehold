@@ -8,7 +8,7 @@ const vm = require('node:vm');
 const ROOT = path.resolve(__dirname, '../..');
 const DATA = 'dev/industrial-textures/coordinated-batch03-recipes.json';
 const ART = 'frontend/assets/industrial/batch03';
-const DOC = 'docs/station-remaster/batch03';
+const DOC = 'docs/keep-remaster/batch03';
 const OUT = 'frontend/assets/industrial/props-v3';
 const FACING = { s: 0, w: 1, n: 2, e: 3 };
 const ROOT_OWNED = 'pixelrig bench workbench rack rackV core comms_dish comms_uplink comms_beacon commswall bridge_relaystack war_intelcab fabricator vat tube research_corelens research_trendpillar etsy_packbot'.split(' ');
@@ -222,7 +222,7 @@ function buildPlan(root = ROOT) {
           measuredNearEdgeRise:pts?.length ? geometry.footprint.h*12-pts.reduce((sum,p)=>sum+p[1],0)/pts.length : null,
           qualification:'A near-edge measurement is not one constant rise for the entire projected tabletop. Parent maps the actual mounted contact point; do not blindly use legacy rise 8.' };
       }
-      record.integrationChecks = ['Check actual scale next to approved workstation/crate and the real cadet.', 'Verify each offered facing, bottom contact, shadow, alpha edges, and occlusion in the running station.'];
+      record.integrationChecks = ['Check actual scale next to approved workkeep/crate and the real cadet.', 'Verify each offered facing, bottom contact, shadow, alpha edges, and occlusion in the running keep.'];
       if (prop.geometry.tableSurface) record.integrationChecks.push('Map mounted items to this authored support polygon. Native generic surfaceRisePixels is legacy data, not the measured new table top.');
       if (prop.leisureUse) record.integrationChecks.push('Verify real agent approach/use/seat and foreground ordering; artwork alone cannot prove seat alignment.');
       entry.views[facing] = record;

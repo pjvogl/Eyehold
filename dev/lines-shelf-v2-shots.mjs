@@ -31,7 +31,7 @@ const OPEN_REFIT = `(() => {
 })()`;
 
 const CLEAR_FLOOR = `(() => {
-  const st = Build.__test__.station();
+  const st = Build.__test__.keep();
   for (const b of st.belts()) st.removeBelt(b.x, b.y);
   const WF = { intake:1, bay:1, outbox:1, filter:1, splitter:1, merger:1 };
   for (const p of st.props().slice()) if (WF[p.t]) st.removeProp(p.id);
@@ -39,7 +39,7 @@ const CLEAR_FLOOR = `(() => {
 })()`;
 
 const findSpot = (bpId) => `(() => {
-  const st = Build.__test__.station();
+  const st = Build.__test__.keep();
   const b = st.bounds();
   for (let ty = b.minTy - 2; ty <= b.maxTy + 2; ty++)
     for (let tx = b.minTx - 2; tx <= b.maxTx + 2; tx++)
@@ -72,7 +72,7 @@ async function main() {
     // it renders 15% past the glass (the known dock/zoom trait, app.css ~3274). Pin the REAL
     // setting to 100% and reload so the shots show the default-text-size presentation.
     await evalJS(cdp, `(() => {
-      const KEY = 'eyehold.station.v1';
+      const KEY = 'eyehold.keep.v1';
       const r = JSON.parse(localStorage.getItem(KEY) || '{"v":1}');
       r.settings = Object.assign({}, r.settings, { textScale: 100 });
       localStorage.setItem(KEY, JSON.stringify(r));
@@ -154,7 +154,7 @@ async function main() {
     shots.push(await capture(cdp, OUT, 'ghost-research'));
     const stamped = await evalJS(cdp, `(() => {
       const bp = WorldModel.BLUEPRINTS.find(b => b.id === 'research_line');
-      const st = Build.__test__.station();
+      const st = Build.__test__.keep();
       const before = st.props().length;
       const cx = ${spot.tx} + (bp.w >> 1), cy = ${spot.ty} + (bp.h >> 1);
       const cv = document.querySelector('.refit-canvas');

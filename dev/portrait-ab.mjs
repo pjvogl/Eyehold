@@ -16,7 +16,7 @@ const OUT = join(process.cwd(), 'dev', '.shots-portrait');
 const WIN = `[...document.querySelectorAll('.term')].find(t => /AGENT DOSSIER/i.test(t.textContent||''))`;
 
 const AB = `(async () => {
-  const a = (StationUI.h && StationUI.h.present) ? StationUI.h.present[0] : null;
+  const a = (KeepUI.h && KeepUI.h.present) ? KeepUI.h.present[0] : null;
   if (!a) return 'no agent';
   const skin = a.skin || DATA.DEFAULT_SKIN;
   const set = (DATA.SKINS[skin] && DATA.SKINS[skin].set) || DATA.SKINS[DATA.DEFAULT_SKIN].set;
@@ -87,7 +87,7 @@ async function main() {
     if (!(await waitDevReady(cdp, evalJS, { url: URL }))) throw new Error('never reached game');
     await sleep(2200);
     mkdirSync(OUT, { recursive: true });
-    await evalJS(cdp, `StationUI.openAgent(0)`);
+    await evalJS(cdp, `KeepUI.openAgent(0)`);
     await sleep(2000);
     console.log("AB:", JSON.stringify(await evalJS(cdp, AB), null, 1));
     console.log('EXCEPTIONS:', JSON.stringify(diag.exceptions).slice(0, 700));

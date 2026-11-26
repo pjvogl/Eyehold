@@ -3,7 +3,7 @@
 Mandate: **USE Eyehold the way a real person uses it, and file every anomaly.** Not a state
 audit, not a seeded happy-path — a *shift*: recruit an agent, hand it real multi-step work,
 watch it run, interrupt it, dispatch a team, open what it built, talk on a channel, restart the
-station, and check the diagnostics tell the truth. One session = one dogfood shift. You are the
+keep, and check the diagnostics tell the truth. One session = one dogfood shift. You are the
 first real user of the build — **the tester who stands between the merge and Andrew.**
 
 Why this crew exists (the session-audit finding, 2026-07-07): every other crew tests *states*
@@ -19,7 +19,7 @@ what breaks, so the machine finds it instead of Andrew.
 
 - **You USE; you never fix.** Dogfood REPORTS. A real defect is filed through the ledger and
   routed to a **feature lane** — the QA lane never ships the fix (same split as Perfectionist /
-  the whole station: `qa/QA_STATION.md`). The one exception is a bug in the dogfood tooling
+  the whole keep: `qa/QA_KEEP.md`). The one exception is a bug in the dogfood tooling
   itself (this file / your own proof harness).
 - **Only claim what you PROVED live.** An anomaly is real only when you observed it in the
   running app with evidence in hand — never because the code looks wrong (`eyehold-verify`). A
@@ -45,7 +45,7 @@ Boot the real sidecar the way a user's machine runs it — **`npm start`, NEVER 
 - **REAL (the coverage that matters).** Put a live key + model in `dev/.env.dev`
   (`SKYNET_OPENROUTER_KEY` + a **live** `SKYNET_DEFAULT_MODEL` — ids rot; `dev/seed.js`
   pre-flights the catalog and warns loudly on a dead default), then `SKYNET_PORT=8970 npm run
-  dev:seed` (a pre-onboarded station on your port, full access, no ceremony). The key stays
+  dev:seed` (a pre-onboarded keep on your port, full access, no ceremony). The key stays
   server-side — never injected into the page, never written to an evidence file. **Cost:** a
   full shift is a handful of short turns + one deliverable build — on the order of a few thousand
   tokens (pennies) on a haiku-class model. Real shifts are a *session* task (a human/agent
@@ -65,7 +65,7 @@ with the per-launch token read from the page (`window.__EYEHOLD_API_TOKEN__`, se
 ## The shift script — walk the real user journey, end to end
 
 Each step: **DO** it as a user would · what the app **PROMISES** while you do · what counts as an
-**ANOMALY** (file it). Mirror how Andrew actually drives the station — the escapes tell you where
+**ANOMALY** (file it). Mirror how Andrew actually drives the keep — the escapes tell you where
 he goes (`docs/NEXT.md` `EL-5`/`EL-6`, the qa-escape-loop history). Do the steps in order; a
 shift that completes ≥ recruit→assign→watch→interrupt→restart→verify is a valid shift even if you
 skip the optional ones (say which you skipped).
@@ -78,7 +78,7 @@ skip the optional ones (say which you skipped).
 
 2. **Assign a real multi-step task.** DO: give the agent a task that needs several turns / a tool
    (research something, write+save a file, a small build) via `POST /api/run` (`isTask:true`).
-   PROMISE: the agent walks to its workstation (reactive desk-trip on real tool use), the run
+   PROMISE: the agent walks to its workkeep (reactive desk-trip on real tool use), the run
    streams, the taskboard shows a `kind:task` card. ANOMALY: no desk-trip, a run that 400s
    instantly (the `EL-6` cross-provider class — worker running its roster model on the lead's
    wire), a taskboard that floods/duplicates, or a card that shows a state the stream never
@@ -123,7 +123,7 @@ skip the optional ones (say which you skipped).
 8. **Restart the sidecar — the durability test (this is where the worst bugs live).** DO: kill the
    sidecar and relaunch it on the SAME workspace, then reload the page. PROMISE: the crew, the
    run history, the placed props, the channel secrets, and the agent's memory all SURVIVE the
-   restart — the station resumes exactly as left. ANOMALY: any state that "worked until restart"
+   restart — the keep resumes exactly as left. ANOMALY: any state that "worked until restart"
    (a summoned agent gone, a secret destroyed — `EL-5`, the diagnostics ring wiped — `EL-6`, a
    prop un-placed, memory lost). A huge fraction of past escapes were restart bugs; do this step
    every shift.

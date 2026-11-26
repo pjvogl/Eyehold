@@ -248,9 +248,9 @@ async function seedPopulatedState(cdp) {
     const prior=await priorResponse.json();
     const save=${JSON.stringify(fixture)};
     save.version=Save.CURRENT;
-    const station=WorldModel.create(WorldModel.starterDoc());
-    station.ensureWorkstation('agent');station.ensureWorkstation('scout');
-    save.station=station.serialize();
+    const keep=WorldModel.create(WorldModel.starterDoc());
+    keep.ensureWorkkeep('agent');keep.ensureWorkkeep('scout');
+    save.keep=keep.serialize();
     save._saveRevision=Number(prior.save&&prior.save._saveRevision)||0;
     const response=await fetch('/api/save',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(save)});
     const body=await response.json();
@@ -271,7 +271,7 @@ async function seedPopulatedState(cdp) {
         await evalJS(cdp, '(async()=>{App.persist();if(!await CloudSave.flush({force:true}))throw new Error("canary baseline save unconfirmed");return true})()');
         const snapshot = await snapshotPopulatedState(cdp);
         for (const save of [snapshot.local, snapshot.durable]) {
-          if (!save || save.agents?.length < 2 || !save.station?.props?.some(p => p.agentId === 'scout') || !save.workstreams?.some(w => w.history?.some(m => m.content === 'preserve-' + nonce)) || save.usage?.calls !== 2) throw new Error('canary population was not retained by the old client');
+          if (!save || save.agents?.length < 2 || !save.keep?.props?.some(p => p.agentId === 'scout') || !save.workstreams?.some(w => w.history?.some(m => m.content === 'preserve-' + nonce)) || save.usage?.calls !== 2) throw new Error('canary population was not retained by the old client');
         }
         return snapshot;
       }
@@ -310,7 +310,7 @@ async function drive() {
   const appVer = await evalJS(cdp, '(typeof Updates!=="undefined" && Updates.snapshot) ? Updates.snapshot().currentVersion : "no-updates-module"');
   log('attached: origin=' + JSON.stringify(origin) + ' app-reported version=' + JSON.stringify(appVer));
 
-  log('seeding a populated two-agent station, prop, workstream, message, usage, and durable sentinel ...');
+  log('seeding a populated two-agent keep, prop, workstream, message, usage, and durable sentinel ...');
   const beforeState = await seedPopulatedState(cdp);
 
   log('driving Updates.check(true) …');

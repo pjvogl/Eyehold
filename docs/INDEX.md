@@ -16,7 +16,7 @@ The docs closest to "how the thing is shaped." Still dated in spirit, but these 
 durable structure rather than a one-time task.
 
 - **BRAIN.md** — 5-minute orientation for any session opening the repo; the fastest on-ramp to
-  Eyehold's core concept (local-first AI-agent harness rendered as a pixel-art station).
+  Eyehold's core concept (local-first AI-agent harness rendered as a pixel-art keep).
 - **HARNESS_ARCHITECTURE.md** — engineering reference for the sidecar/backend: the target
   module map and the event contract each build step works toward.
 - **harness-runtime-spec.md** — the build spec for the sidecar runtime, layered on the frozen
@@ -54,7 +54,7 @@ Subsystem / feature plans:
   `CONNECTORS_MCP_PLAN.md`, `VOICE_CHAT_PLAN.md`, `VOICE_PHASE2_PLAN.md`,
   `RECIPE_MARKETPLACE_PLAN.md`, `SKILL_PARITY_PLAN.md`, `CLASS_LOADOUTS_PLAN.md`,
   `PERSONALIZATION_PLAN.md`, `TUTORIAL_ONBOARDING_PLAN.md`, `MEESEEKS_SWARM_PLAN.md`,
-  `PROPS_PERIPHERY_PLAN.md`, `COMMANDER_DOSSIER_PLAN.md`, `SELF_TEST_STATION_PLAN.md`,
+  `PROPS_PERIPHERY_PLAN.md`, `COMMANDER_DOSSIER_PLAN.md`, `SELF_TEST_KEEP_PLAN.md`,
   `SUMMON_FIXES_PLAN.md`, `WARROOM_BUILD_PLAN.md`.
 - Autonomy / crew / world plans: `AUTONOMY_DRIVER_PLAN.md`, `AGENT_SENTIENCE_ROADMAP.md`,
   `WORKFORCE_SENTIENCE_PLAN.md`, `WORKFORCE_ZONES_PLAN.md`, `TIER_D_LIVING_CREW_PLAN.md`,

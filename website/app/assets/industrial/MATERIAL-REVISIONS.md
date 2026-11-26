@@ -10,7 +10,7 @@ Exact prompt:
 
 > Create one production-quality Eyehold game material texture, square 1024x1024. A single orthographic flat surface filling every pixel. Precisely tileable seamless left/right and top/bottom. Equal diffuse illumination throughout, NO baked directional lighting, vignette or cast shadows. Every pixel fully opaque. Rich believable surface material with controlled low contrast, clean structure but naturally tactile surfaces. Strong material identity survives reduction to small game scale. No scene, perspective, room, props, border, caption, text, insignia, symbols or emissive lights. Exterior brick masonry. Authentic narrow handmade fired-clay bricks, rich russet, burnt sienna, iron brown and occasional darker umber bricks. Bricks approximately 3.6 times wider than tall; eight staggered running-bond courses. Each face has compressed clay striations and fine shallow irregular pits with subtly chipped squared edges. Very thin recessed DARK charcoal-brown mortar, never white mortar. Understated natural variation between bricks, warm earthy muted colors, not saturated orange. No bevelled tiles, glaze, glossy ceramic, rounded soap-bar edges, bolts, white brick or bathroom finish. Brick faces are dominant, joints unobtrusive. Disciplined believable maintained industrial masonry, not ruins.
 
-## Station deck
+## Keep deck
 
 [floor.png](floor.png)
 

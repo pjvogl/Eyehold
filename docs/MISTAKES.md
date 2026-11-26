@@ -42,7 +42,7 @@ debugging or claiming anything done. Companions: [BRAIN.md](BRAIN.md) · [DECISI
   incident: data was never lost; a plain relaunch after cache purge healed it). Hot patches
   stay invisible until that cache is purged. HTTP/version checks do NOT prove the webview
   updated. (Purge-on-version-change shipped 2026-07-06, agent/wv-cache-purge.)
-- **Real station data root** = `%APPDATA%\Roaming\ai.skynet.harness\workspaces`
+- **Real keep data root** = `%APPDATA%\Roaming\ai.skynet.harness\workspaces`
   (`startup.log` proves it). `%LOCALAPPDATA%\Eyehold\workspaces` is a stale migrated-from
   secondary — don't debug against it.
 - **Tauri/Rust build:** `E0463 ctor_proc_macro` = cargo parallel-build race. Pre-build the
@@ -175,7 +175,7 @@ debugging or claiming anything done. Companions: [BRAIN.md](BRAIN.md) · [DECISI
   bay-bound bodies WITHOUT it (spawnAgent early-returned on "already present"), so idle
   agents froze inside their bay's footprint (y-sorted behind the taller bay sprite =
   invisible) and were dropped outright when the bay was deleted — while the crew
-  manifest/dossier still listed them. Andrew's station only relaunches on app updates, so it
+  manifest/dossier still listed them. Andrew's keep only relaunches on app updates, so it
   pattern-matched to "every update breaks my agents." The law now in code: **a roster agent
   ALWAYS has a live floor body; a bay decides WHERE it homes, never WHETHER it exists.**
   When adding any presence/behavior flag, ask: is it derivable from persisted truth on
@@ -203,4 +203,4 @@ debugging or claiming anything done. Companions: [BRAIN.md](BRAIN.md) · [DECISI
 
 Owner correction: furniture must use the existing Eyehold prop-art workflow. PixelLab is for character sprites only, not generated furniture. New character sprites must fit the existing agents and props at actual gameplay scale; only a tiny size increase is acceptable. The command-room experiment used mismatched generated furniture and an oversized operator and was rejected in full. It has been reverted; do not reuse that pass as an approved direction.
 
-Owner follow-up: retain the v0.11.0 prop artwork and dimensions. The subsequent workstation/capability redesign studies were not approved for implementation. The applied prop-polish pass was reverted; keep the approved world lighting and walls, and direct further world work elsewhere unless the owner explicitly reopens prop design.
+Owner follow-up: retain the v0.11.0 prop artwork and dimensions. The subsequent workkeep/capability redesign studies were not approved for implementation. The applied prop-polish pass was reverted; keep the approved world lighting and walls, and direct further world work elsewhere unless the owner explicitly reopens prop design.

@@ -8,13 +8,13 @@ an exhaustive card directory, and 15 equally weighted homepage features. This la
 article one topic, differentiates guides from reference, and replaces the directory and guide
 library with explicit entry paths. Existing page URLs remain available.
 
-The six topics are Start here, Station & agents, Conveyor workflows, Repeat & automate,
+The six topics are Start here, Keep & agents, Conveyor workflows, Repeat & automate,
 Connect your tools, and Troubleshooting & help. The manifest in `scripts/website-shell.mjs`
 owns navigation, article titles, the topic directory, section search index, and within-topic
 pagers. Run that script after changing documentation content; `--check` detects drift.
 
 Docs use plain reading type, higher contrast, native collapsible topic groups, and a responsive
-sidebar. Illustrations retain the station's pixel style. Search indexes local article sections
+sidebar. Illustrations retain the keep's pixel style. Search indexes local article sections
 and links to their anchors, supports keyboard navigation and an explicit empty state, and makes
 no network requests. Article anchors are present in the static HTML. A broken existing
 `somethings-not-running` help link now has a compatibility anchor.
@@ -39,7 +39,7 @@ Raw release labels are generated from the same fallback used by `website/site.js
   quickstart at `#connect-a-provider` positioned its heading at 100 CSS pixels.
 - The staged docs were served with `script-src 'none'`: article content and native topic expansion
   still worked; inactive search controls were hidden.
-- Staged homepage showed 0.11.2, six features, three docs routes, and the rendered station iframe
+- Staged homepage showed 0.11.2, six features, three docs routes, and the rendered keep iframe
   with two canvases. Source-only `website/` lacks the generated `app/embed.htm`, so the deliverable
   preview serves `website-deploy/` instead.
 

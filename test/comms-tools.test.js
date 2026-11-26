@@ -1,7 +1,7 @@
 /* node test/comms-tools.test.js — OUTBOUND channel reach (sidecar/tools/builtin/comms.js).
 
    Locks the capability AND its containment: an agent can message a chat a human already opened with this
-   station, and cannot message anything else. The second half is the point — channel.send is the one tool that
+   keep, and cannot message anything else. The second half is the point — channel.send is the one tool that
    carries content out to a third party under the Commander's own bot identity, so free-form addressing would
    turn any prompt injection into an exfiltration primitive. */
 'use strict';
@@ -31,7 +31,7 @@ const TARGETS = [
 
     const empty = makeCommsTools({ listTargets: () => [] });
     const out = await empty.targetsTool.run({});
-    A.eq(JSON.parse(out.content).targets.length, 0, 'a station nobody has messaged lists nothing');
+    A.eq(JSON.parse(out.content).targets.length, 0, 'a keep nobody has messaged lists nothing');
     A.ok(/nobody has messaged/.test(out.summary), 'and it explains WHY there is nothing, not just "0"');
   }
 
@@ -75,7 +75,7 @@ const TARGETS = [
       redact: (s) => String(s).replace(/sk-[A-Za-z0-9-]+/g, '[redacted]')
     });
     await t.sendTool.run({ target: '99001', text: 'key is sk-or-v1-abcdef' });
-    A.ok(!/sk-or-v1/.test(sent[0]), 'the outbound body is scrubbed before it leaves the station');
+    A.ok(!/sk-or-v1/.test(sent[0]), 'the outbound body is scrubbed before it leaves the keep');
     A.ok(/\[redacted\]/.test(sent[0]), 'and the scrub is visible, not a silent drop');
   }
 
@@ -119,7 +119,7 @@ const TARGETS = [
     let err = null;
     try { await t.sendTool.run({ target: 'C0SLACK1', text: 'hello' }); } catch (e) { err = e; }
     A.ok(err && /not connected/.test(err.message), 'a known chat on a DOWN transport says "not connected"');
-    A.ok(!/not a chat this station can reach/.test(err.message), 'it does NOT claim the chat is unknown — a different fact');
+    A.ok(!/not a chat this keep can reach/.test(err.message), 'it does NOT claim the chat is unknown — a different fact');
     A.ok(/nothing was sent/.test(err.message), 'and it states plainly that nothing went out');
     A.eq(sent.length, 0, 'nothing was transmitted into a dead channel');
   }

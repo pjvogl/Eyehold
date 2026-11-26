@@ -40,7 +40,7 @@ A Telegram-triggered run is classified `surface: 'autonomous'` and is therefore 
 `unattendedGrants: ['workbench','connectors']` already exists (built 2026-07-25) and wires all three
 halves correctly:
 - normalized/allowlisted: `sidecar/inputpolicy.js:67` (`GRANTABLE_UNATTENDED`), `:75` (`normalizeUnattendedGrants`)
-- object half: `sidecar/index.js:10894` (`stationWithObject(station, agentId, 'workbench')`) and `:10899` (`stationWithConnectors`)
+- object half: `sidecar/index.js:10894` (`keepWithObject(keep, agentId, 'workbench')`) and `:10899` (`keepWithConnectors`)
 - authority half: `sidecar/inputpolicy.js:100-102, 120, 167`
 - consent half: `sidecar/index.js:10979, 10982`
 - durable source: cron job records — `sidecar/cron-store.js:60,169,209`, driver `sidecar/cron-driver.js:293`
@@ -79,7 +79,7 @@ shift / delegated workers are byte-identical.
    EXTERNAL_UNKNOWN. Keep PHYSICAL_INPUT / VISIBLE_DESKTOP denied — `computer.use` / `desktop.open`
    are stripped unconditionally on every surface (`enforceSyntheticOnly`) and that is a separate lane.
 3. **`sidecar/index.js` runOnce** — read `o.ownerTrusted`; add the WORKBENCH object via the existing
-   `stationWithObject` (needed for the bay-docked case too, where an explicit `station` bypasses
+   `keepWithObject` (needed for the bay-docked case too, where an explicit `keep` bypasses
    `composeOffice`); make `terminalGrant`/`connectorGrant` true for it.
 4. **Consent broker** (`index.js:~10947`) — with approvals OFF there is no one to click, so an
    owner-trusted run must not default-deny; with approvals ON, keep asking in-chat. Roughly
@@ -104,7 +104,7 @@ shift / delegated workers are byte-identical.
 - `npm run test:fast` AND `npm run test:http`. **Read the LOG, not the exit code** (`npm test > log; echo $?` reports the ECHO's status).
 - Existing suites that lock this behavior and WILL need updating deliberately (not silently):
   `test/inputpolicy.test.js`, `test/capsummary.test.js`, `test/tool-withheld-message.test.js`,
-  `test/class-loadouts.test.js`, `test/station-tools.test.js`.
+  `test/class-loadouts.test.js`, `test/keep-tools.test.js`.
 - **Live proof is required, not optional** (`eyehold-verify`): message a real bot, run a real command
   from Telegram, see real output. The inbound half of Telegram has historically only ever been
   fake-proven — see the memory lane `telegram-hermes-parity-lane`, law: *"a fixture you wrote yourself

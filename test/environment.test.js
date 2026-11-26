@@ -318,16 +318,16 @@ function makeFakeSpawn() {
       let refused = false; try { await missing.ensureReady('missing'); } catch (e) { refused = /not configured/.test(String(e.message)); }
       A.ok(refused, 'SSH refuses execution without an owner-configured target');
 
-      // E-STOP / Quit on a station with no SSH target: nothing to reap, resolved 0 — never a rejection
+      // E-STOP / Quit on a keep with no SSH target: nothing to reap, resolved 0 — never a rejection
       // ("SSH target is not configured for agent" landed in customers' diagnostics as an unhandledRejection)
       const missingSpawn = makeFakeSpawn();
       const missingReap = makeEnvironmentManager({ spawn: missingSpawn, fs, pathMod: path, root, clock, sshConfig: () => null, config: { backend: 'ssh' } });
-      A.eq(await missingReap.killAllBackground(), 0, 'station-wide SSH reap with no configured target resolves 0');
+      A.eq(await missingReap.killAllBackground(), 0, 'keep-wide SSH reap with no configured target resolves 0');
       A.eq(await missingReap.killAllBackground('missing'), 0, 'per-agent SSH reap for an unconfigured agent resolves 0 (no remote root = no jobs)');
       A.eq(missingSpawn.calls.length, 0, 'an unconfigured reap never spawns ssh');
     }
 
-    // ---- SSH station-wide reap reaches EVERY agent with a configured target, not a fallback "agent" id ----
+    // ---- SSH keep-wide reap reaches EVERY agent with a configured target, not a fallback "agent" id ----
     {
       const spawn = makeFakeSpawn();
       const targets = {
@@ -339,7 +339,7 @@ function makeFakeSpawn() {
         config: { backend: 'ssh', sshBin: 'sshx', scpBin: 'scpx' } });
       spawn.setNext('EYEHOLD_KILLED\t2\n', 0);
       spawn.setNext('EYEHOLD_KILLED\t2\n', 0);
-      A.eq(await env.killAllBackground(), 4, 'station-wide reap sums the kills under every configured agent');
+      A.eq(await env.killAllBackground(), 4, 'keep-wide reap sums the kills under every configured agent');
       const scripts = spawn.calls.map(c => c.child.stdin.writes.join(''));
       A.eq(spawn.calls.length, 2, 'one ssh reap per configured agent; the unconfigured roster id spawns nothing');
       A.ok(scripts.some(s => s.indexOf("'/srv/one/.eyehold/jobs'") >= 0) && scripts.some(s => s.indexOf("'/srv/two/.eyehold/jobs'") >= 0), 'each reap runs under that agent\'s own remote root');
@@ -348,7 +348,7 @@ function makeFakeSpawn() {
       A.eq(await env.killAllBackground('a1'), 1, 'a per-agent reap still targets only that agent');
       A.ok(spawn.calls[2].child.stdin.writes.join('').indexOf('/srv/one/') >= 0 && spawn.calls.length === 3, 'per-agent reap ran once, on a1');
 
-      // one unreachable host must not reject the station-wide reap (it is fire-and-forget at E-STOP)
+      // one unreachable host must not reject the keep-wide reap (it is fire-and-forget at E-STOP)
       let calls = 0;
       const flaky = makeEnvironmentManager({ fs, pathMod: path, root, clock,
         spawn: function (file, args, opts) { calls++; if (args.indexOf('box2') >= 0 || args.some(a => /box2/.test(String(a)))) throw new Error('spawn ssh ENOENT'); return spawn(file, args, opts); },
@@ -357,7 +357,7 @@ function makeFakeSpawn() {
       spawn.setNext('EYEHOLD_KILLED\t3\n', 0);
       let flakyErr = null, flakyN = null;
       try { flakyN = await flaky.killAllBackground(); } catch (e) { flakyErr = e; }
-      A.eq(flakyErr, null, 'a transport failure on one host never rejects the station-wide reap');
+      A.eq(flakyErr, null, 'a transport failure on one host never rejects the keep-wide reap');
       A.eq(flakyN, 3, 'the reachable host is still reaped and counted; the failed one counts 0');
       A.eq(calls, 2, 'both configured hosts were attempted');
     }

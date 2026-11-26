@@ -1,5 +1,5 @@
 'use strict';
-// Offline source-render proof, not a browser or live saved-station claim.
+// Offline source-render proof, not a browser or live saved-keep claim.
 const fs=require('node:fs'),path=require('node:path'),vm=require('node:vm');
 const {createCanvas,loadImage}=require('@napi-rs/canvas');
 const Mounts=require('../../frontend/app/authored-surface-mounts.js');
@@ -35,6 +35,6 @@ async function prepare(key,file,spec,bounds){
    g.font='11px monospace';g.fillStyle='#a9c1ae';g.fillText(placements.map(p=>side?p.lift.toFixed(2):'8.00').join(' / ')+' px lift, far → near',ox+14,oy+285);
   }
  });
- const dir=at('docs/station-remaster/surface-mounts');fs.mkdirSync(dir,{recursive:true});fs.writeFileSync(path.join(dir,'native-placement.png'),canvas.toBuffer('image/png'));fs.writeFileSync(path.join(dir,'render-receipt.json'),JSON.stringify({scope:'Offline actual-source composite, no live-station acceptance',cases:receipts},null,2)+'\n');
- console.log(JSON.stringify({proof:'docs/station-remaster/surface-mounts/native-placement.png',cases:receipts.length,placements:receipts.reduce((n,p)=>n+p.placements.length,0),allAuthored:receipts.every(p=>p.placements.every(v=>v.authored))}));
+ const dir=at('docs/keep-remaster/surface-mounts');fs.mkdirSync(dir,{recursive:true});fs.writeFileSync(path.join(dir,'native-placement.png'),canvas.toBuffer('image/png'));fs.writeFileSync(path.join(dir,'render-receipt.json'),JSON.stringify({scope:'Offline actual-source composite, no live-keep acceptance',cases:receipts},null,2)+'\n');
+ console.log(JSON.stringify({proof:'docs/keep-remaster/surface-mounts/native-placement.png',cases:receipts.length,placements:receipts.reduce((n,p)=>n+p.placements.length,0),allAuthored:receipts.every(p=>p.placements.every(v=>v.authored))}));
 })().catch(e=>{console.error(e);process.exitCode=1;});

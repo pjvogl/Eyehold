@@ -71,7 +71,7 @@ export const REQUIRED_CHECKS = Object.freeze([
 // inspect the boot-default (closed) surface and report a product RED without ever operating the
 // control whose contents it claimed to verify. Drive the real dock control first and wait for the
 // panel to settle; SMOKE_PROBE remains the read-only assertion pass. A cold WebView can expose the
-// dock DOM before StationUI.init() has attached its listener, so an unhandled first click is not
+// dock DOM before KeepUI.init() has attached its listener, so an unhandled first click is not
 // evidence of a product failure. Retry while the board is absent. Opening TASKS creates .kb-cols
 // synchronously, which makes the success check prevent a later retry from toggling it closed.
 export const PREPARE_SMOKE_SURFACE = `(async () => {
@@ -80,7 +80,7 @@ export const PREPARE_SMOKE_SURFACE = `(async () => {
     const trigger = document.querySelector('[data-term="tasks"]');
     // 0.13 front doors: TASKS is a tab of MY WORK, not a dock key — open it the way its tab does
     if (trigger) trigger.click();
-    else if (typeof StationUI !== 'undefined' && StationUI.openTerm) StationUI.openTerm('tasks');
+    else if (typeof KeepUI !== 'undefined' && KeepUI.openTerm) KeepUI.openTerm('tasks');
     await new Promise(resolve => setTimeout(resolve, 250));
   }
   return document.querySelectorAll('.kb-cols').length === 1;
@@ -164,7 +164,7 @@ export const SMOKE_PROBE = `(async () => {
   // ---- boot state sane: the world actually rendered ----
   const hasWorld = (typeof window !== 'undefined') && (!!window.__world || !!window.__SKYNET_WORLD || !!document.querySelector('canvas'));
   add('boot/world-present', hasWorld, hasWorld ? 'world model / canvas present' : 'no __world and no <canvas> — app did not render');
-  const hasStage = !!document.querySelector('#stage, canvas, .station, #app, .stage');
+  const hasStage = !!document.querySelector('#stage, canvas, .keep, #app, .stage');
   add('boot/stage-rendered', hasStage, hasStage ? 'stage/app root present in DOM' : 'no stage/app root element');
 
   // ---- production-safe parity subset (cousin of journeys parityCheck; no __SKYNET_TEST__ needed) ----

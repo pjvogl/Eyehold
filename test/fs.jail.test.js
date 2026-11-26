@@ -414,7 +414,7 @@ async function rejects(promise, msg) { try { await promise; A.ok(false, msg + ' 
     A.eq(bare.summary.indexOf('2 matches'), 0, 'a bare name glob still matches by basename everywhere');
   }
 
-  /* ---- a model-supplied regex must never be able to freeze the station ----
+  /* ---- a model-supplied regex must never be able to freeze the keep ----
      fs.search { regex:true } compiles the MODEL's string and runs it synchronously over every line of every
      candidate file. Eyehold is ONE process — UI, API, SSE bus, every agent run — so a backtracking blow-up
      pegged the event loop indefinitely: measured, `(a|a)+$` against a 41-character line never returned and

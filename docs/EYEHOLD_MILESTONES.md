@@ -69,24 +69,24 @@ The operator reported the composed Crown runtime CI green. `sidecar/index.js` is
 
 ## 2026-10-16 unattended-work notification mitigation and seven-room native blueprint
 - Removed automatic `push` triggers from three Eyehold-specific Actions workflows (Work Board, Crown tests and Crown install); these remain manual `workflow_dispatch`. This reduces unnecessary CI notifications, but does not prove other repository-wide jobs have stopped.
-- Created `scripts/eyehold-seven-room-starter.cjs`, an opt-in NEW-STATION template builder using `WorldModel.create(starterDoc())`, validated `addRoom`, `renameRoom`, and `setRoomTerritory`. Includes original home/desk, shared corridor, and six additional departmental rooms. Never overwrites an existing user save or grants new capabilities.
+- Created `scripts/eyehold-seven-room-starter.cjs`, an opt-in NEW-KEEP template builder using `WorldModel.create(starterDoc())`, validated `addRoom`, `renameRoom`, and `setRoomTerritory`. Includes original home/desk, shared corridor, and six additional departmental rooms. Never overwrites an existing user save or grants new capabilities.
 - Added `test/eyehold-seven-room-starter.test.js` and manual `.github/workflows/eyehold-seven-room-blueprint.yml` to validate and export a JSON starter blueprint as an artifact. **Not yet verified green.**
-- Outstanding operational blockers: importing/activating this template in a persistent running station through explicit user action, staffing each room with distinct real agents and capability-scoped workstations, proving interdepartmental live delegation, authenticated deliverable acceptance and Crown award, and connecting verified real USD accounting. Do not claim an autonomous business is active until confirmed.
+- Outstanding operational blockers: importing/activating this template in a persistent running keep through explicit user action, staffing each room with distinct real agents and capability-scoped workkeeps, proving interdepartmental live delegation, authenticated deliverable acceptance and Crown award, and connecting verified real USD accounting. Do not claim an autonomous business is active until confirmed.
 
 ## 2026-10-16 repaired blueprint + operator-instantiated seven-room workforce
 - The red blueprint job was **only** a timestamp comparison failure: native `WorldModel.starterDoc()` stamps `meta.createdAt` with the current millisecond. Fixed test to compare deterministic layout after normalizing that timestamp, while retaining a finite-timestamp assertion.
-- Added one real `desk` prop to each new room. Tests now verify seven desks total and six specialist workstation ownership records survive `WorldModel` serialization/deserialization.
-- New opt-in UI files `frontend/app/eyehold-layout-install.js` and `frontend/app/eyehold-staff-departments.js` are loaded by `frontend/index.html`. Layout activation creates a backup first, requires confirmation, and refuses to replace existing multi-room worlds; staffing requires confirmation and uses `App.summonAgent` + native `station.assignDesk` + persistent roster, with partial retry handling.
+- Added one real `desk` prop to each new room. Tests now verify seven desks total and six specialist workkeep ownership records survive `WorldModel` serialization/deserialization.
+- New opt-in UI files `frontend/app/eyehold-layout-install.js` and `frontend/app/eyehold-staff-departments.js` are loaded by `frontend/index.html`. Layout activation creates a backup first, requires confirmation, and refuses to replace existing multi-room worlds; staffing requires confirmation and uses `App.summonAgent` + native `keep.assignDesk` + persistent roster, with partial retry handling.
 - Work Board now verifies actual named agent specialty and desk-in-room assignment, and prepares a two-worker `team_dispatch` task in COMMS using genuine roster IDs. It creates missing native research and engineering workstreams first, but DOES NOT send a prompt without a human click.
 - Added `.github/workflows/eyehold-live-multidepartment.yml`, a manual real-model Raven Court + Deepforge delegation test with separate reviewable artifacts and bounded provider budgets. It is NOT automatically triggered. No green live result has been observed yet, no commercial income is claimed.
-- All of the above commits are code changes only until the offline blueprint acceptance workflow passes and an operator uses the in-game controls. For deployment, the operator must open a running persistent station, click BACK UP & INSTALL NEW LAYOUT if the station has just one room, then SUMMON & ASSIGN SIX SPECIALISTS and verify the roster and in-world bodies. Never claim a running multi-agent business based only on these code commits.
+- All of the above commits are code changes only until the offline blueprint acceptance workflow passes and an operator uses the in-game controls. For deployment, the operator must open a running persistent keep, click BACK UP & INSTALL NEW LAYOUT if the keep has just one room, then SUMMON & ASSIGN SIX SPECIALISTS and verify the roster and in-world bodies. Never claim a running multi-agent business based only on these code commits.
 
 ## 2026-10-16 source syntax preflight
 - Direct JavaScript parsing of the newly modified modules caught invalid quoted text in `frontend/app/eyehold-workboard.js`. Fixed in commit `88a68178c5749b29997a4983049fd4fea23cb1de`. New on-demand syntax check passes for that file and the other new JS modules inspected.
 - Still requires offline WorldModel runtime test via manual `.github/workflows/eyehold-seven-room-blueprint.yml`, plus user confirmation that the game's import/staff actions persist after restart. The manual paid `.github/workflows/eyehold-live-multidepartment.yml` must pass before claiming Raven Court + Deepforge are proven in one real delegation.
 
 ## 2026-10-16 consolidated backend launch readiness
-- User reports the seven-room blueprint workflow is GREEN. This verifies native room generation and its specified offline tests, not a deployed station.
+- User reports the seven-room blueprint workflow is GREEN. This verifies native room generation and its specified offline tests, not a deployed keep.
 - Added manual/no-provider-charge `.github/workflows/eyehold-backend-launch-readiness.yml` running syntax checks plus physical layout, roster UI wiring, runStore adapter, Crown runtime, durable acceptance and owner HTTP authorization tests. `test/eyehold-launch-readiness.test.js` additionally enforces manual-only charged workflows, capped two-specialist live proof, and server-derived owner authorization.
 - **Still pending a green consolidated readiness run**: do not call backend launch certified until its result is checked. A green result does not prove live UI, hosted availability, real provider connectivity, authenticated owner review in production, external account connections, or generated revenue.
 - The first operator launch must use a computer capable of running Node.js / hosting sidecar, or a separately configured trusted hosted deployment; no public application URL is presently verified.
@@ -112,8 +112,8 @@ The operator reported the composed Crown runtime CI green. `sidecar/index.js` is
 
 ## 2026-10-16 multi-agent stream parsing fix and physical milestone upgrades
 - **Root cause for zero events on paid handoff:** the sequential delegation test searched a literal backslash+n in JSON-lines instead of LF; therefore both supervisor rounds emitted zero parsed events, so consent was never handled and no worker runs could be observed. Fixed JS source delimiter in `test/eyehold-live-multidepartment.test.js`, and added `test/eyehold-live-stream-decoder.test.js` to manual free gate. Corrected workflow has NOT run green. Earlier second-worker failure still requires validation after parser fix.
-- Added `frontend/app/eyehold-native-loot.js` and loaded it in `frontend/index.html`. It uses real native WorldModel props at three distinct positions in all seven named rooms, persists station mutations, refuses absent verification callback, and avoids duplicates. New native integration test in manual offline gate. Uses native plant/shelf/vault stand-ins; custom dragon forge/throne/orrey 3D assets are **not** yet available and must not be claimed as rendered.
-- **Unlock/security remains incomplete:** native applicator is dormant until an authenticated, server-controlled financial evidence/attestation integration is added. A client-supplied callback is not itself a trustworthy financial approval and must never be mistaken for server attestation. No earnings, trophies, model budgets, bank credentials or economic permissions were changed by these commits.
+- Added `frontend/app/eyehold-native-loot.js` and loaded it in `frontend/index.html`. It uses real native WorldModel props at three distinct positions in all seven named rooms, persists keep mutations, refuses absent verification callback, and avoids duplicates. New native integration test in manual offline gate. Uses native plant/shelf/vault stand-ins; custom dragon forge/throne/orrey 3D assets are **not** yet available and must not be claimed as rendered.
+- **Unlock/security remains incomplete:** native applicator is dormant until an authenticated, server-controlled financial evidence/attekeep integration is added. A client-supplied callback is not itself a trustworthy financial approval and must never be mistaken for server attekeep. No earnings, trophies, model budgets, bank credentials or economic permissions were changed by these commits.
 
 
 ## 2026-10-16 continuation: live diagnostics, Treasury integration, and UI gate
@@ -145,7 +145,7 @@ The operator reported the composed Crown runtime CI green. `sidecar/index.js` is
 - Focused local checks passed: decoder, delegation contract, finance arithmetic,
   financial store, native props, milestone catalog, Work Board and activation
   contracts, layout, session restore, seven-agent re-registration, and real
-  authenticated finance HTTP plus durable station save/restart. No model requests.
+  authenticated finance HTTP plus durable keep save/restart. No model requests.
 - Actual browser execution is **pending**: the local Chromium download was truncated.
   The manual backend readiness workflow now includes a real-app desktop/mobile
   browser test with an isolated fixture ledger and zero model budget, using runner
@@ -208,7 +208,7 @@ refund prevents new unlocks but does not delete placed furniture.
 - Corrected offline module job passed on GitHub at `f4a723ad`; it no longer
   attempts paid proof entrypoints. Eval and secret-history checks passed.
 - Reused the no-model browser readiness workflow inside module CI at `d042b952`.
-  Its offline checks passed. Browser execution reached Chrome, but its test station
+  Its offline checks passed. Browser execution reached Chrome, but its test keep
   stopped at credential recovery: the seed had no provider. Updated that isolated
   seed to use the supported keyless local provider with model execution blocked,
   and added failure screenshots/diagnostics. Browser rerun is still required.

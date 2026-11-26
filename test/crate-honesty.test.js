@@ -82,8 +82,8 @@ A.ok(shipCode.indexOf('shippedRunIds.add(rid)') < shipCode.indexOf('deferredShip
 
 /* ---- a wait never survives the floor it belongs to ---- */
 A.ok(/function clearDeferredShips\(/.test(world), 'pending waits can be cleared wholesale');
-const load = world.slice(world.indexOf('function loadStation(st)'), world.indexOf('function loadStation(st)') + 900);
-A.ok(/clearDeferredShips\(\);/.test(load), 'loading a different station clears them — a crate must not land on the wrong floor');
+const load = world.slice(world.indexOf('function loadKeep(st)'), world.indexOf('function loadKeep(st)') + 900);
+A.ok(/clearDeferredShips\(\);/.test(load), 'loading a different keep clears them — a crate must not land on the wrong floor');
 A.ok(/dockLineWork\.clear\(\);/.test(load), '…and the per-dock line-work memory is cleared with it');
 
 A.report('crate-honesty');

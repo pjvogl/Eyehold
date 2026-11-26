@@ -18,7 +18,7 @@ test/channels.telegram.e2e.test.js
 test/cron.run-now.e2e.test.js
 test/cron.session-transcript.e2e.test.js
 test/routing.persist.e2e.test.js
-test/station-recovery.e2e.test.js
+test/keep-recovery.e2e.test.js
 test/paid-link-lifecycle.e2e.test.js
 test/credits-link.test.js
 test/credits.test.js

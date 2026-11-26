@@ -164,7 +164,7 @@
   "limitations": [
     "The updater bundle is not release-signed because the release private key was not supplied.",
     "The numeric parity gates pass, but the full frozen comparison contract remains red because Eyehold recorded two zero-tolerance false-done events.",
-    "Desktop readiness is health plus served station HTML; a separate live Windows UI inspection confirmed the installed window.",
+    "Desktop readiness is health plus served keep HTML; a separate live Windows UI inspection confirmed the installed window.",
     "The running provider-free control-plane soak cannot qualify the release or replace the post-parity installed active/idle 48-hour soak.",
     "The installed provider-backed 48-hour soak is running and cannot qualify the release until its actual end time and signed receipt verification.",
     "The final clean full test:fast rerun remains pending after the soak."

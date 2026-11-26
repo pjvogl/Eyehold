@@ -53,7 +53,7 @@ const GoalStore = (() => {
 
   function load() { try { const raw = localStorage.getItem(KEY); return raw ? JSON.parse(raw) : null; } catch (_) { return null; } }
   function save() { try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (_) {} }
-  function poke() { try { if (typeof StationUI !== 'undefined' && StationUI.rerender) StationUI.rerender('quests', false); } catch (_) {} }
+  function poke() { try { if (typeof KeepUI !== 'undefined' && KeepUI.rerender) KeepUI.rerender('quests', false); } catch (_) {} }
   function capHistory(s) {
     // Completed chapters belong to the Commander. Never evict them to make room for a new goal.
   }
@@ -584,7 +584,7 @@ const GoalStore = (() => {
   // step edges already celebrate via QuestState; this is the capstone for the goal itself.
   function celebrateGoalDone() {
     try { if (typeof SFX === 'object' && SFX.quest) SFX.quest(); } catch (_) {}
-    try { if (typeof StationUI !== 'undefined' && StationUI.notify) StationUI.notify('◆ goal achieved — your outcome has been recorded.', 'gold', undefined, { kind: 'result', go: { term: 'quests' } }); } catch (_) {}
+    try { if (typeof KeepUI !== 'undefined' && KeepUI.notify) KeepUI.notify('◆ goal achieved — your outcome has been recorded.', 'gold', undefined, { kind: 'result', go: { term: 'quests' } }); } catch (_) {}
     noteGoalDone();
   }
   // the evidence line folded onto a completed milestone: prefer a real run summary, else name the milestone.

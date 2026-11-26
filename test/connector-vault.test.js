@@ -28,7 +28,7 @@ try {
     assert.ok(!raw.includes('CANARY') && !raw.includes(keyHex));
   }
   assert.deepEqual(make().load(file), state, 'same key opens after restart');
-  const sanitize = require('../sidecar/station-recovery.js')._internals.sanitizeManagedJson;
+  const sanitize = require('../sidecar/keep-recovery.js')._internals.sanitizeManagedJson;
   assert.throws(() => sanitize('connectors/state.json', fs.readFileSync(file)), /unlocked OS credential store/, 'portable backup cannot silently discard encrypted connector settings');
   const portable = sanitize('connectors/state.json', fs.readFileSync(file), { readConnectorState: () => make().load(file) });
   const portableState = JSON.parse(portable.data.toString());

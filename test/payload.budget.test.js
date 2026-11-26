@@ -6,9 +6,9 @@
    bytes a private sidecar sends to a fake model, prints what it measured so growth is visible in review, and pins
    an upper budget with headroom:
 
-     default-new-install  the floor a fresh station boots with (WorldModel.starterDoc() -> World.heroCaps), the
+     default-new-install  the floor a fresh keep boots with (WorldModel.starterDoc() -> World.heroCaps), the
                           interactive LEAD run, ASK approval, no connectors, no media/Spotify credentials.
-     fully-granted-floor  the same station with the master bypass on: every CAP_REGISTRY object is materialized.
+     fully-granted-floor  the same keep with the master bypass on: every CAP_REGISTRY object is materialized.
 
    A budget failure is a REVIEW prompt, not a bug report: if the growth is intended, raise the budget in the same
    commit and say why. Also re-asserts the chat-diet law: a non-task turn carries NO tools on the wire. */
@@ -40,12 +40,12 @@ const HOST = '127.0.0.1';
    STEP-IN 2026-09-30: browser.need_human is advertised on every run with a browser (it is the way out of a login /
    2FA / CAPTCHA wall, so it is never deferred): 84 tools | 64,918 tool bytes. Intended growth; the byte budget moves
    to 65,300 (measurement + ~0.6%: the earlier headroom is spent, so the next tool owes a diet, not another raise).
-   STATION BUILDER 2026-09-30: the lead's one-line pointer to the deferred builder ("to change the floor, tool_search
-   \"station builder\" and claim only what station.build reports") replaces the old "configured in the station UI"
+   KEEP BUILDER 2026-09-30: the lead's one-line pointer to the deferred builder ("to change the floor, tool_search
+   \"keep builder\" and claim only what keep.build reports") replaces the old "configured in the keep UI"
    sentence, and the three deferred builder tools are named in the deferred index: 24,606 / 24,827 system chars on the
    APPS trunk (7854c4241). Intended growth; the system budgets move by 50 (measurement + ~0.2%).
-   STATION BUILDER 2026-10-01: station.test_line (the lead sends a test job down a line it built) and station.start_line
-   (it sets what starts a line) join the deferred index: ", station_test_line, station_start_line" = +39. Note what else moves this number: the prompt carries the harness build id
+   KEEP BUILDER 2026-10-01: keep.test_line (the lead sends a test job down a line it built) and keep.start_line
+   (it sets what starts a line) join the deferred index: ", keep_test_line, keep_start_line" = +39. Note what else moves this number: the prompt carries the harness build id
    (git describe), whose length changes as other lanes add tags. It took trunk from 24,795 to 24,833 on the floor
    with no prompt change (038a62983). Measured 24,612 + 39 / 24,833 + 39; the system budgets move by 50 again.
    PINNED BUILD ID 2026-10-03: the run's build id is now a fixed release-shaped label (EYEHOLD_BUILD_DESCRIBE below), so a
@@ -53,8 +53,8 @@ const HOST = '127.0.0.1';
    10-06 ISSUE BATCH (#77, already on trunk e5e95c76b): team_dispatch's description now says where a worker's relative
    files land in a project-scoped conversation and why an ASK-mode worker has no shell (+570), image tools name the
    absolute location (+~130): trunk measured 65,999 tool bytes, over the 65,300 budget, and the HTTP gate went red.
-   Intended growth: the byte budget moves to 66,100. station.status (#55) is DEFERRED for exactly this reason — it
-   adds no schema, only ", station_status" (+16) to the deferred index: 24,694 / 24,915. System budgets move by 50. */
+   Intended growth: the byte budget moves to 66,100. keep.status (#55) is DEFERRED for exactly this reason — it
+   adds no schema, only ", keep_status" (+16) to the deferred index: 24,694 / 24,915. System budgets move by 50. */
 const BUDGET = {
   'default-new-install': { systemChars: 24750, tools: 84, toolBytes: 66100 },
   'fully-granted-floor': { systemChars: 24950, tools: 84, toolBytes: 66100 }
@@ -89,7 +89,7 @@ const BUDGET = {
     bodies.length = 0;
     const r = await fixture.request('/api/run', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({
       provider: 'custom', baseUrl: 'http://' + HOST + ':' + llm.address().port + '/v1', key: 'fixture-key', model: 'fixture-model', agentId: 'agent', isTask,
-      placed: starter.map(objectType => ({ objectType })), stationPlaced: starter.map(objectType => ({ objectType })),
+      placed: starter.map(objectType => ({ objectType })), keepPlaced: starter.map(objectType => ({ objectType })),
       system: MARK + ': payload budget probe.', messages: [{ role: 'user', content: 'Summarize what you can do.' }] }) });
     A.eq(r.status, 200, 'run accepted');
     await r.text();

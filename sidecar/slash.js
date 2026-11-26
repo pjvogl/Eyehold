@@ -56,7 +56,7 @@ const BUILTIN_COMMANDS = Object.freeze([
   Object.freeze({
     name: 'usage',
     category: 'Info',
-    desc: 'show real spend from the station ledger',
+    desc: 'show real spend from the keep ledger',
     action: 'usage',
     dispatch: 'server'
   }),
@@ -106,7 +106,7 @@ const BUILTIN_COMMANDS = Object.freeze([
   Object.freeze({
     name: 'save',
     category: 'Session',
-    desc: 'save the current station state',
+    desc: 'save the current keep state',
     action: 'save'
   }),
   Object.freeze({

@@ -196,7 +196,7 @@ async function main() {
 
     const prompt = [
       'Phase 5 the reference harness replacement workload proof.',
-      'The room already contains FILES, MEMORY, TERMINAL, WEB, and COMPUTER stations.',
+      'The room already contains FILES, MEMORY, TERMINAL, WEB, and COMPUTER keeps.',
       'Use the live tools, do not merely describe them.',
       'Required tool work:',
       '1. Call browser.navigate to https://example.com.',
@@ -302,7 +302,7 @@ async function main() {
     existing.soak = Object.assign({}, existing.soak || {}, {
       phase5WorkloadGreen: !!report.checks.workloadPassed,
       restartPreserved: !!report.checks.restartPreserved,
-      notes: 'Phase 5 live workload restarted the sidecar on the same workspace/profile and checked run, transcript, artifact, ledger, and station caps after restart.'
+      notes: 'Phase 5 live workload restarted the sidecar on the same workspace/profile and checked run, transcript, artifact, ledger, and keep caps after restart.'
     });
     writeJson(evidenceFile, existing);
     writeJson(join(OUT, 'phase5-workload-report.json'), report);

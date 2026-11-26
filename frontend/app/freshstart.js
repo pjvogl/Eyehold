@@ -1,12 +1,12 @@
 /* EYEHOLD — freshstart.js
    Desktop-only last-resort reset used when the sidecar is too sick to serve its own recovery route.
-   The native command quarantines durable station data first; only after that succeeds do we clear
+   The native command quarantines durable keep data first; only after that succeeds do we clear
    browser-owned Eyehold state. OS-keychain credentials (including the linked credit account) are
    deliberately outside both operations. */
 'use strict';
 
 const FreshStart = (() => {
-  // Dot namespaces hold station state. The underscore namespace is the original arcade store and
+  // Dot namespaces hold keep state. The underscore namespace is the original arcade store and
   // is still Eyehold-owned; leaving it behind contradicts "completely fresh".
   const PREFIXES = ['eyehold.', 'skynet.', 'eyehold_', 'skynet_'];
 
@@ -37,7 +37,7 @@ const FreshStart = (() => {
   }
 
   function retryBrowserClear(result, storage) {
-    if (!result || result.ok !== true) throw new Error('Eyehold could not preserve the prior station');
+    if (!result || result.ok !== true) throw new Error('Eyehold could not preserve the prior keep');
     let cleared = 0, fallbackError = '';
     try { cleared = clearBrowserState(storage); }
     catch (error) { fallbackError = String(error && error.message || error); }

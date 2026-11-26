@@ -3,20 +3,20 @@
    Two rails of compact instruments live in the chrome's DEAD SPACE — the empty middle of
    #topbar (between the logo anchor and the instrument cluster) and of #bottombar (between
    the dock groups and #term-strip/.bb-right). The world canvas is NEVER a widget surface:
-   widgets belong to the chrome, like the STATION/SPEND wells they sit beside.
+   widgets belong to the chrome, like the KEEP/SPEND wells they sit beside.
 
    TRUTHFUL TELEMETRY — every widget in the Phase-1 catalog is a read-only projection of
    provable harness state, sourced exactly like topbar.js sources SPEND TODAY:
-     - RUNS · 24H   — /api/insights (whole-station fold, 24 hourly buckets) polled ≤1/30s,
+     - RUNS · 24H   — /api/insights (whole-keep fold, 24 hourly buckets) polled ≤1/30s,
                       PLUS live agent.run.end folds between polls (reconciled on next poll).
      - QUEUE        — the live queue.status {queueId, depth} events (per-agent inbound
                       backpressure). Event-driven only: shows an honest "—" until the first
                       event arrives, never a fabricated zero.
      - ROUTINES     — /api/cron {jobs, enabled} polled ≤1/60s + a value pulse on cron.fire.
-     - TOKENS       — /api/insights totalTokens (all-time, whole station).
+     - TOKENS       — /api/insights totalTokens (all-time, whole keep).
 
    AGENT-FED widgets (Phase 2) — any agent can publish a named readout via the widget.set
-   tool (app revenue, AI news, anything); records live in the sidecar's station store and
+   tool (app revenue, AI news, anything); records live in the sidecar's keep store and
    are polled from GET /api/widgets (≤1/30s). Their pinned ids are 'feed:<slug>'.
    PROVENANCE LAW: an agent-fed instrument always shows WHO fed it and WHEN ("NOVA · 3m")
    — the app never asserts the value is true, only that that agent reported it, then. A
@@ -26,7 +26,7 @@
    The connected-app studio creates durable user definitions through /api/widgets/configure.
    Refresh uses a dedicated Workstreams/Chat conversation and the existing connector access
    gates; widget.set publishes the reading with version, agent and timestamp. Schedule setup
-   uses AutomationWindow's existing editor. Legacy station counters remain loadable only for
+   uses AutomationWindow's existing editor. Legacy keep counters remain loadable only for
    saved pins. This module never emits a new shared event or changes the shared contract.
 
    Layout is user-arranged: drag a widget by anywhere on its body between the two rails
@@ -196,8 +196,8 @@ const Widgets = (() => {
   const CATALOG = {
     crew: {
       stats: true,
-      lbl: 'CREW', tip: 'Agents in your current station roster, including the overseer.',
-      paint() { return { val: typeof App !== 'undefined' && App.crewCount ? String(App.crewCount()) : null, sub: 'station roster' }; }
+      lbl: 'CREW', tip: 'Agents in your current keep roster, including the overseer.',
+      paint() { return { val: typeof App !== 'undefined' && App.crewCount ? String(App.crewCount()) : null, sub: 'keep roster' }; }
     },
     active: { stats: true, lbl: 'ACTIVE COMMS', tip: 'Confirmed running conversations in COMMS. Connecting requests are shown separately; background jobs are not included.', paint: () => commsReadout(false) },
     approvals: { lbl: 'NEEDS YOU', action: 'Review waiting conversation', tip: 'Conversations waiting for your approval or answer. Use the arrow to open the first waiting conversation.', paint: () => ({ ...commsReadout(true), tone: typeof Channels !== 'undefined' && Channels.pendingIds().length ? 'warn' : null }) },
@@ -205,7 +205,7 @@ const Widgets = (() => {
     runs24: {
       stats: true,
       lbl: 'RUNS · 24H',
-      tip: 'Runs across the whole station in the last 24h — folded from the real run history (/api/insights), ticking live on each run end.',
+      tip: 'Runs across the whole keep in the last 24h — folded from the real run history (/api/insights), ticking live on each run end.',
       paint() {
         if (!insights) return { val: null, sub: '' };
         const f = foldRuns(insights);
@@ -235,7 +235,7 @@ const Widgets = (() => {
     tokens: {
       stats: true,
       lbl: 'TOKENS',
-      tip: 'Recorded tokens across station run history, including subscription runs — from the real usage fold.',
+      tip: 'Recorded tokens across keep run history, including subscription runs — from the real usage fold.',
       paint() {
         if (!insights) return { val: null, sub: '' };
         return { val: fmtCount(foldTokens(insights)), sub: 'all-time' };
@@ -250,13 +250,13 @@ const Widgets = (() => {
     return Channels.pendingIds().find(id => Workstreams.get(id)) || null;
   }
   function openWidget(id) {
-    if (id === 'next' && typeof StationUI !== 'undefined' && StationUI.openTerm) {
-      closePop(); StationUI.openTerm('routines'); return true;
+    if (id === 'next' && typeof KeepUI !== 'undefined' && KeepUI.openTerm) {
+      closePop(); KeepUI.openTerm('routines'); return true;
     }
     const wsId = id === 'approvals' ? waitingConversation() : null;
     if (wsId && typeof App !== 'undefined' && App.openWorkstream) {
       closePop(); App.openWorkstream(wsId);
-      if (typeof StationUI !== 'undefined' && StationUI.h?.workConversation) StationUI.h.workConversation('widgets');
+      if (typeof KeepUI !== 'undefined' && KeepUI.h?.workConversation) KeepUI.h.workConversation('widgets');
       return true;
     }
     return false;
@@ -284,7 +284,7 @@ const Widgets = (() => {
       fed: true,
       configured: !!feed.get(slug)?.config,
       action: feed.get(slug)?.config ? 'View ' + feed.get(slug).label : null,
-      tip: 'Agent-fed readout "' + slug + '" — an agent publishes this via widget.set. The station only asserts WHO reported it and WHEN (the name · age line), never that the figure itself is true.',
+      tip: 'Agent-fed readout "' + slug + '" — an agent publishes this via widget.set. The keep only asserts WHO reported it and WHEN (the name · age line), never that the figure itself is true.',
       paint() {
         const rec = feed.get(slug);
         if (!rec) return { val: null, sub: 'no signal', prov: null };
@@ -545,13 +545,13 @@ const Widgets = (() => {
       studioText(caption, 'small', s.kind === 'agent' ? 'Information Eyehold manages' : s.kind === 'servicekey' && s.available ? 'API key configured' : s.available ? 'Connected' : s.state);
       const b = addStudioButton(row, s.available ? 'Choose' : 'Reconnect', () => {
         if (s.available) showWidgetForm(s, null, selectedPreset);
-        else { closePop(); if (typeof StationUI !== 'undefined') StationUI.openTerm('connectors', s.kind === 'servicekey' ? 'keys' : 'mcp'); }
+        else { closePop(); if (typeof KeepUI !== 'undefined') KeepUI.openTerm('connectors', s.kind === 'servicekey' ? 'keys' : 'mcp'); }
       });
       b.setAttribute('aria-label', (s.available ? 'Choose ' : 'Reconnect ') + s.label);
     }
     if (!matches) studioText(list, 'p', 'No apps match this search.', 'wg-studio-note');
     const foot = studioText(list, 'div', '', 'wg-studio-actions');
-    addStudioButton(foot, 'Connect another app', () => { closePop(); if (typeof StationUI !== 'undefined') StationUI.openTerm('connectors', 'catalog'); });
+    addStudioButton(foot, 'Connect another app', () => { closePop(); if (typeof KeepUI !== 'undefined') KeepUI.openTerm('connectors', 'catalog'); });
     addStudioButton(foot, 'Reload apps', () => sourceCards(true));
   }
   function presetButtons(parent, onPick) {
@@ -606,7 +606,7 @@ const Widgets = (() => {
     const ws = existing || Workstreams.adopt({ id, title: rec.label, agentId: typeof App.heroId === 'function' ? App.heroId() : 'agent', kind: 'chat', revive: true });
     if (!ws) throw new Error('Could not open this widget’s update conversation.');
     App.openWorkstream(ws.id); Chat.load(ws); App.persist();
-    if (typeof StationUI !== 'undefined' && StationUI.h?.workConversation) StationUI.h.workConversation('widgets');
+    if (typeof KeepUI !== 'undefined' && KeepUI.h?.workConversation) KeepUI.h.workConversation('widgets');
     return ws;
   }
   async function refreshWidget(id) {
@@ -642,7 +642,7 @@ const Widgets = (() => {
     const jobs = (cron?.jobs || []).filter(j => j.meta?.widgetId === rec.slug);
     const next = jobs.find(j => j.enabled && j.nextRunAt);
     studioText(box, 'p', jobs.length ? (!cron.enabled || cron.halted ? 'Scheduled updates paused' : next ? 'Next update: ' + new Date(next.nextRunAt).toLocaleString() : 'Update schedule disabled') : 'Refresh on demand', 'wg-studio-note');
-    if (pollFail.feed || linkDownNow()) studioText(box, 'p', 'Station offline · showing the last saved reading.', 'wg-studio-error');
+    if (pollFail.feed || linkDownNow()) studioText(box, 'p', 'Keep offline · showing the last saved reading.', 'wg-studio-error');
   }
   function showWidgetDetail(id) {
     const rec = feed.get(id); if (!popEl || !rec?.config) return;
@@ -658,7 +658,7 @@ const Widgets = (() => {
     addStudioButton(actions, 'Edit', () => showWidgetForm(rec.config.source, rec));
     addStudioButton(actions, 'Schedule updates', async () => {
       if (typeof AutomationWindow === 'undefined' || !AutomationWindow.openDraft) { msg.textContent = 'Automation is unavailable.'; return; }
-      if ((cron?.jobs || []).some(j => j.meta?.widgetId === id)) { closePop(); StationUI.openTerm('routines'); return; }
+      if ((cron?.jobs || []).some(j => j.meta?.widgetId === id)) { closePop(); KeepUI.openTerm('routines'); return; }
       closePop(); AutomationWindow.openDraft({ name: rec.label + ' widget', agentId: typeof App !== 'undefined' && App.heroId ? App.heroId() : 'agent',
         widgetId: rec.slug,
         prompt: 'Update my saved widget ' + JSON.stringify(rec.slug) + '. First call widget.get with that id for the CURRENT source, display and version. If it was deleted, stop without fetching or recreating it. Follow its refresh instructions, use the existing source access, and publish with widget.set. Do not modify data in the source app.' });

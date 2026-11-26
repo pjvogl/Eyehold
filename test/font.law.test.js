@@ -2,15 +2,15 @@
 
 /* THE EYEHOLD FONT LAW.
  *
- * VT323 is the station's face. Everything — COMMS, the panels, the canvas, the baked floor
+ * VT323 is the keep's face. Everything — COMMS, the panels, the canvas, the baked floor
  * plates — is drawn in it, and a fallback face is never acceptable: the pixel grade IS the
  * product's look, and Courier New in its place reads as a different application.
  *
  * The 2026-08-06 regression: index.html loaded VT323 from Google Fonts *in addition* to the
  * local @font-face. That link registered three more 'VT323' faces whose unicode-ranges covered
- * Latin — every glyph the station renders — each carrying `font-display: swap`, which means
+ * Latin — every glyph the keep renders — each carrying `font-display: swap`, which means
  * "paint the fallback NOW and swap the real face in when the network answers". A slow, blocked,
- * or offline load therefore painted the whole app in Courier New, and a StationBake that ran in
+ * or offline load therefore painted the whole app in Courier New, and a KeepBake that ran in
  * that window baked fallback text permanently into the floor.
  *
  * This suite is the standing guard. It fails if any of the paths back to a non-VT323 glyph

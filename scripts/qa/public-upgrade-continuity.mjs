@@ -7,7 +7,7 @@ import { createHash, randomUUID } from 'node:crypto';
 import { execFileSync } from 'node:child_process';
 import { createRequire } from 'node:module';
 import { connectCDP, evalJS, sleep } from '../lib/cdp.mjs';
-import { populatedFixture, continuityProjection, stableJson, normalizeLegacyWorkstreamDefaults, adoptAssignedSuitColors, adoptStationSchemaV2 } from '../lib/update-continuity.mjs';
+import { populatedFixture, continuityProjection, stableJson, normalizeLegacyWorkstreamDefaults, adoptAssignedSuitColors, adoptKeepSchemaV2 } from '../lib/update-continuity.mjs';
 const { bootToken } = createRequire(import.meta.url)('../../test/_httpToken.js');
 
 if (process.platform !== 'win32' || process.env.GITHUB_ACTIONS !== 'true' || process.env.RUNNER_ENVIRONMENT !== 'github-hosted') {
@@ -105,7 +105,7 @@ function fixtureState(state) {
 async function installFromPublicUpdater() {
   const priorPid = Number(ps("@(Get-CimInstance Win32_Process | Where-Object {$_.ExecutablePath -eq $env:PROOF_EXE})[0].ProcessId"));
   if (!priorPid) throw new Error('Could not identify old installed process');
-  await evalJS(cdp, "StationUI.openTerm('updates')");
+  await evalJS(cdp, "KeepUI.openTerm('updates')");
   await sleep(500);
   const checked = await evalJS(cdp, "(()=>{const b=document.getElementById('up-check');if(!b)return false;b.click();return true;})()");
   if (!checked) throw new Error('Update Center CHECK NOW button missing');
@@ -174,7 +174,7 @@ if(Get-Process -Id $p.Id -ErrorAction SilentlyContinue){throw 'Updated app did n
   const after = await evalJS(cdp, 'Updates.snapshot()');
   if (after.currentVersion !== targetVersion || after.update) throw new Error('Restarted app still offers an update or reports the wrong version');
   receipt.checks.currentVersionHasNoPendingUpdate = true;
-  await evalJS(cdp, "StationUI.closeTerm('updates')");
+  await evalJS(cdp, "KeepUI.closeTerm('updates')");
 }
 try {
   install(baseline); await launch();
@@ -182,7 +182,7 @@ try {
   if (receipt.beforeBuild.version !== baselineVersion) throw new Error('Historical public version mismatch');
   receipt.checks.historicalPublicBoot = true;
   // A fresh hosted profile has no credential, so a populated OpenRouter save correctly
-  // opens connection recovery rather than the station. Store a deliberately invalid,
+  // opens connection recovery rather than the keep. Store a deliberately invalid,
   // synthetic value through the real keychain path; no inference task is submitted.
   await evalJS(cdp, "Harness.setKey('invalid-upgrade-fixture-' + crypto.randomUUID(),'openrouter')");
   const fixture = populatedFixture(randomUUID());
@@ -190,7 +190,7 @@ try {
     await CloudSave.flush({force:true});
     const prior=await fetch('/api/save?agent=agent').then(r=>r.json());
     const save=${JSON.stringify(fixture)};save.version=Save.CURRENT;
-    const world=WorldModel.create(WorldModel.starterDoc());world.ensureWorkstation('agent');world.ensureWorkstation('scout');save.station=world.serialize();
+    const world=WorldModel.create(WorldModel.starterDoc());world.ensureWorkkeep('agent');world.ensureWorkkeep('scout');save.keep=world.serialize();
     save._saveRevision=Number(prior.save&&prior.save._saveRevision)||0;
     const r=await fetch('/api/save',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(save)});const b=await r.json();if(!r.ok||!b.ok)throw Error('Fixture save refused');
     save._saveRevision=b.revision;save._saveDirty=false;save.updatedAt=b.updatedAt;
@@ -201,7 +201,7 @@ try {
   receipt.beforeState = continuityProjection(before);
   if (!await evalJS(cdp, "__TAURI__.core.invoke('harness_has_provider_key',{provider:'openrouter'})")) throw new Error('Synthetic key did not survive public restart');
   for (const s of [before.local, before.durable]) {
-    if (s?.agents?.length !== 2 || !s.station?.props?.some(p => p.agentId === 'scout') || !s.workstreams?.some(w => w.history?.some(m => m.content === 'preserve-' + fixture.agent.canaryNonce)) || s.usage?.calls !== 2) throw new Error('Public baseline did not retain populated fixture');
+    if (s?.agents?.length !== 2 || !s.keep?.props?.some(p => p.agentId === 'scout') || !s.workstreams?.some(w => w.history?.some(m => m.content === 'preserve-' + fixture.agent.canaryNonce)) || s.usage?.calls !== 2) throw new Error('Public baseline did not retain populated fixture');
   }
   receipt.checks.populatedPublicRestart = true;
   if (automatic) await installFromPublicUpdater();
@@ -214,21 +214,21 @@ try {
   receipt.afterState = continuityProjection(after);
   if (!await evalJS(cdp, "__TAURI__.core.invoke('harness_has_provider_key',{provider:'openrouter'})")) throw new Error('Synthetic key did not survive candidate install');
   receipt.expectedMigrationFields = ['local/durable.agent.systemPrompt (regenerated from preserved identity documents)', 'local/durable.agents[].personaId (missing/composed default for this fixture)', 'local/durable.workstreams[].parentStreamId (missing/null)', 'local/durable.workstreams[].projectHome (missing/false)', 'local/durable.agents[].color (missing/non-hex -> crew palette suit)'];
-  const projection = stableJson(fixtureState(adoptStationSchemaV2(adoptAssignedSuitColors(continuityProjection(before), continuityProjection(after)), continuityProjection(after))));
+  const projection = stableJson(fixtureState(adoptKeepSchemaV2(adoptAssignedSuitColors(continuityProjection(before), continuityProjection(after)), continuityProjection(after))));
   if (projection !== stableJson(fixtureState(continuityProjection(after)))) throw new Error('State changed across public-to-candidate reinstall');
   receipt.checks.statePreservedAcrossInstall = true;
   if (process.env.PROOF_STATIC_LEVEL === 'true') {
-    await evalJS(cdp, "StationUI.openTerm('settings','appearance')");
+    await evalJS(cdp, "KeepUI.openTerm('settings','appearance')");
     await sleep(250);
     receipt.staticDefault = await evalJS(cdp, "({value:document.querySelector('#set-static')?.value,multiplier:World.crt.staticLevel})");
-    if (receipt.staticDefault.value !== '100' || receipt.staticDefault.multiplier !== 1) throw new Error('Historical station did not retain the default CRT appearance');
+    if (receipt.staticDefault.value !== '100' || receipt.staticDefault.multiplier !== 1) throw new Error('Historical keep did not retain the default CRT appearance');
     receipt.staticLevels = [];
     for (const value of [0, 200, 45]) {
-      const observed = await evalJS(cdp, `(()=>{const input=document.querySelector('#set-static');input.value=${value};input.dispatchEvent(new Event('input',{bubbles:true}));input.dispatchEvent(new Event('change',{bubbles:true}));return {value:input.value,multiplier:World.crt.staticLevel,saved:JSON.parse(localStorage.getItem('eyehold.station.v1')).settings.staticLevel};})()`);
+      const observed = await evalJS(cdp, `(()=>{const input=document.querySelector('#set-static');input.value=${value};input.dispatchEvent(new Event('input',{bubbles:true}));input.dispatchEvent(new Event('change',{bubbles:true}));return {value:input.value,multiplier:World.crt.staticLevel,saved:JSON.parse(localStorage.getItem('eyehold.keep.v1')).settings.staticLevel};})()`);
       if (observed.saved !== value || observed.multiplier !== value / 100) throw new Error('Installed static setting did not apply and save');
       receipt.staticLevels.push(observed);
     }
-    await evalJS(cdp, "StationUI.closeTerm('settings')");
+    await evalJS(cdp, "KeepUI.closeTerm('settings')");
     receipt.checks.staticLevelAppliesAndSaves = true;
   }
   // Normal quit and relaunch exercise the candidate's ordinary persisted state path too.
@@ -246,11 +246,11 @@ try {
   receipt.syntheticKeyPresentAcrossInstallAndRestart = true;
   receipt.checks.statePreservedAcrossRestart = true;
   if (process.env.PROOF_STATIC_LEVEL === 'true') {
-    await evalJS(cdp, "StationUI.openTerm('settings','appearance')");
+    await evalJS(cdp, "KeepUI.openTerm('settings','appearance')");
     await sleep(250);
-    receipt.staticRestarted = await evalJS(cdp, "({value:document.querySelector('#set-static')?.value,multiplier:World.crt.staticLevel,saved:JSON.parse(localStorage.getItem('eyehold.station.v1')).settings.staticLevel})");
+    receipt.staticRestarted = await evalJS(cdp, "({value:document.querySelector('#set-static')?.value,multiplier:World.crt.staticLevel,saved:JSON.parse(localStorage.getItem('eyehold.keep.v1')).settings.staticLevel})");
     if (receipt.staticRestarted.value !== '45' || receipt.staticRestarted.multiplier !== .45 || receipt.staticRestarted.saved !== 45) throw new Error('Installed static setting did not survive normal restart');
-    await evalJS(cdp, "StationUI.closeTerm('settings')");
+    await evalJS(cdp, "KeepUI.closeTerm('settings')");
     receipt.checks.staticLevelSurvivesRestart = true;
   }
   // Run the normal installed-WebView smoke against these exact signed executable bytes.

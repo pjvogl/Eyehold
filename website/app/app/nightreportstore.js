@@ -64,7 +64,7 @@ const NightReportStore = (() => {
     ]);
     const pendingBuilds = (pendingRes && Array.isArray(pendingRes.pending)) ? pendingRes.pending.filter(p => p && p.runId) : [];
     // status being null is tolerable (the report can still list acts/declines from the ledger); an entirely
-    // unreachable station (no ledger AND no drafts) → nothing to compose, so no beat.
+    // unreachable keep (no ledger AND no drafts) → nothing to compose, so no beat.
     const ledger = (ledgerRes && Array.isArray(ledgerRes.entries)) ? ledgerRes.entries : [];
     const drafts = (draftsRes && Array.isArray(draftsRes.drafts)) ? draftsRes.drafts : [];
 

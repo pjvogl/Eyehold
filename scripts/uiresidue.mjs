@@ -52,7 +52,7 @@ async function main(){
     await step('open LOGBOOK (2nd panel)', clickBB('LOGBOOK'));
     await ev(c, `document.querySelectorAll('.term-x').forEach(b=>{try{b.click()}catch{}})`); await step('close all panels', null);
     // T2: enter refit, then open a dock panel WITHOUT exiting refit  (the suspected overlap)
-    await step('enter BUILD/refit', clickBB('REFIT STATION'));
+    await step('enter BUILD/refit', clickBB('REFIT KEEP'));
     await shot('refit');
     await step('open SETTINGS while in refit', clickBB('SETTINGS'));
     await shot('refit-plus-panel');
@@ -67,7 +67,7 @@ async function main(){
     await ev(c, `document.querySelectorAll('.term-x,.rb-close,.recruit-close').forEach(b=>{try{b.click()}catch{}}); ['keydown'].forEach(t=>document.dispatchEvent(new KeyboardEvent(t,{key:'Escape',keyCode:27,bubbles:true})))`);
     await step('close recruitment', null);
     // T4: enter refit, then open recruitment (two full-screen modes?)
-    await step('enter BUILD/refit again', clickBB('REFIT STATION'));
+    await step('enter BUILD/refit again', clickBB('REFIT KEEP'));
     await step('open RECRUIT while in refit', clickBB('RECRUIT'));
     await shot('refit-plus-recruit');
 

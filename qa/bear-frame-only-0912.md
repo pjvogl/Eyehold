@@ -11,7 +11,7 @@ all other pixels and alpha values are preserved. The earlier expression-lane liv
 review stepped through all eight corrected frames. This narrower build was also
 started with `node dev/seed.js --keep` on port 9199 and verified ONLINE in the in-app
 browser. Selected Teddy Bear in NOVA's appearance panel, confirmed the checked state,
-closed the dossier, and observed the bear in the standard station canvas.
+closed the dossier, and observed the bear in the standard keep canvas.
 No provider task was launched.
 
 The candidate's frontend/website application code and sprite manifests compare

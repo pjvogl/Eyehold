@@ -14,7 +14,7 @@
    narrated (sendTestBoxes returned true), never on a sink, never on a decoy.
 
    Two layers, matching the repo's altitude split:
-     1. FUNCTIONAL — the picker's primitive over a real two-intake station doc (worldmodel +
+     1. FUNCTIONAL — the picker's primitive over a real two-intake keep doc (worldmodel +
         pipeline are plain requires): sourceFor must name the crewed line's mouth, never the
         doc-order-first decoy's.
      2. SOURCE — build.js is a browser IIFE (not node-loadable; same rationale as

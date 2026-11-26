@@ -103,7 +103,7 @@ async function runErr(tool, args) { try { await tool.run(args || {}, {}); return
     A.ok(tk.ok, 'take the wheel');
     A.eq(driver.streaming, 1, 'the agent\'s own browser starts streaming (no relaunch)');
     const f = await host.frame(live.id, 0, 0);
-    A.ok(f.ok && f.frame && f.frame.data === '/9j/FRAME', 'the station can read the live frame');
+    A.ok(f.ok && f.frame && f.frame.data === '/9j/FRAME', 'the keep can read the live frame');
     await host.input(live.id, { type: 'text', text: 'andrew@example.com' });
     await host.input(live.id, { type: 'key', action: 'down', key: 'Enter', code: 'Enter', keyCode: 13, text: '\r' });
     A.eq(driver.inputs.length, 2, 'the Commander\'s input reached the agent\'s browser');
@@ -114,7 +114,7 @@ async function runErr(tool, args) { try { await tool.run(args || {}, {}); return
     A.eq(out.summary, 'handed back', 'the agent learns the Commander handed back');
     A.ok(/https:\/\/example\.com\/dashboard/.test(out.content), 'it is told the page the Commander left it on');
     A.ok(/take a fresh browser\.snapshot/.test(out.content), 'and to take a fresh snapshot before acting');
-    A.ok(/kept in the station browser profile/.test(out.content), 'the durable profile is named truthfully');
+    A.ok(/kept in the keep browser profile/.test(out.content), 'the durable profile is named truthfully');
     A.ok(!/andrew@example\.com/.test(out.content), 'what the Commander typed never appears in the agent\'s result');
     A.eq(B.session.frozen(), null, 'the session thaws');
     A.eq(driver.stopped, 1, 'streaming stopped');
@@ -122,7 +122,7 @@ async function runErr(tool, args) { try { await tool.run(args || {}, {}); return
     A.ok(/navigated since that snapshot|stale browser ref|unknown browser ref/.test(stale || ''), 'a ref from before the handoff is dead: ' + stale);
     const text = await toolOf(B, 'browser.get_text').run({}, {});
     A.ok(/Welcome back/.test(text.content), 'after hand back the agent reads the signed-in page');
-    A.eq(emitted.map(e => e.state), ['waiting', 'taken', 'returned'], 'the station saw every state');
+    A.eq(emitted.map(e => e.state), ['waiting', 'taken', 'returned'], 'the keep saw every state');
   }
 
   // ---- can't do it, expiry, and the temporary-profile truth ----

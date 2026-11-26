@@ -9,7 +9,7 @@ overwrites `RELEASE_NOTES.md` with a scaffold — paste the final text from here
 
 ## User-facing
 
-- **Workflow studio.** The Workflow panel docks beside the station instead of opening INBOX/BAY cards. Lines can
+- **Workflow studio.** The Workflow panel docks beside the keep instead of opening INBOX/BAY cards. Lines can
   be step-tested (pause, continue, edit the hand-off, rerun, rewind). One agent may crew several bays; routing is
   keyed by bay.
 - **Line triggers.** A file dropped in a watched folder, or a call to a line's webhook, starts one run of that
@@ -29,7 +29,7 @@ overwrites `RELEASE_NOTES.md` with a scaffold — paste the final text from here
 - **Coding tools.** `fs.edit` refuses ambiguous edits, `fs.read` can number lines, search respects
   `.gitignore` and uses ripgrep when installed, and `shell.exec` accepts timeouts up to 10 minutes.
 - **Windows command exit codes are reported correctly.** Before this, a failing command could report exit 0.
-- **Headless CLI.** `eyehold run | status | doctor | init` drives a station from a terminal.
+- **Headless CLI.** `eyehold run | status | doctor | init` drives a keep from a terminal.
 - **Memory.** Lessons and facts can be scoped to a project, and recall can use embeddings from a configured
   provider.
 - **DaVinci Resolve edit bay** on the STUDIO prop (live control needs Resolve Studio). Seven hosted MCP
@@ -56,7 +56,7 @@ overwrites `RELEASE_NOTES.md` with a scaffold — paste the final text from here
 - The API token no longer appears in any link, file URL or event stream (short-lived per-file tickets instead), and
   the desktop app's content security policy allows only its own engine port and no inline scripts.
 - Untrusted content stays marked through helper agents, resumed conversations and work-line hand-offs.
-- An agent can no longer be named into a station credential folder, secrets the engine holds are redacted from
+- An agent can no longer be named into a keep credential folder, secrets the engine holds are redacted from
   logs and streams, credential files are private to your user on macOS/Linux, and signing out of ChatGPT survives a
   restart. Document imports and connector sign-ins got size caps and DNS-rebinding protection.
 - Slack and Matrix bot tokens are kept in the OS keychain on desktop, like Telegram and Discord.

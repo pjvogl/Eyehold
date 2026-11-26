@@ -15,7 +15,7 @@ No new application defect was reproduced in this pass. The release remains **NOT
 | CRT settings in the running app | 0%, 45%, 100% and 200% apply/save; 45% survives reload. The grain preset remains 0.26; the multiplier alone changes. Slider geometry stays within its row. No browser exceptions. |
 | Brief rendering sample | Across 120 frames at each of 0%, 100% and 200%, median frame interval was approximately 33.3 ms at every level. This was a headless source check under concurrent QA load, not a performance guarantee for every GPU. |
 | Native builds | Windows, Linux, Apple Silicon and Intel Mac PASS; both Mac notarizations and Intel installed acceptance PASS. |
-| Windows installation and upgrade | Clean install/first launch, idle-close, close-to-tray, published 0.11.1 to candidate installation, populated-station preservation and normal restart PASS. |
+| Windows installation and upgrade | Clean install/first launch, idle-close, close-to-tray, published 0.11.1 to candidate installation, populated-keep preservation and normal restart PASS. |
 | Compiled desktop CRT control | Historical profile opens at 100%; 0%, 200% and 45% apply/save; 45% survives normal desktop restart. |
 | Exact installed WebView | Nine smoke checks PASS with matching candidate commit/tree and executable bytes. |
 | Installed customer regressions | Provider fallback and delegated MCP suites PASS using the installed Node/sidecar bundle and controlled upstream services. |

@@ -136,7 +136,7 @@
   }
 
   function notify(msg, kind) {
-    try { if (typeof StationUI !== 'undefined' && StationUI.notify) StationUI.notify(msg, kind || 'good'); } catch (_) {}
+    try { if (typeof KeepUI !== 'undefined' && KeepUI.notify) KeepUI.notify(msg, kind || 'good'); } catch (_) {}
   }
 
   /* P1.5 build provenance: the git commit/tree + taxonomy this desktop binary was compiled from (stamped by

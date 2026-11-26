@@ -2,7 +2,7 @@
 
    A plugin screen is the plugin's own HTML, opened inside a real Eyehold window (frontend/app/pluginhost.js). This
    module serves those files and the plugin's private key/value store. It is deliberately the SAME shape as
-   /workshop-run/ (the one other place the station runs pages it did not write):
+   /workshop-run/ (the one other place the keep runs pages it did not write):
 
      GET /plugin-ui/~t/<ticket>/<pluginId>/<digest>/<path...>
 
@@ -13,7 +13,7 @@
      window's next request is refused with 410 — the edited code is not running until it is approved again.
    · OPAQUE ORIGIN: every response carries `Content-Security-Policy: sandbox allow-scripts …` WITHOUT
      allow-same-origin. The page runs, but it can never read the app's DOM, the injected API token, or call /api/*
-     with credentials. Everything it may do to the station goes through the host bridge, where the host names the
+     with credentials. Everything it may do to the keep goes through the host bridge, where the host names the
      plugin (the page never gets to say which plugin it is).
    · THE KIT: every HTML page is served with eyehold-kit.css + eyehold-kit.js injected at the top of <head> —
      the glass tokens and components, and the `eyehold` bridge. The CSS sits in `@layer eyehold`, so anything the
@@ -34,8 +34,8 @@ const HTML_RX = /\.html?$/i;
 
 // The frame's sandbox. allow-scripts: plugins are apps. allow-forms: their own forms submit (preventDefault or
 // not). allow-popups(+escape): a link opens a real browser tab, not a crippled sandboxed one. allow-downloads: an
-// export button works. NEVER allow-same-origin (that single flag would hand the page the station's token) and
-// never allow-top-navigation (a plugin must not navigate the station away).
+// export button works. NEVER allow-same-origin (that single flag would hand the page the keep's token) and
+// never allow-top-navigation (a plugin must not navigate the keep away).
 const SANDBOX = 'sandbox allow-scripts allow-forms allow-popups allow-popups-to-escape-sandbox allow-downloads';
 
 // ONE path rule for plugins (sidecar/plugins.js): no streams (':'), no Windows aliases, no escapes.
@@ -79,7 +79,7 @@ function makePluginUiServer(deps) {
   const sandbox = deps.sandbox || SANDBOX;
   const extraCsp = typeof deps.extraCsp === 'function' ? deps.extraCsp : () => '';
 
-  // A refusal lands INSIDE a station window: a tiny dark page that says why, never a white browser text page.
+  // A refusal lands INSIDE a keep window: a tiny dark page that says why, never a white browser text page.
   function fail(res, code, msg) {
     const body = '<!doctype html><meta charset="utf-8"><style>html{background:transparent;color-scheme:dark}' +
       'body{margin:0;padding:16px;color:#eec88f;font:17px/1.35 "VT323",ui-monospace,monospace;letter-spacing:.4px}</style>' +
@@ -162,9 +162,9 @@ function makePluginUiServer(deps) {
 }
 
 /* ---- the plugin's private store ------------------------------------------------------------------------------
-   One JSON object per plugin (<workspaces>/plugin-data/<id>.json) through the station's durable store (fsync,
+   One JSON object per plugin (<workspaces>/plugin-data/<id>.json) through the keep's durable store (fsync,
    .bak recovery, per-key lock). Reached only through the host bridge, which names the plugin itself. Bounded so a
-   runaway plugin cannot fill the disk through the station. */
+   runaway plugin cannot fill the disk through the keep. */
 const STORE_KEY_RX = /^[A-Za-z0-9_.:-]{1,128}$/;
 const STORE_MAX_VALUE = 256 * 1024;
 const STORE_MAX_TOTAL = 4 * 1024 * 1024;

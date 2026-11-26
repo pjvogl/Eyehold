@@ -2,19 +2,19 @@
 
    ERASE EVERYTHING (#65, Settings > APP & BACKUP). A Mac user deleted the app, reinstalled, and found every agent and
    chat still there: uninstalling removes the program, not the per-user app-data folder, the window's own storage or
-   the keychain. START FRESH (freshstart.js) keeps the old station in a quarantine on purpose. This door DELETES, through
+   the keychain. START FRESH (freshstart.js) keeps the old keep in a quarantine on purpose. This door DELETES, through
    the desktop shell's `eyehold_erase_everything` (src-tauri/src/erase_all.rs), behind a typed ERASE plus a second
    confirming click. It never claims more than the shell's receipt proves: what was removed, what could not be, and
    whether this window's storage was cleared. Project folders the Commander trusted are recorded by path and are never
    inside Eyehold's data, so they are never touched.
 
-   WRITES ARE FROZEN while the erase runs and until the reload: this window still holds the OLD station in memory, and
+   WRITES ARE FROZEN while the erase runs and until the reload: this window still holds the OLD keep in memory, and
    its unload/visibility save hooks (cloudsave's beacon, attendance stamps) would otherwise write that old world into
-   the brand-new empty station. freezeWrites() blocks localStorage writes, sendBeacon and /api/ fetches on THIS page
+   the brand-new empty keep. freezeWrites() blocks localStorage writes, sendBeacon and /api/ fetches on THIS page
    instance only; a reload ends it. If the erase is refused, the freeze is lifted again.
 
-   RESET STATION BROWSER (#61, Settings > BROWSER). POST /api/browser/reset: closes the station browser, ends any
-   orphaned Eyehold browser left running on the station profile by an earlier Eyehold process (never the Commander's
+   RESET KEEP BROWSER (#61, Settings > BROWSER). POST /api/browser/reset: closes the keep browser, ends any
+   orphaned Eyehold browser left running on the keep profile by an earlier Eyehold process (never the Commander's
    own Chrome), clears its stale locks. Saved sign-ins are kept.
 
    UMD: a `DataReset` global in the page; module.exports under node so the pure parts are unit-tested. */
@@ -47,7 +47,7 @@
       const proto = w.Storage && w.Storage.prototype;
       if (proto && typeof proto.setItem === 'function') {
         const orig = proto.setItem;
-        proto.setItem = function () { /* frozen: the old station must not write into the fresh one */ };
+        proto.setItem = function () { /* frozen: the old keep must not write into the fresh one */ };
         undo.push(() => { proto.setItem = orig; });
       }
     } catch (_) {}
@@ -63,7 +63,7 @@
       if (typeof w.fetch === 'function') {
         const orig = w.fetch;
         w.fetch = function (input, init) {
-          if (isApiUrl(input)) return Promise.reject(new Error('Eyehold is erasing - station writes are frozen'));
+          if (isApiUrl(input)) return Promise.reject(new Error('Eyehold is erasing - keep writes are frozen'));
           return orig.call(this, input, init);
         };
         undo.push(() => { w.fetch = orig; });
@@ -84,7 +84,7 @@
     const w = opts.win || root;
     const core = opts.core || tauriCore(w);
     if (!core) throw new Error('ERASE EVERYTHING runs in the Eyehold desktop app');
-    // Best effort, BEFORE the freeze: end any orphaned station browser so its files are not held open (#61).
+    // Best effort, BEFORE the freeze: end any orphaned keep browser so its files are not held open (#61).
     try {
       if (typeof w.fetch === 'function') {
         let timer = null;
@@ -110,7 +110,7 @@
     return view;
   }
 
-  /* What the receipt proves, in plain lines — and whether reloading into the fresh station is safe. */
+  /* What the receipt proves, in plain lines — and whether reloading into the fresh keep is safe. */
   function eraseSummary(v) {
     v = v || {};
     const removed = Array.isArray(v.removed) ? v.removed : [];
@@ -125,17 +125,17 @@
     lines.push(v.browserDataCleared === true ? 'Cleared this window\'s stored data.' : 'Could NOT clear this window\'s stored data' + (v.browserClearError ? ' (' + v.browserClearError + ')' : '') + '.');
     const complete = v.ok === true && v.browserDataCleared === true;
     const reloadSafe = v.browserDataCleared === true && v.listening === true;
-    if (v.listening !== true) lines.push('The fresh station did not start answering yet. Quit Eyehold fully and open it again.');
+    if (v.listening !== true) lines.push('The fresh keep did not start answering yet. Quit Eyehold fully and open it again.');
     return { complete, reloadSafe, lines };
   }
 
-  /* ---- station browser reset ---- */
+  /* ---- keep browser reset ---- */
   function browserResetSummary(status, r) {
     r = r || {};
-    if (r.driving) return 'An agent is driving the station browser right now. Stop that run, then reset.';
-    if (status !== 200 && !r.sweep) return 'The browser was not reset: ' + (r.error || ('the station answered ' + status)) + '.';
+    if (r.driving) return 'An agent is driving the keep browser right now. Stop that run, then reset.';
+    if (status !== 200 && !r.sweep) return 'The browser was not reset: ' + (r.error || ('the keep answered ' + status)) + '.';
     const s = r.sweep;
-    const bits = [r.closed ? 'Closed the station browser.' : 'The station browser was not open.'];
+    const bits = [r.closed ? 'Closed the keep browser.' : 'The keep browser was not open.'];
     if (!s) bits.push('No orphan check ran.');
     else if (s.error) bits.push('Could not check for a leftover browser: ' + s.error + '.');
     else {
@@ -147,7 +147,7 @@
     if (r.ok) bits.push('Your saved sign-ins were kept. The next page you open starts a fresh browser.');
     return bits.join(' ');
   }
-  async function resetStationBrowser(win) {
+  async function resetKeepBrowser(win) {
     const w = win || root;
     const res = await w.fetch(apiBase(w) + '/api/browser/reset', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{}' });
     let body = null; try { body = await res.json(); } catch (_) { body = null; }
@@ -161,18 +161,18 @@
   function mountBrowserReset(host) {
     if (!host || typeof document === 'undefined') return;
     const wrap = el('div', 'set-reset-browser');
-    wrap.appendChild(el('h4', 'ms-h', 'RESET STATION BROWSER'));
-    wrap.appendChild(el('p', 'set-about', 'Pages will not load, or agents report the browser is stuck? This closes the station browser, ends any copy an earlier Eyehold session left running, and clears its stale locks. It never touches your own Chrome. Saved sign-ins are kept.'));
+    wrap.appendChild(el('h4', 'ms-h', 'RESET KEEP BROWSER'));
+    wrap.appendChild(el('p', 'set-about', 'Pages will not load, or agents report the browser is stuck? This closes the keep browser, ends any copy an earlier Eyehold session left running, and clears its stale locks. It never touches your own Chrome. Saved sign-ins are kept.'));
     const row = el('div', 'set-save');
-    const btn = el('button', 'bb sm', 'RESET STATION BROWSER'); btn.type = 'button'; btn.id = 'set-reset-browser';
+    const btn = el('button', 'bb sm', 'RESET KEEP BROWSER'); btn.type = 'button'; btn.id = 'set-reset-browser';
     row.appendChild(btn); wrap.appendChild(row);
     const msg = el('p', 'set-about dim', ''); msg.id = 'set-reset-browser-msg'; msg.setAttribute('role', 'status');
     wrap.appendChild(msg);
     btn.addEventListener('click', async () => {
       sfx('click');
-      btn.disabled = true; msg.textContent = 'Resetting the station browser…';
+      btn.disabled = true; msg.textContent = 'Resetting the keep browser…';
       try {
-        const r = await resetStationBrowser();
+        const r = await resetKeepBrowser();
         msg.textContent = browserResetSummary(r.status, r.body);
       } catch (e) {
         msg.textContent = 'The browser was not reset: ' + String((e && e.message) || e) + '.';
@@ -187,7 +187,7 @@
     const wrap = el('div', 'set-erase');
     wrap.appendChild(el('h4', 'ms-h', 'ERASE EVERYTHING'));
     const about = el('p', 'set-about');
-    about.innerHTML = 'Deletes everything Eyehold keeps on this computer and starts over at first run: your station, agents, chats, memory, routines and settings, saved browser sign-ins, files agents saved inside Eyehold, logs, the voice-model download, Eyehold\'s saved keys and tokens in the system keychain, and this window\'s stored data. <b>This cannot be undone.</b> Export a backup first if you might want it.';
+    about.innerHTML = 'Deletes everything Eyehold keeps on this computer and starts over at first run: your keep, agents, chats, memory, routines and settings, saved browser sign-ins, files agents saved inside Eyehold, logs, the voice-model download, Eyehold\'s saved keys and tokens in the system keychain, and this window\'s stored data. <b>This cannot be undone.</b> Export a backup first if you might want it.';
     wrap.appendChild(about);
     wrap.appendChild(el('p', 'set-about dim', 'Not touched: project folders you let agents work in, files exported to "Eyehold deliverables", your Downloads folder, your Eyehold account and its credits (this computer is unlinked from it), and the Eyehold app itself (uninstall it separately).'));
     if (!core) {
@@ -202,7 +202,7 @@
     row.appendChild(input); row.appendChild(btn); wrap.appendChild(row);
     const msg = el('p', 'set-about', ''); msg.id = 'set-erase-msg'; msg.setAttribute('role', 'status');
     wrap.appendChild(msg);
-    const reloadBtn = el('button', 'bb sm', 'OPEN THE FRESH STATION'); reloadBtn.type = 'button'; reloadBtn.hidden = true;
+    const reloadBtn = el('button', 'bb sm', 'OPEN THE FRESH KEEP'); reloadBtn.type = 'button'; reloadBtn.hidden = true;
     reloadBtn.addEventListener('click', () => { try { location.reload(); } catch (_) {} });
     wrap.appendChild(reloadBtn);
     let busy = false;
@@ -217,7 +217,7 @@
         const sum = eraseSummary(view);
         msg.textContent = sum.lines.join(' ');
         if (sum.complete && sum.reloadSafe) {
-          msg.textContent += ' Opening the fresh station…';
+          msg.textContent += ' Opening the fresh keep…';
           setTimeout(() => { try { location.reload(); } catch (_) {} }, 1500);
         } else if (sum.reloadSafe) {
           reloadBtn.hidden = false;   // partial: let them read what remains, then go
@@ -239,5 +239,5 @@
     host.appendChild(wrap);
   }
 
-  return { CONFIRM_WORD, freezeWrites, isApiUrl, eraseDesktop, eraseSummary, browserResetSummary, resetStationBrowser, mountErase, mountBrowserReset, _esc: esc };
+  return { CONFIRM_WORD, freezeWrites, isApiUrl, eraseDesktop, eraseSummary, browserResetSummary, resetKeepBrowser, mountErase, mountBrowserReset, _esc: esc };
 });

@@ -226,7 +226,7 @@ function exited(child, ms) {
       A.eq(h.status, 503, 'owner life 3: /api/health 503');
       A.ok(/^degraded: workspace owner unavailable — another process may own /.test(htxt) && /holder PID \d+/.test(htxt) && /crash-loop: 3 faults in 10m/.test(htxt), 'owner life 3: health carries the owner reason + recovery guidance + loop count: ' + htxt);
       const sv = await fetch(BO + '/api/save?agent=agent');
-      A.eq(sv.status, 503, 'owner life 3: every other route is 503 (the frontend lands on STATION DATA UNREACHABLE)');
+      A.eq(sv.status, 503, 'owner life 3: every other route is 503 (the frontend lands on KEEP DATA UNREACHABLE)');
       const svj = await sv.json();
       A.eq(svj.code, 'WORKSPACE_BUSY', 'owner life 3: JSON carries the safety code');
       A.eq(fs.readFileSync(ownerFile, 'utf8'), ownerDoc, 'owner life 3: the owner claim was NOT reclaimed or rewritten');

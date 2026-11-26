@@ -12,7 +12,7 @@
        completes the final step → the quest goes DONE, riding QuestState's gold celebration. Honest completion:
        the build actually ran — no claim button.
 
-   Self-persists to its own localStorage key (rides the backup prefix, like stationqueststore — no save.js
+   Self-persists to its own localStorage key (rides the backup prefix, like keepqueststore — no save.js
    change). The projection (quests()) is joined into QuestStore.view. NOTHING MINTS XP (the xp.js law): the
    payout is the real build + the shared celebration; XP still flows only from rating the finished work. NEVER
    emits on U.bus (subscription only). */
@@ -46,7 +46,7 @@ const WorkQuestStore = (() => {
     return null;
   }
   const nowMs = () => (typeof Date !== 'undefined' ? Date.now() : 0);
-  function poke() { try { if (typeof StationUI !== 'undefined' && StationUI.rerender) StationUI.rerender('quests', false); } catch (_) {} }
+  function poke() { try { if (typeof KeepUI !== 'undefined' && KeepUI.rerender) KeepUI.rerender('quests', false); } catch (_) {} }
 
   /* ---------- the MINT: an accepted idea → a trackable build ----------
      parsed = the Pitch.parsePitch object ({ title, build:{ kind, recipeId } , gap }). ctx (optional) = {}. The
@@ -139,7 +139,7 @@ const WorkQuestStore = (() => {
   }
 
   // the one honest, player-facing beat for a stalled build — reuses SlagLog's real post-mortem copy (title +
-  // fix), routed through the SHARED StationUI.notify toast in the neutral WARN family (no gold, no new toast
+  // fix), routed through the SHARED KeepUI.notify toast in the neutral WARN family (no gold, no new toast
   // system). Falls back to a plain reason line if SlagLog isn't loaded. An errored run's own message is classified
   // exactly as world.js classifies it for the SLAG post-mortem (Friendly kind + message), so both say the same door.
   function stallBeat(reason, title, errText) {
@@ -153,7 +153,7 @@ const WorkQuestStore = (() => {
       if (d) msg = 'build “' + (title || 'a build') + '” ' + d.title + ' — ' + d.fix;
     } catch (_) {}
     if (!msg) msg = 'build “' + (title || 'a build') + '” stopped (' + reason + ') — adjust and re-run.';
-    try { if (typeof StationUI !== 'undefined' && StationUI.notify) StationUI.notify(msg, 'warn'); } catch (_) {}
+    try { if (typeof KeepUI !== 'undefined' && KeepUI.notify) KeepUI.notify(msg, 'warn'); } catch (_) {}
   }
 
   // sync() is a no-op resolver (work quests advance on the run bus events, not a re-read) — kept for the shared

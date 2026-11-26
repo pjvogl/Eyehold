@@ -1,15 +1,15 @@
 # Eyehold plugins
 
 A plugin is one folder with a single approval. It can add **windows** (your own HTML/JS, opened as real Eyehold
-windows), **code that runs in the station in its own process** (tools for your crew, hooks on every run, background
-jobs, a backend for its windows), and a **terminal** that stands in the station as its body, or any mix of those.
+windows), **code that runs in the keep in its own process** (tools for your crew, hooks on every run, background
+jobs, a backend for its windows), and a **terminal** that stands in the keep as its body, or any mix of those.
 
 - **Where plugins live:** `<workspaces>/plugins/<id>/`. ABILITIES → CREATE / ADVANCED → EXTENSIONS → **COPY FOLDER PATH** shows the exact folder.
 - **Fastest start:** EXTENSIONS → **Create a plugin**. It writes a working starter (a window with notes saved by the
-  station and a KIT tab showing every component) and opens that window. Edit the files from there.
+  keep and a KIT tab showing every component) and opens that window. Edit the files from there.
 - **Approval:** approval is locked to a hash of **every file** in the folder. Change one character anywhere and the
   plugin turns off until you approve the new code in EXTENSIONS: its code stops, and any open window says it changed
-  the next time it talks to the station (or when you reopen it).
+  the next time it talks to the keep (or when you reopen it).
 
 Plan and open decisions: <https://claude.ai/artifact/8qxbub7yipDMTfavubYwZq>.
 
@@ -18,7 +18,7 @@ Plan and open decisions: <https://claude.ai/artifact/8qxbub7yipDMTfavubYwZq>.
 ```
 plugins/pr-radar/
   plugin.json        the manifest
-  index.js           optional — code the station loads (hooks). Omit it, and "main", for a window-only plugin
+  index.js           optional — code the keep loads (hooks). Omit it, and "main", for a window-only plugin
   ui/index.html      a window's page (any HTML/JS/CSS, any framework, relative assets)
   ui/app.js
 ```
@@ -38,9 +38,9 @@ plugins/pr-radar/
 | field | rules |
 |---|---|
 | `screens[].id` | letters, numbers, `-`, `_`; max 32; unique |
-| `screens[].title` | plain text shown in the station's title bar; max 40; markup characters are dropped |
+| `screens[].title` | plain text shown in the keep's title bar; max 40; markup characters are dropped |
 | `screens[].entry` | an `.html` file inside the folder (no `..`, no absolute path, no dot-folders) |
-| `screens[].size` | `panel` (default) or `wide`, the station's two window sizes |
+| `screens[].size` | `panel` (default) or `wide`, the keep's two window sizes |
 | `main` | leave it out **and** name screens for a window-only plugin. Such a plugin has no access to your computer |
 
 Up to 8 screens per plugin, 32 plugins, 512 files / 16 MB per plugin folder.
@@ -49,19 +49,19 @@ Up to 8 screens per plugin, 32 plugins, 512 files / 16 MB per plugin folder.
 
 - The page is served by the sidecar from `/plugin-ui/…` and shown in a **sandboxed frame with an opaque origin**. It
   runs any JavaScript you like, loads its own relative assets, and can `fetch` any public API that allows CORS.
-- It **cannot** read the station page, the station's API token, or call the station's `/api` directly. Everything
-  it asks of the station goes through the `eyehold` bridge below. The station answers only for the plugin that owns
+- It **cannot** read the keep page, the keep's API token, or call the keep's `/api` directly. Everything
+  it asks of the keep goes through the `eyehold` bridge below. The keep answers only for the plugin that owns
   the frame, and a page can't name another plugin.
-- The station draws the title bar, the **PLUGIN** plate, the dock/minimize/expand/close controls and the glass sheet.
-  Your page is everything inside. Text size follows the station's TEXT SIZE setting automatically.
+- The keep draws the title bar, the **PLUGIN** plate, the dock/minimize/expand/close controls and the glass sheet.
+  Your page is everything inside. Text size follows the keep's TEXT SIZE setting automatically.
 
-## The kit (the station look, free)
+## The kit (the keep look, free)
 
 Every page gets `eyehold-kit.css` and `eyehold-kit.js` injected first in `<head>`. The CSS sits in `@layer eyehold`,
 the lowest layer, so **any CSS you write wins** without `!important`. The page background is transparent: the
 window's glass is your background.
 
-**Tokens** (always the station's live values; they repaint when the Commander changes the phosphor):
+**Tokens** (always the keep's live values; they repaint when the Commander changes the phosphor):
 `--ph --ph-bright --ph-dim --ph-faint --ink --text --gold --bg --panel --panel2`
 `--ph-rgb --ph-bright-rgb --gold-rgb` (use as `rgba(var(--ph-rgb), .2)`)
 `--ok --ok-rgb --bad --bad-rgb --warn` (semantic, constant across themes)
@@ -80,7 +80,7 @@ window's glass is your background.
 | states | `sn-loading` · `sn-error` |
 
 Bare `button`, `input`, `select` and `textarea` are already themed, so no control ever shows the browser's white
-paint. Keep it matte: the station uses edges and light, not glows.
+paint. Keep it matte: the keep uses edges and light, not glows.
 
 ## The `eyehold` bridge
 
@@ -96,7 +96,7 @@ await eyehold.store.keys();                        // → ['notes', …]
 
 await eyehold.backend.call('summary', { days: 7 }); // your main file's api.handle('summary', fn), in its process
 
-eyehold.ui.toast('Saved', 'ok' | 'warn' | 'bad');  // a station notification, shown as "<Plugin>: Saved"
+eyehold.ui.toast('Saved', 'ok' | 'warn' | 'bad');  // a keep notification, shown as "<Plugin>: Saved"
 eyehold.ui.setTitle('3 open');                     // title bar becomes "PR RADAR · 3 open"
 eyehold.ui.open('settings');                       // open another screen of THIS plugin
 eyehold.ui.close();
@@ -111,10 +111,10 @@ eyehold.theme.onChange((vars) => redrawChart(vars));
 
 The store lives in `<workspaces>/plugin-data/<id>.json` (durable, survives restarts, outside every agent's files).
 
-## Code that runs in the station (`main`)
+## Code that runs in the keep (`main`)
 
 Your `main` file runs in **its own process** once approved: a crash, a hang or an `exit()` costs the plugin, never
-the station. It has **your computer's permissions** (it is ordinary Node), which is why it needs your approval and
+the keep. It has **your computer's permissions** (it is ordinary Node), which is why it needs your approval and
 why every edit turns it off until you approve it again. A crashed plugin restarts on its next use, at most 3 times
 in 5 minutes. `register(api)` runs once, and everything is registered inside it (sync or async):
 
@@ -141,7 +141,7 @@ module.exports = {
 
     // the SAME store the windows use
     api.store.get('notes'); api.store.set('notes', []); api.store.delete('x'); api.store.keys();
-    api.log('shown in the station log as [plugin:<id>]');
+    api.log('shown in the keep log as [plugin:<id>]');
   }
 };
 ```
@@ -149,7 +149,7 @@ module.exports = {
 Hook events: `pre_tool_call` (can block), `post_tool_call`, `pre_llm_call` (can add `{ context }` or block),
 `post_llm_call`, `on_session_start`, `on_session_end`, `on_pre_compress`, `on_memory_write`, `subagent_stop`.
 A hook has 5 s by default (`api.on(event, fn, { timeoutMs })` asks for up to 30 s), and a failing hook never blocks a run.
-A tool call has 120 s; a window call has 30 s in the station (the page waits 45 s, to cover a cold start). Hook
+A tool call has 120 s; a window call has 30 s in the keep (the page waits 45 s, to cover a cold start). Hook
 payloads are copies (they cross the process line): return a decision, never edit the payload in place. Logging is
 capped at 120 lines a minute per plugin.
 
@@ -158,12 +158,12 @@ capped at 120 lines a minute per plugin.
 Eyehold runs on **object = capability**: an agent can use what stands in its room. A plugin's tools reach agents
 through its **PLUGIN TERMINAL**, a prop in the REFIT catalog under CAPABILITY. When you approve or create a plugin
 with tools, Eyehold **places its terminal in the lead's room for you**. You can move it, place more in other
-rooms, or bind a terminal to a different plugin by clicking it in REFIT. Clicking a terminal in the station opens
+rooms, or bind a terminal to a different plugin by clicking it in REFIT. Clicking a terminal in the keep opens
 the plugin's window.
 
 Plugin tools use the same trust rules as connector tools. A watched run shows you an approval card for each call
 ("use the PR Radar plugin tool “list_prs” …"; *Always* is allowed). An unattended run doesn't get them. Content
-from outside the station revokes them for the rest of the run. Their results reach the model fenced as external
+from outside the keep revokes them for the rest of the run. Their results reach the model fenced as external
 data. The TOOLSETS **connectors** switch turns them all off.
 
 ## Your crew can build plugins
@@ -173,9 +173,9 @@ Ask in COMMS: "build me a plugin that shows my open PRs". The agent uses the plu
 **Build a Eyehold Plugin** library skill has the full recipe):
 
 - It writes a **draft** in `<workspaces>/plugin-drafts/<id>`, never in `plugins/` and never in its own files.
-- `plugin.check` parses and compiles the draft **without running it**, and warns about looks that don't match the station.
+- `plugin.check` parses and compiles the draft **without running it**, and warns about looks that don't match the keep.
 - `plugin.preview` opens the draft as a **DRAFT** window (gold plate) on your screen. The page runs sandboxed with **no
-  network**, a throwaway store and no backend. Its station code never runs.
+  network**, a throwaway store and no backend. Its keep code never runs.
 - `plugin.submit` asks you first, then installs the plugin **OFF**. It switches on only when you press APPROVE & ENABLE in
   EXTENSIONS, the same hash-locked approval every plugin gets. An agent can never switch its own plugin on.
 - To change an installed plugin, the agent uses `plugin.draft_from_installed` (it asks you first, since it reads that

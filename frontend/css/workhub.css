@@ -31,8 +31,8 @@
 .wh-files [data-preview]{width:100%;max-height:420px;overflow:auto}
 .wh-field{display:grid;gap:8px;margin:16px 0}
 .wh-root{appearance:none;background-image:linear-gradient(45deg,transparent 50%,var(--ph) 50%),linear-gradient(135deg,var(--ph) 50%,transparent 50%);background-position:calc(100% - 16px) 50%,calc(100% - 11px) 50%;background-size:5px 5px;background-repeat:no-repeat;padding-right:30px;max-width:100%}
-.wh-station{padding:22px;border:1px solid var(--gold);background:rgba(0,0,0,.3)}
-.wh-station h2{font-size:30px;letter-spacing:3px}
+.wh-keep{padding:22px;border:1px solid var(--gold);background:rgba(0,0,0,.3)}
+.wh-keep h2{font-size:30px;letter-spacing:3px}
 .wh-beacon{position:absolute;right:12px;bottom:12px;z-index:4;max-width:min(330px,calc(100% - 24px));padding:10px 14px;background:rgba(6,14,14,.92);border:1px solid var(--gold);color:var(--ph);text-align:left;font:inherit;cursor:pointer}
 .wh-beacon span,.wh-beacon small{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .wh-beacon span{color:var(--gold);font-size:12px;letter-spacing:1px}

@@ -6,10 +6,10 @@ Preview: http://127.0.0.1:55715/ using dev/seed.js --keep and an isolated local 
 
 ## Delivered behavior
 - Projects remains a flat list of attached folders. Selecting a project opens its overview and stable existing COMMS workstream.
-- Preferred crew comes from existing station agents; preferences do not prohibit using other crew.
+- Preferred crew comes from existing keep agents; preferences do not prohibit using other crew.
 - Background crew work appears as expandable activity, without requiring visible child sessions.
 - The existing worker manager owns execution, interruption, generation-checked steering and persistence. The existing orchestrator reviews returned work in the original project conversation.
-- The normal Sessions and station views remain available. Changing projects or viewing the station does not cancel work.
+- The normal Sessions and keep views remain available. Changing projects or viewing the keep does not cancel work.
 
 ## Focused verification
 - HTTP: stable project identity, separate project activity, existing crew persona, preferred crew in lead context, no extra child sessions, steering included in lead review, restart persistence, revoked access stays revoked, unknown roots rejected.
@@ -50,7 +50,7 @@ The source worktree was clean after verification. This evidence-only commit adds
 
 Supersedes the world-covering project overview described above: user explicitly rejected that placement. Project controls now mount before the existing transcript inside chat-panel. A collapsed project/activity row opens bounded, scrollable crew and activity details. Removed stage attachment and world-hiding body hooks. Backend is unchanged.
 
-Verified live on the isolated preview at port 55715: station visible with controls collapsed and expanded; expanded content capped at 240px; world width remains 434px; composer remains visible; no horizontal overflow; preferred MIRA selection and completed activity result render; switching Launch-Notes and Website-Refresh restores each conversation; browser error log empty. Final preview left on Website-Refresh with controls collapsed.
+Verified live on the isolated preview at port 55715: keep visible with controls collapsed and expanded; expanded content capped at 240px; world width remains 434px; composer remains visible; no horizontal overflow; preferred MIRA selection and completed activity result render; switching Launch-Notes and Website-Refresh restores each conversation; browser error log empty. Final preview left on Website-Refresh with controls collapsed.
 
 Checks: project-home-ui passes including new world isolation, transcript placement and collapsed-default assertions; projects-view 78, comms-responsive-text 5, control-floor-theming 181 assertions pass; syntax and diff whitespace checks pass. Source commit 569b7c053, audit 13ed72ebd. Full fast/HTTP receipts above predate this frontend correction; full merge gate has not been rerun for this revision. Project extension remains unmerged and pending UX review.
 

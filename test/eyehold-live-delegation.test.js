@@ -21,15 +21,15 @@ async function run(){
   {agentId:'agent',name:'THE EYE',model,provider:'openrouter',system:'You are The Eye, supervisor. Delegate the specified engineering task to DEEPFORGE using team_dispatch with workers:[{agentId:"deepforge",prompt:"...",session:"engineering"}]. The session property is mandatory. Do not claim a result unless its worker run completed.'},
   {agentId:'deepforge',name:'DEEPFORGE',model,provider:'openrouter',specialtyId:'eyehold-forge',system:'Deepforge engineer. Answer the delegated task concisely. Never claim tools ran unless they actually did.'}
  ],updatedAt:Date.now()})});if(!roster.ok)throw Error('Roster rejected: HTTP '+roster.status);
- // A remote delegated worker needs a connected station client for lifecycle
+ // A remote delegated worker needs a connected keep client for lifecycle
  // acknowledgments. No commands are silently approved; known coordination
  // messages only get bounded acknowledgements.
  sseController=new AbortController();
- const station=[];let ready;
+ const keep=[];let ready;
  ready=fetch(base+'/api/channels/events?'+sseQuery(token),{signal:sseController.signal}).then(async res=>{
   if(!res.ok)throw Error('Event connection failed');
   const reader=res.body.getReader(),dec=new TextDecoder();let buf='';
-  (async()=>{try{while(true){const {value,done}=await reader.read();if(done)break;buf+=dec.decode(value,{stream:true});let nl;while((nl=buf.indexOf('\n'))>=0){const line=buf.slice(0,nl).trim();buf=buf.slice(nl+1);if(!line.startsWith('data:'))continue;let ev;try{ev=JSON.parse(line.slice(5));}catch{continue;}if(ev?.name!=='station.command')continue;const p=ev.payload||{};station.push({verb:p.verb,args:p.verb==='station.deliver'?{agentId:p.args?.agentId,runId:p.args?.runId,textLength:String(p.args?.text||'').length}:null});let response={ok:false,error:'unsupported station command'};if(p.verb==='station.sessions')response={ok:true,result:{sessions:[{id:'ws_deepforge',title:'engineering',agentId:'deepforge'}]}};if(p.verb==='station.deliver')response={ok:true,result:{folded:true,session:'engineering'}};if(['station.dispatch_start','station.dispatch_end'].includes(p.verb))response={ok:true,result:{session:'engineering'}};await fetch(base+'/api/station/ack',{method:'POST',headers,body:JSON.stringify({id:p.id,...response})}).catch(()=>{});}}}catch{} })();return true;
+  (async()=>{try{while(true){const {value,done}=await reader.read();if(done)break;buf+=dec.decode(value,{stream:true});let nl;while((nl=buf.indexOf('\n'))>=0){const line=buf.slice(0,nl).trim();buf=buf.slice(nl+1);if(!line.startsWith('data:'))continue;let ev;try{ev=JSON.parse(line.slice(5));}catch{continue;}if(ev?.name!=='keep.command')continue;const p=ev.payload||{};keep.push({verb:p.verb,args:p.verb==='keep.deliver'?{agentId:p.args?.agentId,runId:p.args?.runId,textLength:String(p.args?.text||'').length}:null});let response={ok:false,error:'unsupported keep command'};if(p.verb==='keep.sessions')response={ok:true,result:{sessions:[{id:'ws_deepforge',title:'engineering',agentId:'deepforge'}]}};if(p.verb==='keep.deliver')response={ok:true,result:{folded:true,session:'engineering'}};if(['keep.dispatch_start','keep.dispatch_end'].includes(p.verb))response={ok:true,result:{session:'engineering'}};await fetch(base+'/api/keep/ack',{method:'POST',headers,body:JSON.stringify({id:p.id,...response})}).catch(()=>{});}}}catch{} })();return true;
  });
  await ready;await sleep(250);
  const assignment=String(process.env.EYEHOLD_ASSIGNMENT||'Write a two-sentence description of one safe test to verify a Node.js module loads successfully.').trim();
@@ -54,7 +54,7 @@ async function run(){
  }
 }catch(e){if(e.message?.startsWith('Run consent rejected'))throw e;}}}}catch(e){
    const names=events.map(x=>x.name).filter(Boolean);
-   console.error('Delegation stream diagnosis:',JSON.stringify({eventCount:events.length,eventNames:[...new Set(names)].slice(0,20),runStart:names.includes('agent.run.start'),toolCalls:names.filter(n=>n==='agent.tool_call').length,stationCommands:station.slice(-12),permissionsAnswered:approvedPromptIds.size,timedOut:e?.name==='AbortError'}));
+   console.error('Delegation stream diagnosis:',JSON.stringify({eventCount:events.length,eventNames:[...new Set(names)].slice(0,20),runStart:names.includes('agent.run.start'),toolCalls:names.filter(n=>n==='agent.tool_call').length,keepCommands:keep.slice(-12),permissionsAnswered:approvedPromptIds.size,timedOut:e?.name==='AbortError'}));
    throw e;
  }finally{clearTimeout(timer);}
  const runs=await(await fetch(base+'/api/runs?agent=deepforge&limit=20',{headers})).json();
@@ -87,7 +87,7 @@ async function run(){
    if(typeof raw==='string'){try{args=JSON.parse(raw)}catch{args={parseError:true}}}
    const workers=Array.isArray(args?.workers)?args.workers:[];
    return {name:p.name||null,argumentsAvailable:!!(p.arguments||p.args||p.input),workerCount:workers.length,targetAgentIds:workers.map(w=>w.agentId).filter(Boolean),targetSessionTitles:workers.map(w=>w.session||null)};
- }),stationCommands:station.filter(x=>x?.verb?.startsWith('station.')).length,stationVerbs:station.map(x=>x.verb),toolResults:events.filter(e=>e.name==='agent.tool_result').map(e=>({isError:!!e.payload?.isError,fields:Object.keys(e.payload||{}).filter(k=>!['content','text','result','output'].includes(k))})),delivered:station.filter(x=>x.verb==='station.deliver'),model};
+ }),keepCommands:keep.filter(x=>x?.verb?.startsWith('keep.')).length,keepVerbs:keep.map(x=>x.verb),toolResults:events.filter(e=>e.name==='agent.tool_result').map(e=>({isError:!!e.payload?.isError,fields:Object.keys(e.payload||{}).filter(k=>!['content','text','result','output'].includes(k))})),delivered:keep.filter(x=>x.verb==='keep.deliver'),model};
  console.log(JSON.stringify(summary,null,2));
  if(!success)throw Error('Live Deepforge child-run deliverable not established');
 }

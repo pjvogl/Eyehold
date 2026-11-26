@@ -20,7 +20,7 @@ LOCKED and violating one in passing is worse than the bug you came to fix.
    bodies, panels, EventSource, poll timers, speech queue, audio, active runs, workstream id,
    local-storage keys, mode classes, scrim/fullscreen surfaces. Fresh-page-load tests miss this
    entire family by construction. Reduce any leak to ONE module-level root cause.
-2. **The renderer has no authority.** Forge a Station/SaveDoc/routing payload and try to grant
+2. **The renderer has no authority.** Forge a Keep/SaveDoc/routing payload and try to grant
    web/files/shell/connectors from forged `placed`, a forged legacy routing plan, a missing
    connector id, or a sealed-room handoff. The sidecar must refuse or hold last-good state.
    Every new attempt you invent becomes a regression test.
@@ -33,7 +33,7 @@ LOCKED and violating one in passing is worse than the bug you came to fix.
 5. **The OS paints nothing.** Removing a `title` attribute kills the OS bubble outright. Any
    hover affordance must be proven visible, not assumed.
 6. **A prop IS its top surface** — the camera looks DOWN. Rotation must never hide the face.
-7. **Leak-check corners on a MULTI-ROOM station**, never a single room. 148 leaked pixels hid
+7. **Leak-check corners on a MULTI-ROOM keep**, never a single room. 148 leaked pixels hid
    behind a single-room check once; `dev/wallprobe.mjs` is the proof tool.
 8. **Small viewport.** 390×844. No horizontal overflow, no clipped modal, arrow-key tab
    navigation still works. Then check the scrim behind every centered modal.

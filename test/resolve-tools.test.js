@@ -110,7 +110,7 @@ const probeJson = (dur, v, a) => JSON.stringify({ format: { duration: String(dur
   A.eq(emitted.map(e => e.d.kind + ':' + e.d.title), ['file:edits/My_Cut.fcpxml'], 'the file lands in chat as a deliverable');
   A.ok(calls.every(c => c.opts && c.opts.shell === false), 'every child runs WITHOUT a shell');
   await A.rejects(() => tool('resolve_timeline_file').run({ name: 'x', clips: [{ path: '../escape.mp4', out: 2 }] }, ctx), 'a ../ path cannot leave the workspace');
-  await A.rejects(() => tool('resolve_timeline_file').run({ name: 'x', clips: [{ path: path.join(os.tmpdir(), 'abs.mp4'), out: 2 }] }, ctx), 'an absolute path needs the station path-trust guard');
+  await A.rejects(() => tool('resolve_timeline_file').run({ name: 'x', clips: [{ path: path.join(os.tmpdir(), 'abs.mp4'), out: 2 }] }, ctx), 'an absolute path needs the keep path-trust guard');
   await A.rejects(() => tool('resolve_timeline_file').run({ name: 'x', clips: [{ path: 'clips/missing.mp4', out: 2 }] }, ctx), 'missing media is refused, not linked blind');
 
   /* ---- D. resolve_status / resolve_control never claim a live Resolve they did not reach ---- */

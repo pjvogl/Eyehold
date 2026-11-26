@@ -134,7 +134,7 @@ function boot(port, env, attemptsLeft) {
     const p0 = await (await fetch(B + '/api/projects', { headers: { 'X-Eyehold-Token': token, Origin: B } })).json();
     A.eq((p0.projects || []).length, 0, 'GET /api/projects is empty before any bless');
 
-    // Agent workspaces are private even if one is accidentally recorded in the station-global project-grant
+    // Agent workspaces are private even if one is accidentally recorded in the keep-global project-grant
     // store. A global `path:<WORKSPACES/alpha>` grant must never override beta's workspace boundary.
     const blessWorkspace = await fetch(B + '/api/projects/bless', {
       method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Eyehold-Token': token, Origin: B },
@@ -148,7 +148,7 @@ function boot(port, env, attemptsLeft) {
       'a sibling workspace is a hard floor, not a consent prompt');
     const leakedAcrossAgents = mock.requests.slice(beforeIsolationRead).some(msgs =>
       msgs.some(m => m && m.role === 'tool' && String(m.content).indexOf('LIVE_ALPHA_PRIVATE_MARKER') >= 0));
-    A.eq(leakedAcrossAgents, false, 'beta cannot read alpha private bytes through a station-global path grant');
+    A.eq(leakedAcrossAgents, false, 'beta cannot read alpha private bytes through a keep-global path grant');
     await fetch(B + '/api/permissions/revoke', {
       method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Eyehold-Token': token, Origin: B },
       body: JSON.stringify({ key: workspaceGrant })

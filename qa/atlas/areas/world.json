@@ -7,8 +7,8 @@
       "kind": "state",
       "area": "world",
       "name": "shoot state: ingame",
-      "purpose": "The base shoot state — the resting live station with all windows closed; the canonical view the Atlas sweep walks first.",
-      "promise": "buildStates() yields {name:\"ingame\", drive:closeOnly}: from any state, closing all windows returns to the interactive station canvas; every ingame-tagged UI entry is enumerated in this state.",
+      "purpose": "The base shoot state — the resting live keep with all windows closed; the canonical view the Atlas sweep walks first.",
+      "promise": "buildStates() yields {name:\"ingame\", drive:closeOnly}: from any state, closing all windows returns to the interactive keep canvas; every ingame-tagged UI entry is enumerated in this state.",
       "wiring": {
         "files": [
           "scripts/lib/states.mjs",
@@ -140,8 +140,8 @@
       "id": "ui/world/bb-build",
       "kind": "ui",
       "area": "world",
-      "name": "⌂REFIT STATIONplace rooms, corridors & gear",
-      "purpose": "Opens REFIT MODE — the floor editor to place rooms, run corridors, and paint decks (station refit).",
+      "name": "⌂REFIT KEEPplace rooms, corridors & gear",
+      "purpose": "Opens REFIT MODE — the floor editor to place rooms, run corridors, and paint decks (keep refit).",
       "promise": "Clicking it enters Refit mode (.refit-canvas + 'REFIT MODE — DRAG TO PLACE ROOMS' overlay); pulses a refit-nudge until first opened.",
       "wiring": {
         "files": [
@@ -155,7 +155,7 @@
       "coverage": [
         {
           "kind": "shoot",
-          "ref": "build-station"
+          "ref": "build-keep"
         }
       ],
       "status": "perfected",
@@ -169,7 +169,7 @@
       "missing": false,
       "selector": "#bb-build",
       "state": "ingame",
-      "notes": "Live @ HEAD: click #bb-build set document.body.class 'refit-on' and rendered the REFIT dock (.refit-canvas/.refit-top/.refit-title) = REFIT STATION build mode open (Build.toggle, build.js)."
+      "notes": "Live @ HEAD: click #bb-build set document.body.class 'refit-on' and rendered the REFIT dock (.refit-canvas/.refit-top/.refit-title) = REFIT KEEP build mode open (Build.toggle, build.js)."
     },
     {
       "id": "ui/world/bb-missions",
@@ -481,9 +481,9 @@
       "id": "ui/world/btn-recovery-continue",
       "kind": "ui",
       "area": "world",
-      "name": "▶ CONTINUE WITH A FRESH STATION",
-      "purpose": "The recovery-screen 'CONTINUE WITH A FRESH STATION' control — proceeds past a failed/expired restore into a fresh station.",
-      "promise": "On #screen-recovery, #btn-recovery-continue ('▶ CONTINUE WITH A FRESH STATION') abandons the unrecoverable save and boots a fresh station.",
+      "name": "▶ CONTINUE WITH A FRESH KEEP",
+      "purpose": "The recovery-screen 'CONTINUE WITH A FRESH KEEP' control — proceeds past a failed/expired restore into a fresh keep.",
+      "promise": "On #screen-recovery, #btn-recovery-continue ('▶ CONTINUE WITH A FRESH KEEP') abandons the unrecoverable save and boots a fresh keep.",
       "wiring": {
         "files": [
           "frontend/app/app.js",
@@ -893,7 +893,7 @@
       "wiring": {
         "files": [
           "frontend/index.html",
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "frontend/app/navdock.js"
         ],
         "events": []
@@ -923,19 +923,19 @@
       "missing": false,
       "selector": "[data-term=\"agents\"]",
       "state": "ingame",
-      "notes": "Live @ 583fbfbd: click .bb[data-term=agents] opened .term titled 'AGENT DOSSIER' (toggleTerm seam, stationui.js). Re-stamped."
+      "notes": "Live @ 583fbfbd: click .bb[data-term=agents] opened .term titled 'AGENT DOSSIER' (toggleTerm seam, keepui.js). Re-stamped."
     },
     {
       "id": "ui/world/data-term-commander",
       "kind": "ui",
       "area": "world",
-      "name": "◈COMMANDERwhat the station has learned about you",
-      "purpose": "Opens the COMMANDER DOSSIER — what the station has learned about the human operator (your own file).",
+      "name": "◈COMMANDERwhat the keep has learned about you",
+      "purpose": "Opens the COMMANDER DOSSIER — what the keep has learned about the human operator (your own file).",
       "promise": "Clicking it opens a window titled 'COMMANDER DOSSIER' rendering the learned-facts/preferences profile.",
       "wiring": {
         "files": [
           "frontend/index.html",
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "frontend/app/navdock.js"
         ],
         "events": []
@@ -973,7 +973,7 @@
       "wiring": {
         "files": [
           "frontend/index.html",
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "frontend/app/navdock.js"
         ],
         "events": []
@@ -1007,7 +1007,7 @@
       "wiring": {
         "files": [
           "frontend/index.html",
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "frontend/app/navdock.js"
         ],
         "events": []
@@ -1036,12 +1036,12 @@
       "kind": "ui",
       "area": "world",
       "name": "▦LOGBOOKthis agent's run history",
-      "purpose": "Opens the LOGBOOK — the station's event record.",
-      "promise": "Clicking it opens a console window titled 'LOGBOOK' showing the station's event log.",
+      "purpose": "Opens the LOGBOOK — the keep's event record.",
+      "promise": "Clicking it opens a console window titled 'LOGBOOK' showing the keep's event log.",
       "wiring": {
         "files": [
           "frontend/index.html",
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "frontend/app/navdock.js"
         ],
         "events": []
@@ -1075,7 +1075,7 @@
       "wiring": {
         "files": [
           "frontend/index.html",
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "frontend/app/navdock.js",
           "frontend/app/tutorial.js"
         ],
@@ -1110,7 +1110,7 @@
       "wiring": {
         "files": [
           "frontend/index.html",
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "frontend/app/navdock.js"
         ],
         "events": []
@@ -1139,12 +1139,12 @@
       "kind": "ui",
       "area": "world",
       "name": "▲NOTIFICATIONSalerts & unread events",
-      "purpose": "Opens NOTIFICATIONS — alerts & unread station events (also badged with an unread count).",
+      "purpose": "Opens NOTIFICATIONS — alerts & unread keep events (also badged with an unread count).",
       "promise": "Clicking it opens a window titled 'NOTIFICATIONS'; the #nf-badge count reflects unread events.",
       "wiring": {
         "files": [
           "frontend/index.html",
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "frontend/app/navdock.js"
         ],
         "events": []
@@ -1182,7 +1182,7 @@
       "wiring": {
         "files": [
           "frontend/index.html",
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "frontend/app/navdock.js"
         ],
         "events": []
@@ -1213,19 +1213,19 @@
       "missing": false,
       "selector": "[data-term=\"quests\"]",
       "state": "ingame",
-      "notes": "Dock-button OPEN seam locked in test/dock-terms-open.test.js (index.html .bb[data-term] → stationui init → BUILDERS[key] → builder). Atlas finding 5c8f6921 remediated."
+      "notes": "Dock-button OPEN seam locked in test/dock-terms-open.test.js (index.html .bb[data-term] → keepui init → BUILDERS[key] → builder). Atlas finding 5c8f6921 remediated."
     },
     {
       "id": "ui/world/data-term-rewind",
       "kind": "ui",
       "area": "world",
       "name": "↶RESTORErestore an agent's workspace files",
-      "purpose": "Opens RESTORE POINTS — rewind the station to an earlier save/checkpoint.",
+      "purpose": "Opens RESTORE POINTS — rewind the keep to an earlier save/checkpoint.",
       "promise": "Clicking it opens a window titled 'RESTORE POINTS' listing available restore points.",
       "wiring": {
         "files": [
           "frontend/index.html",
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "frontend/app/navdock.js"
         ],
         "events": []
@@ -1259,7 +1259,7 @@
       "wiring": {
         "files": [
           "frontend/index.html",
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "frontend/app/navdock.js"
         ],
         "events": []
@@ -1293,7 +1293,7 @@
       "wiring": {
         "files": [
           "frontend/index.html",
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "frontend/app/navdock.js"
         ],
         "events": []
@@ -1335,7 +1335,7 @@
       "wiring": {
         "files": [
           "frontend/index.html",
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "frontend/app/navdock.js",
           "frontend/app/keycta.js",
           "frontend/app/modeldock.js"
@@ -1371,11 +1371,11 @@
       "area": "world",
       "name": "✦SKILLSwhat agents can do right now (switches: TOOLSETS)",
       "purpose": "Opens SKILLS & CAPABILITIES — the capability-gated recipe/skill library showing what agents are equipped to do.",
-      "promise": "Clicking it opens a console window titled 'SKILLS & CAPABILITIES' listing the station's skills/capabilities.",
+      "promise": "Clicking it opens a console window titled 'SKILLS & CAPABILITIES' listing the keep's skills/capabilities.",
       "wiring": {
         "files": [
           "frontend/index.html",
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "frontend/app/navdock.js"
         ],
         "events": []
@@ -1408,12 +1408,12 @@
       "kind": "ui",
       "area": "world",
       "name": "☑TASKSwhere all work lives — queued, running & done",
-      "purpose": "Opens the TASK BOARD — queued, running, and done work across the station.",
+      "purpose": "Opens the TASK BOARD — queued, running, and done work across the keep.",
       "promise": "Clicking it opens a window titled 'TASK BOARD' whose rows equal the live task store (event-reduced truth).",
       "wiring": {
         "files": [
           "frontend/index.html",
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "frontend/app/navdock.js"
         ],
         "events": []
@@ -1451,7 +1451,7 @@
       "wiring": {
         "files": [
           "frontend/index.html",
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "frontend/app/navdock.js"
         ],
         "events": []
@@ -1474,7 +1474,7 @@
       "missing": false,
       "selector": "[data-term=\"updates\"]",
       "state": "ingame",
-      "notes": "Dock-button OPEN seam locked in test/dock-terms-open.test.js (index.html .bb[data-term] → stationui init → BUILDERS[key] → builder). Atlas finding 5c8f6921 remediated."
+      "notes": "Dock-button OPEN seam locked in test/dock-terms-open.test.js (index.html .bb[data-term] → keepui init → BUILDERS[key] → builder). Atlas finding 5c8f6921 remediated."
     },
     {
       "id": "ui/world/estop-btn",
@@ -1652,7 +1652,7 @@
       "area": "world",
       "name": "input",
       "purpose": "The overseer's name field on the CREATE YOUR OVERSEER connect screen — the first identity choice a new user makes.",
-      "promise": "Typing a name (≤18 chars) updates the live nameplate and is carried into agent.name on WAKE; a blank/sentinel name mints a station codename instead of the bland \"AGENT\".",
+      "promise": "Typing a name (≤18 chars) updates the live nameplate and is carried into agent.name on WAKE; a blank/sentinel name mints a keep codename instead of the bland \"AGENT\".",
       "wiring": {
         "files": [
           "frontend/index.html",
@@ -1948,7 +1948,7 @@
       "id": "ui/world/txt-button-bottombar-build-1",
       "kind": "ui",
       "area": "world",
-      "name": "Shape the station — refit the floor, skills, toolsets, channels",
+      "name": "Shape the keep — refit the floor, skills, toolsets, channels",
       "purpose": "duplicate harvest of ui/world/txt-button-crew-401 (a .bb-grp dock-group tile; this one = BUILD).",
       "promise": "Same contract as ui/world/txt-button-crew-401: click toggles aria-expanded and reveals its group flyout of .bb items.",
       "wiring": {
@@ -1973,7 +1973,7 @@
       "missing": false,
       "selector": "button",
       "state": "ingame",
-      "notes": "CLONE of ui/world/txt-button-crew-401 — same .bb-grp flyout seam (index.html), differs only in group (BUILD — Shape the station: refit, skills, toolsets, channels). 4 tiles live-proven 2026-07-07T22:16:20.560Z. FUTURE-DEDUP."
+      "notes": "CLONE of ui/world/txt-button-crew-401 — same .bb-grp flyout seam (index.html), differs only in group (BUILD — Shape the keep: refit, skills, toolsets, channels). 4 tiles live-proven 2026-07-07T22:16:20.560Z. FUTURE-DEDUP."
     },
     {
       "id": "ui/world/txt-button-bottombar-crew-1",
@@ -2015,7 +2015,7 @@
       "id": "ui/world/txt-button-bottombar-system-1",
       "kind": "ui",
       "area": "world",
-      "name": "Station systems — manual, settings, updates, restore, logs, notifications",
+      "name": "Keep systems — manual, settings, updates, restore, logs, notifications",
       "purpose": "duplicate harvest of ui/world/txt-button-crew-401 (a .bb-grp dock-group tile; this one = SYSTEM).",
       "promise": "Same contract as ui/world/txt-button-crew-401: click toggles aria-expanded and reveals its group flyout of .bb items.",
       "wiring": {
@@ -2040,13 +2040,13 @@
       "missing": false,
       "selector": "button",
       "state": "ingame",
-      "notes": "CLONE of ui/world/txt-button-crew-401 — same .bb-grp flyout seam (index.html), differs only in group (SYSTEM — Station systems: manual, settings, updates, restore, logs, notifications). 4 tiles live-proven 2026-07-07T22:16:20.560Z. FUTURE-DEDUP."
+      "notes": "CLONE of ui/world/txt-button-crew-401 — same .bb-grp flyout seam (index.html), differs only in group (SYSTEM — Keep systems: manual, settings, updates, restore, logs, notifications). 4 tiles live-proven 2026-07-07T22:16:20.560Z. FUTURE-DEDUP."
     },
     {
       "id": "ui/world/txt-button-bottombar-work-1",
       "kind": "ui",
       "area": "world",
-      "name": "The station's work — tasks, recipes, routines, quests",
+      "name": "The keep's work — tasks, recipes, routines, quests",
       "purpose": "duplicate harvest of ui/world/txt-button-crew-401 (a .bb-grp dock-group tile; this one = WORK).",
       "promise": "Same contract as ui/world/txt-button-crew-401: click toggles aria-expanded and reveals its group flyout of .bb items.",
       "wiring": {
@@ -2071,13 +2071,13 @@
       "missing": false,
       "selector": "button",
       "state": "ingame",
-      "notes": "CLONE of ui/world/txt-button-crew-401 — same .bb-grp flyout seam (index.html), differs only in group (WORK — The station's work: tasks, recipes, routines, quests). 4 tiles live-proven 2026-07-07T22:16:20.560Z. FUTURE-DEDUP."
+      "notes": "CLONE of ui/world/txt-button-crew-401 — same .bb-grp flyout seam (index.html), differs only in group (WORK — The keep's work: tasks, recipes, routines, quests). 4 tiles live-proven 2026-07-07T22:16:20.560Z. FUTURE-DEDUP."
     },
     {
-      "id": "ui/world/txt-button-chat-log-brief-me-on-this-station-1",
+      "id": "ui/world/txt-button-chat-log-brief-me-on-this-keep-1",
       "kind": "ui",
       "area": "world",
-      "name": "brief me on this station",
+      "name": "brief me on this keep",
       "purpose": "",
       "promise": "",
       "wiring": {
@@ -2937,8 +2937,8 @@
       "id": "ui/world/txt-button-stage-wrap-cinema-1",
       "kind": "ui",
       "area": "world",
-      "name": "fill the frame with the station (C)",
-      "purpose": "The ▣ CINEMA toggle in the war-room camera HUD — fills the frame with the living station feed (also bound to C).",
+      "name": "fill the frame with the keep (C)",
+      "purpose": "The ▣ CINEMA toggle in the war-room camera HUD — fills the frame with the living keep feed (also bound to C).",
       "promise": "Clicking toggles the \"cinema\" class on the war-room grid; label flips ▣ CINEMA ⇄ ▣ EXIT and a \"CINEMA — press C to exit\" hint shows.",
       "wiring": {
         "files": [
@@ -2961,7 +2961,7 @@
       "missing": false,
       "selector": "button",
       "state": "ingame",
-      "notes": "Seam = warroom.js:106-123 (.cam-cine button, toggles cinema on the wr grid — NOT body). Button live-present 2026-07-07T22:16:20.560Z with title \"fill the frame with the station (C)\"; full toggle in the war-room feed state not driven here. Mapped (honest: not audited)."
+      "notes": "Seam = warroom.js:106-123 (.cam-cine button, toggles cinema on the wr grid — NOT body). Button live-present 2026-07-07T22:16:20.560Z with title \"fill the frame with the keep (C)\"; full toggle in the war-room feed state not driven here. Mapped (honest: not audited)."
     },
     {
       "id": "ui/world/voice-live",

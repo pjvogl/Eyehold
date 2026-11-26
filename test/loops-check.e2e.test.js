@@ -144,7 +144,7 @@ function makeRepo() {
       const st = await until(B, headers, s => (s.loops.find(l => l.id === id) || {}).binding === 'precheck',
         'the loop to stand down on an unblessed root');
       const l = st.loops.find(x => x.id === id);
-      A.eq(l.iterationCount, 0, 'NOT ONE pass was spent on a folder the station has not approved');
+      A.eq(l.iterationCount, 0, 'NOT ONE pass was spent on a folder the keep has not approved');
       A.eq(l.binding, 'precheck', 'and the gate names the reason');
       A.ok(/not approved/i.test(l.bindingDetail || ''), 'in words that say what is wrong: ' + l.bindingDetail);
       A.ok((l.bindingDetail || '').indexOf('dogfood') >= 0 || /re-approve/.test(l.bindingDetail || ''),

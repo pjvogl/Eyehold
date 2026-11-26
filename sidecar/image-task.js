@@ -1,7 +1,7 @@
 /* Pure admission + completion policy for explicit image-generation tasks.
 
    STUDIO uses the linked Eyehold cloud (which owns upstream credentials and credit metering),
-   a separately configured OpenAI/OpenRouter BYOK route, or the station's ChatGPT sign-in
+   a separately configured OpenAI/OpenRouter BYOK route, or the keep's ChatGPT sign-in
    (gpt-image-2 through the Codex Responses image_generation tool, included in the plan).
    Credentials and endpoints travel together; an ordinary model key cannot authorize another service.
    Completion still depends on the artifact ledger, not the model's prose. */
@@ -67,13 +67,13 @@
     if (managedKey && managedBaseUrl) {
       return { ok: true, provider: 'eyehold', protocol: 'openrouter-chat', key: managedKey, baseUrl: managedBaseUrl, keySource: 'managed' };
     }
-    if (providerId !== 'eyehold' && String(input.stationOpenRouterKey || '').trim()) {
-      return { ok: true, provider: 'openrouter', protocol: 'openrouter-chat', key: String(input.stationOpenRouterKey).trim(), baseUrl: base(input.stationOpenRouterBaseUrl), keySource: 'station' };
+    if (providerId !== 'eyehold' && String(input.keepOpenRouterKey || '').trim()) {
+      return { ok: true, provider: 'openrouter', protocol: 'openrouter-chat', key: String(input.keepOpenRouterKey).trim(), baseUrl: base(input.keepOpenRouterBaseUrl), keySource: 'keep' };
     }
-    if (providerId !== 'eyehold' && String(input.stationOpenAIKey || '').trim()) {
-      return { ok: true, provider: 'openai', protocol: 'openai-images', key: String(input.stationOpenAIKey).trim(), baseUrl: base(input.stationOpenAIBaseUrl), keySource: 'station' };
+    if (providerId !== 'eyehold' && String(input.keepOpenAIKey || '').trim()) {
+      return { ok: true, provider: 'openai', protocol: 'openai-images', key: String(input.keepOpenAIKey).trim(), baseUrl: base(input.keepOpenAIBaseUrl), keySource: 'keep' };
     }
-    // Last resort for any other text run: the station's ChatGPT sign-in. Never for a Eyehold-credits run
+    // Last resort for any other text run: the keep's ChatGPT sign-in. Never for a Eyehold-credits run
     // (same rule as the BYOK keys above: a credits run does not silently move onto another account).
     if (providerId !== 'eyehold' && codexSignedIn) return codexRoute();
     return { ok: false, code: 'media-route-required' };
@@ -99,8 +99,8 @@
       const managed = ['eyehold', 'eyehold-cloud', 'managed'].includes(String(input.providerId || '').toLowerCase());
       return 'Image task blocked: ' + (managed ? 'the Eyehold credits connection is unavailable for ' : 'no media connection is configured for ')
         + label(input.providerId, input.model) + '. Open SETTINGS and ' + (managed
-          ? 'relink this station to your Eyehold account'
-          : 'sign in to ChatGPT, connect an OpenAI or OpenRouter API key for image generation, or link this station to your Eyehold account')
+          ? 'relink this keep to your Eyehold account'
+          : 'sign in to ChatGPT, connect an OpenAI or OpenRouter API key for image generation, or link this keep to your Eyehold account')
         + ', then retry. No image artifact was produced.';
     }
     return null;

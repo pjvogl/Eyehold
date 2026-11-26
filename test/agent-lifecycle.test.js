@@ -85,21 +85,21 @@ const { makeAgentLifecycle } = require('../sidecar/agent-lifecycle.js');
       events,
       fetch: (...args) => { events.push('fetch'); return fetchImpl(...args); },
       World: { despawnAgent: id => events.push('despawn:' + id) },
-      station: {
+      keep: {
         propsByAgent: id => [{ id: 'bay-' + id }],
         assignPropAgent: (id, agentId) => events.push('unbind:' + id + ':' + agentId)
       },
       Workstreams: { removeByAgent: id => events.push('streams.remove:' + id) },
-      StationUI: { setRoster: roster => events.push('roster:' + roster.map(a => a.id).join(',')) }
+      KeepUI: { setRoster: roster => events.push('roster:' + roster.map(a => a.id).join(',')) }
     };
     const remove = new Function('CTX', `
       const agents = CTX.agents;
       let agent = CTX.agent;
       const fetch = CTX.fetch;
       const World = CTX.World;
-      const station = CTX.station;
+      const keep = CTX.keep;
       const Workstreams = CTX.Workstreams;
-      const StationUI = CTX.StationUI;
+      const KeepUI = CTX.KeepUI;
       function liveAgents() { return [...agents.values()]; }
       function focusAgent(id) { CTX.events.push('focus:' + id); agent = agents.get(id); }
       function recomposeOrchestrators() { CTX.events.push('recompose'); }
@@ -130,7 +130,7 @@ const { makeAgentLifecycle } = require('../sidecar/agent-lifecycle.js');
   A.ok(accepted.events.indexOf('fetch') < accepted.events.indexOf('agents.delete:scout'), 'fetch completes before local removal');
   A.ok(accepted.events.includes('focus:agent'), 'focused deletion hands COMMS to the hero');
   A.ok(accepted.events.includes('despawn:scout'), 'accepted deletion removes the floor body');
-  A.ok(accepted.events.includes('unbind:bay-scout:'), 'accepted deletion clears station bindings');
+  A.ok(accepted.events.includes('unbind:bay-scout:'), 'accepted deletion clears keep bindings');
   A.ok(accepted.events.includes('streams.remove:scout'), 'accepted deletion retires bound workstreams');
   A.ok(accepted.events.includes('persist'), 'accepted deletion persists the surviving state');
 
@@ -143,7 +143,7 @@ const { makeAgentLifecycle } = require('../sidecar/agent-lifecycle.js');
     const ctx = {
       rosterResult,
       events,
-      station: {
+      keep: {
         propsByAgent: id => { events.push('props:' + id); return [{ id: 'desk-1', t: 'desk', x: 2, y: 3 }]; },
         capForProp: t => t === 'desk' ? 'computer' : '',
         roomAt: () => 'bridge',
@@ -152,7 +152,7 @@ const { makeAgentLifecycle } = require('../sidecar/agent-lifecycle.js');
     };
     const summon = new Function('CTX', `
       const Specialties = { get: () => null };
-      const station = CTX.station;
+      const keep = CTX.keep;
       let lastRosterPush = CTX.rosterResult;
       function summonAgent(spec, opts) {
         CTX.events.push('summon:' + opts.activate + ':' + opts.desk);
@@ -174,7 +174,7 @@ const { makeAgentLifecycle } = require('../sidecar/agent-lifecycle.js');
 
   const acceptedRecruitment = recruitmentHarness(Promise.resolve(true));
   A.eq(await acceptedRecruitment.summon({ name: 'Scout' }), { agentId: 'scout-2', desk: 'BRIDGE' }, 'accepted roster push returns the registered worker');
-  A.eq(acceptedRecruitment.events, ['summon:false:true', 'props:scout-2'], 'success reads back the seeded workstation after registration');
+  A.eq(acceptedRecruitment.events, ['summon:false:true', 'props:scout-2'], 'success reads back the seeded workkeep after registration');
 
   A.report('agent-lifecycle');
 })().catch(e => { console.log('FAIL: agent-lifecycle threw - ' + (e && e.stack || e)); process.exit(1); });

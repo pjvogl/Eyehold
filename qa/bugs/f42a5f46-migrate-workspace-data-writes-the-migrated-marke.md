@@ -14,7 +14,7 @@ fix: 5f8aa7ce
 
 ## Symptom
 
-On an upgrade where the live workspace root is empty and a legacy root (%LOCALAPPDATA%\Eyehold\workspaces, ...\Skynet\workspaces, <install>\sidecar\workspaces) holds the user's sessions/keys/projects/station, a single I/O failure during the copy (Windows sharing violation from a lingering old sidecar, AV lock, ACL denial, long path) aborts that whole subtree — and the app then writes the .migrated marker anyway, so the migration is never retried. The user boots into a partially-populated or empty station with no error, no dialog, and no log line naming what failed. The startup log records `migrated_from=[]`, which is byte-identical to the honest "no legacy data existed" case.
+On an upgrade where the live workspace root is empty and a legacy root (%LOCALAPPDATA%\Eyehold\workspaces, ...\Skynet\workspaces, <install>\sidecar\workspaces) holds the user's sessions/keys/projects/keep, a single I/O failure during the copy (Windows sharing violation from a lingering old sidecar, AV lock, ACL denial, long path) aborts that whole subtree — and the app then writes the .migrated marker anyway, so the migration is never retried. The user boots into a partially-populated or empty keep with no error, no dialog, and no log line naming what failed. The startup log records `migrated_from=[]`, which is byte-identical to the honest "no legacy data existed" case.
 
 ## Repro
 

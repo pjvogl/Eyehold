@@ -1,13 +1,13 @@
 # Orchestrator in existing COMMS — corrected scope
 
-This supersedes the sidebar/home-button design and associated UX claims in `2026-09-19-overseer-home.md`. The owner rejected that interface and confirmed the scope: select the station orchestrator in existing COMMS; talk to one agent that coordinates the user's existing station crew. No new dashboard, sidebar controls, replacement crew, mandatory General conversation or mode selector.
+This supersedes the sidebar/home-button design and associated UX claims in `2026-09-19-overseer-home.md`. The owner rejected that interface and confirmed the scope: select the keep orchestrator in existing COMMS; talk to one agent that coordinates the user's existing keep crew. No new dashboard, sidebar controls, replacement crew, mandatory General conversation or mode selector.
 
 Branch: `agent/overseer-home-0919`. Final source: `8cce77fc1`; frontend source lock points to `3d5e1afad`. Synced with accepted reliability integration `eaac6fc97` through merge `2e33eafeb`. No trunk integration or release is claimed here.
 
 Implementation:
 
 - Removed all sidebar UI and styling introduced by this lane. The small browser module only adopts durable sessions and uses the existing transcript reconciliation. It never changes focus. Polls time out and retry after recovery.
-- Existing roster, worker persona/model handling and team tools remain the execution path. The extra coordination briefing and automatic review admission apply only to the existing station orchestrator (`agent`). A direct specialist conversation cannot resume its paused review queue. Already-admitted orchestrator work continues if the user switches elsewhere.
+- Existing roster, worker persona/model handling and team tools remain the execution path. The extra coordination briefing and automatic review admission apply only to the existing keep orchestrator (`agent`). A direct specialist conversation cannot resume its paused review queue. Already-admitted orchestrator work continues if the user switches elsewhere.
 - Results return to the requesting conversation, with no requirement to use General. Follow-ups reuse existing crew sessions and history. New automatic reviews use the ordinary assistant delivery path without the extra internal delegated-task label.
 
 Focused regression proof:
@@ -15,7 +15,7 @@ Focused regression proof:
 - A user-created `mira_custom` research agent runs with its `MIRA_CUSTOM_PERSONA` instructions.
 - Launch planning is distinct from General; delegation and review arrive only in Launch planning. General's transcript remains empty.
 - Direct specialist chat receives no automatic-coordination briefing. Specialist-led background work does not enter the orchestrator review queue.
-- Host eligibility is limited to interactive station orchestrator runs and their already-admitted reviews. Internal helpers, scheduled work, specialists and external channels (including channel interactive-approval mode) are excluded. Dispatch/spawn only attach return-to-parent review ownership when this host eligibility is true.
+- Host eligibility is limited to interactive keep orchestrator runs and their already-admitted reviews. Internal helpers, scheduled work, specialists and external channels (including channel interactive-approval mode) are excluded. Dispatch/spawn only attach return-to-parent review ownership when this host eligibility is true.
 - Follow-up history, interrupted-review recovery, halt/restart, and no synthetic Commander review messages remain covered.
 - Browser synchronization does not create interface elements or move focus; unchanged polling avoids rebuilding transcripts; offline and hung-request recovery retry reconciliation.
 

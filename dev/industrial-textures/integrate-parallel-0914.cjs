@@ -19,7 +19,7 @@ for(const id of ids){
  manifest.props[id]={views};
 }
 fs.writeFileSync(at(target+'manifest.json'),JSON.stringify(manifest,null,2)+'\n');
-const ledgerPath=at('docs/station-remaster/props-v3/coverage.json'),ledger=JSON.parse(fs.readFileSync(ledgerPath));
+const ledgerPath=at('docs/keep-remaster/props-v3/coverage.json'),ledger=JSON.parse(fs.readFileSync(ledgerPath));
 for(const p of ledger.props)if(manifest.props[p.id])Object.assign(p,{status:'new-design-awaiting-review',views:Object.keys(manifest.props[p.id].views)});
 ledger.newDesigns=ledger.props.filter(p=>p.status==='new-design-awaiting-review').length;
 ledger.remainingFullRedesign=ledger.catalog-ledger.approved-ledger.newDesigns;

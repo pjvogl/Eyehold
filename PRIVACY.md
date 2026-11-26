@@ -116,7 +116,7 @@ When you open **ABILITIES › DISCOVER › SKILL MARKET**, the app downloads the
 `https://starnetos.com/.well-known/starnet-skills.json`, and when you install a skill it downloads
 that skill's files from `https://eyehold.com/skills/`. These are plain `GET`s for static files:
 **no user data, no identifier and no telemetry are sent.** While at least one skill you installed from the
-market is on this station, the app also re-reads the small list of skills the market has pulled
+market is on this keep, the app also re-reads the small list of skills the market has pulled
 (`https://starnetos.com/.well-known/starnet-skills-revoked.json`) shortly after it starts and every few minutes,
 so a skill found to be unsafe is switched off; with no market skills installed, nothing is fetched in the
 background. Every catalog and pulled list is checked against Eyehold's signature before it is used.
@@ -144,7 +144,7 @@ always under the service name `ai.skynet.harness`.
 | Google and other connector credentials, account identity and configuration | `connectors/state.json` and its recovery copy | **AES-256-GCM encrypted on desktop**, with an encryption key in the OS keychain; bare sidecar development without a supplied key remains plaintext |
 | Channel message history (Discord/Telegram chats the bot saw) | `channels/*.history.json` | **Plaintext** JSON on disk |
 | Agent memory ledgers (accepted/declined memory proposals, dossiers, goals) | per-agent `*.json` | **Plaintext** JSON on disk |
-| Station state (widgets, sub-agents, routing, quests, XP) | various `*.json` | **Plaintext** JSON on disk |
+| Keep state (widgets, sub-agents, routing, quests, XP) | various `*.json` | **Plaintext** JSON on disk |
 | Settings, roster, permissions, cron | various `*.json` | **Plaintext** JSON on disk |
 
 ### Secrets: keychain vs. plaintext — the honest picture
@@ -202,7 +202,7 @@ If you do buy credits, you create an account on Eyehold's billing service, and t
 become true:
 
 - **What we hold.** Your email address, your credit balance and the ledger of grants and
-  charges behind it, an identifier for each station you link, and the customer/subscription
+  charges behind it, an identifier for each keep you link, and the customer/subscription
   identifiers our payment processor gives us. That's the list.
 - **Card details never reach us.** Checkout runs on **Stripe**, in your browser. Eyehold never
   sees, receives, or stores a card number — the app has no payment form at all.
@@ -219,7 +219,7 @@ become true:
 ## Deleting your data
 
 Your data is just files. In the desktop app, **Settings → APP & BACKUP → ERASE EVERYTHING** deletes
-all of it on this computer (station data, the app window's own storage, the voice-model download and
+all of it on this computer (keep data, the app window's own storage, the voice-model download and
 the credentials Eyehold saved in the OS keychain), lists anything it could not remove, and restarts at
 first run. Project folders you let agents use are never touched. The full per-OS list of locations is in
 the [troubleshooting guide](https://eyehold.com/docs/troubleshooting.html#where-eyehold-keeps-your-data).

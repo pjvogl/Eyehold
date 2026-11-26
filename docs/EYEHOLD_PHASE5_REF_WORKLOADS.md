@@ -12,7 +12,7 @@ P5 can only be called `ready-to-replace` when all of these are true:
 - A live model completes a real Eyehold UI workload with file, memory, shell or verify, web reach, transcript, ledger, artifact, screenshot, model, and spend evidence.
 - Browser automation is proven by live workload evidence or explicitly remains below replacement-ready.
 - Desktop computer-use is proven by live attended driver evidence or explicitly remains below replacement-ready.
-- Soak evidence includes a restart/resume pass with transcript, ledger, artifact, memory, and station state preserved.
+- Soak evidence includes a restart/resume pass with transcript, ledger, artifact, memory, and keep state preserved.
 - Recovery remains green for cancel, budget, denied consent, tool error, and checkpoint/restore.
 - Clean-machine desktop readiness is either green or explicitly kept out of the replacement decision.
 - The final decision file says `ready-to-replace` only if no accepted replacement gaps remain.

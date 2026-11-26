@@ -1,6 +1,6 @@
 /* node test/website-skill-market.test.js — the public Skill Market page on starnetos.com (2026-09-30).
 
-   website/market.html lists the same signed catalog every station installs from. This pins what keeps it honest
+   website/market.html lists the same signed catalog every keep installs from. This pins what keeps it honest
    and safe on a strict-CSP static site:
      - it is a shell-stamped top page: Skills sits in the nav and footer of every page, and the sitemap lists it
      - no inline script or inline handler (the site's CSP forbids both); it loads market.js, never site.js (the
@@ -57,7 +57,7 @@ A.eq(shell.status, 0, 'the shared shell is stamped: ' + (shell.stdout || shell.s
 // ---- the script ----
 const fetches = [...js.matchAll(/fetch\(\s*([^,)]+)/g)].map(m => m[1].trim());
 A.eq(fetches.sort(), ['INDEX', 'path'], 'market.js makes exactly two kinds of request: the catalog and a package file');
-A.ok(/var INDEX = '\/\.well-known\/starnet-skills\.json';/.test(js), 'the catalog is the same-origin signed index stations install from');
+A.ok(/var INDEX = '\/\.well-known\/starnet-skills\.json';/.test(js), 'the catalog is the same-origin signed index keeps install from');
 A.ok(/function safePath\(p\) \{ return \/\^\\\/skills\\\//.test(js), 'package files are only requested under /skills/<slug>/<version>/');
 A.ok(!/innerHTML|insertAdjacentHTML|outerHTML|document\.write/.test(js), 'catalog text is never inserted as HTML');
 A.ok(/function safeHttps\(u\)/.test(js) && /a\.href = up;/.test(js), 'upstream links go through the https check');

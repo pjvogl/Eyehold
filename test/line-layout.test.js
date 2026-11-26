@@ -10,8 +10,8 @@
                        overlap; every belt tile points at the next.
      DETERMINISTIC   — the same graph and floor give the same layout, byte for byte.
      PINS NEVER MOVE — a machine the Commander placed stays exactly where it is; the rest of the line forms round it.
-     IT FITS         — every blueprint lays out in a fresh station's starter room, or says how big a room it needs, and a
-                       room that size grown beside the station takes it. */
+     IT FITS         — every blueprint lays out in a fresh keep's starter room, or says how big a room it needs, and a
+                       room that size grown beside the keep takes it. */
 'use strict';
 const A = require('./_assert.js');
 const P = require('../frontend/app/pipeline.js');
@@ -56,20 +56,20 @@ function laidGeo(geo, L) {
   const props = geo.props.map(p => { const o = Object.assign({}, p, L.nodes[p.id]); delete o.routes; delete o.def; delete o.done; delete o.esc; return o; });
   return { props: crew(props), belts: L.belts.map(b => ({ x: b.x, y: b.y, dir: b.d })), links: L.links };
 }
-// the floor a real station offers: its deck, whatever stands on it, the belts already laid, the junctions on it
+// the floor a real keep offers: its deck, whatever stands on it, the belts already laid, the junctions on it
 function floorOf(st) {
   const rects = []; for (const r of st.rooms()) for (const rc of r.rects) rects.push(rc);
   const belts = {}; for (const b of st.belts()) belts[key(b.x, b.y)] = b.dir;
   return { rects, blocked: st.props().map(p => ({ x: p.x, y: p.y, w: p.w || 1, h: p.h || 1 })), belts,
     junctions: st.props().filter(p => JUNC[p.t]).map(p => ({ x: p.x, y: p.y })) };
 }
-// the STATION's own rules take the layout: every machine passes its placement check, every belt tile its belt check
-function stationTakes(name, st, geo, L) {
+// the KEEP's own rules take the layout: every machine passes its placement check, every belt tile its belt check
+function keepTakes(name, st, geo, L) {
   const errs = [], laid = {};
   for (const b of st.belts()) laid[key(b.x, b.y)] = true;
   for (const p of geo.props) { const at = L.nodes[p.id], v = st.canPlaceProp(p.t, at.x, at.y, p.w || 1, p.h || 1); if (!v.ok) errs.push(p.t + ' ' + v.error); }
   for (const b of L.belts) { const v = st.canPlaceBeltRun({ tx: b.x, ty: b.y }, { tx: b.x, ty: b.y }); if (!v.ok || laid[key(b.x, b.y)]) errs.push('belt ' + key(b.x, b.y) + ' ' + (v.error || 'ON_BELT')); }
-  A.eq(errs.slice(0, 4), [], name + ': the station itself takes it (every machine and belt passes its own placement check)');
+  A.eq(errs.slice(0, 4), [], name + ': the keep itself takes it (every machine and belt passes its own placement check)');
 }
 function sane(name, geo, L, floor) {
   const foot = {}, errs = [];
@@ -285,14 +285,14 @@ for (const bp of WM.BLUEPRINTS) {
     let floor = floorOf(st), L = LL.layout(graph, floor);
     if (!L.ok) {
       A.ok(L.error === 'NO_ROOM' && L.needs, bp.id + ': too big for the starter room, it says how big a room it needs');
-      // MAKE ROOM's rule (build.js makeRoomFor): the line's size plus a tile of walking room round it, touching the station
+      // MAKE ROOM's rule (build.js makeRoomFor): the line's size plus a tile of walking room round it, touching the keep
       const W = L.needs.w + 2, H = L.needs.h + 2, b = st.bounds(), r = st.addRoom({ kind: 'hab', rect: { x1: b.maxTx + 1, y1: b.minTy, x2: b.maxTx + W, y2: b.minTy + H - 1 } });
-      A.ok(r.ok, bp.id + ': a ' + W + '×' + H + ' room beside the station is legal');
+      A.ok(r.ok, bp.id + ': a ' + W + '×' + H + ' room beside the keep is legal');
       floor = floorOf(st); L = LL.layout(graph, floor);
       grown.push(bp.id);
     }
     A.ok(L.ok, bp.id + ': lays out in the starter room or the room grown for it');
-    if (L.ok) { sane(bp.id + ' (starter station)', geo, L, floor); stationTakes(bp.id, st, geo, L); }
+    if (L.ok) { sane(bp.id + ' (starter keep)', geo, L, floor); keepTakes(bp.id, st, geo, L); }
   }
   // …and the engine packs lines at least as tightly as the hand-drawn blueprints: no fewer fit a fresh starter room
   const handFit = WM.BLUEPRINTS.filter(bp => { const st = WM.create(WM.starterDoc()), z = st.rooms()[0].rects[0]; for (let y = z.y1; y <= z.y2; y++) for (let x = z.x1; x <= z.x2; x++) if (st.canPlaceBlueprint(bp.id, x, y).ok) return true; return false; }).length;

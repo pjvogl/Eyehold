@@ -25,7 +25,7 @@ SKYNET_DEFAULT_MODEL=anthropic/claude-3.5-sonnet
 npm run dev:seed
 ```
 
-Open the printed URL. You land **straight in the live station** — agent `NOVA` awake, model set,
+Open the printed URL. You land **straight in the live keep** — agent `NOVA` awake, model set,
 ready to chat. No BEGIN, no key paste, no ceremony, on any port. Full access is on, so no consent
 prompts interrupt a test.
 

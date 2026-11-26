@@ -205,7 +205,7 @@ const F = (err, status, opts) => friendlyError(err, status, opts);
   A.ok(/ChatGPT/i.test(v.userMessage) && /key/i.test(v.userMessage), 'auth friendly headline offers a fix path (add a key or sign in with ChatGPT)');
   // EL-11 FIX 2: a "sidecar HTTP 403" is OUR OWN token gate (stale X-Eyehold-Token after a crash+respawn), not
   // a provider key problem — it takes the reload door, never "🔑 Add a key". Provider 403s still read as auth.
-  A.eq(F(new Error('sidecar HTTP 403')).kind, 'stale_session', 'sidecar 403 -> stale_session (the station restarted)');
+  A.eq(F(new Error('sidecar HTTP 403')).kind, 'stale_session', 'sidecar 403 -> stale_session (the keep restarted)');
   A.eq(F(new Error('sidecar HTTP 403')).action, 'reload', 'stale_session offers the reload door');
   A.eq(F(new Error('invalid api key')).kind, 'auth', '"invalid api key" -> auth');
 
@@ -215,7 +215,7 @@ const F = (err, status, opts) => friendlyError(err, status, opts);
   A.eq(v.action, 'settings', 'oauth points at Settings');
   A.ok(/ChatGPT sign-in/i.test(v.userMessage), 'oauth friendly headline names ChatGPT sign-in');
 
-  // capability denied -> NOT retryable, action = refit (the TRUE unlock: place the gear; a station quest minted on
+  // capability denied -> NOT retryable, action = refit (the TRUE unlock: place the gear; a keep quest minted on
   // this denial completes by PLACEMENT, never a SKILLS toggle). Copy names the exact power + gear.
   v = F(new Error('no web — capability is off'));
   A.eq(v.kind, 'capdenied', 'capdenied forwarded string -> capdenied');

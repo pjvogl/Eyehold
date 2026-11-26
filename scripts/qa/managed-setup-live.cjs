@@ -24,7 +24,7 @@ const { chromium } = require(process.env.EYEHOLD_PLAYWRIGHT_MODULE || 'playwrigh
       App.currentAgent().onboarded = true;
       KeyCTA.arm(); KeyCTA.refresh();
     });
-    const warning = page.getByText(/there’s no ANTHROPIC key on the station/);
+    const warning = page.getByText(/there’s no ANTHROPIC key on the keep/);
     await warning.waitFor();
     proof.initialWarning = await warning.count();
     // Keep the inherited empty selection from the report, then use the real Settings card.

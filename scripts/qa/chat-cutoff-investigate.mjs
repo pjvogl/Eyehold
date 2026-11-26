@@ -1,4 +1,4 @@
-// Reproduce browser EOF handling in a real isolated seeded station. No model calls.
+// Reproduce browser EOF handling in a real isolated seeded keep. No model calls.
 import { spawn } from 'node:child_process';
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
@@ -34,7 +34,7 @@ try {
   cdp = await connectCDP(cdpPort);
   await cdp.send('Runtime.enable'); await cdp.send('Page.enable');
   await cdp.send('Page.navigate', { url });
-  if (!await waitDevReady(cdp, evalJS, { url })) throw new Error('Station did not reach game screen');
+  if (!await waitDevReady(cdp, evalJS, { url })) throw new Error('Keep did not reach game screen');
   const receipt = await evalJS(cdp, `(async () => {
     const realFetch = window.fetch;
     let mode = 'clean', serial = 0;
@@ -83,7 +83,7 @@ try {
   await sleep(1800);
   await cdp.send('Page.reload');
   await sleep(1000); // let navigation replace the old document before checking its ready flag
-  if (!await waitDevReady(cdp, evalJS, { url })) throw new Error('Reload did not reach station');
+  if (!await waitDevReady(cdp, evalJS, { url })) throw new Error('Reload did not reach keep');
   receipt.reloaded = await evalJS(cdp, `(${JSON.stringify(receipt.results.map(r=>({scenario:r.scenario,id:r.wsId})))})
     .map(r=>({scenario:r.scenario,history:Workstreams.get(r.id)?.history || []}))`);
   writeFileSync(resolve(out, 'live.json'), JSON.stringify(receipt, null, 2));

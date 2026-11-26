@@ -2,7 +2,7 @@
    in a BROWSER page (#89), and that routines saved before 0.13.2 heal their toolset list (#58 / A3).
 
    Boots the actual sidecar (no env key, a mock OpenRouter) and drives the exact surfaces the reports named:
-     1. Run Now with no station key -> 400 with the ONE shared sentence (names SETTINGS → AI & MODELS + the env var)
+     1. Run Now with no keep key -> 400 with the ONE shared sentence (names SETTINGS → AI & MODELS + the env var)
      2. legacy toolset lists written straight into cron.jobs.json ([], 'WEB & BROWSER', 'web_request', 'bogus', a
         freebies-only list) -> after a restart GET /api/cron shows them healed AND the file on disk was rewritten;
         an all-unknown list keeps the freebies-only restriction it ran with (never widened to the full grant)
@@ -12,7 +12,7 @@
         that lost its toolsets to [] now sends web tools to the provider; another page's BOOT hand-over (it never saw
         this revision) is answered stale and does not replace the key
      5. restart -> still runs on the page key (it round-tripped disk); an unchanged push over deleted files rewrites
-        them; a REMOVE whose write fails says the station KEEPS using the key — and it does
+        them; a REMOVE whose write fails says the keep KEEPS using the key — and it does
      6. restart with OPENROUTER_API_KEY in the env -> the operator's env var outranks the page copy
      7. REMOVE -> neither the main file nor its .bak keeps the key; restart without env -> refused again
    Plus the auth seam: no launch token / a foreign Origin is refused, and no route echoes the key.
@@ -72,17 +72,17 @@ const toolNames = call => ((call && call.body.tools) || []).map(t => (t && t.fun
   const runNow = id => fixture.json('POST', '/api/cron/run', { id });
   try {
     await fixture.start();
-    /* ---- 1. no station key: Run Now says the ONE sentence ---- */
+    /* ---- 1. no keep key: Run Now says the ONE sentence ---- */
     const specs = { empty: [], label: ['WEB & BROWSER'], tool: ['web_request'], unknown: ['bogus'], free: ['todo'] };
     const ids = {};
     for (const name of Object.keys(specs)) {
-      const made = await fixture.json('POST', '/api/cron', { name: 'Legacy ' + name, prompt: 'ROUTINE-' + name.toUpperCase() + ' check the station news', schedule: 'every 1h', agentId: 'agent', model: 'test/model', provider: 'openrouter' });
+      const made = await fixture.json('POST', '/api/cron', { name: 'Legacy ' + name, prompt: 'ROUTINE-' + name.toUpperCase() + ' check the keep news', schedule: 'every 1h', agentId: 'agent', model: 'test/model', provider: 'openrouter' });
       A.eq(made.status, 200, 'created routine ' + name);
       ids[name] = made.body && made.body.job && made.body.job.id;
     }
     const refused = await runNow(ids.empty);
-    A.eq(refused.status, 400, 'Run Now with no station key is refused before any spend');
-    const SENTENCE = 'no OPENROUTER API key is saved on this station for this routine — connect or re-save it under SETTINGS → AI & MODELS, or set OPENROUTER_API_KEY in the environment that starts Eyehold';
+    A.eq(refused.status, 400, 'Run Now with no keep key is refused before any spend');
+    const SENTENCE = 'no OPENROUTER API key is saved on this keep for this routine — connect or re-save it under SETTINGS → AI & MODELS, or set OPENROUTER_API_KEY in the environment that starts Eyehold';
     A.eq(refused.body && refused.body.error, SENTENCE, 'the refusal is the shared sentence (was "connect a OpenRouter API key to run this scheduled routine")');
 
     /* ---- 2. legacy toolset lists heal on load and are persisted ---- */
@@ -124,7 +124,7 @@ const toolNames = call => ((call && call.body.tools) || []).map(t => (t && t.fun
     fs.rmSync(keysFile, { recursive: true, force: true });
     const saved = await engineKey({ provider: 'openrouter', key: PAGE_KEY, keyPool: [], baseUrl: '' });
     A.eq(saved.status, 200, 'the save lands');
-    A.ok(saved.body && saved.body.ok === true && saved.body.persisted === true && saved.body.keySource === 'station' && saved.body.unattendedReady === true, 'presence-only answer: ' + saved.text);
+    A.ok(saved.body && saved.body.ok === true && saved.body.persisted === true && saved.body.keySource === 'keep' && saved.body.unattendedReady === true, 'presence-only answer: ' + saved.text);
     A.ok(saved.text.indexOf(PAGE_KEY) < 0, 'the answer never echoes the key');
     A.ok(typeof saved.body.rev === 'string' && saved.body.rev.length > 0, 'the answer carries the revision this page proved (no secret): ' + saved.body.rev);
     A.ok(fs.readFileSync(keysFile, 'utf8').indexOf(PAGE_KEY) >= 0 && fs.readFileSync(keysFile + '.bak', 'utf8').indexOf(PAGE_KEY) >= 0, 'main and .bak hold the copy (read back before the answer)');
@@ -153,21 +153,21 @@ const toolNames = call => ((call && call.body.tools) || []).map(t => (t && t.fun
     mock.calls.length = 0;
     A.eq((await runNow(ids.empty)).status, 200, 'after a restart Run Now still runs');
     A.eq((callFor(mock.calls, 'ROUTINE-EMPTY') || {}).auth, 'Bearer ' + PAGE_KEY, 'on the page key loaded from disk');
-    // an unchanged push re-proves the disk: the files deleted behind the station's back are rewritten, not "saved"
+    // an unchanged push re-proves the disk: the files deleted behind the keep's back are rewritten, not "saved"
     fs.rmSync(keysFile, { force: true }); fs.rmSync(keysFile + '.bak', { force: true });
     const reproved = await engineKey({ provider: 'openrouter', key: PAGE_KEY, keyPool: [], baseUrl: '' });
     A.ok(reproved.status === 200 && reproved.body.persisted === true && reproved.body.changed === false, 'an unchanged push answers persisted: ' + reproved.text);
     A.ok(fs.readFileSync(keysFile, 'utf8').indexOf(PAGE_KEY) >= 0 && fs.readFileSync(keysFile + '.bak', 'utf8').indexOf(PAGE_KEY) >= 0, '…only after it rewrote both lost copies');
-    // THE REMOVE WRITE-FAILURE PATH: the page has already forgotten its key; the station must say it keeps using its copy
+    // THE REMOVE WRITE-FAILURE PATH: the page has already forgotten its key; the keep must say it keeps using its copy
     fs.rmSync(keysFile + '.bak', { force: true });
     fs.mkdirSync(keysFile + '.bak', { recursive: true });   // the .bak can't be written: the removal can't be proven
     const rmFailed = await engineKey({ provider: 'openrouter', key: '', keyPool: [], baseUrl: '' });
     A.eq(rmFailed.status, 500, 'a REMOVE the disk did not prove is a failure');
-    A.ok(rmFailed.body && rmFailed.body.removing === true && /KEEP using it until a retry succeeds/.test(rmFailed.body.error) && !/chat in this browser still works/.test(rmFailed.body.error), 'a failed REMOVE says routines keep using the station copy (never "chat still works"): ' + (rmFailed.body && rmFailed.body.error));
+    A.ok(rmFailed.body && rmFailed.body.removing === true && /KEEP using it until a retry succeeds/.test(rmFailed.body.error) && !/chat in this browser still works/.test(rmFailed.body.error), 'a failed REMOVE says routines keep using the keep copy (never "chat still works"): ' + (rmFailed.body && rmFailed.body.error));
     mock.calls.length = 0;
     A.eq((await runNow(ids.empty)).status, 200, 'and that is true: Run Now still runs');
     A.eq((callFor(mock.calls, 'ROUTINE-EMPTY') || {}).auth, 'Bearer ' + PAGE_KEY, 'on the key the REMOVE could not delete');
-    A.ok(fs.readFileSync(keysFile, 'utf8').indexOf(PAGE_KEY) >= 0, 'and the main file was put back to what the station runs on (a restart agrees with the answer)');
+    A.ok(fs.readFileSync(keysFile, 'utf8').indexOf(PAGE_KEY) >= 0, 'and the main file was put back to what the keep runs on (a restart agrees with the answer)');
     fs.rmSync(keysFile + '.bak', { recursive: true, force: true });
 
     /* ---- 6. an operator env var outranks the page copy ---- */

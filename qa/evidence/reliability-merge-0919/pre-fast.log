@@ -21,7 +21,7 @@ context.test: OK (180 assertions)
 runtimeinfo: OK (15 assertions)
 harness-snapshot: OK (23 assertions)
 harness-stream-completion: OK (188 assertions)
-station-inspect: OK (12 assertions)
+keep-inspect: OK (12 assertions)
 [failopen] aux.test.envelope (x1): aux pass died [redacted-key]
 [failopen] aux.test.envelope (x2): again
 [failopen] maint.test.loop (x1): once
@@ -203,7 +203,7 @@ concurrency.test: OK (65 assertions)
 workspace-lease.test: OK (27 assertions)
 workspace-owner.test: OK (34 assertions)
 workspace-safety.test: OK (12 assertions)
-[recovery] auto station recovery SKIPPED: target workspace is a scratch root (C:\Users\andro\AppData\Local\Temp\eyehold-fake-real-home-DBuLlu\ci-scratch-VTcErh\ws is under C:\Users\andro\AppData\Local\Temp\eyehold-fake-real-home-DBuLlu\ci-scratch-VTcErh); a real station is never ingested into a temp workspace. Explicit recovery (request file / CLI restore) is unaffected.
+[recovery] auto keep recovery SKIPPED: target workspace is a scratch root (C:\Users\andro\AppData\Local\Temp\eyehold-fake-real-home-DBuLlu\ci-scratch-VTcErh\ws is under C:\Users\andro\AppData\Local\Temp\eyehold-fake-real-home-DBuLlu\ci-scratch-VTcErh); a real keep is never ingested into a temp workspace. Explicit recovery (request file / CLI restore) is unaffected.
 workspace-recovery.test: OK (66 assertions)
 workspace-lineage.test: OK (86 assertions)
 agent-lifecycle: OK (45 assertions)
@@ -648,7 +648,7 @@ onboard-fresh-launcher.test: OK (4 assertions)
 codex-configured.test: OK (12 assertions)
 tests: OK (28 assertions)
 PASS isolated seeded sidecar starts
-PASS seeded station reaches the live floor
+PASS seeded keep reaches the live floor
 PASS camera begins on a lit WebGL frame :: {"path":"webgl","ready":true,"failed":false,"lost":false,"frameSum":67}
 PASS WEBGL_lose_context is available and invoked :: {"ok":true}
 PASS same page abandons WebGL for the CPU warp :: {"path":"cpu","ready":false,"failed":true,"lost":true,"frameSum":66}
@@ -692,8 +692,8 @@ quests.test: OK (45 assertions)
 queststore.test: OK (21 assertions)
 queststate.test: OK (63 assertions)
 queststatestore.test: OK (43 assertions)
-stationquests.test: OK (42 assertions)
-stationqueststore.test: OK (41 assertions)
+keepquests.test: OK (42 assertions)
+keepqueststore.test: OK (41 assertions)
 workquests.test: OK (35 assertions)
 workqueststore.test: OK (42 assertions)
 maintquests.test: OK (40 assertions)
@@ -702,7 +702,7 @@ questledgerstore.test: OK (28 assertions)
 kitout.test: OK (33 assertions)
 coach-dodge.test: OK (5642 assertions)
 tutorial-connect-beat.test: OK (25 assertions)
-tutorial-equipped-station: equipped/edited/unavailable floors, optional handoffs, quiet completion and demo event ownership PASS
+tutorial-equipped-keep: equipped/edited/unavailable floors, optional handoffs, quiet completion and demo event ownership PASS
 field-manual-accessibility.test: OK (3 assertions)
 class-loadouts: OK (2651 assertions)
 intent-offer: OK (232 assertions)
@@ -848,8 +848,8 @@ ok 7 - optional readback/blit failure never poisons the authoritative prop conte
   duration_ms: 6.1791
   type: 'test'
   ...
-# Subtest: cached silhouette lighting leaves real workstation heat and progress content live on every draw
-ok 8 - cached silhouette lighting leaves real workstation heat and progress content live on every draw
+# Subtest: cached silhouette lighting leaves real workkeep heat and progress content live on every draw
+ok 8 - cached silhouette lighting leaves real workkeep heat and progress content live on every draw
   ---
   duration_ms: 8.3184
   type: 'test'
@@ -980,7 +980,7 @@ worldmodel: OK (608 assertions)
   1196 paths, 1686 diagonal segments, 6.6x waypoint compression, 0 wall violations
 path-smoothing: OK (78 assertions)
 run-truth.test: OK (18 assertions)
-station-authority: OK (9 assertions)
+keep-authority: OK (9 assertions)
 zones.test: OK (119 assertions)
 idle-life-regressions.test: OK (56 assertions)
 social-border.test: OK (25 assertions)
@@ -988,7 +988,7 @@ social-trio.test: OK (2779 assertions)
 sightline.test: OK (52 assertions)
 agent-affinity.test: OK (28 assertions)
 agent-affinity-weight.test: OK (21 assertions)
-station-gathering.test: OK (73 assertions)
+keep-gathering.test: OK (73 assertions)
 crew-containment.test: OK (23 assertions)
 prop-awareness.test: OK (9 assertions)
 chat-stare-throttle.test: OK (24 assertions)
@@ -996,11 +996,11 @@ talk-turn.test: OK (23 assertions)
 glyph-speech.test: OK (26604 assertions)
 g1bprops.test: OK (43 assertions)
 g3btrophy.test: OK (24 assertions)
-stationbake.chunk: OK (213 assertions)
-stationbake.materials: OK (185 assertions)
-stationbake.seam: OK (52 assertions)
-stationbake.connections: 408 real Canvas assertions passed; {"TRANSFER":20,"mirrored-palettes":20,"same-zone-right-L":10,"same-zone-left-L":10,"same-zone-T":20,"closed-left":10,"jammed-right":10,"disconnected":0,"no-side-crown-above":0,"chamfer-is-not-a-side-crown":0,"chunk-boundary":20,"chunk-boundary incremental":20}
-stationbake.hull: OK (287 assertions)
+keepbake.chunk: OK (213 assertions)
+keepbake.materials: OK (185 assertions)
+keepbake.seam: OK (52 assertions)
+keepbake.connections: 408 real Canvas assertions passed; {"TRANSFER":20,"mirrored-palettes":20,"same-zone-right-L":10,"same-zone-left-L":10,"same-zone-T":20,"closed-left":10,"jammed-right":10,"disconnected":0,"no-side-crown-above":0,"chamfer-is-not-a-side-crown":0,"chunk-boundary":20,"chunk-boundary incremental":20}
+keepbake.hull: OK (287 assertions)
 canvas-loss-recovery: OK (44 assertions)
 stage-context-loss: OK (35 assertions)
 conveyor: OK (154 assertions)
@@ -1115,7 +1115,7 @@ personalization-authority-wiring.test: OK (6 assertions)
 sprite-loading.test: OK (14 assertions)
 textsize-screen-space.test: OK (95 assertions)
 mobile-control-reachability.test: OK (26 assertions)
-station-tooltip.test: OK (499 assertions)
+keep-tooltip.test: OK (499 assertions)
 toast-live-region.test.js OK — 7 assertions
 toast-seat.test: OK (25 assertions)
 channels.discord-wire: OK (40 assertions)
@@ -1165,13 +1165,13 @@ sprite-detached-prop.test: OK (3 assertions)
 lint-gate-can-fail: 773 asserting gate step(s) can all turn the gate red; OK
 lint-emits: scanned 531 file(s), 200 literal emit(s); OK
 lint-determinism: scanned 300 file(s); OK
-station-bridge.test.js: ok
-station-commands.test: OK (135 assertions)
-station-tools.test: OK (67 assertions)
+keep-bridge.test.js: ok
+keep-commands.test: OK (135 assertions)
+keep-tools.test: OK (67 assertions)
 code-mode.test: OK (27 assertions)
 output-artifacts.test: OK (16 assertions)
-station-recovery.test: OK (72 assertions)
-station-recovery-cli.test: OK (20 assertions)
+keep-recovery.test: OK (72 assertions)
+keep-recovery-cli.test: OK (20 assertions)
 execution-profiles.test: OK (34 assertions)
 execution-settings.test: OK (14 assertions)
 execution-router.test: OK (56 assertions)
@@ -1503,7 +1503,7 @@ industrialtextures: OK (398 public-contract assertions; synthetic canvas assets,
 world-texture-ready: OK (69 assertions)
 qa-claims-blob-batch: OK (25 assertions)
 qa-claims-search-batch: binary scope, Unicode folding, exact locators, immutable caching and read failures PASS
-workstation-screen-state: OK (538 assertions)
+workkeep-screen-state: OK (538 assertions)
 prop-remaster-contract: OK (726 assertions)
 authored prop content: OK (104 assertions)
 authored-prop-motion.test: OK (57 assertions)
@@ -1518,7 +1518,7 @@ PASS projection effects: 160 types/184 views, image bindings, source hashes, idl
 PASS: 184 runtime alpha crops match source hashes and every nontransparent pixel.
 {"types":160,"supportedDirections":208,"roomsChecked":76,"mountedCases":38,"savedState":"untouched"}
 PASS: overview filtering, close detail, stable alpha, cache invalidation, silhouette foot contact and open leg gaps.
-station-templates: seven layouts, classic/remastered catalogs, approved home, cozy and creative conveyor routing, clear entrances, prop access, ownership, undo/redo and persistence PASS
+keep-templates: seven layouts, classic/remastered catalogs, approved home, cozy and creative conveyor routing, clear entrances, prop access, ownership, undo/redo and persistence PASS
 PASS: pack-scoped physical resize, saved centre/contact, freed tiles, undo/redo, reload, custom saves and alpha picking.
 PASS: selection follows visible alpha, translated/mounted art, cached measurement and unavailable-art fallback.
 PASS: legacy multi-room save retains room, placement, routing and agent assignment metadata with an idempotent remaster load.
@@ -1530,7 +1530,7 @@ industrial-shells: loader, shells, floors and walls, paint, relief, cache, failu
 refit-bake-reuse: same-save handoff, invalidation, entry/reopen and cold fallback PASS
 hallway-traffic: OK (27 assertions)
 cloudsave timeout: stalled headers/body, abort, late acknowledgement and retry PASS
-station-autosave: edits, undo/redo, presets, coalescing, reentry and storage failure PASS
+keep-autosave: edits, undo/redo, presets, coalescing, reentry and storage failure PASS
 [failopen] durable-store.unreadable (x1): injected EACCES
 [failopen] durable-store.unreadable (x2): injected EACCES
 [failopen] durable-store.unreadable (x3): injected EACCES

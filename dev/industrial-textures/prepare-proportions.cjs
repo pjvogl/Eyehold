@@ -34,10 +34,10 @@ async function cutout(filename, threshold = 145) {
     .resize({ width: 1024 }).png().toFile(path.join(out, 'wall.png'));
   await sharp(await cutout('exec-05dda522-d8d3-4b11-bda9-2c13aa0e57cb.png'))
     .trim({ background: '#00000000', threshold: 1 }).resize({ width: 1024 })
-    .png().toFile(path.join(out, 'workstation.png'));
+    .png().toFile(path.join(out, 'workkeep.png'));
   await sharp(path.join(masters, 'exec-b45bdc91-97e4-4d33-8709-7f19ea87be0f.png'))
     .trim({ background: '#00000000', threshold: 1 }).resize({ width: 768 })
-    .png().toFile(path.join(out, 'workstation-compact.png'));
+    .png().toFile(path.join(out, 'workkeep-compact.png'));
   const atlas = await cutout('exec-a36a183f-06b1-49cc-9236-39e52d7c9de0.png');
   const meta = await sharp(atlas).metadata();
   for (const [i, facing] of ['s', 'e', 'n'].entries()) {

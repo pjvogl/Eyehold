@@ -185,9 +185,9 @@ function parseToolResult(result) {
     // ── messages_send over the DEV channel: a REAL inbound->run->reply round-trip ─────────────────
     r = parseToolResult(await rpc.request('tools/call', { name: 'messages_send', arguments: { target: 'dev:mcpchat', message: 'ping from mcp bridge' } }));
     A.ok(r.data.ok === true && r.data.delivered === true, 'messages_send over dev channel delivered a real inbound message');
-    A.ok(Array.isArray(r.data.replies), 'dev messages_send returns the station replies array');
+    A.ok(Array.isArray(r.data.replies), 'dev messages_send returns the keep replies array');
 
-    // ── events_poll: the SSE-fed queue (the dev run above should have produced station events) ────
+    // ── events_poll: the SSE-fed queue (the dev run above should have produced keep events) ────
     r = parseToolResult(await rpc.request('tools/call', { name: 'events_poll', arguments: { after_cursor: 0, limit: 50 } }));
     A.ok(!r.isError && Array.isArray(r.data.events) && typeof r.data.next_cursor === 'number', 'events_poll returns { events[], next_cursor }');
     A.ok(r.data.events.every(e => typeof e.cursor === 'number' && typeof e.type === 'string'), 'each polled event carries a monotonic cursor + type');
@@ -208,7 +208,7 @@ function parseToolResult(result) {
     A.ok(r.isError === true, 'a data tool marks isError when the sidecar is unreachable');
     A.ok(r.data.sidecarReachable === false && /Eyehold/i.test(r.data.error), 'the error tells the operator to start Eyehold');
 
-    // ⛔ STATION RESTART: THE SCRAPED TOKEN IS PER-LAUNCH AND GOES STALE. Eyehold is a desktop app the
+    // ⛔ KEEP RESTART: THE SCRAPED TOKEN IS PER-LAUNCH AND GOES STALE. Eyehold is a desktop app the
     // Commander closes and reopens; every launch mints a NEW api token. This bridge is spawned once by the MCP
     // client and lives for that whole session, so a token cached for the process lifetime meant the FIRST
     // restart killed every tool with "returned HTTP 401" (and left the SSE feed re-presenting the dead token
@@ -226,7 +226,7 @@ function parseToolResult(result) {
       await sleep(400);
       r = parseToolResult(await rpc.request('tools/call', { name: 'conversations_list', arguments: { limit: 5 } }));
       A.ok(!r.isError && !/40[13]/.test(String(r.data.error || '')),
-        'THE FIX: after a station restart the bridge re-discovers the new token instead of 401ing forever');
+        'THE FIX: after a keep restart the bridge re-discovers the new token instead of 401ing forever');
       A.ok(Array.isArray(r.data.conversations), 'the re-authenticated call returns real data');
     }
 

@@ -1,4 +1,4 @@
-/* First-run orientation and focused conversation, using the station's theme tokens. */
+/* First-run orientation and focused conversation, using the keep's theme tokens. */
 .ov-journey { display:flex; flex-wrap:wrap; gap:10px 24px; list-style:none; padding:14px 0 0; margin:12px 0 0; border-top:1px solid var(--ph-faint); color:var(--ph-dim); font-size:15px; }
 .ov-journey li { display:flex; align-items:center; gap:9px; }
 .ov-journey b { color:var(--ph); font-size:12px; letter-spacing:1px; }
@@ -41,7 +41,7 @@
 
 .ov-panel:has(#cc-recovery:not(.hidden)) .ov-journey { display:none; }
 
-/* A quiet station command, outside the canvas for keyboard access. */
+/* A quiet keep command, outside the canvas for keyboard access. */
 .arrival-controls{position:fixed;z-index:9999;right:24px;bottom:18px;margin:0;padding:0;background:none;border:0;box-shadow:none}
 .arrival-controls>span{display:none}
 .arrival-controls .bb{display:inline-flex;align-items:center;min-height:44px;padding:8px 10px;border:0;border-radius:0;background:none;box-shadow:none;color:var(--ph-dim);font:16px VT323,monospace;letter-spacing:1.5px;text-transform:uppercase;text-shadow:none;cursor:pointer}

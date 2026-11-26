@@ -133,8 +133,8 @@ with a live target → stamped, and `restore` still works.
 
 7. **User-authored create in the SKILLS panel.** `POST /api/agent-skills/manage` already accepts
    `action:'create'`; the panel only offers *edit* on an existing card
-   (`stationui.js:2581 editAgentSkill`). Add a "New skill" composer (name / summary / category /
-   body). Costs a **claims re-lock** because `frontend/app/stationui.js` is a release-surface
+   (`keepui.js:2581 editAgentSkill`). Add a "New skill" composer (name / summary / category /
+   body). Costs a **claims re-lock** because `frontend/app/keepui.js` is a release-surface
    file — budget that, don't discover it at the gate.
 
 ---

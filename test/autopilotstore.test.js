@@ -28,7 +28,7 @@ AutopilotStore.init({
   idleMs: IDLE
 });
 
-/* ---------- a just-active station does nothing ---------- */
+/* ---------- a just-active keep does nothing ---------- */
 A.eq(AutopilotStore.tick().mode, 'none', 'fresh init starts ACTIVE → no fire (reason: not idle)');
 A.eq(offers, 0, 'no curiosity asked while the Commander is active');
 
@@ -46,7 +46,7 @@ A.eq(offers, 1, 'staying idle does NOT re-ask (one autopilot beat per idle episo
 /* ---------- interaction re-arms; a NEW idle episode earns again ---------- */
 AutopilotStore.noteActivity();
 A.eq(AutopilotStore._state().armed, false, 'activity re-arms the next idle beat');
-A.eq(AutopilotStore.tick().mode, 'none', 'right after activity the station is active again, not idle');
+A.eq(AutopilotStore.tick().mode, 'none', 'right after activity the keep is active again, not idle');
 nowMs += IDLE;
 AutopilotStore.tick();
 A.eq(offers, 2, 'a fresh idle episode earns once more');
@@ -111,9 +111,9 @@ A.ok(/value:\s*'undo'/.test(appSrc), 'B3: the undo action is wired into the welc
   A.ok(iPresent > 0 && iDigest > iPresent, 'present + digest hooks exist in order');
   const presentSeg = appSrc.slice(iPresent, iDigest);
   A.ok(/const canNudge = typeof Chat !== 'undefined' && Chat\.nudge;/.test(presentSeg), 'present() decides ONE surface up front (canNudge)');
-  A.ok(/if \(!canNudge && typeof StationUI[\s\S]{0,80}StationUI\.notify\)/.test(presentSeg), 'present(): the toast fires ONLY when the nudge cannot (fallback, not a duplicate)');
+  A.ok(/if \(!canNudge && typeof KeepUI[\s\S]{0,80}KeepUI\.notify\)/.test(presentSeg), 'present(): the toast fires ONLY when the nudge cannot (fallback, not a duplicate)');
   const digestSeg = appSrc.slice(iDigest, iDigest + 4500);
-  A.ok(/if \(\(typeof Chat === 'undefined' \|\| !Chat\.nudge\) && typeof StationUI/.test(digestSeg), 'digest(): the toast fires ONLY when the welcome-back nudge cannot (fallback, not a duplicate)');
+  A.ok(/if \(\(typeof Chat === 'undefined' \|\| !Chat\.nudge\) && typeof KeepUI/.test(digestSeg), 'digest(): the toast fires ONLY when the welcome-back nudge cannot (fallback, not a duplicate)');
   A.ok(/'cronDigest'[,)]/.test(presentSeg) && /'cronDigest'[,)]/.test(digestSeg), 'both fallback toasts stay tagged cronDigest (P1-8 category mute still works)');
 }
 

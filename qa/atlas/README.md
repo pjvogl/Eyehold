@@ -1,8 +1,8 @@
-# Station Atlas — the perfection-loop registry
+# Keep Atlas — the perfection-loop registry
 
 > **What this is:** a registry of **every** surface element in Eyehold — every UI control, slash
 > command, API route, bus event, and shoot state — each carrying its purpose, its observable promise,
-> and its status on the road to *verified-perfect*. The QA Station (`qa/QA_STATION.md`) is a
+> and its status on the road to *verified-perfect*. The QA Keep (`qa/QA_KEEP.md`) is a
 > **regression** watch: it proves trunk stays green and the app keeps booting. It cannot answer *"is
 > every single element correct, purposeful, and polished?"* because nothing enumerates the full
 > surface. **The Atlas is that layer.** A script (the Cartographer) keeps the registry mechanically
@@ -22,7 +22,7 @@ re-proven against the code that now ships. So the gauge is a *living* number, no
 
 ## The one law that shapes everything
 
-Same split as the whole station (`qa/QA_STATION.md` §"the one rule"): **scripts detect + write the
+Same split as the whole keep (`qa/QA_KEEP.md` §"the one rule"): **scripts detect + write the
 registry/ledger; sessions judge + notify.** Mechanically, that means the Cartographer script writes
 ONLY the harvested/mechanical fields and NEVER a field a human decided:
 

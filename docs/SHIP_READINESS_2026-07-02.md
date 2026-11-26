@@ -7,7 +7,7 @@
 ## What ships
 Everything on trunk: the full Game session (floor truth, generative quests +
 MISSION BOARD, return ritual + OUTBOX, pride layer + TROPHY CASE, embodiment),
-PLUS the parallel sessions' work (first-ten onboarding rebuild, QA station lanes,
+PLUS the parallel sessions' work (first-ten onboarding rebuild, QA keep lanes,
 tall walls, all-84-prop art overhaul, settings-parity P0s, CRT feed).
 
 ## Gates

@@ -1,6 +1,6 @@
 /* node test/workstreams.latest-visible.test.js — the rail's receipt line reads the newest visible message from the
    END of a history (Workstreams.latestVisibleMessage) instead of filtering a copy of the whole history twice a second
-   per row (2026-10-07 station performance lane). It must pick exactly the message the old full filter picked:
+   per row (2026-10-07 keep performance lane). It must pick exactly the message the old full filter picked:
    visibleMessages(w).slice().reverse().find(m => m.content.trim()). Seeded random histories, every message shape. */
 'use strict';
 const A = require('./_assert.js');

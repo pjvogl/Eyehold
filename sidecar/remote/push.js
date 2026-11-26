@@ -1,7 +1,7 @@
-/* sidecar/remote/push.js — the station taps a paired phone on the shoulder, even with the app closed.
+/* sidecar/remote/push.js — the keep taps a paired phone on the shoulder, even with the app closed.
 
-   Standard Web Push, sent by THIS station straight to the phone's own push service (Apple, Google, Mozilla):
-     · VAPID (RFC 8292): the station signs a short ES256 token with its own push key, so the push service knows
+   Standard Web Push, sent by THIS keep straight to the phone's own push service (Apple, Google, Mozilla):
+     · VAPID (RFC 8292): the keep signs a short ES256 token with its own push key, so the push service knows
        every message for this subscription comes from the same sender. The key is made on first use and kept in
        WORKSPACES/.secrets/remote-push.json next to the subscriptions.
      · Message encryption (RFC 8291, aes128gcm): every payload is sealed to the keys the phone's browser made for
@@ -61,7 +61,7 @@ function encrypt(plaintext, uaPublicRaw, authSecret, opts) {
   return Buffer.concat([header, asPublic, body]);
 }
 
-// a phone's push address must belong to a real browser push service (Google, Apple, Mozilla, Microsoft): the station
+// a phone's push address must belong to a real browser push service (Google, Apple, Mozilla, Microsoft): the keep
 // never POSTs to an address a phone made up
 const PUSH_HOSTS = ['fcm.googleapis.com', 'android.googleapis.com', 'push.apple.com', 'push.services.mozilla.com', 'notify.windows.com'];
 function pushHostOk(endpoint, extra) {
@@ -128,7 +128,7 @@ function makePush(deps) {
     if (!id) return { ok: false, error: 'unknown phone' };
     const endpoint = String((sub && sub.endpoint) || '');
     const keys = (sub && sub.keys) || {};
-    if (!ENDPOINT_RE.test(endpoint) || !pushHostOk(endpoint, extraHosts)) return { ok: false, error: 'that is not a push address this station can use' };
+    if (!ENDPOINT_RE.test(endpoint) || !pushHostOk(endpoint, extraHosts)) return { ok: false, error: 'that is not a push address this keep can use' };
     let p256dh, auth;
     try { p256dh = unb64u(keys.p256dh); auth = unb64u(keys.auth); publicFromRaw(p256dh); }
     catch (_) { return { ok: false, error: 'the phone sent unusable push keys' }; }
@@ -152,7 +152,7 @@ function makePush(deps) {
     const sub = load().subs[deviceId];
     if (!sub) return { deviceId, ok: false, status: 0 };
     // the push-service check runs at SEND too: a subscription saved by an older build (before the subscribe check)
-    // must not make the station POST to an address a phone made up (sweep 2026-10-02)
+    // must not make the keep POST to an address a phone made up (sweep 2026-10-02)
     if (!ENDPOINT_RE.test(String(sub.endpoint || '')) || !pushHostOk(sub.endpoint, extraHosts)) { unsubscribe(deviceId); return { deviceId, ok: false, status: 0 }; }
     let body;
     try { body = encrypt(Buffer.from(payload), unb64u(sub.p256dh), unb64u(sub.auth)); }

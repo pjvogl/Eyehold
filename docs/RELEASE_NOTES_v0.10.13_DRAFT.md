@@ -42,7 +42,7 @@ This is the full release list for the 214 commits shipped since v0.10.12. It is 
 - Discovery respects pause state, cooldowns, trust boundaries, and finding expiry.
 - Discovery decisions are recorded in the recommendation ledger instead of becoming invisible background behavior.
 - Night Shift can cite the same project findings as evidence, but discovery never changes Night Shift scoring or grants itself access to another project.
-- Completed runs now fold into a support-gated station track record.
+- Completed runs now fold into a support-gated keep track record.
 - Recommendations, quests, and Night Shift can use literal success counts from that track record without overstating sparse history.
 - Ranking uses a conservative prior until enough evidence exists, rather than treating one lucky result as certainty.
 - `/api/insights` exposes the same evidence counts used by the recommendation system.
@@ -59,7 +59,7 @@ This is the full release list for the 214 commits shipped since v0.10.12. It is 
 
 ## Billing, providers, and tool execution
 
-- Bring-your-own-key runs on a linked station no longer require Eyehold credits and are never charged against the Eyehold wallet.
+- Bring-your-own-key runs on a linked keep no longer require Eyehold credits and are never charged against the Eyehold wallet.
 - Managed runs that cross a reservation now settle the real spend at that reservation instead of being refused after the work already happened.
 - Billing leak-guard replays settle against the remembered real spend on every exit path.
 - Gemini 3 thought signatures are preserved when function calls are replayed.
@@ -113,7 +113,7 @@ This is the full release list for the 214 commits shipped since v0.10.12. It is 
 - Durable JSONL append operations write every byte.
 - Rejected output appends roll back instead of leaving a partial record.
 - Cloud save drains overlapping writes before an update and waits for active writes to finish.
-- Failed update preparation can thaw and retry rather than leaving the station stuck in preparation mode.
+- Failed update preparation can thaw and retry rather than leaving the keep stuck in preparation mode.
 - Imported permission grants are verified as persisted.
 - Credential removal is transactional and cannot resurrect a key after a crash.
 - Codex logout, OAuth logout, and FORGET remain signed in when the required deletion cannot be proven, rather than claiming success while credentials remain on disk.
@@ -145,7 +145,7 @@ This is the full release list for the 214 commits shipped since v0.10.12. It is 
 ## Interface and onboarding polish
 
 - Starting a new Commander clears the saved tutorial completion marker and re-arms the tour, coachmarks, and FIRST STEPS guidance.
-- The unreachable-station screen distinguishes a stale-window save refusal (`SAVE-403`) from a lost save request (`SAVE-NET`).
+- The unreachable-keep screen distinguishes a stale-window save refusal (`SAVE-403`) from a lost save request (`SAVE-NET`).
 - Recovery diagnosis is copyable from the unreachable screen, making a screenshot useful for support.
 - The connect screen includes an in-app route to use a different Eyehold account.
 - Stage dragging releases on window mouse-up, blur, and pointer cancellation instead of remaining stuck to the cursor.
@@ -168,4 +168,4 @@ This is the full release list for the 214 commits shipped since v0.10.12. It is 
 - Apple Silicon and Intel macOS artifacts were signed, notarized, and accepted by Gatekeeper; the Intel package also completed installed launch/recovery acceptance.
 - The hosted updater manifest and every Windows, Apple Silicon, and Intel asset were verified after publication.
 
-Already running Eyehold? Update from inside the app. Your crew, sessions, keys, and station remain in place.
+Already running Eyehold? Update from inside the app. Your crew, sessions, keys, and keep remain in place.

@@ -245,10 +245,10 @@ function boot(port, workspaces, attemptsLeft, extraEnv) {
     A.eq(creditsUnconf.body.configured, false, 'the 404 body honestly reports configured:false');
 
     // ---- managed credits: ACCOUNT-SIDE UNLINK INVALIDATES THE LOCAL "LINKED" CLAIM -----------------
-    // Reproduce the 0.10.8 field escape over real sockets: the station first caches a valid $0, then the
+    // Reproduce the 0.10.8 field escape over real sockets: the keep first caches a valid $0, then the
     // account page removes its device and the same bearer starts returning 401. The customer actually has
-    // $22 on the account, but that money is deliberately unreachable until this station pairs to it again.
-    // The app must discard cached $0, stop claiming LINKED, and expose LINK STATION — no local UNLINK ritual.
+    // $22 on the account, but that money is deliberately unreachable until this keep pairs to it again.
+    // The app must discard cached $0, stop claiming LINKED, and expose LINK KEEP — no local UNLINK ritual.
     {
       let revoked = false;
       const cloud = http.createServer((rq, rs) => {
@@ -300,7 +300,7 @@ function boot(port, workspaces, attemptsLeft, extraEnv) {
         A.eq(after.body.reason, 'link_revoked', 'the route names the authoritative account-side revocation');
         A.eq(after.body.balanceUsd, undefined, 'the stale cached $0 is not emitted as the paid account balance');
         const linkable = await read('/api/credits/linkable');
-        A.eq(linkable.body.available, true, 'the revoked station can pair again without manually unlinking locally');
+        A.eq(linkable.body.available, true, 'the revoked keep can pair again without manually unlinking locally');
         A.eq(linkable.body.reason, 'link_revoked', 'the relink card receives the recovery reason');
       } finally {
         try { rb.child.kill(); } catch (_) {}
@@ -385,7 +385,7 @@ function boot(port, workspaces, attemptsLeft, extraEnv) {
 
         const unlinked = await request('POST', '/api/credits/unlink', {});
         A.eq(unlinked.body.unlinked, true, 'genesis switch-account action clears the old sidecar link');
-        const start = await request('POST', '/api/credits/link/start', { deviceName: 'Eyehold Station' });
+        const start = await request('POST', '/api/credits/link/start', { deviceName: 'Eyehold Keep' });
         A.eq(start.body.code, 'STAR-PAID', 'switch account starts the ordinary one-code pairing flow');
         const paired = await request('POST', '/api/credits/link/poll', { code: start.body.code });
         A.eq(paired.body.linked, true, 'newly confirmed paid account is accepted as linked');
@@ -398,7 +398,7 @@ function boot(port, workspaces, attemptsLeft, extraEnv) {
           url: cloudUrl, accountId: 'acct_paid_22', linkedAt: now
         }));
         const funded = await request('GET', '/api/credits?history=0');
-        A.eq(funded.body.balanceUsd, 22, 'after token adoption the running station still reads $22, never the old $0');
+        A.eq(funded.body.balanceUsd, 22, 'after token adoption the running keep still reads $22, never the old $0');
         A.eq(funded.body.accountId, 'acct_paid_22', 'after token adoption the paid account remains the active identity');
 
         const run = await request('POST', '/api/run', {
@@ -420,8 +420,8 @@ function boot(port, workspaces, attemptsLeft, extraEnv) {
       }
     }
 
-    // ---- managed credits: LINKED-BUT-UNFUNDED STATION STILL WAKES ON ITS OWN KEY (issue #6) ------
-    // A station device-linked to a $0 Eyehold account picks a BYOK provider (own Gemini/OpenAI/custom
+    // ---- managed credits: LINKED-BUT-UNFUNDED KEEP STILL WAKES ON ITS OWN KEY (issue #6) ------
+    // A keep device-linked to a $0 Eyehold account picks a BYOK provider (own Gemini/OpenAI/custom
     // key). That run spends the user's vendor money, not managed credit — admission must pass it
     // through byok (no reservation, no debit/credit against the wallet) while a 'eyehold' relay run
     // on the same $0 wallet is still honestly refused. Before the fix, the BYOK wake looped forever
@@ -479,14 +479,14 @@ function boot(port, workspaces, attemptsLeft, extraEnv) {
           return { status: rr.status, body: parsed, text };
         };
         const broke = await request('GET', '/api/credits?history=0');
-        A.eq(broke.body.balanceUsd, 0, 'precondition: the station is linked and the wallet is authoritatively $0');
+        A.eq(broke.body.balanceUsd, 0, 'precondition: the keep is linked and the wallet is authoritatively $0');
 
         const byok = await request('POST', '/api/run', {
           provider: 'custom', baseUrl: vendorUrl + '/v1', key: 'byok-own-key',
           model: 'local/proven-model', agentId: 'byok-wake', internal: true,
           messages: [{ role: 'user', content: 'Reply with exactly: OK' }]
         });
-        A.eq(byok.status, 200, 'BYOK WAKE on a linked $0 station enters the real streaming run route');
+        A.eq(byok.status, 200, 'BYOK WAKE on a linked $0 keep enters the real streaming run route');
         A.ok(byok.text.indexOf('Out of managed credit') < 0, 'BYOK run is never refused for an empty Eyehold wallet (issue #6)');
         A.ok(byok.text.indexOf('agent.token') >= 0, 'BYOK run reaches the user\'s own model endpoint and streams its reply');
         A.ok(vendorCalls.some(c => c.path === '/v1/chat/completions' && c.auth === 'Bearer byok-own-key'),
@@ -1060,7 +1060,7 @@ function boot(port, workspaces, attemptsLeft, extraEnv) {
     const pend = await j('GET', '/api/memory/pending?agent=agent');
     A.eq(pend.status, 200, 'GET /api/memory/pending -> 200');
     A.eq(pend.body.agentId, 'agent', 'the pending deck is reported per agent');
-    A.eq(pend.body.pending, [], 'a station with nothing awaiting a verdict reports an empty deck');
+    A.eq(pend.body.pending, [], 'a keep with nothing awaiting a verdict reports an empty deck');
     const pendBad = await j('GET', '/api/memory/pending?agent=..%2Fetc');
     A.eq(pendBad.status, 403, 'a bad agent id is refused, not path-joined');
 
@@ -1125,7 +1125,7 @@ function boot(port, workspaces, attemptsLeft, extraEnv) {
     A.eq(memBad.status, 400, 'an over-range cooldown -> 400');
     A.ok(fs.existsSync(path.join(ws, 'memory.config.json')), 'the memory config persisted to disk');
 
-    // ---- P1-7 STATION BACKUP: export excludes secrets; import round-trips + reset ----
+    // ---- P1-7 KEEP BACKUP: export excludes secrets; import round-trips + reset ----
     // first seed a real budget override so the export has something server-side to carry.
     await j('POST', '/api/budget/caps', { perRun: 7 });
     const exp = await j('POST', '/api/config/export', { sections: { settings: { theme: 'blue' }, autonomy: { initiative: 'wait', reach: 'sandbox' } } });
@@ -1165,18 +1165,18 @@ function boot(port, workspaces, attemptsLeft, extraEnv) {
       headers: { 'Content-Type': 'application/json', 'X-Skynet-Token': IPC_TOKEN },
       body: JSON.stringify({ provider: 'openai', key: '' })
     });
-    const ttsNoKey = await j('POST', '/api/tts', { text: 'station check', voice: 'Umbriel', style: 'a low, detached transmission' });
+    const ttsNoKey = await j('POST', '/api/tts', { text: 'keep check', voice: 'Umbriel', style: 'a low, detached transmission' });
     A.eq(ttsNoKey.status, 200, 'POST /api/tts with no key -> 200 (never a hard error)');
     A.eq(ttsNoKey.body.fallback, true, 'no-key TTS returns the {fallback:true} envelope so the client uses speechSynthesis');
     A.ok(/no key/i.test(ttsNoKey.body.reason || ''), 'the TTS fallback names the no-key reason');
     const ttsNoText = await j('POST', '/api/tts', { text: '   ' });
     A.eq(ttsNoText.body.fallback, true, 'empty-text TTS also degrades cleanly');
     // ElevenLabs branch: same 200-degrade contract, its own key + validation (no network with the env cleared).
-    const elBadVoice = await j('POST', '/api/tts', { provider: 'elevenlabs', text: 'station check', voiceId: 'not/a/valid/id!' });
+    const elBadVoice = await j('POST', '/api/tts', { provider: 'elevenlabs', text: 'keep check', voiceId: 'not/a/valid/id!' });
     A.eq(elBadVoice.status, 200, 'POST /api/tts elevenlabs with a malformed voiceId -> 200');
     A.eq(elBadVoice.body.fallback, true, 'malformed voiceId degrades to the fallback envelope');
     A.ok(/bad voiceId/i.test(elBadVoice.body.reason || ''), 'the degrade names the bad-voiceId reason');
-    const elNoKey = await j('POST', '/api/tts', { provider: 'elevenlabs', text: 'station check', voiceId: 'AbCdEf012345678901234' });
+    const elNoKey = await j('POST', '/api/tts', { provider: 'elevenlabs', text: 'keep check', voiceId: 'AbCdEf012345678901234' });
     A.eq(elNoKey.status, 200, 'POST /api/tts elevenlabs with no key -> 200 (never a hard error)');
     A.eq(elNoKey.body.fallback, true, 'no-key ElevenLabs TTS returns the {fallback:true} envelope');
     A.ok(/no elevenlabs key/i.test(elNoKey.body.reason || ''), 'the degrade names the missing ElevenLabs key specifically');
@@ -1190,9 +1190,9 @@ function boot(port, workspaces, attemptsLeft, extraEnv) {
     A.eq(sttNoKey.status, 200, 'POST /api/stt with audio but no key -> 200');
     A.eq(sttNoKey.body.text, '', 'no-key STT returns an empty transcript');
     /* ⛔ "no key" IS ONLY THE TRUTH WHEN THERE IS ALSO NO KEYLESS ENGINE. The STT ladder gained a LOCAL floor
-       (tier 4) so a station whose brain is a ChatGPT/Codex or Anthropic subscription is not simply deaf — none
+       (tier 4) so a keep whose brain is a ChatGPT/Codex or Anthropic subscription is not simply deaf — none
        of those credentials is a transcription key. Where that floor is installed, answering "no key" would name
-       the wrong cause: the station HAS ears, this clip was just undecodable. So ask the station what it can
+       the wrong cause: the keep HAS ears, this clip was just undecodable. So ask the keep what it can
        actually do and hold it to the matching truth — asserting one fixed string would force a lie in whichever
        world it was not written for, and dropping to "some reason exists" would guard nothing. */
     const sttStatus = await j('GET', '/api/stt/status');
@@ -1204,7 +1204,7 @@ function boot(port, workspaces, attemptsLeft, extraEnv) {
     const canHearKeyless = !!(localVoice.body && localVoice.body.available);
     if (canHearKeyless) {
       A.ok(/local/i.test(sttNoKey.body.reason || ''), 'with a keyless local engine the degrade names THAT tier failing, not a missing key');
-      A.ok(!/no key/i.test(sttNoKey.body.reason || ''), 'and never blames a key on a station that can transcribe without one');
+      A.ok(!/no key/i.test(sttNoKey.body.reason || ''), 'and never blames a key on a keep that can transcribe without one');
     } else {
       A.ok(/no key/i.test(sttNoKey.body.reason || ''), 'with no engine and no key the STT degrade names the no-key reason');
     }
@@ -1367,10 +1367,10 @@ function boot(port, workspaces, attemptsLeft, extraEnv) {
       // simple masked (client-style) round-trip: one text frame encodes and parses back unchanged
       const frames = [];
       const parse = edge.makeWsParser((op, payload) => frames.push({ op, text: payload.toString('utf8') }), () => {});
-      parse(edge.wsEncode(0x1, Buffer.from('hello station', 'utf8')));
+      parse(edge.wsEncode(0x1, Buffer.from('hello keep', 'utf8')));
       A.eq(frames.length, 1, 'one full masked frame parsed');
       A.eq(frames[0].op, 0x1, 'opcode preserved (text)');
-      A.eq(frames[0].text, 'hello station', 'masked payload decodes back to the original bytes');
+      A.eq(frames[0].text, 'hello keep', 'masked payload decodes back to the original bytes');
     }
     {
       // a fragmented message (fin=0 first frame + final continuation) with an interleaved ping, fed ONE byte at
@@ -1493,7 +1493,7 @@ function boot(port, workspaces, attemptsLeft, extraEnv) {
         rq.on('end', () => {
           seenBody = Buffer.concat(chunks); seenCt = String(rq.headers['content-type'] || '');
           rs.writeHead(200, { 'Content-Type': 'application/json' });
-          rs.end(JSON.stringify({ text: 'station systems nominal' }));
+          rs.end(JSON.stringify({ text: 'keep systems nominal' }));
         });
       });
       await new Promise(r => groqMock.listen(0, '127.0.0.1', r));
@@ -1507,7 +1507,7 @@ function boot(port, workspaces, attemptsLeft, extraEnv) {
         const r = await fetch(GB + '/api/stt', { method: 'POST', headers: { 'Content-Type': 'audio/webm', 'X-Eyehold-Token': gtok, Origin: GB }, body: audioBytes });
         A.eq(r.status, 200, 'groq-keyed /api/stt -> 200');
         const body = await r.json();
-        A.eq(body.text, 'station systems nominal', 'the transcript comes from the dedicated Groq Whisper branch');
+        A.eq(body.text, 'keep systems nominal', 'the transcript comes from the dedicated Groq Whisper branch');
         A.ok(/multipart\/form-data/.test(seenCt), 'the sidecar sent a multipart/form-data body to Groq');
         A.ok(seenBody && seenBody.includes('whisper-large-v3-turbo'), 'the multipart body carries model=whisper-large-v3-turbo');
         A.ok(seenBody && seenBody.includes('name="file"'), 'the multipart body has a file part named "file"');

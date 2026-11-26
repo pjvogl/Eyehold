@@ -1,4 +1,4 @@
-// perf-idle.mjs — what the station costs when nobody touches it: frame intervals, main-thread
+// perf-idle.mjs — what the keep costs when nobody touches it: frame intervals, main-thread
 // metrics over 5s, and every running CSS/Web animation with its target and property.
 import { join } from 'node:path';
 import { rmSync } from 'node:fs';

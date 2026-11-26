@@ -2,7 +2,7 @@
 const assert=require('node:assert/strict'),fs=require('node:fs'),os=require('node:os'),path=require('node:path');
 const {createFinanceStore}=require('../sidecar/eyehold-finance-store.js');
 const WorldModel=require('../frontend/app/worldmodel.js');
-const {buildEyeholdStation}=require('../scripts/eyehold-seven-room-starter.cjs');
+const {buildEyeholdKeep}=require('../scripts/eyehold-seven-room-starter.cjs');
 const {applyTrustedMilestone}=require('../frontend/app/eyehold-native-loot.js');
 const root=fs.mkdtempSync(path.join(os.tmpdir(),'eyehold-finance-'));
 try{
@@ -17,15 +17,15 @@ try{
  assert.deepEqual(createFinanceStore({file}).snapshot(),imported,'financial state survives store restart');
  for(const invalid of [[rec('x','revenue',1),rec('x','revenue',1)],[rec('x','revenue',-1)],[JSON.stringify({id:'x',currency:'EUR',type:'revenue',cents:100})]])assert.throws(()=>store.replaceReviewed(invalid,{confirmedReviewed:true}));
  assert.deepEqual(store.snapshot(),imported,'invalid replacement preserves last good state');
- let station=WorldModel.deserialize(buildEyeholdStation().doc),saved,saves=0;
- const apply=tier=>applyTrustedMilestone({station,tier,attestation:imported,verifyAttestation:(proof,t)=>proof===imported&&imported.unlockedMilestonesUSD.includes(t),persist:()=>{saved=station.serialize();saves++;}});
+ let keep=WorldModel.deserialize(buildEyeholdKeep().doc),saved,saves=0;
+ const apply=tier=>applyTrustedMilestone({keep,tier,attekeep:imported,verifyAttekeep:(proof,t)=>proof===imported&&imported.unlockedMilestonesUSD.includes(t),persist:()=>{saved=keep.serialize();saves++;}});
  for(const tier of imported.unlockedMilestonesUSD)assert(apply(tier).complete);
  assert.equal(saves,3);
- station=WorldModel.deserialize(saved);
- const marked=station.props().filter(p=>String(p.label||'').startsWith('Eyehold:'));assert.equal(marked.length,21);
- const moved=marked[0];assert(station.moveProp(moved.id,moved.x+1,moved.y).ok);
+ keep=WorldModel.deserialize(saved);
+ const marked=keep.props().filter(p=>String(p.label||'').startsWith('Eyehold:'));assert.equal(marked.length,21);
+ const moved=marked[0];assert(keep.moveProp(moved.id,moved.x+1,moved.y).ok);
  for(const tier of imported.unlockedMilestonesUSD)assert(apply(tier).complete);
- assert.equal(station.props().filter(p=>String(p.label||'').startsWith('Eyehold:')).length,21,'moved trophies do not duplicate on reload');
+ assert.equal(keep.props().filter(p=>String(p.label||'').startsWith('Eyehold:')).length,21,'moved trophies do not duplicate on reload');
  assert.equal(saves,3,'idempotent sync does not dirty saves');
  const tampered=JSON.parse(fs.readFileSync(file,'utf8'));tampered.receipts[0].bytes=rec('a','revenue',999999999999);fs.writeFileSync(file,JSON.stringify(tampered));
  assert.equal(store.snapshot().netProfitUSD,null);assert.deepEqual(store.snapshot().unlockedMilestonesUSD,[]);

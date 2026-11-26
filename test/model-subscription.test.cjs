@@ -11,7 +11,7 @@ async function exercise(invoke) {
   const context = {
     closeDock: () => closed++,
     window: invoke ? { __TAURI__: { core: { invoke: (...args) => { calls.push(args); return invoke(); } } } } : {},
-    StationUI: { notify: (...args) => notices.push(args) }
+    KeepUI: { notify: (...args) => notices.push(args) }
   };
   vm.runInNewContext(handler + '\nthis.openAccount = openSubscription;', context);
   context.openAccount({ preventDefault: () => prevented++ });

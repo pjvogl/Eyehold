@@ -1,6 +1,6 @@
 'use strict';
 const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm');
-const text=fs.readFileSync('frontend/app/stationui.js','utf8');
+const text=fs.readFileSync('frontend/app/keepui.js','utf8');
 const code=text.slice(text.indexOf('  const BG_KEYS ='),text.indexOf('  // MODELS panel'));
 const tick=()=>new Promise(r=>setImmediate(r));
 (async()=>{

@@ -5,7 +5,7 @@
           busy / purpose / task-vs-talk logic is reused with zero duplication.
    OUTPUT (agent voice): when an agent speaks a conversational reply (the same moment
           it shows a speech bubble via World.say), it is spoken aloud using the agent's
-          assigned built-in voice, or the existing station recipe when unassigned.
+          assigned built-in voice, or the existing keep recipe when unassigned.
           Personality controls the words independently of the chosen voice.
 
    STT prefers the recorder → /api/stt (server Whisper) wherever the mic can be recorded — Chrome's
@@ -65,7 +65,7 @@ const Voice = (() => {
   // ---- prefs --------------------------------------------------------------
   // do agents speak their replies aloud? (persisted). DEFAULT OFF — and keep it off: when the speaker is
   // on, chat.js routes even a real TASK to the one-on-one 'talk' stance (the agent faces you and answers on
-  // the spot) INSTEAD of walking to its workstation. Defaulting this ON silently suppressed the signature
+  // the spot) INSTEAD of walking to its workkeep. Defaulting this ON silently suppressed the signature
   // desk trip for every task on an untouched agent ("gave it a task, it just stood there"). Voice is opt-in;
   // a user who turns it on (or enters hands-free mode, which force-enables it) gets the spoken one-on-one.
   let speakReplies = loadPref(LS_SPEAK, false);
@@ -194,7 +194,7 @@ const Voice = (() => {
   const NEURAL_COLD_MS = 4000;
   // 'no key' and billing failures (402 / "insufficient credits") are NOT transient — retrying on every reply
   // just burns a round-trip per sentence. Back off much longer, and above all TELL the user (2026-07-07
-  // escape: OpenRouter credits ran dry and the whole station went silent with zero explanation — the degrade
+  // escape: OpenRouter credits ran dry and the whole keep went silent with zero explanation — the degrade
   // itself was fine, the silence ABOUT it wasn't). NB: NO permanent latch — this is a 60s cold-off that ANY
   // speaker-toggle clears, so a spurious startup 'no key' never disables voice for the whole session.
   const BILLING_COLD_MS = 60000;
@@ -208,10 +208,10 @@ const Voice = (() => {
   let fbStreak = 0;        // consecutive neural failures (reset by the next neural success)
   let fbNotified = '';     // reason class already surfaced this outage — notify once, not once per sentence
   /* A reason is a semicolon-joined LADDER of everything the sidecar tried, not one verdict:
-       'no key; edge: edge timeout'                              (keyless station, the free floor blipped)
+       'no key; edge: edge timeout'                              (keyless keep, the free floor blipped)
        'openrouter 402 — insufficient credits; edge: empty audio' (wallet empty AND the floor blipped)
      Two different questions get asked of it, and answering both with one terminal-class-first substring
-     test was the bug: on a keyless station 'no key' is a STRUCTURAL constant the sidecar always prefixes,
+     test was the bug: on a keyless keep 'no key' is a STRUCTURAL constant the sidecar always prefixes,
      so the transient half was invisible — the one-shot retry never fired, the 60s billing cold-off armed
      instead of the 4s one, and the tooltip demanded a credential for a network hiccup on a voice path that
      is keyless by design. Split the two questions:
@@ -225,7 +225,7 @@ const Voice = (() => {
   function classifyFallback(reason) {
     const r = String(reason == null ? '' : reason);
     if (TERMINAL_BILLING.test(r)) return 'credits';
-    // 'no key' is structural. With a transient leg in the ladder the station does NOT need a credential —
+    // 'no key' is structural. With a transient leg in the ladder the keep does NOT need a credential —
     // the free floor does have voice and simply blipped, so sending the user to buy a key would be a lie.
     if (/no key/i.test(r)) return TRANSIENT_LEG.test(r) ? 'error' : 'nokey';
     return 'error';
@@ -269,8 +269,8 @@ const Voice = (() => {
   // mirrors this list — Codex (ChatGPT OAuth) is NOT on it because that token has no audio endpoint to call.
   const TTS_PROVIDERS = ['openrouter', 'gemini', 'openai'];
   // the provider the user actually RUNS agents on (the connect-screen choice). Its NATIVE voice API is
-  // preferred, so the station speaks from the same account it thinks with — an OpenAI station speaks via
-  // OpenAI, a Gemini station via Gemini. A run provider with no voice API (codex/anthropic/…) simply isn't
+  // preferred, so the keep speaks from the same account it thinks with — an OpenAI keep speaks via
+  // OpenAI, a Gemini keep via Gemini. A run provider with no voice API (codex/anthropic/…) simply isn't
   // in TTS_PROVIDERS and the default order stands.
   function runProvider() {
     try { return (typeof Harness !== 'undefined' && Harness.getProv) ? String(Harness.getProv() || '') : ''; } catch (_) { return ''; }
@@ -289,12 +289,12 @@ const Voice = (() => {
   }
   function ttsConfig() {
     // ONE LOCKED VOICE (Andrew, 2026-07-12): every agent, every persona, speaks as ULTRON —
-    // Personas.STATION_VOICE (Algenib + machine shell). Personality changes the WORDS only; the
+    // Personas.KEEP_VOICE (Algenib + machine shell). Personality changes the WORDS only; the
     // literal fallback below keeps the same identity if personas.js isn't loaded (tests, tools).
     // ttsStyle is the natural-language delivery instruction the sidecar folds into the input (and the
     // cache key). ttsShell is the "machine shell" FX chain ({metal,digitize,reverb} in 0..1) applied on
     // playback — Ultron's cold-metal body; a shell bypasses the transmission color (below).
-    const v = (typeof Personas !== 'undefined' && Personas.STATION_VOICE) || null;
+    const v = (typeof Personas !== 'undefined' && Personas.KEEP_VOICE) || null;
     return {
       model: TTS_MODEL,
       voice: (v && v.ttsVoice) || 'Algenib',
@@ -364,7 +364,7 @@ const Voice = (() => {
     return s.replace(/\s+/g, ' ').trim();
   }
 
-  /* duck the game SFX while the agent talks so its voice isn't fought by station blips. SFX.vol is a
+  /* duck the game SFX while the agent talks so its voice isn't fought by keep blips. SFX.vol is a
      plain master multiplier; save it once on the first chunk and restore when the WHOLE reply ends
      (not per-chunk, so the bed doesn't pump between sentences). Idempotent + try/guarded. */
   let _duckSaved = null;
@@ -408,7 +408,7 @@ const Voice = (() => {
   }
 
   /* ---- "transmission" color on neural playback -------------------------------------------------
-     A subtle atmosphere pass so the crew sounds like a voice coming over the station's comms, not a
+     A subtle atmosphere pass so the crew sounds like a voice coming over the keep's comms, not a
      browser <audio> tag. SUBTLE by design — the voice stays fully intelligible; this is seasoning, not a
      walkie-talkie gimmick. Chain: highpass ~120Hz + lowpass ~7kHz (band-limit to a comms channel) →
      a whisper of WaveShaper saturation → a very low-mix ~90ms slapback echo → out. One shared AudioContext,
@@ -590,7 +590,7 @@ const Voice = (() => {
       a.volume = (volume == null ? 1 : volume);
       if (rate && rate > 0) a.playbackRate = Math.max(0.5, Math.min(2, rate));
       if (deep) { try { a.preservesPitch = false; } catch (_) {} try { a.webkitPreservesPitch = false; } catch (_) {} try { a.mozPreservesPitch = false; } catch (_) {} }
-      // add the station "transmission" color (guarded; dry playback if WebAudio routing fails). When routed
+      // add the keep "transmission" color (guarded; dry playback if WebAudio routing fails). When routed
       // through WebAudio, crossOrigin must be set before load for some engines — the blob is same-origin so
       // this is a no-op, but harmless. Routing an element captures its output into the graph → the element's
       // own output goes silent, so ONLY route when the graph actually wires up.
@@ -650,7 +650,7 @@ const Voice = (() => {
   }
   function armAudio() {
     // Build the voice's effect graphs INSIDE a user gesture so they start running: created later (at the first
-    // reply) they start suspended, and the opening sentence played dry — without the station shell — so the
+    // reply) they start suspended, and the opening sentence played dry — without the keep shell — so the
     // reply's first words sounded like a different voice. Only while the speaker is on; idempotent.
     if (speakReplies) {
       try { const cfg = ttsConfig(); if (cfg && cfg.shell) ensureShellGraph(); else if (TRANSMISSION_FX) ensureFxGraph(); } catch (_) {}
@@ -669,7 +669,7 @@ const Voice = (() => {
      `speakSeq` (barge-in / teardown) invalidates every in-flight fetch + queued playback at once. */
   let jobs = [];          // queued chunks: { text, opts, seq, result(Promise), ac(AbortController) }
   let preferLocalTts = false;
-  /* Which built-in voice speaks. Saved per station; empty falls back to the engine's default (male).
+  /* Which built-in voice speaks. Saved per keep; empty falls back to the engine's default (male).
      Read at SPEAK time, not cached, so changing it in Settings takes effect on the very next line. */
   const LOCAL_VOICE_KEY = 'eyehold.liveVoice.localVoice.v1';
   const AGENT_VOICE_KEY = 'eyehold.liveVoice.agentVoice.v1:';
@@ -814,7 +814,7 @@ const Voice = (() => {
       // Two retries for a TRANSIENT failure (429 / network / 5xx) — a single provider blip must cost a
       // beat of latency, not a whole sentence of the reply. A missing credential and an empty wallet are NOT
       // transient: don't burn a second call on them. Ask retryableFallback, not the message class: a keyless
-      // station's reason ALWAYS carried the structural 'no key', which made this branch dead code there.
+      // keep's reason ALWAYS carried the structural 'no key', which made this branch dead code there.
       // Two bounded retries retain this exact chunk; later audio stays ordered.
       // A torn-down job (barge-in bumped speakSeq) is never retried.
       .then(res => (res.kind === 'fail' && retryableFallback(res.reason) && seq === speakSeq) ? synthOnce(job) : res)
@@ -982,7 +982,7 @@ const Voice = (() => {
     onSpeakEnd();
   }
 
-  // an ambient, muttered aside — station-life flavor (from world.js curiosity remarks), in the agent's
+  // an ambient, muttered aside — keep-life flavor (from world.js curiosity remarks), in the agent's
   // own voice but quieter + slower so it reads as talking to itself. It stays silent during any live
   // exchange (incl. an open hands-free loop) so it can't collide with conversation or feed the open mic;
   // re-arming on end covers "voice mode toggled on mid-mutter" so the loop never hangs.
@@ -1340,7 +1340,7 @@ const Voice = (() => {
          nothing into a dead room. An unknown is not an empty. */
       if (!r.ok && !(j && (j.text || j.reason))) {
         const reason = r.status === 403
-          ? 'the station restarted — reload the page to reconnect'
+          ? 'the keep restarted — reload the page to reconnect'
           : 'transcription unreachable (HTTP ' + r.status + ')';
         console.warn('[voice] STT HTTP', r.status);
         return { text: '', reason, failed: true };
@@ -1766,7 +1766,7 @@ const Voice = (() => {
     toggleBtn.innerHTML = speakReplies ? ICON.spkOn : ICON.spkOff;
     /* The pinned degrade reason OUTRANKS the plain on/off copy. This tooltip is the only sanctioned channel
        for voice-outage telemetry (#chat-status is run-state only), so overwriting it unconditionally left the
-       station silent while asserting 'agent voice: ON' with no way to find out why — the exact 2026-07-07
+       keep silent while asserting 'agent voice: ON' with no way to find out why — the exact 2026-07-07
        escape the fbMsg machinery exists to prevent. Every path that legitimately clears the reason calls
        clearNeuralCold()/noteNeuralOk() first, which empty fbMsg; init() did not, and it runs on agent focus,
        persona change and dossier apply. Guarding here covers every caller instead of one. */

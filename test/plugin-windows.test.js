@@ -5,7 +5,7 @@
      - the manifest's screens are validated (an id keys a window, a title is rendered, an entry becomes a path);
      - a window-only plugin (screens, no code) is valid and never require()d;
      - files are served ONLY while the approval covers the bytes on disk — an edit refuses with 410 at once;
-     - every response is an OPAQUE-ORIGIN sandbox (never allow-same-origin), framed only by the station;
+     - every response is an OPAQUE-ORIGIN sandbox (never allow-same-origin), framed only by the keep;
      - the page minter's plugin ticket verifies on the sidecar and opens nothing else;
      - the kit is injected into every page, relative to it, and a path can never climb out of the plugin;
      - the private store is bounded and keyed only by the plugin the host names.
@@ -126,8 +126,8 @@ function serve(handler, url, method) {
     A.eq(r.code, 200, 'an approved page is served');
     A.ok(/sandbox allow-scripts/.test(r.headers['Content-Security-Policy'] || ''), 'the page is sandboxed');
     A.ok(!/allow-same-origin/.test(r.headers['Content-Security-Policy'] || ''), 'NEVER allow-same-origin (the page must not reach the token)');
-    A.ok(!/allow-top-navigation/.test(SANDBOX), 'a plugin can never navigate the station away');
-    A.ok(/frame-ancestors tauri:\/\/localhost http:\/\/127\.0\.0\.1:8787/.test(r.headers['Content-Security-Policy'] || ''), 'only the station may frame it');
+    A.ok(!/allow-top-navigation/.test(SANDBOX), 'a plugin can never navigate the keep away');
+    A.ok(/frame-ancestors tauri:\/\/localhost http:\/\/127\.0\.0\.1:8787/.test(r.headers['Content-Security-Policy'] || ''), 'only the keep may frame it');
     A.ok(r.body.indexOf('<head><link rel="stylesheet" href="../_eyehold/kit.css"><script src="../_eyehold/kit.js"></script>') >= 0, 'the kit is injected first in <head>, relative to the page');
     A.eq(r.headers['Referrer-Policy'], 'no-referrer', 'the ticketed URL never rides a Referer');
 
@@ -136,7 +136,7 @@ function serve(handler, url, method) {
     A.eq(r.body, 'window.x = 1;', 'asset bytes are served untouched');
 
     r = await serve(server, url('ui-only', rec.digest, '_eyehold/kit.css'));
-    A.ok(r.code === 200 && /@layer eyehold/.test(r.body), 'the kit stylesheet is served from the station, layered under the author');
+    A.ok(r.code === 200 && /@layer eyehold/.test(r.body), 'the kit stylesheet is served from the keep, layered under the author');
     r = await serve(server, url('ui-only', rec.digest, '_eyehold/kit.js'));
     A.ok(r.code === 200 && /window\.eyehold = eyehold/.test(r.body), 'the kit bridge is served');
 
@@ -154,7 +154,7 @@ function serve(handler, url, method) {
     r = await serve(server, url('ui-only', rec.digest, 'constructor'));
     A.ok(r.code === 403 || r.code === 404, 'a prototype-named path is refused, never a 500 (got ' + r.code + ')');
     r = await serve(server, url('ui-only', 'b'.repeat(64), 'ui/index.html'));
-    A.ok(/text\/html/.test(r.headers['Content-Type'] || '') && /color-scheme:dark/.test(r.body), 'a refusal is a small DARK page (never a white text page in a station window)');
+    A.ok(/text\/html/.test(r.headers['Content-Type'] || '') && /color-scheme:dark/.test(r.body), 'a refusal is a small DARK page (never a white text page in a keep window)');
     A.ok(/sandbox; default-src 'none'/.test(r.headers['Content-Security-Policy'] || ''), 'the refusal page itself runs nothing');
     // a DRAFT preview server: same files, locked down — scripts only, no network, no forms, no popups
     const draftServer = makePluginUiServer({

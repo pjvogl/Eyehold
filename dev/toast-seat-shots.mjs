@@ -4,7 +4,7 @@
  * The rack used to be pinned by two literal numbers (`left: 268px * --cz; bottom: 128px * --cz`)
  * that lined up with nothing: it floated inside the stage, and because the CREW seam is DRAGGABLE
  * (--crew-w, leftrail.js) a wide rail walked the stage out from under it and the card ended up
- * sitting ON the crew list. StationUI.seatToastRack() now measures the cabinet instead.
+ * sitting ON the crew list. KeepUI.seatToastRack() now measures the cabinet instead.
  *
  * This records, in VISUAL px (the unit the rects and the seam are authored in):
  *   the rack's left edge vs the columns' left edge (#bottombar) · its bottom edge vs the columns'
@@ -29,7 +29,7 @@ const URL = `http://127.0.0.1:${PORT}/`;
 const OUT = process.env.SKYNET_SHOT_OUT || join(process.cwd(), 'dev', '.shots-toast');
 
 const setScale = (v) => `(() => {
-  const KEY = 'eyehold.station.v1';
+  const KEY = 'eyehold.keep.v1';
   const r = JSON.parse(localStorage.getItem(KEY) || '{"v":1}');
   r.settings = Object.assign({}, r.settings, { textScale: ${v} });
   localStorage.setItem(KEY, JSON.stringify(r));
@@ -38,7 +38,7 @@ const setScale = (v) => `(() => {
 })()`;
 
 // A long-dwell card so the shot and the measure see the same thing. `sev-bad` lingers 6.5s.
-const FIRE = (msg, cls) => `(() => { StationUI.notify(${JSON.stringify(msg)}, ${JSON.stringify(cls)}); return 'fired'; })()`;
+const FIRE = (msg, cls) => `(() => { KeepUI.notify(${JSON.stringify(msg)}, ${JSON.stringify(cls)}); return 'fired'; })()`;
 
 /* THE ALIGNMENT CHECK. The two edges the eye reads the rack against are the cabinet's outer
    padding line (#bottombar.left — shared by #topbar, the CREW rail and the dock) and the line
@@ -107,8 +107,8 @@ const dragRail = (toX) => `(() => {
   return document.getElementById('screen-game').style.getPropertyValue('--crew-w');
 })()`;
 
-const OPEN_WINDOWS = `(() => { ['deliverables','settings','tasks'].forEach(k => StationUI.openTerm(k)); return 'opened'; })()`;
-const CLOSE_WINDOWS = `(() => { ['deliverables','settings','tasks'].forEach(k => { try { StationUI.closeTerm(k); } catch (_) {} }); return 'closed'; })()`;
+const OPEN_WINDOWS = `(() => { ['deliverables','settings','tasks'].forEach(k => KeepUI.openTerm(k)); return 'opened'; })()`;
+const CLOSE_WINDOWS = `(() => { ['deliverables','settings','tasks'].forEach(k => { try { KeepUI.closeTerm(k); } catch (_) {} }); return 'closed'; })()`;
 
 /* THE BEFORE PICTURE. Andrew's report was about how this LOOKS, so the harness has to produce a
    render of the old anchor, not only its numbers — pin the pre-fix declaration, shoot, unpin. */
@@ -143,7 +143,7 @@ async function main() {
       await sleep(1200);
       const R = {};
 
-      // 1 · the resting station: one card, nothing else open
+      // 1 · the resting keep: one card, nothing else open
       await evalJS(cdp, FIRE('RUN COMPLETE: NOVA finished “draft the launch email”', 'good'));
       await sleep(700);
       R.default = await evalJS(cdp, MEASURE);
@@ -153,7 +153,7 @@ async function main() {
       await sleep(4200);
       for (const [m, c] of [['✓ connected OpenRouter API key — stored in your OS keychain', 'good'],
                             ['MODEL: anthropic / claude-haiku-4.5 / high', ''],
-                            ['Could not reach the station — retrying in 5s', 'bad']]) {
+                            ['Could not reach the keep — retrying in 5s', 'bad']]) {
         await evalJS(cdp, FIRE(m, c));
         await sleep(220);
       }

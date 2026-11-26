@@ -277,7 +277,7 @@ Put these in the notes, not in a bug report — an unexplained change reads as a
    used to run only A; it runs the whole line now. Floors that are a lone bay, or
    `INBOX → bay → OUTBOX`, behave exactly as before. A mutual A↔B loop is now refused with
    `CHAIN_CYCLE` where it previously did nothing.
-2. **The station looks different** — the wall crown rings the whole room, contact shadows are
+2. **The keep looks different** — the wall crown rings the whole room, contact shadows are
    pools rather than bars, the CRT aperture opened from 50% to 68%, and the bed, lockers and
    three tables were redrawn top-down.
 3. **Controls are drawn by Eyehold, not the OS** — every button, dropdown, checkbox, slider,
@@ -309,15 +309,15 @@ installed-exe smoke (B5), earned rather than waived.
 
 | Look at | Why |
 |---|---|
-| A floor drawn `INBOX → A → B → OUTBOX` runs **both** agents | The single biggest behaviour change for an existing station |
+| A floor drawn `INBOX → A → B → OUTBOX` runs **both** agents | The single biggest behaviour change for an existing keep |
 | E-STOP mid-chain stops every stage | The 6-hop / $2 caps are unit-proven but were **never live-tripped** |
 | The **easel** prop | Redrawn v6 and **never judged** — the one prop from the ugly-six pass with no verdict |
-| Wall crown on a **multi-room** station | Corner work leaked 148px on multi-room once; a single room cannot reproduce it |
+| Wall crown on a **multi-room** keep | Corner work leaked 148px on multi-room once; a single room cannot reproduce it |
 | The COMMS sound board at real volume | Level-grading was tuned by ear, and only 10 of 36 cues were mapped before |
 | ABILITIES › EXTENSIONS — create, approve, revoke, delete a hook | Shipped this cut; the authoring UI is new |
 | A restore point appears after a shell command | §G1 — this never worked before, so nobody has seen it work |
 | The ACP editor bridge from a real editor | **Never seen live in an editor** — the only proof is a spawned-bridge e2e |
-| Your own saved station and crew open intact | The data-layer risk in E1 |
+| Your own saved keep and crew open intact | The data-layer risk in E1 |
 
 ---
 

@@ -48,9 +48,9 @@
   },
   "recoveryScreen": {
     "active": true,
-    "text": "RECOVERY CODE: SAVE-READ · STATION FILE UNAVAILABLEthe station service is running, but could not read the saved station; your existing files are preserved. Send a screenshot of this code to support."
+    "text": "RECOVERY CODE: SAVE-READ · KEEP FILE UNAVAILABLEthe keep service is running, but could not read the saved keep; your existing files are preserved. Send a screenshot of this code to support."
   },
-  "retryResumedStation": true,
+  "retryResumedKeep": true,
   "cacheAdoption": {
     "unknown": true,
     "cacheUnchanged": true

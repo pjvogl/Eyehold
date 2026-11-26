@@ -90,14 +90,14 @@ function makeFolderWatcher(deps) {
   return { baseline, scan, readItem, settleMs };
 }
 
-/* makeFolderPolicy — may this folder be watched? The SAME jail the station already applies to paths a user
+/* makeFolderPolicy — may this folder be watched? The SAME jail the keep already applies to paths a user
    names: pathtrust's hardlines (no NUL, no UNC/network path, never inside .git, never a .env), must exist, must
    be a directory, judged by its REALPATH (a junction/symlink cannot smuggle a system dir in). Then:
      • never a whole drive / filesystem root, never a system folder (Windows, Program Files, ProgramData,
-       /etc, /usr, /System …), never inside the station's own data (WORKSPACES — agents write there, a line
+       /etc, /usr, /System …), never inside the keep's own data (WORKSPACES — agents write there, a line
        that fed on its own output would loop);
      • it must sit inside the owner's HOME folder or inside a project folder they already added (the blessed
-       roots) — the same two places the station treats as the owner's own ground. Home itself is too broad.
+       roots) — the same two places the keep treats as the owner's own ground. Home itself is too broad.
    deps: { fsp, pathMod, hardlineReason(raw, resolved)->reason|null, homeRoots()->[abs], blessedRoots()->[abs],
            forbiddenRoots()->[abs], systemRoots()->[abs], lineRoots()->[abs] (every line's working folder), winish:bool }
    A folder equal to or inside a LINE's working folder (its trusted project — where that line's stages write) is
@@ -110,7 +110,7 @@ function makeFolderPolicy(deps) {
   if (!fsp || !P) throw new Error('trigger-folder policy: fsp and pathMod are required');
   const winish = d.winish === true;
   /* FAIL CLOSED (2026-09-24): a root reader that THROWS answers null, never [] — an empty system/forbidden list
-     would silently skip the very checks that keep the Windows folder and the station's own data out. check() refuses on null. */
+     would silently skip the very checks that keep the Windows folder and the keep's own data out. check() refuses on null. */
   const list = fn => { try { return (typeof fn === 'function' ? fn() : []) || []; } catch (e) { failNote('trigger.folder.policy.roots', e); return null; } };
   const hardline = typeof d.hardlineReason === 'function' ? d.hardlineReason : () => null;
   const norm = s => { let v = P.resolve(String(s)); const root = P.parse(v).root; while (v.length > root.length && /[\\/]$/.test(v)) v = v.slice(0, -1); return winish ? v.toLowerCase() : v; };
@@ -139,13 +139,13 @@ function makeFolderPolicy(deps) {
     if (rhr) return { ok: false, code: 'hardline', error: rhr };
     if (norm(real) === norm(P.parse(real).root)) return { ok: false, code: 'system', error: 'a whole drive cannot be watched — choose a specific folder' };
     const sysRoots = list(d.systemRoots), forbidden = list(d.forbiddenRoots);
-    if (!sysRoots || !forbidden) return { ok: false, code: 'policy', error: 'the station could not read its protected-folder list — refused (try again)' };
+    if (!sysRoots || !forbidden) return { ok: false, code: 'policy', error: 'the keep could not read its protected-folder list — refused (try again)' };
     for (const sys of sysRoots) if (sys && inside(real, sys)) return { ok: false, code: 'system', error: 'system folders cannot be watched: ' + real };
-    for (const f of forbidden) if (f && inside(real, f)) return { ok: false, code: 'station', error: 'the station\'s own data folder cannot be watched (agents write there): ' + real };
+    for (const f of forbidden) if (f && inside(real, f)) return { ok: false, code: 'keep', error: 'the keep\'s own data folder cannot be watched (agents write there): ' + real };
     // A LINE'S OWN OUTPUT (sweep 2026-09-25): a folder equal to or inside the working folder a line's stages write to
     // (its trusted project) would feed that line its own results — a loop that spends on every file it writes.
     const lineRoots = list(d.lineRoots);
-    if (!lineRoots) return { ok: false, code: 'policy', error: 'the station could not read its lines\' working folders — refused (try again)' };
+    if (!lineRoots) return { ok: false, code: 'policy', error: 'the keep could not read its lines\' working folders — refused (try again)' };
     for (const lr of lineRoots) if (lr && inside(real, lr)) return { ok: false, code: 'lineoutput', error: lineOutputError(lr) };
     const homes = (list(d.homeRoots) || []).filter(Boolean);
     for (const h of homes) if (norm(real) === norm(h)) return { ok: false, code: 'broad', error: 'your whole home folder is too broad — choose a specific folder inside it' };

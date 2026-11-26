@@ -154,7 +154,7 @@ test('normal desktop roster renders the selected refresh without preview flags, 
           fs.readFileSync(path.join(frontend, 'assets/sprites', manifest.sprites[key][i]))), key + ' approved bytes/order'));
     }
   }
-  assert.equal(catalog.minionchar, catalog.station_minion, 'retired duplicate remains readable in existing saves');
+  assert.equal(catalog.minionchar, catalog.keep_minion, 'retired duplicate remains readable in existing saves');
   assert.equal(sprites.setForBody(body({ skin: 'unknown' })), 'approved_android', 'unknown/default skin uses refresh');
 });
 

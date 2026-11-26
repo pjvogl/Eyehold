@@ -17,7 +17,7 @@
 })(typeof globalThis !== 'undefined' ? globalThis : this, function () {
   'use strict';
 
-  const CP = require('../child-env.js').guardChildProcess(require('node:child_process'));   // the stdio child's env is built explicitly below; helpers get the station-free default
+  const CP = require('../child-env.js').guardChildProcess(require('node:child_process'));   // the stdio child's env is built explicitly below; helpers get the keep-free default
   const P = require('path');
   const JSONRPC = '2.0';
   const LOCAL_ERROR = Symbol.for('eyehold.mcp.localTransportError');   // read by client.js safeRpcError

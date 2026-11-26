@@ -123,7 +123,7 @@ async function driveShell(fixture, decision) {
 
     const narrowedProfile = await fixture.json('POST', '/api/roster', {
       updatedAt: Date.now() + 10000,
-      agents: [{ agentId: 'david', system: 'You are DAVID.', name: 'DAVID', provider: 'openrouter', model: 'test/model', approvalMode: 'full', executionProfile: 'station-gear' }]
+      agents: [{ agentId: 'david', system: 'You are DAVID.', name: 'DAVID', provider: 'openrouter', model: 'test/model', approvalMode: 'full', executionProfile: 'keep-gear' }]
     });
     A.ok(narrowedProfile.body && narrowedProfile.body.ok === true, 'the stored execution profile can remain narrow while Full Power is explicit');
     const broad = await driveShell(fixture);

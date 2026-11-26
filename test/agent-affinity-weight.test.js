@@ -1,11 +1,11 @@
-/* node test/agent-affinity-weight.test.js — bonds BIAS the station's social beats, they never LOCK them.
+/* node test/agent-affinity-weight.test.js — bonds BIAS the keep's social beats, they never LOCK them.
 
    THE ASK, verbatim: "users will notice some agents around specific other agents frequently that they
    interact with most frequently as well sometimes groups of 3."
 
    The failure mode this file exists to prevent is the obvious over-correction: make favourites strong
    enough and the floor silently fractures into fixed duos who only ever talk to each other, which reads
-   as a broken station rather than a social one. So the load-bearing assertion here is not "best buds are
+   as a broken keep rather than a social one. So the load-bearing assertion here is not "best buds are
    likelier" (easy, and any implementation gets it) — it is that a STRANGER'S WEIGHT IS NEVER ZERO, and
    that a bonded pair still serves a real cooldown so it cannot monopolise the conversation budget.
 
@@ -98,13 +98,13 @@ const look = graph([
 {
   const RELIEF = Number((src.match(/const BOND_CD_RELIEF\s*=\s*([\d.]+)/) || [])[1]);
   const FLOOR = Number((src.match(/const BOND_CD_FLOOR\s*=\s*(\d+)/) || [])[1]);
-  const LANE_MAX = Number((src.match(/const SOCIAL_STATION_CD_MIN\s*=\s*\d+,\s*SOCIAL_STATION_CD_MAX\s*=\s*(\d+)/) || [])[1]);
+  const LANE_MAX = Number((src.match(/const SOCIAL_KEEP_CD_MIN\s*=\s*\d+,\s*SOCIAL_KEEP_CD_MAX\s*=\s*(\d+)/) || [])[1]);
   const PAIR_MIN = Number((src.match(/const SOCIAL_PAIR_CD_MIN\s*=\s*(\d+)/) || [])[1]);
   A.ok(Number.isFinite(RELIEF) && Number.isFinite(FLOOR) && Number.isFinite(LANE_MAX) && Number.isFinite(PAIR_MIN),
     'the cooldown constants are read from the shipped source');
   A.eq(RELIEF < 1, true, 'relief can never zero out the per-pair cooldown');
   A.eq(FLOOR >= LANE_MAX * 0.75, true,
-    'the floor stays comparable to the station conversation lane, so even the strongest bond cannot re-fire as the immediate next beat');
+    'the floor stays comparable to the keep conversation lane, so even the strongest bond cannot re-fire as the immediate next beat');
   A.eq(FLOOR < PAIR_MIN, true, 'but it IS a real reduction — best buds genuinely come back around sooner');
   // strongest possible bond (1.0) still serves the floor
   A.eq(Math.max(FLOOR, Math.round(PAIR_MIN * (1 - RELIEF * 1))) >= FLOOR, true,

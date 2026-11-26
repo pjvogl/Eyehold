@@ -59,10 +59,10 @@ function compose(input) {
   if (prefs.length) evidence.push('VERDICT PATTERNS: ' + prefs.join(', '));
   const activity = Array.isArray(input.activity) ? input.activity.slice(0, 6) : [];
   for (const a of activity) if (a) evidence.push('RECENT ACTIVITY: ' + clip(a, 180));
-  // TRACK RECORD (outcome learning, 2026-08-30): what this station's runs actually produce — pre-composed by
+  // TRACK RECORD (outcome learning, 2026-08-30): what this keep's runs actually produce — pre-composed by
   // outcomes.js, every number a literal count of recent runs. Rides the same weak-evidence fence: it may steer
   // what to propose and how to shape work, never override the current request. Pushed LAST deliberately
-  // (consistency sweep, 2026-08-30): the block's 20-line cap truncates from the tail, and on a warm station
+  // (consistency sweep, 2026-08-30): the block's 20-line cap truncates from the tail, and on a warm keep
   // (6 topics + 5 threads + workflow + verdicts + 6 activity = 19) the original pre-activity position pushed
   // up to 3 RECENT ACTIVITY lines out — trading the freshest grounding for a statistic, the exact inversion
   // of the contextpack doctrine. Now the statistic is what truncates first.

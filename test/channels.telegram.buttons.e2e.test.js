@@ -37,7 +37,7 @@ function readJsonBody(req) {
 // model into asking a TASK_QUESTION and (later) into an ungranted fs.write that must raise a consent prompt.
 //
 // Steps are keyed by `when` = the request's LAST USER MESSAGE, and matched in order. That keying is load-bearing:
-// the station also fires background runs of its own (skill review, quest refresh) against this same endpoint, and
+// the keep also fires background runs of its own (skill review, quest refresh) against this same endpoint, and
 // a positional queue would let those runs eat the steps meant for the Telegram turn. Their last user message is
 // their own long prompt, so they never match and always fall through to the default acknowledgement.
 function startMockOpenRouter() {
@@ -171,7 +171,7 @@ async function waitUntil(fn, ms, label) {
   while (Date.now() < deadline) { if (await fn()) return; await sleep(25); }
   throw new Error('timed out waiting for ' + label);
 }
-// The station fires background runs (skill review, quest refresh) against the same mock, so "the most recent
+// The keep fires background runs (skill review, quest refresh) against the same mock, so "the most recent
 // request" is NOT reliably the Telegram turn. Callers search ALL requests for the one they mean instead.
 const lastUserTurn = (req) => {
   const m = (req && req.messages) || [];
@@ -253,7 +253,7 @@ const lastUserTurn = (req) => {
     A.ok(tg.sends.some(s => /Deploying now\./.test(String(s.text || ''))), 'the follow-up answer is delivered');
 
     // ---- 4. a stale second tap is acknowledged but starts nothing ----
-    // Count the runs that carry THIS OPTION'S text, not every request the station makes. A raw total is moved
+    // Count the runs that carry THIS OPTION'S text, not every request the keep makes. A raw total is moved
     // by anything the previous run still has in flight (an aux reflect/study pass, a late turn), which under
     // full-gate load lands inside the 400ms window below and turned the gate red for a dedupe that worked
     // perfectly (the stale tap was correctly acked 'no longer open' right above). The invariant under test is

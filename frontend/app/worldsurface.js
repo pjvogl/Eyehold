@@ -1,9 +1,9 @@
-/* Eyehold — authored station materials.
+/* Eyehold — authored keep materials.
  *
- * Pure, deterministic pixel painters. The renderer owns the cached station/chunk
+ * Pure, deterministic pixel painters. The renderer owns the cached keep/chunk
  * canvases; this module owns their surface art. It never reads clock, room names,
  * telemetry, or camera state. Physical tile coordinates keep the same floor in
- * place when a build edit grows the station's local coordinate frame.
+ * place when a build edit grows the keep's local coordinate frame.
  *
  * paintFloorTile(ctx, material, base, X, Y, tile, worldTx, worldTy, {detail})
  * paintWallTile(ctx, material, base, X, Y, tile, height, tileX, {detail})

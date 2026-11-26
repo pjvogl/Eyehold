@@ -1,5 +1,5 @@
 /* The same deterministic sky/ground sample functions, with scratch OffscreenCanvases.
-   No station state is imported or modified. Only finished thumbnail pixels cross threads. */
+   No keep state is imported or modified. Only finished thumbnail pixels cross threads. */
 'use strict';
 const motion = { matches: false };
 const window = { devicePixelRatio: 1, screen: {}, matchMedia: () => motion };

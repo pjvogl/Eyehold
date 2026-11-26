@@ -1,13 +1,13 @@
 /* EYEHOLD hudmode.js — HUD MODE: Eyehold as a small always-on-top panel.
    For the Commander who is gaming or doing something else on the PC and wants every piece of work the
-   station is doing one glance away, with a hand on each of them, without the whole station on screen.
+   keep is doing one glance away, with a hand on each of them, without the whole keep on screen.
 
-   The HUD is NOT a second app. It is this same page with the station hidden, the world renderer
+   The HUD is NOT a second app. It is this same page with the keep hidden, the world renderer
    stopped, and the REAL COMMS panel filling a compact frame. On the desktop the Rust shell
    (src-tauri/src/hud_mode.rs) turns the window itself into a corner panel: small, pinned above other
    windows, and restored to the exact size/position/maximized/fullscreen state it had when the HUD closes.
 
-   ACTIVITY (where the HUD opens) is the project ACTIVITY feed (project-home.js) for the whole station:
+   ACTIVITY (where the HUD opens) is the project ACTIVITY feed (project-home.js) for the whole keep:
    one .ph-card per piece of work, in the same markup and glass, each opening onto what it produced and
    the same hands the project feed gives (a direction, STOP WORK) plus OPEN CONVERSATION. CHAT is the
    COMMS conversation itself. Every card states only what the harness can prove:
@@ -141,7 +141,7 @@
       if (s.streamId) r.streamId = String(s.streamId);
       r.internal = s.internal === true;
       // whether STOP / a direction can reach this run (a work-line step or a channel hub run is not in the
-      // station's stoppable set): the card never offers a control whose 'ok' would be a lie
+      // keep's stoppable set): the card never offers a control whose 'ok' would be a lie
       if (typeof s.stoppable === 'boolean') r.stoppable = s.stoppable;
     }
     for (const [id, r] of feed.runs) {
@@ -231,7 +231,7 @@
     else if (feed.snapOk == null && !working) summary = { text: '…', tone: 'dim' };
     else if (waiting) summary = { text: waiting + ' NEED' + (waiting === 1 ? 'S' : '') + ' YOU', tone: 'ask' };
     else if (working) summary = { text: working + ' WORKING', tone: 'live' };
-    else summary = { text: 'STATION IDLE', tone: 'dim' };
+    else summary = { text: 'KEEP IDLE', tone: 'dim' };
     return {
       summary,
       live: live.slice(0, LIVE_MAX),
@@ -240,7 +240,7 @@
     };
   }
 
-  /* ---------------- the ACTIVITY feed: every piece of work on the station ---------------- */
+  /* ---------------- the ACTIVITY feed: every piece of work on the keep ---------------- */
 
   const arr = v => (Array.isArray(v) ? v : []);
   const SOURCE_WORDS = {
@@ -257,7 +257,7 @@
   };
   const WORKER_END = {
     done: ['done', 'Completed'], interrupted: ['stopped', 'Stopped'], error: ['fault', 'Needs attention'],
-    stale: ['fault', 'Lost when the station restarted'], refused: ['fault', 'Refused']
+    stale: ['fault', 'Lost when the keep restarted'], refused: ['fault', 'Refused']
   };
 
   function oneLine(v, max) {
@@ -514,7 +514,7 @@
         receipt.textContent = kind === 'steer' ? 'Direction sent. The agent takes it before its next step.' : 'Stop requested.';
         if (kind === 'steer') input.value = '';
       } catch (e) {
-        receipt.textContent = (kind === 'steer' ? 'Direction not sent: ' : 'Stop not sent: ') + ((e && e.message) || 'the station did not answer') + '.';
+        receipt.textContent = (kind === 'steer' ? 'Direction not sent: ' : 'Stop not sent: ') + ((e && e.message) || 'the keep did not answer') + '.';
       } finally {
         card.pending = false;
         poll();
@@ -554,9 +554,9 @@
   }
 
   /* ---------------- WIDGET: the HUD at its smallest ----------------
-     The REAL station, small: the world renderer keeps running into the station's own view (#stage-wrap,
+     The REAL keep, small: the world renderer keeps running into the keep's own view (#stage-wrap,
      its camera frame included) and its camera follows the agent a glance most needs, so what the widget
-     shows is what the station is doing — at the desk when it works, walking the floor when it is idle.
+     shows is what the keep is doing — at the desk when it works, walking the floor when it is idle.
      Under it, one row per agent with work under way: its lamp, name, run clock, step. A click on the view
      opens ACTIVITY; a click on a row points the camera at that agent. The world stops again whenever the
      widget is not on screen (ACTIVITY / CHAT), so the HUD costs nothing it does not show. */
@@ -592,21 +592,21 @@
   }
 
   // The widget's world is drawn ~20 times a second (World.setFrameCap): alive to a glance, a fraction of the
-  // full station's cost while a game has the GPU. 48ms stays under the world's 64ms step clamp, so bodies
-  // still move at their true speed. The full station gets the world's own RENDER PACING back (30 fps focused, slower unfocused — world.js).
+  // full keep's cost while a game has the GPU. 48ms stays under the world's 64ms step clamp, so bodies
+  // still move at their true speed. The full keep gets the world's own RENDER PACING back (30 fps focused, slower unfocused — world.js).
   const WIDGET_FRAME_MS = 48;
   function worldStart(capped) {
     // the widget shows the world only: its rows already say who works, for how long and on what, so the
-    // station's in-world readouts (clocks, tickers, bubbles, plates, the work pulse) are off while it shows
+    // keep's in-world readouts (clocks, tickers, bubbles, plates, the work pulse) are off while it shows
     try { if (typeof World !== 'undefined') { if (World.setFrameCap) World.setFrameCap(capped ? WIDGET_FRAME_MS : 0); if (World.setOverlays) World.setOverlays(!capped); if (World.start) World.start(); } } catch (_) {}
   }
   function worldStop() { try { if (typeof World !== 'undefined' && World.stop) World.stop(); } catch (_) {} }
 
-  // Point the station's camera at an agent (its own follow-lock: the same one a CREW click makes).
-  const WIDGET_ZOOM = 4.5;   // the agent fills the small picture; the station's own lock is 3
+  // Point the keep's camera at an agent (its own follow-lock: the same one a CREW click makes).
+  const WIDGET_ZOOM = 4.5;   // the agent fills the small picture; the keep's own lock is 3
   const WIDGET_SEAT_AT = 0.84;   // an agent at its desk: feet low in the frame, so its desk and screen show above it
   /* The framing: the agent is always shown at the same closeness (4.5, the agent cam Andrew liked); a picture the
-     Commander makes bigger shows MORE STATION round the agent, never a bigger agent (Andrew 09-30: "the agent cam
+     Commander makes bigger shows MORE KEEP round the agent, never a bigger agent (Andrew 09-30: "the agent cam
      is WAY TOO BIG" — it used to zoom up to a third closer as the window grew). A seated worker moves from low in
      the small frame (its desk and screen above it) toward the middle of a tall one. */
   function widgetFraming() {
@@ -624,20 +624,20 @@
     S.followId = id; S.followKey = key;
     try {
       if (typeof World === 'undefined' || !World.lockBody) return;
-      keepStationCamera();
+      keepKeepCamera();
       World.lockBody(id, fr.zoom, { seatAt: fr.seatAt });
     } catch (_) {}
   }
-  /* The widget BORROWS the station's camera. Before its first follow it keeps what the station was showing (a
+  /* The widget BORROWS the keep's camera. Before its first follow it keeps what the keep was showing (a
      free view or a CREW follow, its zoom and where it looked), and leaving the HUD gives exactly that back — the
-     station never comes back zoomed in on whoever the widget last watched. */
-  function keepStationCamera() {
-    if (S.stationCam) return;
-    try { S.stationCam = (typeof World !== 'undefined' && World.cameraState) ? World.cameraState() : null; } catch (_) { S.stationCam = null; }
+     keep never comes back zoomed in on whoever the widget last watched. */
+  function keepKeepCamera() {
+    if (S.keepCam) return;
+    try { S.keepCam = (typeof World !== 'undefined' && World.cameraState) ? World.cameraState() : null; } catch (_) { S.keepCam = null; }
   }
   function unfollow() {
-    try { if (S.stationCam && typeof World !== 'undefined' && World.restoreCamera) World.restoreCamera(S.stationCam); } catch (_) {}
-    S.stationCam = null;
+    try { if (S.keepCam && typeof World !== 'undefined' && World.restoreCamera) World.restoreCamera(S.keepCam); } catch (_) {}
+    S.keepCam = null;
   }
 
   /* MOVE THE AGENT CAM (Andrew 09-30: "I cant drag the agent cam mode, its just stuck in the top right"). The picture
@@ -674,7 +674,7 @@
   function buildWidget() {
     if (S.widget) return S.widget;
     const g = gameScreen(); if (!g) return null;
-    // the view: a click-catcher over the station view (a click on the world would otherwise open a dossier)
+    // the view: a click-catcher over the keep view (a click on the world would otherwise open a dossier)
     const open = el('button', 'hud-wview'); open.type = 'button';
     open.setAttribute('aria-label', 'Open activity'); open.title = 'Click to open activity · drag to move';
     const box = el('section', 'hud-widget');
@@ -711,7 +711,7 @@
     if (S.followPinned && !plan.tiles.some(x => x.agentId === S.followPinned)) S.followPinned = '';
     const watch = S.followPinned || (plan.tiles[0] && plan.tiles[0].agentId) || '';
     follow(watch);
-    // the station stopped answering: what the rows last knew may be over, so no clock keeps counting it
+    // the keep stopped answering: what the rows last knew may be over, so no clock keeps counting it
     const down = S.feed.snapOk === false;
     const keep = new Set();
     let prev = null;
@@ -733,7 +733,7 @@
       setText(v.name, tile.name);
       if (tile.color) v.name.style.color = tile.color; else v.name.style.removeProperty('color');
       setText(v.clock, down ? 'NO LINK' : tile.working ? fmtClock(t - tile.startedAt) : 'ALL QUIET');
-      setText(v.step, down ? 'The station is not answering' : tile.step);
+      setText(v.step, down ? 'The keep is not answering' : tile.step);
       v.node.setAttribute('aria-label', tile.name + (tile.working ? ' · ' + tile.step + ' · running ' + fmtClock(t - tile.startedAt) : ' · all quiet · ' + tile.step) + '. Watch');
       v.node.title = 'Watch ' + tile.name;
       const want = prev ? prev.nextSibling : w.rows.firstChild;
@@ -749,7 +749,7 @@
   function stopWidgetFrames() {}
 
   /* The widget's window. It opens at the DEFAULT size (a 300x190 picture + its rows); the picture fills whatever
-     the window is, so when the Commander drags the window bigger the station view grows with it — and that
+     the window is, so when the Commander drags the window bigger the keep view grows with it — and that
      size is theirs: it is kept (no auto-fit fights it) and remembered for the next time the HUD opens. */
   const WIDGET_VIEW_W = 300, WIDGET_VIEW_H = 190;
   function widgetDefaultSize() {
@@ -791,10 +791,10 @@
     if (S.els) return S.els;
     const panel = $('chat-panel'), log = $('chat-log'), h3 = panel && panel.querySelector(':scope > h3');
     if (!panel || !log || !h3) return null;
-    // ACTIVITY: the project activity view, for the whole station
+    // ACTIVITY: the project activity view, for the whole keep
     const section = el('section', 'project-home hud-activity');
     section.id = 'hud-activity';
-    section.setAttribute('aria-label', 'All work on the station');
+    section.setAttribute('aria-label', 'All work on the keep');
     const notice = el('p', 'ph-notice'); notice.setAttribute('role', 'status');
     const empty = el('p', 'ph-empty', 'No work yet. Ask an agent something and it shows up here.');
     const list = el('div', 'ph-activity');
@@ -806,8 +806,8 @@
     const small = el('button', 'btn', 'AGENT CAM'); small.type = 'button'; small.id = 'hud-small';
     small.title = 'Shrink the HUD to the agent cam';
     const pin = el('button', 'btn', 'PIN'); pin.type = 'button'; pin.id = 'hud-pin'; pin.hidden = true;
-    const exitBtn = el('button', 'btn', 'STATION'); exitBtn.type = 'button'; exitBtn.id = 'hud-exit';
-    exitBtn.title = 'Back to the full station';
+    const exitBtn = el('button', 'btn', 'KEEP'); exitBtn.type = 'button'; exitBtn.id = 'hud-exit';
+    exitBtn.title = 'Back to the full keep';
     ctl.append(view, small, pin, exitBtn);
     const right = h3.querySelector('.h3-right') || h3;
     right.appendChild(ctl);
@@ -825,7 +825,7 @@
     const items = S.lastItems || [];
     const busy = items.filter(x => x.state === 'live' || x.state === 'ask').length;
     setText(S.els.view, act ? 'CHAT' : ('ACTIVITY' + (busy ? ' · ' + busy : '')));
-    S.els.view.title = act ? 'Open the conversation' : 'See all the work on the station';
+    S.els.view.title = act ? 'Open the conversation' : 'See all the work on the keep';
     S.els.view.setAttribute('aria-pressed', 'false');
     S.els.pin.hidden = !S.desktop;
     setText(S.els.pin, S.pinned ? 'PINNED' : 'PIN');
@@ -841,7 +841,7 @@
     const sum = feedSummary(items, S.feed, S.histOk);
     doc.body.classList.toggle('hud-asking', sum.tone === 'ask');
     if (S.view === 'activity' && S.els.title) setText(S.els.title, '▮ ACTIVITY');
-    setText(S.els.notice, sum.text === 'NO LINK' ? 'The station is not answering. What is shown may be out of date.' : '');
+    setText(S.els.notice, sum.text === 'NO LINK' ? 'The keep is not answering. What is shown may be out of date.' : '');
     S.els.empty.hidden = items.length > 0 || S.feed.snapOk == null;
     const have = new Map(S.cards);
     let prev = null;
@@ -1000,7 +1000,7 @@
     if (S.busy) { S.exitAfter = true; return Promise.resolve(false); }   // entering: leave right after
     if (!S.active) {
       // the page is not in HUD mode, but the shell may still hold the small pinned window (a reload that never
-      // reached the station): hand the window back so it is never stranded tiny and on top
+      // reached the keep): hand the window back so it is never stranded tiny and on top
       if (!tauriCore(root)) return Promise.resolve(false);
       return invoke('eyehold_hud_status').then(v => (v && v.active ? invoke('eyehold_hud_set', { active: false }) : null)).then(() => false);
     }
@@ -1022,7 +1022,7 @@
         }
         unfollow();
         S.followId = S.followPinned = '';
-        if (inGame()) worldStart(false);   // the full station always gets its world back, uncapped
+        if (inGame()) worldStart(false);   // the full keep always gets its world back, uncapped
         announceLayout();
         S.busy = false;
       });
@@ -1066,10 +1066,10 @@
       }
     } catch (_) {}
     // A reload (or a WebView2 crash rebuild) inside HUD mode: the shell still holds the HUD window,
-    // so the page puts its HUD layout back instead of drawing the full station into a tiny frame.
+    // so the page puts its HUD layout back instead of drawing the full keep into a tiny frame.
     invoke('eyehold_hud_status').then(v => {
       if (!v || !v.active) return;
-      // the station may take a while to boot; if it never gets there, give the window back rather than strand it
+      // the keep may take a while to boot; if it never gets there, give the window back rather than strand it
       const tryEnter = (n) => { if (inGame()) enter(); else if (n > 0) root.setTimeout(() => tryEnter(n - 1), 500); else exit(); };
       tryEnter(240);
     });

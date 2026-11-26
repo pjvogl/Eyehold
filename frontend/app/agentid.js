@@ -19,7 +19,7 @@
 
   const RE = /^[A-Za-z0-9_-]{1,40}$/;
   const NAME_MAX = 18;
-  // Station-owned directories under WORKSPACES (codex/, channels/, connectors/, plugins/ …): an agent with one
+  // Keep-owned directories under WORKSPACES (codex/, channels/, connectors/, plugins/ …): an agent with one
   // of these ids would get that credential/code directory as its private file jail. The sidecar refuses them
   // (sidecar/workspace-reserved.js — test/workspace-reserved.test.js keeps the two lists identical); allocate
   // around them so a custom agent named "Codex" becomes codex-2 instead of a broken agent.

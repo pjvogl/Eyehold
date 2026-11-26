@@ -3,7 +3,7 @@
 
    It does two things, both routed through the same flow (reason-only model call → parse → approval beat → schedule):
    - PROACTIVE (fire-once): after the First Pitch, once the Commander has turned autonomy on (Initiative ≥ propose)
-     and the station knows enough, it offers — ONCE — a few standing-job proposals on a clean run.end. Hard-gated +
+     and the keep knows enough, it offers — ONCE — a few standing-job proposals on a clean run.end. Hard-gated +
      anti-nag; the manual entry takes over after.
    - MANUAL: the ROUTINES panel's "propose standing jobs" button calls propose() directly (an explicit ask always
      allowed, even after the one-time proactive offer is spent).
@@ -144,7 +144,7 @@ const AutoJobStore = (() => {
       await Dialogue.say('give me a second — let me think about what would be worth running for you on a schedule…', { auto: true });   // latency patter — never gate a wait on a click
       const res = await Harness.chat({ system, messages: [{ role: 'user', content: directive }], agentId: 'agent', isTask: false, placed: [], internal: true });
       // THE GROUNDING VETO runs here: a proposal whose GROUNDS shares nothing with `known` is dropped, so an
-      // invented rationale can never become a cron job the station wakes to forever.
+      // invented rationale can never become a cron job the keep wakes to forever.
       const proposals = (res && !res.error) ? AutoJobs.parseProposals(res.text, { beliefs: known }) : [];
       if (!proposals.length) {   // model hiccup / nothing groundable → say nothing useful, leave the flag UNSET so a later run can retry
         if (Dialogue.isOpen()) Dialogue.close();
@@ -174,7 +174,7 @@ const AutoJobStore = (() => {
         /* GROUNDS IS THE MODEL'S OWN PROSE, NOT A QUOTE (2026-08-05). It went to the ledger as
            `type:'dossier', quote:` — the evidence type that means "this is a verbatim thing the Commander's
            own record says". autojobs.js parses GROUNDS out of the aux reply and V.grounded only checks that it
-           OVERLAPS what the station knows; the words are still the model's. Same mis-typing the suggest ledger
+           OVERLAPS what the keep knows; the words are still the model's. Same mis-typing the suggest ledger
            carried one file over, same fix: rationale/text. Both ledgerPosts in this file (here and pinProposals). */
         ledgerPost({ id: rid, surface: 'routine', kind: 'routine', title: pr.title, target: nameFp(pr.title), traits: ['routine', 'cadence:' + (pr.cadenceId || 'unknown')], evidence: [{ id: 'routine-grounds', type: 'rationale', text: pr.grounds || pr.why || '' }], readiness: { ready: true, reasons: [] }, modelVersion: 'autojobs-v2' });
         const choice = await Dialogue.node({ lines: AutoJobs.proposalLines(pr), options: AutoJobs.approveChoices(), dismissable: true, dismissLabel: 'leave it — not now' });

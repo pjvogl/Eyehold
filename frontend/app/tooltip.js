@@ -1,4 +1,4 @@
-/* EYEHOLD — tooltip.js : the station's own hover card, replacing the browser's native `title` bubble.
+/* EYEHOLD — tooltip.js : the keep's own hover card, replacing the browser's native `title` bubble.
 
    WHY (Andrew, 2026-07-27): a native tooltip is OS chrome — a grey box in the system font, drawn by
    Windows over the phosphor terminal, on the OS's own ~500ms timer. It is the same defect class as the
@@ -11,17 +11,17 @@
    which is what kills the native bubble, because the OS timer only starts once the pointer rests and the
    attribute is gone before then. `data-tip` is then the source of truth. That is deliberate: a re-render
    that writes `title` again is silently re-adopted on the next hover, and every future control gets the
-   station tooltip for free without anyone remembering a class. Opt out with `data-no-tip` (the model
+   keep tooltip for free without anyone remembering a class. Opt out with `data-no-tip` (the model
    dock does — it owns a richer tip of its own and would otherwise show two).
 
    ACCESSIBILITY: removing `title` removes an accessible description, so this gives it back properly —
    the live card is referenced with aria-describedby while shown, and an element whose ONLY name came
    from its title (an icon button with no text and no aria-label) keeps that name as an aria-label.
 
-   COORDINATES — the uiZoom law (see stationui.js uiZoom / app.js:3139): rects and clientX are VISUAL px,
+   COORDINATES — the uiZoom law (see keepui.js uiZoom / app.js:3139): rects and clientX are VISUAL px,
    but this card is a body child, and body carries `style.zoom` for TEXT SIZE, so its style px are in
    ZOOMED space. Divide by z exactly once, like .ws-menu does, or the card lands off by the zoom factor
-   on any station not at 100%.
+   on any keep not at 100%.
 
    UMD: a `Tooltip` global in the browser; module.exports under node so the pure geometry is testable. */
 'use strict';
@@ -36,7 +36,7 @@
   const MAX_LEN = 400;         // a tooltip is a hint; anything longer belongs in the panel
   const EDGE = 8;              // viewport clamp margin, in zoomed px
   const GAP = 9;               // space between anchor and card
-  const TIP_ID = 'station-tip';
+  const TIP_ID = 'keep-tip';
 
   /* place(anchor, tip, viewport) → {left, top, below, arrowX} — ALL inputs and outputs in ZOOMED px.
      Prefers above the anchor; flips below when the card would clip the top edge; clamps horizontally and
@@ -79,7 +79,7 @@
     init._wired = true;
 
     const card = doc.createElement('div');
-    card.className = 'station-tip';
+    card.className = 'keep-tip';
     card.id = TIP_ID;
     card.setAttribute('role', 'tooltip');
     card.hidden = true;
@@ -111,7 +111,7 @@
       anchor = el;
       card.classList.toggle('dock-tip', !!el.closest('#bottombar'));
       // (2026-09-30) a Build Library tile's tip — and a Workflow panel tile's — is its name, then what it does, on lines of their
-      // own, in the station glass
+      // own, in the keep glass
       card.classList.toggle('glass-tip', !!el.closest('.refit-dock, .wf-panel'));
       card.textContent = text;
       card.hidden = false;

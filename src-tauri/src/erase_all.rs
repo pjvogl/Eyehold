@@ -2,7 +2,7 @@
 //!
 //! The reporter (macOS) deleted the app and reinstalled, and "everything remained": uninstalling removes only the
 //! program, while Eyehold's data lives in a separate per-user app-data folder, the WebView keeps its own storage,
-//! and credentials sit in the OS keychain. START FRESH (fresh_start.rs) deliberately keeps the old station in a
+//! and credentials sit in the OS keychain. START FRESH (fresh_start.rs) deliberately keeps the old keep in a
 //! quarantine folder. This module is the other door: it DELETES.
 //!
 //! Safety rules (each one is tested below):
@@ -10,8 +10,8 @@
 //!     `ai.skynet.harness`, `Eyehold`, `Skynet` or `eyehold` and be at least three components deep. A user's project
 //!     folder, home folder or a filesystem root can never qualify, whatever a caller passes.
 //!   * Links are never followed: a symlink/junction inside a target (or a target that is itself a link) is removed
-//!     as a link; whatever it points at is untouched. Trusted project folders are recorded by PATH in the station
-//!     data, never stored inside it, so erasing the station never reaches them.
+//!     as a link; whatever it points at is untouched. Trusted project folders are recorded by PATH in the keep
+//!     data, never stored inside it, so erasing the keep never reaches them.
 //!   * The install folder is never touched (on macOS it is the signed app bundle); the bundled first-run seed is
 //!     sealed off by the fresh generation's migration marker instead.
 //!   * Every removal is verified (the path must be gone afterwards); failures are returned, never swallowed, so the
@@ -40,7 +40,7 @@ pub fn is_eyehold_owned(path: &Path) -> bool {
         .any(|name| OWNED_NAMES.iter().any(|owned| name == owned))
 }
 
-/// The WebView's live profile may sit beside the station data on some platforms; deleting its files under a
+/// The WebView's live profile may sit beside the keep data on some platforms; deleting its files under a
 /// running window corrupts it. It is cleared through the WebView's own API instead (clear_all_browsing_data).
 fn is_webview_dir(name: &str) -> bool {
     let lower = name.to_lowercase();
@@ -178,7 +178,7 @@ pub fn remove_all(targets: &[PathBuf]) -> RemovalReport {
 }
 
 /// Numeric ids of the agent-bound Telegram bots whose tokens the desktop keychains under `channel:telegram:<id>`.
-/// Read BEFORE the station files go, so those keychain slots can be cleared too.
+/// Read BEFORE the keep files go, so those keychain slots can be cleared too.
 pub fn telegram_bot_ids(workspaces: &Path) -> Vec<String> {
     let file = workspaces.join("channels").join("secrets.json");
     let Some(json) = fs::read_to_string(file)
@@ -291,7 +291,7 @@ mod tests {
             app.join("workspace-quarantine"),
             app.join("update-snapshots"),
             app.join("EBWebView"),
-            app.join(".erasing-station-1"),
+            app.join(".erasing-keep-1"),
         ] {
             fs::create_dir_all(d).unwrap();
         }
@@ -302,7 +302,7 @@ mod tests {
         let plan = plan_targets(
             &app,
             &ws,
-            Some(&app.join(".erasing-station-1")),
+            Some(&app.join(".erasing-keep-1")),
             &[legacy.clone(), user_project.clone()],
             &[],
         );
@@ -322,8 +322,8 @@ mod tests {
         );
         assert_eq!(
             plan[0],
-            app.join(".erasing-station-1"),
-            "the old station goes first"
+            app.join(".erasing-keep-1"),
+            "the old keep goes first"
         );
         let _ = fs::remove_dir_all(root);
     }
@@ -332,14 +332,14 @@ mod tests {
     fn removal_is_verified_and_never_follows_a_link_out_of_eyehold_data() {
         let root = scratch("remove");
         let app = root.join("ai.skynet.harness");
-        let aside = app.join(".erasing-station-1");
+        let aside = app.join(".erasing-keep-1");
         fs::create_dir_all(aside.join("agent-1").join("deep")).unwrap();
         fs::write(
             aside.join("agent-1").join("deep").join("save.json"),
-            b"station",
+            b"keep",
         )
         .unwrap();
-        // the user's project folder, linked INTO the station data
+        // the user's project folder, linked INTO the keep data
         let project = root.join("Projects").join("my-app");
         fs::create_dir_all(&project).unwrap();
         fs::write(project.join("main.rs"), b"fn main() {}").unwrap();
@@ -358,7 +358,7 @@ mod tests {
             assert!(made, "test setup: could not create a junction");
         }
         let report = remove_all(&[aside.clone(), project.clone()]);
-        assert!(!aside.exists(), "the station tree is gone");
+        assert!(!aside.exists(), "the keep tree is gone");
         assert_eq!(report.removed, vec![aside.to_string_lossy().to_string()]);
         assert!(
             project.join("main.rs").is_file(),
@@ -393,7 +393,7 @@ mod tests {
     }
 
     #[test]
-    fn bot_ids_are_read_from_the_station_and_validated() {
+    fn bot_ids_are_read_from_the_keep_and_validated() {
         let root = scratch("bots");
         let ws = root.join("workspaces");
         fs::create_dir_all(ws.join("channels")).unwrap();

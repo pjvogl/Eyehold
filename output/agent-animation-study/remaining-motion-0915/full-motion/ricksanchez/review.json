@@ -2,5 +2,5 @@
   "walkApproved": true,
   "seatsApproved": true,
   "method": "Inspected all 80 packed frames in contact sheet; consistent directional facing, alternating steps, full alpha margins and furniture-free seats.",
-  "liveVerification": "Observed in seeded live station at 19 px with normal roaming, five walking directions, zero backward frames and no console errors; sampled verification."
+  "liveVerification": "Observed in seeded live keep at 19 px with normal roaming, five walking directions, zero backward frames and no console errors; sampled verification."
 }

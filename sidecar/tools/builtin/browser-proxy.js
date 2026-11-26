@@ -3,7 +3,7 @@
    subresources. CONNECT tunnels preserve the browser's original TLS SNI.
 
    A SOCKET ERROR MUST NEVER BE UNHANDLED HERE: this proxy lives inside the sidecar, so an 'error' with no listener
-   ends the whole station. Measured 2026-09-30 (browser gauntlet, gate): Chromium was closed while a CONNECT was still
+   ends the whole keep. Measured 2026-09-30 (browser gauntlet, gate): Chromium was closed while a CONNECT was still
    resolving DNS — the browser's socket reset before its error listener existed (it was attached after the await) and
    the process died with ECONNRESET. Every socket gets its listener synchronously, before any await. */
 'use strict';
@@ -113,13 +113,13 @@ async function startPinnedProxy({ validate, resolve }) {
       if (!client.destroyed) client.end('HTTP/1.1 403 Forbidden\r\nContent-Length: 0\r\n\r\n');
     });
   });
-  // a malformed or reset request from the browser: drop that connection, never the station
+  // a malformed or reset request from the browser: drop that connection, never the keep
   server.on('clientError', (e, sock) => { if (sock && !sock.destroyed) sock.destroy(); });
   await new Promise((resolveReady, reject) => {
     server.once('error', reject);
     server.listen(0, '127.0.0.1', resolveReady);
   });
-  // After listen: a runtime server error (rare — an fd/socket failure) must never end the station; it marks the proxy
+  // After listen: a runtime server error (rare — an fd/socket failure) must never end the keep; it marks the proxy
   // dead instead, and the driver reads listening() to treat its browser as dead and start a fresh one (#61).
   let failed = false;
   server.on('error', () => { failed = true; try { server.close(); } catch (e) { failNote('browser.proxy.close', e); } });

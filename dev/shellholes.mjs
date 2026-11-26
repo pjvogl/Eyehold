@@ -24,7 +24,7 @@ const TRIALS = Number(process.argv[2] || 24);
 
 const PROBE = `(async () => {
   const TRIALS = ${TRIALS};
-  const SKINS = [['station',null],['timber','walnut'],['brick','rust'],['clapboard','bone'],
+  const SKINS = [['keep',null],['timber','walnut'],['brick','rust'],['clapboard','bone'],
     ['shingle','ember'],['stone','sterile'],['stucco','amber'],['curtain','cobalt'],['hedge','fern']];
   const mk = (w, h) => { const c = document.createElement('canvas'); c.width = w; c.height = h; const g = c.getContext('2d'); g.imageSmoothingEnabled = false; return { c, g }; };
   // deterministic PRNG so a failing trial can be re-run by seed
@@ -33,7 +33,7 @@ const PROBE = `(async () => {
   function layout(seed) {
     const R = rng(seed), st = WorldModel.create(WorldModel.defaultDoc());
     for (const id of st.doc().order.slice()) st.removeRoom(id);
-    /* ROOMS THAT TOUCH. Andrew's station is one packed blob with corridors through it, and every
+    /* ROOMS THAT TOUCH. Andrew's keep is one packed blob with corridors through it, and every
        earlier probe used ISLANDS separated by a gap — which is precisely the case where skirts do
        not contend. Grow the layout by budding each new room off an existing edge. */
     // removeRoom refuses to delete the LAST room, so the survivor is the seed we bud from
@@ -68,7 +68,7 @@ const PROBE = `(async () => {
       }
     }
     if (!ids.length) return null;
-    for (const id of ids) { const s = SKINS[Math.floor(R() * SKINS.length)]; if (s[0] !== 'station') st.setHull(id, { mat: s[0], style: s[1] }); }
+    for (const id of ids) { const s = SKINS[Math.floor(R() * SKINS.length)]; if (s[0] !== 'keep') st.setHull(id, { mat: s[0], style: s[1] }); }
     return { st, ids };
   }
 
@@ -76,7 +76,7 @@ const PROBE = `(async () => {
   function holes(geo, bk) {
     // base only — a transparent base pixel under a footprint is backdrop showing through
     const o = mk(bk.W, bk.H);
-    StationBake.drawBase(o.g, bk, 0, 0);
+    KeepBake.drawBase(o.g, bk, 0, 0);
     const d = o.g.getImageData(0, 0, bk.W, bk.H).data, T = geo.TILE;
     let n = 0, worst = null;
     for (const r of geo.allRects) {
@@ -95,11 +95,11 @@ const PROBE = `(async () => {
     const L = layout(1000 + t * 7919);
     if (!L) continue;
     const geo = L.st.projectGeometry();
-    const bk = StationBake.bake(geo);
+    const bk = KeepBake.bake(geo);
     const h = holes(geo, bk);
     // chunk parity
-    const flat = b => { const o = mk(b.W, b.H); o.g.fillStyle = '#000'; o.g.fillRect(0, 0, b.W, b.H); StationBake.drawBase(o.g, b, 0, 0); StationBake.drawLight(o.g, b, 0, 0); return o; };
-    const A = flat(bk), B = flat(StationBake.bakeIncremental(geo, null, null, {}));
+    const flat = b => { const o = mk(b.W, b.H); o.g.fillStyle = '#000'; o.g.fillRect(0, 0, b.W, b.H); KeepBake.drawBase(o.g, b, 0, 0); KeepBake.drawLight(o.g, b, 0, 0); return o; };
+    const A = flat(bk), B = flat(KeepBake.bakeIncremental(geo, null, null, {}));
     const da = A.g.getImageData(0, 0, A.c.width, A.c.height).data, db = B.g.getImageData(0, 0, B.c.width, B.c.height).data;
     let par = 0, box = null;
     for (let i = 0; i < da.length; i += 4) if (Math.abs(da[i]-db[i])+Math.abs(da[i+1]-db[i+1])+Math.abs(da[i+2]-db[i+2]) > 6) {
@@ -108,23 +108,23 @@ const PROBE = `(async () => {
     }
     // the same layout through TRUNK-BEFORE, so we know whether the ownership pass introduced it
     let parBefore = null;
-    if (window.StationBakeBefore) {
-      const bkB = window.StationBakeBefore.bake(geo);
-      const fb = b => { const o = mk(b.W, b.H); o.g.fillStyle = '#000'; o.g.fillRect(0, 0, b.W, b.H); window.StationBakeBefore.drawBase(o.g, b, 0, 0); window.StationBakeBefore.drawLight(o.g, b, 0, 0); return o; };
-      const A2 = fb(bkB), B2 = fb(window.StationBakeBefore.bakeIncremental(geo, null, null, {}));
+    if (window.KeepBakeBefore) {
+      const bkB = window.KeepBakeBefore.bake(geo);
+      const fb = b => { const o = mk(b.W, b.H); o.g.fillStyle = '#000'; o.g.fillRect(0, 0, b.W, b.H); window.KeepBakeBefore.drawBase(o.g, b, 0, 0); window.KeepBakeBefore.drawLight(o.g, b, 0, 0); return o; };
+      const A2 = fb(bkB), B2 = fb(window.KeepBakeBefore.bakeIncremental(geo, null, null, {}));
       const d1 = A2.g.getImageData(0, 0, A2.c.width, A2.c.height).data, d2 = B2.g.getImageData(0, 0, B2.c.width, B2.c.height).data;
       parBefore = 0; for (let i = 0; i < d1.length; i += 4) if (Math.abs(d1[i]-d2[i])+Math.abs(d1[i+1]-d2[i+1])+Math.abs(d1[i+2]-d2[i+2]) > 6) parBefore++;
     }
-    out.push({ trial: t, rooms: L.ids.length, holePx: h.n, at: h.worst, parityPx: par, parityBox: box, parityPxBefore: parBefore, chunkPx: StationBake.CHUNK_PX });
+    out.push({ trial: t, rooms: L.ids.length, holePx: h.n, at: h.worst, parityPx: par, parityBox: box, parityPxBefore: parBefore, chunkPx: KeepBake.CHUNK_PX });
   }
   out.sort((a, b) => (b.holePx - a.holePx) || (b.parityPx - a.parityPx));
   // render the worst trial
   let crop = null;
   if (out.length && (out[0].holePx > 0 || out[0].parityPx > 0)) {
     const L = layout(1000 + out[0].trial * 7919);
-    const geo = L.st.projectGeometry(), bk = StationBake.bake(geo);
-    const fl = b => { const o = mk(b.W, b.H); o.g.fillStyle='#000'; o.g.fillRect(0,0,b.W,b.H); StationBake.drawBase(o.g,b,0,0); StationBake.drawLight(o.g,b,0,0); return o; };
-    const MA = fl(bk), MB = fl(StationBake.bakeIncremental(geo, null, null, {}));
+    const geo = L.st.projectGeometry(), bk = KeepBake.bake(geo);
+    const fl = b => { const o = mk(b.W, b.H); o.g.fillStyle='#000'; o.g.fillRect(0,0,b.W,b.H); KeepBake.drawBase(o.g,b,0,0); KeepBake.drawLight(o.g,b,0,0); return o; };
+    const MA = fl(bk), MB = fl(KeepBake.bakeIncremental(geo, null, null, {}));
     const xa = MA.g.getImageData(0,0,MA.c.width,MA.c.height), xb = MB.g.getImageData(0,0,MB.c.width,MB.c.height);
     const dv = mk(MA.c.width, MA.c.height), od = dv.g.createImageData(MA.c.width, MA.c.height);
     for (let i=0;i<xa.data.length;i+=4){ const on = Math.abs(xa.data[i]-xb.data[i])+Math.abs(xa.data[i+1]-xb.data[i+1])+Math.abs(xa.data[i+2]-xb.data[i+2])>6; od.data[i]=on?255:xa.data[i]>>2; od.data[i+1]=on?60:xa.data[i+1]>>2; od.data[i+2]=on?30:xa.data[i+2]>>2; od.data[i+3]=255; }
@@ -132,7 +132,7 @@ const PROBE = `(async () => {
     window.__parityPng = dv.c.toDataURL('image/png').split(',')[1];
     const o = mk(bk.W, bk.H);
     o.g.fillStyle = '#7a1030'; o.g.fillRect(0, 0, bk.W, bk.H);   // magenta shows through every hole
-    StationBake.drawBase(o.g, bk, 0, 0); StationBake.drawLight(o.g, bk, 0, 0);
+    KeepBake.drawBase(o.g, bk, 0, 0); KeepBake.drawLight(o.g, bk, 0, 0);
     const z = mk(bk.W * 2, bk.H * 2); z.g.imageSmoothingEnabled = false;
     z.g.drawImage(o.c, 0, 0, bk.W * 2, bk.H * 2);
     crop = z.c.toDataURL('image/png').split(',')[1];

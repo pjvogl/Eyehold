@@ -62,7 +62,7 @@ function makeProjectScan(deps) {
   // compose the bounded snapshot text from labeled sections (whole-section drop past the cap, then hard clamp).
   function compose(root, sections, maxChars) {
     const cap = Number.isFinite(maxChars) ? maxChars : defMax;
-    const head = 'PROJECT SNAPSHOT — ' + oneLine(root, 120) + ' (read by the station, not guessed):';
+    const head = 'PROJECT SNAPSHOT — ' + oneLine(root, 120) + ' (read by the keep, not guessed):';
     const out = [head];
     let used = head.length;
     for (const sec of sections) {

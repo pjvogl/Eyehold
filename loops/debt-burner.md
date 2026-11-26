@@ -1,6 +1,6 @@
 # L7 · Debt Burner — hotfiles must not calcify (daily, own worktree)
 
-The hotfiles (sidecar/index.js, loop.js, world.js, stationui.js, app.js, build.js…) absorb
+The hotfiles (sidecar/index.js, loop.js, world.js, keepui.js, app.js, build.js…) absorb
 every lane's edits and grow toward unmaintainable. One small, verified simplification per day.
 
 ## Each tick

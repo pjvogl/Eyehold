@@ -1,5 +1,5 @@
 // APPS — "it can be anything" (2026-09-30): a real model builds an INTERACTIVE app with a CUSTOM look.
-//   node dev/apps-custom-proof.mjs [port]      against a RUNNING station with a real model → .worldshots/apps-custom/
+//   node dev/apps-custom-proof.mjs [port]      against a RUNNING keep with a real model → .worldshots/apps-custom/
 // Andrew: "it should be very customizable, meaning it can be anything … the users should do what they want".
 // Builds the Focus Timer example (a pomodoro timer that must look like a retro arcade cabinet, no schedule, no
 // published data) and proves: the crew wrote a working page with its OWN look, it runs (the clock counts down after
@@ -50,7 +50,7 @@ try {
   await cdp.send('Emulation.setDeviceMetricsOverride', { width: 1440, height: 900, deviceScaleFactor: 1, mobile: false });
   await cdp.send('Page.navigate', { url: 'http://127.0.0.1:' + PORT + '/' });
   for (let i = 0; i < 60; i++) { try { if (await run(`!!document.querySelector('#screen-game.active') && typeof AppsUI === 'object'`)) break; } catch {} await sleep(500); }
-  check('the station is up with APPS loaded', await run(`typeof AppsUI === 'object' && !!document.querySelector('[data-group="apps"]')`));
+  check('the keep is up with APPS loaded', await run(`typeof AppsUI === 'object' && !!document.querySelector('[data-group="apps"]')`));
 
   await run(`document.querySelector('[data-group="' + (document.querySelector('#bottombar .bb-group[data-group="apps"]').hidden ? 'build' : 'apps') + '"] .bb-grp').click(), true`);
   await sleep(300);

@@ -3,7 +3,7 @@ const test = require('node:test');
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const vm = require('node:vm');
-const source = fs.readFileSync(require.resolve('../frontend/app/stationui.js'), 'utf8');
+const source = fs.readFileSync(require.resolve('../frontend/app/keepui.js'), 'utf8');
 const section = source.slice(source.indexOf("  const TIER_MODELS_KEY ="), source.indexOf('  // P1-8 NOTIFICATION'));
 
 function rig(saved, catalog) {

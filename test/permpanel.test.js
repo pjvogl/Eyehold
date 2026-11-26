@@ -45,7 +45,7 @@ ok(/revoke/i.test(P.describeGrant('net:send')), 'a NON-curated standing grant st
 // --- CROSS-LOCK: frontend catalog keys === sidecar grantable set ---
 eq(P.grantableKeys().slice().sort(), GRANTABLE.slice().sort(), 'panel catalog keys exactly match sidecar permgrants.GRANTABLE (no drift)');
 
-// --- effectiveness (object=capability): a grant only takes EFFECT once its station object is placed ---
+// --- effectiveness (object=capability): a grant only takes EFFECT once its keep object is placed ---
 eq(P.grantObject('cabinet:write'), 'cabinet', 'cabinet:write needs the cabinet object placed to take effect');
 eq(P.grantObject('net:send'), null, 'a grant with no object requirement → null');
 ok(/INTEL CAB/i.test(P.objectHint('cabinet:write')), 'objectHint names the INTEL CAB to place (the real palette prop name)');

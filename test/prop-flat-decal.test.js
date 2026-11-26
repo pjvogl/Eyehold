@@ -25,7 +25,7 @@ const RULES = {
 };
 WM.setPropRules(t => RULES[t] || null);
 
-function station() {
+function keep() {
   const s = WM.create();
   A.ok(s.addRoom({ kind: 'hab', rect: { x1: 30, y1: 0, x2: 44, y2: 8 } }).ok, 'test room placed');
   return s;
@@ -33,7 +33,7 @@ function station() {
 
 /* ---- a prop may stand ON a decal ---- */
 {
-  const s = station();
+  const s = keep();
   A.ok(s.addProp({ t: 'rug', x: 32, y: 2, w: 4, h: 3, block: false }).ok, 'rug unrolls on bare deck');
   A.eq(s.canPlaceProp('gachapon', 33, 3, 1, 1).ok, true, 'a solid prop places on the rug');
   A.eq(s.canPlaceProp('plant', 32, 2, 1, 1).ok, true, 'a stack prop places on the rug corner');
@@ -45,7 +45,7 @@ function station() {
 
 /* ---- a decal may be unrolled UNDER props that are already there ---- */
 {
-  const s = station();
+  const s = keep();
   A.ok(s.addProp({ t: 'gachapon', x: 33, y: 3, w: 1, h: 1 }).ok, 'a solid prop stands on the deck');
   A.eq(s.canPlaceProp('rug', 32, 2, 4, 3).ok, true, 'the rug unrolls under it');
   const r = s.addProp({ t: 'rug', x: 32, y: 2, w: 4, h: 3, block: false });
@@ -56,7 +56,7 @@ function station() {
 
 /* ---- a decal is not a table: it hosts nothing, it only stops blocking ---- */
 {
-  const s = station();
+  const s = keep();
   A.ok(s.addProp({ t: 'rug', x: 32, y: 2, w: 4, h: 3, block: false }).ok, 'rug down');
   const v = s.canPlaceProp('plant', 33, 3, 1, 1);
   A.eq(v.ok, true, 'the plant places');
@@ -65,14 +65,14 @@ function station() {
 
 /* ---- off-deck still wins: an exemption from OVERLAP is not an exemption from the floor ---- */
 {
-  const s = station();
+  const s = keep();
   A.eq(s.canPlaceProp('rug', 60, 40, 4, 3).error, 'OFF_DECK', 'a decal still has to lie on a deck');
 }
 
 /* ---- with NO rules installed a decal is just a prop again (plain node callers / older saves) ---- */
 WM.setPropRules(null);
 {
-  const s = station();
+  const s = keep();
   A.ok(s.addProp({ t: 'rug', x: 32, y: 2, w: 4, h: 3, block: false }).ok, 'rug down');
   A.eq(s.canPlaceProp('gachapon', 33, 3, 1, 1).error, 'OVERLAP', 'no rules => no decal exemption');
 }

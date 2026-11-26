@@ -1,4 +1,4 @@
-/* node test/workspace-lineage.http.test.js — real host reports and recovers a selected prior station across restart. */
+/* node test/workspace-lineage.http.test.js — real host reports and recovers a selected prior keep across restart. */
 'use strict';
 const A = require('./_assert.js');
 const fs = require('node:fs');
@@ -31,13 +31,13 @@ function waitExit(child, ms) {
     child.once('exit', (code, signal) => { clearTimeout(timer); resolve({ code, signal }); });
   });
 }
-function station(name, updatedAt, marker) {
+function keep(name, updatedAt, marker) {
   return {
     version: 1, agentId: 'agent', updatedAt, savedAt: updatedAt,
     doc: {
       schema: 'eyehold.save', version: 5, updatedAt,
       agent: { id: 'agent', name },
-      station: { rooms: [{ id: marker }], props: [] },
+      keep: { rooms: [{ id: marker }], props: [] },
       workstreams: [{ id: 'general', history: [{ role: 'user', content: marker }] }]
     }
   };
@@ -51,8 +51,8 @@ function station(name, updatedAt, marker) {
   const legacyB = path.join(appData, 'Skynet', 'workspaces');
   fs.mkdirSync(current, { recursive: true }); fs.mkdirSync(legacyA, { recursive: true }); fs.mkdirSync(legacyB, { recursive: true });
   fs.writeFileSync(path.join(current, '.migration-receipt.json'), JSON.stringify({ version: 1, validated: true, files: [] }));
-  fs.writeFileSync(path.join(legacyA, 'agent.save.json'), JSON.stringify(station('NOVA', 77, 'private-nova-marker')));
-  fs.writeFileSync(path.join(legacyB, 'agent.save.json'), JSON.stringify(station('ORION', 88, 'private-orion-marker')));
+  fs.writeFileSync(path.join(legacyA, 'agent.save.json'), JSON.stringify(keep('NOVA', 77, 'private-nova-marker')));
+  fs.writeFileSync(path.join(legacyB, 'agent.save.json'), JSON.stringify(keep('ORION', 88, 'private-orion-marker')));
   const legacyABytes = fs.readFileSync(path.join(legacyA, 'agent.save.json'));
   const legacyBBytes = fs.readFileSync(path.join(legacyB, 'agent.save.json'));
   const baseEnv = Object.assign({}, process.env, {
@@ -80,10 +80,10 @@ function station(name, updatedAt, marker) {
     A.eq(body.save, null, 'active workspace is definitively empty');
     A.eq(body.lineage && body.lineage.priorInstallEvidence, true, 'host still proves a prior installation');
     A.eq(body.lineage && body.lineage.onboardingAllowed, false, 'host explicitly refuses the genesis inference');
-    A.eq(body.lineage.recovery.recoverableCount, 2, 'both valid station generations are disclosed');
-    A.eq(body.lineage.recovery.automaticCandidateId, null, 'real host refuses to guess between conflicting stations');
-    const selected = body.lineage.recovery.candidates.find(row => row.stationName === 'ORION');
-    A.ok(selected && selected.id, 'Commander can identify the desired station without exposing save contents');
+    A.eq(body.lineage.recovery.recoverableCount, 2, 'both valid keep generations are disclosed');
+    A.eq(body.lineage.recovery.automaticCandidateId, null, 'real host refuses to guess between conflicting keeps');
+    const selected = body.lineage.recovery.candidates.find(row => row.keepName === 'ORION');
+    A.ok(selected && selected.id, 'Commander can identify the desired keep without exposing save contents');
 
     const reportRes = await fetch('http://127.0.0.1:' + first.port + '/api/lineage/report', { headers: { 'X-Eyehold-Token': TOKEN } });
     const reportRaw = await reportRes.text();
@@ -104,13 +104,13 @@ function station(name, updatedAt, marker) {
     const recoveredRes = await fetch('http://127.0.0.1:' + second.port + '/api/save?agent=agent', { headers: { 'X-Eyehold-Token': TOKEN } });
     const recovered = await recoveredRes.json();
     A.eq(recoveredRes.status, 200, 'restarted sidecar answers from the activated generation');
-    A.eq(recovered.save && recovered.save.agent && recovered.save.agent.name, 'ORION', 'next pre-store boot activates exactly the selected station');
-    A.eq(recovered.save.station.rooms[0].id, 'private-orion-marker', 'selected station data survives the complete HTTP restart path');
+    A.eq(recovered.save && recovered.save.agent && recovered.save.agent.name, 'ORION', 'next pre-store boot activates exactly the selected keep');
+    A.eq(recovered.save.keep.rooms[0].id, 'private-orion-marker', 'selected keep data survives the complete HTTP restart path');
     A.eq(fs.readFileSync(path.join(legacyA, 'agent.save.json')).equals(legacyABytes), true, 'unselected source remains byte-exact');
     A.eq(fs.readFileSync(path.join(legacyB, 'agent.save.json')).equals(legacyBBytes), true, 'selected source remains byte-exact');
     A.ok(fs.readdirSync(path.dirname(current)).some(name => name.startsWith('workspaces.recovery-rollback-')), 'empty current generation is retained as rollback');
 
-    // START FRESH over the real route: the recovered station's save is removed (the "manual reset" a stranded
+    // START FRESH over the real route: the recovered keep's save is removed (the "manual reset" a stranded
     // user performs), leftover ledgers remain, legacy roots still exist → the gate fires with nothing chosen.
     // Start fresh must quarantine the leftovers, acknowledge the legacy roots, exit 75, and the next boot
     // must allow onboarding — with every legacy source byte-exact.

@@ -9,7 +9,7 @@
      THE MODEL — a v1 save loads, routes identically and saves as v2 with its links, adopted only when they compile to
                  the identical plan. From then on the floor KEEPS its links (phase B): a save's garbage links drop and
                  the belts are linked by what they join; a cut belt drops its link and its stubs route nothing.
-                 The sidecar's station store reads a v1 save the same way.
+                 The sidecar's keep store reads a v1 save the same way.
      SEMANTICS — what a linked floor MEANS, locked now for the link tools (phase B): a belt that passes a machine's ring
                  hooks nothing; FILTER routes and LOOP exits follow their links' ports, not compass points; a belt beside
                  a junction that is not one of its links is JUNCTION_TOUCH; a passing belt is not a line. */
@@ -19,7 +19,7 @@ const P = require('../frontend/app/pipeline.js');
 const WM = require('../frontend/app/worldmodel.js');
 const { answersFor } = require('./_multibay-parity.js');
 const fx = require('./fixtures/multibay-parity.json');
-const { makeStationStore } = require('../sidecar/station-store.js');
+const { makeKeepStore } = require('../sidecar/keep-store.js');
 
 const plain = geo => { const g = Object.assign({}, geo); delete g.links; return g; };
 const same = (geo, links, msg) => {
@@ -114,9 +114,9 @@ for (const bp of WM.BLUEPRINTS) for (const crewed of [false, true]) {
   A.eq(out.version, 2, 'a v1 save loads and saves as v2');
   A.ok(Array.isArray(out.links) && out.links.length === st.links().length && out.links.length >= 10, '…carrying its links');
   const g = st.projectGeometry();
-  A.eq(P.compileRoutingPlan(g).hash, tilePlan.hash, '…and routes identically: same plan hash, so no station re-arms');
+  A.eq(P.compileRoutingPlan(g).hash, tilePlan.hash, '…and routes identically: same plan hash, so no keep re-arms');
   A.eq(P.compileRoutingPlan(g), tilePlan, '…same plan, field for field');
-  A.eq(WM.defaultDoc().version, 2, 'a new station starts at v2');
+  A.eq(WM.defaultDoc().version, 2, 'a new keep starts at v2');
 
   // a save's links are KEPT — only those the floor no longer stands behind drop, and every loose belt that joins two
   // machines is linked afresh, so a save an older build edited still routes by what is drawn
@@ -151,11 +151,11 @@ for (const bp of WM.BLUEPRINTS) for (const crewed of [false, true]) {
   } finally { P.deriveLinks = real; }
   A.eq(WM.deserialize(v1).links(), st.links(), '…and one they do reproduce adopts them');
 
-  // the sidecar reads a v1 save the same way (station-store loads the same model and compiler)
-  const store = makeStationStore(), r = store.setStation(v1);
+  // the sidecar reads a v1 save the same way (keep-store loads the same model and compiler)
+  const store = makeKeepStore(), r = store.setKeep(v1);
   A.ok(r.ok, 'the sidecar accepts a v1 save');
   A.eq(store.getRoutingPlan().hash, tilePlan.hash, '…routes it identically');
-  A.ok(store.getStation().version === 2 && Array.isArray(store.getStation().links), '…and holds it as v2 with its links');
+  A.ok(store.getKeep().version === 2 && Array.isArray(store.getKeep().links), '…and holds it as v2 with its links');
 }
 
 /* ---------- SEMANTICS: what a linked floor means (the contract the link tools build on) ---------- */

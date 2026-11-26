@@ -334,7 +334,7 @@
       "kind": "command",
       "area": "commands",
       "name": "/cron — show or arm scheduled routines",
-      "purpose": "Show or arm the station's scheduled routines (cron), reading/writing the real /api/cron state.",
+      "purpose": "Show or arm the keep's scheduled routines (cron), reading/writing the real /api/cron state.",
       "promise": "Typing /cron shows the current routine schedule from /api/cron; with on|off|status it arms/disarms and reports the real armed state — never a faked status.",
       "wiring": {
         "files": [
@@ -882,7 +882,7 @@
       "kind": "command",
       "area": "commands",
       "name": "/reload-skills — refresh the slash skill catalog",
-      "purpose": "Invalidate and re-fetch the slash skill + command catalog for the active workstation so newly-authored skills appear.",
+      "purpose": "Invalidate and re-fetch the slash skill + command catalog for the active workkeep so newly-authored skills appear.",
       "promise": "Typing /reload-skills clears the cached catalog and re-warms it from /api/slash/catalog (whose payload the sidecar composes from the skill library, so skills refresh with it), confirming the refresh; the palette then reflects the current skills.",
       "wiring": {
         "files": [
@@ -911,7 +911,7 @@
       "firstSeen": "2026-07-07T08:09:25.408Z",
       "lastSeen": "2026-07-18T00:54:02.711Z",
       "missing": false,
-      "notes": "Live-proven @ seed :8965 / CDP :9365 (evidence .uiatlas/commands-live.json + commands-boundary.json). /reload-skills → 'Refreshing slash skills and command catalog for this workstation.' — ack; re-warms the catalog from /api/slash/catalog + /api/skills."
+      "notes": "Live-proven @ seed :8965 / CDP :9365 (evidence .uiatlas/commands-live.json + commands-boundary.json). /reload-skills → 'Refreshing slash skills and command catalog for this workkeep.' — ack; re-warms the catalog from /api/slash/catalog + /api/skills."
     },
     {
       "id": "command/resume",
@@ -1023,9 +1023,9 @@
       "id": "command/save",
       "kind": "command",
       "area": "commands",
-      "name": "/save — save the current station state",
-      "purpose": "Persist the current station state (agent save) on demand so the Commander can checkpoint their work.",
-      "promise": "Typing /save writes the current station/agent save and confirms; it persists the real save document, not a no-op.",
+      "name": "/save — save the current keep state",
+      "purpose": "Persist the current keep state (agent save) on demand so the Commander can checkpoint their work.",
+      "promise": "Typing /save writes the current keep/agent save and confirms; it persists the real save document, not a no-op.",
       "wiring": {
         "files": [
           "sidecar/slash.js",
@@ -1049,7 +1049,7 @@
       "firstSeen": "2026-07-07T08:09:25.408Z",
       "lastSeen": "2026-07-18T00:54:02.711Z",
       "missing": false,
-      "notes": "Live-proven @ seed :8965 / CDP :9365 (evidence .uiatlas/commands-live.json + commands-boundary.json). /save → 'Saved the current station state.' — ack proven live. KNOWN: deep persist-across-restart not re-verified this pass; the ack + dispatch resolution are the guarded surface."
+      "notes": "Live-proven @ seed :8965 / CDP :9365 (evidence .uiatlas/commands-live.json + commands-boundary.json). /save → 'Saved the current keep state.' — ack proven live. KNOWN: deep persist-across-restart not re-verified this pass; the ack + dispatch resolution are the guarded surface."
     },
     {
       "id": "command/skills",
@@ -1057,7 +1057,7 @@
       "area": "commands",
       "name": "/skills — show installed skill recipes",
       "purpose": "Show the installed skill recipes available to the active agent, reading the real /api/skills catalog scoped to placed capabilities.",
-      "promise": "Typing /skills fetches /api/skills?placed=<caps> and lists the skills available to this workstation (respecting placed-capability gating) — it reflects only skills that actually exist and are reachable.",
+      "promise": "Typing /skills fetches /api/skills?placed=<caps> and lists the skills available to this workkeep (respecting placed-capability gating) — it reflects only skills that actually exist and are reachable.",
       "wiring": {
         "files": [
           "sidecar/slash.js",
@@ -1230,7 +1230,7 @@
       "kind": "command",
       "area": "commands",
       "name": "/suggestions — review recurring-task recipe suggestions",
-      "purpose": "Review the recurring-task recipe suggestions the station has mined from run history, and accept/dismiss/clear them.",
+      "purpose": "Review the recurring-task recipe suggestions the keep has mined from run history, and accept/dismiss/clear them.",
       "promise": "Typing /suggestions lists the mined candidates (MintStore.candidates); accept saves one as a recipe (Recipes.saveCustom), dismiss/reject denylists it, clear wipes the history — acting on the real suggestion store.",
       "wiring": {
         "files": [
@@ -1376,8 +1376,8 @@
       "id": "command/usage",
       "kind": "command",
       "area": "commands",
-      "name": "/usage — show real spend from the station ledger",
-      "purpose": "Tell the Commander what the station has actually SPENT, from the same ledger the budget caps enforce against.",
+      "name": "/usage — show real spend from the keep ledger",
+      "purpose": "Tell the Commander what the keep has actually SPENT, from the same ledger the budget caps enforce against.",
       "promise": "Typing /usage prints today's spend (against the daily cap when one is set), all-time spend with run count and token total, and this agent's share — every figure read from the sidecar spend ledger, so it includes headless runs (routines, away shifts, night shift, messaging) the browser never observed. Sub-cent spend renders as </usr/bin/bash.01, never /usr/bin/bash.00. An unreadable ledger refuses rather than reporting zero.",
       "wiring": {
         "files": [

@@ -23,7 +23,7 @@ const PROFILE = join(OUT, '_chrome');
 
 // Open the window and settle it for capture. Returns a small report so a failed shot is never a silent blank.
 const OPEN_PANEL = `(async () => {
-  StationUI.openTerm('deliverables');
+  KeepUI.openTerm('deliverables');
   await new Promise(r => setTimeout(r, 1800));
   const win = document.querySelector('.term.console.dlv-win');
   if (!win) return JSON.stringify({ ok: false, why: 'window not found' });

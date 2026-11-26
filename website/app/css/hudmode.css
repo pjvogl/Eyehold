@@ -1,7 +1,7 @@
 /* EYEHOLD hudmode.css — HUD MODE (app/hudmode.js): Eyehold folded down to a small always-on-top panel.
-   body.hud-mode hides every station region except the real COMMS panel, which fills the (desktop:
+   body.hud-mode hides every keep region except the real COMMS panel, which fills the (desktop:
    small, always-on-top) window. body.hud-view-activity (where the HUD opens) swaps the conversation for
-   ACTIVITY: the project activity feed (project-home.css) for the whole station, one .ph-card per piece
+   ACTIVITY: the project activity feed (project-home.css) for the whole keep, one .ph-card per piece
    of work, in exactly the project feed's glass. COMMS itself is untouched: it is already designed.
    The only additions here are state marks (needs your OK, a fault) as edge/text changes, never glow.
    The selectors lead with `html body.hud-mode` so they outrank every responsive #screen-game.active
@@ -29,7 +29,7 @@ html body.hud-mode #screen-game.active {
   padding: 4px; gap: 0;
   overflow: hidden;
 }
-/* The station's own regions leave; #terms (the station windows COMMS opens: ADD AGENTS, files,
+/* The keep's own regions leave; #terms (the keep windows COMMS opens: ADD AGENTS, files,
    settings) stays, so every door the conversation opens still opens inside the HUD. */
 html body.hud-mode #screen-game.active > :is(#topbar, #left, #stage-wrap, #crew-resizer, #bottombar, #nav-coach) { display: none !important; }
 html body.hud-mode #logo { display: none !important; }
@@ -62,9 +62,9 @@ html body.hud-mode #hud-activity .ph-controls > [hidden] { display: none; }
 html body.hud-mode #hud-activity .hud-card-nav { margin-top: 6px; }
 html body.hud-mode #hud-activity .ph-result:empty { display: none; }
 
-/* ---- WIDGET (where the HUD opens): the real station, small, and who is working ----
-   The station's own view (#stage-wrap: the world canvas and its camera frame) comes back inside the
-   HUD at widget size; the rows under it are crew-row glass: lamp (the station .dot), name, run clock,
+/* ---- WIDGET (where the HUD opens): the real keep, small, and who is working ----
+   The keep's own view (#stage-wrap: the world canvas and its camera frame) comes back inside the
+   HUD at widget size; the rows under it are crew-row glass: lamp (the keep .dot), name, run clock,
    step. The row being watched takes the selected glass state; waiting on the Commander, the gold edge. */
 #hud-widget, .hud-wview { display: none; }
 /* the picture takes every pixel the window gives it; the rows keep their own height under it. The window
@@ -81,7 +81,7 @@ html body.hud-mode.hud-view-widget #screen-game.active > #stage-wrap {
   display: block !important; grid-area: view; position: relative;
   width: auto; height: auto; min-width: 0; min-height: 0;
 }
-/* only the world and its camera frame: the station's own buttons and toasts stay with the station */
+/* only the world and its camera frame: the keep's own buttons and toasts stay with the keep */
 html body.hud-mode.hud-view-widget #stage-wrap > :not(#stage):not(.cam-hud) { display: none !important; }
 html body.hud-mode.hud-view-widget #stage-wrap .cam-cine { display: none !important; }
 html body.hud-mode.hud-view-widget .hud-wview {
@@ -134,8 +134,8 @@ html body.hud-mode.hud-view-widget #hud-widget {
 
 /* ---- WIDGET, cleaner: one panel, the picture, the rows ----
    The camera's words (label, LIVE, TRACKING, FEED and the identity strip behind them) belong to the big
-   station; at widget size the row under the picture already names who is watched and what it is doing,
-   so only the station's corner marks stay. The view and its rows join into one glass panel: the view takes
+   keep; at widget size the row under the picture already names who is watched and what it is doing,
+   so only the keep's corner marks stay. The view and its rows join into one glass panel: the view takes
    the top corners, the rows the bottom, the view's own hairline is the seam. */
 html body.hud-mode.hud-view-widget #screen-game.active { gap: 0; }
 html body.hud-mode.hud-view-widget #stage-wrap :is(.cam-label, .cam-rec, .cam-feed, .cam-mode) { display: none !important; }
@@ -176,13 +176,13 @@ html body.hud-mode.hud-view-widget #hud-widget .hud-wclock { grid-column: 4; gri
 html body.hud-mode.hud-view-widget #hud-widget .hud-wrow[data-state="idle"] .hud-wclock { font-size: 13px; }
 html body.hud-mode.hud-view-widget #hud-widget .hud-wmore { border-top: 1px solid var(--gd-edge, var(--ph-dim)); border-radius: 0; padding: 5px 10px; }
 
-/* the HUD's own header controls exist only while the HUD is on: back in the full station the COMMS header is
+/* the HUD's own header controls exist only while the HUD is on: back in the full keep the COMMS header is
    exactly as designed (they are appended once, on first entry, and stay in the DOM) */
 body:not(.hud-mode) #chat-panel .hud-ctl { display: none !important; }
 
 /* ==== THE NEW GLASS (Andrew 09-30: "use inspo from the gorgeous new glass style … u keep making it look like the
    ugly older version") ====
-   The HUD wears the station's NEWEST material — the Workflow panel / Build Library sheet (workflow-panel.css,
+   The HUD wears the keep's NEWEST material — the Workflow panel / Build Library sheet (workflow-panel.css,
    refit-polish.css) — not the older 5px gd panel with its striped header, 3px keys and 13px text:
    a 12px frosted sheet (the refit glass over the refit sheet, blur 18px, one hairline, a lifted shadow), a plain
    header with a hairline under it, 8px glass keys read at 15-16px, 10px cards, 17px reading text, nothing under
@@ -306,7 +306,7 @@ html body.hud-mode #hud-activity .ph-controls:not(.hud-card-nav) .btn:first-of-t
 html body.hud-mode #hud-activity .ph-controls:not(.hud-card-nav) .btn + .btn:is(:hover, :focus-visible):not(:disabled) { color: var(--bad, #ff4a3d); border-color: var(--bad, #ff4a3d); background: color-mix(in srgb, var(--bad, #ff4a3d) 8%, transparent); }
 html body.hud-mode #hud-activity .hud-card-nav { margin: 4px 0 0; }
 
-/* ---- WIDGET: one frosted sheet — the station view on top, the caption under it ---- */
+/* ---- WIDGET: one frosted sheet — the keep view on top, the caption under it ---- */
 html body.hud-mode.hud-view-widget #screen-game.active > #stage-wrap {
   border: 1px solid var(--hud-edge); border-bottom: 0; border-radius: 12px 12px 0 0; overflow: hidden;
   box-shadow: inset 0 1px 0 rgba(var(--ph-bright-rgb), .07);
@@ -336,7 +336,7 @@ html body.hud-mode.hud-view-widget #hud-widget .hud-wrow:focus-visible { outline
 html body.hud-mode.hud-view-widget #hud-widget .hud-wrow.on:not(:only-child) { background: var(--hud-on); border-color: var(--hud-edge); box-shadow: var(--hud-light), inset 0 -2px 0 rgba(var(--ph-rgb), .65); }
 html body.hud-mode.hud-view-widget #hud-widget .hud-wrow[data-state="ask"],
 html body.hud-mode.hud-view-widget #hud-widget .hud-wrow[data-state="ask"]:only-child { border-color: color-mix(in srgb, var(--gold, #e9c46a) 60%, transparent); background: rgba(var(--gold-rgb, 233, 196, 106), .06); box-shadow: var(--hud-light); }
-/* the housed lamp (the Workflow panel's status lamp) in place of the station's small pulsing dot */
+/* the housed lamp (the Workflow panel's status lamp) in place of the keep's small pulsing dot */
 html body.hud-mode.hud-view-widget #hud-widget .hud-wrow > .dot {
   width: 10px; height: 10px; border-radius: 50%; animation: none; opacity: 1;
   background-color: var(--ph); box-shadow: var(--hud-lamp), 0 0 4px rgba(var(--ph-rgb), .3);

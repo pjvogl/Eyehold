@@ -46,7 +46,7 @@ fields should make clear which pieces were UI-attended and which were automated.
     "ledgerPreserved": false,
     "artifactsPreserved": false,
     "memoryPreserved": false,
-    "stationStatePreserved": false,
+    "keepStatePreserved": false,
     "notes": ""
   },
   "failureRecovery": {

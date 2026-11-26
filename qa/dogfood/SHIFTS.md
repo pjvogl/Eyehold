@@ -1,7 +1,7 @@
 # Dogfood shift log
 
 Dated entry per dogfood shift (`loops/dogfood.md`). One agent USES Eyehold like a real user and
-files every anomaly. Verdict line = did the station survive being used? Silence is
+files every anomaly. Verdict line = did the keep survive being used? Silence is
 indistinguishable from a dead session — an entry is written every shift, clean or not.
 
 **Provider legend:** `real` = live provider key (the coverage that matters — model behaviour,

@@ -1,6 +1,6 @@
 /* node test/remote.core.test.js — Eyehold Remote phase 1: the sealed channel, pairing, sessions, the shared
    approvals registry, the verb gateway and the LAN listener, driven end to end with the REAL phone client
-   (relay/app/phone-client.js, WebCrypto only) against the REAL station modules. No sidecar boot, no
+   (relay/app/phone-client.js, WebCrypto only) against the REAL keep modules. No sidecar boot, no
    model, no network beyond 127.0.0.1. */
 'use strict';
 const A = require('./_assert.js');
@@ -25,38 +25,38 @@ async function rejects(p, re, msg) {
 }
 
 (async () => {
-  /* ---------- 1. crypto: Node station <-> WebCrypto phone derive identical keys ---------- */
+  /* ---------- 1. crypto: Node keep <-> WebCrypto phone derive identical keys ---------- */
   {
-    const station = C.generateKeyPair();
+    const keep = C.generateKeyPair();
     const phone = await Phone._makeKeyPair(false);
     const sEph = C.generateKeyPair();
     const pEph = await Phone._makeKeyPair(false);
     const nP = C.newNonce(), nS = C.newNonce();
-    const sk = C.deriveSessionKeys({ side: 'station', myStaticPrivate: station.privateKey, myStaticPublic: station.publicRaw,
+    const sk = C.deriveSessionKeys({ side: 'keep', myStaticPrivate: keep.privateKey, myStaticPublic: keep.publicRaw,
       myEphPrivate: sEph.privateKey, myEphPublic: sEph.publicRaw, peerStaticPublic: phone.publicRaw, peerEphPublic: pEph.publicRaw,
-      phoneNonce: nP, stationNonce: nS });
-    const pk = await Phone._deriveKeys({ ephPrivate: pEph.privateKey, devicePrivate: phone.privateKey, stationPub: station.publicRaw,
-      devicePub: phone.publicRaw, stationEph: sEph.publicRaw, phoneEph: pEph.publicRaw, phoneNonce: nP, stationNonce: nS });
+      phoneNonce: nP, keepNonce: nS });
+    const pk = await Phone._deriveKeys({ ephPrivate: pEph.privateKey, devicePrivate: phone.privateKey, keepPub: keep.publicRaw,
+      devicePub: phone.publicRaw, keepEph: sEph.publicRaw, phoneEph: pEph.publicRaw, phoneNonce: nP, keepNonce: nS });
 
-    const up = await Phone._seal(pk.p2s, 'p2s', 1, { hello: 'station', n: 42 });
-    A.eq(C.open(sk.p2s, 'p2s', up), { hello: 'station', n: 42 }, 'station opens a frame sealed by WebCrypto');
+    const up = await Phone._seal(pk.p2s, 'p2s', 1, { hello: 'keep', n: 42 });
+    A.eq(C.open(sk.p2s, 'p2s', up), { hello: 'keep', n: 42 }, 'keep opens a frame sealed by WebCrypto');
     const down = C.seal(sk.s2p, 's2p', 1, { hi: 'phone' });
-    A.eq(await Phone._open(pk.s2p, 's2p', down), { hi: 'phone' }, 'WebCrypto opens a frame sealed by the station');
+    A.eq(await Phone._open(pk.s2p, 's2p', down), { hi: 'phone' }, 'WebCrypto opens a frame sealed by the keep');
 
     const bad = Object.assign({}, up, { ct: up.ct.slice(0, -2) + (up.ct.slice(-2) === 'AA' ? 'AB' : 'AA') });
     A.throws(() => C.open(sk.p2s, 'p2s', bad), 'a tampered frame fails GCM');
     A.throws(() => C.open(sk.p2s, 's2p', up), 'a frame is bound to its direction');
     A.throws(() => C.open(sk.p2s, 'p2s', Object.assign({}, up, { seq: 2 })), 'a frame is bound to its seq');
 
-    // a middle box that swaps the station ephemeral cannot produce matching keys
+    // a middle box that swaps the keep ephemeral cannot produce matching keys
     const evil = C.generateKeyPair();
-    const pk2 = await Phone._deriveKeys({ ephPrivate: pEph.privateKey, devicePrivate: phone.privateKey, stationPub: station.publicRaw,
-      devicePub: phone.publicRaw, stationEph: evil.publicRaw, phoneEph: pEph.publicRaw, phoneNonce: nP, stationNonce: nS });
+    const pk2 = await Phone._deriveKeys({ ephPrivate: pEph.privateKey, devicePrivate: phone.privateKey, keepPub: keep.publicRaw,
+      devicePub: phone.publicRaw, keepEph: evil.publicRaw, phoneEph: pEph.publicRaw, phoneNonce: nP, keepNonce: nS });
     const up2 = await Phone._seal(pk2.p2s, 'p2s', 1, { x: 1 });
-    A.throws(() => C.open(sk.p2s, 'p2s', up2), 'a swapped ephemeral yields keys the station rejects');
+    A.throws(() => C.open(sk.p2s, 'p2s', up2), 'a swapped ephemeral yields keys the keep rejects');
 
     A.eq(C.pairingProof('ABCD2345', phone.publicRaw, 'Pixel'), await Phone.pairingProof('ABCD2345', phone.publicRaw, 'Pixel'), 'pairing proof matches across Node and WebCrypto');
-    A.ok(/^[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{4}$/.test(C.fingerprint(station.publicRaw)), 'fingerprint is short and readable');
+    A.ok(/^[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{4}$/.test(C.fingerprint(keep.publicRaw)), 'fingerprint is short and readable');
     A.throws(() => C.importPublicRaw(C.b64u(Buffer.alloc(65, 4))), 'an off-curve point is refused');
   }
 
@@ -66,18 +66,18 @@ async function rejects(p, re, msg) {
   let clock = 1_000_000;
   const now = () => clock;
   let devices = makeDevices({ fs, path, file, crypto: C, now, newId });
-  const st1 = devices.stationKeys();
-  A.ok(/^stn_/.test(st1.id), 'station id minted');
+  const st1 = devices.keepKeys();
+  A.ok(/^stn_/.test(st1.id), 'keep id minted');
   {
-    const again = makeDevices({ fs, path, file, crypto: C, now, newId }).stationKeys();
-    A.eq(again.publicRaw, st1.publicRaw, 'station key survives a restart (same public key read back)');
-    A.eq(again.id, st1.id, 'station id survives a restart');
+    const again = makeDevices({ fs, path, file, crypto: C, now, newId }).keepKeys();
+    A.eq(again.publicRaw, st1.publicRaw, 'keep key survives a restart (same public key read back)');
+    A.eq(again.id, st1.id, 'keep id survives a restart');
   }
   const phoneKey = await Phone.makeDeviceKey();
   {
     const p = devices.startPairing({ name: 'Andrew phone' });
     A.ok(/^[A-Z2-9]{8}$/.test(p.code), 'pairing code is 8 unambiguous characters');
-    A.eq(p.stationPub, st1.publicRaw, 'pairing hands out the station public key');
+    A.eq(p.keepPub, st1.publicRaw, 'pairing hands out the keep public key');
     const wrong = await Phone.pairingProof('WRONGCOD', phoneKey.publicRaw, 'Andrew phone');
     const r1 = devices.completePairing({ pairingId: p.pairingId, publicKey: phoneKey.publicRaw, name: 'Andrew phone', proof: wrong });
     A.eq(r1.ok, false, 'a wrong proof is refused');
@@ -91,7 +91,7 @@ async function rejects(p, re, msg) {
     A.eq(reread[0].name, 'Andrew phone', 'device name persisted');
     A.ok(!('publicKey' in reread[0]) && !('privateKey' in reread[0]), 'list() never carries key material');
     const raw = fs.readFileSync(file, 'utf8');
-    A.ok(raw.indexOf(phoneKey.publicRaw) >= 0 && raw.indexOf('privateKey') >= 0, 'station private key + device public key are on disk in the protected file');
+    A.ok(raw.indexOf(phoneKey.publicRaw) >= 0 && raw.indexOf('privateKey') >= 0, 'keep private key + device public key are on disk in the protected file');
   }
   {
     const p = devices.startPairing({});
@@ -176,12 +176,12 @@ async function rejects(p, re, msg) {
     A.ok(/^dev_/.test(paired.deviceId), 'pairing over HTTP returns a device id');
     await rejects(Phone.pair({ base, pairingId: p.pairingId, code: p.code, name: 'Tablet', key: k2 }), /expired|already/, 'the same code cannot pair twice over HTTP');
 
-    const client = Phone.connect({ base, deviceId: paired.deviceId, stationPub: p.stationPub, key: k2 });
+    const client = Phone.connect({ base, deviceId: paired.deviceId, keepPub: p.keepPub, key: k2 });
     const s1 = await client.call('status');
     A.eq(s1.ok, true, 'status over the sealed channel');
     A.eq(s1.data.agents[0].agentId, 'forge', 'status carries the crew');
     const snd = await client.call('send', { agentId: 'forge', text: 'tighten the hero copy' });
-    A.eq(snd.data.runId, 'run_1', 'send returns the station run id');
+    A.eq(snd.data.runId, 'run_1', 'send returns the keep run id');
     A.eq(sent[0].deviceId, paired.deviceId, 'the host learns which device sent the task');
     A.eq((await client.call('stop', { runId: 'nope' })).ok, false, 'stop on a dead run explains itself');
 
@@ -194,7 +194,7 @@ async function rejects(p, re, msg) {
     for (let i = 0; i < 100 && !got.length; i++) await new Promise(r => setTimeout(r, 10));
     A.eq(got[0], { type: 'approvals.changed', count: 1 }, 'a broadcast event reaches the phone and decrypts');
 
-    // an approval opened on the station is answered from the phone
+    // an approval opened on the keep is answered from the phone
     const decided = [];
     const done = approvals.add({ runId: 'rX', promptId: 'pX', agentId: 'forge', surface: 'desk', tool: 'shell.exec', argsSummary: 'npm run deploy', finish: (d) => decided.push(d) });
     const list = await client.call('approvals');
@@ -223,14 +223,14 @@ async function rejects(p, re, msg) {
     A.eq(devices.revoke(paired.deviceId).ok, true, 'revoke');
     sessions.endDevice(paired.deviceId);
     await rejects(client.call('status'), /expired|no session|unknown device|refused/, 'a revoked phone is cut off immediately');
-    await rejects(Phone.connect({ base, deviceId: paired.deviceId, stationPub: p.stationPub, key: k2 }).call('status'), /unknown device/, 'a revoked phone cannot say hello again');
+    await rejects(Phone.connect({ base, deviceId: paired.deviceId, keepPub: p.keepPub, key: k2 }).call('status'), /unknown device/, 'a revoked phone cannot say hello again');
     A.eq(makeDevices({ fs, path, file, crypto: C, now, newId }).get(paired.deviceId), null, 'revoke survives a restart');
 
     // nothing else is served
     const r404 = await fetch(base + '/api/key');
     A.eq(r404.status, 404, 'the LAN door serves no /api route');
     const info = await (await fetch(base + '/remote/v1/info')).json();
-    A.eq(info.stationId, st1.id, 'info names the station and nothing else');
+    A.eq(info.keepId, st1.id, 'info names the keep and nothing else');
     A.ok(JSON.stringify(info).indexOf('privateKey') < 0, 'info carries no key material');
 
     client.close();
@@ -242,8 +242,8 @@ async function rejects(p, re, msg) {
 
   // one phone cannot crowd the others off: its own sessions are capped, oldest first
   {
-    const stationKp = C.generateKeyPair(), phoneKp = C.generateKeyPair();
-    const dv2 = { get: (id) => ({ id, publicKey: phoneKp.publicRaw }), stationKeys: () => ({ id: 'stn', privateKey: stationKp.privateKey, publicRaw: stationKp.publicRaw }), touch: () => {} };
+    const keepKp = C.generateKeyPair(), phoneKp = C.generateKeyPair();
+    const dv2 = { get: (id) => ({ id, publicKey: phoneKp.publicRaw }), keepKeys: () => ({ id: 'stn', privateKey: keepKp.privateKey, publicRaw: keepKp.publicRaw }), touch: () => {} };
     const ss2 = makeSessions({ devices: dv2, crypto: C, now: () => Date.now(), newId, perDevice: 4 });
     for (let i = 0; i < 4; i++) ss2._live.set('other-' + i, { id: 'other-' + i, deviceId: 'phone-b', keys: {}, lastAt: Date.now(), inSeq: 0, outSeq: 0 });
     let made = 0;

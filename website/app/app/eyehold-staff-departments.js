@@ -17,16 +17,16 @@
   const board=document.getElementById('eyehold-workboard');if(!board||board.querySelector('[data-eye-staff]'))return;
   const box=document.createElement('details');box.dataset.eyeStaff='1';
   const title=document.createElement('summary');title.textContent='STAFF THE PHYSICAL DEPARTMENTS';box.appendChild(title);
-  const message=document.createElement('p');message.textContent='Requires the seven-room station to be installed. Summons six visible specialists with existing model configuration; no tasks run and no paid provider calls start automatically.';
+  const message=document.createElement('p');message.textContent='Requires the seven-room keep to be installed. Summons six visible specialists with existing model configuration; no tasks run and no paid provider calls start automatically.';
   const action=document.createElement('button');action.type='button';action.textContent='SUMMON & ASSIGN SIX SPECIALISTS';
   const status=document.createElement('p');status.setAttribute('role','status');
   box.append(message,action,status);board.appendChild(box);
   function staffDepartments(){
    if(action.disabled)return;
-   if(typeof App==='undefined'||typeof App.station!=='function'||typeof App.summonAgent!=='function'||typeof App.agents!=='function'||typeof Specialties==='undefined') {status.textContent='Start the station and its roster first.';return}
-   const station=App.station();if(!station||typeof station.assignDesk!=='function'){status.textContent='Canonical WorldModel unavailable.';return}
-   const doc=station.serialize();const rooms=Object.values(doc.rooms||{}).filter(r=>r.kind!=='corridor');
-   if(rooms.length!==7){status.textContent='This station does not have the seven-room layout. Install or build it first.';return}
+   if(typeof App==='undefined'||typeof App.keep!=='function'||typeof App.summonAgent!=='function'||typeof App.agents!=='function'||typeof Specialties==='undefined') {status.textContent='Start the keep and its roster first.';return}
+   const keep=App.keep();if(!keep||typeof keep.assignDesk!=='function'){status.textContent='Canonical WorldModel unavailable.';return}
+   const doc=keep.serialize();const rooms=Object.values(doc.rooms||{}).filter(r=>r.kind!=='corridor');
+   if(rooms.length!==7){status.textContent='This keep does not have the seven-room layout. Install or build it first.';return}
    action.disabled=true;
    const reports=[];
    try{
@@ -36,8 +36,8 @@
      const desk=(doc.props||[]).find(p=>p.t==='desk'&&!p.agentId&&room.rects.some(q=>p.x>=q.x1&&p.x<=q.x2&&p.y>=q.y1&&p.y<=q.y2));
      const existing=App.agents().find(a=>String(a.name||'').toUpperCase()===name);
      if(existing){
-      if(!desk){reports.push(name+': already on roster; check its workstation');continue}
-      const link=station.assignDesk(desk.id,existing.id);
+      if(!desk){reports.push(name+': already on roster; check its workkeep');continue}
+      const link=keep.assignDesk(desk.id,existing.id);
       reports.push(name+': existing agent '+(link&&link.ok?'desk assigned':'requires desk review'));
       continue;
      }
@@ -46,7 +46,7 @@
      if(!spec){reports.push(name+': specialty not available');continue}
      const newAgent=App.summonAgent({...spec,agentName:name},{desk:false});
      if(!newAgent||!newAgent.id){reports.push(name+': summon refused');continue}
-     const bind=station.assignDesk(desk.id,newAgent.id);
+     const bind=keep.assignDesk(desk.id,newAgent.id);
      reports.push(name+': '+(bind&&bind.ok?'summoned and desk assigned':'summoned; desk binding needs attention'));
     }
     if(typeof App.persist==='function')App.persist();

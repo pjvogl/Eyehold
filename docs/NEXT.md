@@ -83,7 +83,7 @@ Verified live through the seeded app at :8916 and a deterministic local provider
 suggest/adopt/undo/save, delayed and failed planning requests, delayed save duplicate protection,
 new typing and navigation preservation, star-to-chapter navigation through a filtered archive,
 real harness step execution, next-step advancement without goal achievement, exact output
-retrieval, and the empty-output recovery path. New controls retain station paint. Screenshots
+retrieval, and the empty-output recovery path. New controls retain keep paint. Screenshots
 were inspected. These are labelled fixture results, not real audience or business outcomes;
 the tests establish the interaction and transport, not suggestion quality across all models.
 
@@ -121,7 +121,7 @@ Live proof: the draft survives idea/reflection saves, pause/resume, template und
 changes. A real intercepted/delayed goal registration displayed SAVING, minted one goal,
 retained text typed while pending, and restored controls after its response. A single-line
 draft triggered the real close warning. Metric saves retained values, cleared only submitted
-notes, and cleared saved dirty markers. Unique control ids and station paint were checked.
+notes, and cleared saved dirty markers. Unique control ids and keep paint were checked.
 
 Focused tests pass: GoalStore 160 assertions, quest-log window 104. Full `npm run test:fast`
 passed 771/771 against source receipt `b00834d92`; the full receipt is
@@ -146,7 +146,7 @@ Implemented in `172acd77e`, with layout and review corrections through `e529f9dc
 - Actual milestone launches carry the goal, success condition, constraints, motivation, and
   latest reflection. Crew reviews also carry recorded steps and any reported final outcome.
 - A personal constellation derived from saved goals and acknowledged outcome records, linked
-  to crew review, with existing Commander progression and station evolution alongside it.
+  to crew review, with existing Commander progression and keep evolution alongside it.
 - A chapter archive with step evidence, user outcome reports, revisions, and reflections;
   JSON export through a real download. Adding goals no longer silently evicts old chapters.
 
@@ -156,7 +156,7 @@ outcome report -> illuminated star and ORBIT stage. Reaching the metric target a
 finish the goal. Browser and sidecar restarts retained ideas, links, constraints, revisions,
 reflections, and exactly the same outcome receipts. Crew review opened as an editable prompt
 with the reported result explicitly distinguished from independent verification. Export
-download retained both test goals, both ideas, and revision history. New controls use station
+download retained both test goals, both ideas, and revision history. New controls use keep
 paint; the next action remains visible in the docked panel. All examples are labelled local
 fixtures, not actual audience or business achievements.
 
@@ -193,9 +193,9 @@ Live proof on the seeded app: real local provider transport -> brief.proceed -> 
 run completion created `journey-feedback.html`; one of three steps completed while the overall
 goal stayed active. Deliberate provider failure awarded no progress. App, automation and
 creative goal examples rendered correctly. A reported final planned step still required explicit
-outcome confirmation; that confirmation advanced the existing station evolution to VECTOR.
+outcome confirmation; that confirmation advanced the existing keep evolution to VECTOR.
 Selected next step, prior evidence and goal focus survived both browser reload and sidecar
-restart. The output-library action showed the produced file; new controls had station paint
+restart. The output-library action showed the produced file; new controls had keep paint
 and the return card had no horizontal overflow. These are labelled local fixture scenarios,
 not evidence of customer adoption or actual business outcomes.
 
@@ -218,7 +218,7 @@ Do not treat source proof as installer acceptance, usability validation, or rele
 Next product checkpoint: have the owner and a small set of users try their own app-building,
 automation and creative work across return visits. Check whether the next action is useful,
 changing direction is clear, evidence is trusted, and the world payoff feels personal. Then
-decide whether to expand experiments/dependencies, actual reusable crew learning and station
+decide whether to expand experiments/dependencies, actual reusable crew learning and keep
 artifacts. Backend ownership consolidation follows the validated persistence requirements;
 this slice intentionally preserves existing stores and IDs. No new XP currency or tool gating.
 
@@ -234,7 +234,7 @@ Owner requested cleanup using `docs/AUDIT_0.11.1_FOR_0.11.2.md`. This lane owns 
 reproduced audit repairs and review of outstanding release evidence. Done means late catalogs
 preserve the chosen provider/model, image costs reconcile without a second debit, cancellation
 prevents image publication, panel height survives reopen/reload, and BYOK media recovery names
-the supported credential route. Registered regressions, live disposable-station checks and
+the supported credential route. Registered regressions, live disposable-keep checks and
 fast/HTTP gates must pass. Installed/account/hardware proof remains separately tracked.
 The previous release's exceptions do not carry forward.
 
@@ -247,7 +247,7 @@ scopes and remaining installed/account/soak acceptance in `docs/AUDIT_0.11.1_FOR
 
 ## IMPLEMENTED — skin-motion-0910: movement stutter
 
-Source repair 75a814c18 holds look-back facing and removes empty waypoint frames for hero, idle crew and workstation crew. Live hero/crew checks passed; behavior regression 15/15 and customer journeys 34/34 passed. Receipt: qa/movement-continuity-0910.md. Full integration gate is recorded in qa/STATUS.md.
+Source repair 75a814c18 holds look-back facing and removes empty waypoint frames for hero, idle crew and workkeep crew. Live hero/crew checks passed; behavior regression 15/15 and customer journeys 34/34 passed. Receipt: qa/movement-continuity-0910.md. Full integration gate is recorded in qa/STATUS.md.
 
 ## MERGED — 2026-09-10 world seating integration (agent/doorway-occlusion-0910)
 
@@ -262,7 +262,7 @@ completed at f3e57f58e; post-merge fast gate also passed 753/753. Installed desk
 
 Owner reported agents walking behind walls near openings. Source repair a22f780e3 validates
 actual foot paths, guards early turns and re-anchors off-grid starts; 140b3e7b2 adds the
-remaining-leg separation regression. Live seeded proof: all 12 hero/crew/workstation routes
+remaining-leg separation regression. Live seeded proof: all 12 hero/crew/workkeep routes
 passed both hallway orientations and directions with zero wall crossings. Customer journeys
 34/34 green; full fast gate 752/752 green. Bug: 49192a68. Merged 9e5b6d88e; exact merged-commit fast gate in the isolated checkout also passed 752/752.
 Unrelated qa/STATUS.md work was preserved. Installed recovery remains unverified.
@@ -282,7 +282,7 @@ Owner authorized sentence buffering, ordered audio recovery, cutoff diagnostics,
 
 ## DONE — 2026-09-08 legacy rating save repair (agent/rating-repair-0908)
 
-Own lane: preserve legacy station identity on resume and surface rating failure reasons.
+Own lane: preserve legacy keep identity on resume and surface rating failure reasons.
 Before/after real UI and same-run HTTP proof recorded in bug 1fc69e6a; source fix a55a1ed07.
 Integrated candidate gates: fast 733/733 and HTTP 105/105 passed. Customer installer recovery remains unverified.
 
@@ -297,7 +297,7 @@ spoken direct replies for specialists, and the missing macOS hardened-runtime au
 entitlement. Release CI checks the actual signed app entitlement and microphone purpose string.
 
 Live seeded UI on :9196 proved NOVA/Bella and VOICE TEST/George independently, retained both
-through sidecar restart + page reload, and restored station-default inheritance on clear.
+through sidecar restart + page reload, and restored keep-default inheritance on clear.
 Real authenticated TTS returned distinct Kokoro WAVs for the same phrase. No browser warnings,
 errors, or native control paint. Fast: 725/725; HTTP: 101/101; customer journeys: 29/29, all exit 0.
 
@@ -349,12 +349,12 @@ Owner request: plan and execute a goal-centered leveling and quest loop.
    refresh, durable later/blocked/too-big/resume, and explicit real-world action reporting.
 4. Connect the quest-log UI to those APIs, including user-performed milestone reporting,
    extending a completed plan, and specific achievement receipts.
-5. Verify action -> evidence -> next step -> goal confirmation -> station evolution in the
+5. Verify action -> evidence -> next step -> goal confirmation -> keep evolution in the
    seeded running app, repeat reads after restart, then fast/http gates and integration.
 
 Done means a completed plan leaves the goal active; a reported real-world action advances
 the plan with labelled evidence; a recorded metric informs planning; explicit goal outcome
-confirmation advances Commander level and station evolution exactly once, surviving restart.
+confirmation advances Commander level and keep evolution exactly once, surviving restart.
 
 Implemented: explicit success conditions and goal confirmation, manual goal creation with one
 or more steps, focus switching, extending plans, user-performed action reports, Commander
@@ -399,7 +399,7 @@ See `qa/task-context-conversation-0905.md`. Existing QA status and Rooms handoff
 ## DONE — 2026-09-05 platform connection integration (`agent/platform-handoff-0905`)
 
 Connector task continuation, saved browser-profile contention, and Google account identity were
-integrated with current station workflows and the Hermes reliability lane. Joint production trunk
+integrated with current keep workflows and the Hermes reliability lane. Joint production trunk
 `c2a62eeb9` passed post-merge fast 716/716 and HTTP 96/96, both exit 0. Seeded live task
 restart/continuation and real-Chrome saved-cookie reuse passed on the identical production source.
 Unrelated QA status and Rooms handoff bytes were preserved; merge receipts belong in `qa/STATUS.md`.
@@ -415,7 +415,7 @@ acceptance opens the existing editable routine draft with the original agent, so
 The user chooses the cadence and confirms creation; no schedule is inferred from counts. Persist
 offer/defer/never decisions, honor paused/forgotten personalization, and suppress scheduled workflows.
 
-Done means: in a seeded live station, repeated completed requests earn a concrete takeover card;
+Done means: in a seeded live keep, repeated completed requests earn a concrete takeover card;
 review opens a prefilled routine draft, confirmation creates exactly one real scheduler job, and
 restart retains the job/decision without another offer. Negative scenarios remain silent. Focused,
 fast and HTTP gates pass before the user-authorized merge. Use existing scheduler execution and
@@ -429,7 +429,7 @@ and run receipts. Post-merge gate result belongs in `qa/STATUS.md`.
 
 ## DONE — 2026-09-05 approved world/UI integration (`agent/world-visual-audit-0904`)
 
-Owner approved the custom station and all six UI upgrades for immediate integration. Combined with
+Owner approved the custom keep and all six UI upgrades for immediate integration. Combined with
 trunk `010a6b50f`, verified, and fast-forwarded into trunk at `6085f26b8`: 712/712 fast steps green
 (extended timeout), 21 live UI checks, no browser exceptions. The integrated tree exactly matched
 the verified candidate. Capability badges preserve the newer per-agent effective-authority model;
@@ -440,7 +440,7 @@ and preserved. No installed binary, publication, or project-wide readiness claim
 ## 2026-09-05 — HERMES RECONNECT + WEBSITE LOOKUP (`agent/hermes-reconnect-capture-0905`)
 
 Implemented bounded SSE replay (1,024 events / 2 MiB), boot-scoped cursors, duplicate suppression,
-obsolete-connection guards, and authoritative snapshot recovery. `station.command` is never replayed:
+obsolete-connection guards, and authoritative snapshot recovery. `keep.command` is never replayed:
 reconnecting cannot retry a renderer mutation that already executed or timed out. Recovery stays
 visibly degraded until a snapshot succeeds. The shipped website renderer mirror stays identical.
 
@@ -451,14 +451,14 @@ and oversized responses. The bundled **Learn a Website Lookup** procedure requir
 against the live page before saving a runtime skill and its script through `skill.manage`.
 This first slice covers read-only JSON lookups, not authenticated or mutating workflow replay.
 
-Live proof: seeded station showed DOWN after its sidecar stopped and recovered after restart;
+Live proof: seeded keep showed DOWN after its sidecar stopped and recovered after restart;
 the new boot's cursor requested snapshot reset. Real Chromium observed a fixture's lookup, the
 production browser tool derived its client, and direct JSON matched the rendered result. Focused
 tests prove disconnected channel replay, restart expiry, no duplicate replay, command exclusion,
 HTTP failure handling, and exact skill script read-back in a fresh process. Integrated by exact
 fast-forward at `9c9f788d0`; both before and after integration, fast **712/712** and HTTP **95/95**
 passed. Evidence: `qa/digests/2026-09-05-hermes-reconnect-capture.md`. No installed-binary or
-station-wide readiness claim.
+keep-wide readiness claim.
 
 ## 2026-09-04 — LIVE TRANSCRIPTS + VOICE TURN FLOW (`agent/voice-flow-0904`)
 
@@ -559,7 +559,7 @@ connector wall, none was watched. Andrew directed items 1–5 to execute. State:
 
 1. **Users answered.** Issues #6/#5/#2 got replies naming the fixes that ride v0.10.13
    (`5b5f50a1d` BYOK credit gate, `6adda1348` connector 401 → REAUTH + SSE, `977294cbc`/`03519b043`/
-   `1e651a03e` unreachable-station recovery). 49thMedia's residual "no EYEHOLD key" banner is the keycta
+   `1e651a03e` unreachable-keep recovery). 49thMedia's residual "no EYEHOLD key" banner is the keycta
    asking for the wrong provider after unlink — lane `agent/free-path-ollama` fixes the CTA.
 2. **macOS physical recovery proof — retroactively waived for 0.10.13** (record in
    `docs/RELEASE_CUT_CHECKLIST_v0.10.13.md` § Post-publish record). **It is the first MUST of the next cut.**
@@ -588,7 +588,7 @@ The managed proxy lane (`codex/provider-truth-0903`, cloud commit `b83271e`) add
 and preserves only bounded, redacted upstream message/type/code/provider/request-id fields in both
 responses and structured logs. Deterministic proxy replays of the exact Sonnet 5 body, with and without
 `reasoning_effort`, pass, and the public route inventory reported nine active endpoints for the id on
-2026-09-03. Historical production-log correlation remains unclaimed because this workstation has no
+2026-09-03. Historical production-log correlation remains unclaimed because this workkeep has no
 Fly.io authentication and the old client did not forward its run id to the cloud request.
 
 Proof: live seeded Windows UI selected the direct bare id, switched to Eyehold, showed `MODEL UPDATED`,
@@ -607,7 +607,7 @@ and `qa:ready` READY with zero open P0/P1 findings.
 This waiver does not waive the staged-draft T0 clean-install or G1 packaged-lifecycle gates, hosted-feed
 verification, or the older-client update canary. Physical macOS recovery proof is still absent and must
 either pass on real Mac hardware or receive a separate explicit owner waiver before Publish. The updater
-signing key's two usable offline copies also still require human attestation before the official tag push.
+signing key's two usable offline copies also still require human attekeep before the official tag push.
 
 ## 2026-09-02 — v0.10.13 RC.1 INVALIDATED; RELEASE-BLOCKER REPAIR
 
@@ -662,7 +662,7 @@ from the shared-contract owner. **Built same day, all four slices live-proved �
 ## 2026-08-21 — MOMENTUM LOOP: CONTINUOUS EXTRACTION + USEFUL POPUPS (`agent/momentum-loop`)
 
 Thesis check (Andrew, 08-21): the interview is a ONE-TIME extraction of what the user wants and how;
-the station must keep extracting through the work itself, and turn what it learns into automation
+the keep must keep extracting through the work itself, and turn what it learns into automation
 that takes work off the user. Audit of interview → dossier → quests → recommendations found the loop
 leaks in seven places; the rate beat (`chat.js` ~2770, `▲ nailed it / ◆ close / ▼ missed`) only mints
 XP and asks nothing. Popups must carry real power or not appear.
@@ -673,7 +673,7 @@ XP and asks nothing. Popups must carry real power or not appear.
    (`min(great,3) − 2·min(miss,3)`, can sink a recipe out of the row). Only recipe-launched runs carry a
    `recipeId`; that is the correct scope.
    Also already built: the just-in-time curiosity nudge (`chat.js curiosityNudge`, `curiosity.js`) — but it
-   asks only about BLANK dims, so once the interview fills all nine the station never refines again.
+   asks only about BLANK dims, so once the interview fills all nine the keep never refines again.
 
 **BUILT in this lane — verdict follow-up (`frontend/app/verdictfollowup.js`, `test/verdictfollowup.test.js`):**
 `◆ close` / `▼ missed` no longer end in "noted": the beat asks "what missed?" with chips that each map to a
@@ -750,7 +750,7 @@ confidence telemetry; physical-microphone acoustic proof remains outstanding. Fo
 website-mirror checks are green. `npm run test:http` is **76/76 GREEN** and `npm run test:fast` is
 **630/630 GREEN** on this lane.
 
-## 2026-08-09 — WEBSITE PREVIEW STATE CORRECTION (`agent/station-preview-state`)
+## 2026-08-09 — WEBSITE PREVIEW STATE CORRECTION (`agent/keep-preview-state`)
 
 READY TO MERGE. The first preview repair updated the renderer mirror and stage crop but left the
 website-only captured save on the retired one-room `hull` material state. Worse, `demo-boot.js`
@@ -766,16 +766,16 @@ hull, while the reported public screenshot remains the retired gray hull. Crop t
 `748 / 752` with offsets `-252px / -84px`. Focused preview coverage is 14/14, website mirror is
 exact, and the guarded website stage check would publish 3,901 files while holding back 17.
 
-## 2026-08-09 — CURRENT WEBSITE STATION PREVIEW (`agent/station-preview-current`)
+## 2026-08-09 — CURRENT WEBSITE KEEP PREVIEW (`agent/keep-preview-current`)
 
-READY TO MERGE. The eyehold.com station preview was still clipping the embedded app with the
+READY TO MERGE. The eyehold.com keep preview was still clipping the embedded app with the
 retired `666x744 @ 283,88` camera rectangle while the current shell renders the stage at
 `748x752 @ 252,84`. The homepage now measures the real same-origin `#stage` rectangle after iframe
 load and on later layout changes, then derives its crop offset, scale, and aspect ratio from that
 live geometry. The website app mirror is synchronized with the current frontend, including the
-latest station lighting/rendering changes, and the corrected controller is cache-busted.
+latest keep lighting/rendering changes, and the corrected controller is cache-busted.
 
-Live local-site proof at desktop width rendered the complete warm-lit station with measured crop
+Live local-site proof at desktop width rendered the complete warm-lit keep with measured crop
 `748 / 752`, offsets `-252px / -84px`, and scale `0.721925`; at `390x844` it retained the same live
 geometry, scaled to `0.447861`, and reported `scrollWidth 375` with no horizontal overflow. The new
 regression is 6/6, website mirror is exact (3,885 files + 2 embed-only), claims planning authority
@@ -801,7 +801,7 @@ Verification: focused voice-button (**86/86**), media-service (**34/34**), and c
 package JSON checks are green. Both the final branch and merged trunk passed
 `npm run test:fast` **584/584 GREEN** and `npm run test:http` **70/70 GREEN**. Claims authority
 passes with 206 locked surface files. In the real seeded app, the TURN END control rendered with the persisted
-NORMAL 1.8S value after closing and reopening Local Live, using the station-native dark skin.
+NORMAL 1.8S value after closing and reopening Local Live, using the keep-native dark skin.
 The in-app browser denied microphone capture, so real acoustic boundary/transcript proof
 remains for an installed-desktop pass; production callback behavior is covered deterministically.
 No route, shared-contract, external-service, push, PR, or deploy change occurred.
@@ -969,7 +969,7 @@ message, production-data mutation, integration-tree edit, push, PR, deploy, tag,
 READY TO MERGE. A Telegram Bot API poller could be genuinely healthy while owner enrollment was still
 unfinished. The adapter correctly refused every ordinary DM in that state, but CHANNELS rendered
 `CONNECTED — polling`, told the Commander to DM the bot, and could overwrite the one-time `/pair` command
-when the asynchronous poll-up repaint landed. The in-station agent then also reported Telegram as unreachable
+when the asynchronous poll-up repaint landed. The in-keep agent then also reported Telegram as unreachable
 because no admitted chat had ever reached the channel target store.
 
 First connect now issues and durably stores a fresh owner challenge and returns its raw code once to the
@@ -990,7 +990,7 @@ publication occurred.
 ## 2026-08-05 — TELEGRAM OGG/OPUS VOICE TRANSCRIPTION (`agent/telegram-voice-ogg`)
 
 READY TO MERGE. Telegram already normalized voice notes as `voice-message.ogg` and routed them through the
-shared STT ladder, but its keyless local floor decoded WAV only. A station with the shipped offline speech
+shared STT ladder, but its keyless local floor decoded WAV only. A keep with the shipped offline speech
 engine therefore saved the attachment and told the agent `local engine needs wav (got ogg)` instead of
 delivering the spoken words. The media service now lazily loads a bundled in-process Ogg/Opus decoder,
 downmixes/resamples the result to 16 kHz mono Float32 PCM, and feeds the same local Whisper path used by WAV.
@@ -1011,7 +1011,7 @@ Bot API E2E plus the live shared STT route.
 IMPLEMENTATION READY; CANDIDATE CLAIMS BLOCKED. Checkpoints now bind their shadow Git history to the exact
 mutation root instead of always snapshotting the agent workspace. Relative workspace writes retain the
 existing IDs and layout; commands and writes in an authorized external project use a digest-scoped repo
-under the station checkpoint store, never the project's own `.git`. Restore rechecks current root authority
+under the keep checkpoint store, never the project's own `.git`. Restore rechecks current root authority
 and fails closed after revocation while keeping the checkpoint visible for later exact-root reauthorization.
 The Rewind UI names the affected root and cannot offer a restore while its authority is revoked.
 
@@ -1025,11 +1025,11 @@ and HTTP remained 60/60 green. Fast passed its first 205 steps, including every 
 correctly blocked at `qa-product-perfect-claims.test.js` because the shared claims are sealed to another
 candidate commit (9 failed / 55 passed). This branch does not rewrite shared candidate evidence. Final
 integration must reconcile the known `sidecar/index.js`/fast-manifest overlaps, regenerate candidate-bound
-claims once, and rerun the canonical gate. No station-wide readiness claim is made.
+claims once, and rerun the canonical gate. No keep-wide readiness claim is made.
 
-## 2026-08-04 — COMPLETE STATION DISASTER RECOVERY P0 (`agent/disaster-recovery-p0`)
+## 2026-08-04 — COMPLETE KEEP DISASTER RECOVERY P0 (`agent/disaster-recovery-p0`)
 
-READY TO MERGE. Eyehold now has a versioned, offline complete-station recovery bundle and operator CLI.
+READY TO MERGE. Eyehold now has a versioned, offline complete-keep recovery bundle and operator CLI.
 Capture inventories every non-ephemeral `WORKSPACES` file plus supplied browser-owned `eyehold.*` state,
 binds every payload and the manifest with SHA-256, and refuses to publish a recovery point unless agents,
 rooms/props, conversations, memories, routines, loops, tasks, projects, deliverables, permissions, and
@@ -1041,7 +1041,7 @@ Credential and machine authority handling is explicit. Connector/channel/project
 provider credentials, OAuth/token/key material, cookies, and absolute-path grants are excluded and listed
 under `reauthentication`. Portable non-path permission grants survive. A restored project is truthfully
 `REVOKED` until its path is reauthorized. The CLI and machine-readable rehearsal evidence enumerate exact
-`restored`, `skipped`, and `reauthentication` rows; `docs/DISASTER_RECOVERY.md` records the stopped-station
+`restored`, `skipped`, and `reauthentication` rows; `docs/DISASTER_RECOVERY.md` records the stopped-keep
 backup, clean-profile restore, browser import, and previous-version rollback procedures.
 
 Verification: the deterministic destructive rehearsal is **8/8 GREEN** for complete capture, clean-profile
@@ -1125,8 +1125,8 @@ the same agent's ungranted routine, revokes real authority, and prompts again; a
 row explicitly name its watched-session boundary and surviving host hardlines. The existing real-module
 tooltip rig proves pointerout during the 320ms delay cannot create a ghost while a rested anchor still
 shows normally. Focused receipts: channel SSE 75 assertions, tooltip 353, permissions 69, permissions UI
-34, MCP HTTP 87, website mirror 8. A seeded station on `:18761` reached ONLINE; SETTINGS › PERMISSIONS
-rendered its authoritative ledger, the station tooltip self-started/adopted its CINEMA title and hid on
+34, MCP HTTP 87, website mirror 8. A seeded keep on `:18761` reached ONLINE; SETTINGS › PERMISSIONS
+rendered its authoritative ledger, the keep tooltip self-started/adopted its CINEMA title and hid on
 exit, and the browser warning/error log was empty. The canonical fast gate reached step 198/499, then
 hit the known `qa-product-perfect-claims` authority failure introduced by this lane's obsolete base
 `90df36dd`; integration has already reset to clean `9aa72820`, so the coordinator must re-run `test:fast`
@@ -1152,7 +1152,7 @@ Verification: `node --check` and focused domain/loop/orchestration/runstore/COMM
 real-sidecar incident replay then passed 45 assertions: exactly one `web_fetch`, one zero-tool synthesis turn,
 no delegated/search cascade, and persisted model/effort/run/tool timings. The real delegation e2e passed 31
 assertions and proved `/api/runs` joins the worker to its exact lead with model and elapsed time; runstore reload
-proved the join and tool milliseconds survive restart. A seeded station on `:18879` rendered ONLINE with no
+proved the join and tool milliseconds survive restart. A seeded keep on `:18879` rendered ONLINE with no
 browser console errors, then the tab and seed process were closed. No provider spend, external message/write,
 push, PR, deploy, publish, credential, production-data change, or integration-tree edit was performed.
 ## 2026-08-02 — RECOMMENDATION FABRIC 1–5 (MERGED)
@@ -1180,7 +1180,7 @@ simulation proves that a later automation preference overtakes an earlier resear
 Verification on merged trunk: focused recommendation/readiness/quest/routine/study/suggestion/
 personalization tests green; every touched JavaScript file passes `node --check`; `test:fast` is 495/495
 green; full `test:http` is green (sidecar 460, quest refresh 47, cron API 79, lifecycle 59, route coverage
-75, browser gauntlet 86). A seeded station on `:8879` at `v0.8.0-135-g14b4fac9` proved the complete
+75, browser gauntlet 86). A seeded keep on `:8879` at `v0.8.0-135-g14b4fac9` proved the complete
 five-state lifecycle and quality outcome, durable pause across restart, model suppression while paused,
 and rejection of a paused write. Replay reported completion/acceptance/evidence/readiness coverage 1,
 precision@3 1, regret 0, Brier 0.0225, and bounded automation weight 0.5. The final Forget returned all
@@ -1226,7 +1226,7 @@ lanes now read the same provenance-labelled topics, threads, workflow, recent ac
 and verdict summary; weak observed evidence is explicitly forbidden from overriding the current request.
 
 Verification on the synced final tree: `test:fast` 486/486 green; full `test:http` green (including sidecar 459 and
-route coverage 75). Focused recommendation/readiness/workflow/context/study tests are green. A seeded station
+route coverage 75). Focused recommendation/readiness/workflow/context/study tests are green. A seeded keep
 on `:18799` recorded `live:sync-7e7ae8e7`, applied deferred/accepted/completed verdicts, restarted with `--keep`,
 and reloaded the exact four-state transition plus its evidence. `recommendation-replay.mjs` then reported
 acceptance/completion/evidence/readiness coverage of 1 across the two completed samples and a bounded research
@@ -1255,18 +1255,18 @@ paths. No publish, push, PR, deployment, release, credential, or production-data
 ## 2026-08-01 — HARNESS SELF-AWARENESS (`agent/harness-self-awareness-reconcile`)
 
 RECONCILED against bridge trunk `25f8b053`. Eyehold now gives every compute-capable agent a local, read-only,
-consent-free `station.inspect` tool backed by the same build, scheduler, connector, and diagnostic
+consent-free `keep.inspect` tool backed by the same build, scheduler, connector, and diagnostic
 collectors as the UI APIs. Its output is bounded and allowlisted; secrets and filesystem paths do
 not cross the tool boundary, and any failed collector is labelled unavailable rather than rendered
 as a confident empty/healthy state. The run identity block now includes the exact app and harness
-build, and the operator manual directs mutable harness questions to `station.inspect` instead of
+build, and the operator manual directs mutable harness questions to `keep.inspect` instead of
 invented CLI commands or requests for WORKBENCH/INTEL CAB.
 
 Verification: focused snapshot/tool/policy/runtime/manual tests are green; the real MCP-sidecar e2e
-passes 76 assertions and proves the provider sees and calls the legal `station_inspect` wire name
+passes 76 assertions and proves the provider sees and calls the legal `keep_inspect` wire name
 against a planted routine, connected MCP server, and diagnostic failure. The reconciled `test:fast`
 gate is 491/491 green after synchronization with trunk `6819a1af`, and the full `test:http` gate is
-green. In a seeded live station on `:8977`,
+green. In a seeded live keep on `:8977`,
 NOVA used both granted tools in one run: it reported exact clean build
 `v0.8.0-73-g30c9a53b`, the disarmed/unhealthy scheduler, zero routines, zero connectors, and zero
 recorded errors, then used bounded code composition to calculate `17 * 23 = 391`. The seed was
@@ -1274,7 +1274,7 @@ stopped. No push, PR, deploy, publish, credential, or production-data change was
 
 ## 2026-07-31 — BROWSER REACH 0.8.5 (`agent/browser-reach-085`)
 
-READY TO MERGE at `dd01c8d3` (five commits from `7b2550e0`). The station-owned Chromium launch now
+READY TO MERGE at `dd01c8d3` (five commits from `7b2550e0`). The keep-owned Chromium launch now
 derives its UA generation from the installed binary, carries the host locale, removes the
 `HeadlessChrome` product token, and disables Chromium's AutomationControlled signal. Attached
 Commander-owned Chrome is never launched or modified by this posture. Challenge telemetry is one
@@ -1300,7 +1300,7 @@ owned real-Chromium fixture records ordinary content as reached and a verificati
 
 Verification: focused browser contract 281 assertions; reach-measure contract 15; web-politeness 10;
 real-Chromium gauntlet 77; `test:fast` 475/475 green; full `test:http` green (including sidecar 445).
-A seeded station booted on `:8897`; `/health` returned 200 with `v0.8.0-18-gdd01c8d3`, the app shell
+A seeded keep booted on `:8897`; `/health` returned 200 with `v0.8.0-18-gdd01c8d3`, the app shell
 returned 200/67,131 bytes, and unauthenticated `/api/toolsets` correctly returned 403. The proof seed
 was stopped. No external-site benchmark was run because no authorized origin was supplied, so no
 claim about third-party wall reach is made. No merge, push, PR, deploy, publish, credential, or
@@ -1321,7 +1321,7 @@ Corrective verification: browser contract 293; reach receipt 18; browser parity 
 attach 33; browser PIE 53; web politeness 13; real-Chromium gauntlet 86; `test:fast` 475/475 green;
 full `test:http` green. Seeded branch `v0.8.0-32-g94a034dd` returned 200 from `/health` and the app
 shell, then the proof process was stopped. `qa:ready` is separately `NOT READY` because this isolated
-worktree has no Guardian, journeys, Beginner Run, or installed-exe receipts; no station-wide release
+worktree has no Guardian, journeys, Beginner Run, or installed-exe receipts; no keep-wide release
 readiness claim is made. External-site reach remains unmeasured without an authorized target.
 
 
@@ -1329,7 +1329,7 @@ readiness claim is made. External-site reach remains unmeasured without an autho
 
 Andrew's mandate for the update after v0.8.0: (1) make Eyehold dramatically easier for a
 beginner to understand — users are asking a lot of questions; (2) fix as many bugs as we can;
-(3) build a stealth engine so station browsing stops being misidentified as a bot. Full plan,
+(3) build a stealth engine so keep browsing stops being misidentified as a bot. Full plan,
 with evidence re-grepped against trunk `129801b1`: **[docs/PLAN_v0.9.0.md](PLAN_v0.9.0.md)**.
 
 Headlines a lane should know before claiming work from it:
@@ -1375,7 +1375,7 @@ now match the code, and the two findings from this sweep are recorded against `8
 voice tests are green (`voice.button` 67 assertions, `voice.draftguard` 21, Local Live UI, realtime,
 native STT, local voice, and provider timeouts). Claims planning is PASS (37 claims / 189 locked
 files), `test:fast` is 464/464 green, and the full 55-suite `test:http` chain is green. A post-merge
-seeded restart and stale-tab browser round trip remain the final live proof. The wider station still
+seeded restart and stale-tab browser round trip remain the final live proof. The wider keep still
 has unrelated open QA-register findings, so this entry is a feature merge verdict, not a whole-product
 release verdict. No push, deploy, publish, production-data, credential, or secret change.
 
@@ -1407,7 +1407,7 @@ Regression: the real browser gauntlet now includes the below-fold fixture (65 as
 focused find/recovery contract is 39 assertions. `node --check` passed all three touched JS files;
 `test:fast` is 429/429 green; full `test:http:raw` is green through all 51 suites. The standard
 420-second `test:http` wrapper timed out after its browser/skill suites had passed; the same raw
-chain completed cleanly in 429 seconds. A seeded station reached NOVA/COMMS online with no visible
+chain completed cleanly in 429 seconds. A seeded keep reached NOVA/COMMS online with no visible
 alerts or browser warnings/errors. No push, merge, PR, deploy, publish, production-data, or source
 credential changes.
 ## 2026-07-28 — SESSION RAIL KEYBOARD ACCESS (`agent/quality-loop-0728d`)
@@ -1563,7 +1563,7 @@ No push, merge, deploy, publish, PR, production-data, secret, or source-credenti
 Getting the source repo release-shaped for the public flip (Andrew: "essentially ready for
 early release"). DONE this lane: GitHub repo **renamed `skynet-harness` → `eyehold`** (still
 PRIVATE; old URLs redirect) + description/homepage/topics set on BOTH repos; README rebuilt to
-the reference harness/OpenClaw-class presentation (wordmark hero + station render from the website branch, now
+the reference harness/OpenClaw-class presentation (wordmark hero + keep render from the website branch, now
 committed under `.github/media/`, badges, feature table, importer section); all breaking slug
 references fixed (package.json, CONTRIBUTING, issue-template advisory link,
 opensource-readiness test) + living docs swept; obsolete `publish.sh` removed; gate 373 green.
@@ -1621,7 +1621,7 @@ Mac architectures, run installed smoke plus the ≥48h real-provider dogfood soa
 
 ## 2026-07-19 — RELEASE POLISH PASS + UPDATE STAGING (trunk through d2677fd0+)
 
-Full-station polish sweep before the next update cut (Andrew will green-light + test on other
+Full-keep polish sweep before the next update cut (Andrew will green-light + test on other
 hardware). Done this pass: 3-agent audit (frontend/backend/release) — frontend exceptionally
 clean (1 fix), backend error spine mature (no stack leaks); stdout quieted ([channel] payload
 log now opt-in EYEHOLD_DEBUG_CHANNELS=1, [aux-governor] only on DEFERRED, [summon] dev-gated);
@@ -1660,7 +1660,7 @@ Full plan (Andrew-approved direction, wording in red-pen): `docs/ONBOARDING_V3_P
   'ask me one real question' probe → one-question intake at the top-VOI dim; intake bank rewritten into
   the scene register) + BRAIN-GATING (keyless wake = honest holding line + scripted mission/cadence + a
   persisted IOU; first live-brain session offers the real interview once — spent on offer). LIVE-PROVEN:
-  loose station → hunting:true, probe chip → year question → typed answer landed 'stated'; deferred flag →
+  loose keep → hunting:true, probe chip → year question → typed answer landed 'stated'; deferred flag →
   boot offer → accept launched the full meeting in-game.
 - OPEN: Andrew red-pen of the live wording + his own live pass; merge ritual; exe rebuild after merge.
   Not live-walked (honest): the keyless-wake branch itself (source-locked; needs an unconfigured-brain
@@ -1675,7 +1675,7 @@ rails between speech, trophy/quest broadcasts each took a full row, and 9 gold .
 shouted as loud as a blocking consent. Fix (chat.js + comms.css only, FNV/CRT vocabulary intact):
 (1) RUN FOLD — resolvePresence absorbs the run's tool rails into the resolved line
 ("RUN COMPLETE · 8s · N tools ▸"), collapsed, click/Enter toggles, rails moved never deleted;
-(2) broadcast COALESCING — consecutive station lines stack in ONE hairline block (tone per-line);
+(2) broadcast COALESCING — consecutive keep lines stack in ONE hairline block (tone per-line);
 (3) beat hierarchy — passive .turnin family whispers (1px gold rail, no glow, 14px), only
 .consent keeps full lit gold. Live-proven on a real haiku+fs.list run (seed :9281); gate 369/369
 green incl. comms-presence lock; W0 re-stamped in-branch 11223bd7.
@@ -1788,7 +1788,7 @@ into Eyehold — this is launch-conversion work. Shipped in this lane:
 ## 2026-07-18 — CONCURRENT SESSIONS ON ONE AGENT (branch `claude/multiple-concurrent-sessions-736e68`)
 
 Andrew's ask: multiple COMMS sessions may drive the SAME agent at once (the reference harness parity), with the
-agent staying at its workstation until the LAST run ends. Shipped:
+agent staying at its workkeep until the LAST run ends. Shipped:
 - **Admission mutex retired** (sidecar/index.js): same-agent runs are ADMITTED concurrently; the
   distinct-agent fan-out cap is unchanged. The workspace/shadow-git collision moved to a
   **run-scoped workspace lease** (`sidecar/workspace-lease.js`, unit-locked): taken at the first
@@ -1829,7 +1829,7 @@ connector) — a KEYS tab in TOOLSETS & CONNECTORS under CATALOG. Shipped in thi
 Full-codebase cleanliness audit (4 parallel sweeps: sidecar, frontend, contract seams, dead code).
 Tier 1 executed in-branch, gate 364/364 green: `sidecar/respond.js` canonical json()/isAgentId
 (3 sendJson copies + serve* family migrated; dead `tool.web` warn-filters removed), `Harness.api`
-JSON client (stationui.js 56/65 fetch sites migrated; 9 left raw deliberately — test-pinned
+JSON client (keepui.js 56/65 fetch sites migrated; 9 left raw deliberately — test-pinned
 literals, streaming, Response-shape consumers), `el()`→`mkEl` collision fix, 4 stale root planning
 docs → docs/archive/, 15 orphaned scripts deleted, terminal-position.test + openai-compat.e2e wired
 into gates, W0 re-stamped. NOT done (locked/blocked): tts/stt 200-always is a LOCKED decision
@@ -1839,7 +1839,7 @@ outside page scope.
 Tier 2 backlog (each its own lane; incremental only, no big-bang splits while lanes are in flight):
 - [x] Declarative route table — DONE, merged fb43b0f7 2026-07-18 (176 ifs -> ROUTES data; next slice = per-domain route modules registering into the table) (~174 if-lines; THE merge hotspot; encode
       the tts/stt fail-open policies as data)
-- [x] BUILDERS split (partial by design) — DONE, merged d2b335ba 2026-07-18: 7 self-contained windows -> app/windows/*.js via StationUI.registerWindow; SETTINGS/CONNECTIONS/dossier etc. deliberately kept in core (mutable-state entanglement). Original item: split stationui.js along the BUILDERS registry (stationui.js:7197) into app/windows/*.js,
+- [x] BUILDERS split (partial by design) — DONE, merged d2b335ba 2026-07-18: 7 self-contained windows -> app/windows/*.js via KeepUI.registerWindow; SETTINGS/CONNECTIONS/dossier etc. deliberately kept in core (mutable-state entanglement). Original item: split keepui.js along the BUILDERS registry (keepui.js:7197) into app/windows/*.js,
       one window per PR
 - [ ] Settings-store factory for the ~25 loadX/saveX/global triples (whole-file clobber race class);
       fold the 4 bespoke token stores onto makeDurableJsonStore (security-adjacent)
@@ -1931,7 +1931,7 @@ Full evidence and repros: `docs/POWERUSER_AUDIT_2026-07-15.md`. Baseline gates w
 confirmed **14 new defects: 4 P1 · 8 P2 · 2 P3**. Highest priority:
 
 **Fix execution plan (2026-07-16):** `docs/POWERUSER_FIX_PLAN_2026-07-16.md` — four waves,
-EL-3 reproduction per defect, serialized `index.js` / `stationui.js` / `chat.js` ownership,
+EL-3 reproduction per defect, serialized `index.js` / `keepui.js` / `chat.js` ownership,
 live restart criteria, composed gates, and a final installed-app proof. Wave 4D (tray-supervised
 background lifecycle) remains an explicit owner decision checkpoint; the plan recommends opt-in
 launch-at-login plus visible tray ownership, never a hidden daemon.
@@ -1953,14 +1953,14 @@ dedicated regression test on trunk:
       (read-back proven, no token lie); Ollama/custom = LOCAL ENDPOINT CONFIGURED/OFFLINE with
       reachability-gated ACTIVE; `allocName` uniquifies defaults + `[id]` badge on collisions;
       `busyPeerFor` preflight = BUSY IN <session> + VIEW ACTIVE RUN; `formatRunHolderAge` "just
-      now"; mid-stream sidecar death classified station-unreachable; `persistPartial` keeps
+      now"; mid-stream sidecar death classified keep-unreachable; `persistPartial` keeps
       streamed text + disconnect marker on both error branches.
 - [x] **PU-13..PU-14 P3:** `Workstreams.startSession` reuses the untouched blank; stopped runs
       offer Try again (incl. after reload; clarifying end correctly excluded).
 
 Remaining from this audit: Wave 4D (background lifecycle) = Andrew's product decision; minor
 coverage gaps noted in the review lane (route-level test for validateNightFocusSteer; explicit
-poisoned-termPos reload assert). EL-3 law applies to any NEW finding. Do not infer station-wide
+poisoned-termPos reload assert). EL-3 law applies to any NEW finding. Do not infer keep-wide
 readiness from the green baseline; Atlas at this head is 444 stale · 123 unmapped · 1 missing.
 
 ## IMPLEMENTED 2026-07-16 — TASK-BRIEF RELIABILITY HARDENING (`agent/briefing-reliability`)
@@ -2079,15 +2079,15 @@ the launch-integrity guarantees. Live-proven on a real booted sidecar, zero spen
 
 ## MERGED 2026-07-15 — VOICE DECOUPLED FROM THE LLM (lane `claude/hermes-voice-system-analysis-910f29`, trunk `dc2c8809` + W0 `e5e60914`)
 
-Voice is now a STATION subsystem (analysis + acceptance bar: docs/REF_HARNESS_VOICE_ANALYSIS_2026-07-14.md).
+Voice is now a KEEP subsystem (analysis + acceptance bar: docs/REF_HARNESS_VOICE_ANALYSIS_2026-07-14.md).
 Shipped: sidecar/edgetts.js zero-dep FREE KEYLESS Edge neural floor in /api/tts (keyed chain →
 edge → 200 {fallback}); /api/stt dedicated ASR (Groq whisper-large-v3-turbo → whisper-1 →
 chat-model); frontend neural-only (robotic speechSynthesis path DELETED — degrade = silence +
 speaker tooltip; 'no key' latch → 60s cold-off). Live-proven keyless end-to-end (real Edge MP3
 through the real page, play() resolved). Installed exe picks this up at the next build cut.
 
-- [ ] OPEN: local-ASR floor for desktop Anthropic-only stations (sherpa-onnx-node / whisper.cpp
-      spike; the last acceptance-bar gap — browser stations have webSpeech, desktop keyless STT doesn't).
+- [ ] OPEN: local-ASR floor for desktop Anthropic-only keeps (sherpa-onnx-node / whisper.cpp
+      spike; the last acceptance-bar gap — browser keeps have webSpeech, desktop keyless STT doesn't).
 - [ ] OPEN: Edge-voice audition vs Algenib (en-US-ChristopherNeural chosen as nearest bass;
       Andrew's ear decides; swap via SKYNET_EDGE_TTS_VOICE).
 - [ ] OPEN: V-ACK (spoken ack on first tool call from the prewarmed cache + ducking), V-HYGIENE
@@ -2172,7 +2172,7 @@ P0/P1s in the qa findings ledger, crew `Adversarial`). FIXED in-lane with EL-3 e
   Node ≥15 emits it at message completion): ghost runs spent unwatched, mutex held, reloaded UI
   contradicted the harness. All three run routes now use `res.on('close')` (`6923ed05`).
 - F2 P0 COMMS `online` asserted forever over a dead sidecar — now folds `World.linkState` →
-  `station unreachable` (`73f376fa`).
+  `keep unreachable` (`73f376fa`).
 - F3 P1 idle `/steer` minted a paid run from a steering note — now refuses honestly (`f488ed11`).
 OPEN (routed, repros in the ledger):
 - F4 P1 `/model` accepts garbage ids with a confident ack — warn-not-block against the warmed
@@ -2234,7 +2234,7 @@ are still gated cold by design), and a COMMS nudge when drafts pile up unseen.
 ## BUILT 2026-07-13 — QUEST V3 STANDING REFRESH (branch `claude/eyehold-quest-system-25fae6`, `fd8823d8`)
 
 Andrew's report: a live save sat 3 days with an unchanged quest slate and a NEVER-created
-`_station.quests.json` — V2 made completion honest but generation passive (agents mint only mid-run,
+`_keep.quests.json` — V2 made completion honest but generation passive (agents mint only mid-run,
 doctrine bar rarely met). The fix is a standing harness refresh (the scout mint-cycle mold):
 - `sidecar/questrefresh.js` (pure) + index.js ambient half: 24h cadence + caught-up fast path (zero
   open ledger quests → refresh after 1h cooldown), 5-min tick + boot catch-up look (desktop sessions
@@ -2242,7 +2242,7 @@ doctrine bar rarely met). The fix is a standing harness refresh (the scout mint-
 - Each cycle names the NORTH STAR (Commander's active goal ALWAYS outranks the model's inference),
   then ONE aux model call proposes ≤3 step-quests toward it; parse enforces the contract rule at the
   seam (no `run`, prop keys clamp to placeables, fact keys sweepable, WHY must cite shown evidence,
-  dedup vs open slate + denylist); mints ride `questStore.mint` (station-wide `kind:generated`).
+  dedup vs open slate + denylist); mints ride `questStore.mint` (keep-wide `kind:generated`).
 - Every outcome in a visible ledger; `GET /api/quests/refresh` = north star + due state + ledger.
   Opt-out `SKYNET_QUEST_REFRESH=0`. Gates green: test:fast, test:http full, new pure suite (45
   assertions) + true e2e (boot→due→mock model→real mints on disk; ungrounded reply rejected, 0 mints).
@@ -2445,7 +2445,7 @@ as EL-11 FIX 1; 200 {ok:false,degraded:true} is a LOCKED test-asserted design, d
       Catalog intake also DONE same merge: 29/50 recipes declare their material decision.
 
 **NEW QUEUE from the launch-polish session (claim before building):**
-- [ ] EL-11 leftovers 8-13, all frontend-owned (stationui.js/chat.js — was blocked on the 7/09 UI
+- [ ] EL-11 leftovers 8-13, all frontend-owned (keepui.js/chat.js — was blocked on the 7/09 UI
       session; fix shapes with file:line evidence in the 2026-07-09 launch-polish triage, session
       transcript): 8 undo for out-of-jail artifacts (backend route + card affordance) · 9 EXPORT
       AGENT full backup button in SETTINGS (Backup.exportAll exists, connect-screen-only) · 10
@@ -2469,19 +2469,19 @@ as EL-11 FIX 1; 200 {ok:false,degraded:true} is a LOCKED test-asserted design, d
       + tag `archive/connector-spine-rescue-2026-07-09`; tree verified CLEAN 2026-07-14): email/
       sms/webhook/whatsapp adapters + tests (new-file clean) + managed-credits billing seam. Its
       slack = superseded by trunk's; its org/derive = orphaned (orgvalidator.js deleted).
-      Remaining = the port: manual re-wire of index.js/stationui.js in a fresh lane.
+      Remaining = the port: manual re-wire of index.js/keepui.js in a fresh lane.
 - [ ] **Settings V2 control-plane PORT** — rescue ✅ DONE 2026-07-14 (committed verbatim as
       `02d872f9` on `agent/hermes-settings-audit` + tag `archive/hermes-settings-audit-rescue-2026-07-14`;
       tree CLEAN; its own settings-store test 21/21 green at its base). Contents: schema-driven
       settings-store.js (schema/defaults/current triple, ~50 fields) + GET/POST `/api/settings`
-      + `/defaults` + `/schema` + schema-rendered panel (stationui.js +378). Port assessment
+      + `/defaults` + `/schema` + schema-rendered panel (keepui.js +378). Port assessment
       (2026-07-14, base 1867 behind): trunk STILL has no `/api/settings` — backend half genuinely
       missing. But port must be SELECTIVE, not a merge: (a) reconcile with trunk's newer
       `/api/runtime/knobs` (P1-9 — same protected-sibling persistence; don't ship two knob
       stores); (b) drop fields refuted by locked decisions (appearance.music — music DELETED;
       appearance.scanlines — toggle removed, always-on) and every `status:'planned'` no-op field
       (tool surface must never exceed wired reality); (c) render new sections INTO the existing
-      premium SETTINGS window, don't replace it; (d) index.js/stationui.js hunks won't merge at
+      premium SETTINGS window, don't replace it; (d) index.js/keepui.js hunks won't merge at
       1867-commit drift — hand re-port using the rescue as reference; settings-store.js + test
       port nearly clean after field re-curation.
 - [ ] **growth-t4 anti-nag budget** — global one-interactive-ask-per-task-end + starvation
@@ -2563,7 +2563,7 @@ product (pattern for docs/MISTAKES.md: before fixing "the app", prove the instru
    worktree + 8940-43 ports → all 4 BLOCKED P0s, all 3 "visual regressions" (within threshold
    clean — NO re-bless), work-tasks "failure" = overlapping teardown). Fixed: heartbeat
    lockfile (%TEMP%/eyehold-qa-guardian.lock, stale reclaim) + review-clean verdict (all-
-   dismissed red gate ≠ red; BLOCKED never excused) mirrored into journeys.mjs; QA_STATION §2
+   dismissed red gate ≠ red; BLOCKED never excused) mirrored into journeys.mjs; QA_KEEP §2
    corrected. Guardian findings 10→0.
 4. **J7 slash INPUT-path truth journey** (12 assertions, non-vacuous: reintroduced 7/05 bug →
    FAIL exit 3) pays Perfectionist 070e8aca — the last open P1. Atlas coverage refs added.
@@ -2582,7 +2582,7 @@ engine** (`sidecar/interests.js` — reason-only topic extraction over real acti
 histogram + evidence quotes) + **scout cycle** (`sidecar/scout.js` + index.js post-run hook —
 persisted cadence, drafts agent prospects AND recipes, every attempt in a visible ledger) +
 `/api/scout*` routes + frontend rewire (prospectstore = scout client; SUGGESTED shelf gains
-station-drafted recipe cards; launch telemetry feeds FOR-YOU rank). Signal loosened: all-agent
+keep-drafted recipe cards; launch telemetry feeds FOR-YOU rank). Signal loosened: all-agent
 tool counting, CALIBRATING_N 5→3. Live-verified on dev seed (restart hydration, both shelves,
 accept/dismiss round-trips, telemetry). OPEN: first real-provider scout cycle unobserved;
 optional nightshift catch-up pass; scout-ledger surfacing in a UI panel. (✅ 2026-07-09
@@ -2726,7 +2726,7 @@ Rule stands: land it or delete it — an unmerged branch is a claim nobody verif
 ## DONE 2026-07-07 — SKILLS panel legibility (Fable session) ✅
 
 - **skills-legibility MERGED 9b2c22a4**: the library read as broken ("can't enable
-  anything") — 36/38 recipes OFF on a fresh station, ◉/○ glyph didn't read as a switch,
+  anything") — 36/38 recipes OFF on a fresh keep, ◉/○ glyph didn't read as a switch,
   enabling a gear-gated skill just changed text to "● ON · needs CABINET" with no path to
   a cabinet. Shipped: real ON/OFF pill switch; user-choice vs floor-grant rendered as TWO
   visuals (switch + READY/NEEDS GEAR chip, combined string deleted); `→ PLACE <OBJECT>`
@@ -2741,9 +2741,9 @@ Rule stands: land it or delete it — an unmerged branch is a claim nobody verif
   merge-gate: 2× `qa:journeys --only J2` on merged trunk = 38/38 PASS. Flake in the
   15×120ms busy-poll window, dismissed with evidence in the finding.
 
-## DONE 2026-07-07 — Station Atlas: the perfection loop (Fable session) ✅
+## DONE 2026-07-07 — Keep Atlas: the perfection loop (Fable session) ✅
 
-- **Station Atlas MERGED 00538abd** (gate 261 green in-lane AND on merged trunk): the
+- **Keep Atlas MERGED 00538abd** (gate 261 green in-lane AND on merged trunk): the
   goal+loop system for perfecting every surface element. `qa/atlas/` sharded registry
   (every UI control / slash command / API route / bus event / shoot state gets a dossier:
   purpose · promise · wiring · coverage · status), `scripts/qa/cartographer.mjs` mapper
@@ -2767,7 +2767,7 @@ Rule stands: land it or delete it — an unmerged branch is a claim nobody verif
   three launch styles now serialize. Also: a red gate whose every finding is dismissed/known is
   now **review-clean** at the cycle verdict (mirrors golden), so the dismissed J2b panel-close
   busy-poll flake (`6feab179`, reproduced 3/3 PASS isolated) no longer pins the release gate RED;
-  `journeys.mjs` mirrors it for its own exit code. QA_STATION §2 "overlap harmlessly" claim
+  `journeys.mjs` mirrors it for its own exit code. QA_KEEP §2 "overlap harmlessly" claim
   corrected to the truth. GREEN all-5-gates cycle proven on trunk 42803552 (guardian-20260708-195105);
   all 10 stale Guardian findings closed → Green Guardian 0 open. OPEN = merge to trunk (the live
   hourly task runs trunk code, so the lock only protects production after merge).
@@ -2775,10 +2775,10 @@ Rule stands: land it or delete it — an unmerged branch is a claim nobody verif
 ## QA Escape Loop — standing directive (added 2026-07-07, Fable session)
 
 **Why:** Andrew keeps finding bugs that audits called "up to par." Diagnosed causes:
-(1) the QA Station (`qa/QA_STATION.md`) was built 7/01, movie-tested green, and **never
+(1) the QA Keep (`qa/QA_KEEP.md`) was built 7/01, movie-tested green, and **never
 activated** — Guardian last ran 7/03 while ~40 lanes merged unwatched (first re-run 7/07
 immediately went RED on 7 stale-baseline golden findings; triaged + re-blessed 79016922);
-(2) station coverage is **static/seeded/happy-path** while Andrew's bugs are **dynamic seam
+(2) keep coverage is **static/seeded/happy-path** while Andrew's bugs are **dynamic seam
 bugs** — sim↔UI↔task-truth diverging *during* real use (taskboard flood, >30s stream abort,
 features breaking under interruption); (3) nothing converts an Andrew-found bug into
 permanent machine coverage, so coverage never converges on his bug distribution.
@@ -2793,7 +2793,7 @@ promise?" (sibling of "where's its UI?").
 - **EL-0 · Activate the watch** — ✅ DONE 2026-07-07 (Andrew-approved): 3 scheduled tasks
   registered (`Eyehold-QA-Guardian-Hourly` / `Beginner-Daily` / `Janitor-Weekly`, verified
   via schtasks) + session `qa:guardian:watch` running. STILL OPEN: the Overseer `/loop`
-  session (QA_STATION §6, the digest+P0-notify half) and a reboot-surviving per-merge watch.
+  session (QA_KEEP §6, the digest+P0-notify half) and a reboot-surviving per-merge watch.
 - **EL-1 · Journey Corps** — ✅ MERGED 2026-07-07 (44a513e7, gate 260 green; orchestrator
   live-ran qa:journeys on merged trunk 114/114 PASS). `npm run qa:journeys` = J1 task-
   lifecycle+taskboard truth · J2 E-STOP/panel-close/reload interrupt honesty · J3 double-
@@ -2877,7 +2877,7 @@ lost-work law strikes again); items 2,4,6,7 ✅ were already fixed on trunk (a99
 items 8-13 STILL OPEN, all frontend-owned, queued with fix shapes at the top of this file.
 
 LAW (memory stranded-user-testing-law): shippable = zero STRANDED. Each item = fix lane + EL-3 test.
-STRANDED (ranked): 1. hung provider stream ends RUN COMPLETE reason:done (provider.js:146-160 reader.cancel settles read as done — watchdog cannot fire; night beats inherit) 2. degraded workspace: writes refused 200 ok:false while save-dot healthy + cloudsave stamps success (cloudsave.js~105/app.js~990 check r.ok not body) 3. background-session consent invisible → auto-DENY at 120s (notify gated on isActiveWs; warroom hotspot removed) 4. night-shift durable halt (TONIGHT'S fix) invisible: panel says ACTIVE/standing-by + NEXT ELIGIBLE while halted:true never read by any frontend; lift (dial re-write) documented nowhere 5. wedged beat run holds agent mutex forever; /api/halt misses handleNightshiftBeatNow AC (index.js:7085) + E-STOP button doesn't exist (hotkey-only, error copy names it) 6. post-sidecar-respawn stale token → all 403 + "Add a key" misdirection (classify 403 as reload/re-auth) 7. double-corrupt save → silent GENESIS (quarantine works, zero disclosure) 8. no undo for out-of-jail artifacts (ns/ branches, workshop KEEP) 9. full-agent backup (save+memory) unreachable in-app (connect-screen only; STATION BACKUP = 1.4KB settings, no memories) 10. dead MCP connector invisible outside panel (connector.state → console.log only, GA-8) 11. dead channel invisible outside panel 12. custom/Ollama base-URL uneditable post-onboarding + 13. connector OAuth 5-min uncancelable lock survives panel reopen.
+STRANDED (ranked): 1. hung provider stream ends RUN COMPLETE reason:done (provider.js:146-160 reader.cancel settles read as done — watchdog cannot fire; night beats inherit) 2. degraded workspace: writes refused 200 ok:false while save-dot healthy + cloudsave stamps success (cloudsave.js~105/app.js~990 check r.ok not body) 3. background-session consent invisible → auto-DENY at 120s (notify gated on isActiveWs; warroom hotspot removed) 4. night-shift durable halt (TONIGHT'S fix) invisible: panel says ACTIVE/standing-by + NEXT ELIGIBLE while halted:true never read by any frontend; lift (dial re-write) documented nowhere 5. wedged beat run holds agent mutex forever; /api/halt misses handleNightshiftBeatNow AC (index.js:7085) + E-STOP button doesn't exist (hotkey-only, error copy names it) 6. post-sidecar-respawn stale token → all 403 + "Add a key" misdirection (classify 403 as reload/re-auth) 7. double-corrupt save → silent GENESIS (quarantine works, zero disclosure) 8. no undo for out-of-jail artifacts (ns/ branches, workshop KEEP) 9. full-agent backup (save+memory) unreachable in-app (connect-screen only; KEEP BACKUP = 1.4KB settings, no memories) 10. dead MCP connector invisible outside panel (connector.state → console.log only, GA-8) 11. dead channel invisible outside panel 12. custom/Ollama base-URL uneditable post-onboarding + 13. connector OAuth 5-min uncancelable lock survives panel reopen.
 ROUGH highlights: harness.js:355 discards error body (EL-10 door lost pre-stream) · key REMOVE doesn't revoke server-side · provider-down blamed on app · TG/DC "connected" lie pre-auth (1c09b36f) · 402 top-up URL not a link · budget stops never name cap/door (/api/budget/resume zero callers) · HALT toast "stopped 0 runs" lie · readiness-gate jargon hides the grant · awakening full-replay on reload · broken-brain invisible until failure · fresh workspace inherits codex tokens cross-root (sign-out violation) · disk-fail 60-min blind window · silent .bak recovery · no bulk memory delete · no tour replay.
 Full evidence: session scratchpad stranded/ + shots; agent reports 2026-07-08 evening. Stale claims corrected: GC-7 browse EXISTS, GB-22 cleanup EXISTS, GA-3 retry chip EXISTS.
 
@@ -2914,7 +2914,7 @@ project-green while the Guardian sat RED; (b) nothing ever uses the product the 
 **The law (READY-GATE, mirror into eyehold-verify + DECISIONS.md when EL-7 lands):** no session,
 report, or doc may claim Eyehold is "ready", "perfect standing", or "go-public-able" without a
 fresh `npm run qa:ready` receipt printed alongside the claim. Lane-level done stays lane-level:
-"lane X verified; station-wide status is whatever qa:ready says."
+"lane X verified; keep-wide status is whatever qa:ready says."
 
 **Queue:**
 - **EL-7 · qa:ready gate** — ✅ MERGED 2026-07-07 (lane agent/ready-gate → 7f737a93, gate 267
@@ -2941,7 +2941,7 @@ fresh `npm run qa:ready` receipt printed alongside the claim. Lane-level done st
 
 ## Atlas — Perfectionist area claims (one session, one area)
 
-The Station Atlas (`qa/atlas/`) is a registry of every surface element; Perfectionist sessions
+The Keep Atlas (`qa/atlas/`) is a registry of every surface element; Perfectionist sessions
 (`loops/perfectionist.md`) drive each to `perfected`. **Concurrency law** (`docs/MISTAKES.md` #4 +
 `qa/atlas/README.md`): one session claims one area at a time. Before working an area, claim it here
 as `IN PROGRESS — <lane> · <area>`; release it (delete the line) when the batch commits. Never work
@@ -2991,7 +2991,7 @@ _Wave-5 DONE 2026-07-07 (3 lanes merged + gated 265 + reaped): **work / system /
 COMPLETE (0 unmapped each)**. Truth bug found+chipped: telegram connect lies 'connected'
 pre-auth (1c09b36f). Dead listener 'flagged' + 16 aspirational event slots → cortex-memory
 wire-or-retire (1019f6e1, 9c5ec90c). Catalog UI-dispatch seam unguarded (3717ef2e). Restale
-37/37 HELD mid-wave, then NS-4 (stationui.js+index.js) re-decayed 329 — final restale sweep
+37/37 HELD mid-wave, then NS-4 (keepui.js+index.js) re-decayed 329 — final restale sweep
 scheduled as wave-7 closing step; probe chip = the structural fix._
 
 _Wave-4 DONE 2026-07-07 (3 lanes merged + gated + reaped; gate 261→264 under parallel
@@ -3084,7 +3084,7 @@ shared/events.js._
 
 **Round 2 (GB) — six deeper audits 2026-07-07: world, REFIT/workshop, skills/routines/voice,
 lifecycle, micro-UX, journey-walk. Corrections applied: CHANNELS window EXISTS
-(stationui.js:3360-3488 TG+Discord+health), ROUTINES console EXISTS (#rt-add/#rt-arm/run-now);
+(keepui.js:3360-3488 TG+Discord+health), ROUTINES console EXISTS (#rt-add/#rt-arm/run-now);
 E-STOP visibility + get-a-key link already chipped by Atlas — not re-listed.**
 
 *GB-T1 — highest pain:*
@@ -3114,7 +3114,7 @@ E-STOP visibility + get-a-key link already chipped by Atlas — not re-listed.**
 - GB-11 Guardian sidecar respawn is silent — no "connection recovered" toast.
 - GB-12 Skill last-fired/last-result never shown ("is this skill even used?").
 - GB-13 Routine fire HISTORY absent + timezone mislabel (server ISO labeled "local",
-  stationui.js:4168).
+  keepui.js:4168).
 - GB-14 Per-run cost breakdown (in/out tokens, per-tool) — totals only.
 
 *GB-T3 — build/world/workshop QoL:*
@@ -3124,10 +3124,10 @@ E-STOP visibility + get-a-key link already chipped by Atlas — not re-listed.**
   (+/-/F/arrows); mute-all quick toggle in chrome.
 - GB-18 Workshop bulk cleanup UI (janitor sees 106 rot findings; user has per-card Discard only).
 - GB-19 Inline preview for image/md/csv deliverables (html-only today).
-- GB-20 Station layout blueprints (save/share/load layout templates).
+- GB-20 Keep layout blueprints (save/share/load layout templates).
 
 *GB-T4 — micro-UX & hygiene:*
-- GB-21 Focus trap + focus-restore in modal windows (aria-modal set, no trap; stationui.js:115).
+- GB-21 Focus trap + focus-restore in modal windows (aria-modal set, no trap; keepui.js:115).
 - GB-22 Empty-input guards on create/rename (empty routine name → raw 400).
 - GB-23 Copy buttons on ids/paths/tokens beyond diagnostics.
 - GB-24 Goal abandon button + quest dismiss beyond dossier-kind (queststate.js:88 gates).
@@ -3166,14 +3166,14 @@ were already shipped or on GA/GB — the audit is saturated; below is the residu
   deliverable link is ALL a card holds today).
 - GC-14 Recruit: preview class system prompt before summon; custom-class DELETE (edit exists);
   skin preview before confirm.
-- GC-15 Factory-reset (fresh station) from settings without reinstall.
+- GC-15 Factory-reset (fresh keep) from settings without reinstall.
 - GC-16 Widget resize (reorder/remove exist); maxlength counters (18-char rename truncates
   silently); spellcheck attr on chat textarea; emoji-in-names canvas rendering unvalidated.
 - GC-17 Parked/low: proxy settings, app locale, migration guide doc (export covers data).
 
 ## NIGHT SHIFT — autonomy rebuild (added 2026-07-07, Fable session; Andrew-approved direction)
 
-**Escape:** Andrew left the station overnight at MAX autonomy → exactly 1 autonomous act, then
+**Escape:** Andrew left the keep overnight at MAX autonomy → exactly 1 autonomous act, then
 10.7h of silence (live-verified in `runs.jsonl`: last self-directed beat 02:24, next activity =
 the 1PM cron). Root causes code-verified this session — the autonomy layer is a demo, not a shift:
 
@@ -3232,7 +3232,7 @@ enforced leash, multi-beat cadence, every decision ledgered.
   (at-capacity, disabled, no-capability) — needs the governed event-enum addition. (c) autonomy
   DECISION LEDGER: every beat records inputs + outcome (acted/earned/declined + which gate
   bound) durably; morning-readable. Truthful-telemetry law: if the dial shows "free", the
-  station must be able to prove what it did with that freedom.
+  keep must be able to prove what it did with that freedom.
 - **NS-1 · sidecar night-shift driver:** move the loop out of the webview. Server-owned
   away-detection (last user-triggered activity, frontend beacons on input; NOT DOM-only),
   beat attempt every ~30–60min while away, leash enforced + persisted server-side (survives
@@ -3254,7 +3254,7 @@ enforced leash, multi-beat cadence, every decision ledgered.
   (digestSummary/undo snapshot plumbing exists in autopilot.js B3). Dial copy updated to match
   enforced reality; GA-9/GB-13 routine UI items pair naturally here.
 
-Done means (per lane, live-app): leave the station idle with dial at 'free' + dev clock/short
+Done means (per lane, live-app): leave the keep idle with dial at 'free' + dev clock/short
 beat interval → observe ≥2 real jailed tool-run deliverables + a truthful ledger of every
 decision, gate green. NS-0a done means the >8min-run duplicate repro fires once.
 
@@ -3334,7 +3334,7 @@ it." Structurally impossible today because:
   patterns ("you kept the last 3 test-fix patches, discarded both blog drafts"). North-star
   product test (the Andrew framing, 2026-07-08): *the ceiling on autonomous relevance must be
   the user's granted context, never the architecture — and relevance must measurably compound
-  with weeks of use.* Done means: same seeded station, 10 simulated beat/verdict cycles →
+  with weeks of use.* Done means: same seeded keep, 10 simulated beat/verdict cycles →
   proposal mix provably shifts toward kept-kind work (assertable from ledger + learn state).
 
 Done means (per lane, live-app): NS-5 = grant a real repo, seed a planted bug, leave idle at
@@ -3501,7 +3501,7 @@ sync: 8 assertions; `test:fast`: 539/539 steps green. Installed-desktop verifica
 ## 2026-08-07 — HERMES-CLASS PARITY 4–6 (`agent/hermes-access-gap`)
 
 - **4 · Attended browser authentication:** closed by verification of the existing production path. Watched
-  COMMS runs expose the two-phase `browser.login` handoff, visible Chrome uses the station-owned persistent
+  COMMS runs expose the two-phase `browser.login` handoff, visible Chrome uses the keep-owned persistent
   profile, profile ownership is single-run leased, ordinary later runs reuse the authenticated profile, and
   unattended/headless/contention paths fail honestly. The focused browser suite is green.
 - **5 · Isolated stdio MCP + agent-authored skills:** stdio connectors now bind to a named `SAFE CELL` agent.
@@ -3715,7 +3715,7 @@ IN PROGRESS — 2026-09-15: agent/response-audit-0915-7c2a owns the serialized r
 
 RESPONSE SAFETY MERGE COMPLETE — 2026-09-15: agent/response-audit-0915-7c2a fast-forwarded into feat/harness-backend at b4e99c0fb0d5bb49a1257394f5115a3da5cb5d68. Verified production source unchanged by integration; fast 783/783, HTTP 117/117, customer journeys 34/34 and seeded/UI proof recorded. Serialized merge reservation released. Existing operational edits and owned evidence worktree retained. Source fixes require a future installer release; no push or publication performed.
 
-DONE — station-default-0915 merged: code 6b05fa848, receipt 560d4b135; 808/808 fast checks passed before and after merge; live Build/presets/equipped tutorial/reload verified (2026-09-16).
+DONE — keep-default-0915 merged: code 6b05fa848, receipt 560d4b135; 808/808 fast checks passed before and after merge; live Build/presets/equipped tutorial/reload verified (2026-09-16).
 
 RELEASED — 2026-09-16: the prior release-0120-final-0916 integration claim is complete and superseded by release-0120-prep-0915. Immutable application candidate df6090835dcdebc402356466fc54a48f929ff942 includes the accepted source lanes; CI-only repair 93c9f30d pins the upgrade proof separately. The current release train is 35166711378. Publication remains unauthorized.
 

@@ -1,7 +1,7 @@
 /* sidecar/savestore.js — durable server-side persistence for the agent the user builds (M-save).
 
    The browser's localStorage is the FRAGILE store: a cache wipe, a different browser, or a fresh
-   machine loses the agent (identity, XP/level/confidence, personalization, workstreams, station).
+   machine loses the agent (identity, XP/level/confidence, personalization, workstreams, keep).
    `save.js` itself says "localStorage for now ... moves to the SQLite sidecar later." This module is
    that move: a durable mirror of the save envelope on the sidecar's own disk (the app-data dir that
    survives a browser wipe). The frontend keeps localStorage as a fast cache and writes through to here.
@@ -212,7 +212,7 @@
     }
 
     return {
-      // HTTP callers must distinguish a missing station from temporarily inaccessible bytes.
+      // HTTP callers must distinguish a missing keep from temporarily inaccessible bytes.
       // Keep load()'s legacy optional-document shape for internal best-effort readers.
       loadState(agentId) {
         const r = readTagged(saveFile(agentId));
@@ -258,7 +258,7 @@
           const same = prev && JSON.stringify(Object.assign({}, prev.doc, { updatedAt: prev.requestUpdatedAt == null ? prevUpdated : prev.requestUpdatedAt, _saveRevision: expected, _saveDirty: false })) === JSON.stringify(Object.assign({}, doc, { _saveDirty: false }));
           if (same) return { ok: true, updatedAt: prevUpdated, revision };
           if (expected !== revision) {
-            // Keep the rejected snapshot durably as well as the current station. Never silently
+            // Keep the rejected snapshot durably as well as the current keep. Never silently
             // merge whole envelopes: removals and roster/config edits have conflicting semantics.
             const client = /^[A-Za-z0-9_-]{1,80}$/.test(String(doc._saveClient || '')) ? doc._saveClient : clock.now() + '-' + (++tmpSeq);
             const recovery = String(agentId) + '.save-conflict-' + client + '.json';

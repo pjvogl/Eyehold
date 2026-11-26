@@ -4,7 +4,7 @@
   "records": [
     {
       "id": "arc_indexwall",
-      "source": "docs/station-remaster/batch02/coordinator/arc_indexwall-source.png",
+      "source": "docs/keep-remaster/batch02/coordinator/arc_indexwall-source.png",
       "seeds": [],
       "output": "frontend/assets/industrial/batch02/coordinator/arc_indexwall.png",
       "sourceWidth": 1902,
@@ -25,7 +25,7 @@
     },
     {
       "id": "whiteboard",
-      "source": "docs/station-remaster/batch02/coordinator/whiteboard-source.png",
+      "source": "docs/keep-remaster/batch02/coordinator/whiteboard-source.png",
       "seeds": [],
       "output": "frontend/assets/industrial/batch02/coordinator/whiteboard.png",
       "sourceWidth": 1849,
@@ -46,7 +46,7 @@
     },
     {
       "id": "chartwall",
-      "source": "docs/station-remaster/batch02/coordinator/chartwall-source.png",
+      "source": "docs/keep-remaster/batch02/coordinator/chartwall-source.png",
       "seeds": [],
       "output": "frontend/assets/industrial/batch02/coordinator/chartwall.png",
       "sourceWidth": 1650,
@@ -67,7 +67,7 @@
     },
     {
       "id": "calwall",
-      "source": "docs/station-remaster/batch02/coordinator/calwall-source.png",
+      "source": "docs/keep-remaster/batch02/coordinator/calwall-source.png",
       "seeds": [],
       "output": "frontend/assets/industrial/batch02/coordinator/calwall.png",
       "sourceWidth": 2089,
@@ -88,7 +88,7 @@
     },
     {
       "id": "missionboard",
-      "source": "docs/station-remaster/batch02/coordinator/missionboard-source.png",
+      "source": "docs/keep-remaster/batch02/coordinator/missionboard-source.png",
       "seeds": [],
       "output": "frontend/assets/industrial/batch02/coordinator/missionboard.png",
       "sourceWidth": 1546,
@@ -109,7 +109,7 @@
     },
     {
       "id": "trophycase",
-      "source": "docs/station-remaster/batch02/coordinator/trophycase-source.png",
+      "source": "docs/keep-remaster/batch02/coordinator/trophycase-source.png",
       "seeds": [],
       "output": "frontend/assets/industrial/batch02/coordinator/trophycase.png",
       "sourceWidth": 1168,
@@ -130,7 +130,7 @@
     },
     {
       "id": "arc_microfiche",
-      "source": "docs/station-remaster/batch02/coordinator/arc_microfiche-source.png",
+      "source": "docs/keep-remaster/batch02/coordinator/arc_microfiche-source.png",
       "seeds": [],
       "output": "frontend/assets/industrial/batch02/coordinator/arc_microfiche.png",
       "sourceWidth": 1402,
@@ -151,7 +151,7 @@
     },
     {
       "id": "comms_inbox",
-      "source": "docs/station-remaster/batch02/coordinator/comms_inbox-source.png",
+      "source": "docs/keep-remaster/batch02/coordinator/comms_inbox-source.png",
       "seeds": [],
       "output": "frontend/assets/industrial/batch02/coordinator/comms_inbox.png",
       "sourceWidth": 1536,

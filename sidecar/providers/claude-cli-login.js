@@ -11,7 +11,7 @@
                     passed through and never logged or stored.
 
    ONE login child at a time (a second start() replaces the first). It is killed on cancel, on the TTL, and when
-   the sidecar exits, so a half-finished sign-in never outlives the station.
+   the sidecar exits, so a half-finished sign-in never outlives the keep.
 
    makeClaudeCliLogin({ host?, spawn?, env?, platform?, fs?, os?, clock?, ttlMs?, urlWaitMs? })
      start()               -> { status:'pending', login_id, url } | { status:'connected', ... } | { status:'error', error, code }

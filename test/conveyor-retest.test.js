@@ -1,11 +1,11 @@
-/* test/conveyor-retest.test.js — what the 2026-09-28 end-to-end retest of the conveyor audit fixes caught (a fresh station,
+/* test/conveyor-retest.test.js — what the 2026-09-28 end-to-end retest of the conveyor audit fixes caught (a fresh keep,
    real clicks, a REVISION LOOP stamped and crewed, a hand-built split → join, one real job through the line).
 
    B3  — the "+" between a REVISION LOOP's two bays in the starter room passed the lane check, and the insert then refused
          NO_ROOM. canInsertBayBetween now runs the REAL insert on a throwaway copy of the floor.
    B1  — the line cards were fit-checked only when the palette rendered: an UNDO left eight cards claiming they fit.
    R3  — SCHEDULE OFF was a floor-wide flag: every INBOX said it, even a line with no schedule (that one is simply unfed).
-   R3  — the station's SHIPPED pallet counted a step test ("a test is not put in the OUTBOX").
+   R3  — the keep's SHIPPED pallet counted a step test ("a test is not put in the OUTBOX").
    R3  — the INBOX card posted silently under an open question in COMMS: the click read as dead.
    X1  — "sample" wording survived around the RUN ONE REAL JOB control, and the result named the agent by its id.
    R2  — the OUTBOX step note named the upstream agent by its internal id ("after AGENT").
@@ -26,7 +26,7 @@ const ghost = read('frontend/app/ghostline.js'), outbox = read('frontend/app/win
 
 /* ---------- B3: the "+" dry run is the real insert ---------- */
 {
-  // the starter room as a fresh station has it, a REVISION LOOP stamped into it (the retest's floor)
+  // the starter room as a fresh keep has it, a REVISION LOOP stamped into it (the retest's floor)
   const s = WM.create();
   for (const [t, x, y, w, h] of [['desk', 8, 1, 2, 1], ['war_intelcab', 1, 0, 1, 2], ['gigs_servercart', 1, 9, 1, 1], ['comms_dish', 14, 0, 2, 2],
     ['workbench', 3, 1, 2, 1], ['studio', 14, 8, 2, 2], ['plant', 0, 0, 1, 1], ['plant', 17, 0, 1, 1], ['desk', 5, 1, 2, 1], ['desk', 10, 1, 2, 1]])
@@ -42,8 +42,8 @@ const ghost = read('frontend/app/ghostline.js'), outbox = read('frontend/app/win
   A.eq(s.canUndo(), undo0, '…and burns no undo slot');
   const real = s.insertBayBetween(bays[0].id, bays[1].id, { w: 2, h: 2 });
   A.ok(!real.ok && real.error === mid.error, 'the real insert refuses exactly what the dry run refused');
-  A.ok(/const insertProbe = \{ seq: -1, memo: \{\} \}/.test(read('frontend/app/worldmodel.js')) && /makeStation\(clone\(doc\)\)\.insertBayBetween\(fromId, toId, size\)/.test(read('frontend/app/worldmodel.js')), 'the dry run is the real insert on a throwaway copy, cached per floor version');
-  A.ok(/const sp = propSpec\('bay'\);[\s\S]{0,160}station\.canInsertBayBetween\(fromId, toId, \{ w: sp\.w, h: sp\.h, block: sp\.blocks !== false \}\)/.test(build), 'the panel asks with the SAME bay size insertBay places');
+  A.ok(/const insertProbe = \{ seq: -1, memo: \{\} \}/.test(read('frontend/app/worldmodel.js')) && /makeKeep\(clone\(doc\)\)\.insertBayBetween\(fromId, toId, size\)/.test(read('frontend/app/worldmodel.js')), 'the dry run is the real insert on a throwaway copy, cached per floor version');
+  A.ok(/const sp = propSpec\('bay'\);[\s\S]{0,160}keep\.canInsertBayBetween\(fromId, toId, \{ w: sp\.w, h: sp\.h, block: sp\.blocks !== false \}\)/.test(build), 'the panel asks with the SAME bay size insertBay places');
 }
 
 /* ---------- B1: line cards stay honest as the floor changes ---------- */
@@ -56,7 +56,7 @@ const ghost = read('frontend/app/ghostline.js'), outbox = read('frontend/app/win
   A.ok(/if \(drawn\) \{ say\(stat \? stat\.dataset\.rest \|\| '' : ''\); if \(make\) make\.remove\(\); return; \}/.test(fit) && /if \(fits\) \{[^}]*if \(make\) make\.remove\(\);/.test(fit), 'a card that fits again sheds NO ROOM and MAKE ROOM');
   A.ok(/b\.after\(mk\)/.test(fit) && /mk\.onclick = e => makeRoomFor\(bp\.id, e\)/.test(fit), 'a card that stops fitting gains MAKE ROOM FOR IT as a sibling button');
   A.ok(/cell\.appendChild\(b\); grid\.appendChild\(cell\);\s*setLineTileFit\(b, bp\);/.test(build), 'every card is fit-checked as it renders');
-  const onChange = build.slice(build.indexOf('unsub = station.onChange('), build.indexOf('unsub = station.onChange(') + 500);
+  const onChange = build.slice(build.indexOf('unsub = keep.onChange('), build.indexOf('unsub = keep.onChange(') + 500);
   A.ok(/clearLineFields\(\);[\s\S]{0,120}scheduleLineFitSync\(\);/.test(onChange), 'every floor edit (UNDO included) re-syncs the cards on screen');
   A.ok(/for \(const b of root\.querySelectorAll\('\.refit-linetile\[data-line\]'\)\)/.test(build), '…every line card on screen');
 }

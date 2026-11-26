@@ -6,8 +6,8 @@
    dropped entry) fails here, not in a demo.
 
    MISSION BOARD (feature 2 — the quest log's body): functional-but-NOT-capability, in its OWN catalog
-   category (the workstation-model rule) — it must grant no tools, ever. Plus source locks on the
-   click-routing seam (world.js hit-test → app.js → StationUI.openTerm('quests')) and the pin feed. */
+   category (the workkeep-model rule) — it must grant no tools, ever. Plus source locks on the
+   click-routing seam (world.js hit-test → app.js → KeepUI.openTerm('quests')) and the pin feed. */
 'use strict';
 const A = require('./_assert.js');
 const fs = require('fs');
@@ -45,42 +45,42 @@ A.eq(ToolProps.toolPropType('image_analyze'), 'studio', 'toolPropType(image_anal
   const sp = m.addProp({ t: 'studio', x: 8, y: 2, w: st.w, h: st.h });
   A.ok(sp.ok, 'studio placed in the same room');
   A.ok(m.bayObjects('a1').indexOf('studio') >= 0, 'placing the STUDIO genuinely grants the studio capability to the room\'s agent');
-  A.eq(m.capForProp('studio'), 'studio', 'station.capForProp knows the studio prop (world.js capPropFor pulse targeting)');
+  A.eq(m.capForProp('studio'), 'studio', 'keep.capForProp knows the studio prop (world.js capPropFor pulse targeting)');
 }
 
 /* ================= ROOM SCOPE: an empty assigned bay is not "no bay" =================
    world.js is a browser IIFE, so extract the shipped heroCaps method and execute it against the real
    WorldModel. bayObjects() returns [] both when an agent has no bay and when its assigned room is genuinely
-   empty. Only the first case may use the legacy station-wide fallback. */
+   empty. Only the first case may use the legacy keep-wide fallback. */
 {
   const world = fs.readFileSync(path.join(__dirname, '../frontend/app/world.js'), 'utf8');
   const begin = world.indexOf('heroCaps: (agentId) => {');
-  const end = world.indexOf('\n    },\n    // STATION-WIDE gear', begin);
+  const end = world.indexOf('\n    },\n    // KEEP-WIDE gear', begin);
   A.ok(begin >= 0 && end > begin, 'the shipped World.heroCaps method is extractable');
   const method = world.slice(begin, end + '\n    }'.length).replace(/^heroCaps:\s*/, '');
-  const bindHeroCaps = station => new Function('station', 'return (' + method + ');')(station);
+  const bindHeroCaps = keep => new Function('keep', 'return (' + method + ');')(keep);
 
   const m = WM.create();
   const annex = m.addRoom({ kind: 'lab', rect: { x1: 18, y1: 0, x2: 26, y2: 8 } });
   A.ok(annex.ok, 'a second capability-isolation room is placed');
   A.ok(m.addProp({ t: 'comms_dish', x: 2, y: 2, w: 1, h: 1, block: true }).ok,
-    'the original room holds station-wide WEB gear');
+    'the original room holds keep-wide WEB gear');
   A.ok(m.addProp({ t: 'workbench', x: 4, y: 2, w: 2, h: 1, block: true }).ok,
-    'the original room holds station-wide TERMINAL gear');
+    'the original room holds keep-wide TERMINAL gear');
   A.ok(m.addProp({ t: 'bay', x: 20, y: 2, w: 2, h: 2, block: true, agentId: 'isolated' }).ok,
     'the isolated agent has a bay in the empty second room');
 
   const heroCaps = bindHeroCaps(m);
   A.eq(m.agentRoomId('isolated'), annex.id, 'the model proves the isolated agent has an assigned room');
   A.eq(m.bayObjects('isolated'), [], 'that assigned room truthfully has no capability objects');
-  A.eq(heroCaps('isolated'), [], 'an empty assigned bay stays empty instead of inheriting station-wide gear');
+  A.eq(heroCaps('isolated'), [], 'an empty assigned bay stays empty instead of inheriting keep-wide gear');
 
   A.ok(m.addProp({ t: 'comms_dish', x: 23, y: 2, w: 1, h: 1, block: true }).ok,
     'WEB gear is placed inside the isolated room');
   A.eq(heroCaps('isolated'), [{ objectType: 'dish' }],
     'a bay-bound agent receives only the capability gear in its own room');
   A.ok(heroCaps('unbound').some(x => x.objectType === 'workbench'),
-    'an agent with no bay keeps the legacy station-wide fallback');
+    'an agent with no bay keeps the legacy keep-wide fallback');
 
   const faulted = bindHeroCaps({
     bayObjects: () => [],
@@ -95,8 +95,8 @@ A.eq(ToolProps.toolPropType('image_analyze'), 'studio', 'toolPropType(image_anal
 const mb = PS.spec('missionboard');
 A.ok(mb, 'the catalog has a MISSION BOARD prop');
 A.eq(mb.tier, 'functional', 'MISSION BOARD is a SYSTEMS-tier prop (it does something: projects + opens the quest log)');
-A.eq(mb.cat, 'command', 'MISSION BOARD gets its OWN category (the workstation-model rule: functional-but-not-capability, never mixed into capability or cosmetics)');
-A.ok(['workstation', 'workflow', 'capability', 'isolation'].indexOf(mb.cat) < 0, 'that category is none of the existing functional ones');
+A.eq(mb.cat, 'command', 'MISSION BOARD gets its OWN category (the workkeep-model rule: functional-but-not-capability, never mixed into capability or cosmetics)');
+A.ok(['workkeep', 'workflow', 'capability', 'isolation'].indexOf(mb.cat) < 0, 'that category is none of the existing functional ones');
 A.ok(PS.has('missionboard'), 'MISSION BOARD has a real draw function');
 A.eq(WM.CAP_PROP_MAP.missionboard, undefined, 'MISSION BOARD grants NO capability (CAP_PROP_MAP has no entry)');
 A.eq(WM.grantLabelForProp('missionboard'), null, '…and no power word (it is a projection, never a grant)');

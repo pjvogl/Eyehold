@@ -212,7 +212,7 @@
   }
 
   /* AN ARRAY ALWAYS SAYS WHAT IT HOLDS (2026-10-08). Gemini refuses the WHOLE request when any declared array has no
-     `items` ("…properties[shape].items: missing field", INVALID_ARGUMENT) — station.plan's `shape: {type:'array'}` killed
+     `items` ("…properties[shape].items: missing field", INVALID_ARGUMENT) — keep.plan's `shape: {type:'array'}` killed
      every Gemini run whose tool.search revealed it (real-model run: clear notifications, pin, E-STOP all "Something went
      wrong"). `items: {}` (anything) is accepted everywhere and changes no meaning. Returns the SAME object when nothing
      was missing, so callers can keep their identity checks. */

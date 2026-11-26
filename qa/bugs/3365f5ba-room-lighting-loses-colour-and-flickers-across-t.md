@@ -24,11 +24,11 @@ The evenly lit rooms lose warmth and their bright patches pulse rapidly, making 
 
 ## Repro
 
-Open the seeded :9197 preview on source 28a9ed488. Observe a furnished wood-floor room for several seconds in the station and Build views. The fixture glow uses 83/210ms sine terms with a 90% intensity range; material warmth and sheen are both reduced by the same 0.22 gain as the coverage cut.
+Open the seeded :9197 preview on source 28a9ed488. Observe a furnished wood-floor room for several seconds in the keep and Build views. The fixture glow uses 83/210ms sine terms with a 90% intensity range; material warmth and sheen are both reduced by the same 0.22 gain as the coverage cut.
 
 ## Evidence
 
-`test/simulation-lighting.test.js` executes both real drawing functions at six times, verifies identical fixture draw commands, gradient reuse, rebake invalidation and state restoration. It also samples source emission over 30 seconds, preserving working-state gating and reduced-motion behavior. `dev/room-lighting-vibrancy-proof.mjs` compares actual browser canvas bakes: furnished reference floor chroma 14.099 -> 16.046, luma 41.259 -> 47.558, zero clipped highlights. PNGs and colour.json are in `.worldshots/vibrant-lighting/`. Furnished station and Build views were inspected live; the existing Build proof reports no degraded layers and unchanged station data. Nine sizes and L/U/overlap coverage checks still pass.
+`test/simulation-lighting.test.js` executes both real drawing functions at six times, verifies identical fixture draw commands, gradient reuse, rebake invalidation and state restoration. It also samples source emission over 30 seconds, preserving working-state gating and reduced-motion behavior. `dev/room-lighting-vibrancy-proof.mjs` compares actual browser canvas bakes: furnished reference floor chroma 14.099 -> 16.046, luma 41.259 -> 47.558, zero clipped highlights. PNGs and colour.json are in `.worldshots/vibrant-lighting/`. Furnished keep and Build views were inspected live; the existing Build proof reports no degraded layers and unchanged keep data. Nine sizes and L/U/overlap coverage checks still pass.
 
 ## Verdict
 
@@ -40,7 +40,7 @@ Source 970df704b fixed rapid motion but the owner rejected its weak colour/glow.
 
 ## Regression
 
-Registered `test/simulation-lighting.test.js` passes 77 assertions including temporal stability in both views, allocation reuse, website parity, and all emission modes. `test/stationbake.chunk.test.js` passes 64 assertions; room-lighting-settings passes its default, persistence wiring and exposure checks. The live settings driver verifies all three levels, keyboard activation, fixed fixture layout and reload persistence.
+Registered `test/simulation-lighting.test.js` passes 77 assertions including temporal stability in both views, allocation reuse, website parity, and all emission modes. `test/keepbake.chunk.test.js` passes 64 assertions; room-lighting-settings passes its default, persistence wiring and exposure checks. The live settings driver verifies all three levels, keyboard activation, fixed fixture layout and reload persistence.
 
 ## Sibling coverage
 

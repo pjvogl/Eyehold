@@ -1,5 +1,5 @@
 'use strict';
-// Package the imagegen masters into the game. The workstation generator returned
+// Package the imagegen masters into the game. The workkeep generator returned
 // an opaque transparency matte; remove only its connected light background.
 const fs = require('node:fs');
 const path = require('node:path');
@@ -11,14 +11,14 @@ const files = {
   floor: 'exec-c8e0fddc-26c5-4a55-9731-f3848b234328.png',
   wall: 'exec-601872c7-3076-40af-9088-8bbe1d2d3eb2.png',
   shell: 'exec-49758ab7-d3f8-48b8-b68c-0036139d9511.png',
-  workstation: 'exec-b73a7026-3c5c-488a-9212-3ec60f8c2521.png'
+  workkeep: 'exec-b73a7026-3c5c-488a-9212-3ec60f8c2521.png'
 };
 (async () => {
   const out = path.join(root, 'frontend/assets/industrial');
   fs.mkdirSync(out, { recursive: true });
   for (const [name, file] of Object.entries(files)) {
     const source = path.join(input, file);
-    if (name !== 'workstation') {
+    if (name !== 'workkeep') {
       await sharp(source).resize({ width: name === 'wall' ? 1024 : 768 }).png().toFile(path.join(out, name + '.png'));
       continue;
     }

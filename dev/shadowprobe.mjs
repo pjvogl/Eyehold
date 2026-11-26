@@ -10,7 +10,7 @@
 //      (a bobbing body's pool must shrink AND fade), the seated and ULTRON variants. Real function,
 //      real browser, not a re-implementation.
 //   2. THE DECK — whether the pool is actually VISIBLE where it has to live. Geometry can be perfect
-//      and still be black-on-black: the station deck measures ~28/255 luma under the hero.
+//      and still be black-on-black: the keep deck measures ~28/255 luma under the hero.
 //   3. THE OFF-FLOOR PATH — the dossier portrait draws a body with no floor (b.noShadow) and must
 //      paint NO pool; one there scales into a blocky bar across the card.
 //

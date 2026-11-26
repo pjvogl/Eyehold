@@ -1613,7 +1613,7 @@
       "kind": "route",
       "area": "routes",
       "name": "GET /api/skills",
-      "purpose": "The bundled recipe library + per-workstation placement flags for the SKILLS panel.",
+      "purpose": "The bundled recipe library + per-workkeep placement flags for the SKILLS panel.",
       "promise": "GET (optionally ?placed=...) returns 200 with the library catalog + enabled/placed flags from the skill store.",
       "wiring": {
         "files": [
@@ -2049,7 +2049,7 @@
       "wiring": {
         "files": [
           "sidecar/index.js",
-          "sidecar/station-store.js"
+          "sidecar/keep-store.js"
         ],
         "events": []
       },
@@ -2207,7 +2207,7 @@
       "wiring": {
         "files": [
           "sidecar/index.js",
-          "sidecar/station-store.js"
+          "sidecar/keep-store.js"
         ],
         "events": []
       },
@@ -2985,7 +2985,7 @@
       "kind": "route",
       "area": "routes",
       "name": "POST /api/config/export",
-      "purpose": "Station backup: export the durable config bundle.",
+      "purpose": "Keep backup: export the durable config bundle.",
       "promise": "POST returns 200 with the exportable config envelope (secrets excluded per config export rules).",
       "wiring": {
         "files": [
@@ -3017,7 +3017,7 @@
       "kind": "route",
       "area": "routes",
       "name": "POST /api/config/import",
-      "purpose": "Restore a station config bundle produced by export.",
+      "purpose": "Restore a keep config bundle produced by export.",
       "promise": "POST {bundle} validates and folds the config in, returning 200 on success or a shaped error.",
       "wiring": {
         "files": [
@@ -3049,7 +3049,7 @@
       "kind": "route",
       "area": "routes",
       "name": "POST /api/config/reset",
-      "purpose": "Reset station config to defaults.",
+      "purpose": "Reset keep config to defaults.",
       "promise": "POST clears the config overrides and returns 200.",
       "wiring": {
         "files": [
@@ -3683,7 +3683,7 @@
       "wiring": {
         "files": [
           "sidecar/index.js",
-          "sidecar/station-store.js"
+          "sidecar/keep-store.js"
         ],
         "events": []
       },
@@ -4426,7 +4426,7 @@
       "wiring": {
         "files": [
           "sidecar/index.js",
-          "sidecar/station-store.js"
+          "sidecar/keep-store.js"
         ],
         "events": []
       },
@@ -4788,7 +4788,7 @@
       "kind": "route",
       "area": "routes",
       "name": "POST /api/skills/toggle",
-      "purpose": "Persist a station-wide enable/disable choice for a library recipe.",
+      "purpose": "Persist a keep-wide enable/disable choice for a library recipe.",
       "promise": "POST {slug, enabled} persists the choice and returns 200; GET /api/skills reflects it.",
       "wiring": {
         "files": [

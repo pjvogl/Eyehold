@@ -9,11 +9,11 @@ const { makeComputerTools } = require('../sidecar/tools/builtin/computer.js');
 const { makeDesktopTools } = require('../sidecar/tools/builtin/desktop.js');
 const { enforceSyntheticOnly, enforceRunAuthority, enforceEnabledToolsets, TOOLSET_FREEBIES, runInputContext, impactOfTool, makeRunAuthority, IMPACTS, backgroundOwnsLoopbackUrl, backgroundOwnsLocalUrl, makeLoopbackListenerProbe, normalizeUnattendedGrants, isConnectorTool } = require('../sidecar/inputpolicy.js');
 
-const station = {
+const keep = {
   agents: { ag: { id: 'ag', room: 'r' } },
   rooms: { r: { id: 'r', objects: [{ objectType: 'computer' }, { objectType: 'workbench' }, { objectType: 'dish' }] } }
 };
-const raw = resolveTools('ag', station);
+const raw = resolveTools('ag', keep);
 A.ok(!raw.tools.includes('computer.use'), 'ordinary capability telemetry never advertises physical input');
 A.ok(!raw.tools.includes('desktop.open'), 'ordinary capability telemetry never advertises real-screen launch');
 // Also simulate a stale/forged legacy resolver result: the per-run policy must still strip it.
@@ -56,9 +56,9 @@ A.ok(legacyRaw.tools.includes('computer.use') && legacyRaw.tools.includes('deskt
   A.ok(!onlyWeb.tools.includes('mcp:notion.read'), 'connectors require the explicit connectors family');
   A.ok(onlyWeb.tools.includes('quest.update') && onlyWeb.tools.includes('tool.search'), 'non-toggleable computer freebies remain available');
   A.eq(onlyWeb.approvalRules['shell.exec'], undefined, 'parallel approval map is attenuated with tool names');
-  A.eq(enforceEnabledToolsets(projected, { get: n => defs[n] }, null), projected, 'null keeps legacy station grants unchanged');
+  A.eq(enforceEnabledToolsets(projected, { get: n => defs[n] }, null), projected, 'null keeps legacy keep grants unchanged');
   // The computer freebies no switch can turn off survive a restriction too (a routine keeps its own notepad).
-  const FREEBIE_TOOLS = ['quest.update', 'tool.search', 'todo', 'deliverable_note', 'station.inspect', 'station.show', 'manual.read', 'routine.notepad'];   // station.show: the same stationinfo grant as station.inspect (read, no consent; it refuses any run nobody is watching)
+  const FREEBIE_TOOLS = ['quest.update', 'tool.search', 'todo', 'deliverable_note', 'keep.inspect', 'keep.show', 'manual.read', 'routine.notepad'];   // keep.show: the same keepinfo grant as keep.inspect (read, no consent; it refuses any run nobody is watching)
   for (const t of FREEBIE_TOOLS) {
     A.ok(safe.tools.includes(t), 'fixture: the computer grants ' + t);
     A.ok(onlyWeb.tools.includes(t), 'a restriction-only toolset list keeps the computer freebie ' + t);
@@ -168,7 +168,7 @@ A.ok(isConnectorTool(MCP_TOOL) && !isConnectorTool(UNCLASSIFIED), 'connector cla
 A.ok(!interactiveAuthority.authorize({}, { name: 'computer.use', capability: 'physical-input' }).ok, 'physical input has no ordinary-run authority');
 A.ok(!interactiveAuthority.authorize({}, { name: 'desktop.open', capability: 'visible-desktop' }).ok, 'visible desktop has no ordinary-run authority');
 A.eq(impactOfTool({ name: 'future.magic', capability: 'future-cap' }), IMPACTS.EXTERNAL_UNKNOWN, 'unknown future tools fail closed instead of defaulting safe');
-A.eq(impactOfTool({ name: 'station.inspect', capability: 'stationinfo' }), IMPACTS.NONE, 'local secret-free harness inspection is a safe built-in read');
+A.eq(impactOfTool({ name: 'keep.inspect', capability: 'keepinfo' }), IMPACTS.NONE, 'local secret-free harness inspection is a safe built-in read');
 A.eq(impactOfTool({ name: 'browser.test_input', capability: 'workbench' }), IMPACTS.SYNTHETIC_BROWSER, 'synthetic CDP input is explicitly classified');
 
 const fakeDefs = {

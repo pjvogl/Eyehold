@@ -27,7 +27,7 @@ The owner reports lag after selecting the refreshed backdrops. Large scenes can 
 
 ## Repro
 
-1. Launch an isolated seeded station with `node dev/seed.js --keep` and open Cinema at 1920×1080 or 3840×2160.
+1. Launch an isolated seeded keep with `node dev/seed.js --keep` and open Cinema at 1920×1080 or 3840×2160.
 2. Select Ocean, Night City, Moon and Forest through Appearance; drag and zoom the camera.
 3. Profile the shared `SpaceBG.draw` and `Terrain.draw` calls with the world's actual `imageSmoothingEnabled=false` setting. Separate cold build, warm submission, final GPU readback and whole-app frame intervals.
 4. Repeat with `scripts/qa/backdrop-performance-live.mjs` against its CDP port. This drives real Appearance, Cinema, drag and wheel controls and records pixels and runtime errors.

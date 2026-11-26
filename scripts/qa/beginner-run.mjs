@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-/* scripts/qa/beginner-run.mjs — the Self-Testing Station's BEGINNER RUN (lane Q2).
+/* scripts/qa/beginner-run.mjs — the Self-Testing Keep's BEGINNER RUN (lane Q2).
  *
  * WHY THIS EXISTS: the whole product thesis is "a brand-new user reaches first value,
  * unassisted, in under 10 minutes." Every other QA detector (shoot/audit/golden) boots the
@@ -118,7 +118,7 @@ export function uiOnlyProviderBaseEnv(mode, base) {
   };
 }
 
-// A production-mode sidecar deliberately scans the canonical OS app-data roots for prior-station
+// A production-mode sidecar deliberately scans the canonical OS app-data roots for prior-keep
 // evidence. The Beginner Run must exercise that behavior without seeing the Commander's real profile,
 // so the child process gets an empty OS-data namespace as well as its own SKYNET_WORKSPACES root.
 export function isolatedOsDataEnv(root, pathMod = path) {
@@ -642,7 +642,7 @@ if (INVOKED_DIRECTLY) (async () => {
     log('mode=' + MODE + ' port=' + PORT + ' run=' + path.relative(REPO, RUN_DIR));
     log('temp workspace: ' + TEMP_WS + ' (empty → fresh connect screen; cleaned up after run)');
 
-    // WAKE now performs a mandatory live-wire preflight before entering the station. UI-only owns a
+    // WAKE now performs a mandatory live-wire preflight before entering the keep. UI-only owns a
     // local deterministic upstream for that request; --live deliberately leaves the real wire intact.
     if (MODE === 'ui-only') uiOnlyProvider = await startUiOnlyOpenRouter(PLACEHOLDER_MODEL);
 

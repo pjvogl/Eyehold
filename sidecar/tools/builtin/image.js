@@ -2,7 +2,7 @@
 
    Generation rides the media route resolved by the host: OpenRouter-compatible chat completions,
    OpenAI's dedicated Images API, or the ChatGPT plan (gpt-image-2 through the Codex Responses
-   image_generation tool, authorized by the station's ChatGPT sign-in, no API key). Credentials remain
+   image_generation tool, authorized by the keep's ChatGPT sign-in, no API key). Credentials remain
    paired with their provider endpoint.
 
      image_generate  : POST /chat/completions with modalities:['image','text']. The model returns a
@@ -376,7 +376,7 @@
 
     async function orPost(body, timeoutMs, parentSignal) {
       checkCancelled(parentSignal);
-      if (!apiKey) throw new Error('STUDIO image generation is unavailable: no media connection is configured. Open SETTINGS and connect an OpenRouter API key for image generation, or link this station to your Eyehold account, then retry; no image was produced.');
+      if (!apiKey) throw new Error('STUDIO image generation is unavailable: no media connection is configured. Open SETTINGS and connect an OpenRouter API key for image generation, or link this keep to your Eyehold account, then retry; no image was produced.');
       const res = await withTimeout(signal => doFetch(orUrl, {
         method: 'POST',
         headers: { 'Authorization': 'Bearer ' + apiKey, 'Content-Type': 'application/json', 'HTTP-Referer': 'https://eyehold.local', 'X-Title': 'EYEHOLD' },
@@ -400,7 +400,7 @@
 
     async function openAIImagePost(body, timeoutMs, parentSignal) {
       checkCancelled(parentSignal);
-      if (!apiKey) throw new Error('STUDIO image generation is unavailable: no media connection is configured. Open SETTINGS and connect an OpenAI or OpenRouter API key for image generation, or link this station to your Eyehold account, then retry; no image was produced.');
+      if (!apiKey) throw new Error('STUDIO image generation is unavailable: no media connection is configured. Open SETTINGS and connect an OpenAI or OpenRouter API key for image generation, or link this keep to your Eyehold account, then retry; no image was produced.');
       const res = await withTimeout(signal => doFetch(openAIImageUrl, {
         method: 'POST',
         headers: { 'Authorization': 'Bearer ' + apiKey, 'Content-Type': 'application/json' },

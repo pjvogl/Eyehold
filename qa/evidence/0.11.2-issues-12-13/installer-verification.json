@@ -57,7 +57,7 @@
       "scripts/qa/installed-customer-regressions.cjs"
     ]
   },
-  "scope": "Private 0.11.1-version candidate; manual historical NSIS upgrade and normal restart; installed Node/sidecar customer scenarios use controlled upstreams and isolated stations. No public 0.11.2 feed or actual customer account recovery claimed.",
+  "scope": "Private 0.11.1-version candidate; manual historical NSIS upgrade and normal restart; installed Node/sidecar customer scenarios use controlled upstreams and isolated keeps. No public 0.11.2 feed or actual customer account recovery claimed.",
   "priorAttempts": [
     {
       "run": 34563698033,

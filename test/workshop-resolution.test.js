@@ -6,7 +6,7 @@
    Commander opened the session and saw only the naked stub, which read as a broken/old UI (no card,
    no Open-it, no decisions, no explanation). Truthful telemetry says the session must state what
    actually happened, from server truth (the deliverable lifecycle library), or honestly say the files
-   are gone — and must stay SILENT only when the station is unreachable (never assert an unproven
+   are gone — and must stay SILENT only when the keep is unreachable (never assert an unproven
    resolution).
 
    Proven over the real store with injected fakes (Workstreams/Chat/fetch), same harness style as
@@ -24,7 +24,7 @@ global.localStorage = {
 
 let pending = [];            // rows served by /api/workshop/pending
 let libraryRows = [];        // rows served by /api/deliverables
-let pendingUnreachable = false;   // simulate a dead station for the pending probe
+let pendingUnreachable = false;   // simulate a dead keep for the pending probe
 global.fetch = async (url) => {
   const u = String(url);
   if (u.indexOf('/api/workshop/pending') === 0) {
@@ -100,15 +100,15 @@ const seedSession = (runId, extraHistory) => {
   await WorkshopStore.presentFor('workshop-run-M');
   A.ok(!sysLines('workshop-run-M').some(c => c.indexOf('◈') === 0), 'a session that already carries its ✓ decision marker gets no extra resolution line');
 
-  /* ---------- 6. station unreachable → SILENCE (never assert a resolution the server didn't prove) ---------- */
+  /* ---------- 6. keep unreachable → SILENCE (never assert a resolution the server didn't prove) ---------- */
   seedSession('run-U');
   pendingUnreachable = true;
   await WorkshopStore.presentFor('workshop-run-U');
-  A.ok(!sysLines('workshop-run-U').some(c => c.indexOf('◈') === 0), 'an unreachable station appends NOTHING — fail-open stays honest');
+  A.ok(!sysLines('workshop-run-U').some(c => c.indexOf('◈') === 0), 'an unreachable keep appends NOTHING — fail-open stays honest');
   pendingUnreachable = false;
 
   /* ---------- 7. unreachable at open (cold-boot race) → RETRIES while the session is on screen, and the
-     card appears the moment the station answers. THE BUG THIS LOCKS OUT (2026-07-19, 3rd report): on
+     card appears the moment the keep answers. THE BUG THIS LOCKS OUT (2026-07-19, 3rd report): on
      desktop the bundled frontend paints before the sidecar listens; presentFor's one-shot probe failed
      silently and the Commander saw only the naked stub — no card, no buttons, forever. ---------- */
   seedSession('run-R');
@@ -118,10 +118,10 @@ const seedSession = (runId, extraHistory) => {
   cards = [];
   WorkshopStore._pfDelays.fast = 20; WorkshopStore._pfDelays.slow = 20;
   await WorkshopStore.presentFor('workshop-run-R');
-  A.eq(cards.length, 0, 'no card while the station is down (never a fabricated card)');
+  A.eq(cards.length, 0, 'no card while the keep is down (never a fabricated card)');
   pendingUnreachable = false;          // the sidecar comes up
   await new Promise(r => setTimeout(r, 120));   // let the retry chain fire
-  A.eq(cards.length, 1, 'the retry presents the card once the station answers');
+  A.eq(cards.length, 1, 'the retry presents the card once the keep answers');
   A.eq(cards[0].o.sessionId, 'workshop-run-R', 'the late card is still pinned to its own session');
 
   /* ---------- 8. unreachable + the Commander switched away → the chain retires (no card into a
@@ -132,21 +132,21 @@ const seedSession = (runId, extraHistory) => {
   activeStreamId = 'workshop-run-S';
   cards = [];
   await WorkshopStore.presentFor('workshop-run-S');
-  activeStreamId = 'ws_general';       // switched away before the station answered
+  activeStreamId = 'ws_general';       // switched away before the keep answered
   pendingUnreachable = false;
   await new Promise(r => setTimeout(r, 120));
   A.eq(cards.length, 0, 'a retired chain never paints into a session the Commander left');
 
-  /* ---------- 9. the ATTACH POLL is one-shot no more: station down at boot → maybePresent retries,
-     and the deliverable's session is adopted (greet path) the moment the station answers ---------- */
+  /* ---------- 9. the ATTACH POLL is one-shot no more: keep down at boot → maybePresent retries,
+     and the deliverable's session is adopted (greet path) the moment the keep answers ---------- */
   streams.delete('workshop-run-A'); pending = [{ runId: 'run-A', title: 'boot-race build', files: [] }];
   pendingUnreachable = true;
   activeStreamId = 'ws_general';
   await WorkshopStore._maybePresent();
-  A.ok(!streams.has('workshop-run-A'), 'no session adopted while the station is down (never a fabricated row)');
+  A.ok(!streams.has('workshop-run-A'), 'no session adopted while the keep is down (never a fabricated row)');
   pendingUnreachable = false;          // sidecar comes up
   await new Promise(r => setTimeout(r, 120));
-  A.ok(streams.has('workshop-run-A'), 'the attach-poll retry adopts the deliverable session once the station answers');
+  A.ok(streams.has('workshop-run-A'), 'the attach-poll retry adopts the deliverable session once the keep answers');
 
   A.report('workshop-resolution');
 })().catch(e => { console.error(e); process.exit(1); });

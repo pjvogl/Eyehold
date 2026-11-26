@@ -50,7 +50,7 @@ Applied in `arrive()`'s `'use'` branch and the `use` branch of `maybeGlance`. Ha
 permanently "furniture" and ambient curiosity ran out of targets.
 
 ### 3. Roam — `frontend/app/zones.js`
-Zone = station floor **∩** `ROAM_RADIUS` (14) around the body's stable desk/spawn anchor. Room plates
+Zone = keep floor **∩** `ROAM_RADIUS` (14) around the body's stable desk/spawn anchor. Room plates
 do not widen or clip that distance, and the same rule applies to solo and deskless placed bodies.
 `geo.walkable` plus the existing pathfinder still reject walls and unreachable destinations; the
 zone only owns the stable distance boundary. `test/zones.test.js` covers the exact edge behavior.
@@ -66,7 +66,7 @@ He tested it live and said it was **worse**, over-engineered, and that the agent
 TV, arcade and pinball he had placed. He was right, and the cause was a **gating bug that predates
 this lane**: `planProp` — the only route to any leisure prop — hung off the **rest** drive, so an
 agent only went near entertainment when TIRED. Idle downtime accumulates the **stim** (bored) drive,
-which did caretaker laps and study beats. Measured on a replica of his own station: the hero used
+which did caretaker laps and study beats. Measured on a replica of his own keep: the hero used
 **zero** leisure props in six minutes.
 
 - `planPlay` — bored + something fun in reach → go play, ahead of the caretaker lap.
@@ -159,4 +159,4 @@ animation calls, but if you want a clean receipt, re-run it.
 
 Open, honestly stated: crew bodies still favour the couch heavily (one measured 9 of 12 visits);
 the entertainment weighting is tuned by feel, not by a target distribution; and the roam radius has
-never been exercised on a real multi-room station (Andrew's is one room).
+never been exercised on a real multi-room keep (Andrew's is one room).

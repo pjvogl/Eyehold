@@ -51,11 +51,11 @@ function skillMdOf(exported) { return packageFormat.fileBuffer(JSON.parse(export
     A.eq(exported.filename, 'deploy-the-site-prod.eyehold-skill.json', 'a filename from the spec name');
     A.eq(exported.digest, packageFormat.fromEnvelope(pkg).digest, 'the digest names exactly these bytes');
 
-    // ---- B. round-trip into another station as a community install ----
+    // ---- B. round-trip into another keep as a community install ----
     const away = store();
     const exAway = exchangeFor(away);
     const preview = await exAway.inspectEnvelope({ envelope: exported.envelope });
-    A.eq(preview.name, 'Deploy the Site (prod)', 'the importing station shows the original display name');
+    A.eq(preview.name, 'Deploy the Site (prod)', 'the importing keep shows the original display name');
     A.eq(preview.files.map(f => f.path).sort(), ['SKILL.md', 'references/checklist.md'], 'with its support file');
     const installed = exAway.install({ agentId: 'b', inspectionId: preview.inspectionId });
     const there = away.view('b', installed.skill.id, { bump: false, includeArchived: true });

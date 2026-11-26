@@ -1,5 +1,5 @@
 // APPS — an app's REFRESH survives the window closing (2026-09-30).
-//   node dev/apps-detach-proof.mjs [port] [appId]     against a RUNNING station with a real model
+//   node dev/apps-detach-proof.mjs [port] [appId]     against a RUNNING keep with a real model
 // Run Now cancels its run when the watching page goes away (the AUTOMATION panel's law). An app's REFRESH asks with
 // detach:true, because the update is the app's job, not the window's. Proof: give the app an update task, press
 // its refresh (the same request the bar sends), KILL the whole browser 3 s later, then — from a fresh browser —

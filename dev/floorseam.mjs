@@ -4,7 +4,7 @@
 // Andrew 2026-08-05: "when you place multiple rooms, or a hallway, the floors do appear to not
 // blend properly. there is always a border that shows."
 //
-// Same discipline as dev/corridordeck.mjs: bake offscreen at 1:1 through the shipped StationBake,
+// Same discipline as dev/corridordeck.mjs: bake offscreen at 1:1 through the shipped KeepBake,
 // composite over MAGENTA, and answer the question with NUMBERS as well as crops. The number that
 // matters is a per-row (or per-column) mean-luma profile taken straight ACROSS the seam on the BARE
 // composite — the ambient gradient is a smooth ramp, so any row that jumps off it is a painted line.
@@ -42,7 +42,7 @@ const PROBE = `(() => {
                  D: D.error || null, W: W.error || null, E: E.error || null };
 
   const geo = st.projectGeometry(), T = geo.TILE;
-  const bk = StationBake.bake(geo);
+  const bk = KeepBake.bake(geo);
   const mk = (w, h) => { const c = document.createElement('canvas'); c.width = w; c.height = h; const g = c.getContext('2d'); g.imageSmoothingEnabled = false; return { c, g }; };
   const lit = mk(bk.W, bk.H); lit.g.fillStyle = '#ff00ff'; lit.g.fillRect(0, 0, bk.W, bk.H);
   lit.g.drawImage(bk.baseCv, 0, 0); lit.g.drawImage(bk.lightCv, 0, 0);

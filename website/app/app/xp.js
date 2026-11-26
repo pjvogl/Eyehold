@@ -19,8 +19,8 @@
                      Descriptive capability, not currency: authoring earns nothing, so it cannot be farmed.
 
    The design rule: these DESCRIBE the agent's user-approved growth/reliability — they never GATE it. No
-   capability is ever locked behind a level. The station-wide rollup uses the SAME engine fed
-   the same events, so "STATION Lv 28" is just the colony's cumulative, user-approved track record. */
+   capability is ever locked behind a level. The keep-wide rollup uses the SAME engine fed
+   the same events, so "KEEP Lv 28" is just the colony's cumulative, user-approved track record. */
 'use strict';
 (function (root, factory) {
   const api = factory();
@@ -50,7 +50,7 @@
        • ATTRIBUTED — 'done' (completed) · 'max_iters' / 'budget' / 'refusal' (it engaged and fell short)
        • EXCLUDED   — 'error' + 'empty' (the PROVIDER failed: a 404, a dead model id, an out-of-credit key, a
                       degraded stream — charging that to the agent would be a lie, and it is the single most
-                      common terminal on a misconfigured station) · 'cancelled' (the COMMANDER stopped it) ·
+                      common terminal on a misconfigured keep) · 'cancelled' (the COMMANDER stopped it) ·
                       'clarifying' (a neutral Task Brief question — the frozen contract says every success-keyed
                       consumer must treat it exactly like 'cancelled').
      Excluded runs are still COUNTED, separately, so the dossier can say how many were set aside instead of
@@ -165,7 +165,7 @@
     return c >= 85 ? 1.5 : c >= 65 ? 1.3 : c >= 45 ? 1.15 : 1;
   }
 
-  // ---- the stats shape (used for BOTH a single agent and the station rollup) ----
+  // ---- the stats shape (used for BOTH a single agent and the keep rollup) ----
   function fresh() { return { xp: 0, level: 1, lifetimeXp: 0, confidence: SEED_CONF, samples: 0, counters: {}, milestones: [], receipts: { runs: [], feedback: [] } }; }
   function clone(s) { return s ? JSON.parse(JSON.stringify(s)) : fresh(); }
   // defensive: a corrupted / hand-edited save must never let a non-finite value (NaN/Infinity) poison the
@@ -208,8 +208,8 @@
        • the shipped-task ladder is now 1 → 5 → 25 → 100, the SAME rungs credential() publishes as tiers, so
          a trophy lighting and the agent's dispatch briefing gaining a line are one event, not two systems.
        • HANDS ON is the first badge in the whole catalogue to read `toolsOk` — real successful tool calls,
-         the most-proven counter the station keeps, and previously worth no recognition at all.
-       • DEPENDABLE is the harness-observed twin of TRUSTED (what the Commander SAID vs what the station SAW).
+         the most-proven counter the keep keeps, and previously worth no recognition at all.
+       • DEPENDABLE is the harness-observed twin of TRUSTED (what the Commander SAID vs what the keep SAW).
          It asks reliability() for the band rather than re-deriving the 85% threshold, so the badge can never
          drift from the dossier's B2 gauge, and it adds a VOLUME floor on top: the band alone goes DEPENDABLE
          at MIN_RUNS (3), which would have made this a sixth session-one badge — the exact cliff S4 exists to
@@ -225,7 +225,7 @@
     { id: 'hands_on',    label: 'HANDS ON',    hint: '25 tool calls',     when: (c) => (c.toolsOk || 0) >= 25 },      // S4: 25 tools that really ran and really succeeded
     { id: 'workhorse',   label: 'WORKHORSE',   hint: '25 tasks',          when: (c) => (c.tasksDone || 0) >= 25 },    // 25 tasks shipped
     { id: 'centurion',   label: 'CENTURION',   hint: '100 tasks',         when: (c) => (c.tasksDone || 0) >= 100 },   // 100 tasks shipped
-    // delivered work OUT through a channel (Telegram, Discord, Slack…) — work that reached you away from the station.
+    // delivered work OUT through a channel (Telegram, Discord, Slack…) — work that reached you away from the keep.
     // It used to read the COMMS `delivered` counter, so any finished chat task earned it in the same beat as FIRST
     // LIGHT (first-hour walk 2026-09-28: "NIGHT SHIFT" at 22:50 for listings pasted into chat). The id stays.
     { id: 'night_shift', label: 'NIGHT SHIFT', hint: '1 channel delivery', when: (c) => (c.awayDelivered || 0) >= 1 },

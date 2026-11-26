@@ -50,7 +50,7 @@ const ProspectStore = (() => {
      longer than any session or reload cycle, shorter than any honest re-surfacing.
      Own key, own hydrate — the legacy KEY store stays exactly as it is (read-only). */
   const SHOWN_KEY = 'eyehold.prospects.shown.v1';
-  const SHOWN_CAP = 200;                     // bounded: a long-lived station keeps the most recent impressions
+  const SHOWN_CAP = 200;                     // bounded: a long-lived keep keeps the most recent impressions
   const SHOWN_TTL_MS = 24 * 60 * 60 * 1000;
   function loadShown() {
     try {
@@ -295,7 +295,7 @@ const ProspectStore = (() => {
   // the per-recipe launch counters ({id: {name, n, lastAt, rated?}}) — rankRecipes' engagement + outcome signal.
   function launches() { return (cache && cache.usage && cache.usage.launches) || {}; }
 
-  // a brand-new hero drops the browser-side state; the server store is the station's own memory (kept).
+  // a brand-new hero drops the browser-side state; the server store is the keep's own memory (kept).
   function reset() { legacy = hydrateLegacy(null); cache = null; recommendationIds = {}; try { localStorage.removeItem(KEY); localStorage.removeItem(SHOWN_KEY); } catch (_) {} }
 
   return { init, refresh, pushContext, list, recipeDrafts, get, interests, gate, warm, preferenceModel, ledger, dismiss, accept, reset,

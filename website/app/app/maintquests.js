@@ -2,7 +2,7 @@
 
    SlagLog (slaglog.js) already diagnoses every unproductive run into a plain-English { reason, title, cause,
    fix } post-mortem and keeps a small ring of the recent ones. Those diagnoses go nowhere today. This engine
-   folds that ring into playable direction: when the SAME cause bites REPEATEDLY, the station mints ONE
+   folds that ring into playable direction: when the SAME cause bites REPEATEDLY, the keep mints ONE
    maintenance quest carrying the diagnosis + the actionable fix:
 
      "⚑ 3 runs died on max_iters — split the task or raise the iteration budget"
@@ -12,7 +12,7 @@
        in the live ring before it mints (a real, recurring problem, not a blip).
      • ONE OPEN QUEST PER CAUSE — the same recurring reason never duplicates (dedup key = the reason).
      • DISMISSAL = STOP FOREVER — a waved-off maintenance quest never re-renders and never re-fires, even if
-       the cause keeps biting (the anti-nag law: the station suggests a fix, it never pushes).
+       the cause keeps biting (the anti-nag law: the keep suggests a fix, it never pushes).
      • HONEST COMPLETION — no claim button. A minted quest completes the instant the SIGNAL CLEARS: the cause's
        count in the live ring falls back below MIN_HITS. This is provable from the ring alone (a bounded window
        of the most-recent post-mortems): as clean/other runs push the failing runs out of the ring, the count
@@ -25,7 +25,7 @@
    store folds a jam signal in via record() with a synthetic reason ('cron-jam:<jobId>') so it rides the exact
    same dedup + projection + dismissal as a slag cause — one quest shape, never a parallel system.
 
-   PURE + node-testable (mirrors stationquests.js / queststate.js): no Date.now / Math.random — the caller
+   PURE + node-testable (mirrors keepquests.js / queststate.js): no Date.now / Math.random — the caller
    injects the clock and the live ring/counts. The browser store (maintqueststore.js) owns the live reads
    (World.slagPostmortems, the cron-jam tally); this file owns only the deterministic fold + the projection
    into the shared Quests shape. */
@@ -60,7 +60,7 @@
       const cause = clean(r.cause);
       if (!cause) continue;
       // null must round-trip as null — Number(null) is 0 (finite!), which would resurrect an open quest as
-      // "completed/dismissed at epoch". Guard the null case explicitly before coercing (the stationquests trap).
+      // "completed/dismissed at epoch". Guard the null case explicitly before coercing (the keepquests trap).
       const comp = r.completedAt == null ? NaN : Number(r.completedAt);
       const dis = r.dismissedAt == null ? NaN : Number(r.dismissedAt);
       s.quests[id] = {
@@ -76,7 +76,7 @@
     return s;
   }
 
-  /* fold a freshly detected recurring cause into the state (in place, like StationQuests.record). Called by the
+  /* fold a freshly detected recurring cause into the state (in place, like KeepQuests.record). Called by the
      store ONLY once a cause has crossed the threshold in the live ring (the store owns the tally; a caller may
      pass hits so the card can read "N runs died on …"). d = { cause, title, fix, hits }. Rules:
        • one entry per cause — a repeat NEVER duplicates (idempotent update of the human-facing labels + hits
@@ -120,7 +120,7 @@
      the store's predicate — "is this cause STILL recurring (≥ threshold in the live ring)?". Completion is the
      real signal clearing (the operator fixed the line), never a claim. Returns the entries that transitioned
      this refresh (so the store can log); the open→done CELEBRATION rides QuestState's fold over the projection
-     — this engine never plays sound, exactly like stationquests.js. */
+     — this engine never plays sound, exactly like keepquests.js. */
   function refresh(state, active, now) {
     const closed = [];
     if (!state || !state.quests || typeof active !== 'function') return closed;

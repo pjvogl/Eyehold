@@ -19,11 +19,11 @@ A BYOK user without a media route is told only to link a Eyehold account even th
 
 ## Repro
 
-Run node scripts/qa/audit-0112/byok-recovery.cjs. On a disposable unlinked station, submit an explicit image task using a custom conversation provider, with studio available and no OpenRouter media key. The pre-inference error says to link this station to your Eyehold account.
+Run node scripts/qa/audit-0112/byok-recovery.cjs. On a disposable unlinked keep, submit an explicit image task using a custom conversation provider, with studio available and no OpenRouter media key. The pre-inference error says to link this keep to your Eyehold account.
 
 ## Evidence
 
-qa/evidence/0.11.2-audit/audit-byok-recovery.json captures the actual sidecar admission error and zero-turn error terminal. sidecar/image-task.js:44 supports a station OpenRouter key for non-managed runs but sidecar/image-task.js:67 offers only the Eyehold-link remedy. sidecar/tools/builtin/image.js:181 repeats the link-only recovery. test/image-task.test.js currently asserts that narrowed wording.
+qa/evidence/0.11.2-audit/audit-byok-recovery.json captures the actual sidecar admission error and zero-turn error terminal. sidecar/image-task.js:44 supports a keep OpenRouter key for non-managed runs but sidecar/image-task.js:67 offers only the Eyehold-link remedy. sidecar/tools/builtin/image.js:181 repeats the link-only recovery. test/image-task.test.js currently asserts that narrowed wording.
 
 ## Verdict
 

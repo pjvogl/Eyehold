@@ -90,7 +90,7 @@ const rejects = async (p, label) => { try { await p; A.ok(false, label + ' (did 
   {
     const { t } = make();
     for (let i = 0; i < MAX_WIDGETS; i++) await run(t, { id: 'w' + i, value: String(i) });
-    A.eq(t.list().length, MAX_WIDGETS, 'the station holds the cap');
+    A.eq(t.list().length, MAX_WIDGETS, 'the keep holds the cap');
     await rejects(run(t, { id: 'overflow', value: 'x' }), 'a NEW id beyond the cap throws');
     const r = await run(t, { id: 'w0', value: 'updated' });
     A.ok(r.content.indexOf('Updated') === 0, 'updating an existing id at the cap still works');

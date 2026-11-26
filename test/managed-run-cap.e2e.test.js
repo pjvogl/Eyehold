@@ -1,6 +1,6 @@
 'use strict';
 /* node test/managed-run-cap.e2e.test.js — issue #53 "Credit Over Consumption On Simple Tasks".
-   A Eyehold-credit (managed, provider 'eyehold') run on a fresh station used to reserve the WHOLE wallet as its
+   A Eyehold-credit (managed, provider 'eyehold') run on a fresh keep used to reserve the WHOLE wallet as its
    per-run ceiling (the shipped per-run cap is 0 = off, and admission turned "no cap" into "the balance"), so one
    prompt on a busy model could spend every dollar the user had just added. This boots the REAL sidecar against a
    fake Eyehold cloud (balance / debit / credit / metered chat completions — the relay charges each completion,

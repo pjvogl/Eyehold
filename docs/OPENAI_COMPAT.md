@@ -42,8 +42,8 @@ codes** (401/403/429/400/404/502) because OpenAI-client compatibility is the con
 - Every run rides the **same `runOnce` autonomous seam** the channels hub uses:
   `surface:'autonomous'` (a headless HTTP caller has no browser to answer a
   `permission.prompt`, so an ungranted mutation default-denies and the run continues —
-  never stalls) and `broadcast:true` (so an external-harness run **lights the station floor**
-  — the user sees that an outside harness talked to their station).
+  never stalls) and `broadcast:true` (so an external-harness run **lights the keep floor**
+  — the user sees that an outside harness talked to their keep).
 - Every run is **task work** (`isTask:true`): the model is offered the agent's real tools
   (the `tool.started`/`tool.completed` events above), still behind the autonomous consent
   rule. Only the structured-output repair pass below runs tool-less.

@@ -25,13 +25,13 @@ const Save = (() => {
         : { workstreams: [], activeId: null, generalId: null };
       return { agent: doc.agent, usage: doc.usage, workstreams: slice.workstreams, activeId: slice.activeId, generalId: slice.generalId };
     },
-    // v2 -> v3 (agent growth): seed the XP/level/confidence stats on the agent + a station-wide rollup.
+    // v2 -> v3 (agent growth): seed the XP/level/confidence stats on the agent + a keep-wide rollup.
     // Honest cold-start: fresh meters (confidence shows "calibrating" until real outcomes arrive). The
     // literal keeps save.js decoupled from xp.js load order; it mirrors Xp.fresh() exactly.
     2: doc => {
       const fresh = () => ({ xp: 0, level: 1, lifetimeXp: 0, confidence: 50, samples: 0, counters: {}, milestones: [] });
       if (doc.agent && typeof doc.agent === 'object' && (!doc.agent.stats || typeof doc.agent.stats !== 'object')) doc.agent.stats = fresh();
-      if (!doc.stationStats || typeof doc.stationStats !== 'object') doc.stationStats = fresh();
+      if (!doc.keepStats || typeof doc.keepStats !== 'object') doc.keepStats = fresh();
       return doc;
     },
     // v3 -> v4 (personalization): seed an empty, valid user-affinity profile slice. Cold-start-safe —
@@ -41,7 +41,7 @@ const Save = (() => {
       if (!doc.profile || typeof doc.profile !== 'object') doc.profile = { v: 1, tags: {}, seed: null, enabled: true, total: 0 };
       return doc;
     },
-    // v4 -> v5 (Commander Dossier): seed an empty, valid station-wide dossier slice. Cold-start-safe — an
+    // v4 -> v5 (Commander Dossier): seed an empty, valid keep-wide dossier slice. Cold-start-safe — an
     // older save (or one whose owner never finished the awakening) gets a learnable, all-empty dossier; it
     // then seeds from the agent's onboarding docs at DossierStore.init. The literal mirrors Dossier.fresh()
     // to keep save.js decoupled from dossier.js load order.

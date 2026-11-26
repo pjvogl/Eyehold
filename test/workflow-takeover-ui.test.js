@@ -11,7 +11,7 @@ const vm = require('node:vm');
     MintStore:{enabled:()=>!paused}, AutomationWindow:{openDraft:d=>drafts.push(d)},
     Chat:{nudge:(text,choices,callback)=>cards.push({text,choices,callback})},
     RecLedger:{accepted:k=>verdicts.push(k),declined:(k,defer)=>verdicts.push(defer)},
-    StationUI:{notify:message=>calls.push({error:message})},
+    KeepUI:{notify:message=>calls.push({error:message})},
     fetch:async(url,options)=>{
       const body=options.body?JSON.parse(options.body):null; calls.push(body);
       return {ok:!fail,json:async()=>fail?{ok:false,error:'stale offer'}:{ok:true,candidates:[c],candidate:c}};

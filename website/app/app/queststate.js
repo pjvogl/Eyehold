@@ -44,7 +44,7 @@
       if (!Number.isFinite(first)) continue;
       // null/undefined must round-trip as null — Number(null) is 0 (finite!), which would resurrect a
       // never-completed quest as "completed at epoch" (a 1969 trophy). Guard the null case before coercing,
-      // mirroring stationquests.js's hydrate. A stored 0 from the pre-fix bug window ALSO reads as null here:
+      // mirroring keepquests.js's hydrate. A stored 0 from the pre-fix bug window ALSO reads as null here:
       // the trophy case then renders it "completed, date unknown" rather than 1969 (the migration choice —
       // an honest completion with no knowable date beats a fabricated one).
       const comp = (r.completedAt == null || r.completedAt === 0) ? NaN : Number(r.completedAt);
@@ -64,8 +64,8 @@
 
   // which quests QuestState MAY wave off (GB-24 — dismiss everywhere). QuestState is the denylist for every
   // kind that has NO external per-store denylist of its own: the dossier "get to know you" asks, milestone
-  // achievements, and the station-arc rows all fall to it. The kinds EXCLUDED here are excluded on purpose:
-  //   • station-gap / work / maintenance / ledger own their OWN durable denylist (their store's dismiss) — the
+  // achievements, and the keep-arc rows all fall to it. The kinds EXCLUDED here are excluded on purpose:
+  //   • keep-gap / work / maintenance / ledger own their OWN durable denylist (their store's dismiss) — the
   //     panel routes those there, never here, so a double-denylist can't disagree.
   //   • idea — its cadence is owned by SuggestStore in COMMS; dismissing it here would fight that store's budget.
   //   • arc-goal / arc-step — a coupled, persisted GOAL PATH (retires only on real drift), not a standalone nag,
@@ -73,9 +73,9 @@
   function dismissible(q) {
     if (!q || !q.kind) return false;
     switch (q.kind) {
-      case 'station-gap': case 'work': case 'maintenance': case 'ledger': return false;
+      case 'keep-gap': case 'work': case 'maintenance': case 'ledger': return false;
       case 'idea': case 'arc-goal': case 'arc-step': return false;
-      default: return true;   // dossier, milestone, station — QuestState is their permanent denylist
+      default: return true;   // dossier, milestone, keep — QuestState is their permanent denylist
     }
   }
 

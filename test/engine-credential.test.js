@@ -1,10 +1,10 @@
-/* node test/engine-credential.test.js — the station keeps its OWN copy of a key saved in a browser page, and every
+/* node test/engine-credential.test.js — the keep keeps its OWN copy of a key saved in a browser page, and every
    unattended surface says ONE sentence when it has no credential (#89).
 
    Reported (Linux, 0.13.1): OpenRouter chat works, but a scheduled routine says 'provider "openrouter" has no usable
    credential' / 'connect a OpenRouter API key to run this scheduled routine'. Root cause: in the browser build the
    key lives only in the page's localStorage and rides each /api/run body; a run with no page attached resolves its
-   key on the station, which never had it. Locks (pure — the live proof is test/routine-keys.e2e.test.js):
+   key on the keep, which never had it. Locks (pure — the live proof is test/routine-keys.e2e.test.js):
      · the store normalizes the page's config, adopts a change ONLY after persist() proves it (a failed save — and a
        failed REMOVE — leaves the old state live and says so), never loads a malformed record, lists its secrets for
        redaction
@@ -22,7 +22,7 @@ const NR = require('../frontend/app/nightreport.js');
 const cron = require('../sidecar/cron.js');
 const cronStore = require('../sidecar/cron-store.js');
 const { makeCronDriver } = require('../sidecar/cron-driver.js');
-const recovery = require('../sidecar/station-recovery.js');
+const recovery = require('../sidecar/keep-recovery.js');
 
 const KEY = 'sk-or-v1-0123456789abcdef0123456789abcdef';
 
@@ -45,10 +45,10 @@ A.ok(!EC.normalizeInput({ key: 'x'.repeat(5000) }).ok, 'an absurd key is refused
     verify: env => disk === JSON.stringify(env)
   });
   A.eq(store.get('openrouter'), null, 'empty store');
-  A.eq(store.revOf('openrouter'), '', 'no revision for a provider the station holds nothing for');
+  A.eq(store.revOf('openrouter'), '', 'no revision for a provider the keep holds nothing for');
   const r1 = store.put('openrouter', { key: KEY, keyPool: ['alt1'] });
   A.eq(r1, { ok: true, changed: true, applied: true }, 'a save that persisted is adopted');
-  A.eq(store.get('openrouter'), { key: KEY, keyPool: ['alt1'] }, 'the station now holds the page copy');
+  A.eq(store.get('openrouter'), { key: KEY, keyPool: ['alt1'] }, 'the keep now holds the page copy');
   A.eq(store.revOf('openrouter'), 'r1', 'each adopted change gets a new revision');
   A.eq(writes[0], { version: 1, providers: { openrouter: { key: KEY, keyPool: ['alt1'], rev: 'r1' } } }, 'the envelope written is versioned, one record per provider');
   A.eq(store.put('openrouter', { key: KEY, keyPool: ['alt1'] }), { ok: true, changed: false, applied: true }, 'the same config again (every page boot) writes nothing');
@@ -56,11 +56,11 @@ A.ok(!EC.normalizeInput({ key: 'x'.repeat(5000) }).ok, 'an absurd key is refused
   A.eq(store.revOf('openrouter'), 'r1', 'and keeps its revision');
   A.eq(store.secretValues().sort(), [KEY, 'alt1'].sort(), 'every held key and backup is listed for known-value redaction');
 
-  // an unchanged push re-proves the disk: a file deleted behind the station's back is rewritten, not answered "saved"
+  // an unchanged push re-proves the disk: a file deleted behind the keep's back is rewritten, not answered "saved"
   disk = null;
   A.eq(store.put('openrouter', { key: KEY, keyPool: ['alt1'] }), { ok: true, changed: false, applied: true }, 'an unchanged push over a lost file still succeeds…');
   A.eq(writes.length, 2, '…because it rewrote the file');
-  A.eq(disk, JSON.stringify(writes[0]), 'with exactly what the station runs on');
+  A.eq(disk, JSON.stringify(writes[0]), 'with exactly what the keep runs on');
   disk = null; fail = true;
   const lost = store.put('openrouter', { key: KEY, keyPool: ['alt1'] });
   A.ok(lost.ok === false && lost.error === 'persist', 'an unchanged push over a lost file that cannot be rewritten is a failure, never "saved"');
@@ -71,21 +71,21 @@ A.ok(!EC.normalizeInput({ key: 'x'.repeat(5000) }).ok, 'an absurd key is refused
   const before = writes.length;
   const r2 = store.put('openrouter', { key: 'sk-or-v1-new' });
   A.ok(r2.ok === false && r2.removing === false, 'a save whose read-back failed reports ok:false (and that it was a save)');
-  A.eq(store.get('openrouter').key, KEY, 'the unproven key is not adopted: the station keeps running on exactly what is on disk');
+  A.eq(store.get('openrouter').key, KEY, 'the unproven key is not adopted: the keep keeps running on exactly what is on disk');
   A.eq(writes.length - before, 2, 'a failed write is followed by one put-it-back write…');
-  A.eq(writes[writes.length - 1].providers.openrouter.key, KEY, '…of what the station still runs on (a half-landed write must not load next boot)');
+  A.eq(writes[writes.length - 1].providers.openrouter.key, KEY, '…of what the keep still runs on (a half-landed write must not load next boot)');
   const r3 = store.put('openrouter', { key: '' });
-  A.ok(r3.ok === false && r3.removing === true && r3.held === true, 'a REMOVE whose write failed reports ok:false, that it was a removal, and that the station still holds the copy (the route words it differently)');
+  A.ok(r3.ok === false && r3.removing === true && r3.held === true, 'a REMOVE whose write failed reports ok:false, that it was a removal, and that the keep still holds the copy (the route words it differently)');
   A.eq(store.get('openrouter').key, KEY, 'an unproven removal leaves the old key in place (it would come back after a restart otherwise)');
   const throwing = EC.makeEngineKeys({ load: () => undefined, persist: () => { throw new Error('EACCES'); } });
   A.eq(throwing.put('anthropic', { key: 'sk-ant-x' }).ok, false, 'a persist that throws is a failed save, never a crash');
   A.eq(throwing.get('anthropic'), null, 'and nothing was adopted');
   const nothingHeld = throwing.put('anthropic', { key: '' });
-  A.ok(nothingHeld.ok === false && nothingHeld.removing === true && nothingHeld.held === false, 'a failed REMOVE of a provider the station holds nothing for says so (no copy is in use)');
+  A.ok(nothingHeld.ok === false && nothingHeld.removing === true && nothingHeld.held === false, 'a failed REMOVE of a provider the keep holds nothing for says so (no copy is in use)');
 
   fail = false;
   A.eq(store.put('openrouter', { key: '' }), { ok: true, changed: true, applied: true }, 'a proven REMOVE');
-  A.eq(store.get('openrouter'), null, 'REMOVE clears the station copy');
+  A.eq(store.get('openrouter'), null, 'REMOVE clears the keep copy');
   const tomb = writes[writes.length - 1].providers.openrouter;
   A.ok(tomb && tomb.removed === true && !tomb.key && !tomb.keyPool && /^r\d+$/.test(tomb.rev), 'the file keeps only a key-less tombstone: ' + JSON.stringify(tomb));
   A.eq(store.secretValues(), [], 'a tombstone is no secret');
@@ -98,12 +98,12 @@ A.ok(!EC.normalizeInput({ key: 'x'.repeat(5000) }).ok, 'an absurd key is refused
   let revs = 0;
   const store = EC.makeEngineKeys({ load: () => undefined, persist: () => true, newRev: () => 'b' + (++revs) });
   const OLD = 'sk-or-v1-old-page-key', NEW = 'sk-or-v1-rotated-key';
-  // first boot after the upgrade: the station holds nothing, so the first page to boot hands its key over
-  A.eq(store.put('openrouter', { key: OLD }, { boot: true, ifRev: '' }), { ok: true, changed: true, applied: true }, 'a boot hand-over fills an empty station');
+  // first boot after the upgrade: the keep holds nothing, so the first page to boot hands its key over
+  A.eq(store.put('openrouter', { key: OLD }, { boot: true, ifRev: '' }), { ok: true, changed: true, applied: true }, 'a boot hand-over fills an empty keep');
   const seen = store.revOf('openrouter');
   // a second origin (127.0.0.1 vs localhost — separate localStorage) boots holding a different key it never saved here
   A.eq(store.put('openrouter', { key: 'sk-or-v1-other-origin' }, { boot: true, ifRev: '' }), { ok: true, changed: false, applied: false, stale: true }, 'another page\'s boot cannot replace a key it never saw');
-  A.eq(store.get('openrouter').key, OLD, 'the station keeps the first page\'s key');
+  A.eq(store.get('openrouter').key, OLD, 'the keep keeps the first page\'s key');
   // the Commander rotates the key in page B (explicit save = last write wins)
   A.eq(store.put('openrouter', { key: NEW }).applied, true, 'an explicit save always applies');
   // page A (still holding OLD, last saw `seen`) boots again: OLD must not come back
@@ -143,7 +143,7 @@ A.ok(EC.normalizeInput({ key: KEY, baseUrl: 'https://proxy.example/v1' }).ok, 'a
 /* ---------- credentialError: ONE sentence, real ways out ---------- */
 {
   const key = EC.credentialError({ id: 'openrouter', label: 'OpenRouter', kind: 'key', env: 'OPENROUTER_API_KEY', what: 'this scheduled routine' });
-  A.eq(key, 'no OpenRouter API key is saved on this station for this scheduled routine — connect or re-save it under SETTINGS → AI & MODELS, or set OPENROUTER_API_KEY in the environment that starts Eyehold', 'the key sentence');
+  A.eq(key, 'no OpenRouter API key is saved on this keep for this scheduled routine — connect or re-save it under SETTINGS → AI & MODELS, or set OPENROUTER_API_KEY in the environment that starts Eyehold', 'the key sentence');
   A.ok(!/connect an? .+? api key\b/i.test(key), 'not the interactive "connect a X API key" shape the chat error ladder maps to "no key connected yet"');
   A.ok(/base URL/.test(EC.credentialError({ label: 'Custom', kind: 'baseUrl', baseUrlEnv: 'CUSTOM_OPENAI_BASE_URL' })) && /CUSTOM_OPENAI_BASE_URL/.test(EC.credentialError({ label: 'Custom', kind: 'baseUrl', baseUrlEnv: 'CUSTOM_OPENAI_BASE_URL' })), 'an endpoint provider names its base URL and env var');
   A.ok(/ChatGPT is not signed in/.test(EC.credentialError({ kind: 'codex' })), 'ChatGPT names the sign-in');
@@ -161,7 +161,7 @@ A.ok(NR.bindingPhrase('no-provider').indexOf(EC.UNATTENDED_REMEDY) >= 0, 'nightr
   const job = cronStore.makeJob({ id: 'j1', prompt: 'do j1', agentId: 'agent', schedule: cron.parseSchedule('every 1m', T0) }, { id: 'j1', now: T0 });
   let store = [job];
   const events = [];
-  const SENTENCE = 'no OpenRouter API key is saved on this station for this scheduled routine — test';
+  const SENTENCE = 'no OpenRouter API key is saved on this keep for this scheduled routine — test';
   const driver = makeCronDriver({
     getJobs: () => store, setJobs: j => { store = j; return true; },
     runOnce: () => Promise.resolve(), emit: (n, p) => events.push({ n, p }), newId: () => 'r1', newAbort: () => new AbortController(), now: () => now,
@@ -171,7 +171,7 @@ A.ok(NR.bindingPhrase('no-provider').indexOf(EC.UNATTENDED_REMEDY) >= 0, 'nightr
   now = T0 + 60000;
   driver.applyTick(now);
   const blocked = cronStore.getJob(store, 'j1');
-  A.eq(blocked.blockedConfig && blocked.blockedConfig.reason, SENTENCE, 'the routine row carries the station\'s one sentence');
+  A.eq(blocked.blockedConfig && blocked.blockedConfig.reason, SENTENCE, 'the routine row carries the keep\'s one sentence');
   A.eq(blocked.lastError, SENTENCE, 'lastError (what ROUTINES shows) is that sentence');
   const bare = makeCronDriver({ getJobs: () => [job], setJobs: () => true, runOnce: () => Promise.resolve(), newId: () => 'r', newAbort: () => new AbortController(), now: () => now, getKey: () => '', hasCredential: () => false, defaultModel: 'm', persona: 'P' });
   A.ok(bare && typeof bare.applyTick === 'function', 'a host that injects no credentialError still builds a driver (the shared builder is its fallback)');
@@ -241,13 +241,13 @@ A.ok(NR.bindingPhrase('no-provider').indexOf(EC.UNATTENDED_REMEDY) >= 0, 'nightr
   A.ok(/const ENGINE_KEYS_FILE = path\.join\(WORKSPACES, '\.secrets', 'provider-keys\.json'\);/.test(src), 'the copy lives in the protected .secrets/ sibling of the fs jail');
   A.ok(/load: \(\) => DESKTOP_SHELL \? undefined :/.test(src) && /if \(DESKTOP_SHELL\) return json\(409/.test(body('handleEngineKeySet')), 'the desktop app (OS keychain) never reads or writes the plaintext copy');
   A.ok(/persist: \(envelope\) => saveCredentialRemovalVerified\(ENGINE_KEYS_FILE, envelope, null, 'engine-keys'\)/.test(src), 'main AND .bak are written and read back (a replaced key never lingers in .bak)');
-  A.ok(/\{ values: engineKeys\.secretValues\(\) \}/.test(body('stationSecretValues')), 'the page copy is a known secret for redaction');
+  A.ok(/\{ values: engineKeys\.secretValues\(\) \}/.test(body('keepSecretValues')), 'the page copy is a known secret for redaction');
   A.ok(/\{ m: 'POST', exact: '\/api\/providers\/engine-key', h: handleEngineKeySet \}/.test(src), 'the route is an ordinary /api/* POST (token + Host + Origin gate)');
   A.ok(!/TOKEN_EXEMPT[^\n]*engine-key/.test(fs.readFileSync(path.join(__dirname, '..', 'sidecar', 'apiauth.js'), 'utf8')), 'and it is NOT token-exempt');
   const h = body('handleEngineKeySet');
   A.ok(!/\.key\b[^\n]*json\(200/.test(h) && /engineKeyPresence\(id\)/.test(h), 'the answer is presence only');
   A.ok(/\{ boot: body\.boot === true, ifRev: typeof body\.ifRev === 'string' \? body\.ifRev : '' \}/.test(h), 'a page boot hand-over is marked, with the revision that page last saw');
-  A.ok(/r\.held \? 'the station could not delete its copy of this ' \+ label \+ ' connection \(its log has the reason\) — routines and other unattended runs will KEEP using it until a retry succeeds'/.test(h), 'a failed REMOVE says the station keeps using its copy (never "chat still works")');
+  A.ok(/r\.held \? 'the keep could not delete its copy of this ' \+ label \+ ' connection \(its log has the reason\) — routines and other unattended runs will KEEP using it until a retry succeeds'/.test(h), 'a failed REMOVE says the keep keeps using its copy (never "chat still works")');
   A.ok(/if \(r\.stale\) return json\(200, Object\.assign\(\{ ok: true, provider: id, applied: false, stale: true, changed: false \}, engineKeyPresence\(id\)\)\);/.test(h), 'a stale boot hand-over is answered without the current revision');
   A.ok(/verify: \(envelope\) => \{[\s\S]{0,200}\[ENGINE_KEYS_FILE, ENGINE_KEYS_FILE \+ '\.bak'\]\.every/.test(src), 'an unchanged push re-checks both copies on disk');
   A.ok(/credentialError: \(provider\) => engineCredentialError\(provider, 'this scheduled routine'\)/.test(src), 'the scheduled fire says the shared sentence');
@@ -255,7 +255,7 @@ A.ok(NR.bindingPhrase('no-provider').indexOf(EC.UNATTENDED_REMEDY) >= 0, 'nightr
 }
 
 /* ---------- pre-update backups never carry the copy ---------- */
-A.eq(recovery._internals.classifyPolicy('.secrets/provider-keys.json').action, 'skip', 'station-recovery skips .secrets/provider-keys.json');
+A.eq(recovery._internals.classifyPolicy('.secrets/provider-keys.json').action, 'skip', 'keep-recovery skips .secrets/provider-keys.json');
 A.eq(recovery._internals.classifyPolicy('.secrets/provider-keys.json.bak').action, 'skip', '…and its .bak');
 
 A.report('engine-credential.test');

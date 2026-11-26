@@ -54,7 +54,7 @@ const wait = ms => new Promise(r => setTimeout(r, ms));
     A.eq((await eng.submitCode('x')).ok, false, 'no code is sent once cancelled');
   }
 
-  // C. start errors surface with their code; an unreachable station is an error, not silence.
+  // C. start errors surface with their code; an unreachable keep is an error, not silence.
   {
     withFetch({ start: { status: 'error', code: 'not_installed', error: 'Claude Code is not installed' } });
     const eng = makeClaudeCliSignIn();
@@ -62,8 +62,8 @@ const wait = ms => new Promise(r => setTimeout(r, ms));
     A.eq(got, ['Claude Code is not installed', 'not_installed'], 'start error carries message + code');
     global.fetch = async () => { throw new Error('offline'); };
     got = null; await eng.start({ onError: m => { got = m; } });
-    A.ok(/couldn’t start/.test(got), 'an unreachable station says so');
-    A.eq(await eng.status(), null, 'status is null when the station cannot answer');
+    A.ok(/couldn’t start/.test(got), 'an unreachable keep says so');
+    A.eq(await eng.status(), null, 'status is null when the keep cannot answer');
   }
 
   A.report('claude-cli-signin-engine.test');

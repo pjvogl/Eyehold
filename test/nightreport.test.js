@@ -32,7 +32,7 @@ A.ok(/ON ITS OWN/.test(NR.bindingPhrase('halt')), 'halt phrase names the lift �
 // grounded knowledge: dossier/activity), never the raw "held back by the readiness gate" jargon.
 A.ok(NR.BINDING_PHRASE.readiness, 'BINDING_PHRASE carries a readiness entry');
 A.ok(!/readiness gate/i.test(NR.bindingPhrase('readiness')), 'readiness renders plain copy, not raw gate jargon');
-A.ok(/know|learn|task/i.test(NR.bindingPhrase('readiness')), 'readiness copy says what feeds the gate (the station learning you through real work)');
+A.ok(/know|learn|task/i.test(NR.bindingPhrase('readiness')), 'readiness copy says what feeds the gate (the keep learning you through real work)');
 
 /* ---------- compose(): the no-report rule (no absence / no decision → no beat) ---------- */
 const empty = NR.compose({ status: null, ledger: [], drafts: [], awaySince: 1000, nowMs: 9999, tzOffsetMin: 0 });
@@ -225,8 +225,8 @@ A.ok(/leave the app running/i.test(NR.awayRuleText({ awayAfterMs: 900000 })), 't
 A.ok(NR.panelModel({ status: { active: true, away: false, beatsUsedToday: 0, leashPerDay: 3, awayAfterMs: 900000 }, tzOffsetMin: 0 }).awayRuleText.indexOf('15 min') >= 0, 'panelModel surfaces the away rule');
 
 /* ---------- postureOutlook(): the honest dial-raise feedback (NS visibility 2026-07-13) ----------
-   The instant the Commander raises the autonomy dial (awakening cadence beat / station panel), one honest line
-   from the LIVE status says what a beat will actually do while they're away + how far the station is from acting. */
+   The instant the Commander raises the autonomy dial (awakening cadence beat / keep panel), one honest line
+   from the LIVE status says what a beat will actually do while they're away + how far the keep is from acting. */
 A.eq(NR.postureOutlook(null), '', 'unreachable status → no outlook (never a fabricated promise)');
 A.eq(NR.postureOutlook({}), '', 'a status with no buildMode/readiness detail → no outlook');
 // cold-start build pick with no away-workshop grant: it will only DRAFT, and it's still learning — say BOTH.
@@ -234,10 +234,10 @@ const outCold = NR.postureOutlook(Object.assign({}, stBase, { buildMode: 'draft'
 A.ok(/while you.re away/i.test(outCold), 'the outlook is framed as what happens WHILE AWAY');
 A.ok(/drafts only/i.test(outCold) && /grant/i.test(outCold), 'a build pick that can only draft says so + names the missing grant');
 A.ok(/still learning you/i.test(outCold) && /3 of 4 areas/.test(outCold), 'the cold-start readiness caveat rides the same line');
-// a fully-hot, granted build station: the outlook is the plain "beats BUILD…" truth, no readiness caveat.
+// a fully-hot, granted build keep: the outlook is the plain "beats BUILD…" truth, no readiness caveat.
 const outBuild = NR.postureOutlook(Object.assign({}, stBase, { buildMode: 'build', draftReason: null, workshopGranted: true, readiness: { tier: 'hot' } }));
-A.ok(/jobs build real deliverables/i.test(outBuild), 'a granted, hot station promises real building');
-A.ok(!/still learning/i.test(outBuild), 'a hot station adds no still-learning caveat');
+A.ok(/jobs build real deliverables/i.test(outBuild), 'a granted, hot keep promises real building');
+A.ok(!/still learning/i.test(outBuild), 'a hot keep adds no still-learning caveat');
 A.eq(NR.postureOutlook(outBuild) === outBuild, false, 'postureOutlook takes a status object, not its own string (sanity)');
 
 /* ---------- unseenDrafts(): the live-session nudge predicate (NS visibility 2026-07-13) ----------

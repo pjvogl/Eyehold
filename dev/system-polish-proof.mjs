@@ -30,7 +30,7 @@ try{
   const diagnostics=collectDiagnostics(cdp);
   await navigate('Page.navigate',{url:fixture.baseUrl});
   const autonomy=await evalJS(cdp,`(async()=>{
-    await AutonomyStore.init();StationUI.openTerm('settings','autonomy');
+    await AutonomyStore.init();KeepUI.openTerm('settings','autonomy');
     while(AutonomyStore.status().pending)await new Promise(r=>setTimeout(r,25));
     const original=window.fetch;
     window.fetch=(url,opts)=>String(url)==='/api/autonomy/posture'&&opts?.method==='POST'?Promise.resolve(new Response(JSON.stringify({ok:false,error:'Audit save failure'}),{status:503})):original(url,opts);
@@ -77,7 +77,7 @@ try{
       results.push({width,state:state.name,driven,...row});
       assert.ok(!/NOTFOUND|ERROR|CLICK_ERR/.test(String(driven)),state.name);assert.deepEqual(row.native,[],state.name);assert.equal(row.overflow,false,state.name+' page overflow');
     }
-    await evalJS(cdp,closeOnly);await evalJS(cdp,"StationUI.openTerm('settings')");
+    await evalJS(cdp,closeOnly);await evalJS(cdp,"KeepUI.openTerm('settings')");
     const sections=await evalJS(cdp,"[...document.querySelectorAll('[id^=con-tab-settings-]')].map(e=>e.id)");
     for(const section of sections){
       await evalJS(cdp,`document.getElementById(${JSON.stringify(section)}).click()`);await sleep(150);

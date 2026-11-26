@@ -2,7 +2,7 @@
 
 Open http://127.0.0.1:9199/ in a browser. Glass is now the default presentation from the first paint. `?glass=1` remains compatible; `?glass=0` is an explicit diagnostic fallback.
 
-This isolated branch is the glass interface merge candidate for the real Eyehold frontend and sidecar, not an installed release. Its save lives in `dev/.scratch-workspace`. No production station data or provider keys were copied.
+This isolated branch is the glass interface merge candidate for the real Eyehold frontend and sidecar, not an installed release. Its save lives in `dev/.scratch-workspace`. No production keep data or provider keys were copied.
 
 ## Try it
 
@@ -69,11 +69,11 @@ Live checks on the final local demo:
 - Settings and dossier controls had zero matches for the native white/grey paint signatures.
 
 Checks:
-- Syntax checks passed for glass-demo.js, stationui.js, and navdock.js.
+- Syntax checks passed for glass-demo.js, keepui.js, and navdock.js.
 - dev/glass-motion.test.cjs passed interrupted entrance/exit, stale callback suppression, completion ordering, reduced-motion, exit-layout, and rapid dock-chip replacement cases.
 - window-minimize 20, terminal-resize 16, terminal-position 43, control-floor 117, and website-app-sync 8 assertions passed; approval indicator regression also passed.
 - The resize source guard now checks operation order rather than a 500-character limit that the earlier docking hook exceeded.
-- Full npm run test:fast stopped at step 286/733: qa-product-perfect-claims.test.js (10 failures). A read against the pre-change committed baseline 2036bce8dfb64b8de03622a167d31dff9f22c198 confirmed its release manifest already rejects the demo's app.js, stationui.js, index.html and added paths. That release audit was not rewritten for a local design prototype. The full suite is not green.
+- Full npm run test:fast stopped at step 286/733: qa-product-perfect-claims.test.js (10 failures). A read against the pre-change committed baseline 2036bce8dfb64b8de03622a167d31dff9f22c198 confirmed its release manifest already rejects the demo's app.js, keepui.js, index.html and added paths. That release audit was not rewritten for a local design prototype. The full suite is not green.
 - Reduced-motion behavior was exercised in the deterministic controller test; the OS preference was not changed. No installed-app or release verification/merge.
 
 
@@ -111,7 +111,7 @@ Checks:
 
 ## COMMS identity correction - 2026-09-09
 
-Owner feedback: the names were too small and the hierarchy did not fit the station. The header now uses an inset crew-style glass card, a 40 x 52 portrait, and a full-width 26px uppercase agent name. Removed the redundant ON THE LINE overline; model information and Add agents sit beneath the name. Message speaker names increased from 11px to 17px while timestamps remain secondary. Group conversations keep their existing flex header layout.
+Owner feedback: the names were too small and the hierarchy did not fit the keep. The header now uses an inset crew-style glass card, a 40 x 52 portrait, and a full-width 26px uppercase agent name. Removed the redundant ON THE LINE overline; model information and Add agents sit beneath the name. Message speaker names increased from 11px to 17px while timestamps remain secondary. Group conversations keep their existing flex header layout.
 
 Live DOM proof: NOVA header 26px, speaker name 17px, header height 76px; no horizontal header overflow at the original 354px rail or the narrowed 303px rail. Agent menu opened and Escape returned focus. Restored the exact original rail width and preserved the empty draft. Final reload showed the revised typography with no browser warnings/errors. Group header appearance was not live-tested with multiple agents.
 
@@ -199,7 +199,7 @@ readability (21), control-floor-theming (125), website-app-sync (8) and diff whi
 
 ## Model menu hierarchy polish - 2026-09-09
 
-Reduced the model header to one row: current model first in station-style uppercase, provider metadata aligned right. Removed the redundant rule above the model list. Per-model reasoning tags now appear on selection, hover or keyboard focus, with their space reserved to prevent label movement. Footer actions size to their contents. Glass surfaces, reasoning track, readable type sizes and the Eyehold subscription action are preserved.
+Reduced the model header to one row: current model first in keep-style uppercase, provider metadata aligned right. Removed the redundant rule above the model list. Per-model reasoning tags now appear on selection, hover or keyboard focus, with their space reserved to prevent label movement. Footer actions size to their contents. Glass surfaces, reasoning track, readable type sizes and the Eyehold subscription action are preserved.
 
 Live proof: header height reduced from 64.4px to 42.5px, client/scroll width both 348px. Subscription action client/scroll width both 162px (previously 255px). Model popup client/scroll width both 348px. Hovering the Sonnet row revealed its MIN tag at opacity .8 while the actual selected reasoning remained MIN. Final model claude haiku latest, 484px rail, empty draft and subscription destination preserved. Browser warning/error log empty; final menu open for review.
 
@@ -238,21 +238,21 @@ Truth and interaction fixes:
 - Read/unread still come from the original Workstreams timestamps and open-session rules. No counters, activity, runs or read receipts are invented.
 - Row accessible names and hover tips now explain every state. The existing one-second ticker updates adopted tooltip text in place, including a visible tooltip, and updates project-scoped session rows too. The glyph is decorative to screen readers because the row names the state.
 
-A separate labeled sample preview is served at /dev/session-indicators.html. It uses the actual shared styles for all seven states without manufacturing jobs or approval prompts in the station. The preview's sample labels are not live telemetry.
+A separate labeled sample preview is served at /dev/session-indicators.html. It uses the actual shared styles for all seven states without manufacturing jobs or approval prompts in the keep. The preview's sample labels are not live telemetry.
 
 Live verification:
 - Real app: all three current sessions honestly showed read; each lamp measured 12px, no animation. Row height stayed 34.39px and client/scroll widths both 231px on the final inspected rail. Arrow navigation focused General and showed its current read tooltip; Enter opened it. Returned to Glass UI exploration, claude haiku latest / MIN and empty draft. Browser warning/error log empty.
 - Sample preview: all seven frames measured 12px. Only working's inner stroke had gd-session-scan; only approval's outer frame had gd-approval-pulse. Unread/read/reply/failure/connecting had no animation. Screenshot inspection confirmed distinct filled, hollow, scan, exclamation, message and cross silhouettes with the red glass theme. The preview clearly identifies all rows as samples.
-- Real provider execution, live consent prompts, a populated project session list and the OS reduced-motion setting were not exercised. Their transition logic is covered by the real channel/session reducer tests; reduced-motion rules are source-checked. No fake live state was injected into the owner's station.
+- Real provider execution, live consent prompts, a populated project session list and the OS reduced-motion setting were not exercised. Their transition logic is covered by the real channel/session reducer tests; reduced-motion rules are source-checked. No fake live state was injected into the owner's keep.
 
-Checks: JS syntax for app.js and changed tests; registered session-indicators (32 assertions), consent-visibility (24), channels (53), workstreams (193), projects-view (69), session-power-tools (130), session-creation (19), readability (21), comms-responsive-text (5), station-tooltip (427), control-floor-theming (125), website-app-sync (8) and the standalone approval regression all passed. The transition test uses the real Channels and Workstreams modules with a controlled clock, including working/unread/read, save hydration, same-agent session isolation, approval priority, pause exclusion and failure recovery. Website mirror synchronized. Full fast stopped at step 286/736 with the same 10 existing qa-product-perfect-claims release-manifest failures. Gate remains red; no merge or release.
+Checks: JS syntax for app.js and changed tests; registered session-indicators (32 assertions), consent-visibility (24), channels (53), workstreams (193), projects-view (69), session-power-tools (130), session-creation (19), readability (21), comms-responsive-text (5), keep-tooltip (427), control-floor-theming (125), website-app-sync (8) and the standalone approval regression all passed. The transition test uses the real Channels and Workstreams modules with a controlled clock, including working/unread/read, save hydration, same-agent session isolation, approval priority, pause exclusion and failure recovery. Website mirror synchronized. Full fast stopped at step 286/736 with the same 10 existing qa-product-perfect-claims release-manifest failures. Gate remains red; no merge or release.
 
 
 ## Etched read indicator - 2026-09-09
 
 Refined the read state with a subtle 1px etched checkmark, a slightly lighter theme-derived stroke and a shaded glass face. It remains 12px and static, visually quieter than the filled unread core. No state logic or other indicator changed. Preview wording now describes the checkmark.
 
-Live proof: sample preview showed the 6x4px checkmark with 1px strokes at .85 opacity; all three read signals in the real station showed the same stroke, 12px size and no animation. Glass UI exploration remained active. Website mirror (8), readability (21), session-indicators (32) and diff whitespace checks passed. Full fast was not repeated for this CSS-only refinement; its existing release-manifest failures remain documented above.
+Live proof: sample preview showed the 6x4px checkmark with 1px strokes at .85 opacity; all three read signals in the real keep showed the same stroke, 12px size and no animation. Glass UI exploration remained active. Website mirror (8), readability (21), session-indicators (32) and diff whitespace checks passed. Full fast was not repeated for this CSS-only refinement; its existing release-manifest failures remain documented above.
 
 
 ## Open-corner read silhouette - 2026-09-09
@@ -271,7 +271,7 @@ Live proof: preview reports a 1px border, 2px radius, 12px footprint, zero inner
 
 ## Glass widget rails and library - 2026-09-09
 
-Owner requested the PIN A WIDGET affordance match the newer glass identity. Both rails now use compact 28px glass controls with a crisp CSS plus, 14px label and the station hover/active treatment. The widget library shares the glass surface and blur, a framed stroke X, readable search, a unified category track, glass source rows/actions, and matching setup inputs. The editor heading drops its inherited wide tracking and decorative rule. All changes are scoped to body.glass-demo; widgets.js, source access, feed values and saved layout behavior are unchanged.
+Owner requested the PIN A WIDGET affordance match the newer glass identity. Both rails now use compact 28px glass controls with a crisp CSS plus, 14px label and the keep hover/active treatment. The widget library shares the glass surface and blur, a framed stroke X, readable search, a unified category track, glass source rows/actions, and matching setup inputs. The editor heading drops its inherited wide tracking and decorative rule. All changes are scoped to body.glass-demo; widgets.js, source access, feed values and saved layout behavior are unchanged.
 
 Live proof on the real seeded :9199 app at 1049x912, with the owner's red theme and 302px COMMS rail:
 - Both empty-rail triggers measured 119.41x28px, with 14px labels and 11px plus strokes. The bottom navigation remained in place.

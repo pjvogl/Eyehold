@@ -70,7 +70,7 @@ for (const bp of WM.BLUEPRINTS) {
   const inbox = mine.find(p => p.t === 'intake'), loop = mine.find(p => p.t === 'loop');
   if (inbox && !(inbox.limits && inbox.limits.maxUsdPerDay === 4)) wrong.push(bp.id + ': the daily cap did not ride along');
   if (loop && loop.maxIter !== 2) wrong.push(bp.id + ': the review tries did not ride along');
-  // every machine stands where the station allows
+  // every machine stands where the keep allows
   for (const p of mine) if (!st.canPlaceProp(p.t, p.x, p.y, p.w, p.h, p.id).ok) wrong.push(bp.id + ': ' + p.t + ' stands where it may not');
   // one UNDO takes the whole line back
   st.undo();
@@ -94,13 +94,13 @@ A.ok(placed === WM.BLUEPRINTS.length - NEEDS_LARGER_ROOM.size && placed > drawnF
   const build = fs.readFileSync(path.join(__dirname, '..', 'frontend/app/build.js'), 'utf8');
   const at = (from, to) => { const a = build.indexOf(from); return a < 0 ? '' : build.slice(a, build.indexOf(to, a)); };
   const stamp = at('  function stampLine(w, ev) {', '  /* NO STANDALONE CANVAS INVITATION');
-  A.ok(/LineEdit\.placeBlueprint\(station, bp\.id, \{ x: w\.tx, y: w\.ty \}, \{ stamp: lineStampOpts\(bp\) \}\)/.test(stamp) && stamp.indexOf('station.stampBlueprint(') < stamp.indexOf('LineEdit.placeBlueprint('),
+  A.ok(/LineEdit\.placeBlueprint\(keep, bp\.id, \{ x: w\.tx, y: w\.ty \}, \{ stamp: lineStampOpts\(bp\) \}\)/.test(stamp) && stamp.indexOf('keep.stampBlueprint(') < stamp.indexOf('LineEdit.placeBlueprint('),
     'a click stamps the drawn tile map where it fits, and lays the same line out there (same cap and tries) where it does not');
   A.ok(/LAID OUT TO FIT HERE/.test(stamp), '…and says which it did');
   const fit = at('  function setLineTileFit(b, bp) {', '  let lineFitSyncT = 0;');
   // (2026-09-30: said on the tile's own small line — a line that fits laid out says its steps like any other; "needs more room" once the engine says no)
   A.ok(/queueLineLaid\(bp\.id\)/.test(fit) && !/fits laid out/.test(fit) && /'needs more room'/.test(fit) && /stat\.dataset\.rest/.test(fit), 'a card whose drawn shape fits nowhere asks the engine in the background, and says NEEDS MORE ROOM only once it has answered no');
-  A.ok(/LineEdit\.canPlaceBlueprint\(station, id, lineNearTile\(\)\)/.test(build) && /lineLaidQueue\.length = 0/.test(at('  function clearLineFields() {', '  const lineLaidMemo')), '…one line at a time, forgotten whenever the floor changes');
+  A.ok(/LineEdit\.canPlaceBlueprint\(keep, id, lineNearTile\(\)\)/.test(build) && /lineLaidQueue\.length = 0/.test(at('  function clearLineFields() {', '  const lineLaidMemo')), '…one line at a time, forgotten whenever the floor changes');
   A.ok(/g\.laid \? ' — CLICK TO LAY IT OUT HERE'/.test(build), 'a red ghost invites the click only when the line fits laid out');
   A.ok(/const W = Math\.min\(bp\.w, need\.w\) \+ 2, H = Math\.min\(bp\.h, need\.h\) \+ 2;/.test(build), 'MAKE ROOM builds the room the laid-out line needs when that is smaller than the drawn one');
 }

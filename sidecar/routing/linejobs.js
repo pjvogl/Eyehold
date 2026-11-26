@@ -6,7 +6,7 @@
 
    TRUTH: a record says only what the route recorded. Its status is the route's own verdict (delivered = the route's `completed`:
    every stage ran clean and the line ships to the OUTBOX), its runs are runs.jsonl rows, its output is what the line delivered,
-   and a job the station restarted under is said as interrupted — never left "running".
+   and a job the keep restarted under is said as interrupted — never left "running".
 
    Pure: state in, state out ({ jobs: [...] }, newest last). The sidecar persists it (makeDomainStore → line-jobs.json). */
 'use strict';
@@ -78,13 +78,13 @@ function note(state, id, n) {
   const jobs = state.jobs.slice(); jobs[i] = job;
   return { state: { jobs }, job };
 }
-// the station (re)started: nothing is riding a line any more — a job left "running" is said as interrupted
+// the keep (re)started: nothing is riding a line any more — a job left "running" is said as interrupted
 function boot(state, at) {
   let changed = false;
   const jobs = (state && Array.isArray(state.jobs) ? state.jobs : []).map(j => {
     if (j.status !== 'running') return j;
     changed = true;
-    return Object.assign({}, j, { status: 'interrupted', endedAt: num(at) || j.startedAt, error: 'the station stopped while this job was out — send it again' });
+    return Object.assign({}, j, { status: 'interrupted', endedAt: num(at) || j.startedAt, error: 'the keep stopped while this job was out — send it again' });
   });
   return { state: { jobs }, changed };
 }

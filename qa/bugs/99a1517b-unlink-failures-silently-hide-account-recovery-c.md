@@ -32,13 +32,13 @@ A customer reports attempting to unlink an old account but seeing no option to l
 
 ## Evidence
 
-The production handlers in `frontend/app/stationui.js` previously discarded unlink errors with `.catch(() => wireCredits(body))`. They did not inspect `Harness.api.post`'s `{ok,status,j}` envelope. STORE treated every status-read failure as unconfigured, then treated a failed linkability read as unavailable and left the panel blank.
+The production handlers in `frontend/app/keepui.js` previously discarded unlink errors with `.catch(() => wireCredits(body))`. They did not inspect `Harness.api.post`'s `{ok,status,j}` envelope. STORE treated every status-read failure as unconfigured, then treated a failed linkability read as unavailable and left the panel blank.
 
-Live seeded source verification used synthetic accounts and controlled failures at the native/HTTP boundary. No customer credentials or balances were changed. Before repair a rejected credential-clear command returned `This station is linked to your account. UNLINK` with no error. After repair the same rejection displayed `Could not clear the saved account credential. Unlink was not completed.` An HTTP unlink failure displayed `Could not confirm that unlink completed.` A linkability outage displayed `Could not check your account connection` with RETRY.
+Live seeded source verification used synthetic accounts and controlled failures at the native/HTTP boundary. No customer credentials or balances were changed. Before repair a rejected credential-clear command returned `This keep is linked to your account. UNLINK` with no error. After repair the same rejection displayed `Could not clear the saved account credential. Unlink was not completed.` An HTTP unlink failure displayed `Could not confirm that unlink completed.` A linkability outage displayed `Could not check your account connection` with RETRY.
 
 The new regression fails against the pre-repair source because the expected credential-clear error is absent. The repaired source passes. Existing `test/credits-link.test.js` passed 95 assertions and `test/paid-link-lifecycle.e2e.test.js` passed six scenarios, including delayed responses and restart.
 
-The seeded running app also completed the ordinary account switch: UNLINK and CONFIRM exposed LINK STATION, the new pairing code was confirmed in the local synthetic cloud, and STORE showed the synthetic funded account with a $25 balance. The customer-journey gate passed all 34 journeys. These are source-level results; they do not establish recovery on the affected installation.
+The seeded running app also completed the ordinary account switch: UNLINK and CONFIRM exposed LINK KEEP, the new pairing code was confirmed in the local synthetic cloud, and STORE showed the synthetic funded account with a $25 balance. The customer-journey gate passed all 34 journeys. These are source-level results; they do not establish recovery on the affected installation.
 
 All 782 fast-list steps passed across the initial 445 successful steps and a 337-step continuation. The initial run stopped on the required website-mirror equality check; `sync:website` regenerated the two changed JavaScript copies, the equality check passed, and the continuation reran that check through the end of the manifest. The mirror verifier and bug-register validator also passed.
 

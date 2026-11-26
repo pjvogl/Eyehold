@@ -4,7 +4,7 @@
    Four gaps, all of which cost the member something real:
 
      · A VOICE NOTE WAS DEAD INPUT. We saved the .ogg and told the model "saved to <path>" — a path it cannot
-       hear — while the station has owned an STT engine the whole time.
+       hear — while the keep has owned an STT engine the whole time.
      · WE ANSWERED EVERY MESSAGE IN A WHITELISTED GROUP and never checked whether the sender was a bot. That is
        a model call per message in a room the member is not even talking in, and two bots in one group answer
        each other forever.

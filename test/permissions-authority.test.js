@@ -35,7 +35,7 @@ function check(fn){checks++;try{fn();}catch(e){failed++;console.error(e.message)
   check(()=>assert.deepEqual(calls,[true,false]));check(()=>assert.equal(S.snapshot().masterBypass,false));
   S.init({load:false,api:{load:async()=>({grants:['cabinet:write'],masterBypass:true}),revoke:async()=>({}),bypass:async()=>({})}});
   await S.refresh();let error;try{await S.reset();}catch(e){error=e;}
-  check(()=>assert.ok(error,'new station lockdown must reject ambiguous replies'));
+  check(()=>assert.ok(error,'new keep lockdown must reject ambiguous replies'));
   for(const op of ['grant','revoke','bypass']){
     S.init({load:false,api:{[op]:async()=>op==='bypass'?{ok:true,masterBypass:true}:{ok:true,grants:op==='grant'?[]:['cabinet:write']}}});
     const snap=await S[op==='bypass'?'setBypass':op](op==='bypass'?false:'cabinet:write');

@@ -6,14 +6,14 @@ const { note: failNote } = require('./failopen.js');
 // bookkeeping, not user state; any files it actually migrated are scanned independently below.
 // E-STOP/scheduler bookkeeping is INFRA, never evidence: the desktop shell fires POST /api/halt on EVERY
 // clean quit, which durably writes loops.halt.json + nightshift.state.json (+ cron.halt.json when armed)
-// even on a station that was never created — so a fresh install that was merely opened and closed once
-// carried "prior station evidence" and stranded on the recovery gate forever (2026-08-25). A file the
-// sidecar can write WITHOUT a Commander having created a station must never count as a prior station.
+// even on a keep that was never created — so a fresh install that was merely opened and closed once
+// carried "prior keep evidence" and stranded on the recovery gate forever (2026-08-25). A file the
+// sidecar can write WITHOUT a Commander having created a keep must never count as a prior keep.
 const INFRA = /^(?:\.eyehold-workspace-owner\.json|\.schema-version\.json(?:\.bak)?|\.migrated|\.migration-receipt\.json|cron\.lock|proc-ledger\.json|liveprices\.cache\.json|(?:cron\.halt|loops\.halt|nightshift\.state)\.json(?:\.bak)?)$/i;
 // Positive evidence only. The former "anything not on the infrastructure denylist" rule made every newly
-// introduced cache/receipt a fake prior station. This covers the harness-owned durable authorities without
-// treating an arbitrary future `*.cache.json` as proof that a Commander already created a station.
-const STATE_EVIDENCE = /^(?:agent\.save\.json(?:\.bak|\.corrupt-\d+)?|agent\.roster\.json(?:\.bak)?|(?:transcript|ledger|runs|growth-ratings|skills|skillprefs|autonomy\.ledger|deliverables\.library)\.jsonl|(?:budget|fallback|station\.widgets|memory\.config|study\.state|projects|personalization|recommendations|task-briefs|threads|execution-settings|terminal-sessions|subagents|routing\.plan|toolsets|usercommands)\.json(?:\.bak)?|(?:skills-allowed|skill-registries|skill-exchange-metrics|permissions\.(?:allow|bypass)|hooks(?:-allowed)?|plugins-allowed|cron\.(?:jobs|armed)|loops|nightshift\.(?:drafts|learn|acts)|nightfocus\.state|scout\.(?:interests|state))\.json(?:\.bak)?|_(?:station|commander)\.[a-z0-9._-]+\.json(?:\.bak)?|[a-z0-9_-]+\.(?:notebook|todo|declined|minted|pending|workshop|deliverables)\.json(?:\.bak)?|.*\.eyehold-(?:backup|recovery)\.json)$/i;
+// introduced cache/receipt a fake prior keep. This covers the harness-owned durable authorities without
+// treating an arbitrary future `*.cache.json` as proof that a Commander already created a keep.
+const STATE_EVIDENCE = /^(?:agent\.save\.json(?:\.bak|\.corrupt-\d+)?|agent\.roster\.json(?:\.bak)?|(?:transcript|ledger|runs|growth-ratings|skills|skillprefs|autonomy\.ledger|deliverables\.library)\.jsonl|(?:budget|fallback|keep\.widgets|memory\.config|study\.state|projects|personalization|recommendations|task-briefs|threads|execution-settings|terminal-sessions|subagents|routing\.plan|toolsets|usercommands)\.json(?:\.bak)?|(?:skills-allowed|skill-registries|skill-exchange-metrics|permissions\.(?:allow|bypass)|hooks(?:-allowed)?|plugins-allowed|cron\.(?:jobs|armed)|loops|nightshift\.(?:drafts|learn|acts)|nightfocus\.state|scout\.(?:interests|state))\.json(?:\.bak)?|_(?:keep|commander)\.[a-z0-9._-]+\.json(?:\.bak)?|[a-z0-9_-]+\.(?:notebook|todo|declined|minted|pending|workshop|deliverables)\.json(?:\.bak)?|.*\.eyehold-(?:backup|recovery)\.json)$/i;
 
 function meaningfulEntries(fs, path, root) {
   try {
@@ -27,9 +27,9 @@ function meaningfulEntries(fs, path, root) {
   } catch (_) { return []; }
 }
 
-// START FRESH marker: the Commander explicitly chose a new station over external prior-install evidence
+// START FRESH marker: the Commander explicitly chose a new keep over external prior-install evidence
 // (legacy roots, update snapshots) that nothing could recover. It lists the acknowledged roots; evidence from
-// those roots no longer gates. It NEVER suppresses current-workspace evidence — real station files in the live
+// those roots no longer gates. It NEVER suppresses current-workspace evidence — real keep files in the live
 // workspace are always honored. Not in STATE_EVIDENCE, so the marker itself is never "prior state".
 const FRESH_MARKER = '.fresh-start.json';
 const QUARANTINE_DIR = 'workspace-quarantine';
@@ -80,7 +80,7 @@ function inspectWorkspaceLineage(deps) {
 }
 
 /* START FRESH — the gate's third exit (2026-08-22: a first-run whose overseer never woke, then a manual reset,
-   left a user on PRIOR STATION DATA FOUND with nothing recoverable and no way forward). Moves every
+   left a user on PRIOR KEEP DATA FOUND with nothing recoverable and no way forward). Moves every
    current-workspace state file into a sibling quarantine folder (NEVER deletes — a wrong click is
    reversible by hand) and writes the marker acknowledging external evidence roots. Returns what moved.
    Fails closed: any rename error stops the pass with the files that already moved reported, nothing lost. */
@@ -94,8 +94,8 @@ function startFresh(deps) {
   const moved = [];
   /* DRAIN, never sample: meaningfulEntries caps each listing at 40 for the gate's BOUNDED evidence
      report, but Start Fresh must move EVERY state file — moving one 40-file page and returning ok left
-     the rest as live current-workspace evidence, so the next inspect kept the PRIOR STATION DATA gate
-     shut (the exact dead end this exit was built to remove) with the station torn in half (early-
+     the rest as live current-workspace evidence, so the next inspect kept the PRIOR KEEP DATA gate
+     shut (the exact dead end this exit was built to remove) with the keep torn in half (early-
      alphabet files quarantined, later ones live). Loop pages until the listing is empty; the pass
      ceiling only guards against a pathological directory that regrows entries. */
   let entries = meaningfulEntries(fs, path, current);

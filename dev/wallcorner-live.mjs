@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// dev/wallcorner-live.mjs — render Andrew's LIVE station (agent.save.json) through the current
+// dev/wallcorner-live.mjs — render Andrew's LIVE keep (agent.save.json) through the current
 // bake and dump NN-zoomed crops around every chamfer/junction, to locate the "wall texture curves
 // then gets cut off" defect he circled on 2026-08-13. Pattern per dev/walljoin-live.mjs.
 //
@@ -20,11 +20,11 @@ const ONLY = process.env.SKYNET_CROP || '';
 
 const savePath = join(process.env.APPDATA, 'ai.skynet.harness', 'workspaces', 'agent.save.json');
 const save = JSON.parse(readFileSync(savePath, 'utf8'));
-const stationDoc = save.doc && save.doc.station;
-if (!stationDoc) { console.error('no .doc.station in save'); process.exit(2); }
+const keepDoc = save.doc && save.doc.keep;
+if (!keepDoc) { console.error('no .doc.keep in save'); process.exit(2); }
 
 const PROBE = `(() => {
-  const doc = ${JSON.stringify(JSON.stringify(stationDoc))};
+  const doc = ${JSON.stringify(JSON.stringify(keepDoc))};
   const ZOOM = ${ZOOM};
   const ONLY = ${JSON.stringify(ONLY)};
   const st = WorldModel.deserialize(JSON.parse(doc));
@@ -35,12 +35,12 @@ const PROBE = `(() => {
   const DROP = ${JSON.stringify(process.env.SKYNET_DROP_CHAMFER || '')};
   if (DROP === '*') geo.chamfers = [];
   else if (DROP) { const kill = new Set(DROP.split(';')); geo.chamfers = geo.chamfers.filter(c => !kill.has(c[0] + ',' + c[1])); }
-  const bk = StationBake.bake(geo);
+  const bk = KeepBake.bake(geo);
   const mk = (w, h) => { const c = document.createElement('canvas'); c.width = w; c.height = h; const g = c.getContext('2d'); g.imageSmoothingEnabled = false; return { c, g }; };
   const lit = mk(bk.W, bk.H);
   lit.g.drawImage(bk.baseCv, 0, 0); lit.g.drawImage(bk.lightCv, 0, 0);
 
-  // NN-zoomed crop of the composited station, over magenta so unpainted void is unmistakable.
+  // NN-zoomed crop of the composited keep, over magenta so unpainted void is unmistakable.
   const RULER = ${process.env.SKYNET_RULER ? 1 : 0};
   const crop = (x, y, w, h) => {
     const o = mk(w * ZOOM, h * ZOOM);

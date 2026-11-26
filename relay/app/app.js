@@ -1,13 +1,13 @@
 /* Eyehold Remote — the phone app.
 
-   Three places: STATION (the picture of your station, what needs you, your crew, your latest sessions),
+   Three places: KEEP (the picture of your keep, what needs you, your crew, your latest sessions),
    SESSIONS (every conversation, the same ones the desk shows) and FILES (what the crew delivered).
 
-   Everything here comes from the station over the sealed channel: status, approvals, sessions, files, routines,
-   live run events, and the station picture, which the desk's own renderer drew (nothing is drawn or staged on the
-   phone). When the link is down the app says so and shows when it last heard from the station. A run is only
-   shown as working when the station said so, and the picture always carries its age: an old one is never
-   called live. All station text is rendered with textContent, never as HTML. */
+   Everything here comes from the keep over the sealed channel: status, approvals, sessions, files, routines,
+   live run events, and the keep picture, which the desk's own renderer drew (nothing is drawn or staged on the
+   phone). When the link is down the app says so and shows when it last heard from the keep. A run is only
+   shown as working when the keep said so, and the picture always carries its age: an old one is never
+   called live. All keep text is rendered with textContent, never as HTML. */
 (function () {
   'use strict';
 
@@ -18,7 +18,7 @@
     back: 'M10 3L5 8l5 5', close: 'M3.5 3.5l9 9M12.5 3.5l-9 9', send: 'M3 8h9M8.5 4l4 4-4 4', caret: 'M3 5.5l5 5 5-5',
     expand: 'M9.5 2.5h4v4M6.5 13.5h-4v-4M13.5 2.5L9 7M2.5 13.5L7 9',
     gear: 'M2 5h7M12 5h2M2 11h2M7 11h7M9 3.5h3v3H9zM4 9.5h3v3H4z',
-    station: 'M2.5 3.5h11v9h-11zM2.5 6.5h11M5.5 9.5h5', sessions: 'M2.5 3.5h11v7h-6l-3 2.5v-2.5h-2z', files: 'M4 2.5h5.5l2.5 2.5v8.5H4zM9.5 2.5V5H12', activity: 'M1.5 8.5h3l2-5 3 9 2-4h3'
+    keep: 'M2.5 3.5h11v9h-11zM2.5 6.5h11M5.5 9.5h5', sessions: 'M2.5 3.5h11v7h-6l-3 2.5v-2.5h-2z', files: 'M4 2.5h5.5l2.5 2.5v8.5H4zM9.5 2.5V5H12', activity: 'M1.5 8.5h3l2-5 3 9 2-4h3'
   };
   function icon(name) {
     const s = document.createElementNS(SVGNS, 'svg');
@@ -31,11 +31,11 @@
   const S = {
     rec: null, client: null, linkState: 'connecting', lastOkAt: 0, latency: null,
     status: null, approvals: [], threads: [], files: [], routines: [],
-    tab: 'station', page: null, thread: null, file: null, target: null, query: '',
+    tab: 'keep', page: null, thread: null, file: null, target: null, query: '',
     live: new Map(),            // runId -> { streamId, agentId, text, steps:[], ended }
     stepOf: new Map(),
-    drafts: new Map(),           // promptId -> a half-typed answer           // runId -> the tool it is using right now (from the station's feed)
-    view: null, viewNone: false, viewBusy: false,   // the station picture: { at, w, h, bodies, url, age0, seenAt }
+    drafts: new Map(),           // promptId -> a half-typed answer           // runId -> the tool it is using right now (from the keep's feed)
+    view: null, viewNone: false, viewBusy: false,   // the keep picture: { at, w, h, bodies, url, age0, seenAt }
     portraits: new Map(), portraitBusy: false,      // skin -> image URL (null = none)
     scroll: {}, seen: new Set(), retryMs: 1000, retryTimer: null, arrivedAt: new Map()
   };
@@ -61,7 +61,7 @@
   const plainText = (t) => String(t == null ? '' : t).replace(/`{1,3}|\*\*|^\s{0,3}#{1,6}\s+/gm, '').replace(/\s+/g, ' ').trim();
   const streamLive = (streamId) => { for (const [, L] of S.live) if (L.streamId === streamId && !L.ended) return true; return false; };
   /* WHAT AN AGENT IS DOING, in plain words: one word for a crew card, a phrase for a row. Read from the name of the
-     step the station last reported for that run (never a raw tool name on screen). */
+     step the keep last reported for that run (never a raw tool name on screen). */
   const DOING = [
     [/^fs\.(write|append|edit|patch|move|rename|delete|remove|mkdir)|^skill\.write/, 'writing', 'writing a file'],
     [/^fs\./, 'reading', 'reading files'],
@@ -73,7 +73,7 @@
     [/^(team|session)\./, 'managing', 'handing work to the crew'],
     [/^recall/, 'recalling', 'looking back at a conversation'],
     [/^(notebook|memory)/, 'noting', 'saving a note'],
-    [/^station\./, 'building', 'working on the station'],
+    [/^keep\./, 'building', 'working on the keep'],
     [/^routine\./, 'planning', 'setting up a routine'],
     [/^brief\.ask/, 'asking', 'asking you something'],
     [/^(task|quest|brief)\./, 'planning', 'planning the work'],
@@ -87,7 +87,7 @@
     for (const [re, word, phrase] of DOING) if (re.test(n)) return { word, phrase };
     return { word: 'working', phrase: n ? 'using ' + n.replace(/\.+/g, ' ').trim() : 'working' };
   }
-  // the newest step the station reported for a run: the phone's own run stream first, then the station's tool events
+  // the newest step the keep reported for a run: the phone's own run stream first, then the keep's tool events
   function lastStep(runId) {
     const L = runId && S.live.get(runId);
     return (L && L.steps.length ? L.steps[L.steps.length - 1].name : '') || (runId && S.stepOf.get(runId)) || '';
@@ -143,7 +143,7 @@
     return root;
   }
 
-  /* ---------- portraits: each agent's own sprite, from the station ---------- */
+  /* ---------- portraits: each agent's own sprite, from the keep ---------- */
   const skinKey = (a) => (a && a.skin) || '_';
   function well(agentId, cls) {
     const a = agentOf(agentId), w = el('span', 'well' + (cls ? ' ' + cls : ''));
@@ -196,7 +196,7 @@
     clearTimeout(S.retryTimer);
     if (S.client) { try { S.client.close(); } catch (_) {} }
     const r = S.rec;
-    const c = PhoneClient.connectRelay({ relay: r.station.relay, stationPub: r.station.stationPub, deviceId: r.station.deviceId, relayToken: r.station.relayToken, key: r.key });
+    const c = PhoneClient.connectRelay({ relay: r.keep.relay, keepPub: r.keep.keepPub, deviceId: r.keep.deviceId, relayToken: r.keep.relayToken, key: r.key });
     S.client = c;
     c.onEvent(onEvent);
     c.onStatus((s, detail) => {
@@ -290,7 +290,7 @@
       return;
     }
     if (e.type === 'view.crew') { if (S.view) { S.crewPaused = !!e.paused; applyCrew(e.bodies, e.at); paintHero(); } return; }
-    if (e.type === 'station' && e.name === 'agent.tool_call' && e.payload && e.payload.runId && e.payload.name) {
+    if (e.type === 'keep' && e.name === 'agent.tool_call' && e.payload && e.payload.runId && e.payload.name) {
       S.stepOf.set(String(e.payload.runId), String(e.payload.name));
       if (S.stepOf.size > 200) S.stepOf.delete(S.stepOf.keys().next().value);
       const rid = CSS.escape(String(e.payload.runId));
@@ -298,10 +298,10 @@
       for (const n of document.querySelectorAll('[data-verb="' + rid + '"]')) n.textContent = doing(e.payload.name).word;
       return;
     }
-    if (e.type === 'station' && (e.name === 'agent.run.start' || e.name === 'agent.run.end')) { statusSoonish(); if (S.tab === 'sessions') activitySoonish(); }
+    if (e.type === 'keep' && (e.name === 'agent.run.start' || e.name === 'agent.run.end')) { statusSoonish(); if (S.tab === 'sessions') activitySoonish(); }
   }
 
-  /* ---------- the station, live ----------
+  /* ---------- the keep, live ----------
      The room is a still the desk's own renderer drew (refreshed every few seconds, with the crew left out). The crew
      are drawn here, on top, from the desk's crew stream: the same sprite drawings the stage is showing, in the same
      places, a few times a second, and each one glides to its next position between updates, so they move smoothly.
@@ -325,7 +325,7 @@
   /* SMOOTH MOTION. Positions arrive about five times a second, but the network spaces them unevenly (measured through
      the live relay: 186 ms typical, 309 ms at the 95th percentile, while the desk sends every 200 ms ±13). Easing
      toward each newest point made a walker surge and stall five times a second. Instead every point keeps the
-     STATION's own time for it (`at`, stamped where the desk handed it over), mapped onto this phone's clock by the
+     KEEP's own time for it (`at`, stamped where the desk handed it over), mapped onto this phone's clock by the
      quickest arrival seen, and the crew are drawn a little in the past at constant speed between two real points:
      the uneven gaps disappear and nothing is invented (the drawing is always between two places they really were).
      How far behind adapts to the link: on the live relay the points also came in BURSTS (0.8-1 s of nothing, then
@@ -368,7 +368,7 @@
       if (!c) { c = { samples: [to], key: b.key, keyAt: now, idx0: b.idx, idx: b.idx }; scene.crew.set(b.agentId, c); }
       else {
         const last = c.samples[c.samples.length - 1];
-        // a jump across the station (a room change, a reconnect) is a cut, not a glide
+        // a jump across the keep (a room change, a reconnect) is a cut, not a glide
         if (t <= last.t || Math.hypot(to.x - last.x, to.y - last.y) > Math.max(6, to.h) * 4) c.samples = [to];
         else { c.samples.push(to); while (c.samples.length > 2 && c.samples[1].t < now - clockMap.playout - 1500) c.samples.shift(); }
       }
@@ -405,10 +405,10 @@
       if (t && t.frames && t.frames.length) g.drawImage(frameOf(c, t, now), r.x, r.y, r.w, r.h);
     }
   }
-  /* FRAMING. A small station fits the card whole. A big one (a picture spanning far more floor than a phone card
+  /* FRAMING. A small keep fits the card whole. A big one (a picture spanning far more floor than a phone card
      can show legibly) is framed on where the crew are, and the frame drifts gently after them. */
   const HERO_ASPECT = 4 / 3;
-  function bigStation() { return !!(S.view && S.view.scale && S.view.w / S.view.scale > 560); }
+  function bigKeep() { return !!(S.view && S.view.scale && S.view.w / S.view.scale > 560); }
   /* The camera follows ONE crew member: whoever is working (the one who started first), otherwise the one you are
      talking to. Tap a portrait in CREW and the card turns to them. */
   function focusAgent() {
@@ -420,7 +420,7 @@
   }
   function cropTarget() {
     const v = S.view, full = { x: 0, y: 0, w: v.w, h: v.h };
-    if (!bigStation() || !v.crewFree || !scene.crew.size) return full;
+    if (!bigKeep() || !v.crewFree || !scene.crew.size) return full;
     const id = focusAgent(), c = id && scene.crew.get(id);
     if (!c) return full;
     const r = rectAt(c, performance.now()), k = v.scale;
@@ -430,7 +430,7 @@
   }
   function heroCrop() {
     const t = cropTarget(), c = scene.crop;
-    if (!c || !bigStation()) { scene.crop = t; return t; }
+    if (!c || !bigKeep()) { scene.crop = t; return t; }
     const e = 0.08, d = Math.abs(t.x - c.x) + Math.abs(t.y - c.y) + Math.abs(t.w - c.w);
     scene.cropMoving = d > 0.5;
     if (scene.cropMoving) scene.crop = { x: c.x + (t.x - c.x) * e, y: c.y + (t.y - c.y) * e, w: c.w + (t.w - c.w) * e, h: c.h + (t.h - c.h) * e };
@@ -464,9 +464,9 @@
 
   const hero = (() => {
     const root = el('div', 'hero'), frame = el('div', 'hero-frame'), cv = el('canvas'), chip = el('span', 'chip'), dot = el('i'), chipText = el('span');
-    const expand = el('button', 'icon-btn expand'); expand.type = 'button'; expand.setAttribute('aria-label', 'Open the station view'); expand.appendChild(icon('expand'));
+    const expand = el('button', 'icon-btn expand'); expand.type = 'button'; expand.setAttribute('aria-label', 'Open the keep view'); expand.appendChild(icon('expand'));
     const empty = el('div', 'hero-empty'), eb = el('b'), es = el('span');
-    cv.setAttribute('role', 'img'); cv.setAttribute('aria-label', 'Your station');
+    cv.setAttribute('role', 'img'); cv.setAttribute('aria-label', 'Your keep');
     chip.appendChild(dot); chip.appendChild(chipText); empty.appendChild(eb); empty.appendChild(es);
     frame.appendChild(cv); root.appendChild(frame); root.appendChild(empty); root.appendChild(chip); root.appendChild(expand);
     return { root, frame, cv, chip, chipText, expand, empty, eb, es };
@@ -482,13 +482,13 @@
     const v = S.view;
     hero.frame.hidden = !v; hero.chip.hidden = !v; hero.expand.hidden = !v; hero.empty.hidden = !!v;
     if (!v) {
-      if (S.viewNone && S.deskOpen) { hero.eb.textContent = 'ALMOST THERE'; hero.es.textContent = 'Eyehold is open on your computer but has not drawn your station yet. Bring its window to the front for a moment.'; }
-      else if (S.viewNone) { hero.eb.textContent = 'NO PICTURE YET'; hero.es.textContent = 'Open Eyehold on your computer and your station appears here.'; }
-      else if (S.linkState === 'open') { hero.eb.textContent = 'LOADING YOUR STATION'; hero.es.textContent = ''; }
-      else { hero.eb.textContent = 'STATION OFFLINE'; hero.es.textContent = 'The picture appears when your station is reachable.'; }
+      if (S.viewNone && S.deskOpen) { hero.eb.textContent = 'ALMOST THERE'; hero.es.textContent = 'Eyehold is open on your computer but has not drawn your keep yet. Bring its window to the front for a moment.'; }
+      else if (S.viewNone) { hero.eb.textContent = 'NO PICTURE YET'; hero.es.textContent = 'Open Eyehold on your computer and your keep appears here.'; }
+      else if (S.linkState === 'open') { hero.eb.textContent = 'LOADING YOUR KEEP'; hero.es.textContent = ''; }
+      else { hero.eb.textContent = 'KEEP OFFLINE'; hero.es.textContent = 'The picture appears when your keep is reachable.'; }
       return;
     }
-    hero.frame.style.aspectRatio = bigStation() && v.crewFree ? '4 / 3' : v.w + ' / ' + v.h;
+    hero.frame.style.aspectRatio = bigKeep() && v.crewFree ? '4 / 3' : v.w + ' / ' + v.h;
     const live = viewLive();
     hero.root.classList.toggle('stale', !live);
     hero.chip.className = 'chip' + (live ? ' live' : ''); hero.chipText.textContent = stampText();
@@ -547,10 +547,10 @@
     openViewer();
   });
 
-  /* ---------- the station, full screen ---------- */
+  /* ---------- the keep, full screen ---------- */
   const viewer = (() => {
     const stage = $('viewer-stage'), cv = el('canvas');
-    cv.setAttribute('role', 'img'); cv.setAttribute('aria-label', 'Your station');
+    cv.setAttribute('role', 'img'); cv.setAttribute('aria-label', 'Your keep');
     stage.appendChild(cv);
     return { stage, cv, k: 1, x: 0, y: 0, fit: 1, pts: new Map(), sel: null, tap: null, pinch: null, lastTap: 0 };
   })();
@@ -579,7 +579,7 @@
       const t = el('span', 't'); t.appendChild(el('b', null, a.name || a.agentId));
       t.appendChild(el('span', null, line));
       const b = el('button', 'btn', 'Message'); b.type = 'button';
-      b.onclick = () => { S.target = a.agentId; closeViewer(); S.tab = 'station'; S.thread = null; S.file = null; S.page = null; render(); $('compose-text').focus(); };
+      b.onclick = () => { S.target = a.agentId; closeViewer(); S.tab = 'keep'; S.thread = null; S.file = null; S.page = null; render(); $('compose-text').focus(); };
       plate.replaceChildren(well(a.agentId, 'sm'), t, b);
     }
     kick();
@@ -588,7 +588,7 @@
     if (!S.view) return;
     viewer.sel = null; $('viewer-plate').dataset.key = ''; $('viewer').hidden = false; viewerFit();
     const c = scene.crop;
-    if (c && c.w < S.view.w * 0.95) {   // a framed big station: open on the same framing, then pan and zoom from there
+    if (c && c.w < S.view.w * 0.95) {   // a framed big keep: open on the same framing, then pan and zoom from there
       const W = window.innerWidth, H = window.innerHeight;
       viewer.k = Math.min(W / c.w, H / c.h); viewer.x = W / 2 - (c.x + c.w / 2) * viewer.k; viewer.y = H / 2 - (c.y + c.h / 2) * viewer.k;
     }
@@ -634,7 +634,7 @@
     window.addEventListener('resize', () => { if (!v.hidden && S.view) { viewerFit(); kick(); } });
   })();
 
-  /* ---------- notifications (Web Push, sent by the station itself) ---------- */
+  /* ---------- notifications (Web Push, sent by the keep itself) ---------- */
   // what this phone can do: 'ok' | 'install' (iPhone Safari tab: only a Home Screen app may get pushes) | 'no'
   const isStandalone = () => (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) || navigator.standalone === true;
   function pushSupport() {
@@ -642,7 +642,7 @@
     if (/iPhone|iPad/.test(navigator.userAgent) && !isStandalone()) return 'install';
     return 'no';
   }
-  S.push = { on: null, busy: false };   // on = the station holds a subscription for THIS phone (null until asked)
+  S.push = { on: null, busy: false };   // on = the keep holds a subscription for THIS phone (null until asked)
   function keyBytes(b64) { const bin = b64uDecode(b64); const u = new Uint8Array(bin.length); for (let i = 0; i < bin.length; i++) u[i] = bin.charCodeAt(i); return u; }
   async function refreshPush() {
     if (S.linkState !== 'open') return;
@@ -657,7 +657,7 @@
       if (!S.push.key) await refreshPush();
       const reg = await navigator.serviceWorker.ready;
       let sub = await reg.pushManager.getSubscription();
-      // a subscription made for another station's key (paired elsewhere before) would be refused by the push service
+      // a subscription made for another keep's key (paired elsewhere before) would be refused by the push service
       const want = keyBytes(S.push.key), have = sub && sub.options && sub.options.applicationServerKey ? new Uint8Array(sub.options.applicationServerKey) : null;
       if (sub && (!have || have.length !== want.length || have.some((x, i) => x !== want[i]))) { await sub.unsubscribe(); sub = null; }
       if (!sub) sub = await reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: want });
@@ -695,8 +695,8 @@
     } else {
       box.appendChild(el('div', 'push-h', S.push.on ? 'Notifications are on' : 'Get a tap when your crew needs you'));
       box.appendChild(el('div', 'note-line', S.push.on
-        ? 'Your station taps this phone when an agent needs your OK or has a question, and when a task you sent finishes.'
-        : 'When an agent needs your OK, has a question, or finishes a task you sent, your station taps this phone, even with the app closed.'));
+        ? 'Your keep taps this phone when an agent needs your OK or has a question, and when a task you sent finishes.'
+        : 'When an agent needs your OK, has a question, or finishes a task you sent, your keep taps this phone, even with the app closed.'));
       const row = el('div', 'btns');
       const b = el('button', 'btn' + (S.push.on ? ' no' : ' go'), S.push.busy ? '…' : S.push.on ? 'Turn off' : 'Turn on'); b.type = 'button';
       b.disabled = S.push.busy || S.linkState !== 'open' || S.push.on === null;
@@ -708,7 +708,7 @@
     }
     return box;
   }
-  // a notification tap: '#needs' opens STATION, '#thread=<id>' opens that conversation
+  // a notification tap: '#needs' opens KEEP, '#thread=<id>' opens that conversation
   async function openFromPush(url) {
     const m = /^#thread=([A-Za-z0-9_-]{1,64})$/.exec(String(url || ''));
     if (m) {
@@ -717,7 +717,7 @@
       const agentId = (t && t.agentId) || (((S.activity && S.activity.done) || []).find(r => r.streamId === m[1]) || {}).agentId || S.target;
       openThread(m[1], agentId); return;
     }
-    if (url === '#needs') { closeViewer(); setTab('station'); }
+    if (url === '#needs') { closeViewer(); setTab('keep'); }
   }
 
   /* ---------- rendering ---------- */
@@ -726,7 +726,7 @@
     S.tab = t; S.thread = null; S.file = null; S.page = null;
     if (t === 'sessions') refreshThreads().then(() => render(true));
     if (t === 'sessions') refreshActivity().then(() => render(true));
-    if (t === 'station') { refreshView(); Promise.all([refreshThreads(), refreshActivity()]).then(() => render(true)); }
+    if (t === 'keep') { refreshView(); Promise.all([refreshThreads(), refreshActivity()]).then(() => render(true)); }
     render();
   }
 
@@ -750,7 +750,7 @@
     const bw = $('bar-well'); bw.hidden = !S.thread; if (S.thread) bw.replaceChildren(well(S.thread.agentId, 'sm'));
     const firstSaid = S.thread && (S.thread.turns || []).find(t => t.role === 'user');
     $('bar-title').textContent = S.thread ? ((openRow && (plain(openRow.title) || plain(openRow.preview))) || (firstSaid && plain(firstSaid.content).slice(0, 80)) || agentName(S.thread.agentId)) : S.file ? (S.file.name || 'FILE') : S.page === 'settings' ? 'SETTINGS'
-      : S.tab === 'sessions' ? 'SESSIONS' :  ((S.status && S.status.station) || 'STATION');
+      : S.tab === 'sessions' ? 'SESSIONS' :  ((S.status && S.status.keep) || 'KEEP');
     const sub = $('bar-sub'); sub.hidden = !S.thread;
     if (S.thread) sub.textContent = agentName(S.thread.agentId) + (streamLive(S.thread.streamId) ? ' · working' : '');
     const target = S.thread ? S.thread.agentId : S.target;
@@ -766,7 +766,7 @@
     else if (S.file) renderFile(v);
     else if (S.thread) renderThread(v);
     else if (S.page === 'settings') renderSettings(v);
-    else if (S.tab === 'station') renderStation(v);
+    else if (S.tab === 'keep') renderKeep(v);
     else if (S.tab === 'sessions') renderSessions(v);
     else renderSessions(v);
     if (key === prevKey) { v.scrollTop = S.scroll[key] || 0; const c = v.querySelector('.crew'); if (c) c.scrollLeft = crewX; }
@@ -783,14 +783,14 @@
   function removedCard() {
     const box = el('div', 'ask');
     box.appendChild(el('div', 'who', 'This phone was removed'));
-    box.appendChild(el('div', 'what', 'The station no longer knows this phone. Pair it again from SETTINGS → DEVICES on your desktop.'));
+    box.appendChild(el('div', 'what', 'The keep no longer knows this phone. Pair it again from SETTINGS → DEVICES on your desktop.'));
     const b = el('button', 'btn', 'Pair again'); b.type = 'button';
     b.onclick = async () => { await RemoteStore.forget(); location.reload(); };
     const row = el('div', 'btns'); row.appendChild(b); box.appendChild(row);
     return box;
   }
 
-  /* A PERMISSION ASK IN PLAIN WORDS. The station sends the tool's name and its arguments (a JSON object, which may be
+  /* A PERMISSION ASK IN PLAIN WORDS. The keep sends the tool's name and its arguments (a JSON object, which may be
      clipped mid-way, or a plain string). The card says what the agent wants to do and shows only the part worth
      reading (the file's text, the command), never the raw JSON. */
   function argsOf(s) {
@@ -808,7 +808,7 @@
     const raw = String(a.argsSummary || '').trim(), o = argsOf(raw);
     const str = (v) => (typeof v === 'string' ? v : v == null ? '' : JSON.stringify(v, null, 1));
     const cut = (v, n) => { const s = str(v); return s.length > n ? s.slice(0, n) + '…' : s; };
-    const tail = (s) => (s && o._cut ? s + '\n… (cut short by the station)' : s);
+    const tail = (s) => (s && o._cut ? s + '\n… (cut short by the keep)' : s);
     const file = str(o.path || o.file_path || o.filePath || o.file || o.target);
     const fileName = file.length > 42 ? file.split(/[\\/]/).pop() : file;
     const pm = /^plugin__(.+?)__(.+)$/.exec(tool);
@@ -824,8 +824,8 @@
     if (/summon/.test(t)) return { line: who + ' wants to add a new agent to the crew', detail: tail(listOf(o)) };
     if (/^routine\.create$/.test(t)) return { line: who + ' wants to schedule a routine' + (o.name ? ' "' + o.name + '"' : '') + (o.schedule ? ', ' + o.schedule : ''), detail: tail(cut(o.prompt || o.task || o.instructions, 600)) };
     if (/^routine\.manage$/.test(t)) return { line: who + ' wants to ' + (o.action || 'change') + ' the routine' + (o.id ? ' "' + o.id + '"' : ''), detail: '' };
-    if (/^station\.build$/.test(t)) return { line: who + ' wants to build on your station. One UNDO in Build mode takes it back.', detail: cut(raw, 900) };
-    if (/^station\.make\.prop$/.test(t)) return { line: who + ' wants to make a new prop: ' + (raw.split('\n')[0] || 'a new prop'), detail: '' };
+    if (/^keep\.build$/.test(t)) return { line: who + ' wants to build on your keep. One UNDO in Build mode takes it back.', detail: cut(raw, 900) };
+    if (/^keep\.make\.prop$/.test(t)) return { line: who + ' wants to make a new prop: ' + (raw.split('\n')[0] || 'a new prop'), detail: '' };
     if (/^web\.(request|fetch)$|^http/.test(t)) return { line: who + ' wants to reach ' + (str(o.url) || 'a website'), detail: tail(listOf(o, ['url'])) };
     return { line: who + ' wants to use ' + (t.replace(/\.+/g, ' ').trim() || 'a tool'), detail: tail(listOf(o)) || cut(raw, 600) };
   }
@@ -866,7 +866,7 @@
       const wait = Date.now() - arrived;
       box.appendChild(el('div', 'note', 'Asked ' + (wait < 60000 ? 'just now' : ago(wait) + ' ago') + '.' + (session ? ' "This task" lets it do this again until the task ends.' : '') + ' "Always" and full access are set at the desk.'));
     }
-    if (S.linkState !== 'open') { for (const b of box.querySelectorAll('button')) b.disabled = true; box.appendChild(el('div', 'note', 'Reconnect to answer. If the station stays unreachable, it denies this on its own after a short wait.')); }
+    if (S.linkState !== 'open') { for (const b of box.querySelectorAll('button')) b.disabled = true; box.appendChild(el('div', 'note', 'Reconnect to answer. If the keep stays unreachable, it denies this on its own after a short wait.')); }
     // it is on a screen a person is looking at: earn the one bounded extension, once
     if (document.visibilityState === 'visible' && !S.seen.has(a.promptId)) { S.seen.add(a.promptId); call('seen', { runId: a.runId, promptId: a.promptId }).catch(() => {}); }
     return box;
@@ -892,13 +892,13 @@
     render();
   }
 
-  // When the link is down, everything below is what the station LAST said. Say so, never pass it off as live.
+  // When the link is down, everything below is what the keep LAST said. Say so, never pass it off as live.
   function staleNote(v) {
     if (S.linkState === 'open' || !S.lastOkAt) return;
-    v.appendChild(el('div', 'note-line', 'Station offline. Showing what it last reported, ' + ago(Date.now() - S.lastOkAt) + ' ago.'));
+    v.appendChild(el('div', 'note-line', 'Keep offline. Showing what it last reported, ' + ago(Date.now() - S.lastOkAt) + ' ago.'));
   }
 
-  // the newest finished run of each conversation, from the station's run history
+  // the newest finished run of each conversation, from the keep's run history
   function lastRunByStream() {
     const m = new Map();
     for (const r of (S.activity && S.activity.done) || []) if (r.streamId && !m.has(r.streamId)) m.set(r.streamId, r);
@@ -936,7 +936,7 @@
     return box;
   }
 
-  function renderStation(v) {
+  function renderKeep(v) {
     staleNote(v);
     paintHero();
     v.appendChild(hero.root);
@@ -948,12 +948,12 @@
     const list = agents();
     const working = list.filter(isWorking).length;
     const cs = section('Crew' + (list.length ? ' · ' + (working ? working + ' working' : list.length) : ''));
-    if (!list.length) cs.appendChild(el('div', 'empty', S.linkState === 'open' ? 'No agents on this station yet.' : 'Waiting for the station…'));
+    if (!list.length) cs.appendChild(el('div', 'empty', S.linkState === 'open' ? 'No agents on this keep yet.' : 'Waiting for the keep…'));
     else {
       const strip = el('div', 'crew');
       for (const a of list.slice().sort((p, q) => (isWorking(q) ? 1 : 0) - (isWorking(p) ? 1 : 0))) {
         const w = isWorking(a);
-        // the housed lamp says only what the station says: needs you (an open ask) gold, working amber, idle green;
+        // the housed lamp says only what the keep says: needs you (an open ask) gold, working amber, idle green;
         // no lamp while the link is down (the last word could be stale)
         const asking = S.linkState === 'open' && S.approvals.some(x => x.agentId === a.agentId);
         const m = el('button', 'mate' + (S.target === a.agentId ? ' sel' : '') + (w ? ' work' : '') + (asking ? ' ask' : '')); m.type = 'button';
@@ -961,7 +961,7 @@
         if (S.linkState === 'open') pw.appendChild(el('i', 'dot ' + (asking ? 'ask' : w ? 'work' : 'ok')));
         m.appendChild(pw);
         m.appendChild(el('b', null, a.name || a.agentId));
-        // working: what it is doing in one word (from the station's newest step), and for how long
+        // working: what it is doing in one word (from the keep's newest step), and for how long
         const step = w ? lastStep(a.runId) : '';
         const em = el('em', null, S.linkState !== 'open' ? (a.state || 'idle') : w ? (step ? doing(step).word : 'working') : 'idle');
         if (w && a.runId) em.dataset.verb = a.runId;
@@ -973,9 +973,9 @@
       cs.appendChild(strip);
     }
     v.appendChild(cs);
-    // the station shows only where you left off; every session lives on the SESSIONS tab
+    // the keep shows only where you left off; every session lives on the SESSIONS tab
     const ss = section('Latest', false, S.threads.length > 1 ? { text: 'ALL ' + S.threads.length + ' ›', go: () => setTab('sessions') } : null);
-    if (!S.threads.length) ss.appendChild(el('div', 'empty', S.linkState === 'open' ? 'No sessions yet. Write a task below to start one.' : 'Waiting for the station…'));
+    if (!S.threads.length) ss.appendChild(el('div', 'empty', S.linkState === 'open' ? 'No sessions yet. Write a task below to start one.' : 'Waiting for the keep…'));
     else { const l = el('div', 'list'); l.appendChild(sessionRow(S.threads[0], lastRunByStream().get(S.threads[0].streamId))); ss.appendChild(l); }
     v.appendChild(ss);
     if (S.push.on === false && pushSupport() !== 'no' && !nudgeDismissed()) v.appendChild(pushCard(true));
@@ -1001,7 +1001,7 @@
       const needle = S.query.trim().toLowerCase();
       const rows = needle ? S.threads.filter(t => [t.title, t.preview, agentName(t.agentId)].join(' ').toLowerCase().indexOf(needle) >= 0) : S.threads;
       l.replaceChildren();
-      if (!rows.length) l.appendChild(el('div', 'empty', needle ? 'Nothing matches that.' : S.linkState === 'open' ? 'No sessions yet. Write a task below to start one.' : 'Waiting for the station…'));
+      if (!rows.length) l.appendChild(el('div', 'empty', needle ? 'Nothing matches that.' : S.linkState === 'open' ? 'No sessions yet. Write a task below to start one.' : 'Waiting for the keep…'));
       for (const t of rows) l.appendChild(sessionRow(t, lr.get(t.streamId)));
     };
     q.addEventListener('input', () => { S.query = q.value; fill(); });
@@ -1023,7 +1023,7 @@
       const r = await call('thread', { streamId, limit: Math.min(200, want), page: true });
       if (r.ok && S.thread && S.thread.streamId === streamId) {
         const d = r.data;
-        if (Array.isArray(d)) { S.thread.turns = d; S.thread.earlier = 0; }   // an older station answers with the bare list
+        if (Array.isArray(d)) { S.thread.turns = d; S.thread.earlier = 0; }   // an older keep answers with the bare list
         else { S.thread.turns = d.turns || []; S.thread.earlier = Number(d.earlier) || 0; }
       }
     } catch (e) { toast(e.message, true); }
@@ -1105,8 +1105,8 @@
     if (atEnd) v.scrollTop = v.scrollHeight;
   }
 
-  /* ---------- ACTIVITY: what the station is doing and what it did ----------
-     Straight from the station's run history: what needs you, what is running now, what finished (its result line,
+  /* ---------- ACTIVITY: what the keep is doing and what it did ----------
+     Straight from the keep's run history: what needs you, what is running now, what finished (its result line,
      how it ended, the files it made). Tapping a piece of work opens its conversation; tapping a file opens it. */
   async function refreshActivity() { try { const r = await call('activity', { limit: 30 }); if (r.ok) S.activity = r.data; } catch (_) {} }
   let activityTimer = null;
@@ -1196,9 +1196,9 @@
       rs.appendChild(l); v.appendChild(rs);
     }
     const s = section('This phone'), card = el('div', 'glass pad');
-    const r = S.rec && S.rec.station;
+    const r = S.rec && S.rec.keep;
     const lines = [
-      ['Station', (S.status && S.status.station) || (r && r.stationId) || '—'],
+      ['Keep', (S.status && S.status.keep) || (r && r.keepId) || '—'],
       ['Phone name', (r && r.name) || '—'],
       ['Phone code', (r && r.fingerprint) || '—'],
       ['Relay', (r && r.relay) || '—'],
@@ -1207,14 +1207,14 @@
     const kvs = el('div');
     for (const [k, val] of lines) { const row = el('div', 'kv'); row.appendChild(el('span', null, k)); row.appendChild(el('b', null, val)); kvs.appendChild(row); }
     card.appendChild(kvs);
-    card.appendChild(el('div', 'note-line', 'Everything between this phone and your station is sealed end to end. The relay only passes it along.'));
+    card.appendChild(el('div', 'note-line', 'Everything between this phone and your keep is sealed end to end. The relay only passes it along.'));
     s.appendChild(card); v.appendChild(s);
-    const fs = section('Forget this station');
+    const fs = section('Forget this keep');
     fs.appendChild(el('div', 'note-line', 'Removes the pairing from this phone. You can pair again from the desk.'));
-    const b = el('button', 'btn no', 'Forget station'); b.type = 'button';
+    const b = el('button', 'btn no', 'Forget keep'); b.type = 'button';
     let armed = false;
     b.onclick = async () => {
-      if (!armed) { armed = true; b.textContent = 'Tap again to forget'; setTimeout(() => { armed = false; b.textContent = 'Forget station'; }, 4000); return; }
+      if (!armed) { armed = true; b.textContent = 'Tap again to forget'; setTimeout(() => { armed = false; b.textContent = 'Forget keep'; }, 4000); return; }
       try { S.client && S.client.close(); } catch (_) {}
       await RemoteStore.forget(); location.replace(location.pathname);
     };
@@ -1270,8 +1270,8 @@
     $('setup-fp').textContent = await PhoneClient.fingerprint(p.s);
     const key = await PhoneClient.makeDeviceKey();
     const name = /iPhone/.test(navigator.userAgent) ? 'iPhone' : /iPad/.test(navigator.userAgent) ? 'iPad' : /Android/.test(navigator.userAgent) ? 'Android phone' : 'Phone';
-    const res = await PhoneClient.pairRelay({ relay, stationPub: p.s, pairingId: p.p, code: p.c, name, key });
-    const rec = { key, station: { stationId: res.stationId || p.i, stationPub: p.s, deviceId: res.deviceId, relayToken: res.relayToken, relay, name, fingerprint: res.fingerprint, pairedAt: Date.now() } };
+    const res = await PhoneClient.pairRelay({ relay, keepPub: p.s, pairingId: p.p, code: p.c, name, key });
+    const rec = { key, keep: { keepId: res.keepId || p.i, keepPub: p.s, deviceId: res.deviceId, relayToken: res.relayToken, relay, name, fingerprint: res.fingerprint, pairedAt: Date.now() } };
     await RemoteStore.save(rec);
     return rec;
   }
@@ -1350,9 +1350,9 @@
     setInterval(ping, 20000);
     setInterval(() => { if (document.visibilityState !== 'visible') return; for (const n of document.querySelectorAll('[data-since]')) n.textContent = clock(Date.now() - Number(n.dataset.since)); }, 1000);
     setInterval(() => { if (looking()) refreshStatus().then(() => { if (S.tab === 'sessions' && !S.thread && !S.file && !S.page) return refreshActivity(); }).then(() => { render(true); ensurePortraits(); }); paintLamp(); }, 10000);
-    // the station picture: asked for only while it is on screen, which is also what keeps the desk drawing it
+    // the keep picture: asked for only while it is on screen, which is also what keeps the desk drawing it
     setInterval(() => {
-      const onScreen = !$('viewer').hidden || (S.tab === 'station' && !S.thread && !S.file && !S.page);
+      const onScreen = !$('viewer').hidden || (S.tab === 'keep' && !S.thread && !S.file && !S.page);
       if (looking() && onScreen) refreshView(); else if (S.view) paintHero();
     }, 4000);
   }
@@ -1370,7 +1370,7 @@
   $('back').onclick = () => {
     const wasThread = !!S.thread;
     S.thread = null; S.file = null; S.page = null; render();
-    if (S.tab === 'station') refreshView();
+    if (S.tab === 'keep') refreshView();
     if (wasThread) refreshThreads().then(() => render(true));
   };
   $('gear').onclick = () => { S.page = 'settings'; refreshRoutines().then(() => render(true)); render(); };

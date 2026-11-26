@@ -72,7 +72,7 @@ Google branding verification then passed and the verified Eyehold branding was p
 Data-access review is still unsubmitted: Google requires intended-use selections and a real
 OAuth/demo video covering this project's clients. Productivity categories were reviewed but
 cannot be saved without the required video. No video URL, public data-access approval,
-Limited Use attestation, or real-account lifecycle receipt has been fabricated. See
+Limited Use attekeep, or real-account lifecycle receipt has been fabricated. See
 `docs/RELEASE_FOLLOWTHROUGH_2026-09-06.md`.
 
 Before: fresh Gmail card required client ID and client secret input. After: the seeded UI at 127.0.0.1:8946 showed SIGN IN WITH GOOGLE and zero application-credential inputs. With a synthetic provider, callback completion changed the card to MANAGE SERVICE and displayed six Gmail tools plus a verified synthetic account identity. After restarting the seeded sidecar with --keep and opening a fresh browser tab, the connected Gmail account and all six tools were restored in the live UI. `test/google-connector.test.js` exercises all 23 native MCP operations and the package configuration guard; `test/google-signin.e2e.test.js` drives the real sidecar across consent, cancellation, persistence failures, restart, refresh, revocation and removal. These tests do not prove Google public approval.

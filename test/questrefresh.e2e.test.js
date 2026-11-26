@@ -9,9 +9,9 @@
      byte unchanged quest/refresh stores; an explicit manual refresh still launches and mints afterward.
 
    BOOT 1 — THE HAPPY CHAIN: a never-refreshed save with a dossier + active goal boots; the due cycle fires
-     off the boot look, the mock's grounded QUEST reply mints station-wide generated quests with real
+     off the boot look, the mock's grounded QUEST reply mints keep-wide generated quests with real
      contracts, the north star adopts the Commander's ACTIVE GOAL (user-set outranks inferred), and both
-     `_station.quests.json` and `_station.questrefresh.json` persist.
+     `_keep.quests.json` and `_keep.questrefresh.json` persist.
 
    BOOT 2 — THE HONEST-FAILURE CHAIN: a well-formed reply whose WHY cites nothing observed is rejected by
      the grounding guard — ZERO quests minted, a visible 'rejected' ledger note (never a silent no-mint),
@@ -113,13 +113,13 @@ const QUIET = { SKYNET_THREAD_MINE: '0', SKYNET_SKILL_REVIEW: '0', SKYNET_SKILL_
 const CRED = { SKYNET_OPENROUTER_KEY: 'sk-or-v1-questrefresh-fake', SKYNET_DEFAULT_MODEL: 'test/model' };
 
 (async () => {
-  // Automatic and manual auxiliary work share the station's persisted spending pools.
+  // Automatic and manual auxiliary work share the keep's persisted spending pools.
   for (const scope of ['day', 'global', 'unknown']) {
     const mock = await startMock('NONE');
     const ws = fs.mkdtempSync(path.join(os.tmpdir(), 'sk-qrefresh-budget-'));
     seedEvidence(ws); seedAutonomy(ws, 'propose');
     fs.writeFileSync(path.join(ws, 'ledger.jsonl'), scope === 'unknown' ? 'not valid ledger JSON\n'
-      : JSON.stringify({ runId: 'spent', agentId: 'station', usd: 1.25, turns: 1, tokens: 10, model: 'fixture', ts: Date.now() }) + '\n');
+      : JSON.stringify({ runId: 'spent', agentId: 'keep', usd: 1.25, turns: 1, tokens: 10, model: 'fixture', ts: Date.now() }) + '\n');
     let child = null;
     try {
       const up = await boot(9280 + (process.pid % 10), Object.assign({}, CRED, QUIET, {
@@ -160,8 +160,8 @@ const CRED = { SKYNET_OPENROUTER_KEY: 'sk-or-v1-questrefresh-fake', SKYNET_DEFAU
     const ws = fs.mkdtempSync(path.join(os.tmpdir(), 'sk-qrefresh-wait-restart-'));
     seedEvidence(ws);
     seedAutonomy(ws, 'wait');
-    const questFile = path.join(ws, '_station.quests.json');
-    const refreshFile = path.join(ws, '_station.questrefresh.json');
+    const questFile = path.join(ws, '_keep.quests.json');
+    const refreshFile = path.join(ws, '_keep.questrefresh.json');
     const seededQuests = JSON.stringify({ v: 1, seq: 0, quests: [], deniedTitles: [] });
     const seededRefresh = JSON.stringify({ v: 1, state: { v: 1, lastCycleAt: 0, lastMintAt: 0, northStar: null, proposedNorthStar: null, pendingQuests: [], declinedNorthStars: [], ledger: [] } });
     fs.writeFileSync(questFile, seededQuests);
@@ -314,7 +314,7 @@ const CRED = { SKYNET_OPENROUTER_KEY: 'sk-or-v1-questrefresh-fake', SKYNET_DEFAU
       'WHY: growing the youtube channel needs recurring guest research'
     ].join('\n'));
     const ws = fs.mkdtempSync(path.join(os.tmpdir(), 'sk-qrefresh-e2e-'));
-    seedEvidence(ws);   // NO _station.questrefresh.json: a never-cycled state is due at the boot look
+    seedEvidence(ws);   // NO _keep.questrefresh.json: a never-cycled state is due at the boot look
     seedAutonomy(ws);
     const { child, port } = await boot(8985 + (process.pid % 10), Object.assign({ SKYNET_WORKSPACES: ws, SKYNET_OPENROUTER_BASE: mock.base }, CRED, QUIET), 20);
     const B = 'http://' + HOST + ':' + port;
@@ -331,22 +331,22 @@ const CRED = { SKYNET_OPENROUTER_KEY: 'sk-or-v1-questrefresh-fake', SKYNET_DEFAU
       A.ok(st.lastCycleAt > 0, 'the cycle spent the cadence (lastCycleAt stamped)');
       A.eq(st.ledger.filter(e => e.outcome === 'minted').length, 2, 'both grounded quests minted');
 
-      // the quests are REAL ledger quests (GET /api/quests), station-wide, contract-carrying.
+      // the quests are REAL ledger quests (GET /api/quests), keep-wide, contract-carrying.
       const q = await (await fetch(B + '/api/quests', { headers: { 'X-Eyehold-Token': token, Origin: B } })).json();
       const minted = (q.quests || []).filter(x => x.createdBy === 'system:quest-refresh');
       A.eq(minted.length, 2, 'GET /api/quests serves the two minted quests');
       const ep = minted.find(x => x.title === 'Publish episode 3');
-      A.ok(ep && ep.contract.type === 'attest' && ep.agentId === null && ep.kind === 'generated', 'attest quest: station-wide, kind generated');
+      A.ok(ep && ep.contract.type === 'attest' && ep.agentId === null && ep.kind === 'generated', 'attest quest: keep-wide, kind generated');
       A.eq(ep.steps.map(s => s.label), ['final cut', 'thumbnail', 'upload'], 'steps rode through the store');
       const dish = minted.find(x => x.title === 'Put guest research on tap');
       A.ok(dish && dish.contract.type === 'prop' && dish.contract.key === 'dish', 'prop quest carries the placeable contract key');
       A.ok(ep.groundedIn && ep.groundedIn.indexOf('episode 3') >= 0, 'groundedIn cites the real evidence');
 
       // durable truth on disk (restart-safety is the point of the harness-owned ledger).
-      const onDiskQuests = JSON.parse(fs.readFileSync(path.join(ws, '_station.quests.json'), 'utf8'));
-      A.ok(JSON.stringify(onDiskQuests).indexOf('Publish episode 3') >= 0, '_station.quests.json persisted the mint');
-      const onDiskState = JSON.parse(fs.readFileSync(path.join(ws, '_station.questrefresh.json'), 'utf8'));
-      A.ok(onDiskState.state && onDiskState.state.northStar && onDiskState.state.northStar.source === 'goal', '_station.questrefresh.json persisted the north star');
+      const onDiskQuests = JSON.parse(fs.readFileSync(path.join(ws, '_keep.quests.json'), 'utf8'));
+      A.ok(JSON.stringify(onDiskQuests).indexOf('Publish episode 3') >= 0, '_keep.quests.json persisted the mint');
+      const onDiskState = JSON.parse(fs.readFileSync(path.join(ws, '_keep.questrefresh.json'), 'utf8'));
+      A.ok(onDiskState.state && onDiskState.state.northStar && onDiskState.state.northStar.source === 'goal', '_keep.questrefresh.json persisted the north star');
 
       // MANUAL OVERRIDE: POST /refresh/run fires a real cycle NOW (gates bypassed). The mock replays the
       // same two quests — both titles are now OPEN, so the parse dedup drops them and the cycle records an
@@ -372,7 +372,7 @@ const CRED = { SKYNET_OPENROUTER_KEY: 'sk-or-v1-questrefresh-fake', SKYNET_DEFAU
     const mock = await startMock([
       'NORTH_STAR: Achieve maximum synergy',
       'QUEST: Embrace the grindset',
-      'DESC: A quest citing nothing the station observed.',
+      'DESC: A quest citing nothing the keep observed.',
       'REWARD: vibes',
       'CONTRACT: attest',
       'WHY: hustle culture demands relentless morning routines'   // ungroundable: cites nothing real
@@ -431,8 +431,8 @@ const CRED = { SKYNET_OPENROUTER_KEY: 'sk-or-v1-questrefresh-fake', SKYNET_DEFAU
     const ws = fs.mkdtempSync(path.join(os.tmpdir(), 'sk-qrefresh-e2e-'));
     seedEvidence(ws);   // full evidence — proving the skip is the SLATE-FULL guard, not the cold-save guard
     seedAutonomy(ws);
-    // seed the store already at the cap: 3 OPEN station-wide (agentId:null) generated quests.
-    fs.writeFileSync(path.join(ws, '_station.quests.json'), JSON.stringify({ v: 1, seq: 3, quests: [1, 2, 3].map(i => ({
+    // seed the store already at the cap: 3 OPEN keep-wide (agentId:null) generated quests.
+    fs.writeFileSync(path.join(ws, '_keep.quests.json'), JSON.stringify({ v: 1, seq: 3, quests: [1, 2, 3].map(i => ({
       id: 'q:' + i, title: 'Seeded generated ' + i, kind: 'generated', agentId: null, createdBy: 'system:quest-refresh',
       contract: { type: 'attest', key: '' }, status: 'open', createdAt: 1
     })) }));
@@ -492,7 +492,7 @@ const CRED = { SKYNET_OPENROUTER_KEY: 'sk-or-v1-questrefresh-fake', SKYNET_DEFAU
       const beforeQuests = await (await fetch(B + '/api/quests', { headers: { 'X-Eyehold-Token': token, Origin: B } })).json();
       A.eq((beforeQuests.quests || []).filter(x => x.createdBy === 'system:quest-refresh').length, 0, 'no quest mints before direction confirmation');
       // on-disk: the proposal is durable, the adopted star is still empty (nothing silently persisted as adopted).
-      const disk = JSON.parse(fs.readFileSync(path.join(ws, '_station.questrefresh.json'), 'utf8')).state;
+      const disk = JSON.parse(fs.readFileSync(path.join(ws, '_keep.questrefresh.json'), 'utf8')).state;
       A.ok(disk.proposedNorthStar && disk.proposedNorthStar.text === STAR, 'the proposal persisted to disk');
       A.ok(!disk.northStar, 'nothing was silently adopted');
 
@@ -512,7 +512,7 @@ const CRED = { SKYNET_OPENROUTER_KEY: 'sk-or-v1-questrefresh-fake', SKYNET_DEFAU
       A.eq(after.pendingQuestCount, 0, 'the staged quest batch clears after confirm');
       const afterQuests = await (await fetch(B + '/api/quests', { headers: { 'X-Eyehold-Token': token, Origin: B } })).json();
       A.eq((afterQuests.quests || []).filter(x => x.createdBy === 'system:quest-refresh').length, 1, 'the quest becomes open only after confirmation');
-      const disk2 = JSON.parse(fs.readFileSync(path.join(ws, '_station.questrefresh.json'), 'utf8')).state;
+      const disk2 = JSON.parse(fs.readFileSync(path.join(ws, '_keep.questrefresh.json'), 'utf8')).state;
       A.ok(disk2.northStar && disk2.northStar.text === STAR && !disk2.proposedNorthStar, 'confirm persisted the adoption + cleared the proposal');
     } finally {
       try { child.kill(); } catch (_) {}

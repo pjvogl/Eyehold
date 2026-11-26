@@ -283,7 +283,7 @@ const AutopilotStore = (() => {
   function init(opts) {
     deps = opts || {};
     state = hydrate(load());
-    lastActivity = now();   // a freshly-entered station starts ACTIVE (no instant idle fire on load)
+    lastActivity = now();   // a freshly-entered keep starts ACTIVE (no instant idle fire on load)
     armed = false; acting = false;
     if (!deps || deps.install !== false) install();
   }

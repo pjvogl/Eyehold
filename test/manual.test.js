@@ -29,21 +29,21 @@ const { eyeholdManual } = require('../sidecar/manual.js');
   A.ok(/INTEL CAB[^\n]*FILES/.test(m), 'pairing: INTEL CAB → FILES');
   A.ok(/WORKBENCH[^\n]*TERMINAL/.test(m), 'pairing: WORKBENCH → TERMINAL');
   A.ok(/SERVER CART[^\n]*MEMORY/.test(m), 'pairing: SERVER CART → MEMORY');
-  A.ok(/WORKSTATION[^\n]*COMPUTE/.test(m), 'pairing: WORKSTATION → COMPUTE');
+  A.ok(/WORKKEEP[^\n]*COMPUTE/.test(m), 'pairing: WORKKEEP → COMPUTE');
 
   // 5) the user-facing surfaces are named so the agent points at the right control
   A.ok(/BUILD MODE/.test(m), 'names BUILD MODE (the builder)');
   A.ok(/COMMS/.test(m), 'names COMMS (where you task an agent)');
   A.ok(/SCHEDULES/.test(m), 'names SCHEDULES (built-in scheduled work, AUTOMATE)');
   // the 0.13 dock (sweep 2026-10-02): every menu path the agent tells the Commander exists — no 0.12.5 dock buttons
-  A.ok(!/⇄ ABILITIES|✉ CHANNELS|AUTOMATION \(dock|MCP CONNECTORS|Add a custom API key|BUILD STATION/.test(m), 'names no 0.12.5 dock button or removed tab');
+  A.ok(!/⇄ ABILITIES|✉ CHANNELS|AUTOMATION \(dock|MCP CONNECTORS|Add a custom API key|BUILD KEEP/.test(m), 'names no 0.12.5 dock button or removed tab');
   A.ok(/CONNECT › ABILITIES/.test(m) && /CONNECT › CHANNELS/.test(m) && /MY WORK/.test(m) && /AUTOMATE/.test(m), 'names the 0.13 menus');
   A.ok(/Recruitment Bay/.test(m), 'names the Recruitment Bay (summon)');
   A.ok(/APPROVAL/.test(m), 'names APPROVAL/APPROVALS');
 
   // 6) troubleshooting cues a stuck Commander actually hits
-  A.ok(/NO COMPUTE/.test(m), 'troubleshoots the NO COMPUTE / needs-a-workstation case');
-  A.ok(/CALL station\.inspect first/.test(m), 'live harness-state questions route to the authoritative inspector');
+  A.ok(/NO COMPUTE/.test(m), 'troubleshoots the NO COMPUTE / needs-a-workkeep case');
+  A.ok(/CALL keep\.inspect first/.test(m), 'live harness-state questions route to the authoritative inspector');
   A.ok(/needs no placed prop or approval/.test(m), 'self-inspection is correctly described as a base read');
   A.ok(/Never[\s\S]{0,160}invent a Eyehold CLI command/.test(m), 'manual forbids guessing a diagnostic command');
   A.ok(/place the matching prop/i.test(m), 'tells the agent to place the matching prop for a missing power');

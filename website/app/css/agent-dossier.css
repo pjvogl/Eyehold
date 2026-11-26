@@ -9,7 +9,7 @@
 .agent-dossier .ag-item.sel { background: var(--menu-glass); color: var(--ph-bright); border-color: rgba(var(--ph-rgb),.35); box-shadow: inset 0 1px 0 rgba(var(--ph-bright-rgb),.1); }
 .agent-dossier .ag-item.sel .ag-item-st { color: var(--ph-dim); }
 .agent-dossier .ag-item-nm { font-size: 15px; }
-.agent-dossier :is(.ag-hero,.ag-mission,.cf-group,.ag-reflection-panel,.gx-2 > div,.ag-xp-panel,.ag-achievements,.gx-station) { border: 1px solid rgba(var(--ph-rgb),.2); border-radius: 12px; background: var(--menu-glass); box-shadow: inset 0 1px 0 rgba(var(--ph-bright-rgb),.08); padding: 18px; margin: 0 0 18px; }
+.agent-dossier :is(.ag-hero,.ag-mission,.cf-group,.ag-reflection-panel,.gx-2 > div,.ag-xp-panel,.ag-achievements,.gx-keep) { border: 1px solid rgba(var(--ph-rgb),.2); border-radius: 12px; background: var(--menu-glass); box-shadow: inset 0 1px 0 rgba(var(--ph-bright-rgb),.08); padding: 18px; margin: 0 0 18px; }
 .agent-dossier .ag-hero { gap: 20px; align-items: center; }
 .agent-dossier .ag-info { min-width: 0; }
 .agent-dossier .ag-name { font-size: 28px; line-height: 1.3; flex-wrap: wrap; }
@@ -102,7 +102,7 @@
 .agent-dossier .gx-band { font-size: 13px; letter-spacing: .3px; }
 .agent-dossier .gx-well { border-radius: 8px; padding: 12px; margin-top: 14px; background: rgba(0,0,0,.12); }
 .agent-dossier .gx-row { line-height: 1.5; gap: 8px; flex-wrap: wrap; }
-.agent-dossier .gx-station .body { gap: 20px; }
+.agent-dossier .gx-keep .body { gap: 20px; }
 @media (max-width: 800px) { .agent-dossier .gx-tros { grid-template-columns: repeat(2,minmax(0,1fr)); } .agent-dossier .gx-2 { grid-template-columns: 1fr; } }
 @media (max-width: 680px) { .agent-dossier .con-pane { padding: 14px; } .agent-dossier .ag-setup { grid-template-columns: 1fr; } .agent-dossier .ag-growth-hero { padding: 18px; gap: 18px; } .agent-dossier .ag-level-badge { flex-basis: 70px; height: 80px; } }
 

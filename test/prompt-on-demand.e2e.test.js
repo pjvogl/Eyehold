@@ -67,7 +67,7 @@ const textText = c => typeof c === 'string' ? c : (Array.isArray(c) ? c.map(p =>
     mains.length = 0; callScripted = !!scripted;
     const r = await fixture.request('/api/run', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({
       provider: 'custom', baseUrl: 'http://' + HOST + ':' + llm.address().port + '/v1', key: 'fixture-key', model: 'fixture-model', agentId: 'agent', isTask: true,
-      placed: placed.map(objectType => ({ objectType })), stationPlaced: placed.map(objectType => ({ objectType })),
+      placed: placed.map(objectType => ({ objectType })), keepPlaced: placed.map(objectType => ({ objectType })),
       system: MARK + ': on-demand probe.', messages: [{ role: 'user', content: 'Plan the work, then tell me where ROUTINES live.' }] }) });
     A.eq(r.status, 200, 'run accepted');
     const events = (await r.text()).trim().split('\n').map(l => { try { return JSON.parse(l); } catch (_) { return {}; } });

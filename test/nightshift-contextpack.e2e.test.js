@@ -178,7 +178,7 @@ function seedLogs(ws, now) {
     // ===== 2. COLD-LEASH FIX — with NO dossier and NO activity, status reports binding:readiness + no spend. =====
     // wipe the activity by pointing at a FRESH workspace-less state: clear the dossier (empty beliefs) and rely on
     // the status route's statusDecision (folds the precheck). We can't erase seeded runs live, so instead prove the
-    // pre-spend path via the STATUS binding after making the station present (so no beat fired) AND then reason about
+    // pre-spend path via the STATUS binding after making the keep present (so no beat fired) AND then reason about
     // the readiness precheck directly: with the dossier cleared to empty, the ONLY grounding is the seeded activity —
     // so to show a TRUE cold decline we boot a SECOND, unseeded sidecar.
     // (handled in the cold-boot block below)
@@ -204,7 +204,7 @@ function seedLogs(ws, now) {
       // empty activity, the precheck returns not-ok → binding 'readiness'.
       await fetch(B2 + '/api/autonomy/posture', { method: 'POST', headers: headers2, body: JSON.stringify({ posture: { initiative: 'leash', reach: 'observe', leashPerDay: 12 }, beliefs: { known: [], beliefs: {} } }) });
       const st2 = await (await fetch(B2 + '/api/nightshift/status', { headers: headers2 })).json();
-      A.eq(st2.beatsUsedToday, 0, 'COLD-LEASH: a brand-new station has spent NO leash');
+      A.eq(st2.beatsUsedToday, 0, 'COLD-LEASH: a brand-new keep has spent NO leash');
       // the binding is either 'present' (if the boot-seeded away clock hasn't elapsed) or 'readiness' (if away). In
       // BOTH cases NO leash was spent — the point of the fix. We assert the readiness precheck is reachable by
       // confirming the binding is one of the pre-spend/local gates, never a spent-leash state.

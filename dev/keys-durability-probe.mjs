@@ -62,7 +62,7 @@ try {
       conHasToken: !!con0.hasToken, conHeader: (con0.headers || {})['X-Api-Version'], conTimeout: con0.timeoutMs };
   })()`);
   console.log('SURVIVED RESTART', JSON.stringify(survived));
-  await evalJS(cdp, `StationUI.openTerm('connectors')`); await sleep(1600);
+  await evalJS(cdp, `KeepUI.openTerm('connectors')`); await sleep(1600);
   const ui = await evalJS(cdp, `(async () => {
     const r = {};
     document.querySelector('#con-tab-connectors-keys').click();

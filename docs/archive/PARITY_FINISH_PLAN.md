@@ -291,7 +291,7 @@ constant); add the offset-drift repair branch (parity `jobs.py:1364-1385`).
     "next: 9:00 AM EDT").
 - **Files:** `sidecar/cron.js` (edit, med — additive tz param, default UTC preserves current
   behavior, no signature break, stays determinism-lint clean); `sidecar/index.js` (edit, HIGH —
-  host-tz constant near `:170`, tz in preview at `:1287-1303`); `frontend/app/stationui.js`
+  host-tz constant near `:170`, tz in preview at `:1287-1303`); `frontend/app/keepui.js`
   (edit, med — tz in the `buildRoutines` preview `:1234-1390`); `test/cron.dst.test.js` (NEW,
   low); `package.json` (edit, med — append test).
 - **Notes:** Document the nonexistent/ambiguous policy in the `cron.js` header. Event additive:
@@ -321,7 +321,7 @@ constant); add the offset-drift repair branch (parity `jobs.py:1364-1385`).
   - **Files:** `sidecar/cron.js` (tz-aware match + DST repair, header policy), `sidecar/index.js`
     (`CRON_HOST_TZ` const + tz-aware preview returning `tz`/`localNext`, `parseCronScheduleOr400`
     tz-arg + reject), `sidecar/cron-driver.js` (inject + thread `defaultTz` into `planTick`),
-    `frontend/app/stationui.js` (preview shows local time + tz tag), `test/cron.dst.test.js` (NEW),
+    `frontend/app/keepui.js` (preview shows local time + tz tag), `test/cron.dst.test.js` (NEW),
     `test/cron.api.test.js` (extended), `package.json` (append cron.dst test).
   - **Coordination/event note (NOT emitted this iteration — for the batched memory-cortex request):**
     `cron.fire` optional `tz` field and a `cron.skipped` reason `tz-recompute` would let the HUD show
@@ -607,9 +607,9 @@ ORs with `SKYNET_CRON_ENABLED`, NOT runtime `process.env` mutation), then re-ren
     stays fully inert — the "byte-identical browser path when off" guarantee holds (assert no
     timer armed, no behavior change). A toggle that arms must not change the off-path.
   - LIVE: toggle ENABLE in the running app → a due job fires within ONE tick; UI flips
-    `○ scheduler is OFF` (`stationui.js:1301`) → `● scheduler armed`; `GET /api/cron` reflects
+    `○ scheduler is OFF` (`keepui.js:1301`) → `● scheduler armed`; `GET /api/cron` reflects
     `enabled`.
-- **Files:** `frontend/app/stationui.js` (edit, med — `buildRoutines`, one-click enable + honest
+- **Files:** `frontend/app/keepui.js` (edit, med — `buildRoutines`, one-click enable + honest
   badge); `sidecar/index.js` (edit, HIGH — boot block reads the persisted flag; new toggle route
   → run `test:http`). 
 - **Notes:** A persisted `cronArmed` flag OR'd at boot is cleaner than mutating `process.env` and
@@ -637,7 +637,7 @@ ORs with `SKYNET_CRON_ENABLED`, NOT runtime `process.env` mutation), then re-ren
   - **GET /api/cron `enabled`** now reports the live `cronArmed` (was boot-frozen `CRON_ENABLED`) so the panel
     reflects a runtime arm/disarm immediately. The cron.api.test `enabled:false` assertion still holds (cron
     off → `cronArmed` false).
-  - **Honest UI** (`stationui.js` `buildRoutines.refresh`) — OFF shows a RED `○ scheduling is OFF — routines
+  - **Honest UI** (`keepui.js` `buildRoutines.refresh`) — OFF shows a RED `○ scheduling is OFF — routines
     will NOT fire.` badge + a one-click `▶ ENABLE SCHEDULING` button (posts the arm route, then re-renders from
     the authoritative GET); ON shows `● scheduler armed` + a `⏸ DISABLE SCHEDULING` control. Replaced the old
     dim "set SKYNET_CRON_ENABLED=1" hint (which told the user to edit env + restart — the lie this closes).
@@ -659,14 +659,14 @@ ORs with `SKYNET_CRON_ENABLED`, NOT runtime `process.env` mutation), then re-ren
     files; `index.js` is the lint-exempt composition root). `npm run test:http` GREEN (EXIT 0 — cron.api 56
     assertions unchanged + cron.arm 25). **LIVE-WATCHED** (`npm start`, free port :8873, temp WORKSPACES,
     cron OFF): boot prints no "cron tick armed" (inert); `GET /api/cron` → `enabled:false`; the served
-    `stationui.js` carries the new OFF-badge + ENABLE control; arm route → `{ok:true,enabled:true}`, GET flips
+    `keepui.js` carries the new OFF-badge + ENABLE control; arm route → `{ok:true,enabled:true}`, GET flips
     `enabled:true`, the boot-reconcile ticks the due past one-shot within one tick
     (`[cron] cron.tick {fired:0,skipped:1,planned:1}` + `cron.skipped no-capability` — zero spend),
     `cron.armed.json` = `{"version":1,"armed":true}`; disarm → `enabled:false`, `cron tick DISARMED`,
     `armed:false`; a bad body (no `enabled`) → 400; arm without token → 403. The honest OFF badge + ENABLE
     button also rendered in a real Chromium DOM.
   - **Files:** `sidecar/index.js` (persisted `cronArmed` store + `armCron`/`disarmCron` + boot-OR + `POST
-    /api/cron/arm` route + GET reports live `cronArmed`), `frontend/app/stationui.js` (`buildRoutines` honest
+    /api/cron/arm` route + GET reports live `cronArmed`), `frontend/app/keepui.js` (`buildRoutines` honest
     OFF/ON badge + one-click enable/disable), `test/cron.arm.test.js` (NEW), `package.json` (append
     `cron.arm.test` to `test:http`). No `shared/events.js`/`shared/schema.js` edit
     (`git log feat/harness-backend..agent/parity-finish -- shared/*` stays empty); no new event emitted (the
@@ -817,7 +817,7 @@ double-register).
    an autonomous surface.
 7. **G1 frontend capability-OBJECT surfacing is a SEPARATE later lane**, AFTER the backend tools
    land green — it serializes against `agent/crew-sentience` (world.js, 50m) and
-   `agent/workstation-ui` (build.js/propsprites.js). It must NOT be bundled into this lane's merge.
+   `agent/workkeep-ui` (build.js/propsprites.js). It must NOT be bundled into this lane's merge.
 
 **Board-check protocol:** before EVERY edit session and again immediately before each merge, from
 the integration tree run `node scripts/board.mjs --files <substr>` for each hot target. MANDATORY
@@ -826,7 +826,7 @@ files (revival-risk): `sidecar/index.js`, `sidecar/capability/registry.js`, `sid
 iterated files), `sidecar/permissions.js` (exec-spine), `sidecar/mcp/manager.js` (mcp lane),
 `frontend/app/world.js` (crew-sentience/workforce-zones/state-integrity — PREFER not touching;
 route presentation through props instead), `frontend/app/app.js` (state-integrity/onboarding-
-remaster), `frontend/app/stationui.js`. The three NEW backend files (`browser.js`, `computer.js`,
+remaster), `frontend/app/keepui.js`. The three NEW backend files (`browser.js`, `computer.js`,
 `transport.stdio.js`) are verified free of existing owners but RE-check at merge in case another
 lane adds the same path. `board.mjs` only sees uncommitted/ahead-of-trunk state — combine with
 `git log -1 -- <file>` recency for the full picture. Keep the lane SHORT, land NEW files first,
@@ -956,7 +956,7 @@ merge in small increments.
   interval) / `disarmCron()` (clear it) — so a due job fires within ONE tick of enabling with NO restart. Guarded by
   the SAME `x-eyehold-token` gate as the cron CRUD routes (`rejectBadApiToken` before dispatch), not a weaker
   hand-rolled guard. `GET /api/cron enabled` now reports the live `cronArmed` (reflects a runtime arm/disarm
-  immediately). UI (`stationui buildRoutines`): OFF shows a red "scheduling is OFF — routines will NOT fire" badge +
+  immediately). UI (`keepui buildRoutines`): OFF shows a red "scheduling is OFF — routines will NOT fire" badge +
   one-click ENABLE SCHEDULING; ON shows armed + DISABLE. INERT-WHEN-OFF preserved (no env + no flag → cronArmed=false
   → boot no-ops → byte-identical off-path). RED→GREEN proven (`test/cron.arm.test.js`, NEW, 25 assertions in
   `test:http`: pre-fix RED — arm route 404s, enabled never flips, no flag persisted; the inert-when-off + token-guard

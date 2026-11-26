@@ -52,7 +52,7 @@ const Diag = require('../frontend/app/diagnostics.js');
     const savedHarness = global.Harness;
     try {
       global.Harness = { pingEngine: () => Promise.resolve(false) };
-      const gateDead = await Diag.localReport({ kind: 'SAVE-NET · SAVE REQUEST LOST', error: 'the app loaded, but its saved-station request did not return' });
+      const gateDead = await Diag.localReport({ kind: 'SAVE-NET · SAVE REQUEST LOST', error: 'the app loaded, but its saved-keep request did not return' });
       A.ok(/NOT REACHABLE/.test(verdictLine(gateDead)), 'with no engineAlive the report measures, and a dead probe reads NOT REACHABLE');
       global.Harness = { pingEngine: () => Promise.resolve(null) };
       A.ok(/UNPROVEN/.test(verdictLine(await Diag.localReport({ kind: 'SAVE-NET · SAVE REQUEST LOST' }))), 'a timed-out probe stays UNPROVEN');

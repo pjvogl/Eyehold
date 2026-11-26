@@ -1,15 +1,15 @@
-/* EYEHOLD — terrain.js : THE GROUND. What the station is standing ON.
+/* EYEHOLD — terrain.js : THE GROUND. What the keep is standing ON.
 
    THIS IS NOT A BACKDROP, AND THE DIFFERENCE IS THE WHOLE POINT.
 
    spacebg.js draws things at a DISTANCE, in screen space, deliberately not zooming — correct for
-   a starfield or a sea a long way below. Terrain is at the SAME PLANE as the station: it must pan
+   a starfield or a sea a long way below. Terrain is at the SAME PLANE as the keep: it must pan
    AND zoom with it, or the illusion dies on the first scroll-wheel tick. The camera zooms 0.5x to
    6x (world.js MINZ/MAXZ), a 12x range, so faking that in screen space would fall apart violently.
 
-   So the ground is drawn in WORLD space, between world.js's setTransform() and the station bake.
+   So the ground is drawn in WORLD space, between world.js's setTransform() and the keep bake.
    At that seam the camera transform is already applied, which means panning, zooming and the
-   station's own coordinate frame all come for free — no parallax maths, no toroidal wrap, no
+   keep's own coordinate frame all come for free — no parallax maths, no toroidal wrap, no
    camera plumbing.
 
    THREE layers, because they fail differently:
@@ -24,7 +24,7 @@
         gives an infinite non-repeating field with no stored map, drawn from pre-rendered sprites
         so a crown costs one drawImage rather than four hundred stamps every frame.
 
-   The station stands in a CLEARING: scatter is suppressed inside the station's world rect plus a
+   The keep stands in a CLEARING: scatter is suppressed inside the keep's world rect plus a
    margin, and thickened just outside it, because a real clearing has a dense edge.
 
    WHY THE FIRST FOREST WAS SCRAPPED (2026-07-24, Andrew: "too blurry… just looks like an outline
@@ -47,7 +47,7 @@ const Terrain = (typeof document === 'undefined') ? { active: () => false } : ((
   const TAU = Math.PI * 2;
   // Terrain sprites are baked once, then trim() reads their pixels. Choose CPU-backed scratch
   // canvases at context creation so each trim does not synchronously read back a GPU surface.
-  // The live station canvas and the cached sprites' artwork are unchanged.
+  // The live keep canvas and the cached sprites' artwork are unchanged.
   const mkCv = (w, h) => {
     const c = document.createElement('canvas'); c.width = w; c.height = h;
     c.getContext('2d', { willReadFrequently: true });
@@ -143,7 +143,7 @@ const Terrain = (typeof document === 'undefined') ? { active: () => false } : ((
   }
 
   /* THE SUN. One direction for every shadow, every lit rim, every facet, in every ground. Light
-     comes from the top-left, which is what the station's own props already assume. */
+     comes from the top-left, which is what the keep's own props already assume. */
   const SUN = { x: -0.7071, y: -0.7071 };
 
   /* ------------------------------------------------------------------ GROUND: FOREST ---- */
@@ -171,7 +171,7 @@ const Terrain = (typeof document === 'undefined') ? { active: () => false } : ((
           outline now carries the same rhythm INSIDE — ridges lit, valleys dark — round a bright apex.
        3. THE WILDERNESS IS THICK. Undergrowth density is doubled and varied — ferns, dark bushes,
           saplings, fallen branches, mossed logs, stumps, boulders, mushroom clusters — and it now
-          grows in the station's clearing margin too (never under the floor plan), because play
+          grows in the keep's clearing margin too (never under the floor plan), because play
           zoom looks at exactly that ground.
        4. THE FLOOR IS A FLOOR. Leaf litter with shape, pine-needle drifts, small plants, moss with
           texture, roots, twigs, stones, puddles in the wet — under a dark key, in a narrow range.
@@ -621,7 +621,7 @@ const Terrain = (typeof document === 'undefined') ? { active: () => false } : ((
         const W = ridges[0].W || ST.W, LANE = ST.LANE, HALF = 100;
         const level = (lane, sx) => ((h01(sx, lane, 94) * 3) | 0) - 1;
         for (let lane = Math.floor(y0 / LANE) - 1; lane <= Math.ceil(y1 / LANE); lane++) {
-          if (lane !== 0 && h01(lane, 0, 91) > ST.P) continue;   // lane 0 always runs: the station's own river
+          if (lane !== 0 && h01(lane, 0, 91) > ST.P) continue;   // lane 0 always runs: the keep's own river
           let laneY = lane * LANE + h01(lane, 1, 92) * LANE * 0.8;
           if (clr) {   // never through the pad — shove the lane just clear of it, so it hugs the clearing
             const top = clr.y - C * 0.5 - HALF, bot = clr.y + clr.h + C * 0.5 + HALF;
@@ -633,7 +633,7 @@ const Terrain = (typeof document === 'undefined') ? { active: () => false } : ((
           }
         }
       }
-      /* the station's own footprint (the bake rect) is the clearing MINUS its margin: nothing at
+      /* the keep's own footprint (the bake rect) is the clearing MINUS its margin: nothing at
          all goes there; low undergrowth may grow in the margin band around it. */
       const stn = clr ? { x: clr.x + C * 0.5, y: clr.y + C * 0.5, w: clr.w - C, h: clr.h - C } : null;
       const inRect = (r, x, y) => r && x > r.x && x < r.x + r.w && y > r.y && y < r.y + r.h;
@@ -666,7 +666,7 @@ const Terrain = (typeof document === 'undefined') ? { active: () => false } : ((
           if (!clutter) continue;
           /* THE WILDERNESS: undergrowth in every gap, THICK. Bushes and saplings, ferns, fallen
              branches, logs, stone, mushrooms — densest at the clearing's rim and in the glades,
-             and present in the margin around the station where play zoom actually looks. */
+             and present in the margin around the keep where play zoom actually looks. */
           const open = clamp01(1 - dens * 1.3) + edgeBoost * 1.2;
           const nSmall = Math.round(open * 4.2 * (0.4 + h01(cx, cy, 5)));
           for (let k = 0; k < nSmall; k++) {
@@ -686,7 +686,7 @@ const Terrain = (typeof document === 'undefined') ? { active: () => false } : ((
   };
 
   /* -------------------------------------------------------------------- GROUND: MOON ---- */
-  /* A landed station on a mare plain. The forest's problem was making an organic mass legible;
+  /* A landed keep on a mare plain. The forest's problem was making an organic mass legible;
      the moon's is the opposite — there is exactly ONE material out here, so every scrap of
      interest has to come from FORM. Which is lucky, because form is what a crater is.
 
@@ -718,7 +718,7 @@ const Terrain = (typeof document === 'undefined') ? { active: () => false } : ((
     LIGHT: {
       /* Mare basalt is DARK — albedo around 0.07, one of the least reflective surfaces in the
          solar system. The moon looks bright to us only because it sits against black sky. Ramping
-         it up to "moon white" would both be wrong and break the law that the station is the
+         it up to "moon white" would both be wrong and break the law that the keep is the
          brightest thing on screen. */
       /* TEN STEPS, NOT SIX, AND A DUOTONE (2026-09-09). At six steps of ~12 units the hash dither
          between adjacent steps was a ±12 salt-and-pepper over the whole plain, and at play zoom
@@ -1291,7 +1291,7 @@ const Terrain = (typeof document === 'undefined') ? { active: () => false } : ((
             if (h01(cx, cy, g.salt) > g.p) continue;
             const wx = (cx + h01(cx, cy, g.salt + 40)) * g.C;
             const wy = (cy + h01(cx, cy, g.salt + 50)) * g.C;
-            /* THE PAD: the station sits on cleared, graded ground. Craters are suppressed under it
+            /* THE PAD: the keep sits on cleared, graded ground. Craters are suppressed under it
                for the same reason trees are — a rim running through the floor plan reads as a
                drawing laid over a picture. */
             if (clr && wx > clr.x && wx < clr.x + clr.w && wy > clr.y && wy < clr.y + clr.h) continue;
@@ -1310,19 +1310,19 @@ const Terrain = (typeof document === 'undefined') ? { active: () => false } : ((
 
   /* ---------------------------------------------------------------------- dispatch ---- */
 
-  let curId = null;                          // null == no ground; the station is flying, spacebg owns the frame
+  let curId = null;                          // null == no ground; the keep is flying, spacebg owns the frame
   let st = null, builtId = '';
   let plate = null;
 
   // Terrain is static in world space. Rasterize an overscanned view off-thread and move
   // that plate with the camera, rather than repainting thousands of overlapping crowns.
-  function drawPlate(ctx, cam, cw, ch, station, id) {
+  function drawPlate(ctx, cam, cw, ch, keep, id) {
     if (typeof BackdropBake === 'undefined') return false;
     const s = (cam && cam.scale) || 1, px = (cam && cam.panX) || 0, py = (cam && cam.panY) || 0;
     const left = -px / s, top = -py / s, right = (cw - px) / s, bottom = (ch - py) / s;
-    const footprint = station ? { x: station.x || 0, y: station.y || 0, w: station.w, h: station.h } : null;
-    const stationKey = JSON.stringify(footprint);
-    const same = plate && plate.id === id && plate.stationKey === stationKey;
+    const footprint = keep ? { x: keep.x || 0, y: keep.y || 0, w: keep.w, h: keep.h } : null;
+    const keepKey = JSON.stringify(footprint);
+    const same = plate && plate.id === id && plate.keepKey === keepKey;
     const covers = same && Math.abs(plate.scale / s - 1) < 0.04 &&
       left >= plate.left + 64 / s && top >= plate.top + 64 / s &&
       right <= plate.left + (plate.canvas.width - 64) / plate.scale && bottom <= plate.top + (plate.canvas.height - 64) / plate.scale;
@@ -1330,7 +1330,7 @@ const Terrain = (typeof document === 'undefined') ? { active: () => false } : ((
       const margin = 256;
       const params = { id, width: cw + margin * 2, height: ch + margin * 2, scale: s,
         left: Math.floor(-px / 128) * 128 / s - margin / s,
-        top: Math.floor(-py / 128) * 128 / s - margin / s, station: footprint };
+        top: Math.floor(-py / 128) * 128 / s - margin / s, keep: footprint };
       const key = JSON.stringify(params);
       const queued = BackdropBake.request('ground', key, params, data => {
         if (curId !== id) { BackdropBake.release(data); return; }
@@ -1339,21 +1339,21 @@ const Terrain = (typeof document === 'undefined') ? { active: () => false } : ((
         canvas.getContext('2d').drawImage(data.bitmap, 0, 0);
         BackdropBake.release(data);
         if (plate) { plate.canvas.width = 0; plate.canvas.height = 0; }
-        plate = { id, stationKey, canvas, scale: params.scale, left: params.left, top: params.top };
+        plate = { id, keepKey, canvas, scale: params.scale, left: params.left, top: params.top };
       });
       if (!queued) {
         // The compatibility path still caches static scenery instead of repainting every tree.
         const canvas = document.createElement('canvas'); canvas.width = params.width; canvas.height = params.height;
         const g = canvas.getContext('2d'), bakeCam = { scale: s, panX: -params.left * s, panY: -params.top * s };
         g.imageSmoothingEnabled = false; g.setTransform(s, 0, 0, s, bakeCam.panX, bakeCam.panY);
-        drawDirect(g, bakeCam, params.width, params.height, station);
+        drawDirect(g, bakeCam, params.width, params.height, keep);
         if (plate) { plate.canvas.width = 0; plate.canvas.height = 0; }
-        plate = { id, stationKey, canvas, scale: s, left: params.left, top: params.top };
+        plate = { id, keepKey, canvas, scale: s, left: params.left, top: params.top };
       }
     }
     ctx.fillStyle = GROUNDS[id].base;
     ctx.fillRect(left, top, cw / s, ch / s);
-    if (plate && plate.id === id && plate.stationKey === stationKey) ctx.drawImage(plate.canvas, plate.left, plate.top,
+    if (plate && plate.id === id && plate.keepKey === keepKey) ctx.drawImage(plate.canvas, plate.left, plate.top,
       plate.canvas.width / plate.scale, plate.canvas.height / plate.scale);
     return true;
   }
@@ -1374,7 +1374,7 @@ const Terrain = (typeof document === 'undefined') ? { active: () => false } : ((
      for the landed case. The deck patch, the dapple overlay and every tree/ridge sprite are
      offscreen canvases built once; a GPU reset zeroes their pixels without touching the objects,
      and the two CanvasPatterns cached on `st` keep pointing at the now-blank plates, so the floor
-     fills with nothing and the station stands on the void. Dropping `st` drops the patterns with
+     fills with nothing and the keep stands on the void. Dropping `st` drops the patterns with
      it, which is why this is a null and not a per-canvas repaint. */
   function invalidate() {
     st = null; builtId = '';
@@ -1407,16 +1407,16 @@ const Terrain = (typeof document === 'undefined') ? { active: () => false } : ((
 
   /* Draw the ground under the CURRENT world transform. Callers must already have applied
      setTransform(scale,0,0,scale,panX,panY) — that is what makes this pan and zoom for free.
-     `station` is the bake's world rect and may be null before the first bake, in which case
+     `keep` is the bake's world rect and may be null before the first bake, in which case
      nothing is cleared and the ground simply closes over. */
-  function draw(ctx, cam, cw, ch, station) {
+  function draw(ctx, cam, cw, ch, keep) {
     const id = curId;
     if (!id || !has(id)) return;
-    if (drawPlate(ctx, cam, cw, ch, station, id)) return;
-    drawDirect(ctx, cam, cw, ch, station);
+    if (drawPlate(ctx, cam, cw, ch, keep, id)) return;
+    drawDirect(ctx, cam, cw, ch, keep);
   }
 
-  function drawDirect(ctx, cam, cw, ch, station) {
+  function drawDirect(ctx, cam, cw, ch, keep) {
     const id = curId;
     if (!id || !has(id)) return;
     if (builtId !== id || !st) build(id);
@@ -1429,7 +1429,7 @@ const Terrain = (typeof document === 'undefined') ? { active: () => false } : ((
     const x1 = (cw - px) / s + pad, y1 = (ch - py) / s + pad;
 
     // 1. THE FLOOR — one fill through a repeating pattern, in the current transform space, so it
-    // scales with the world exactly like the station bake does.
+    // scales with the world exactly like the keep bake does.
     if (!st.pattern) st.pattern = ctx.createPattern(st.patchCv, 'repeat');
     if (st.pattern) { ctx.fillStyle = st.pattern; ctx.fillRect(x0, y0, x1 - x0, y1 - y0); }
     else { ctx.fillStyle = G.base; ctx.fillRect(x0, y0, x1 - x0, y1 - y0); }
@@ -1447,12 +1447,12 @@ const Terrain = (typeof document === 'undefined') ? { active: () => false } : ((
       }
     }
 
-    /* the CLEARING: the station's footprint plus a margin, kept free of anything tall. The rect is
+    /* the CLEARING: the keep's footprint plus a margin, kept free of anything tall. The rect is
        passed in rather than assumed at the origin — world.js blits the bake at (0,0) but REFIT
        blits it at cache.origin, and a clearing in the wrong place is worse than none. */
-    const clr = station ? {
-      x: (station.x || 0) - G.CELL * 0.5, y: (station.y || 0) - G.CELL * 0.5,
-      w: station.w + G.CELL, h: station.h + G.CELL,
+    const clr = keep ? {
+      x: (keep.x || 0) - G.CELL * 0.5, y: (keep.y || 0) - G.CELL * 0.5,
+      w: keep.w + G.CELL, h: keep.h + G.CELL,
     } : null;
 
     // 3. THE SCATTER. Hashed per cell — no stored map, no growth over time, and stable: the same
@@ -1476,7 +1476,7 @@ const Terrain = (typeof document === 'undefined') ? { active: () => false } : ((
   }
 
   /* how close a cell is to the clearing's edge, 0..1 — used to thicken the undergrowth around the
-     station. A real clearing has a wall of growth at its rim; a hard cut with nothing at the edge
+     keep. A real clearing has a wall of growth at its rim; a hard cut with nothing at the edge
      reads as a mask, which is what it is. */
   function nearClearing(clr, wx, wy, C) {
     const dx = Math.max(clr.x - wx, 0, wx - (clr.x + clr.w));
@@ -1487,7 +1487,7 @@ const Terrain = (typeof document === 'undefined') ? { active: () => false } : ((
   }
 
   /* set the ground. Anything that is not a known ground id (a SKY id, or nothing) turns the layer
-     OFF — spacebg then owns the frame, which is what "the station is flying" means. */
+     OFF — spacebg then owns the frame, which is what "the keep is flying" means. */
   function setGround(id) { curId = has(id) ? id : null; return curId; }
   const getGround = () => curId;
   const active = () => !!(curId && has(curId));
@@ -1495,7 +1495,7 @@ const Terrain = (typeof document === 'undefined') ? { active: () => false } : ((
   const list = () => ORDER.map(id => ({ id, label: GROUNDS[id].label, blurb: GROUNDS[id].blurb || '', ground: true }));
 
   /* The picker's swatch: the REAL renderer, never a stand-in, so a preview cannot promise a place
-     the station won't deliver.
+     the keep won't deliver.
 
      BUILT AT A REFERENCE SIZE AND SCALED DOWN, which is the same law the sky swatches learned:
      drawing straight into a 112x63 chip shows one third of one tree crown, because the features
@@ -1505,7 +1505,7 @@ const Terrain = (typeof document === 'undefined') ? { active: () => false } : ((
 
      MEMOISED, because a sample costs a whole ground BUILD. `st = null` below forces build(id) to
      regenerate the patch, the overlay and every sprite pool before it can draw one chip — measured
-     live on a seeded station at 112x63: moon 400ms, forest 150ms, and SETTINGS repainted all six
+     live on a seeded keep at 112x63: moon 400ms, forest 150ms, and SETTINGS repainted all six
      swatches on EVERY build of the panel (open, tab swap, any rerender). The inputs are fully
      deterministic (fixed seed 0x0FE57, no camera, no clock, no theme), so the cached chip is
      bit-identical to a fresh render — this caches the REAL renderer's output, it does not stand in
@@ -1543,5 +1543,5 @@ const Terrain = (typeof document === 'undefined') ? { active: () => false } : ((
   return { draw, setGround, getGround, active, baseColor, list, paintSample, invalidate, _dbgLosePixels,
     _dbgBakeState: () => ({ ready: !!plate && plate.id === curId, id: plate?.id || builtId,
       width: plate?.canvas.width || 0, height: plate?.canvas.height || 0, scale: plate?.scale || 0,
-      left: plate?.left, top: plate?.top, stationKey: plate?.stationKey }), GROUNDS };
+      left: plate?.left, top: plate?.top, keepKey: plate?.keepKey }), GROUNDS };
 })();

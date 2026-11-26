@@ -1,6 +1,6 @@
 /* test/dialogue-doorlaw.test.js — THE DOOR LAW reaches the awakening and the quick tour (sweep 2026-10-02).
 
-   On a fresh station the dock grows with use (systems.js): AUTOMATE and CONNECT start hidden. A line that names a system brings it
+   On a fresh keep the dock grows with use (systems.js): AUTOMATE and CONNECT start hidden. A line that names a system brings it
    online — but only COMMS lines did. The awakening ("its line is waiting for a crew: WORK › AUTOMATE › WORKFLOWS …") and the quick
    tour ("open WORK › AUTOMATE › WORKFLOWS", "BUILD › CONNECT › ABILITIES") speak through Dialogue.say / Dialogue.node, so they sent a
    brand-new Commander to a dock button that was not there. Dialogue now applies the door law to every line it speaks. */
@@ -16,7 +16,7 @@ const ctx = vm.createContext({ console, module: { exports: {} }, localStorage: {
 vm.runInContext(rd('frontend/app/systems.js'), ctx, { filename: 'systems.js' });
 const Systems = ctx.module.exports;
 Systems.init({ epoch: 'fresh-1', fresh: true, crewCount: () => 1 });
-A.ok(Systems.staged() && !Systems.isOnline('automate') && !Systems.isOnline('connect'), 'fixture: a fresh station starts with AUTOMATE and CONNECT hidden');
+A.ok(Systems.staged() && !Systems.isOnline('automate') && !Systems.isOnline('connect'), 'fixture: a fresh keep starts with AUTOMATE and CONNECT hidden');
 
 // the exact lines the awakening and the tour speak
 const onb = rd('frontend/app/onboarding.js'), tut = rd('frontend/app/tutorial.js');

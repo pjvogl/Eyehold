@@ -93,7 +93,7 @@
             "sidecar/tools/builtin/orchestration.js": "1ad21f4778c607a213af17014fce69ae577d510061d26266d7fc7065d51e2243",
             "sidecar/inputpolicy.js": "77ea1085dd266d883321b350295159c0aa76c094b16cc2f56b2b6c922ba14c5e"
           },
-          "scope": "Installed Node and sidecar; isolated stations; controlled upstream providers and MCP, no customer account"
+          "scope": "Installed Node and sidecar; isolated keeps; controlled upstream providers and MCP, no customer account"
         }
       },
       "delegated-connectors": {
@@ -109,7 +109,7 @@
             "sidecar/tools/builtin/orchestration.js": "1ad21f4778c607a213af17014fce69ae577d510061d26266d7fc7065d51e2243",
             "sidecar/inputpolicy.js": "77ea1085dd266d883321b350295159c0aa76c094b16cc2f56b2b6c922ba14c5e"
           },
-          "scope": "Installed Node and sidecar; isolated stations; controlled upstream providers and MCP, no customer account"
+          "scope": "Installed Node and sidecar; isolated keeps; controlled upstream providers and MCP, no customer account"
         }
       }
     }

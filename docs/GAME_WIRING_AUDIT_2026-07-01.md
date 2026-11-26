@@ -7,7 +7,7 @@
 Four parallel lenses: event backbone, world simulation, gamification loops, and
 harness-feature reach-through. Verdict up front:
 
-**The sprite layer is truthful but mute, and the station renders *states*, not
+**The sprite layer is truthful but mute, and the keep renders *states*, not
 *events* — and *sessions*, not *history*.** The desk-trip invariant (walk only on
 real tool fire, commit 8b39836) is solid. But moment-to-moment activity (which
 tool, how far along, token flow) is invisible, and the across-time story (what ran
@@ -91,7 +91,7 @@ return loop is real, not manufactured.
 
 1. **Legibility (watch it run):** per-tool prop activation + desk progress +
    token-driven screen flicker + Meeseeks. Also feeds the GTM spectacle thesis —
-   a station that visibly works is clippable.
+   a keep that visibly works is clippable.
 2. **Return ritual (morning collect):** while-away digest beat + physical OUTBOX
    crates stacked per overnight run. Reviewing/rating each = the "collect tap,"
    which ALSO feeds XP + confidence + memory turn-in — one ritual closes four
@@ -104,7 +104,7 @@ return loop is real, not manufactured.
    actionable fix-your-factory prompts; budget as a power meter that depletes;
    cache % as smelter efficiency. Chaseable numbers with real dollar meaning.
 5. **Monument pride:** trophy-case prop for milestones; lifetime counters
-   (tasks shipped, deliverables, streaks); station postcard export.
+   (tasks shipped, deliverables, streaks); keep postcard export.
 6. **Escalating automation:** celebrate seed reuse ("the seed you saved ran 5×
    this week"); job-board/wall-clock prop makes routines feel like built
    infrastructure, not settings.

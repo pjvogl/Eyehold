@@ -37,7 +37,7 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
 // a deliberately LARGE, byte-stable system prefix so Anthropic actually caches it. The per-model minimum runs up
 // to 4096 tokens (Opus 4.6/4.5, Haiku 4.5), so pad well past that (~6k+ tokens) — below the floor Anthropic runs
 // the request UNCACHED with no error, which would make the cache assertion a false negative.
-const BIG_SYSTEM = ('You are a meticulous operations assistant aboard a space station. ' +
+const BIG_SYSTEM = ('You are a meticulous operations assistant aboard a space keep. ' +
   'Follow instructions exactly and answer with extreme concision. ').repeat(260);
 
 function boot(port, ws, attemptsLeft) {

@@ -6,7 +6,7 @@ Scope is immutable `v0.11.1` (`b3760c46ff3fe02790e6c3b0c50a23c30b5837a8`) throug
 
 | Notes section | Source anchors and scope |
 | --- | --- |
-| Station visuals and performance | Backdrop final artwork c772f4f84, worker/cache repair 2c041bbe6, CRT d9477feb6, walks c24077948, directional correction 734063b21, panel persistence 871561348, transient cards 19fc72df4/25b32523d/455ffc9ed. |
+| Keep visuals and performance | Backdrop final artwork c772f4f84, worker/cache repair 2c041bbe6, CRT d9477feb6, walks c24077948, directional correction 734063b21, panel persistence 871561348, transient cards 19fc72df4/25b32523d/455ffc9ed. |
 | Overseer and personalities | Setup 70a698ad2/0946764a5, personality 81b6f5703/a29342efc/f7be913a6, narrow layout ff188bee7, stale-warning recovery 564c399fd. |
 | Providers and discovery | Discover 4e1d06c00, guide 59a5b1e22, GitHub 16cf2b926 and subsequent expiry/error/persistence fixes, identities 3f2cc70d4, catalog 59b5f2462, fallback/MCP 44c6b4952/b4bcdac90, Claude f111be488/9441660d0. |
 | Saves and recovery | Concurrent save and loop reviews 64ed8711b, conflict-arrival bb1aa021e, startup eab106abd, conversion de01a1343, queued revision 767a35925, restored replies a66fc5638. |

@@ -1,5 +1,5 @@
 'use strict';
-/* node test/managed-credit-refusal.e2e.test.js — a funded Eyehold-credit station must never be told it is out of
+/* node test/managed-credit-refusal.e2e.test.js — a funded Eyehold-credit keep must never be told it is out of
    credits (customer report 2026-10-06: "$79.24 on my account, but it says I'm out of credits and must top up").
    Two seams told that lie before this test existed:
      • a balance check that FAILED (cloud slow / 5xx / timeout) left the cached balance null, the uncapped
@@ -82,7 +82,7 @@ const Friendly = require('../frontend/app/friendlyerror.js');
     assert.ok(/credits are safe/i.test(r.copy.userMessage), 'COMMS says the credits are safe: ' + r.copy.userMessage);
     assert.equal(r.copy.retryable, true, 'COMMS offers a retry for a failed balance check');
 
-    // ---- 2. the cloud refuses this station's token (revoked / another account): relink, never top up ----
+    // ---- 2. the cloud refuses this keep's token (revoked / another account): relink, never top up ----
     reset(79.24, 401);
     r = await run('balance-401');
     assert.equal(r.end.reason, 'error', 'a refused link is refused (fail closed)');

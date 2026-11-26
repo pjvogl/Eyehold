@@ -21,7 +21,7 @@ context.test: OK (180 assertions)
 runtimeinfo: OK (15 assertions)
 harness-snapshot: OK (23 assertions)
 harness-stream-completion: OK (188 assertions)
-station-inspect: OK (12 assertions)
+keep-inspect: OK (12 assertions)
 [failopen] aux.test.envelope (x1): aux pass died [redacted-key]
 [failopen] aux.test.envelope (x2): again
 [failopen] maint.test.loop (x1): once
@@ -203,7 +203,7 @@ concurrency.test: OK (65 assertions)
 workspace-lease.test: OK (27 assertions)
 workspace-owner.test: OK (34 assertions)
 workspace-safety.test: OK (12 assertions)
-[recovery] auto station recovery SKIPPED: target workspace is a scratch root (C:\Users\andro\AppData\Local\Temp\eyehold-fake-real-home-iADqRr\ci-scratch-6RQdno\ws is under C:\Users\andro\AppData\Local\Temp\eyehold-fake-real-home-iADqRr\ci-scratch-6RQdno); a real station is never ingested into a temp workspace. Explicit recovery (request file / CLI restore) is unaffected.
+[recovery] auto keep recovery SKIPPED: target workspace is a scratch root (C:\Users\andro\AppData\Local\Temp\eyehold-fake-real-home-iADqRr\ci-scratch-6RQdno\ws is under C:\Users\andro\AppData\Local\Temp\eyehold-fake-real-home-iADqRr\ci-scratch-6RQdno); a real keep is never ingested into a temp workspace. Explicit recovery (request file / CLI restore) is unaffected.
 workspace-recovery.test: OK (66 assertions)
 workspace-lineage.test: OK (86 assertions)
 agent-lifecycle: OK (45 assertions)
@@ -648,7 +648,7 @@ onboard-fresh-launcher.test: OK (4 assertions)
 codex-configured.test: OK (12 assertions)
 tests: OK (28 assertions)
 PASS isolated seeded sidecar starts
-PASS seeded station reaches the live floor
+PASS seeded keep reaches the live floor
 PASS camera begins on a lit WebGL frame :: {"path":"webgl","ready":true,"failed":false,"lost":false,"frameSum":67}
 PASS WEBGL_lose_context is available and invoked :: {"ok":true}
 PASS same page abandons WebGL for the CPU warp :: {"path":"cpu","ready":false,"failed":true,"lost":true,"frameSum":67}
@@ -692,8 +692,8 @@ quests.test: OK (45 assertions)
 queststore.test: OK (21 assertions)
 queststate.test: OK (63 assertions)
 queststatestore.test: OK (43 assertions)
-stationquests.test: OK (42 assertions)
-stationqueststore.test: OK (41 assertions)
+keepquests.test: OK (42 assertions)
+keepqueststore.test: OK (41 assertions)
 workquests.test: OK (35 assertions)
 workqueststore.test: OK (42 assertions)
 maintquests.test: OK (40 assertions)
@@ -702,7 +702,7 @@ questledgerstore.test: OK (28 assertions)
 kitout.test: OK (33 assertions)
 coach-dodge.test: OK (5642 assertions)
 tutorial-connect-beat.test: OK (25 assertions)
-tutorial-equipped-station: equipped/edited/unavailable floors, optional handoffs, quiet completion and demo event ownership PASS
+tutorial-equipped-keep: equipped/edited/unavailable floors, optional handoffs, quiet completion and demo event ownership PASS
 field-manual-accessibility.test: OK (3 assertions)
 FAIL: skill names/descriptions come from the live /api/skills catalog (the SKILLS window's source)
 class-loadouts: 1 problem(s), 2650 ok

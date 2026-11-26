@@ -12,7 +12,7 @@
       "complete": true,
       "retainedOriginal": false,
       "sourceStandingHeight": 76,
-      "readyForStation": true,
+      "readyForKeep": true,
       "renderSet": "approved_android",
       "motionSource": "satin-cadets-0915",
       "style": "Pixel-shaded faceless messenger figure"
@@ -28,7 +28,7 @@
       "complete": true,
       "retainedOriginal": false,
       "sourceStandingHeight": 76,
-      "readyForStation": true,
+      "readyForKeep": true,
       "renderSet": "approved_astronaut"
     },
     {
@@ -42,7 +42,7 @@
       "complete": true,
       "retainedOriginal": false,
       "sourceStandingHeight": 76,
-      "readyForStation": true,
+      "readyForKeep": true,
       "renderSet": "approved_robot"
     },
     {
@@ -56,7 +56,7 @@
       "complete": true,
       "retainedOriginal": false,
       "sourceStandingHeight": 76,
-      "readyForStation": true,
+      "readyForKeep": true,
       "renderSet": "approved_crthead"
     },
     {
@@ -70,7 +70,7 @@
       "complete": true,
       "retainedOriginal": false,
       "sourceStandingHeight": 76,
-      "readyForStation": true,
+      "readyForKeep": true,
       "renderSet": "approved_alien"
     },
     {
@@ -84,7 +84,7 @@
       "complete": true,
       "retainedOriginal": false,
       "sourceStandingHeight": 76,
-      "readyForStation": true,
+      "readyForKeep": true,
       "renderSet": "approved_ultron"
     },
     {
@@ -98,7 +98,7 @@
       "complete": true,
       "retainedOriginal": false,
       "sourceStandingHeight": 76,
-      "readyForStation": true,
+      "readyForKeep": true,
       "renderSet": "approved_skeleton"
     },
     {
@@ -112,7 +112,7 @@
       "complete": true,
       "retainedOriginal": false,
       "sourceStandingHeight": 76,
-      "readyForStation": true,
+      "readyForKeep": true,
       "renderSet": "approved_plaguedoctor"
     },
     {
@@ -126,7 +126,7 @@
       "complete": true,
       "retainedOriginal": false,
       "sourceStandingHeight": 76,
-      "readyForStation": true,
+      "readyForKeep": true,
       "renderSet": "approved_secretagent"
     },
     {
@@ -140,7 +140,7 @@
       "complete": true,
       "retainedOriginal": false,
       "sourceStandingHeight": 76,
-      "readyForStation": true,
+      "readyForKeep": true,
       "renderSet": "approved_voidwizard"
     },
     {
@@ -154,7 +154,7 @@
       "complete": true,
       "retainedOriginal": false,
       "sourceStandingHeight": 76,
-      "readyForStation": true,
+      "readyForKeep": true,
       "renderSet": "approved_xenomorph"
     },
     {
@@ -168,7 +168,7 @@
       "complete": true,
       "retainedOriginal": false,
       "sourceStandingHeight": 76,
-      "readyForStation": true,
+      "readyForKeep": true,
       "renderSet": "approved_robocop"
     },
     {
@@ -182,7 +182,7 @@
       "complete": true,
       "retainedOriginal": false,
       "sourceStandingHeight": 76,
-      "readyForStation": true,
+      "readyForKeep": true,
       "renderSet": "approved_masterchief"
     },
     {
@@ -196,7 +196,7 @@
       "complete": true,
       "retainedOriginal": false,
       "sourceStandingHeight": 76,
-      "readyForStation": true,
+      "readyForKeep": true,
       "renderSet": "approved_grimreaper"
     },
     {
@@ -210,7 +210,7 @@
       "complete": true,
       "retainedOriginal": false,
       "sourceStandingHeight": 76,
-      "readyForStation": true,
+      "readyForKeep": true,
       "renderSet": "approved_crewmate"
     },
     {
@@ -224,7 +224,7 @@
       "complete": true,
       "retainedOriginal": false,
       "sourceStandingHeight": 76,
-      "readyForStation": true,
+      "readyForKeep": true,
       "renderSet": "approved_bear"
     },
     {
@@ -238,7 +238,7 @@
       "complete": true,
       "retainedOriginal": false,
       "sourceStandingHeight": 76,
-      "readyForStation": true,
+      "readyForKeep": true,
       "renderSet": "approved_pepe"
     },
     {
@@ -252,7 +252,7 @@
       "complete": true,
       "retainedOriginal": false,
       "sourceStandingHeight": 76,
-      "readyForStation": true,
+      "readyForKeep": true,
       "renderSet": "approved_capybara"
     },
     {
@@ -266,13 +266,13 @@
       "complete": true,
       "retainedOriginal": false,
       "sourceStandingHeight": 76,
-      "readyForStation": true,
+      "readyForKeep": true,
       "renderSet": "approved_vaultboy"
     },
     {
-      "id": "station_minion",
-      "skin": "station_minion",
-      "name": "Station Minion",
+      "id": "keep_minion",
+      "skin": "keep_minion",
+      "name": "Keep Minion",
       "stage": "complete",
       "targetStandingHeight": 19,
       "walkFramesReady": true,
@@ -280,8 +280,8 @@
       "complete": true,
       "retainedOriginal": false,
       "sourceStandingHeight": 76,
-      "readyForStation": true,
-      "renderSet": "approved_station_minion"
+      "readyForKeep": true,
+      "renderSet": "approved_keep_minion"
     },
     {
       "id": "blank_blue",
@@ -294,7 +294,7 @@
       "complete": true,
       "retainedOriginal": false,
       "sourceStandingHeight": 76,
-      "readyForStation": true,
+      "readyForKeep": true,
       "renderSet": "approved_blank_blue",
       "motionSource": "satin-cadets-0915",
       "style": "Pixel-shaded faceless messenger figure"
@@ -310,7 +310,7 @@
       "complete": true,
       "retainedOriginal": false,
       "sourceStandingHeight": 76,
-      "readyForStation": true,
+      "readyForKeep": true,
       "renderSet": "approved_blank_green",
       "motionSource": "satin-cadets-0915",
       "style": "Pixel-shaded faceless messenger figure"
@@ -326,7 +326,7 @@
       "complete": true,
       "retainedOriginal": false,
       "sourceStandingHeight": 76,
-      "readyForStation": true,
+      "readyForKeep": true,
       "renderSet": "approved_blank_red",
       "motionSource": "satin-cadets-0915",
       "style": "Pixel-shaded faceless messenger figure"
@@ -342,7 +342,7 @@
       "complete": true,
       "retainedOriginal": false,
       "sourceStandingHeight": 76,
-      "readyForStation": true,
+      "readyForKeep": true,
       "renderSet": "approved_blank_amber",
       "motionSource": "satin-cadets-0915",
       "style": "Pixel-shaded faceless messenger figure"
@@ -358,7 +358,7 @@
       "complete": true,
       "retainedOriginal": false,
       "sourceStandingHeight": 76,
-      "readyForStation": true,
+      "readyForKeep": true,
       "renderSet": "approved_heisenberg",
       "motionSource": "remaining-motion-0915",
       "motionMethod": "imagegen-sheets",
@@ -375,7 +375,7 @@
       "complete": true,
       "retainedOriginal": false,
       "sourceStandingHeight": 76,
-      "readyForStation": true,
+      "readyForKeep": true,
       "renderSet": "approved_endoskeleton"
     },
     {
@@ -389,7 +389,7 @@
       "complete": true,
       "retainedOriginal": false,
       "sourceStandingHeight": 76,
-      "readyForStation": true,
+      "readyForKeep": true,
       "renderSet": "approved_ultrondroid"
     },
     {
@@ -403,7 +403,7 @@
       "complete": true,
       "retainedOriginal": false,
       "sourceStandingHeight": 76,
-      "readyForStation": true,
+      "readyForKeep": true,
       "renderSet": "approved_samaltman"
     },
     {
@@ -417,7 +417,7 @@
       "complete": true,
       "retainedOriginal": false,
       "sourceStandingHeight": 76,
-      "readyForStation": true,
+      "readyForKeep": true,
       "renderSet": "approved_dario"
     },
     {
@@ -431,7 +431,7 @@
       "complete": true,
       "retainedOriginal": false,
       "sourceStandingHeight": 76,
-      "readyForStation": true,
+      "readyForKeep": true,
       "renderSet": "approved_freddyfazbear"
     },
     {
@@ -445,7 +445,7 @@
       "complete": true,
       "retainedOriginal": false,
       "sourceStandingHeight": 76,
-      "readyForStation": true,
+      "readyForKeep": true,
       "renderSet": "approved_ghostface"
     },
     {
@@ -459,7 +459,7 @@
       "complete": true,
       "retainedOriginal": false,
       "sourceStandingHeight": 76,
-      "readyForStation": true,
+      "readyForKeep": true,
       "renderSet": "approved_morpheus"
     },
     {
@@ -473,7 +473,7 @@
       "complete": true,
       "retainedOriginal": false,
       "sourceStandingHeight": 76,
-      "readyForStation": true,
+      "readyForKeep": true,
       "renderSet": "approved_ricksanchez",
       "motionSource": "remaining-motion-0915",
       "motionMethod": "imagegen-sheets",
@@ -490,7 +490,7 @@
       "complete": true,
       "retainedOriginal": false,
       "sourceStandingHeight": 76,
-      "readyForStation": true,
+      "readyForKeep": true,
       "renderSet": "approved_ninjaturtle"
     },
     {
@@ -504,7 +504,7 @@
       "complete": true,
       "retainedOriginal": true,
       "sourceStandingHeight": 46,
-      "readyForStation": true,
+      "readyForKeep": true,
       "renderSet": "pikachu",
       "acceptedExisting": true,
       "approvedRelease": "v0.11.2",
@@ -521,7 +521,7 @@
       "complete": true,
       "retainedOriginal": false,
       "sourceStandingHeight": 76,
-      "readyForStation": true,
+      "readyForKeep": true,
       "renderSet": "approved_caseyjones"
     },
     {
@@ -535,7 +535,7 @@
       "complete": true,
       "retainedOriginal": false,
       "sourceStandingHeight": 76,
-      "readyForStation": true,
+      "readyForKeep": true,
       "renderSet": "approved_finn"
     }
   ]

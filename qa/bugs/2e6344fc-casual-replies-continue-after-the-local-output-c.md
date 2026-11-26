@@ -32,7 +32,7 @@ Before repair: `FAIL: a capped casual reply stops after one generation — expec
 
 ## Verdict
 
-Source repair verified through the real host and a dev-seeded station. Casual Ollama requests have a smaller configurable cap; task and auxiliary requests keep their existing allowance. A pending brief promotes a terse answer to a task before either policy applies. Generic hosted requests have no new cap. Automatic output continuation stays enabled for tasks. The unrelated transport retry path remains intact. Full gate receipts belong to the audit report. Installer and customer-model timing remain unverified.
+Source repair verified through the real host and a dev-seeded keep. Casual Ollama requests have a smaller configurable cap; task and auxiliary requests keep their existing allowance. A pending brief promotes a terse answer to a task before either policy applies. Generic hosted requests have no new cap. Automatic output continuation stays enabled for tasks. The unrelated transport retry path remains intact. Full gate receipts belong to the audit report. Installer and customer-model timing remain unverified.
 
 ## Regression
 

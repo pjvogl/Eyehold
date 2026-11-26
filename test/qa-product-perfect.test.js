@@ -173,7 +173,7 @@ const statusContext = { nowMs: NOW, key, readEvidence: validityContext(manifest.
   A.eq(receiptValidity(good, validityContext(wave)).ok, true, 'fresh signed receipt with intact evidence passes');
   A.eq(receiptValidity(Object.assign({}, good, { candidateSha: 'b'.repeat(40) }), validityContext(wave)).ok, false, 'receipt from another commit is stale');
   A.eq(receiptValidity(Object.assign({}, good, { waveDefinitionHash: '0'.repeat(64) }), validityContext(wave)).ok, false, 'changed wave definition re-queues proof');
-  const unsigned = Object.assign({}, good); delete unsigned.attestation;
+  const unsigned = Object.assign({}, good); delete unsigned.attekeep;
   A.eq(receiptValidity(unsigned, validityContext(wave)).ok, false, 'unsigned hand-written receipt is rejected');
   const ancient = receipt(wave, { startedAt: '2026-07-01T00:00:00.000Z', finishedAt: '2026-07-01T00:01:00.000Z' });
   A.eq(receiptValidity(ancient, validityContext(wave)).ok, false, 'ancient receipt expires');

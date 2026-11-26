@@ -413,10 +413,10 @@ const Updates = (() => {
     const auto = body.querySelector('#set-updates-auto');
     if (auto) auto.addEventListener('change', ev => setAutoCheck(ev.target.checked));
     const open = body.querySelector('#set-updates-open');
-    if (open && typeof StationUI !== 'undefined' && StationUI.toggleTerm) {
+    if (open && typeof KeepUI !== 'undefined' && KeepUI.toggleTerm) {
       // no per-window width: UPDATE CENTER is the default PANEL shell, same as its BUILDERS entry
       // (two window sizes only — see the note in frontend/css/style.css).
-      open.addEventListener('click', () => StationUI.toggleTerm('updates', 'UPDATE CENTER', render, {}));
+      open.addEventListener('click', () => KeepUI.toggleTerm('updates', 'UPDATE CENTER', render, {}));
     }
   }
 
@@ -471,7 +471,7 @@ const Updates = (() => {
       // reinstalling the latest build keeps all data (see RELEASES_PAGE note).
       out += '<div class="up-error">' + esc(state.error) +
         '<br><button class="bb sm up-manual" id="up-manual-err">DOWNLOAD LATEST MANUALLY</button>' +
-        '<span class="up-meta up-manual-note">Reinstalling over the top keeps your station and settings.</span></div>';
+        '<span class="up-meta up-manual-note">Reinstalling over the top keeps your keep and settings.</span></div>';
     }
     out += '<div class="up-foot">Last checked: ' + esc(fmtTime(state.lastCheckedAt)) +
       ' · <a href="#" id="up-manual-foot" class="up-manual-link">download manually</a></div></div>';

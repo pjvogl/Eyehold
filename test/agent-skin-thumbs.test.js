@@ -38,7 +38,7 @@ for (const [sw, sh, W, H] of [[28, 39, 32, 38], [43, 46, 60, 76], [31, 44, 90, 1
 A.eq(AP.fitPlan(0, 0, 10, 10), null, 'no art, no plan');
 
 // ---- one pipeline, shared ----
-const su = rd('app/stationui.js'), ap = rd('app/agentportraits.js');
+const su = rd('app/keepui.js'), ap = rd('app/agentportraits.js');
 A.ok(/AgentPortraits\.renderBody\(a, performance\.now\(\)\)/.test(su), 'the dossier portrait renders through the shared renderBody');
 A.ok(!/drawPortrait\._buf/.test(su), 'the dossier no longer keeps its own copy of the 1:1 render');
 A.ok(/SPRITES\.bodyScale/.test(ap) && /SPRITES\.drawBody\(/.test(ap), 'renderBody cancels the floor scale and draws the real body');

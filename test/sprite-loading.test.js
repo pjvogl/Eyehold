@@ -16,7 +16,7 @@ const worldSource = fs.readFileSync(path.join(__dirname, '..', 'frontend', 'app'
 const appHtml = fs.readFileSync(path.join(__dirname, '..', 'frontend', 'index.html'), 'utf8');
 
 A.eq(planned.length, all.length, 'every valid manifest track belongs to exactly one set');
-A.ok(grouped.blank && grouped.ultron, 'default skin and station leader have loadable sets');
+A.ok(grouped.blank && grouped.ultron, 'default skin and keep leader have loadable sets');
 A.eq(initial.length, grouped.blank.length + grouped.ultron.length, 'startup plan de-duplicates requested sets');
 A.ok(initialFrames > 0 && initialFrames < totalFrames * 0.12, 'startup fetches less than twelve percent of sprite frames');
 A.ok(totalFrames > 3000, 'budget assertion covers the expanded production manifest rather than a fixture');
@@ -25,7 +25,7 @@ A.eq(Plan.groupTracks({ broken: 'not-an-array', 'valid.rot.south': ['valid.png']
 A.ok(/tracksBySet = SpriteLoadPlan\.groupTracks\(man\.sprites\)/.test(loaderSource), 'runtime uses the tested manifest planner');
 A.ok(/primeTrack = defSet \+ '\.rot\.south'/.test(loaderSource) && /await loadTrack\(primeTrack, primePaths\)/.test(loaderSource),
   'runtime prioritizes one renderable default pose before the full animation set');
-A.ok(/Promise\.all\(\[loadSet\(defSet\), loadSet\(leaderSet\)\]\)/.test(loaderSource), 'full default and selected station-leader sets continue warming in the background');
+A.ok(/Promise\.all\(\[loadSet\(defSet\), loadSet\(leaderSet\)\]\)/.test(loaderSource), 'full default and selected keep-leader sets continue warming in the background');
 A.ok(/SPRITES\.loading/.test(worldSource) && /get loading\(\)/.test(loaderSource),
   'the world suppresses the procedural body only while the real startup skin is actively loading');
 // The fork deliberately removed the reserved upstream pose's eager page

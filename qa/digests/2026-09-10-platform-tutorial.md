@@ -22,7 +22,7 @@ all deeper interview questions. No onboarding/interview source was changed in th
 ## Live proof
 
 Real frontend and sidecar from this isolated worktree, using dev/onboard-mock.js --keep,
-port 19374 and a seeded NOVA station. The local model fixture was not needed for account setup.
+port 19374 and a seeded NOVA keep. The local model fixture was not needed for account setup.
 
 1. SYSTEM > FIELD MANUAL > REPLAY QUICK TOUR showed NOVA and CONNECT MY PLATFORMS.
    Choosing it closed the conversation and selected CONNECT PLATFORMS in the manual.

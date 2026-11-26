@@ -12,7 +12,7 @@
         ignored (session-scoped), undecided = still owed (re-surfaced every session until decided), an
         explicit 'later' stays quiet for the session, and a duplicate workshop.built never double-delivers.
 
-   Proven over the real store with injected fakes (Workstreams/Chat/StationUI/fetch), plus source-guards
+   Proven over the real store with injected fakes (Workstreams/Chat/KeepUI/fetch), plus source-guards
    for the browser-only wiring: chat.js load() calls presentFor, the card is session-pinned, and app.js
    still routes the genuine-return hook to WorkshopStore.presentOnReturn. */
 'use strict';
@@ -72,7 +72,7 @@ global.Workstreams = {
 let cards = [];
 global.Chat = { workshopReturn: (m, o) => { cards.push({ m: m, o: o }); } };
 let toasts = [];
-global.StationUI = { notify: (msg, kind, cat) => toasts.push({ msg: msg, kind: kind, cat: cat }) };
+global.KeepUI = { notify: (msg, kind, cat) => toasts.push({ msg: msg, kind: kind, cat: cat }) };
 // the App shim reveal() drives — openWorkstream is the real focus switch (switchWorkstream → Chat.load)
 global.App = { openWorkstream: (id) => { activeStreamId = id; const w = streams.get(id); if (w) w.lastReadAt = Date.now(); } };
 

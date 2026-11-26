@@ -14,7 +14,7 @@ cut it.
 
 1. **A beginner reaches real value faster than any harness.**
    The game IS the onboarding. the reference harness makes you figure out what an agent is for;
-   Eyehold's station teaches by building. (Locked: easier-than-the reference harness moat.)
+   Eyehold's keep teaches by building. (Locked: easier-than-the reference harness moat.)
 
 2. **The value flow is reversed.**
    The agent figures out the Commander — dossier → First Pitch → ongoing ideas →
@@ -27,12 +27,12 @@ cut it.
    invisible). No fake timers, no invented progress, ever. (Locked: truthful
    telemetry; recurring "app lies" sin.)
 
-4. **Building the station = building real capability.**
+4. **Building the keep = building real capability.**
    Object=capability. Placing a dish literally grants web tools. The Factorio
    build-loop with real stakes: your factory layout is your permission system.
    (Locked: prop gates; sandbox/no-gating — props suggest, never block creativity.)
 
-5. **The station is alive and pulls you back honestly.**
+5. **The keep is alive and pulls you back honestly.**
    Real async work means the return loop can be genuine: overnight routines
    produce real deliverables to collect; a blocked agent really is waiting for
    you. Eerie-not-cute. (Locked: autonomy layer; Clash-pride + Thronglets thesis.)
@@ -44,7 +44,7 @@ cut it.
 | **Watch** | minutes | give task → SEE the agent visibly work (walk, tool-props firing, progress) → deliverable rides the belt → rate it | half-built: walk is real, work is illegible |
 | **Build** | session | quest suggests next capability gap → place prop / wire belt → agent can genuinely do more → new pitch uses it | props work; quests don't drive it |
 | **Return** | daily | reopen app → digest + OUTBOX crates → collect/rate each → XP/confidence/memory all advance → new idea pitched | missing entirely |
-| **Meta** | weekly | seeds accumulate → routines run the factory unattended → trophies/lifetime stats grow → station postcard to share | stats exist (now-only); no trophies, no share |
+| **Meta** | weekly | seeds accumulate → routines run the factory unattended → trophies/lifetime stats grow → keep postcard to share | stats exist (now-only); no trophies, no share |
 
 The genius constraint: **rating collected work is the "collect tap"** — one action
 feeds XP (leveling is locked to feedback-on-real-work), confidence, and memory
@@ -77,12 +77,12 @@ gets confused.
   empty-room honesty (dark screens + "I need a computer here").
 - LATER: Meeseeks sprites for real sub-agent fan-out (backend merged already).
 
-### Layer 2 — THE STATION (infrastructure = capability)
+### Layer 2 — THE KEEP (infrastructure = capability)
 *The factory floor. Every functional prop maps to a real subsystem.*
 - ✅ have: capability registry (computer/notebook/cabinet/dish/workbench/studio/
   jukebox/connector/orchestrator), conveyors with cost-scaled cargo, queue gauge.
 - BUILD (new functional props — separate category from cosmetics, per the
-  workstation-model decision):
+  workkeep-model decision):
   - **MISSION BOARD** — the quest log's body (Layer 4 lives here). Routines are
     pinned to it; agents walk to it to pin proposals (Layer 5).
   - **POWER METER** — budget/spend made physical; depletes as cost accrues,
@@ -123,20 +123,20 @@ projection; it becomes a GENERATIVE system fed by real signals.*
 **Quest taxonomy (generators → the six quest types):**
 | Type | Generator (real signal) | Example | Exists today? |
 |---|---|---|---|
-| **Station quests** | `capdenied` + capability-gap detection: agent tried a tool its room can't grant | "NOVA reached for the web — place a DISH in her bay" | ❌ (capdenied is audio-only; the audit's silent-fail gap becomes a quest generator) |
-| **Context quests** | blank dossier dims (+ memory-overhaul asked/rejected state) | "Tell the station your goals" | ✅ basic (7 dims, no state persistence) |
+| **Keep quests** | `capdenied` + capability-gap detection: agent tried a tool its room can't grant | "NOVA reached for the web — place a DISH in her bay" | ❌ (capdenied is audio-only; the audit's silent-fail gap becomes a quest generator) |
+| **Context quests** | blank dossier dims (+ memory-overhaul asked/rejected state) | "Tell the keep your goals" | ✅ basic (7 dims, no state persistence) |
 | **Work quests** | pitches/suggestions/seeds accepted → multi-step quest with real progress | "Build the morning-brief routine — 2 steps left" | 🟡 one vanishing "idea waiting" card |
 | **Milestone quests** | Xp.milestones() | WORKHORSE: 25 tasks | ✅ but silent completion, no trophy case |
 | **Maintenance quests** | slag post-mortems, budget.threshold, cron.skipped backlog, queue depth | "3 runs died on max_iters — split the task or raise the budget" | ❌ (slaglog diagnoses exist, go nowhere) |
-| **Onboarding quests** | first-run kit-out tour glow-goals | "Place your first workstation" | ✅ (tutorial) — fold its goal-loop pattern into the same log |
+| **Onboarding quests** | first-run kit-out tour glow-goals | "Place your first workkeep" | ✅ (tutorial) — fold its goal-loop pattern into the same log |
 
 **Quest UX:** MISSION BOARD prop (click → quest log), glow-driven targets (reuse
 the kit-out tour's proven pattern — never hardcode prop labels, resolve from live
 catalog), completion celebration (SFX + gold flourish + trophy-case entry where
-applicable), and quest chaining (a completed station quest can surface the work
+applicable), and quest chaining (a completed keep quest can surface the work
 quest it unblocked: "the dish is live — want NOVA to build the price-watcher?").
 
-### Layer 5 — THE LIVING STATION (return loop + autonomy embodiment)
+### Layer 5 — THE LIVING KEEP (return loop + autonomy embodiment)
 *What happens between sessions, and how it greets you.*
 - ✅ have: autonomy Initiative×Reach through B4 (real writes, undo, TG/Discord
   ping), cron engine, channels, autojobs proposals.
@@ -151,8 +151,8 @@ quest it unblocked: "the dish is live — want NOVA to build the price-watcher?"
 ### Layer 6 — PRIDE & SPECTACLE (the meta loop + GTM)
 - ✅ have: honest floor HUD (now-only), cost-scaled cargo.
 - BUILD: lifetime counters (tasks shipped, deliverables, routines run, streaks) —
-  durable, station-level; TROPHY CASE rendering milestones; seed-reuse callouts
-  ("the seed you saved ran 5× this week"); later: station postcard export /
+  durable, keep-level; TROPHY CASE rendering milestones; seed-reuse callouts
+  ("the seed you saved ran 5× this week"); later: keep postcard export /
   shareable clips (GTM: spectacle = growth engine; ship shareable by default).
 
 ---
@@ -185,7 +185,7 @@ Runs as a lane PARALLEL to G2 after G0 merges.
   never re-fires, per the ignore→stop-forever decision) + completion celebration
   on the EXISTING quests (SFX + flourish). Cheap, immediate feel-win.
   **Movie test:** finish a dossier quest → the log visibly celebrates.
-- **G1b** — the killer generator: capdenied→station quest + MISSION BOARD prop +
+- **G1b** — the killer generator: capdenied→keep quest + MISSION BOARD prop +
   glow-targets. **Movie test:** agent reaches for the web in a dish-less room →
   a quest appears on the board → placing the dish completes it → agent retries
   and succeeds.
@@ -210,7 +210,7 @@ the OUTBOX, digest beat fires once, rating a crate advances XP/confidence/memory
 ### Phase G3 — Pride layer (Layer 6)
 Trophy case prop, lifetime counters store, seed-reuse callouts, confidence
 narrative beats, quest/idea/seed celebration SFX (audio.js additions).
-**Movie test:** a milestone lands in the trophy case with sound; the station
+**Movie test:** a milestone lands in the trophy case with sound; the keep
 shows lifetime tasks shipped.
 
 ### Phase G4 — Embodiment (Layer 1 deep)
@@ -220,7 +220,7 @@ scratch). **Movie test:** an agent hits a permission gate → walks to the airlo
 and waits → user approves → it returns to work.
 
 ### Phase G5 — Spectacle (later, GTM)
-Station postcard export; clip capture. Not this session unless G0-G2 land fast.
+Keep postcard export; clip capture. Not this session unless G0-G2 land fast.
 
 ### Sequencing rationale
 G0 first because every later layer renders through those same signals — and G0

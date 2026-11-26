@@ -2,7 +2,7 @@
 const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path'),os=require('node:os'),{spawn}=require('node:child_process');
 const {bootToken}=require('./_httpToken.js');
 const WorldModel=require('../frontend/app/worldmodel.js');
-const {buildEyeholdStation}=require('../scripts/eyehold-seven-room-starter.cjs');
+const {buildEyeholdKeep}=require('../scripts/eyehold-seven-room-starter.cjs');
 const {applyTrustedMilestone}=require('../frontend/app/eyehold-native-loot.js');
 const {createFinanceStore}=require('../sidecar/eyehold-finance-store.js');
 const root=fs.mkdtempSync(path.join(os.tmpdir(),'eyehold-finance-http-'));
@@ -26,13 +26,13 @@ async function run(){
  report=await(await fetch(endpoint,{headers})).json();assert.deepEqual(report.unlockedMilestonesUSD,[1000000]);
  assert(!JSON.stringify(report).includes('receipt-1'),'HTTP omits individual receipts');
  assert.notEqual((await fetch(endpoint,{method:'POST',headers,body:JSON.stringify({verified:true,netProfitUSD:100000000})})).status,200,'client cannot import finances');
- const station=WorldModel.deserialize(buildEyeholdStation().doc);
- assert(applyTrustedMilestone({station,tier:1000000,attestation:report,verifyAttestation:(proof,t)=>proof===report&&proof.unlockedMilestonesUSD.includes(t),persist:()=>{}}).complete);
- const saved=await(await fetch(base+'/api/save',{method:'POST',headers,body:JSON.stringify({schema:'eyehold.save',version:6,updatedAt:Date.now(),agent:{id:'agent',name:'THE EYE'},station:station.serialize()})})).json();assert.equal(saved.ok,true);
+ const keep=WorldModel.deserialize(buildEyeholdKeep().doc);
+ assert(applyTrustedMilestone({keep,tier:1000000,attekeep:report,verifyAttekeep:(proof,t)=>proof===report&&proof.unlockedMilestonesUSD.includes(t),persist:()=>{}}).complete);
+ const saved=await(await fetch(base+'/api/save',{method:'POST',headers,body:JSON.stringify({schema:'eyehold.save',version:6,updatedAt:Date.now(),agent:{id:'agent',name:'THE EYE'},keep:keep.serialize()})})).json();assert.equal(saved.ok,true);
  await stop();await start();headers={Origin:base,'X-Eyehold-Token':await bootToken(base,base)};
  report=await(await fetch(endpoint,{headers})).json();assert.deepEqual(report.unlockedMilestonesUSD,[1000000],'host restart retains financial unlock');
  const recovered=await(await fetch(base+'/api/save?agent=agent',{headers})).json();
- const restored=WorldModel.deserialize(recovered.save.station);assert.equal(restored.props().filter(p=>String(p.label||'').startsWith('Eyehold:')).length,7,'seven native trophies survive durable HTTP save and process restart');
+ const restored=WorldModel.deserialize(recovered.save.keep);assert.equal(restored.props().filter(p=>String(p.label||'').startsWith('Eyehold:')).length,7,'seven native trophies survive durable HTTP save and process restart');
  console.log('PASS: real sidecar finance authentication, missing data, host import, no client write, and restart durability; no provider calls');
 }
 run().catch(e=>{console.error(e);process.exitCode=1}).finally(async()=>{await stop();fs.rmSync(root,{recursive:true,force:true,maxRetries:5,retryDelay:200});});

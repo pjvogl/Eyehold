@@ -35,11 +35,11 @@ function memStorage(init) {
 
 // ---- C. run() against a real-ish Storage copies forward AND leaves the legacy key in place (rollback) ----
 {
-  const s = memStorage({ 'skynet.save': 'AGENT', 'skynet.station.v1': 'LAYOUT', 'pref.x': '1' });
+  const s = memStorage({ 'skynet.save': 'AGENT', 'skynet.station.v1': 'LAYOUT', 'eyehold.station.v1': 'BROWSER', 'pref.x': '1' });
   const n = LM.run(s);
-  A.eq(n, 2, 'migrated two keys');
+  A.eq(n, 2, 'migrated the save and the layout');
   A.eq(s.getItem('eyehold.save'), 'AGENT', 'agent save reachable under the new key');
-  A.eq(s.getItem('eyehold.station.v1'), 'LAYOUT', 'station layout reachable under the new key');
+  A.eq(s.getItem('eyehold.keep.v1'), 'BROWSER', 'an eyehold.station layout wins over the older skynet copy');
   A.eq(s.getItem('skynet.save'), 'AGENT', 'legacy key LEFT IN PLACE (rollback safety)');
   A.eq(s.getItem('pref.x'), '1', 'foreign key untouched');
 }

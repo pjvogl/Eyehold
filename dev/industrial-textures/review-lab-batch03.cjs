@@ -20,7 +20,7 @@ const {fit}=require('../../frontend/app/propremaster.js');
   g.fillStyle='#b8b2a0';g.font='16px sans-serif';g.fillText(a.id+' · '+spec.footprint.w+' × '+spec.footprint.h+' tiles',left,top+270);
   checks.push({id:a.id,footprint:spec.footprint,bounds:spec.bounds,actualUniformFit:box,sourceRgbChanges:a.subjectRgbChanges,sourceOnly:true});
  }
- const out='docs/station-remaster/batch03/lab/';
+ const out='docs/keep-remaster/batch03/lab/';
  fs.writeFileSync(at(out+'native-scale.png'),await sheet.encode('png'));
  fs.writeFileSync(at(out+'geometry-review.json'),JSON.stringify(checks,null,2)+'\n');
  console.log('Six sources rendered with shared uniform fit and native footprint outlines.');

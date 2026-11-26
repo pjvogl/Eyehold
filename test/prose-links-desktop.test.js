@@ -20,7 +20,7 @@ function harness({ tauri, selection }) {
   const opened = [];
   const document = { addEventListener: (t, fn) => { if (t === 'click') handlers.push(fn); } };
   const window = { getSelection: () => (selection || ''), __TAURI__: tauri ? { core: { invoke: (cmd, a) => { opened.push([cmd, a.url]); return Promise.resolve(); } } } : undefined };
-  const ctx = { document, window, StationUI: { notify() {} } };
+  const ctx = { document, window, KeepUI: { notify() {} } };
   vm.createContext(ctx);
   vm.runInContext(block, ctx);
   vm.runInContext(block, ctx);   // a re-init never stacks a second handler

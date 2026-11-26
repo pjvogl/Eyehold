@@ -10,7 +10,7 @@ const calls = [];
 const originalFetch = global.fetch;
 global.fetch = (...args) => { calls.push(args); throw new Error('network'); };
 try {
-  const draft = { agentId: 'moonleaf', title: 'Field guide', description: 'A short guide to keeping a station ledger.', priceCents: 1200, channel: 'stripe-payment-link', deliverableRef: 'delivery:guide-1', computeCents: 35 };
+  const draft = { agentId: 'moonleaf', title: 'Field guide', description: 'A short guide to keeping a keep ledger.', priceCents: 1200, channel: 'stripe-payment-link', deliverableRef: 'delivery:guide-1', computeCents: 35 };
   const made = market.propose(draft);
   assert.equal(made.listing.status, 'proposed');
   assert.equal(made.action.status, 'queued');

@@ -5,7 +5,7 @@
    1m49s, unbounded) while same-origin fetches failed — connectivity the harness, being dead, provably could
    not back. The fix folds the idle claim on World.linkState() (the E1 bridge-health predicate the topbar
    #sig and the canvas LINK DOWN marker already read): a genuinely bridged-but-dead link reads
-   `station unreachable` in the fault palette, re-derived on the same 3s cadence topbar repaints #sig.
+   `keep unreachable` in the fault palette, re-derived on the same 3s cadence topbar repaints #sig.
 
    F1: Node ≥15 emits IncomingMessage 'close' at MESSAGE COMPLETION, so a run route that reads its body and
    THEN attaches req.on('close') attaches after the event has already fired — the disconnect cleanup is dead
@@ -29,7 +29,7 @@ const sidecarSrc = fs.readFileSync(path.join(__dirname, '../sidecar/index.js'), 
 A.ok(/World\.linkState\s*\(\)/.test(chatSrc), 'chat.js reads World.linkState() (the E1 bridge-health predicate)');
 A.ok(/ls\.bridged\s*&&\s*!ls\.paused\s*&&\s*ls\.down/.test(chatSrc), 'only a bridged-but-dead link downgrades (pre-entry / deliberate pause never false-alarm)');
 // the downgraded claim is the honest one, and it can never mask live run-state (busy/approval win the ternary).
-A.ok(/down\s*\?\s*'station unreachable'\s*:\s*'online'/.test(chatSrc), "the idle claim is 'station unreachable' when the link is provably dead — 'online' only when it isn't");
+A.ok(/down\s*\?\s*'keep unreachable'\s*:\s*'online'/.test(chatSrc), "the idle claim is 'keep unreachable' when the link is provably dead — 'online' only when it isn't");
 // the status classifier maps the downgraded label onto a distinct fault class.
 A.ok(/unreachable[^:]*\?\s*'status-down'/.test(chatSrc), "status() maps 'unreachable' onto the status-down class");
 A.ok(/'status-online'\s*,\s*'status-down'/.test(chatSrc) || /'status-down'\s*,\s*'status-online'/.test(chatSrc) || /status-down/.test(chatSrc.match(/statusEl\.classList\.remove\([^)]*\)/)[0]), 'status-down is in the class reset list (no sticky fault paint)');

@@ -325,8 +325,8 @@
   - Branch agent/workforce-zones is fully merged into feat/harness-backend and its working tree is clean. Propose-only removal command: gen-trees\remove-agent-tree.ps1 workforce-zones -DeleteBranch
   - evidence: `qa/digests/janitor-2026-07-01.md`
   - id: `915d82d5-1782948400632` · fingerprint: `915d82d5`
-- **Removable worktree: workstation-ui (branch merged + clean)**
-  - Branch agent/workstation-ui is fully merged into feat/harness-backend and its working tree is clean. Propose-only removal command: gen-trees\remove-agent-tree.ps1 workstation-ui -DeleteBranch
+- **Removable worktree: workkeep-ui (branch merged + clean)**
+  - Branch agent/workkeep-ui is fully merged into feat/harness-backend and its working tree is clean. Propose-only removal command: gen-trees\remove-agent-tree.ps1 workkeep-ui -DeleteBranch
   - evidence: `qa/digests/janitor-2026-07-01.md`
   - id: `c1c0f921-1782948400632` · fingerprint: `c1c0f921`
 - **Root litter: 22 loose artifact(s) at repo root**
@@ -357,8 +357,8 @@
   - A non-plan doc references a path that does not exist. qa/digests/janitor-2026-07-01.md cites `frontend/app/queue.js`, which is absent from the working tree.
   - evidence: `qa/digests/janitor-2026-07-01.md`
   - id: `7a4f3c01-1782948400635` · fingerprint: `7a4f3c01`
-- **Dead doc reference: qa/digests/janitor-2026-07-01.md cites missing qa/QA_STATION.md**
-  - A non-plan doc references a path that does not exist. qa/digests/janitor-2026-07-01.md cites `qa/QA_STATION.md`, which is absent from the working tree.
+- **Dead doc reference: qa/digests/janitor-2026-07-01.md cites missing qa/QA_KEEP.md**
+  - A non-plan doc references a path that does not exist. qa/digests/janitor-2026-07-01.md cites `qa/QA_KEEP.md`, which is absent from the working tree.
   - evidence: `qa/digests/janitor-2026-07-01.md`
   - id: `367cb27d-1782948400636` · fingerprint: `367cb27d`
 - **Dead doc reference: qa/digests/janitor-2026-07-01.md cites missing frontend/data.js**

@@ -1,13 +1,13 @@
 // Apply only this reviewed room's finish/spacing to the owned custom demo save.
-// The original station artifact is retained for reversal. Never targets installed user data.
+// The original keep artifact is retained for reversal. Never targets installed user data.
 import assert from 'node:assert/strict';
 import {readFileSync,writeFileSync,renameSync} from 'node:fs';
 const file='dev/.scratch-workspace/agent.save.json';
-const before=JSON.parse(readFileSync('.worldshots/command-room/original-station.json','utf8'));
-const after=JSON.parse(readFileSync('.worldshots/command-room/proposed-station.json','utf8'));
+const before=JSON.parse(readFileSync('.worldshots/command-room/original-keep.json','utf8'));
+const after=JSON.parse(readFileSync('.worldshots/command-room/proposed-keep.json','utf8'));
 const envelope=JSON.parse(readFileSync(file,'utf8'));
 const asString=typeof envelope.doc==='string';const doc=asString?JSON.parse(envelope.doc):envelope.doc;
-const current=doc.station;
+const current=doc.keep;
 for(const key of ['floorMat','floorPaint','hullMat','hullStyle']){
   if(JSON.stringify(current.rooms.r1[key])===JSON.stringify(after.rooms.r1[key]))continue;
   assert.deepEqual(current.rooms.r1[key],before.rooms.r1[key],'Command room changed since the review: '+key);

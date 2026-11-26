@@ -6,12 +6,12 @@ This fork's visible product name is Eyehold. The strings below still say Eyehold
 
 | Leftover | Why |
 | --- | --- |
-| MIT notice that the Eyehold name, logo, and station sheets are not licensed | Required reservation from the upstream README. This fork must not ship as Eyehold. |
-| `eyehold.save`, `EYEHOLD_*`, `X-Eyehold-Token`, `ai.skynet.harness` | Existing stations, keychain entries, and desktop identity. New UI writes do not rename those stores in this milestone. |
+| MIT notice that the Eyehold name, logo, and keep sheets are not licensed | Required reservation from the upstream README. This fork must not ship as Eyehold. |
+| `eyehold.save`, `EYEHOLD_*`, `X-Eyehold-Token`, `ai.skynet.harness` | Existing keeps, keychain entries, and desktop identity. New UI writes do not rename those stores in this milestone. |
 | `starnet-skill-registry/v1`, `StarNet Skill Market`, `StarNet skill package`, `website/skills/**`, `website/.well-known/starnet-skills*.json` | Signed, hash-pinned catalog. Rewriting the name changes the bytes and the signature cannot be reissued here. |
 | `https://eyehold.com` canonical tags | The website tests and sitemap still publish that host. It is not an Eyehold domain. The owner must replace it before a public site. |
 | `github.com/pjvogl/eyehold` and `github.com/Eyehold/eyehold` | This GitHub repository was not renamed. Community links that still name the upstream source repo are called out here. |
-| `frontend/assets/**` industrial sheets and character sprite sheets | Upstream station art. Not replaced in this milestone. The default ground, splash, wordmark, and crew sprites are original. |
+| `frontend/assets/**` industrial sheets and character sprite sheets | Upstream keep art. Not replaced in this milestone. The default ground, splash, wordmark, and crew sprites are original. |
 | Filename `eyehold-wordmark.svg` | The mask contract still loads that path. The path data is a new pixel wordmark, not the traced Eyehold logo. |
 | `qa/product-perfect/claims.json` authority text | The claims lock compares the committed ledger. It was not rewritten. |
 
@@ -40,5 +40,5 @@ Gap: no reviewed receipts, no bank reconciliation, no owned billing host, and no
 - Replace the industrial prop and crew sprite sheets with original art, or stop shipping them.
 - Replace every remaining user-facing Eyehold string outside the signed catalog and the license reservation.
 - Point the website canonical host, skill catalog, and community links at domains the owner controls.
-- Provision owner review on a real station, then record accepted work before any Crown or profit claim.
+- Provision owner review on a real keep, then record accepted work before any Crown or profit claim.
 - Add an owned publisher, signing identity, and update feed before distribution.

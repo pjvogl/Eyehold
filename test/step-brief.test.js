@@ -8,7 +8,7 @@
 
    THE LAW UNDER TEST EVERYWHERE: a brief is PROMPT TEXT ONLY. It must never change WHO runs
    (resolveTarget/chainNext identical with and without briefs) or WHAT tools they hold
-   (stationFor reads objects, never brief). */
+   (keepFor reads objects, never brief). */
 'use strict';
 const A = require('./_assert.js');
 const WM = require('../frontend/app/worldmodel.js');
@@ -17,7 +17,7 @@ const { makeRouter } = require('../sidecar/routing/router.js');
 const { makeChainRunner } = require('../sidecar/routing/chain.js');
 
 const BRIEF = 'Dig three primary sources and hand the writer a bulleted evidence pack.';
-const HDR = 'YOUR STANDING BRIEF FOR THIS STATION:';
+const HDR = 'YOUR STANDING BRIEF FOR THIS KEEP:';
 
 (async () => {
 
@@ -130,7 +130,7 @@ const lineGeo = withBriefs => ({
   A.eq(r.stageBrief('solo'), 'Handle whatever lands here.', 'a beltless dock briefs through dockBays');
 
   // a plan with BLOCKING errors is refused for ROUTING but the brief — a fact about the PLACED floor —
-  // still serves (same capsPlan precedence as stationFor: a broken belt graph must not strip the duty line).
+  // still serves (same capsPlan precedence as keepFor: a broken belt graph must not strip the duty line).
   // (the fixture used to be a duplicate-binding floor; one agent may crew many bays since 2026-09-22, so the
   //  blocking error is now a belt CYCLE drawn beside the briefed dock)
   const dup = P.compileRoutingPlan({

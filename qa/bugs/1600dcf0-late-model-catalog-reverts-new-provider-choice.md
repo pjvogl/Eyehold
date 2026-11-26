@@ -19,7 +19,7 @@ An outstanding catalog refresh for provider A can overwrite a later choice of pr
 
 ## Repro
 
-Run node scripts/qa/audit-0112/live-probes.cjs against the isolated seeded station on port 19312. The controlled browser probe holds the Ollama catalog response, selects Eyehold / anthropic/test-model through the shipped Harness setters, then releases the response. The resulting state is ollama / empty model. The browser runs the real released ModelDock module; the catalog transport is fault-injected.
+Run node scripts/qa/audit-0112/live-probes.cjs against the isolated seeded keep on port 19312. The controlled browser probe holds the Ollama catalog response, selects Eyehold / anthropic/test-model through the shipped Harness setters, then releases the response. The resulting state is ollama / empty model. The browser runs the real released ModelDock module; the catalog transport is fault-injected.
 
 ## Evidence
 

@@ -110,7 +110,7 @@ cheap/no-op calls toward the hard stop. Keep the loop-guard circuit-breaker inta
 
 ### P1.1 — Fix QA-1: Settings reflects the active Codex/OAuth connection  ·  STATUS: ✅ DONE (trunk `384a0c3`)
 The in-game SETTINGS panel hardcodes `provider:'openrouter'` and can show "No API keys connected"
-while Codex OAuth is live and runnable (`stationui.js:786-792`). Make it read the real provider
+while Codex OAuth is live and runnable (`keepui.js:786-792`). Make it read the real provider
 (`getProv()`) + `GET /api/auth/codex/status` and show the live Codex card.
 - **Acceptance:** Codex connected → panel shows it; OpenRouter key → unchanged; live-verified both.
 - **Notes:**
@@ -136,7 +136,7 @@ room-seal it delivers (per WIRING_AUDIT P6). Real capability-isolation → P3 fo
 > low-value): retire the documented stale branches (camera/workpipe-b/recruit-fix/etc.) — housekeeping, not a
 > feature gap; left to a manual pass to avoid the loop doing remote-branch deletes autonomously.
 Rebase `origin/agent/beginner-ux` onto trunk (new `frontend/app/tutorial.js` ~470 lines + css),
-resolve additive conflicts in `stationui.js`/`build.js`/`app.js`, green + live-verify the
+resolve additive conflicts in `keepui.js`/`build.js`/`app.js`, green + live-verify the
 First-Command tutorial loads after the Awakening, merge to trunk. Then retire the documented
 stale/redundant branches (camera, workpipe-b, recruit-fix, recruitment-bay, ui-polish,
 design-system, cortex-memory, chat-resize, api-hardening, cleanup, floor-routes-inapp, tutorial).

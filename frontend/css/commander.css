@@ -1,4 +1,4 @@
-/* Commander dossier: readable profile sections in the shared station console. */
+/* Commander dossier: readable profile sections in the shared keep console. */
 .commander-console.sn-menu .con-rail-list { padding: 10px 8px; gap: 4px; }
 .commander-console.sn-menu .con-rail-item { flex: 0 0 auto; min-height: 38px; grid-template-columns: 16px minmax(0,1fr); gap: 8px; padding: 9px 10px; margin: 0; border-radius: 7px; background: transparent; }
 .commander-console.sn-menu .con-rail-label { font-size: 14px; letter-spacing: .15px; line-height: 1.3; }

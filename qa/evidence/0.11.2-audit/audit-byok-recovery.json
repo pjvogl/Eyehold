@@ -7,7 +7,7 @@
         "agentId": "byok-audit",
         "runId": "a2007698-4e5b-4978-ae17-baf152f3d6e5",
         "transient": false,
-        "message": "Image task blocked: the Eyehold credits connection is unavailable for custom / test/model. Open SETTINGS and link this station to your Eyehold account, then retry. No image artifact was produced."
+        "message": "Image task blocked: the Eyehold credits connection is unavailable for custom / test/model. Open SETTINGS and link this keep to your Eyehold account, then retry. No image artifact was produced."
       }
     },
     {

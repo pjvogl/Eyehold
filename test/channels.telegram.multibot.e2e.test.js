@@ -3,7 +3,7 @@
    Boots the actual sidecar with a TOKEN-AWARE fake Bot API (each /bot<TOKEN>/<method> is a separate bot
    with its own getMe identity, update queue and send log) plus a fake OpenRouter. Drives the REAL routes:
    a bad token is refused by the getMe probe, two extra bots are added and poll side by side with the
-   station bot, each DM runs the bound agent (hard-lock) and replies + typing-indicates through its OWN
+   keep bot, each DM runs the bound agent (hard-lock) and replies + typing-indicates through its OWN
    token only, per-bot owner claim refuses a stranger, and disconnect stops exactly that bot's poller. */
 'use strict';
 
@@ -150,12 +150,12 @@ async function waitUntil(fn, ms, label) {
   throw new Error('timed out waiting for ' + label);
 }
 
-const STATION = 'STATIONTOKEN', TOK_A = 'TOKAAA', TOK_B = 'TOKBBB';
+const KEEP = 'KEEPTOKEN', TOK_A = 'TOKAAA', TOK_B = 'TOKBBB';
 
 (async () => {
   const llm = await startMockOpenRouter();
   const tg = await startMockTelegramMulti({
-    [STATION]: { id: 100, username: 'StationBot' },
+    [KEEP]: { id: 100, username: 'KeepBot' },
     [TOK_A]: { id: 111, username: 'NovaBot' },
     [TOK_B]: { id: 222, username: 'ScoutBot' }
   });
@@ -165,7 +165,7 @@ const STATION = 'STATIONTOKEN', TOK_A = 'TOKAAA', TOK_B = 'TOKBBB';
     SKYNET_OPENROUTER_BASE: llm.base, EYEHOLD_OPENROUTER_BASE: llm.base,
     SKYNET_OPENROUTER_KEY: 'sk-or-v1-multibot-fake', EYEHOLD_OPENROUTER_KEY: 'sk-or-v1-multibot-fake',
     SKYNET_DEFAULT_MODEL: 'test/model', EYEHOLD_DEFAULT_MODEL: 'test/model',
-    SKYNET_TELEGRAM_TOKEN: STATION, EYEHOLD_TELEGRAM_TOKEN: STATION,
+    SKYNET_TELEGRAM_TOKEN: KEEP, EYEHOLD_TELEGRAM_TOKEN: KEEP,
     SKYNET_TELEGRAM_API_BASE: tg.base, EYEHOLD_TELEGRAM_API_BASE: tg.base
   };
   const { child, port } = await boot(9060 + (process.pid % 50), env, 20);
@@ -186,18 +186,18 @@ const STATION = 'STATIONTOKEN', TOK_A = 'TOKAAA', TOK_B = 'TOKBBB';
     ] });
     A.eq(roster.status, 200, 'test roster synchronized before agent-bot setup');
 
-    // station bot polling (auto-started from env)
-    await waitUntil(() => tg.perToken[STATION].calls.some(c => c.method === 'getUpdates'), 5000, 'station bot polls');
+    // keep bot polling (auto-started from env)
+    await waitUntil(() => tg.perToken[KEEP].calls.some(c => c.method === 'getUpdates'), 5000, 'keep bot polls');
 
     // ---- 1. bad token: the getMe probe refuses it with a clean 400; nothing persists ----
     const bad = await api('POST', '/api/channels/telegram/bots/connect', { token: 'NOTREAL', agentId: 'agent', model: 'test/model' });
     A.eq(bad.status, 400, 'unknown token -> 400');
     A.ok(/Telegram rejected/.test(bad.j.error || ''), 'refusal names the getMe failure');
 
-    // ---- 2. the station bot token cannot double as an agent bot (one poller per token) ----
-    const dupe = await api('POST', '/api/channels/telegram/bots/connect', { token: STATION, agentId: 'agent', model: 'test/model' });
-    A.eq(dupe.status, 400, 'station token as agent bot -> 400');
-    A.ok(/station bot/.test(dupe.j.error || ''), 'refusal explains it IS the station bot');
+    // ---- 2. the keep bot token cannot double as an agent bot (one poller per token) ----
+    const dupe = await api('POST', '/api/channels/telegram/bots/connect', { token: KEEP, agentId: 'agent', model: 'test/model' });
+    A.eq(dupe.status, 400, 'keep token as agent bot -> 400');
+    A.ok(/keep bot/.test(dupe.j.error || ''), 'refusal explains it IS the keep bot');
 
     // ---- 2b. a valid Telegram token with a broken bound-agent credential/model fails BEFORE persistence ----
     const badProvider = await api('POST', '/api/channels/telegram/bots/connect', { token: TOK_A, agentId: 'bad_agent', provider: 'openrouter', model: 'wrong/global-model' });
@@ -250,7 +250,7 @@ const STATION = 'STATIONTOKEN', TOK_A = 'TOKAAA', TOK_B = 'TOKBBB';
     A.ok(/^[-A-Z0-9]{11}$/.test(String(repairB.j.code || '')), 'bot B recovery pairing code shape');
     await pairBot('222', TOK_B, repairB.j.code);
     const botBSendsBeforeA = tg.perToken[TOK_B].sends.length;
-    const stationSendsBeforeA = tg.perToken[STATION].sends.length;
+    const keepSendsBeforeA = tg.perToken[KEEP].sends.length;
 
     // ---- 4. DM bot A: hard-locked run as its bound agent; typing + reply through TOKEN A ONLY ----
     tg.pushText(TOK_A, 900, 77, 'do a thing');
@@ -262,7 +262,7 @@ const STATION = 'STATIONTOKEN', TOK_A = 'TOKAAA', TOK_B = 'TOKBBB';
     A.eq(String(botAReply.chat_id), '900', 'bot A replied to its own chat');
     A.ok(tg.perToken[TOK_A].actions.some(a => a.action === 'typing' && String(a.chat_id) === '900'), 'bot A showed the typing indicator during the run');
     A.eq(tg.perToken[TOK_B].sends.length, botBSendsBeforeA, 'bot B sent NOTHING for bot A\'s chat (no cross-talk)');
-    A.eq(tg.perToken[STATION].sends.length, stationSendsBeforeA, 'the station bot sent NOTHING for bot A\'s chat');
+    A.eq(tg.perToken[KEEP].sends.length, keepSendsBeforeA, 'the keep bot sent NOTHING for bot A\'s chat');
     // hard-lock: the durable CHANNEL history landed under the BOUND agent, not a tg_<chatId> fallback.
     // (read the channel store straight from disk — /api/transcript serves per-STREAM history, not per-agent.)
     const chanHist = (agentId) => {

@@ -7,14 +7,14 @@
    ACTIVE ROUTINES · CREATE ROUTINE · ACTIVE LOOPS · START A LOOP.
 
    Mechanics: this file owns the window slot (key `automation`) and a tiny lane registry. Loads AFTER
-   stationui.js and BEFORE windows/routines.js + windows/loops.js (see index.html); each of those
+   keepui.js and BEFORE windows/routines.js + windows/loops.js (see index.html); each of those
    registers a LANE — a function of (body) returning { sections, wire } — instead of mounting its own
    console. buildAutomation concatenates the lanes' sections into one mountConsole call, then runs
    each lane's wire() against the shared body. All panes are mounted up-front (mountConsole's design),
    the two lanes' ids are disjoint (rt-* / lp-*), so both wirings coexist untouched. */
 'use strict';
 (() => {
-  if (typeof StationUI === 'undefined' || !StationUI.registerWindow) return;
+  if (typeof KeepUI === 'undefined' || !KeepUI.registerWindow) return;
   const lanes = [];
   // the seam routines.js / loops.js register through. Kept deliberately tiny: order of registration
   // (script order in index.html) is the section order in the rail — routines first, loops second.
@@ -24,19 +24,19 @@
     registerLane(fn) { if (typeof fn === 'function') lanes.push(fn); },
     openAway(agentId) {
       awayAgent = agentId || null;
-      StationUI.openTerm('automation', 'away');
-      StationUI.h.rerender('automation');
+      KeepUI.openTerm('automation', 'away');
+      KeepUI.h.rerender('automation');
     },
     openDraft(value) {
       draft = Object.assign({}, value || {});
-      StationUI.openTerm('automation', 'routines-create');
+      KeepUI.openTerm('automation', 'routines-create');
     }
   };
 
   function buildAutomation(body) {
     const built = lanes.map(fn => fn(body)).filter(b => b && Array.isArray(b.sections));
     const sections = built.reduce((acc, b) => acc.concat(b.sections), []);
-    const H = StationUI.h;
+    const H = KeepUI.h;
     sections.push({ id: 'away', label: 'WHILE I’M AWAY', glyph: '◈', desc: 'Choose an agent, review its queue, and decide whether it can build while you’re away.', build: pane => {
       pane.innerHTML = '<div class="away-picker"><label for="auto-away-agent">Agent</label><select id="auto-away-agent" class="key-input">' + H.present.map(a => '<option value="' + H.esc(a.id) + '">' + H.esc(a.name || a.id) + '</option>').join('') + '</select></div><div id="auto-away-body"></div>' +
         '<details class="cf-group"><summary>Let agents choose their own work</summary><p>Want agents to suggest or pick jobs themselves? Choose their level of initiative in Settings. The queue above holds work you chose.</p><button class="bb sm" id="auto-initiative">OPEN INITIATIVE SETTINGS</button></details>';
@@ -55,7 +55,7 @@
         + '<button type="button" class="bb sm" id="auto-init-change" data-tip="Whether agents start work nobody asked for. It does not change the schedules here.">CHANGE</button>';
       top.querySelector('#auto-init-change').addEventListener('click', () => H.openTerm('settings', 'autonomy'));
     };
-    StationUI.h.mountConsole(body, 'automation', sections, { search: false, railTop });
+    KeepUI.h.mountConsole(body, 'automation', sections, { search: false, railTop });
     // ONE MENU: AUTOMATE's tabs (SCHEDULES / GOAL LOOPS / AWAY WORK) pick the area, so the rail lists only that
     // area's own pages (e.g. Scheduled jobs + New schedule) instead of repeating the tabs beside them.
     const area = id => String(id || '').startsWith('routines') ? 'routines' : String(id || '').startsWith('loops') ? 'loops' : String(id || '');
@@ -76,7 +76,7 @@
     const renderAway = () => {
       awayAgent = picker.value;
       const a = H.present.find(a => a.id === awayAgent);
-      awayBody.innerHTML = a ? H.workshopCard(a) : '<p>No agents on this station. Recruit one to configure away work.</p>';
+      awayBody.innerHTML = a ? H.workshopCard(a) : '<p>No agents on this keep. Recruit one to configure away work.</p>';
       if (a) H.wireWorkshop(awayBody, a);
     };
     picker.addEventListener('change', renderAway);
@@ -127,5 +127,5 @@
     }
   }
 
-  StationUI.registerWindow('automation', 'AUTOMATION', buildAutomation, { console: true, className: 'automation-win' });
+  KeepUI.registerWindow('automation', 'AUTOMATION', buildAutomation, { console: true, className: 'automation-win' });
 })();

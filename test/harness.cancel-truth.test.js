@@ -67,7 +67,7 @@ const fetchDown = async () => { throw new TypeError('Failed to fetch'); };
   A.ok(failed.length > 200, 'stopFailed body located');
   A.ok(/interrupted\.delete\(id\)/.test(failed), 'an unconfirmed stop un-flags the stream: it is never marked stopped on a claim the harness cannot back');
   A.ok(/Harness\.pingEngine\(\)/.test(failed) && /Friendly\.friendlyError\(new Error\(reason\), null, \{ engineAlive: engineAlive \}\)/.test(failed), 'the transport verdict is MEASURED (pingEngine) and worded by friendlyError, the same path send()\'s catch uses');
-  A.ok(/STOP was not confirmed by the station — the run may still be working\./.test(failed), 'the line says the run may still be working (truthful telemetry)');
+  A.ok(/STOP was not confirmed by the keep — the run may still be working\./.test(failed), 'the line says the run may still be working (truthful telemetry)');
   A.ok(/status\(isBusy\(\) \? 'stopping… not confirmed' : 'online'\)/.test(failed), 'the status stays in the stopping family while the run is still busy');
 
   /* ---- chat.js consent ack: a failed ack is surfaced, the card stays pending ---- */

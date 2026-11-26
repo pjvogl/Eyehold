@@ -19,7 +19,7 @@
     },
     {
       "sha": "a2764b70835a422cdb18f411cbfcf3154cc0eacd",
-      "subject": "feat: add orbital shells and clean station floors and walls"
+      "subject": "feat: add orbital shells and clean keep floors and walls"
     },
     {
       "sha": "0f0f53033589ce5e076703ac31755dd2ea65d13c",
@@ -31,7 +31,7 @@
     },
     {
       "sha": "a3a3a45ec8e470f5da50876e40193ef8ed720bba",
-      "subject": "art: add three industrial station shell textures"
+      "subject": "art: add three industrial keep shell textures"
     },
     {
       "sha": "05a399cf0833c05f2ac7e692ed71002efb3dd2f5",
@@ -59,7 +59,7 @@
     },
     {
       "sha": "d0046e1c7727df68ac16ef1983bd73fe6bc478e4",
-      "subject": "feat: add industrial station minion skin and directional animations"
+      "subject": "feat: add industrial keep minion skin and directional animations"
     },
     {
       "sha": "0054a3d7a46312bdddb981a2e116e6fdd39c6378",
@@ -71,7 +71,7 @@
     },
     {
       "sha": "3259d9ff36d1faedff6206d048b807421386212b",
-      "subject": "style: quiet the arrival skip control with station phosphor styling"
+      "subject": "style: quiet the arrival skip control with keep phosphor styling"
     },
     {
       "sha": "f49596784bcf67c751fad8c9ad2528045969608a",
@@ -91,11 +91,11 @@
     },
     {
       "sha": "9568243c420e691e00943b35f48717d80c6e6301",
-      "subject": "feat: reveal the arriving agent across the full station viewport"
+      "subject": "feat: reveal the arriving agent across the full keep viewport"
     },
     {
       "sha": "312b7b5d6a8e1b9c4f9553a58f597af212806bb1",
-      "subject": "feat: make industrial station materials the default with saved-layout compatibility"
+      "subject": "feat: make industrial keep materials the default with saved-layout compatibility"
     },
     {
       "sha": "9bbb27322803c6f8e5c4cb5c11ad85e395ada443",
@@ -115,7 +115,7 @@
     },
     {
       "sha": "14e263840936929a5a2bde837b6ee0e681eb5b56",
-      "subject": "fix: preserve workstation scale and integrate industrial chairs"
+      "subject": "fix: preserve workkeep scale and integrate industrial chairs"
     },
     {
       "sha": "0fc7e3f6dddfe568dce73dc4dd3cdcf66382ddf2",
@@ -143,11 +143,11 @@
     },
     {
       "sha": "26f12626ae726214b60aa7ac1e5c363a4cf3205a",
-      "subject": "fix: replay the station tour without repeating task setup"
+      "subject": "fix: replay the keep tour without repeating task setup"
     },
     {
       "sha": "5f80da1fbc51627a6ba7b5a5f8a2cd1f6c0ec5c4",
-      "subject": "feat: run industrial station texture preview with preserved geometry"
+      "subject": "feat: run industrial keep texture preview with preserved geometry"
     },
     {
       "sha": "53b62ff848223d1b524c2d5cc408e76edd4d7f56",
@@ -159,7 +159,7 @@
     },
     {
       "sha": "274e88685977840e9baaed48a6c74a38449f23d2",
-      "subject": "art: add reference-based industrial station textures"
+      "subject": "art: add reference-based industrial keep textures"
     },
     {
       "sha": "05155ab010c34b3863dd6aac75da90692783dac4",
@@ -179,11 +179,11 @@
     },
     {
       "sha": "f8b60bef099f82517dd336ce27f23cf962bf02e3",
-      "subject": "fix: align station pointer targets with CRT curvature"
+      "subject": "fix: align keep pointer targets with CRT curvature"
     },
     {
       "sha": "f772377919a3ae1fffba1e2a5d3c7f00ce6bce35",
-      "subject": "style: refresh station speech bubbles"
+      "subject": "style: refresh keep speech bubbles"
     }
   ],
   "reportSummary": {
@@ -255,8 +255,8 @@
     },
     {
       "id": "0ff9dfc6",
-      "file": "0ff9dfc6-bay-names-are-unreadable-at-normal-station-zoom.md",
-      "title": "Bay names are unreadable at normal station zoom",
+      "file": "0ff9dfc6-bay-names-are-unreadable-at-normal-keep-zoom.md",
+      "title": "Bay names are unreadable at normal keep zoom",
       "origin": "owner",
       "found": "2026-09-06",
       "severity": "P1",
@@ -607,8 +607,8 @@
     },
     {
       "id": "72af29f4",
-      "file": "72af29f4-funded-station-false-zero-warning.md",
-      "title": "Funded working station still displays a zero-credit warning",
+      "file": "72af29f4-funded-keep-false-zero-warning.md",
+      "title": "Funded working keep still displays a zero-credit warning",
       "origin": "customer",
       "found": "2026-08-24",
       "severity": "P1",
@@ -975,8 +975,8 @@
     },
     {
       "id": "b3b8d28f",
-      "file": "b3b8d28f-website-station-preview-fails-when-hosting-beaco.md",
-      "title": "Website station preview fails when hosting beacon is blocked",
+      "file": "b3b8d28f-website-keep-preview-fails-when-hosting-beaco.md",
+      "title": "Website keep preview fails when hosting beacon is blocked",
       "origin": "owner",
       "found": "2026-09-05",
       "severity": "P1",
@@ -1103,8 +1103,8 @@
     },
     {
       "id": "d28ba8f4",
-      "file": "d28ba8f4-station-button-redesign-escaped-the-bottom-navig.md",
-      "title": "Station button redesign escaped the bottom navigation",
+      "file": "d28ba8f4-keep-button-redesign-escaped-the-bottom-navig.md",
+      "title": "Keep button redesign escaped the bottom navigation",
       "origin": "owner",
       "found": "2026-09-06",
       "severity": "P2",
@@ -1264,10 +1264,10 @@
   ],
   "recentUnmergedBranches": [
     {
-      "branch": "agent/station-default-0915",
+      "branch": "agent/keep-default-0915",
       "sha": "1f87ef828a8774b5c18fc5631c170e1e96c689e3",
       "date": "2026-09-15T21:15:27-04:00",
-      "subject": "Refresh station integration source locks without changing claim verdicts",
+      "subject": "Refresh keep integration source locks without changing claim verdicts",
       "commitsNotInBaseline": 388,
       "containedInOtherRecentTips": []
     },
@@ -1342,7 +1342,7 @@
       "subject": "feat: integrate authored prop directions content and machinery",
       "commitsNotInBaseline": 133,
       "containedInOtherRecentTips": [
-        "agent/station-default-0915",
+        "agent/keep-default-0915",
         "agent/prop-coordination-0914",
         "agent/prop-utility-0914",
         "agent/prop-crew-0914",
@@ -1411,7 +1411,7 @@
       "branch": "agent/prop-animation-0913",
       "sha": "d4967f0070137ab97ba24e3e399eabe962ed0799",
       "date": "2026-09-13T16:35:27-04:00",
-      "subject": "fix: restore industrial workstation occupancy and screen animation",
+      "subject": "fix: restore industrial workkeep occupancy and screen animation",
       "commitsNotInBaseline": 24,
       "containedInOtherRecentTips": []
     },
@@ -1459,7 +1459,7 @@
       "branch": "agent/visual-replies-0912",
       "sha": "783df1949fc4a8d942f4111dab7825e1d27e9c61",
       "date": "2026-09-13T01:05:09-04:00",
-      "subject": "docs: record station diagram aesthetic verification",
+      "subject": "docs: record keep diagram aesthetic verification",
       "commitsNotInBaseline": 25,
       "containedInOtherRecentTips": []
     },

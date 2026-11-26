@@ -2,7 +2,7 @@
 
    ACP is the EDITOR surface: a client (Zed, Neovim, …) spawns the bridge and speaks JSON-RPC 2.0 both ways.
    This drives the core with a fake sidecar and a fake client, so every protocol decision is pinned without a
-   station or an editor: the handshake, session lifecycle, the event -> session/update mapping that makes an
+   keep or an editor: the handshake, session lifecycle, the event -> session/update mapping that makes an
    editor render a live tool list, the permission round-trip, cancel, and the stopReason contract. */
 'use strict';
 const A = require('./_assert.js');
@@ -66,7 +66,7 @@ function harness(opts) {
     A.eq(r.result.agentInfo.name, 'eyehold', 'the agent identifies itself');
     A.eq(r.result.agentInfo.version, '9.9.9', 'and reports the real harness version, not a literal');
     A.eq(r.result.agentCapabilities.loadSession, true, 'loadSession is advertised');
-    A.eq(r.result.authMethods.length, 0, 'no auth methods are advertised (the station token already fences /api)');
+    A.eq(r.result.authMethods.length, 0, 'no auth methods are advertised (the keep token already fences /api)');
 
     /* CAPABILITIES MUST NOT OVER-CLAIM. This shipped as image:true in the first cut while the bridge could not
        forward an image at all — a client reads that as "this agent can see pictures", lets the user attach a
@@ -177,7 +177,7 @@ function harness(opts) {
     await new Promise(r => setTimeout(r, 20));   // the consent post is deliberately not awaited by the stream
 
     const req = h.requests.find(x => x.method === 'session/request_permission');
-    A.ok(req, 'the station consent prompt becomes a native editor permission request');
+    A.ok(req, 'the keep consent prompt becomes a native editor permission request');
     A.eq(req.params.sessionId, sid, 'the request names the session');
     A.eq(req.params.toolCall.title, 'Write notes.md', 'the card says what will happen in words');
     A.eq(req.params.toolCall.kind, 'edit', 'a write is an EDIT');
@@ -186,7 +186,7 @@ function harness(opts) {
     A.eq(req.params.options.map(o => o.kind).join(','), 'allow_once,allow_always,reject_once', 'and each carries its ACP kind so the editor styles it');
 
     const consent = h.posted.find(p => p[1] === '/api/consent');
-    A.ok(consent, 'the answer is posted back to the station');
+    A.ok(consent, 'the answer is posted back to the keep');
     A.eq(consent[2].promptId, 'p1', 'the answer targets the right prompt');
     A.eq(consent[2].runId, 'run-42', 'and carries the runId — /api/consent looks the finisher up by runId FIRST');
     A.eq(consent[2].decision, 'session', 'the chosen option maps straight through (optionIds ARE the decisions)');
@@ -422,7 +422,7 @@ function harness(opts) {
     A.eq(card.title, 'Write acp-notes.md', 'the approval card NAMES THE FILE, not the tool');
     A.eq(card.locations[0].path, 'acp-notes.md', 'and carries a location the editor can jump to');
 
-    /* The FOLDER-TRUST ask is not a model tool call — it is the station's "work in <root>?" gate, and because an
+    /* The FOLDER-TRUST ask is not a model tool call — it is the keep's "work in <root>?" gate, and because an
        ACP session sends its cwd as the project root it is very often the FIRST card a user ever sees. It read
        "path.trust" before this. */
     A.eq(I.titleOf('path.trust', I.permArgs('C:/proj/thing')), 'Allow Eyehold to work in C:/proj/thing',

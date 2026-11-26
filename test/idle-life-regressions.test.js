@@ -46,7 +46,7 @@ A.ok(/function purposefulIdleProp\(p\)/.test(world), 'deliberate idle destinatio
 A.ok(/const FUN_KINDS\s*=\s*\{[^}]*arcade[^}]*pinball[^}]*pool[^}]*bar[^}]*\}/.test(world), 'purposeful games and counters stay eligible');
 A.ok(!/const FUN_KINDS\s*=\s*\{[^}]*fish/.test(world), 'passive decor watching is not in the deliberate leisure picker');
 A.ok(/const use = propUse\(p\); if \(!use \|\| !purposefulIdleProp\(p\)\) continue/.test(world), 'generic prop planning rejects irrelevant catalog use rows');
-A.ok(/isWorkstationProp\(p\.t\)\s*&&\s*p\.agentId\s*===\s*self\.id/.test(world), 'ambient prop inspection is limited to the body’s own desk');
+A.ok(/isWorkkeepProp\(p\.t\)\s*&&\s*p\.agentId\s*===\s*self\.id/.test(world), 'ambient prop inspection is limited to the body’s own desk');
 A.ok(/if \(c\.kind === ['"]bar['"]\) continue/.test(world), 'a bar without a free stool is skipped rather than stared at');
 
 // Couch/TV regression: a claimed sofa cushion is rendered as a real sit and holds for minutes.

@@ -115,7 +115,7 @@ Goal: prove Eyehold remains boring across a fresh run and a restart run.
 Gate:
 
 - `.dogfood/phase4-attended-evidence.json` marks fresh and restart pass.
-- Transcript, ledger, artifacts, memory, and station state are preserved.
+- Transcript, ledger, artifacts, memory, and keep state are preserved.
 
 ## P4.5 Failure/Recovery Proof
 
@@ -158,5 +158,5 @@ No-go:
 - Live provider proof has not passed.
 - Attended same-work trial or restart soak has not passed.
 - Eyehold can lose transcript, artifact, model identity, spend truth, memory, or
-  station state.
+  keep state.
 - Failure states can look like success.

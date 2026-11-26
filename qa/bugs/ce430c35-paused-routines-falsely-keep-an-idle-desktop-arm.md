@@ -9,7 +9,7 @@ found: 2026-09-11
 lane: release-0112-finalprep-0911
 fix: b87bdf26099327e91eae85f9c5b1933ea5dbbe56
 origin: owner
-report: local-personal-station-2026-09-11
+report: local-personal-keep-2026-09-11
 affected: Windows personal 0.11.1; candidate a1d334f97 also reproduces
 family: lifecycle-truth
 installer: verified
@@ -23,7 +23,7 @@ recovery: unconfirmed
 
 ## Symptom
 
-The personal Windows station's native tray reports "1 routine armed" despite its sole routine being paused. Closing the window keeps the idle process resident.
+The personal Windows keep's native tray reports "1 routine armed" despite its sole routine being paused. Closing the window keeps the idle process resident.
 
 ## Repro
 
@@ -35,7 +35,7 @@ The running personal app reported zero active runs, one paused/disabled job, and
 
 ## Verdict
 
-Source fixed: lifecycleArmedSnapshot counted every persisted routine rather than the enabled jobs the scheduler can execute. The aggregate now excludes disabled jobs. Pausing already aborts the job's active lease after the durable write; this change does not alter pause, resume, scheduler intent, credentials or task execution. Exact installed verification passes, including pause while the scheduler remains armed, restart and mixed job counts. The personal station also reports idle after normal restart. Owner acknowledgement remains unconfirmed; the agent's installed verification is recorded separately.
+Source fixed: lifecycleArmedSnapshot counted every persisted routine rather than the enabled jobs the scheduler can execute. The aggregate now excludes disabled jobs. Pausing already aborts the job's active lease after the durable write; this change does not alter pause, resume, scheduler intent, credentials or task execution. Exact installed verification passes, including pause while the scheduler remains armed, restart and mixed job counts. The personal keep also reports idle after normal restart. Owner acknowledgement remains unconfirmed; the agent's installed verification is recorded separately.
 
 ## Regression
 
@@ -43,4 +43,4 @@ Source fixed: lifecycleArmedSnapshot counted every persisted routine rather than
 
 ## Sibling coverage
 
-{"adapters":[{"target":"desktop supervisor lifecycle endpoint","state":"covered","test":"test/lifecycle-armed.http.test.js","scenario":"raw-socket response and truthful enabled-job count","gate":"http"}],"entrypoints":[{"target":"pause/resume routine API","state":"covered","test":"test/lifecycle-armed.http.test.js","scenario":"pause only job and resume without changing scheduler intent","gate":"http"}],"displays":[{"target":"native tray","state":"covered","test":"test/lifecycle-armed.http.test.js","scenario":"Backend reasons consumed by the native tray exclude paused jobs; installed native tooltip was separately observed as idle, recorded in EXECUTION.md","gate":"http"}],"lifecycle":[{"target":"restart and mixed saved routines","state":"covered","test":"test/lifecycle-armed.http.test.js","scenario":"paused-only station stays idle after restart; mixed count excludes paused jobs","gate":"http"}]}
+{"adapters":[{"target":"desktop supervisor lifecycle endpoint","state":"covered","test":"test/lifecycle-armed.http.test.js","scenario":"raw-socket response and truthful enabled-job count","gate":"http"}],"entrypoints":[{"target":"pause/resume routine API","state":"covered","test":"test/lifecycle-armed.http.test.js","scenario":"pause only job and resume without changing scheduler intent","gate":"http"}],"displays":[{"target":"native tray","state":"covered","test":"test/lifecycle-armed.http.test.js","scenario":"Backend reasons consumed by the native tray exclude paused jobs; installed native tooltip was separately observed as idle, recorded in EXECUTION.md","gate":"http"}],"lifecycle":[{"target":"restart and mixed saved routines","state":"covered","test":"test/lifecycle-armed.http.test.js","scenario":"paused-only keep stays idle after restart; mixed count excludes paused jobs","gate":"http"}]}

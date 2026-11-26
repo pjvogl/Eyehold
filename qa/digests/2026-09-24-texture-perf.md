@@ -18,7 +18,7 @@ The probe reduces through exact 2:1 bilinear halvings (true box averages on ever
 
 ## Evidence
 
-- `dev/world-performance-probe.mjs --gpu --settled`, RTX 5060 Ti, seeded station:
+- `dev/world-performance-probe.mjs --gpu --settled`, RTX 5060 Ti, seeded keep:
   25.8 fps / 32.2 ms median callback / 66.7 ms p95 interval → 60 fps / 1.6 ms / 16.7 ms.
 - Probe latched trusted (3 clean readings) on 3/3 boots; an injected 1.8× GL brightening is still
   caught on its first reading.

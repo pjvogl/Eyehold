@@ -66,7 +66,7 @@ const RecruiterStore = (() => {
 
   /* the INTEREST GAP read: warm learned topics NOBODY on the crew covers (engine: Recruiter.interestGaps).
      Separate from recommend() by design — that one can only ever surface classes whose kit the Commander's work
-     already touches, so it structurally cannot recommend a capability the station lacks. Same glass-box gate:
+     already touches, so it structurally cannot recommend a capability the keep lacks. Same glass-box gate:
      learning OFF → nothing (the Commander opted out of being modelled, and this reads the learned histogram).
      Topics come from the SERVER's histogram via ProspectStore (GET /api/scout) — never invented here; with no
      read yet, or nothing warm, this returns [] and the bay renders exactly what it renders today. */

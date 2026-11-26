@@ -421,7 +421,7 @@
       },
 
       /* setShortDescription — the line under the bot's name in its profile. A Telegram BOT has no presence dot
-         (that is a user-account feature), so this is the closest thing to "the station is up". Off by default,
+         (that is a user-account feature), so this is the closest thing to "the keep is up". Off by default,
          exactly as in the reference harness, and for a good reason: it rewrites a PUBLIC profile field that the
          member may have written themselves, so it is opt-in or nothing. Capped at Telegram's 120 characters.
          NEVER throws — a status line is the least important thing this channel does. */

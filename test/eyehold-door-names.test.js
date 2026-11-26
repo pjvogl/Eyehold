@@ -1,6 +1,6 @@
 /* test/eyehold-door-names.test.js — every Eyehold-credit message names a door that EXISTS.
    The SETTINGS console has no "PROVIDERS" section any more: the Eyehold card, the STORE (+ ADD CREDITS) and
-   the relink live on the AI & MODELS page (stationui.js section id 'providers', label 'AI & MODELS'). A prop
+   the relink live on the AI & MODELS page (keepui.js section id 'providers', label 'AI & MODELS'). A prop
    refusal or a credential error that says "SETTINGS → PROVIDERS" sends the user hunting for a tab that is not
    there (spend-truth lane B5, 2026-10-08). The cloud is a fake fetch; nothing leaves the process. */
 'use strict';
@@ -14,10 +14,10 @@ const ROOT = path.join(__dirname, '..');
 const read = rel => fs.readFileSync(path.join(ROOT, rel), 'utf8');
 
 // the door the messages must name really exists: the AI & MODELS section is the providers pane
-const station = read('frontend/app/stationui.js');
-A.ok(/\{ id: 'providers', label: 'AI & MODELS'/.test(station), 'SETTINGS has an AI & MODELS section (the providers pane)');
-A.ok(/id="credits-buy">＋ ADD CREDITS/.test(station) && /secProviders =[\s\S]{0,1200}<div id="credits-store"><\/div>/.test(station), 'the STORE (+ ADD CREDITS) renders inside that same AI & MODELS pane');
-A.ok(!/label: 'PROVIDERS'/.test(station), 'no SETTINGS section is labelled PROVIDERS');
+const keep = read('frontend/app/keepui.js');
+A.ok(/\{ id: 'providers', label: 'AI & MODELS'/.test(keep), 'SETTINGS has an AI & MODELS section (the providers pane)');
+A.ok(/id="credits-buy">＋ ADD CREDITS/.test(keep) && /secProviders =[\s\S]{0,1200}<div id="credits-store"><\/div>/.test(keep), 'the STORE (+ ADD CREDITS) renders inside that same AI & MODELS pane');
+A.ok(!/label: 'PROVIDERS'/.test(keep), 'no SETTINGS section is labelled PROVIDERS');
 
 (async () => {
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'door-names-'));
@@ -47,7 +47,7 @@ A.ok(!/label: 'PROVIDERS'/.test(station), 'no SETTINGS section is labelled PROVI
     A.ok(!/SETTINGS \\u2192 PROVIDERS|SETTINGS → PROVIDERS/.test(read('sidecar/userprops.js')), 'userprops.js names no SETTINGS → PROVIDERS door anywhere');
     // the eyehold credential error (index.js providerCredentialError) points at the real page
     const idx = read('sidecar/index.js');
-    A.ok(/if \(id === 'eyehold'\) return 'link this station to a Eyehold account \(SETTINGS -> AI & MODELS -> EYEHOLD MANAGED\) to run on credits';/.test(idx),
+    A.ok(/if \(id === 'eyehold'\) return 'link this keep to a Eyehold account \(SETTINGS -> AI & MODELS -> EYEHOLD MANAGED\) to run on credits';/.test(idx),
       'a Eyehold credential error names SETTINGS -> AI & MODELS -> EYEHOLD MANAGED');
     A.ok(!/SETTINGS -> PROVIDERS -> EYEHOLD MANAGED/.test(idx), 'the old PROVIDERS door is gone from index.js');
   } finally { fs.rmSync(dir, { recursive: true, force: true }); }

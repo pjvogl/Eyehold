@@ -4,11 +4,11 @@
    fence exactly as it is; this one binds the LAN only while Remote is switched on, and it speaks nothing but
    the remote protocol:
 
-     POST /remote/v1/pair    { pairingId, publicKey, name, proof }  -> { ok, deviceId, stationId }
+     POST /remote/v1/pair    { pairingId, publicKey, name, proof }  -> { ok, deviceId, keepId }
      POST /remote/v1/hello   { v, deviceId, eph, nonce }            -> welcome
      POST /remote/v1/call    { sessionId, frame }                   -> { frame }   (sealed request -> sealed reply)
      GET  /remote/v1/events?sid=<sessionId>                         -> text/event-stream of sealed frames
-     GET  /remote/v1/info                                           -> { ok, v, stationId }  (no secrets)
+     GET  /remote/v1/info                                           -> { ok, v, keepId }  (no secrets)
 
    Nothing here can reach the master API token, any /api route, or the file system. Every request body is
    size-capped; pairing and hello are rate-limited per address. The master sidecar port never opens to the LAN. */
@@ -61,8 +61,8 @@ function makeLanListener(deps) {
     const u = new URL(req.url, 'http://lan');
     const p = u.pathname;
     if (req.method === 'GET' && p === '/remote/v1/info') {
-      let stationId = null; try { stationId = devices.stationKeys().id; } catch (e) { note('remote.lan.stationKeys', e); }
-      return send(res, 200, { ok: true, v: C.VERSION, stationId });
+      let keepId = null; try { keepId = devices.keepKeys().id; } catch (e) { note('remote.lan.keepKeys', e); }
+      return send(res, 200, { ok: true, v: C.VERSION, keepId });
     }
     if (req.method === 'POST' && p === '/remote/v1/pair') {
       if (!allowPair(addrOf(req))) return send(res, 429, { ok: false, error: 'too many pairing attempts — wait a few minutes' });
@@ -70,11 +70,11 @@ function makeLanListener(deps) {
       if (!b.value) return send(res, 400, { ok: false, error: 'bad request' });
       const r = devices.completePairing(b.value);
       if (!r.ok) return send(res, 400, { ok: false, error: r.error });
-      let st = null; try { st = devices.stationKeys(); } catch (e) { note('remote.lan.stationKeys', e); }
+      let st = null; try { st = devices.keepKeys(); } catch (e) { note('remote.lan.keepKeys', e); }
       const tok = typeof devices.issueRelayToken === 'function' ? devices.issueRelayToken(r.device.id) : { ok: false };
       if (typeof deps.onPaired === 'function') { try { deps.onPaired(r.device); } catch (e) { note('remote.lan.deps.onPaired', e); } }
       log('paired ' + r.device.name + ' (' + r.device.id + ')');
-      return send(res, 200, { ok: true, deviceId: r.device.id, stationId: st && st.id, fingerprint: r.device.fingerprint, relayToken: tok.ok ? tok.token : null });
+      return send(res, 200, { ok: true, deviceId: r.device.id, keepId: st && st.id, fingerprint: r.device.fingerprint, relayToken: tok.ok ? tok.token : null });
     }
     if (req.method === 'POST' && p === '/remote/v1/hello') {
       if (!allowHello(addrOf(req))) return send(res, 429, { ok: false, error: 'slow down' });
@@ -117,7 +117,7 @@ function makeLanListener(deps) {
     const host = (o && o.host) || '0.0.0.0';
     const port = Number(o && o.port) || 0;
     return new Promise((resolve, reject) => {
-      const s = http.createServer((req, res) => { handle(req, res).catch(() => { try { send(res, 500, { ok: false, error: 'station error' }); } catch (e) { note('remote.lan.send', e); } }); });
+      const s = http.createServer((req, res) => { handle(req, res).catch(() => { try { send(res, 500, { ok: false, error: 'keep error' }); } catch (e) { note('remote.lan.send', e); } }); });
       s.headersTimeout = 15000;
       s.requestTimeout = 30000;
       s.on('error', (e) => { if (!bound) reject(e); else log('listener error: ' + ((e && e.message) || e)); });

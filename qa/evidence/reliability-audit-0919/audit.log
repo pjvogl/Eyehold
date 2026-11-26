@@ -14,7 +14,7 @@ scenario: floor-rest
   PASS  bodies/nonempty  — 1 bodies
   PASS  floor/zoned-bodies-contained  — 1 bodies, none roaming outside its zone
   PASS  floor/awareness-gaze-only  — 0 gaze calls (0 exercised), 0 movement mutations
-  PASS  truthful/stationLevel  — displayed=1 eq expected=1
+  PASS  truthful/keepLevel  — displayed=1 eq expected=1
   PASS  log/frozen-bus  — 0 events captured
 
 scenario: task
@@ -25,12 +25,12 @@ scenario: task
 
 scenario: hud-xp
   PASS  hud-xp/hud-readable  — 1 HUD checks
-  PASS  hud-xp/stationLevel  — displayed=1 eq expected=1
+  PASS  hud-xp/keepLevel  — displayed=1 eq expected=1
   PASS  hud-xp/floorstats-reduced  — runs=1 slag=0
   PASS  hud-xp/floorstats-runs-match-log  — FloorStats.runs=1 == agent.run.start count=1
   PASS  hud-xp/xp-reduced  — Xp.level=1 xp=0
   PASS  hud-xp/commander-source-available  — backend Commander level=1
-  PASS  hud-xp/station-chip-matches-journey  — displayed COMMANDER="Lv 1" (lvl 1) vs backend level=1
+  PASS  hud-xp/keep-chip-matches-journey  — displayed COMMANDER="Lv 1" (lvl 1) vs backend level=1
 
 scenario: summon
   PASS  summon/bay-open  — recruitment bay shown (opened:RECRUIT)
@@ -41,7 +41,7 @@ scenario: summon
 scenario: moat
   PASS  moat/heroCaps-readable  — before=[cabinet, notebook, dish, workbench, studio]
   PASS  moat/build-mode  — REFIT open + dev hook present
-  PASS  moat/strip-prop  — 1 workbench(es) removed via station.removeProp
+  PASS  moat/strip-prop  — 1 workbench(es) removed via keep.removeProp
   PASS  moat/capability-offline  — after strip=[cabinet, notebook, dish, studio] (no workbench object ⇒ no terminal)
   PASS  moat/place-prop  — workbench @ (2,0)
   PASS  moat/capability-online  — after=[cabinet, notebook, dish, studio, workbench] (workbench ⇒ terminal)

@@ -126,7 +126,7 @@ const { SidecarFixture } = require('./helpers/sidecar-fixture.js');
     const routedAgent = ((routed.body && routed.body.agents) || []).find(a => a.agentId === 'agent') || {};
     A.eq(routedAgent.profile && routedAgent.profile.effectiveBackend, 'local', 'Full Power routes this agent to the local host even while Safe Cell remains the stored post-revocation profile');
     A.eq(routedAgent.environment && routedAgent.environment.effectiveBackend, 'local', 'runtime truth agrees with active Full Power host authority');
-    A.eq(routed.body && routed.body.backend && routed.body.backend.routing && routed.body.backend.routing.perAgent, true, 'station status exposes per-agent backend routing');
+    A.eq(routed.body && routed.body.backend && routed.body.backend.routing && routed.body.backend.routing.perAgent, true, 'keep status exposes per-agent backend routing');
     A.eq(routed.body && routed.body.policy && routed.body.policy.idleCleanupMinutes, 17, 'idle cleanup policy survives a sidecar restart');
     A.eq(routedAgent.sshTarget && routedAgent.sshTarget.host, 'buildbox', 'nonsecret SSH destination survives the same restart');
     A.eq(routedAgent.sshTarget && routedAgent.sshTarget.password, undefined, 'profile status never exposes an SSH password');

@@ -124,7 +124,7 @@ finally {
     assert.ok(rel && !rel.startsWith('..') && !isAbsolute(rel) && rel.startsWith('eyehold-wall-receiver-'), 'cleanup stays inside its own test temp directory');
     // Chrome's children can hold chrome_debug.log for seconds after the parent exits on a loaded
     // Windows box (2s was not enough under a full gate) — the same transient-lock window
-    // stationbake.connections.test.mjs allows, and it still fails if the lock never lifts.
+    // keepbake.connections.test.mjs allows, and it still fails if the lock never lifts.
     for (let attempt = 0; attempt < 50; attempt++) {
       try { rmSync(profile, { recursive: true, force: true }); break; }
       catch (error) { if (!['EBUSY', 'EPERM', 'ENOTEMPTY'].includes(error.code) || attempt === 49) throw error; await sleep(200); }

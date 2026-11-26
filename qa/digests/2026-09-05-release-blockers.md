@@ -35,12 +35,12 @@ This is a source/seeded-browser verification receipt, not release or customer-re
   lost-acknowledgement, missing-row and duplicate checks. After stopping the seed sidecar and restarting
   with `node dev/seed.js --keep`, exactly one `EMAIL ONCE PERSISTENCE` routine remained visible in
   Active Routines, with `runsLine:true` and `schedule.kind:once`.
-- On that seeded station, three `_dbgLoseCanvases()` injections advanced the recovery count from
+- On that seeded keep, three `_dbgLoseCanvases()` injections advanced the recovery count from
   0 to 3 and restored opaque cached pixels. `_dbgKillStageContext()` advanced stage rebuilds from
   0 to 1 and restored the visible frame. An independent 32x32 probe canvas saw 941–942 non-dark
   pixels out of 1024; the source drawing canvas was not read back directly. No uncaught browser
   exceptions occurred. This simulates loss effects; it is not a physical GPU reset or a 20-minute
-  reproduction of the customer's affected station.
+  reproduction of the customer's affected keep.
 - Beginner Run passed the six-step UI-only path in 116181 ms. Its scope ends at the first real
   model boundary, not at a fabricated deliverable. It ran on the lane's `94bff3a5f` source snapshot.
 
@@ -57,8 +57,8 @@ The six customer P1 records remain open. These local passes do not establish the
 | --- | --- |
 | Managed Sonnet HTTP 400 | Production relay trace/error for the affected request and exact installer retest. `flyctl auth whoami` still reports no access token on this host. |
 | Mac paid onboarding/relink | Physical Apple Silicon Mac, exact installer, account link/reload/recovery/restart receipt. Issue #2 is closed but has no reporter recovery confirmation. |
-| Funded station zero-credit banner | Authoritative affected-account balance and UI/provider state captured together, then recovery/restart. |
-| Blank viewport after 10–20 minutes | Affected installer, display scale/window dimensions, actual station, and renderer/GPU diagnostics. |
+| Funded keep zero-credit banner | Authoritative affected-account balance and UI/provider state captured together, then recovery/restart. |
+| Blank viewport after 10–20 minutes | Affected installer, display scale/window dimensions, actual keep, and renderer/GPU diagnostics. |
 | Missing ONCE routine | Affected job id and save/list/restart diagnostics; the current local path passes. |
 | Idle/high usage | Customer run ledger, provider/model, enabled background work, and expected cadence. No customer-specific billing defect has been established. |
 

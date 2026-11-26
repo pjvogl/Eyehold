@@ -65,13 +65,13 @@ test('sample uses each dock provider and saved model without environment default
     assert.equal(refused.body.ok, false);
     assert.equal(calls.length, 0, 'missing roster model cannot spend a different provider credential');
 
-    // "Follow station default": an unpinned specialist runs on the OVERSEER's model and provider (what COMMS
+    // "Follow keep default": an unpinned specialist runs on the OVERSEER's model and provider (what COMMS
     // resolves), never on a stale provider its row still carries (the #24 leak shape) and never refused outright.
-    const station = [
+    const keep = [
       { agentId: 'agent', name: 'Overseer', system: 'Sample', provider: 'custom', model: 'hop-model' },
       { agentId: 'scout', name: 'Scout', system: 'Sample', provider: 'eyehold', model: '' }
     ];
-    assert.equal((await fixture.json('POST', '/api/roster', { agents: station, updatedAt: Date.now() })).status, 200);
+    assert.equal((await fixture.json('POST', '/api/roster', { agents: keep, updatedAt: Date.now() })).status, 200);
     const unpinnedPlan = Pipeline.compileRoutingPlan({ props: [
       { id: 'i', t: 'intake', x: 0, y: 0, w: 1, h: 1 },
       { id: 's', t: 'bay', x: 3, y: 0, w: 1, h: 1, agentId: 'scout' },

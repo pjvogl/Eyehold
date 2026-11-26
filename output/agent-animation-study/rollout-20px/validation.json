@@ -213,7 +213,7 @@
       "maxWalkHeight": 78
     },
     {
-      "id": "station_minion",
+      "id": "keep_minion",
       "status": "complete",
       "standingHeight": 19,
       "rotations": 8,

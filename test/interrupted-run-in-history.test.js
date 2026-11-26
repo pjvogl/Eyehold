@@ -29,7 +29,7 @@ const AGENT = 'hist_agent';
 function bootSidecar(port, workspaces, attempts) {
   return new Promise((resolve, reject) => {
     const appSandbox = path.join(workspaces, '_appdata');
-    // ISOLATION: no inherited EYEHOLD_/SKYNET_/HERMES_ variable may point this sidecar at a real station.
+    // ISOLATION: no inherited EYEHOLD_/SKYNET_/HERMES_ variable may point this sidecar at a real keep.
     const env = Object.assign({}, process.env);
     for (const k of Object.keys(env)) if (/^(EYEHOLD_|SKYNET_|HERMES_)/i.test(k)) delete env[k];
     Object.assign(env, {

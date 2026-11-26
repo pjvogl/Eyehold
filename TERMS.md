@@ -85,7 +85,7 @@ repository root. These terms cover use of the app; the MIT License governs the c
 Third-party components remain under their original licenses (see `NOTICE.md`).
 
 The MIT License covers the code only. It grants no rights — by trademark, implication, or
-otherwise — to the Eyehold name, the logo, the station artwork and sprites, or the rest of the
+otherwise — to the Eyehold name, the logo, the keep artwork and sprites, or the rest of the
 project's brand identity, all of which remain owned by Eyehold. You may fork, modify, and
 redistribute the code, including commercially; forks and derivatives must ship under their own
 name, logo, and artwork, and must not present themselves as Eyehold or as endorsed by it.

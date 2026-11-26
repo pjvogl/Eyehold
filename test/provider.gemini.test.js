@@ -241,13 +241,13 @@ async function collect(provider, req) { const out = []; for await (const e of pr
     // Stream: the signature comes back as an opaque reasoning block keyed by the SAME id tool_start publishes.
     const sse = [
       line({ candidates: [{ content: { parts: [
-        { functionCall: { name: 'station_inspect', args: { q: 1 } }, thoughtSignature: 'sig-A' },
+        { functionCall: { name: 'keep_inspect', args: { q: 1 } }, thoughtSignature: 'sig-A' },
         { functionCall: { name: 'fs_list', args: { p: '/' } }, thoughtSignature: 'sig-B' }
       ] }, finishReason: 'STOP' }] }),
       ''
     ].join('\n');
     const p = makeGeminiProvider({ fetch: sseFetch(sse), key: 'k' });
-    const evs = await collect(p, { model: 'gemini-3-flash', messages: [], tools: [{ type: 'function', function: { name: 'station_inspect' } }] });
+    const evs = await collect(p, { model: 'gemini-3-flash', messages: [], tools: [{ type: 'function', function: { name: 'keep_inspect' } }] });
     const sigs = evs.filter(e => e.type === 'reasoning' && e.block && e.block.type === 'gemini_tool_signature').map(e => e.block);
     A.eq(sigs, [
       { type: 'gemini_tool_signature', callId: 'call_0', signature: 'sig-A' },
@@ -261,12 +261,12 @@ async function collect(provider, req) { const out = []; for await (const e of pr
         { type: 'gemini_tool_signature', callId: 'call_0', signature: 'sig-A' },
         { type: 'gemini_tool_signature', callId: 'call_1', signature: 'sig-B' }
       ], tool_calls: [
-        { id: 'call_0', function: { name: 'station_inspect', arguments: '{"q":1}' } },
+        { id: 'call_0', function: { name: 'keep_inspect', arguments: '{"q":1}' } },
         { id: 'call_1', function: { name: 'fs_list', arguments: '{"p":"/"}' } }
       ] },
       { role: 'tool', tool_call_id: 'call_0', content: '{"ok":true}' }
     ]);
-    A.eq(conv.contents[0].parts[0], { functionCall: { name: 'station_inspect', args: { q: 1 } }, thoughtSignature: 'sig-A' }, 'first functionCall replays with ITS signature');
+    A.eq(conv.contents[0].parts[0], { functionCall: { name: 'keep_inspect', args: { q: 1 } }, thoughtSignature: 'sig-A' }, 'first functionCall replays with ITS signature');
     A.eq(conv.contents[0].parts[1], { functionCall: { name: 'fs_list', args: { p: '/' } }, thoughtSignature: 'sig-B' }, 'second functionCall replays with its own — not the first one\'s');
 
     // A signature-less transcript (pre-Gemini-3 history, or reasoning stripped on a provider switch) replays

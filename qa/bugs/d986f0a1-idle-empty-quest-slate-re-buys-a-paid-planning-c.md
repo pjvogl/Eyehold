@@ -15,7 +15,7 @@ origin: audit
 
 ## Symptom
 
-A station that knows something about the Commander, left open with an empty quest slate, pays for a quest-planning model call every hour for as long as it stays open, even though nothing changed and the planner keeps giving the same answer. With PROPOSE becoming the new-station default (agent/user-study-loop), this would hit every idle open station, not only Commanders who raised the autonomy dial.
+A keep that knows something about the Commander, left open with an empty quest slate, pays for a quest-planning model call every hour for as long as it stays open, even though nothing changed and the planner keeps giving the same answer. With PROPOSE becoming the new-keep default (agent/user-study-loop), this would hit every idle open keep, not only Commanders who raised the autonomy dial.
 
 ## Repro
 
@@ -30,4 +30,4 @@ Deterministic replay before the fix: `1.01h idle, empty slate, unchanged context
 
 ## Verdict
 
-Fixed on agent/user-study-loop cba0e52f5: caught-up now requires the context key to have moved since the last cycle. Finishing quests moves it (progress-changed fires within 5 min), and the daily cadence still refreshes an idle station once a day.
+Fixed on agent/user-study-loop cba0e52f5: caught-up now requires the context key to have moved since the last cycle. Finishing quests moves it (progress-changed fires within 5 min), and the daily cadence still refreshes an idle keep once a day.

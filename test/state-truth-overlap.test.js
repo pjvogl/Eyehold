@@ -7,15 +7,15 @@ const A = require('./_assert.js');
 const read = rel => fs.readFileSync(path.join(__dirname, '..', rel), 'utf8');
 
 const world = read('frontend/app/world.js');
-const station = read('frontend/app/stationui.js');
+const keep = read('frontend/app/keepui.js');
 
 A.ok(/function workerFoot\([\s\S]{0,700}seen\.add\(ht\.x \+ ',' \+ ht\.y\)/.test(world),
   'summoned-worker occupancy includes the hero, so the first worker cannot hide underneath it');
-A.ok(/function agHead\(a, act\)[\s\S]{0,500}const live = !!\(a && agentLive\(a\.id\)\)[\s\S]{0,700}live \? 'WORKING'/.test(station),
+A.ok(/function agHead\(a, act\)[\s\S]{0,500}const live = !!\(a && agentLive\(a\.id\)\)[\s\S]{0,700}live \? 'WORKING'/.test(keep),
   'the dossier headline derives WORKING from the selected agent');
-A.ok(/x\.id === focusedId && act === 'talk' \? 'talking' : 'working'/.test(station),
+A.ok(/x\.id === focusedId && act === 'talk' \? 'talking' : 'working'/.test(keep),
   'a different worker never inherits the focused agent conversation label');
-A.ok(/const selectedLive = !!\(selected && agentLive\(selected\.id\)\)[\s\S]{0,500}selectedLive \? 'WORKING'/.test(station),
+A.ok(/const selectedLive = !!\(selected && agentLive\(selected\.id\)\)[\s\S]{0,500}selectedLive \? 'WORKING'/.test(keep),
   'live dossier repaint remains scoped to the selected worker');
 // Exercise the crew projection instead of locking the old presentation wording.
 // Three concurrent agents include one pending approval; a fourth agent is idle.
@@ -30,7 +30,7 @@ const crewContext = vm.createContext({
   Workstreams: { get: () => ({ agentId: 'approval' }) },
   $: selector => selector.startsWith('#cs-') ? crewLabels[selector.slice(4)] : null
 });
-vm.runInContext(A.fnBody(station, 'function crewTick()') + '\ncrewTick();', crewContext);
+vm.runInContext(A.fnBody(keep, 'function crewTick()') + '\ncrewTick();', crewContext);
 A.eq(crewLabels.hero.textContent, 'IN CONVERSATION', 'the focused running agent owns the conversation label');
 A.eq(crewLabels.worker.textContent, 'WORKING', 'a background worker never inherits the conversation label');
 A.eq(crewLabels.approval.textContent, 'WORKING', 'crew keeps its activity summary; approval details belong to the session');
@@ -43,10 +43,10 @@ crewContext.crewQuery = ''; vm.runInContext('crewTick()', crewContext);
 A.ok(crewIds.every(id => !crewRows[id].hidden), 'closing search restores the entire roster');
 A.ok(/const unhealthyChannels = new Set\(\)[\s\S]*?state === 'up'[\s\S]*?reconnected[\s\S]*?key: toastKey/.test(world),
   'a proven channel recovery replaces the active outage claim instead of leaving a stale red toast');
-A.ok(/const toastKey = String\(\(opts && opts\.key\)[\s\S]*?dataset\.toastKey === toastKey[\s\S]*?prior\.remove\(\)/.test(station),
+A.ok(/const toastKey = String\(\(opts && opts\.key\)[\s\S]*?dataset\.toastKey === toastKey[\s\S]*?prior\.remove\(\)/.test(keep),
   'keyed transient toasts remove the prior live-state card before rendering its replacement');
 
 A.eq(read('website/app/app/world.js'), world, 'website world mirror carries worker spawn truth exactly');
-A.eq(read('website/app/app/stationui.js'), station, 'website dossier mirror carries per-worker status truth exactly');
+A.eq(read('website/app/app/keepui.js'), keep, 'website dossier mirror carries per-worker status truth exactly');
 
 A.report('state-truth-overlap');

@@ -75,7 +75,7 @@ try {
   A.eq(L.attestedFor && L.attestedFor('int9'), null, 'nothing before the settle');
   L.settleUnsettled('int9', 1.25, 'entered');
   A.eq(L.attestedFor('int9'), { usd: 1.25, attestedAs: 'entered' }, 'the Commander\'s figure and how it was attested');
-  A.eq(L.attestedFor('prior'), null, 'a metered row is not an attestation');
+  A.eq(L.attestedFor('prior'), null, 'a metered row is not an attekeep');
 } finally { fs.rmSync(dir, { recursive: true, force: true }); }
 
 // ---- the host wires it: the settle restamps, the boot scan heals from the ledger ----

@@ -62,7 +62,7 @@ productivity fit the implemented tasks, but the form cannot save those selection
 the video. Existing scope justifications remain available. A real consent/operation demo,
 real-account refresh/removal/revocation/restart acceptance, and the applicable sensitive/
 restricted-scope review still remain. The Workspace data policy and any required security
-assessment must be addressed for the actual model-provider data flow before attestation.
+assessment must be addressed for the actual model-provider data flow before attekeep.
 
 Official references:
 - https://developers.google.com/identity/protocols/oauth2/production-readiness/restricted-scope-verification

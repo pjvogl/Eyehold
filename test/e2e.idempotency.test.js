@@ -7,7 +7,7 @@
      · the second call is answered from the ledger, visibly (agent.tool_result summary 'idempotent-replay');
      · the ledger is durable on disk under the workspace;
      · a NEW run (new work item) of the same routine sends the write again — the scope is the work item,
-       never the station. */
+       never the keep. */
 'use strict';
 
 const A = require('./_assert.js');
@@ -213,7 +213,7 @@ async function readNdjson(res) {
     A.ok(String(rows[0].content).indexOf('id=msg-1') >= 0, 'the recorded result is the real first result');
     A.ok(fs.readFileSync(ledgerFile, 'utf8').indexOf('mcp-secret-token') < 0, 'the ledger never carries the connector secret');
 
-    // ---- run 2: a NEW work item of the same routine sends again (scope is the work item, not the station) ----
+    // ---- run 2: a NEW work item of the same routine sends again (scope is the work item, not the keep) ----
     const run2 = await fetch(B + '/api/cron/run', { method: 'POST', headers, body: JSON.stringify({ id: job.id }) });
     A.eq(run2.status, 200, 'second Run Now returns a stream');
     const panel2 = await readNdjson(run2);

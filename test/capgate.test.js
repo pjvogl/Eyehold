@@ -17,8 +17,8 @@ function officeReach(opts) {
   return resolveTools('ag', { agents: { ag: { id: 'ag', room: 'office' } }, rooms: { office: { id: 'office', objects } } });
 }
 
-// build a station: { roomId: [objectType,...] }, with agent 'ag' assigned to `assignedRoom`
-function station(objsByRoom, assignedRoom) {
+// build a keep: { roomId: [objectType,...] }, with agent 'ag' assigned to `assignedRoom`
+function keep(objsByRoom, assignedRoom) {
   const rooms = {};
   for (const r in objsByRoom) rooms[r] = { id: r, objects: objsByRoom[r].map((t, i) => ({ instanceId: r + '_' + i, objectType: t })) };
   return { rooms, agents: { ag: { id: 'ag', room: assignedRoom } } };
@@ -26,46 +26,46 @@ function station(objsByRoom, assignedRoom) {
 
 // ---- A. resolveTools (pure projection) ----
 {
-  const full = resolveTools('ag', station({ quarters: ['computer', 'notebook'] }, 'quarters'));
+  const full = resolveTools('ag', keep({ quarters: ['computer', 'notebook'] }, 'quarters'));
   A.ok(full.hasCompute, 'computer grants compute');
-  A.eq(full.tools.slice().sort(), ['app.check', 'app.create', 'app.publish', 'app.read', 'app.schedule', 'app.write', 'code.run', 'deliverable_note', 'manual.read', 'notebook.feedback', 'notebook.read', 'notebook.write', 'quest.update', 'recall_conversation', 'routine.notepad', 'skill.list', 'skill.manage', 'skill.view', 'skill.write', 'station.inspect', 'station.show', 'todo', 'tool.search', 'widget.get', 'widget.set'], 'notebook grants its tools; compute excluded from tools[]; the host-scoped routine notepad and other primitives ride the COMPUTER placed in this same room');
+  A.eq(full.tools.slice().sort(), ['app.check', 'app.create', 'app.publish', 'app.read', 'app.schedule', 'app.write', 'code.run', 'deliverable_note', 'manual.read', 'notebook.feedback', 'notebook.read', 'notebook.write', 'quest.update', 'recall_conversation', 'routine.notepad', 'skill.list', 'skill.manage', 'skill.view', 'skill.write', 'keep.inspect', 'keep.show', 'todo', 'tool.search', 'widget.get', 'widget.set'], 'notebook grants its tools; compute excluded from tools[]; the host-scoped routine notepad and other primitives ride the COMPUTER placed in this same room');
   A.eq(full.approvalRules['notebook.write'].requiresConsent, false, 'notebook write needs no consent (sandboxed private memory)');
   A.eq(full.approvalRules['notebook.read'].requiresConsent, false, 'read auto-allowed');
 
-  const empty = resolveTools('ag', station({ quarters: [] }, 'quarters'));
+  const empty = resolveTools('ag', keep({ quarters: [] }, 'quarters'));
   A.ok(!empty.hasCompute, 'empty room -> no compute');
   A.eq(empty.tools.length, 0, 'empty room -> no tools');
 
   // capability follows the ASSIGNED room, not objects elsewhere
   // `todo` is ABSENT from notebook-only rooms since 2026-08-17: it rides the COMPUTER (taskplan freebie), so
-  // any agent that can RUN has a task list — a notebook-less station no longer silently loses planning.
-  const split = resolveTools('ag', station({ quarters: ['notebook'], lab: ['computer'] }, 'quarters'));
+  // any agent that can RUN has a task list — a notebook-less keep no longer silently loses planning.
+  const split = resolveTools('ag', keep({ quarters: ['notebook'], lab: ['computer'] }, 'quarters'));
   A.eq(split.tools.slice().sort(), ['notebook.feedback', 'notebook.read', 'notebook.write', 'recall_conversation', 'skill.list', 'skill.manage', 'skill.view', 'skill.write', 'widget.get', 'widget.set'], 'only assigned-room objects grant tools');
   A.ok(!split.hasCompute, 'a computer in a DIFFERENT room does not grant compute');
 
   // de-dupe duplicate objects
-  const dup = resolveTools('ag', station({ quarters: ['notebook', 'notebook'] }, 'quarters'));
+  const dup = resolveTools('ag', keep({ quarters: ['notebook', 'notebook'] }, 'quarters'));
   A.eq(dup.tools.slice().sort(), ['notebook.feedback', 'notebook.read', 'notebook.write', 'recall_conversation', 'skill.list', 'skill.manage', 'skill.view', 'skill.write', 'widget.get', 'widget.set'], 'duplicate objects de-duped');
 
   // QUEST V2 §B fix: quest.update rides the COMPUTER (the compute freebie), not the notebook. A computer-only room
   // therefore grants quest.update while granting NO notebook tool — the exact reach a bare interactive agent gets.
-  const compOnly = resolveTools('ag', station({ quarters: ['computer'] }, 'quarters'));
+  const compOnly = resolveTools('ag', keep({ quarters: ['computer'] }, 'quarters'));
   A.ok(compOnly.hasCompute, 'a computer grants compute');
   // The bare compute-only office exposes host-owned primitives and no general notebook tools. routine.notepad
   // is inert unless the host also minted a cronJobId for this exact scheduled run.
   // deliverable_note rides COMPUTER for the same reason quest.update/tool.search do: it must exist on the
   // compute-only interactive office, which is exactly the surface most likely to produce an unnamed file.
-  A.eq(compOnly.tools.slice().sort(), ['app.check', 'app.create', 'app.publish', 'app.read', 'app.schedule', 'app.write', 'code.run', 'deliverable_note', 'manual.read', 'quest.update', 'routine.notepad', 'station.inspect', 'station.show', 'todo', 'tool.search'], 'computer-only room grants the host-scoped routine scratch tool + the deliverable naming, task-plan and (deferred, inert-until-approved) plugin-authoring freebies, no general notebook tools');
+  A.eq(compOnly.tools.slice().sort(), ['app.check', 'app.create', 'app.publish', 'app.read', 'app.schedule', 'app.write', 'code.run', 'deliverable_note', 'manual.read', 'quest.update', 'routine.notepad', 'keep.inspect', 'keep.show', 'todo', 'tool.search'], 'computer-only room grants the host-scoped routine scratch tool + the deliverable naming, task-plan and (deferred, inert-until-approved) plugin-authoring freebies, no general notebook tools');
   A.eq(compOnly.approvalRules['quest.update'].requiresConsent, false, 'quest.update is consent-free (freebie trust class)');
   A.eq(compOnly.approvalRules['todo'].requiresConsent, false, 'todo is consent-free (taskplan freebie — a runnable agent always has a task list)');
 
   // unknown agent -> nothing
-  A.eq(resolveTools('ghost', station({ quarters: ['computer'] }, 'quarters')).tools.length, 0, 'unknown agent -> no tools');
+  A.eq(resolveTools('ghost', keep({ quarters: ['computer'] }, 'quarters')).tools.length, 0, 'unknown agent -> no tools');
 }
 
 // ---- B. canAgentUse ----
 {
-  const r = resolveTools('ag', station({ quarters: ['notebook'] }, 'quarters'));
+  const r = resolveTools('ag', keep({ quarters: ['notebook'] }, 'quarters'));
   A.ok(canAgentUse(r, 'notebook.read').ok, 'granted tool allowed');
   A.ok(!canAgentUse(r, 'shell.exec').ok, 'ungranted tool denied');
   A.ok(canAgentUse(r, 'shell.exec').reason.indexOf('shell.exec') >= 0, 'denial names the tool');
@@ -73,13 +73,13 @@ function station(objsByRoom, assignedRoom) {
 
 // ---- C. attenuate (intersection, never union) ----
 {
-  const r = resolveTools('ag', station({ quarters: ['notebook'] }, 'quarters'));
+  const r = resolveTools('ag', keep({ quarters: ['notebook'] }, 'quarters'));
   A.eq(attenuate(r, ['notebook.read', 'web.fetch']).tools, ['notebook.read'], 'attenuate intersects; never adds web.fetch');
 }
 
 // ---- C2. makeCapCtx threads run-scoped extras (runId) onto the ctx tools/dispatch consume (B1 seam) ----
 {
-  const r = resolveTools('ag', station({ quarters: ['notebook'] }, 'quarters'));
+  const r = resolveTools('ag', keep({ quarters: ['notebook'] }, 'quarters'));
   const cc = makeCapCtx(r, { runId: 'run_42' });
   A.eq(cc.runId, 'run_42', 'makeCapCtx surfaces runId from extra (so a tool can stamp sourceRunId)');
   A.eq(cc.agentId, 'ag', 'capCtx still carries agentId');
@@ -96,9 +96,9 @@ function station(objsByRoom, assignedRoom) {
   A.eq(fresh.tools.indexOf('web_search'), -1, 'F1: no DISH placed -> no web');
   A.eq(fresh.tools.indexOf('fs.read'), -1, 'F1: no CABINET placed -> no files');
   A.eq(fresh.tools.indexOf('shell.exec'), -1, 'F1: no WORKBENCH placed -> no terminal');
-  // QUEST V2 §B fix (truthful telemetry): quest.update MUST be present on the bare interactive office — the STATION
+  // QUEST V2 §B fix (truthful telemetry): quest.update MUST be present on the bare interactive office — the KEEP
   // QUESTS prompt (gated on isTask) commands it, and a real-provider run reported it MISSING when it rode the notebook.
-  // Now it rides compute (the freebie), so an agent with an EMPTY station can actually act on / mint quests.
+  // Now it rides compute (the freebie), so an agent with an EMPTY keep can actually act on / mint quests.
   A.ok(fresh.tools.indexOf('quest.update') >= 0, 'F1: bare interactive office (nothing placed) STILL grants quest.update — the prompt never advertises an absent tool');
 
   // F2. placing a DISH genuinely unlocks web (and ONLY web) — the core "object = capability" promise.
@@ -142,7 +142,7 @@ function setup() {
   {
     const { seq, emit } = setup();
     const provider = makeReplayProvider({ turns: [[{ type: 'text', delta: 'hi' }, { type: 'done', finishReason: 'stop' }]] });
-    const resolved = resolveTools('ag', station({ quarters: [] }, 'quarters'));
+    const resolved = resolveTools('ag', keep({ quarters: [] }, 'quarters'));
     const res = await runAgentLoop({ messages: [{ role: 'user', content: 'x' }], provider, emit, cost: makeCostEngine({ priceOf: provider.priceOf }), model: 'replay/model', capCtx: makeCapCtx(resolved) });
     A.eq(provider.callCount(), 0, 'no compute -> NO paid model call');
     const cd = seq.find(e => e.name === 'capdenied');
@@ -155,7 +155,7 @@ function setup() {
   {
     const { emit } = setup();
     const provider = makeReplayProvider({ turns: [[{ type: 'text', delta: 'hi' }, { type: 'done', finishReason: 'stop' }]] });
-    const resolved = resolveTools('ag', station({ quarters: ['computer'] }, 'quarters'));
+    const resolved = resolveTools('ag', keep({ quarters: ['computer'] }, 'quarters'));
     const res = await runAgentLoop({ messages: [{ role: 'user', content: 'x' }], provider, emit, cost: makeCostEngine({ priceOf: provider.priceOf }), model: 'replay/model', capCtx: makeCapCtx(resolved) });
     A.eq(provider.callCount(), 1, 'compute present -> model call proceeds');
     A.eq(res.reason, 'done', 'normal completion');
@@ -172,7 +172,7 @@ function setup() {
     let ran = 0;
     reg.register({ name: 'notebook.read', capability: 'memory', schema: { type: 'object' }, run: async () => { ran++; return 'secret notes'; } });
     // computer present (run proceeds) but NO notebook -> notebook.read is not granted
-    const resolved = resolveTools('ag', station({ quarters: ['computer'] }, 'quarters'));
+    const resolved = resolveTools('ag', keep({ quarters: ['computer'] }, 'quarters'));
     const res = await runAgentLoop({
       messages: [{ role: 'user', content: 'read my notes' }], provider, emit, cost: makeCostEngine({ priceOf: provider.priceOf }),
       model: 'replay/model', tools: reg.wireFormat(), dispatch: (c, ctx) => reg.dispatch(c, ctx), capCtx: makeCapCtx(resolved)

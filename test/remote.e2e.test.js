@@ -10,13 +10,13 @@
      5. A run is DETACHED: the phone disconnects mid-run, the run still finishes, and the reply is there on reconnect.
      6. A DESKTOP run's approval is answerable from the phone, and the desk stream learns it was answered.
      7. The LAN door serves no /api route; revoke cuts a phone off at once.
-     8. Across a restart: Remote stays on, the station key and the paired phone persist, and the phone reconnects.
-     9. SESSION PARITY: a session that exists on the desk (in the station save) is in the phone's list with its
+     8. Across a restart: Remote stays on, the keep key and the paired phone persist, and the phone reconnects.
+     9. SESSION PARITY: a session that exists on the desk (in the keep save) is in the phone's list with its
         title and history; a phone turn sent into it runs WITH that history and lands under the same session id;
         phone-started runs are listed for the desk to adopt (GET /api/remote/recent).
-    10. THE STATION PICTURE: the desk page hands over a still (POST /api/remote/view); the phone reads it with the
+    10. THE KEEP PICTURE: the desk page hands over a still (POST /api/remote/view); the phone reads it with the
         `view` verb, which is also what tells the desk a phone is looking; each agent's portrait is its own sprite.
-    11. NOTIFICATIONS: the phone reads the station's push key, subscribes, and a push it cannot deliver is reported
+    11. NOTIFICATIONS: the phone reads the keep's push key, subscribes, and a push it cannot deliver is reported
         as not sent (never as sent). */
 'use strict';
 const A = require('./_assert.js');
@@ -134,7 +134,7 @@ function startMockModel() {
     A.eq(st.body.devices.length, 1, 'the desk lists the paired phone');
     A.eq(st.body.devices[0].name, 'Test phone', 'with its name');
 
-    client = Phone.connect({ base: lan, deviceId: paired.deviceId, stationPub: pr.body.stationPub, key });
+    client = Phone.connect({ base: lan, deviceId: paired.deviceId, keepPub: pr.body.keepPub, key });
     const status = await client.call('status');
     A.eq(status.ok, true, 'status over the sealed channel');
     A.ok(status.data.agents.some(a => a.agentId === 'forge' && a.state === 'idle'), 'the phone sees FORGE idle');
@@ -184,7 +184,7 @@ function startMockModel() {
     await Promise.race([listening, sleep(1000)]);
     await waitUntil(async () => !(await fx.json('GET', '/api/remote')).body.connected.some(c => c.live), 5000, 'phone stream detached');
     llm.gate.release();
-    const client2 = Phone.connect({ base: lan, deviceId: paired.deviceId, stationPub: pr.body.stationPub, key });
+    const client2 = Phone.connect({ base: lan, deviceId: paired.deviceId, keepPub: pr.body.keepPub, key });
     await waitUntil(async () => { const t = await client2.call('thread', { streamId }); return t.data.some(x => x.role === 'assistant' && /SLOW_DONE/.test(x.content)); }, 20000, 'slow reply after reconnect');
     A.ok(true, 'a run started from the phone finished while the phone was gone, and the reply was there on reconnect');
     client = client2;
@@ -237,18 +237,18 @@ function startMockModel() {
     A.ok(recent.body.runs.some(r => r.runId === cont.data.runId && r.streamId === 'ws_desk_launch' && r.live === false && r.endedAt), 'the desk can see the phone run and its session');
     A.ok(recent.body.runs.some(r => r.streamId === streamId && /remote shell proof|slow reply/.test(r.title)), 'and the phone-started conversation, titled with what was said');
     const tr = await fx.json('GET', '/api/transcript?agent=forge&stream=ws_desk_launch&limit=50');
-    A.ok((tr.body.turns || []).some(t => t.role === 'assistant' && /CODEWORD_HELIX_SEEN/.test(String(t.content))), 'the turn is in the station transcript under the desk session id (the desk merges it on open)');
+    A.ok((tr.body.turns || []).some(t => t.role === 'assistant' && /CODEWORD_HELIX_SEEN/.test(String(t.content))), 'the turn is in the keep transcript under the desk session id (the desk merges it on open)');
 
-    // 10. the station picture
+    // 10. the keep picture
     const want0 = await fx.json('GET', '/api/remote/view');
-    A.eq([want0.body.enabled, want0.body.at], [true, null], 'the desk is told Remote is on and that the station has no picture yet');
+    A.eq([want0.body.enabled, want0.body.at], [true, null], 'the desk is told Remote is on and that the keep has no picture yet');
     const noPic = await client.call('view', {});
     A.ok(noPic.ok && noPic.data.none === true, 'a phone asking before any picture exists is told there is none');
     const want1 = await fx.json('GET', '/api/remote/view');
     A.eq(want1.body.want, true, 'and its asking is what makes the desk start drawing');
     const pic = Buffer.concat([Buffer.from('RIFF'), Buffer.from([0, 0, 0, 0]), Buffer.from('WEBPVP8 '), Buffer.alloc(3000, 9)]);
     const bad = await fx.json('POST', '/api/remote/view', { w: 640, h: 480, data: Buffer.from('not a picture').toString('base64') });
-    A.eq(bad.status, 400, 'the station refuses something that is not a picture');
+    A.eq(bad.status, 400, 'the keep refuses something that is not a picture');
     const putPic = await fx.json('POST', '/api/remote/view', { w: 640, h: 480, bodies: [{ agentId: 'forge', x: 320, y: 200 }], data: pic.toString('base64') });
     A.ok(putPic.status === 200 && putPic.body.ok, 'the desk page hands over a still: ' + JSON.stringify(putPic.body).slice(0, 120));
     const got = await client.call('view', {});
@@ -273,14 +273,14 @@ function startMockModel() {
 
     // 11. notifications
     const pk = await client.call('pushKey');
-    A.ok(pk.ok && /^[A-Za-z0-9_-]{80,90}$/.test(pk.data.key) && pk.data.on === false, 'the phone reads the station push key; not subscribed yet');
+    A.ok(pk.ok && /^[A-Za-z0-9_-]{80,90}$/.test(pk.data.key) && pk.data.on === false, 'the phone reads the keep push key; not subscribed yet');
     const nodeCrypto = require('crypto');
     const ecdh = nodeCrypto.createECDH('prime256v1'); ecdh.generateKeys();
     const bsub = { endpoint: 'https://127.0.0.1:9/push/abc', keys: { p256dh: ecdh.getPublicKey().toString('base64url'), auth: nodeCrypto.randomBytes(16).toString('base64url') } };
     A.eq((await client.call('pushOn', { endpoint: 'http://127.0.0.1:9/x', keys: bsub.keys })).ok, false, 'a plain-http push address is refused');
     A.eq((await client.call('pushOn', { endpoint: 'https://evil.example/collect', keys: bsub.keys })).ok, false, 'a push address that is not a real push service is refused');
     A.eq((await client.call('pushOn', bsub)).ok, true, 'the phone subscribes');
-    A.eq((await client.call('pushKey')).data.on, true, 'and the station says so');
+    A.eq((await client.call('pushKey')).data.on, true, 'and the keep says so');
     const tp = await client.call('pushTest');
     A.eq(tp.ok, false, 'a push that cannot be delivered is reported as not sent: ' + JSON.stringify(tp).slice(0, 120));
     A.eq((await client.call('pushOff')).ok, true, 'the phone unsubscribes');
@@ -288,7 +288,7 @@ function startMockModel() {
 
     // 7. the LAN door is not the API; revoke cuts a phone off
     A.eq((await fetch(lan + '/api/remote')).status, 404, 'the LAN door serves no /api route');
-    A.eq((await fetch(lan + '/')).status, 404, 'nor the station page');
+    A.eq((await fetch(lan + '/')).status, 404, 'nor the keep page');
 
     // a second phone, to carry through the restart
     const pr2 = await fx.json('POST', '/api/remote/pair', { name: 'Tablet' });
@@ -299,10 +299,10 @@ function startMockModel() {
     A.eq(rv.status, 200, 'revoke');
     let cut = false; try { await client.call('status'); } catch (_) { cut = true; }
     A.ok(cut, 'the revoked phone is cut off at once');
-    let hello = false; try { await Phone.connect({ base: lan, deviceId: paired.deviceId, stationPub: pr.body.stationPub, key }).call('status'); } catch (e) { hello = /unknown device/.test(e.message); }
+    let hello = false; try { await Phone.connect({ base: lan, deviceId: paired.deviceId, keepPub: pr.body.keepPub, key }).call('status'); } catch (e) { hello = /unknown device/.test(e.message); }
     A.ok(hello, 'and cannot say hello again');
 
-    // 8. restart: switch, station key and paired phone persist; the door reopens
+    // 8. restart: switch, keep key and paired phone persist; the door reopens
     const raw = fs.readFileSync(path.join(fx.workspace, '.secrets', 'remote.json'), 'utf8');
     A.ok(raw.indexOf(key2.publicRaw) >= 0 && raw.indexOf(key.publicRaw) < 0, 'on disk: the kept phone, not the revoked one');
     await fx.restart();
@@ -310,16 +310,16 @@ function startMockModel() {
     A.eq(after.body.enabled, true, 'Remote is still on after a restart');
     A.eq(after.body.listening, true, 'the LAN door reopened on boot');
     A.eq(after.body.devices.map(d => d.name), ['Tablet'], 'the paired phone survived the restart');
-    const c3 = Phone.connect({ base: lan, deviceId: paired2.deviceId, stationPub: pr2.body.stationPub, key: key2 });
-    A.eq((await c3.call('status')).ok, true, 'the phone reconnects after a restart with the same station key');
+    const c3 = Phone.connect({ base: lan, deviceId: paired2.deviceId, keepPub: pr2.body.keepPub, key: key2 });
+    A.eq((await c3.call('status')).ok, true, 'the phone reconnects after a restart with the same keep key');
 
-    // 12. E-STOP reaches a phone run: while it works it is on the station's run list (a reconnect keeps the agent
+    // 12. E-STOP reaches a phone run: while it works it is on the keep's run list (a reconnect keeps the agent
     //     working on the floor), and the halt aborts it and counts it
     const held = await c3.call('send', { agentId: 'forge', text: 'slow reply' });
     A.eq(held.ok, true, 'a held phone task started');
     await waitUntil(() => !!llm.gate.held, 20000, 'model holding the phone task');
     const snap = await fx.json('GET', '/api/state/snapshot');
-    A.ok(snap.body.runs.some(r => r.runId === held.data.runId && r.agentId === 'forge' && r.source === 'remote'), 'the phone run is in the station snapshot: ' + JSON.stringify(snap.body.runs).slice(0, 200));
+    A.ok(snap.body.runs.some(r => r.runId === held.data.runId && r.agentId === 'forge' && r.source === 'remote'), 'the phone run is in the keep snapshot: ' + JSON.stringify(snap.body.runs).slice(0, 200));
     const halt = await fx.json('POST', '/api/halt', {});
     A.ok(halt.status === 200 && halt.body.halted >= 1, 'E-STOP counts the phone run: ' + JSON.stringify(halt.body).slice(0, 160));
     await waitUntil(async () => (await fx.json('GET', '/api/remote/recent')).body.runs.some(r => r.runId === held.data.runId && r.live === false), 10000, 'phone run ended by E-STOP');

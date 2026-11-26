@@ -1,11 +1,11 @@
-/* crtlab.js — DEV-ONLY live tuning panel for the CRT/fade overlay + the station lighting.
+/* crtlab.js — DEV-ONLY live tuning panel for the CRT/fade overlay + the keep lighting.
  *
  * Inert unless the page is opened with ?crtlab (e.g. http://127.0.0.1:8791/?crtlab=1).
  * It mutates the SAME live config objects the renderer reads — World.crt (scanlines/fade/
- * glow, applied every frame) and StationBake.LIGHT (the bake; a debounced World.rebake()
+ * glow, applied every frame) and KeepBake.LIGHT (the bake; a debounced World.rebake()
  * re-runs it) — so you compare options in real time. "COPY VALUES" puts the exact numbers
  * on the clipboard so they can be baked in as the new defaults. Ships nothing on its own:
- * with no ?crtlab it never builds, and the defaults live in world.js / stationbake.js.
+ * with no ?crtlab it never builds, and the defaults live in world.js / keepbake.js.
  */
 (function () {
   if (!/[?&]crtlab\b/.test(location.search)) return;
@@ -14,13 +14,13 @@
   if (typeof WorldRenderer !== 'undefined' && WorldRenderer.enabled()) Object.assign(CRT_DEFAULTS, WorldRenderer.PHOSPHOR);
   if (CRT_DEFAULTS.sharpen == null) CRT_DEFAULTS.sharpen = 0;
   if (CRT_DEFAULTS.film == null) CRT_DEFAULTS.film = 0;
-  // MUST MIRROR StationBake.LIGHT — RESET writes these back over the live object (same contract as
+  // MUST MIRROR KeepBake.LIGHT — RESET writes these back over the live object (same contract as
   // WALL_DEFAULTS below). Dulled 2026-08-15 alongside the bake; a stale mirror here would make RESET
-  // restore the brighter station that no longer ships.
+  // restore the brighter keep that no longer ships.
   const LIGHT_DEFAULTS = { ambient: 0.82, pool: 0.85, room: 0.46, corridor: 0.34, door: 0.4, floor: 0.24, crown: 0.45, pitch: 8, reach: 1.3, falloff: 0.85, cool: 0.45, warm: 0.16, spill: 0.7 };
-  // MUST MIRROR StationBake.SHAPE — same RESET-writes-these contract as WALL_DEFAULTS below.
+  // MUST MIRROR KeepBake.SHAPE — same RESET-writes-these contract as WALL_DEFAULTS below.
   const SHAPE_DEFAULTS = { cornerN: 1 };
-  /* MUST MIRROR StationBake.WALL EXACTLY — these are not just the readout's key list, RESET writes
+  /* MUST MIRROR KeepBake.WALL EXACTLY — these are not just the readout's key list, RESET writes
      them back over the live object. They had drifted (up 9, side 12) behind the shipped 14/7, so
      RESET restored a state that never shipped and side 12 pushed the wall band past the hull
      silhouette it is pinned to. Add a WALL knob, add it here. */
@@ -45,9 +45,9 @@
     'Bright room':     { light: { ambient: 0.52, pool: 0.9, floor: 0.2 } },
     'Balanced':        { light: { ambient: 0.66, pool: 0.95, floor: 0.22 } },
     'Dark + pools':    { light: { ambient: 0.82, pool: 1.0, floor: 0.26 } },
-    // the pre-2026-08-15 station, for A/Bing the dulling pass against what shipped before it
+    // the pre-2026-08-15 keep, for A/Bing the dulling pass against what shipped before it
     'Light: pre-08-15': { light: { ambient: 0.77, pool: 1, room: 0.6, corridor: 0.42, door: 0.5 } },
-    // the pre-2026-09-02 station: linear pool falloff, warm-black shadow, no film, no spill, pools at
+    // the pre-2026-09-02 keep: linear pool falloff, warm-black shadow, no film, no spill, pools at
     // reach 1, plus the heavier scan/grain — A/B the whole glow-up against what shipped before it
     'Light: pre-09-02': { light: { ambient: 0.82, pool: 0.85, room: 0.48, corridor: 0.34, door: 0.42, floor: 0.2, reach: 1, falloff: 0, cool: 0, warm: 0, spill: 0 }, crt: { scan: 0.43, grain: 0.24, aberr: 0.35 } },
     // the pre-2026-09-03 world: no bloom, no prop light, no cast shadows' worth of light, thin film, faint dither — A/B the whole overhaul
@@ -59,7 +59,7 @@
     'CRT: old TV':     { crt: { scan: 0.46, pitch: 2, curve: 0.13, vig: 0.40, aberr: 0.3, bloom: 0.2, mask: 0.22, bleed: 0.2, roll: 0.12 } },
     'CRT: heavy TV':   { crt: { scan: 0.55, pitch: 3, curve: 0.16, vig: 0.48, aberr: 0.45, bloom: 0.3, mask: 0.32, bleed: 0.3, roll: 0.2 } },
     'Light: v1 (flat)': { light: { falloff: 0, cool: 0, warm: 0, spill: 0 } },
-    // side is pinned at `pad` (7) — past it the wall band juts out of the station's own silhouette
+    // side is pinned at `pad` (7) — past it the wall band juts out of the keep's own silhouette
     'Flat (old)':      { wall: { up: 0, corUp: 0, skirt: 12, side: 4 }, depth: { wallShadow: 0, sheen: 0, cornerAO: 0, dither: 0, floorWear: 0, floorDetail: 0, deckSeam: 0, wallDetail: 0, poolAlbedo: 0 } },
     'Tall halls':      { wall: { up: 10, corUp: 6, skirt: 32, side: 7 } },
     'Towering':        { wall: { up: 32, corUp: 15, skirt: 38, side: 7 } },
@@ -75,10 +75,10 @@
     'Ap: wide open':   { crt: { vig: 0.16, over: 1.24 }, tube: { clear: 80, mid: 93, midA: 0.16, edgeA: 0.48, inset: 24 } },
   };
 
-  // World/StationBake are top-level `const`s (global lexical bindings, NOT window props), so
+  // World/KeepBake are top-level `const`s (global lexical bindings, NOT window props), so
   // reference them bare with a window fallback.
   const W = () => (typeof World !== 'undefined' ? World : window.World);
-  const SB = () => (typeof StationBake !== 'undefined' ? StationBake : window.StationBake);
+  const SB = () => (typeof KeepBake !== 'undefined' ? KeepBake : window.KeepBake);
   const crt = () => (W() && W().crt) || {};
   const light = () => (SB() && SB().LIGHT) || {};
   const wall = () => (SB() && SB().WALL) || {};
@@ -265,8 +265,8 @@
     section(body, 'WALL HEIGHT (re-bakes)');
     sliders.push(buildSlider(body, wall, 'up', 0, 36, 1, scheduleRebake));      // room north face rise
     sliders.push(buildSlider(body, wall, 'corUp', 0, 48, 1, scheduleRebake));   // include the shipped 30px corridor face without clamping the readout
-    sliders.push(buildSlider(body, wall, 'skirt', 6, 44, 1, scheduleRebake));   // hull drop below the station
-    sliders.push(buildSlider(body, wall, 'side', 4, 7, 1, scheduleRebake));     // e/w wall band width — 7 is the hull's own reach (`pad`); past it the wall juts out of the station silhouette
+    sliders.push(buildSlider(body, wall, 'skirt', 6, 44, 1, scheduleRebake));   // hull drop below the keep
+    sliders.push(buildSlider(body, wall, 'side', 4, 7, 1, scheduleRebake));     // e/w wall band width — 7 is the hull's own reach (`pad`); past it the wall juts out of the keep silhouette
     sliders.push(buildSlider(body, wall, 'sideCap', 2, 6, 1, scheduleRebake));  // lit top surface of the e/w/s walls — the crown ring's width
     sliders.push(buildSlider(body, wall, 'hullLit', 0.1, 1, 0.01, scheduleRebake));   // exterior exposure at the DECK LINE — the plate ring and the top of the skirt, where the room's light spills over the crown
     sliders.push(buildSlider(body, wall, 'hullVoid', 0, 0.8, 0.01, scheduleRebake));  // exterior exposure at the skirt's FOOT — starlight only; the skirt fades between the two
@@ -278,7 +278,7 @@
       sliders.push(buildSlider(body, industrial, 'floorGain', .65, 1.2, .01, scheduleRebake));
       sliders.push(buildSlider(body, industrial, 'wallGain', .65, 1.2, .01, scheduleRebake));
       sliders.push(buildSlider(body, industrial, 'contact', 0, .6, .01, scheduleRebake));
-      sliders.push(buildSlider(body, industrial, 'cut', 0, 3, .05, scheduleRebake));          // how far a lamp pool opens the ambient film (1 = the pre-09-22 station)
+      sliders.push(buildSlider(body, industrial, 'cut', 0, 3, .05, scheduleRebake));          // how far a lamp pool opens the ambient film (1 = the pre-09-22 keep)
       sliders.push(buildSlider(body, industrial, 'key', 0, 2, .05, scheduleRebake));          // warm gain landed ON the surface inside each pool (0 = off)
       sliders.push(buildSlider(body, industrial, 'keyReach', .2, 1, .02, scheduleRebake));    // key radius as a fraction of the cut — tighter = distinct pools, wider = haze
       sliders.push(buildSlider(body, industrial, 'keyProps', 0, 4, .1, scheduleRebake));      // screen/beacon colour splashed onto what surrounds them
@@ -328,7 +328,7 @@
       if(typeof IndustrialTextures!=='undefined')IndustrialTextures.ready.then(()=>setTimeout(syncAll,0));
       return;
     }
-    if (tries <= 0) { console.warn('[crtlab] World/StationBake not ready'); return; }
+    if (tries <= 0) { console.warn('[crtlab] World/KeepBake not ready'); return; }
     setTimeout(() => boot(tries - 1), 200);
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', () => boot(40));

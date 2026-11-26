@@ -3,12 +3,12 @@ Date: 2026-10-15
 Status: planning document only; no runtime changes, tests, or visual assets yet.
 
 ## Goal
-Reskin the forked Eyehold frontend into the original dark-fantasy Eyehold world while preserving truthful AI runtime telemetry, workstation permissions, agent delegation, pathfinding, and the possibility of adding arbitrary new themed rooms/factions without editing hardcoded seven-room logic.
+Reskin the forked Eyehold frontend into the original dark-fantasy Eyehold world while preserving truthful AI runtime telemetry, workkeep permissions, agent delegation, pathfinding, and the possibility of adding arbitrary new themed rooms/factions without editing hardcoded seven-room logic.
 
 ## Verified source entrypoints (fork default branch feat/harness-backend)
 - `frontend/index.html`: HTML/CSS/script loader, boot/splash and overseer creation; contains references to protected Eyehold branding, logo, sprites and UI terminology.
-- `frontend/app/world.js`: primary multi-room canvas renderer; camera pan/zoom, procedural station bake, runtime projections, geometry recalc, characters, routing and pathing.
-- `frontend/app/zones.js`: pure idle-zone geometry derived from rooms/workstations; includes multi-room/solo and leash modes.
+- `frontend/app/world.js`: primary multi-room canvas renderer; camera pan/zoom, procedural keep bake, runtime projections, geometry recalc, characters, routing and pathing.
+- `frontend/app/zones.js`: pure idle-zone geometry derived from rooms/workkeeps; includes multi-room/solo and leash modes.
 - `frontend/app/app.js`: user-facing agent roster and selected overseer/hero, agent skins, runtime bridge state.
 - `frontend/app/workflowpanel.js`: workflow UI for multiple bays and routing lines; relies on compiled workflow plan/server facts.
 - `sidecar/`: local Node agent runtime (see docs/BRAIN.md); dispatch and capability validation must not be overridden by themes.
@@ -18,18 +18,18 @@ Reskin the forked Eyehold frontend into the original dark-fantasy Eyehold world 
 - `docs/WORKFORCE_ZONES_PLAN.md`: old plan for derived room/leash restrictions, verify contemporary implementation.
 
 ## Remaining inventory required before code mutations
-1. List all `frontend/app/*.js` scripts actually loaded by `frontend/index.html`; identify `worldmodel.js`, `stationbake.js`, build-mode controls, renderer, pathfinder, sprite/portrait registries and storage boundary.
-2. Inventory `frontend/assets/` by filename, pixel dimensions, license/provenance. Mark all original author's reserved name/logo/station art/sprites as **replace**, including any copies in website/Tauri icons or build resources.
-3. Find explicit limits on room count, station dimensions, tile coordinates, prop counts, agent count, zoom/minimap, and persistence schema; record performance at 1, 7, 12, 25 rooms.
+1. List all `frontend/app/*.js` scripts actually loaded by `frontend/index.html`; identify `worldmodel.js`, `keepbake.js`, build-mode controls, renderer, pathfinder, sprite/portrait registries and storage boundary.
+2. Inventory `frontend/assets/` by filename, pixel dimensions, license/provenance. Mark all original author's reserved name/logo/keep art/sprites as **replace**, including any copies in website/Tauri icons or build resources.
+3. Find explicit limits on room count, keep dimensions, tile coordinates, prop counts, agent count, zoom/minimap, and persistence schema; record performance at 1, 7, 12, 25 rooms.
 4. Trace create room -> geometry bake -> per-agent zone -> capability scope -> sidecar authorization -> SSE event -> world animation.
 5. Inventory existing dynamic room creation/UI before implementing anything redundant.
 
 ## Extensible architecture (proposed, not yet implemented)
-- **Realm = underlying station**. Keep the existing canonical WorldModel data and serialized layout as the only authority for geometry and capability boundaries.
+- **Realm = underlying keep**. Keep the existing canonical WorldModel data and serialized layout as the only authority for geometry and capability boundaries.
 - **Territory = room metadata**, keyed by stable underlying room ID, NOT fixed room array index and NOT theme name. An arbitrary number of territories may exist.
 - **Faction = presentation and default agent role template**, not an authority bypass. A faction can occupy multiple rooms; rooms can be reassigned.
 - **Theme package registry**, a declarative manifest resolving each room to `themeId`, `factionId`, `environmentId`, `assetSetId`, descriptive display name, and optional decorations. Fallback to a generic fantasy room/agent when assets are unavailable.
-- **Room addition workflow**: user opens Build Mode -> Add Territory -> chooses room type/template and optional team -> places/resizes/connects room -> assigns permitted workstations/tools/agents -> saves. The existing layout compiler/pathfinder validates adjacency, routing and privileges. No recompilation required for a new room of an existing type.
+- **Room addition workflow**: user opens Build Mode -> Add Territory -> chooses room type/template and optional team -> places/resizes/connects room -> assigns permitted workkeeps/tools/agents -> saves. The existing layout compiler/pathfinder validates adjacency, routing and privileges. No recompilation required for a new room of an existing type.
 - **New faction workflow**: add a new manifest entry + sprite assets and optional role templates. Do not add switch statements to world.js for each faction; registry-driven asset selection.
 - **Sauron-like overseer**: use original 'The Eye' identity, bind to actual lead agent ID and supervisor permissions; no unlimited privileges merely from character skin.
 - **State separation**: theme manifests are presentation metadata; every work/blocked/completed animation remains tied to real runtime events. No fabricated agent work or revenue indicators.

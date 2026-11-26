@@ -40,7 +40,7 @@ try {
   await capture(cdp, out, 'surface-room');
   const pixel = await evalJS(cdp, "Array.from(document.getElementById('prop-catalog-fixture').getContext('2d').getImageData(120,120,1,1).data)");
   assert.ok(pixel[3] > 0, 'Room canvas is blank');
-  const receipt = { fixtureOnly: true, types: 160, directions: covered.size, states: ['idle', 'powered-fixture'], rooms, pixel, exceptions: diagnostics.exceptions, savedStationAcceptance: false };
+  const receipt = { fixtureOnly: true, types: 160, directions: covered.size, states: ['idle', 'powered-fixture'], rooms, pixel, exceptions: diagnostics.exceptions, savedKeepAcceptance: false };
   fs.writeFileSync(path.join(out, 'browser-receipt.json'), JSON.stringify(receipt, null, 2));
   assert.deepEqual(diagnostics.exceptions, []);
   console.log(JSON.stringify({ types: 160, directions: covered.size, rooms: rooms.length, pixel, exceptions: diagnostics.exceptions.length }));

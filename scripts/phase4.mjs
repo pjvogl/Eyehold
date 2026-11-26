@@ -157,7 +157,7 @@ function checkTwoPassSoak(loop) {
   const ev = attendedEvidence();
   const soak = ev && ev.soak;
   const ok = soak && soak.freshPass && soak.restartPass && soak.transcriptPreserved
-    && soak.ledgerPreserved && soak.artifactsPreserved && soak.memoryPreserved && soak.stationStatePreserved;
+    && soak.ledgerPreserved && soak.artifactsPreserved && soak.memoryPreserved && soak.keepStatePreserved;
   return {
     id: '4.4-two-pass-soak',
     phase: '4.4',
@@ -169,7 +169,7 @@ function checkTwoPassSoak(loop) {
     evidenceFile: evFile,
     reason: ok
       ? 'Fresh and restart pass evidence is present.'
-      : 'Needs attended evidence for fresh pass, restart pass, transcript, ledger, artifacts, memory, and station state preservation.'
+      : 'Needs attended evidence for fresh pass, restart pass, transcript, ledger, artifacts, memory, and keep state preservation.'
   };
 }
 

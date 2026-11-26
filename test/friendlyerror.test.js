@@ -68,7 +68,7 @@ for (const raw of [
 ]) {
   const v = friendlyError(new Error(raw));
   A.eq(v.kind, 'network', raw + ' classifies as a transport disconnect');
-  A.eq(v.retryable, true, raw + ' remains retryable after the station returns');
+  A.eq(v.retryable, true, raw + ' remains retryable after the keep returns');
   A.ok(/try again/i.test(v.userMessage), raw + ' still gives a concrete next step');
   // the regression guard: unprobed, it must not blame (or absolve) the local engine.
   A.eq(v.engineAlive, null, raw + ' unprobed => engineAlive null');
@@ -106,9 +106,9 @@ for (const raw of [
   A.eq(v.retryable, true, 'a failed check is retryable (the service hiccup passes)');
   A.eq(v.action, null, 'retry is the door, not a top-up');
 }
-// ---- the service REFUSED the station's link: relink, never top up ----
+// ---- the service REFUSED the keep's link: relink, never top up ----
 {
-  const v = friendlyError("Managed credits are unavailable — your Eyehold account refused this station's link (it was unlinked, or belongs to another account). Relink it under SETTINGS → AI & MODELS → EYEHOLD MANAGED (or use your own provider key).");
+  const v = friendlyError("Managed credits are unavailable — your Eyehold account refused this keep's link (it was unlinked, or belongs to another account). Relink it under SETTINGS → AI & MODELS → EYEHOLD MANAGED (or use your own provider key).");
   A.eq(v.kind, 'managed_credit_link', 'a refused link is its own kind');
   A.ok(/relink/i.test(v.userMessage) && !/out of|top up/i.test(v.userMessage), 'it points at relinking, never at a top-up: ' + v.userMessage);
   A.eq(v.action, 'store', 'the door is AI & MODELS, where the EYEHOLD card relinks');
@@ -195,7 +195,7 @@ for (const raw of [
   A.eq(v.kind, 'stale_session', 'a sidecar 403 classifies as stale_session, not auth');
   A.eq(v.action, 'reload', 'the door is a reload, never the provider-key field');
   A.eq(v.retryable, false, 'a stale token is not fixed by a blind retry');
-  A.ok(/restart/i.test(v.userMessage) && /reload/i.test(v.userMessage), 'the copy says the station restarted and to reload');
+  A.ok(/restart/i.test(v.userMessage) && /reload/i.test(v.userMessage), 'the copy says the keep restarted and to reload');
   const btn = actionButton(v);
   A.ok(btn && /reload/i.test(btn.label) && typeof btn.run === 'function', 'actionButton yields a RELOAD door');
   A.ok(!/key/i.test(btn.label), 'the label never offers "Add a key" for a stale session');
@@ -236,7 +236,7 @@ for (const raw of [
   A.ok(btn && /BUILD MODE/i.test(btn.label) && typeof btn.run === 'function', 'a capdenied verdict yields a BUILD MODE button with a run()');
   A.eq(actionButton({ action: null, retryable: true }), null, 'a plain-retry verdict yields no action button');
   A.eq(actionButton(null), null, 'a null verdict yields no button (never throws)');
-  // run() is safe to call with no globals present (Build/StationUI undefined in node) — must not throw.
+  // run() is safe to call with no globals present (Build/KeepUI undefined in node) — must not throw.
   let threw = false; try { btn.run(); } catch (_) { threw = true; }
   A.ok(!threw, "the REFIT button's run() degrades quietly when no surface is loaded");
   // auth (no ChatGPT connected in node) → a key/settings door
@@ -369,7 +369,7 @@ for (const raw of [
 }
 
 /* ---- A SUPERGROK USER WAS TOLD TO "SIGN IN WITH CHATGPT" (2026-09-27 user report) ----
-   The /api/run guard answered a bare "missing key/model" for a signed-out GROK OAUTH station, and every one of
+   The /api/run guard answered a bare "missing key/model" for a signed-out GROK OAUTH keep, and every one of
    these read "No model is connected yet — add a provider key (or sign in with ChatGPT)". Each failure now names
    its own provider and its own door. Both ladders (delegate + browser kindFromRaw) must agree. */
 {
@@ -445,9 +445,9 @@ for (const raw of [
   const btn = actionButton(interrupted);
   A.ok(btn && /SPENDING LIMITS/.test(btn.label), 'the door names SPENDING LIMITS (got: ' + (btn && btn.label) + ')');
   const opened = [];
-  const prevUI = global.StationUI;
-  global.StationUI = { openTerm(key, section) { opened.push([key, section]); } };
-  try { btn.run(); } finally { if (prevUI === undefined) delete global.StationUI; else global.StationUI = prevUI; }
+  const prevUI = global.KeepUI;
+  global.KeepUI = { openTerm(key, section) { opened.push([key, section]); } };
+  try { btn.run(); } finally { if (prevUI === undefined) delete global.KeepUI; else global.KeepUI = prevUI; }
   A.eq(JSON.stringify(opened), JSON.stringify([['settings', 'budget']]), 'the door opens SETTINGS › SPENDING LIMITS (section budget)');
   // not swallowed: provider billing and the generic unknown stay what they were
   A.eq(friendlyError(Object.assign(new Error('openai http 429 - insufficient_quota'), { status: 429 })).kind, 'billing', 'provider billing is untouched');

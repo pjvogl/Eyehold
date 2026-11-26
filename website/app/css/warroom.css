@@ -42,7 +42,7 @@
 #crew .dot.wr-await { background: var(--bad); box-shadow: 0 0 8px rgba(255, 92, 77, .85); animation: wr-dot .5s infinite; }
 @keyframes wr-dot { 0%, 100% { opacity: 1; } 50% { opacity: .3; } }
 
-/* ---------- CINEMA mode: the living station fills the frame ---------- */
+/* ---------- CINEMA mode: the living keep fills the frame ---------- */
 .cam-cine {
   position: absolute; bottom: 7px; right: 12px; pointer-events: auto; z-index: 4;
   font-family: inherit; font-size: 13px; letter-spacing: 1px; cursor: pointer;

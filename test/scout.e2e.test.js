@@ -14,7 +14,7 @@
        a recipe draft is STAGED, and the ledger records both hops (interests folded + recipe staged).
 
    BOOT 2 — THE HONEST-FAILURE CHAIN (anti-silent-no-op; warm pre-seeded so the mint attempt fires):
-     · a well-formed recipe whose WHY cites NOTHING the station observed is rejected by the grounding
+     · a well-formed recipe whose WHY cites NOTHING the keep observed is rejected by the grounding
        guard: NO draft staged + a 'rejected' ledger note (visible failure, never a quiet nothing);
      · an extraction reply with INVENTED evidence folds to zero topics + an honest 'none' ledger note.
 
@@ -55,7 +55,7 @@ function startMock(replies) {
           };
           if (body.indexOf('intake analyst') >= 0) { calls.push('extraction'); text(replies.extraction); }        // interests.buildDirective's system marker
           else if (body.indexOf('recipe author') >= 0) { calls.push('recipe'); text(replies.recipe); }            // scout.buildRecipeDirective's system marker
-          else if (body.indexOf("station's recruiter") >= 0) { calls.push('recruiter'); text(replies.prospect || 'NONE'); }   // the LLM prospect authorship pass
+          else if (body.indexOf("keep's recruiter") >= 0) { calls.push('recruiter'); text(replies.prospect || 'NONE'); }   // the LLM prospect authorship pass
           else { calls.push('run'); text('ok, done.'); }                                                          // the main task run itself
         });
         return;
@@ -145,7 +145,7 @@ const QUIET = { SKYNET_THREAD_MINE: '0', SKYNET_SKILL_REVIEW: '0', SKYNET_SKILL_
 
       // sanity: pre-run, the scout is honestly COLD (no interests -> warm:false, gate binds 'cold').
       const cold = await (await fetch(B + '/api/scout', { headers: { 'X-Eyehold-Token': token, Origin: B } })).json();
-      A.eq(cold.warm, false, 'pre-run the station is honestly cold (no interests yet)');
+      A.eq(cold.warm, false, 'pre-run the keep is honestly cold (no interests yet)');
       A.eq(cold.gate.binding, 'cold', 'the gate reports the cold binding pre-run');
 
       // drive REAL task runs — the post-run hook is the ONLY trigger used (no state poked mid-flight).
@@ -158,7 +158,7 @@ const QUIET = { SKYNET_THREAD_MINE: '0', SKYNET_SKILL_REVIEW: '0', SKYNET_SKILL_
         p => p.staged && p.staged.some(it => it.kind === 'recipe'),
         'a recipe draft staged by the live scout cycle');
       A.ok(true, 'ORCHESTRATION: a real run chain staged a recipe draft end-to-end');
-      A.eq(s.warm, true, 'the station is WARM off live-extracted interests (never pre-seeded)');
+      A.eq(s.warm, true, 'the keep is WARM off live-extracted interests (never pre-seeded)');
       const topic = (s.interests || []).find(t => /nvidia/.test(t.topic));
       A.ok(topic, 'the extracted interest persisted and is served by GET /api/scout');
       A.ok(topic && topic.evidence.some(q => q.indexOf('nvidia earnings call') >= 0), 'the interest carries its verbatim evidence quote');
@@ -188,7 +188,7 @@ const QUIET = { SKYNET_THREAD_MINE: '0', SKYNET_SKILL_REVIEW: '0', SKYNET_SKILL_
     const mock = await startMock({
       // INVENTED evidence: quotes nothing in the real activity -> the extraction grounding guard must drop it.
       extraction: 'TOPIC: quantum basket weaving | EVIDENCE: an invented quote citing zero observed activity',
-      // a WELL-FORMED recipe whose WHY cites nothing the station observed -> the parseRecipe grounding
+      // a WELL-FORMED recipe whose WHY cites nothing the keep observed -> the parseRecipe grounding
       // guard must reject it (the new anti-invented-pitch arm), visibly, via the ledger.
       recipe: [
         'NAME: Fresh Dashboards',

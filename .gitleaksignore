@@ -70,8 +70,8 @@ ebe55d5fe24ee35804b554907d7564948c523a07:output/agent-animation-study/approved-m
 # Reviewed 2026-09-16: industrial_partition-r1 and industrial_partition-r3
 # are image/rotation keys for the west/east partition artwork. Keep every
 # exception bound to its exact historical commit, file, rule and line.
-8d7b571ae30413fec1851cfae197b630dceafa36:docs/station-remaster/catalog-storage-rest-1/assignment-contracts.json:generic-api-key:2640
-8d7b571ae30413fec1851cfae197b630dceafa36:docs/station-remaster/catalog-storage-rest-1/assignment-contracts.json:generic-api-key:2656
+8d7b571ae30413fec1851cfae197b630dceafa36:docs/keep-remaster/catalog-storage-rest-1/assignment-contracts.json:generic-api-key:2640
+8d7b571ae30413fec1851cfae197b630dceafa36:docs/keep-remaster/catalog-storage-rest-1/assignment-contracts.json:generic-api-key:2656
 eef21c982c9cacd73e6db3e24baf5e2d798cbeee:dev/industrial-textures/coordinated-batch03-recipes.json:generic-api-key:292
 eef21c982c9cacd73e6db3e24baf5e2d798cbeee:dev/industrial-textures/coordinated-batch03-recipes.json:generic-api-key:356
 3d445dbcc5b3b927c1fe148d9ceca2dc11e0a075:dev/industrial-textures/prop-structure-manifest.json:generic-api-key:142
@@ -99,8 +99,8 @@ eae4248a82dbe17c4a1eebada1c3759cb0402f61:test/redact.known-values.test.js:slack-
 3b3c50b332fcf72cf63840e9c9dfc8081adc8f7e:test/remote-push.test.js:generic-api-key:107
 
 # 0.13.2 (2026-10-09): reviewed fixtures, not keys — patterned fake OpenRouter keys in key-handling tests, and a settings path
-# ("budget/caps/perDay") in a station-control tool comment that the generic-api-key rule reads as a key.
-93a73b295d3ba048a45953dd3ebdca80624744ad:sidecar/tools/builtin/station-control.js:generic-api-key:377
+# ("budget/caps/perDay") in a keep-control tool comment that the generic-api-key rule reads as a key.
+93a73b295d3ba048a45953dd3ebdca80624744ad:sidecar/tools/builtin/keep-control.js:generic-api-key:377
 99be50565ce5c4e24dc3e4922025f7f61cd17b3c:test/provider-key-check.test.js:generic-api-key:53
 dc2a6676b72bc30d665076b3f965c1a81870182b:test/engine-credential.test.js:generic-api-key:26
 dc2a6676b72bc30d665076b3f965c1a81870182b:test/engine-credential.test.js:generic-api-key:29

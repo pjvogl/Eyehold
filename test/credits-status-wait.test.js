@@ -6,23 +6,23 @@
    read in a 20s race, but Harness.api.get carries its OWN 15s default deadline, so the inner deadline always fired first
    and the 20s race never mattered — a funded, healing account still read "couldn't confirm". The STORE read had the same
    15s inner deadline. This RUNS the production code against a fake clock: harness.js requestJson (the real deadline),
-   app.js refreshEyeholdGenesisStatus (WAKE) and stationui.js wireCredits (STORE), with a fetch that answers at 16s. */
+   app.js refreshEyeholdGenesisStatus (WAKE) and keepui.js wireCredits (STORE), with a fetch that answers at 16s. */
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
 const vm = require('node:vm');
 
 const read = f => fs.readFileSync(path.join(__dirname, '..', 'frontend', 'app', f), 'utf8');
-const harnessSrc = read('harness.js'), appSrc = read('app.js'), stationuiSrc = read('stationui.js');
+const harnessSrc = read('harness.js'), appSrc = read('app.js'), keepuiSrc = read('keepui.js');
 const slice = (src, from, to) => {
   const a = src.indexOf(from), b = src.indexOf(to, a);
   assert.ok(a >= 0 && b > a, 'slice anchors found: ' + from.trim().slice(0, 40));
   return src.slice(a, b);
 };
 const apiCode = slice(harnessSrc, '  async function requestJson(', '\n  // ONE fold point') + '\nthis.api = api;';
-const wakeCode = slice(appSrc, '  let eyeholdLinked = false;', '  // A station can be linked to a DIFFERENT Eyehold login') + '\nthis.wake = { refreshEyeholdGenesisStatus, revealEyeholdGenesis };';
-const storeCode = slice(stationuiSrc, '  let _creditsLinkPoll =', '  // BUDGET panel') + '\nthis.store = { wireCredits };';
-const provCode = slice(stationuiSrc, '  let creditsProv = {', '  // The rows CONNECTIONS should actually draw') + '\nthis.prov = { refreshCreditsProvider };';
+const wakeCode = slice(appSrc, '  let eyeholdLinked = false;', '  // A keep can be linked to a DIFFERENT Eyehold login') + '\nthis.wake = { refreshEyeholdGenesisStatus, revealEyeholdGenesis };';
+const storeCode = slice(keepuiSrc, '  let _creditsLinkPoll =', '  // BUDGET panel') + '\nthis.store = { wireCredits };';
+const provCode = slice(keepuiSrc, '  let creditsProv = {', '  // The rows CONNECTIONS should actually draw') + '\nthis.prov = { refreshCreditsProvider };';
 
 const flush = async () => { for (let i = 0; i < 8; i++) await new Promise(setImmediate); };
 // a virtual clock shared by every lifted module: timers fire in due order, microtasks drain between them
@@ -45,8 +45,8 @@ function makeClock() {
     }
   };
 }
-// the station's /api/credits: answers `body` after `delayMs` of virtual time (Infinity = never), aborts like a real fetch.
-// /api/credits/linkable answers at once: a station that is already linked is not linkable.
+// the keep's /api/credits: answers `body` after `delayMs` of virtual time (Infinity = never), aborts like a real fetch.
+// /api/credits/linkable answers at once: a keep that is already linked is not linkable.
 function makeApi(clock, delayMs, body) {
   const seen = { aborted: 0, routes: [] };
   const fetch = (route, init) => new Promise((resolve, reject) => {
@@ -144,7 +144,7 @@ const ok = (cond, msg) => { assert.ok(cond, msg); n++; };
   // 4. the genesis reveal (is there a EYEHOLD chip at all?) reads the same path: a slow heal must not hide a linked account
   {
     const w = await wake(16000, { reveal: true, picked: 'openai' });
-    ok(w.result === true && !w.chip.classList.contains('hidden'), 'GENESIS: a 16s healing answer still reveals the EYEHOLD chip for a linked station');
+    ok(w.result === true && !w.chip.classList.contains('hidden'), 'GENESIS: a 16s healing answer still reveals the EYEHOLD chip for a linked keep');
     ok(w.seen.aborted === 0 && w.seen.routes[0] === '/api/credits?history=0', 'GENESIS: the reveal waited out the heal on the summary read');
   }
   // 5. the SETTINGS provider card: a slow heal paints LINKED with the real balance, never "not linked" / hidden

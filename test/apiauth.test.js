@@ -91,8 +91,8 @@ A.eq(auth.isAllowedApiOrigin('http://127.0.0.1:1234', PORT), false, 'wrong-port 
 A.eq(auth.isAllowedApiOrigin('http://localhost:9000', PORT, 'localhost:9000'), true, 'ssh -L 9000 tunnel: Origin matches the request Host -> allowed');
 A.eq(auth.isAllowedApiOrigin('http://127.0.0.1:9000', PORT, '127.0.0.1:9000'), true, 'tunnel on 127.0.0.1 allowed');
 A.eq(auth.isAllowedApiOrigin('http://[::1]:9000', PORT, '[::1]:9000'), true, 'tunnel on ipv6 loopback allowed');
-A.eq(auth.isAllowedApiOrigin('http://localhost:3000', PORT, 'localhost:' + PORT), false, 'ANOTHER local site calling the station (Origin != Host) stays refused');
-A.eq(auth.isAllowedApiOrigin('http://127.0.0.1:1234', PORT, '127.0.0.1:' + PORT), false, 'wrong-port loopback origin still rejected when Host is the station');
+A.eq(auth.isAllowedApiOrigin('http://localhost:3000', PORT, 'localhost:' + PORT), false, 'ANOTHER local site calling the keep (Origin != Host) stays refused');
+A.eq(auth.isAllowedApiOrigin('http://127.0.0.1:1234', PORT, '127.0.0.1:' + PORT), false, 'wrong-port loopback origin still rejected when Host is the keep');
 A.eq(auth.isAllowedApiOrigin('http://evil.example:9000', PORT, 'evil.example:9000'), false, 'a rebinding attacker (non-loopback Host) is refused even when Origin == Host');
 A.eq(auth.isAllowedApiOrigin('http://user@localhost:9000', PORT, 'localhost:9000'), false, 'a non-serialized origin (userinfo) never matches');
 A.eq(auth.isAllowedApiOrigin('http://localhost:9000/x', PORT, 'localhost:9000'), false, 'an origin with a path never matches');

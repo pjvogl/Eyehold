@@ -123,7 +123,7 @@ assert.match(bodyOf('finish'), /Voice\.setLocalTts\(false\)/, 'leaving live voic
    without a binding, browsing the rail mid-call silently re-targeted the conversation — the next utterance
    ran in whatever session was open, under that session's agent (Andrew hit this live). Both entry points
    bind; every utterance pins focus back to the bound session; the binding dies with the call; and the ONE
-   legitimate rebind is a voice-driven station.switch_session while a call is live. */
+   legitimate rebind is a voice-driven keep.switch_session while a call is live. */
 for (const fn of ['start', 'startDictation']) {
   assert.match(bodyOf(fn), /bindSession\(\)/, fn + '() binds the call to the session it was opened in');
 }
@@ -132,7 +132,7 @@ assert.doesNotMatch(bodyOf('onAssistant'), /ensureBoundFocus\(\)/, 'a delayed as
 assert.match(bodyOf('rebind'), /Voice\.stopSpeaking\(\)/, 'a voice-commanded rebind cuts queued audio owned by the former session');
 assert.match(bodyOf('finish'), /boundWsId = null/, 'the binding dies with the call');
 assert.match(source, /boundSession\(\) \|\| Workstreams\.active\(\)/, "the panel reports the CALL's session, not the browsed one");
-const cmdSource = fs.readFileSync(path.join(root, 'frontend', 'app', 'stationcommands.js'), 'utf8');
+const cmdSource = fs.readFileSync(path.join(root, 'frontend', 'app', 'keepcommands.js'), 'utf8');
 assert.match(cmdSource, /VoiceLive\.isActive\(\) && VoiceLive\.rebind/, 'a voice-driven session switch rebinds the live call (a UI click never routes through that verb)');
 
 // Exercise the binding state machine, not only its spelling. A UI rail switch changes activeId but

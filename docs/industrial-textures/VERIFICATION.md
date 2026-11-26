@@ -1,4 +1,4 @@
-# Industrial station verification — 2026-09-12
+# Industrial keep verification — 2026-09-12
 
 Local running edition: `http://127.0.0.1:18792/?textures=industrial`.
 The backend was launched with `node dev/seed.js --keep`; `/api/health` returned
@@ -8,14 +8,14 @@ The backend was launched with `node dev/seed.js --keep`; `/api/health` returned
 
 - The page loaded all four industrial assets and exposed `data-texture-pack="industrial"`
   and `data-texture-resolution="3"` on the document element.
-- The station displayed the new floor, north wall, side walls, chamfers, exterior
-  skirt, and three workstations. NOVA moved between different floor positions.
+- The keep displayed the new floor, north wall, side walls, chamfers, exterior
+  skirt, and three workkeeps. NOVA moved between different floor positions.
 - The visible state reached `UPLINK ONLINE`, `COMMS online`, and `FEED: LIVE`.
 - Refit reported `1 ROOM · 396 TILES · 3 OBJECTS`.
-- Clicking the center workstation in Refit opened `ASSIGN AGENT TO WORKSTATION`
+- Clicking the center workkeep in Refit opened `ASSIGN AGENT TO WORKKEEP`
   with NOVA available and the current agent ID `agent` retained.
-- Canceling the picker and choosing Done produced `Station layout saved`.
-  Reload retained the station and the industrial material edition.
+- Canceling the picker and choosing Done produced `Keep layout saved`.
+  Reload retained the keep and the industrial material edition.
 - Browser error-log query after reload returned `[]`.
 
 ## Rendering checks
@@ -23,7 +23,7 @@ The backend was launched with `node dev/seed.js --keep`; `/api/health` returned
 `dev/industrial-textures/verify-render.cjs` ran with the bundled `@napi-rs/canvas`:
 
 ```json
-{"assets":{"requested":true,"loaded":true,"failed":[],"assets":["floor","wall","shell","workstation"]},"alphaSamples":6400,"worldAnchor":"PASS","missingAssetFallback":"PASS","normalRenderer":"PASS"}
+{"assets":{"requested":true,"loaded":true,"failed":[],"assets":["floor","wall","shell","workkeep"]},"alphaSamples":6400,"worldAnchor":"PASS","missingAssetFallback":"PASS","normalRenderer":"PASS"}
 ```
 
 The alpha comparison exercises translated drawing, clipping, gradients,
@@ -33,7 +33,7 @@ Negative-coordinate floor samples agree with their wrapped texture coordinates.
 A deliberately missing wall asset keeps the complete original material set active.
 
 The existing prop-light-response regression passed all eight subtests, including
-live workstation heat/progress, context recovery and bounded cache behavior.
+live workkeep heat/progress, context recovery and bounded cache behavior.
 All touched JavaScript passed `node --check`; `git diff --check` was clean.
 The generated website mirror matched all 4,592 frontend files plus two embed files.
 
@@ -65,16 +65,16 @@ are outside this first pass.
 
 ## Furniture revision — September 12, previous receipt
 
-Done for this revision means: the live preview displays the compact workstation
+Done for this revision means: the live preview displays the compact workkeep
 without stretching, office chairs use the reference materials in their authored
 facings, and placed chairs survive saving and restarting the local server.
 
 Observed in the live app:
 
-- New compact single-monitor console, matching automatic workstation chair,
+- New compact single-monitor console, matching automatic workkeep chair,
   and two north-facing placeable office chairs at the side desks.
 - Refit catalogue showed the new chair, then west and north facings through TURN.
-- Refit changed from 3 to 5 objects and reported `Station layout saved`.
+- Refit changed from 3 to 5 objects and reported `Keep layout saved`.
 - Saved props remained at desk coordinates (10,2), (4,2), (16,2), and chair
   coordinates (4,3), (17,3), both chairs with rotation 2.
 - Restarted only this worktree's preview sidecar through `dev/seed.js --keep`.
@@ -90,7 +90,7 @@ Native canvas receipt:
 alphaSamples: 6400
 chairOrientations: 8
 seatFrontPixelMatch: PASS
-workstationAspect: PASS
+workkeepAspect: PASS
 floorContact: PASS
 worldAnchor: PASS
 missingAssetFallback: PASS
@@ -101,7 +101,7 @@ All changed JavaScript passed syntax checks. The website generator reported a
 clean mirror of 4,595 frontend files plus two preserved embed files.
 
 Focused canonical test runner: **28 steps green**, exit 0, covering prop light
-response, rendering, mounting, chair/seat behavior, refit footprints, station
+response, rendering, mounting, chair/seat behavior, refit footprints, keep
 baking, world lighting, and website synchronization. Log:
 `dev/industrial-textures/furniture-focused.log`.
 
@@ -118,18 +118,18 @@ Full-run log: `dev/industrial-textures/test-fast-furniture.log`.
 This revision remains an isolated, running visual preview. No merge, installed
 application update, release claim, or provider/model run was performed.
 
-![Furniture revision in the running station](live-furniture.jpg)
+![Furniture revision in the running keep](live-furniture.jpg)
 
 ## Proportions and wall continuity — September 12, previous receipt
 
-Done for this revision means the running station shows broader furniture at the
+Done for this revision means the running keep shows broader furniture at the
 previous height, centered chairs, and sharp wall art that continues around the
 corners and through the shell's ownership masks.
 
 Observed in the live preview at `http://127.0.0.1:18792/?textures=industrial`:
 
 - Refit lists DESK and DESK ×2 as **3 × 1 tiles**. Clicking a placed desk opens
-  its workstation assignment dialog. The station still has five objects.
+  its workkeep assignment dialog. The keep still has five objects.
 - Saved desks at (10,2), (4,2), (16,2) are 3 × 1. Side chairs at (5,3) and
   (17,3) are centered under their desks. Placement validation passes for all five.
 - The console occupies about 38 × 23.2 world pixels without stretching; the
@@ -139,19 +139,19 @@ Observed in the live preview at `http://127.0.0.1:18792/?textures=industrial`:
   carries its dense artwork through its masking layers instead of flattening it.
 - The live canvas displays sharp shell plating and connected corner detailing.
   Dataset: `texturePack: industrial`, `textureResolution: 6`. Browser errors: `[]`.
-- Refit reports `Station layout saved`. The isolated preview was restarted with
+- Refit reports `Keep layout saved`. The isolated preview was restarted with
   `dev/seed.js --keep`, and its health endpoint returned `status: ok`.
 
 Native canvas verification passes: 6,400 primary/dense alpha comparisons, eight
 chair orientation/mirror combinations, exact occupied-seat rim pixel agreement,
-unchanged furniture ground contact, preserved workstation aspect ratio, unchanged
+unchanged furniture ground contact, preserved workkeep aspect ratio, unchanged
 wall-mask authority, and exact pixel agreement between straight and wrapped wall
 sampling under the same projection. All three canvas-image overloads preserve
 detailed shell art and masks through nested composites. A missing asset keeps
 the original renderer and two-tile catalogue sizes; normal mode is unchanged.
 
 The focused canonical runner passes **28 steps**, exit 0, covering prop lighting,
-rendering, mounting, chair/seat behavior, Refit footprints, station baking,
+rendering, mounting, chair/seat behavior, Refit footprints, keep baking,
 world lighting and website synchronization. Log:
 `dev/industrial-textures/proportions-focused.log`. Syntax checks and
 `git diff --check` pass. The generated website mirror contains 4,595 frontend
@@ -161,7 +161,7 @@ The full release gate remains blocked by the locked release-authority audit
 described in the previous receipt. This is a running visual preview, not a
 release-audited build. No trunk merge or release ledger update was performed.
 
-![Broader furniture and sharp walls in the running station](live-proportions.jpg)
+![Broader furniture and sharp walls in the running keep](live-proportions.jpg)
 
 ## Default integration — September 12, current receipt
 
@@ -172,8 +172,8 @@ Newly placed desks occupy three tiles. Classic and missing-asset fallbacks retai
 the original renderer and catalogue dimensions.
 
 Live placement in Refit changed the object count from five to six, opened the
-workstation assignment dialog, and returned to five after undo. Saving retained
-the original coordinates. A dev-seed sidecar restart retained the station;
+workkeep assignment dialog, and returned to five after undo. Saving retained
+the original coordinates. A dev-seed sidecar restart retained the keep;
 health returned `status: ok`, version `v0.11.2-41-g0d1e015e9`. The default page
 reports `texturePack: industrial`, `textureResolution: 6`, browser errors `[]`.
 
@@ -186,7 +186,7 @@ passes **771 / 771**, exit 0.
 Main branch advanced from `b4652157b` to the exact tested source `0d1e015e9`.
 Unrelated integration-checkout edits were preserved exactly. The local post-merge
 run hit its 15-minute guard without an assertion failure. Another lane then
-integrated website changes, keeping the station source unchanged. The combined
+integrated website changes, keeping the keep source unchanged. The combined
 commit `f8ddd9c36` passed **772 / 772 fast tests** and **34 / 34 customer journeys**
 in [post-merge CI](https://github.com/Eyehold/eyehold/actions/runs/34728957569).
 Exact source and preservation details are recorded in the

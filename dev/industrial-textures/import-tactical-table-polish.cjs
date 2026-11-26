@@ -1,7 +1,7 @@
 'use strict';
 // Crop transparent margins only. New machine bodies remain generated raster art.
 const fs=require('node:fs'),sharp=require('sharp'),crypto=require('node:crypto');
-const root='frontend/assets/industrial/tactical-table-polish',docs='docs/station-remaster/tactical-table-polish';
+const root='frontend/assets/industrial/tactical-table-polish',docs='docs/keep-remaster/tactical-table-polish';
 const generated='C:/Users/andro/.codex/generated_images/01a09e45-c8db-79c2-b990-4349e09fba9c';
 const hash=b=>crypto.createHash('sha256').update(b).digest('hex');
 const jobs=[['bridge_tacticaltable','44ac680d-0b14-47d2-ac91-c7e575aad227','hex-thin-v5']];
@@ -26,7 +26,7 @@ const jobs=[['bridge_tacticaltable','44ac680d-0b14-47d2-ac91-c7e575aad227','hex-
   console.log(id,crop);
  }
  fs.writeFileSync(docs+'/integration.json',JSON.stringify({records},null,2)+'\n');
- const gp='docs/station-remaster/projection-correction/catalog-groups.json',groups=JSON.parse(fs.readFileSync(gp));
+ const gp='docs/keep-remaster/projection-correction/catalog-groups.json',groups=JSON.parse(fs.readFileSync(gp));
  if(!groups.groups.some(g=>g.name==='tactical-table-polish'))groups.groups.push({name:'tactical-table-polish',file:docs+'/integration.json'});
  fs.writeFileSync(gp,JSON.stringify(groups,null,2)+'\n');
 })();

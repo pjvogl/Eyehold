@@ -52,7 +52,7 @@ Each entry names its trigger, what it needs, and what it produces.
 const MANIFEST = {
   v: 1, runId: RUN_ID, agentId: AGENT, backlogId: BACKLOG_ID,
   title: 'Recent-work automation backlog #' + STAMP, kind: 'doc', planOnly: true,
-  summary: 'A short backlog turning repeated workstation questions into concrete automation candidates. Each candidate has a trigger, required context, output, and effort estimate.',
+  summary: 'A short backlog turning repeated workkeep questions into concrete automation candidates. Each candidate has a trigger, required context, output, and effort estimate.',
   files: [{ path: 'automation-backlog.md', bytes: Buffer.byteLength(PLAN, 'utf8') }],
   howToUse: 'Open automation-backlog.md.',
   notVerified: [

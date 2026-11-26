@@ -26,8 +26,8 @@ for (const category of ['', ...data.categories.map(c => c.id)]) {
       if (!prop.r) assert.deepEqual({ w: prop.w, h: prop.h }, { w: P.spec(prop.t).w, h: P.spec(prop.t).h }, 'South footprint changed');
       if (entry.placement === 'wall') assert.equal(prop.y, 0);
       if (entry.placement === 'surface') {
-        assert.equal(room.station.mountOf(prop), 'surface', entry.key);
-        assert.ok(room.supports.some(h => h.id === room.station.surfaceHostOf(prop))); mounted++;
+        assert.equal(room.keep.mountOf(prop), 'surface', entry.key);
+        assert.ok(room.supports.some(h => h.id === room.keep.surfaceHostOf(prop))); mounted++;
       }
     }
     // Every room is a disposable model; constructing it cannot mutate the starter document.

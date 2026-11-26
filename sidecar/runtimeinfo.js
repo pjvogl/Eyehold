@@ -32,12 +32,12 @@
     return out;
   }
 
-  // "Today is Wednesday, September 30, 2026 (station clock; trust it over your own sense of the date)." or '' —
+  // "Today is Wednesday, September 30, 2026 (keep clock; trust it over your own sense of the date)." or '' —
   // kept short: it rides every run's system prompt, which has a hard byte budget (test/payload.budget.test.js)
   function todayLine(now) {
     const t = Number(now);
     if (!Number.isFinite(t) || t <= 0) return '';
-    try { return 'Today is ' + new Date(t).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }) + ' (station clock; trust it over your own sense of the date).'; } catch (_) { return ''; }
+    try { return 'Today is ' + new Date(t).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }) + ' (keep clock; trust it over your own sense of the date).'; } catch (_) { return ''; }
   }
 
   function runtimeIdentityBlock(o) {
@@ -64,10 +64,10 @@
     ];
     if (fallbacks.length) lines.push('Possible fallback models: ' + fallbacks.join(', '));
     // TODAY (2026-09-30): a model's own sense of the date is its training era — asked for "today's news" it searched a
-    // year-old month. The station's clock is the truth; `now` is injected by the caller (this file never reads a clock).
+    // year-old month. The keep's clock is the truth; `now` is injected by the caller (this file never reads a clock).
     const today = todayLine(o.now);
     if (today) lines.push(today);
-    lines.push('If the Commander asks what Eyehold build, model, provider, run, surface, or session you are using, answer from this block. For mutable harness state such as scheduler health, routines, connectors, or errors, call station.inspect. Do not guess or invent a CLI command.');
+    lines.push('If the Commander asks what Eyehold build, model, provider, run, surface, or session you are using, answer from this block. For mutable harness state such as scheduler health, routines, connectors, or errors, call keep.inspect. Do not guess or invent a CLI command.');
     return '\n\n' + lines.join('\n');
   }
 

@@ -9,7 +9,7 @@
 
    Until this store nothing in the frontend called EITHER route — the north star, the "what the refresher
    tried and why" ledger, and the manual refresh were invisible. This thin live store is their browser-side
-   read+write surface. It POLLS the status route on the station's tick cadence — THROTTLED (a real network
+   read+write surface. It POLLS the status route on the keep's tick cadence — THROTTLED (a real network
    fetch at most every POLL_MS, and immediately after a run) so the tick never floods the sidecar — and
    caches the last-good status, so a fetch failure keeps the previous view (the truthful-degradation idiom
    every sibling store uses: workshopstore / questledgerstore).
@@ -100,7 +100,7 @@ const QuestRefreshStore = (() => {
       shown = Chat.nudge(line, [{ label: 'Confirm ✓', value: 'yes' }, { label: 'Not quite', value: 'no' }, { label: 'Open QUEST LOG', value: 'log', skip: true }], choice => {
         if (choice && choice.value === 'yes') { verdict('confirm').then(afterVerdict); }
         else if (choice && choice.value === 'no') { verdict('decline').then(afterVerdict); }
-        else if (typeof StationUI !== 'undefined' && StationUI.openTerm) StationUI.openTerm('quests');
+        else if (typeof KeepUI !== 'undefined' && KeepUI.openTerm) KeepUI.openTerm('quests');
       });
       // a nudge that actually claimed the slot spends one unit of the shared budget (a refused one spent nothing)
       if (shown && typeof Chat.spendAsk === 'function') { try { Chat.spendAsk(); } catch (_) {} }
@@ -109,8 +109,8 @@ const QuestRefreshStore = (() => {
       try { Chat.broadcast('YOUR MAIN GOAL — CONFIRM? · ' + String(ns.text).toUpperCase()); } catch (_) {}
     }
   }
-  function afterVerdict() { if (typeof StationUI !== 'undefined' && StationUI.rerender) { try { StationUI.rerender('quests', false); } catch (_) {} } }
-  function poke() { try { if (typeof StationUI !== 'undefined' && StationUI.rerender) StationUI.rerender('quests', false); } catch (_) {} }
+  function afterVerdict() { if (typeof KeepUI !== 'undefined' && KeepUI.rerender) { try { KeepUI.rerender('quests', false); } catch (_) {} } }
+  function poke() { try { if (typeof KeepUI !== 'undefined' && KeepUI.rerender) KeepUI.rerender('quests', false); } catch (_) {} }
 
   /* FOLLOW THE CYCLE TO ITS END (2026-08-13). Starting a refresh is not finishing one: the POST returns
      `started` in milliseconds while the engine works for seconds afterwards, and `inFlight` only clears on a
@@ -157,7 +157,7 @@ const QuestRefreshStore = (() => {
       const res = await fetch('/api/quests/refresh/run', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{}' });
       const j = await res.json().catch(() => null);
       out = j && typeof j === 'object' ? { ok: !!j.ok, started: !!j.started, error: j.error || '' } : out;
-    } catch (_) { out = { ok: false, started: false, error: 'could not reach the station' }; }
+    } catch (_) { out = { ok: false, started: false, error: 'could not reach the keep' }; }
     finally { running = false; lastFetch = 0; await refetch(); }   // immediate: inFlight/ledger reflect the launch now
     if (out.started) watchSettle();   // and then follow it to the end, so the outcome lands without a re-open
     return out;

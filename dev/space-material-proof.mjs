@@ -9,7 +9,7 @@ try {
  if(!await waitUp(url)) throw Error('seed server unavailable');
  cdp=await connectCDP(9386); await cdp.send('Page.enable'); await cdp.send('Runtime.enable');
  await cdp.send('Page.navigate',{url});
- if(!await waitDevReady(cdp,evalJS,{url})) throw Error('station not ready');
+ if(!await waitDevReady(cdp,evalJS,{url})) throw Error('keep not ready');
  const result=await evalJS(cdp,`(async()=>{
   await IndustrialTextures.ready;
   const status=IndustrialTextures.status(); if(!status.loaded||status.failed.length) throw Error(JSON.stringify(status));
@@ -20,9 +20,9 @@ try {
   for(const [i,[axis,id,hue]] of defs.entries()) {
    const c=document.createElement('canvas');c.width=240;c.height=96;const p=c.getContext('2d');
    const base=WorldModel.FLOOR_STYLES[hue].base;
-   if(axis==='hull') StationBake.sampleHull(p,id,base,20,96,12);
-   else if(axis==='floor') StationBake.sampleMaterial(p,id,base,20,8,12);
-   else StationBake.sampleWall(p,id,base,20,96,12);
+   if(axis==='hull') KeepBake.sampleHull(p,id,base,20,96,12);
+   else if(axis==='floor') KeepBake.sampleMaterial(p,id,base,20,8,12);
+   else KeepBake.sampleWall(p,id,base,20,96,12);
    const d=p.getImageData(0,0,240,96).data;let sum=0,lit=0;
    for(let k=0;k<d.length;k+=4){sum+=d[k]+d[k+1]+d[k+2];if(d[k+3])lit++;}
    if(!sum||!lit)throw Error('empty '+id);samples.push({axis,id,hue,sum,lit});
@@ -51,8 +51,8 @@ try {
    const floor=defs[3+i],wall=defs[7+i],shell=defs[i%3];
    for(const r of [st.setDeck(room.id,{mat:floor[1],style:floor[2]}),st.setWalls(room.id,{mat:wall[1],style:wall[2]}),st.setHull(room.id,{mat:shell[1],style:shell[2]})])if(!r.ok)throw Error(JSON.stringify(r));
   }
-  const bake=StationBake.bake(st.projectGeometry());
-  const scene=document.createElement('canvas');scene.width=bake.W*2;scene.height=bake.H*2;const sg=scene.getContext('2d');sg.fillStyle='#080d15';sg.fillRect(0,0,scene.width,scene.height);sg.scale(2,2);StationBake.drawBase(sg,bake,0,0);StationBake.drawLight(sg,bake,0,0);
+  const bake=KeepBake.bake(st.projectGeometry());
+  const scene=document.createElement('canvas');scene.width=bake.W*2;scene.height=bake.H*2;const sg=scene.getContext('2d');sg.fillStyle='#080d15';sg.fillRect(0,0,scene.width,scene.height);sg.scale(2,2);KeepBake.drawBase(sg,bake,0,0);KeepBake.drawLight(sg,bake,0,0);
   return {status,samples,floorParity,wallParity,roomCount:st.doc().order.length,swatches:cv.toDataURL().split(',')[1],scene:scene.toDataURL().split(',')[1]};
  })()`);
  for(const key of ['swatches','scene']){writeFileSync(new URL(key+'.png',out),Buffer.from(result[key],'base64'));delete result[key];}
@@ -62,11 +62,11 @@ try {
  const choices=[['hull','hull','thermal','hullMatOfRoom'],['hull','hull','insulation','hullMatOfRoom'],['hull','hull','heatsink','hullMatOfRoom'],['floor','floor','flightdeck','matOfRoom'],['floor','floor','lunar','matOfRoom'],['floor','floor','maggrid','matOfRoom'],['floor','floor','habitat','matOfRoom'],['walls','wall','pressure','wallMatOfRoom'],['walls','wall','radiator','wallMatOfRoom'],['walls','wall','utility','wallMatOfRoom'],['walls','wall','acoustic','wallMatOfRoom']];
  result.ui=[];
  for(const [target,axis,id,method] of choices){
-  const point=await evalJS(cdp,`(()=>{document.querySelector('button[data-target="${target}"]').click();const button=document.querySelector('button[data-surface="${axis}"][data-mat="${id}"]');if(!button)throw Error('missing ${id}');button.click();const st=Build.__test__.station(),doc=st.doc(),room=doc.rooms[doc.order[0]],r=room.rects[0];const e=Build.__test__._tileEvent([Math.floor((r.x1+r.x2)/2),Math.floor((r.y1+r.y2)/2)]);return {x:e.clientX,y:e.clientY,id:room.id};})()`);
+  const point=await evalJS(cdp,`(()=>{document.querySelector('button[data-target="${target}"]').click();const button=document.querySelector('button[data-surface="${axis}"][data-mat="${id}"]');if(!button)throw Error('missing ${id}');button.click();const st=Build.__test__.keep(),doc=st.doc(),room=doc.rooms[doc.order[0]],r=room.rects[0];const e=Build.__test__._tileEvent([Math.floor((r.x1+r.x2)/2),Math.floor((r.y1+r.y2)/2)]);return {x:e.clientX,y:e.clientY,id:room.id};})()`);
   await cdp.send('Input.dispatchMouseEvent',{type:'mouseMoved',x:point.x,y:point.y});
   await cdp.send('Input.dispatchMouseEvent',{type:'mousePressed',x:point.x,y:point.y,button:'left',clickCount:1});
   await cdp.send('Input.dispatchMouseEvent',{type:'mouseReleased',x:point.x,y:point.y,button:'left',clickCount:1});await sleep(150);
-  const receipt=await evalJS(cdp,`(()=>{const st=Build.__test__.station(),mat=st.${method}(${JSON.stringify(point.id)}),layers=Build.__test__.degradedLayers();if(mat!=='${id}'||layers.length)throw Error(JSON.stringify({mat,layers}));st.undo();return {id:mat,layers};})()`);
+  const receipt=await evalJS(cdp,`(()=>{const st=Build.__test__.keep(),mat=st.${method}(${JSON.stringify(point.id)}),layers=Build.__test__.degradedLayers();if(mat!=='${id}'||layers.length)throw Error(JSON.stringify({mat,layers}));st.undo();return {id:mat,layers};})()`);
   result.ui.push(receipt);
  }
  writeFileSync(new URL('receipt.json',out),JSON.stringify(result,null,2));console.log(JSON.stringify(result));

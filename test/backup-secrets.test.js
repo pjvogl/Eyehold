@@ -40,7 +40,7 @@ const SECRET_ROWS = {
 
 (async () => {
   localStorage.setItem('eyehold.save', SAVE);
-  localStorage.setItem('eyehold.station.v1', JSON.stringify({ theme: 'amber', crt: true }));
+  localStorage.setItem('eyehold.keep.v1', JSON.stringify({ theme: 'amber', crt: true }));
   localStorage.setItem('eyehold.byok.model', 'openai/gpt-safe-model-name');
   localStorage.setItem('eyehold.byok.prov', 'openrouter');
   for (const [key, value] of Object.entries(SECRET_ROWS)) localStorage.setItem(key, value);
@@ -50,7 +50,7 @@ const SECRET_ROWS = {
   const bytes = JSON.stringify(bundle);
   eq(bundle.secretsIncluded, false, 'portable bundle explicitly declares that secrets are excluded');
   eq(bundle.store['eyehold.save'], SAVE, 'agent save survives export');
-  eq(JSON.parse(bundle.store['eyehold.station.v1']).theme, 'amber', 'station settings survive export');
+  eq(JSON.parse(bundle.store['eyehold.keep.v1']).theme, 'amber', 'keep settings survive export');
   eq(bundle.store['eyehold.byok.model'], 'openai/gpt-safe-model-name', 'nonsecret model selection survives export');
   eq(bundle.notebook[0].title, 'safe memory', 'nonsecret memory survives export');
   for (const [key, sentinel] of Object.entries(SECRET_ROWS)) {
@@ -64,12 +64,12 @@ const SECRET_ROWS = {
   localStorage.setItem('eyehold.byok.key.openrouter', 'CURRENT_MACHINE_KEY');
   const legacyStore = Object.assign({
     'skynet.save': JSON.stringify({ schema: 'eyehold.save', version: 8, agent: { id: 'agent', name: 'RESTORED' } }),
-    'skynet.station.v1': JSON.stringify({ theme: 'green' })
+    'skynet.keep.v1': JSON.stringify({ theme: 'green' })
   }, SECRET_ROWS, { 'skynet.byok.key.legacy': 'QA_LEGACY_KEY' });
   const applied = Backup.applyBundle({ schema: 'skynet.backup', version: 1, agentName: 'RESTORED', store: legacyStore });
   ok(applied.ok, 'legacy bundle still imports');
   eq(JSON.parse(localStorage.getItem('eyehold.save')).agent.name, 'RESTORED', 'legacy nonsecret save maps forward');
-  eq(JSON.parse(localStorage.getItem('eyehold.station.v1')).theme, 'green', 'legacy nonsecret settings map forward');
+  eq(JSON.parse(localStorage.getItem('eyehold.keep.v1')).theme, 'green', 'legacy nonsecret settings map forward');
   eq(localStorage.getItem('eyehold.byok.key.openrouter'), 'CURRENT_MACHINE_KEY', 'import never overwrites this machine credential');
   eq(localStorage.getItem('eyehold.byok.key.legacy'), null, 'legacy credential alias is not restored');
   for (const key of Object.keys(SECRET_ROWS)) {

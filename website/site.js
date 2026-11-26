@@ -51,7 +51,7 @@
   var bootLines = [
     '> EYEHOLD TERMLINK',
     '> ESTABLISHING UPLINK ........... OK',
-    '> STATION MANIFEST LOADED ....... OK',
+    '> KEEP MANIFEST LOADED ....... OK',
     '> RENDERING TERMINAL'
   ];
   var boot = document.getElementById('boot');

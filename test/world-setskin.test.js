@@ -7,7 +7,7 @@
         pure literal — extract + eval it and assert every advertised tile resolves to a well-formed set.
      2. THE VALIDATE→PERSIST→RE-RENDER WIRING in the two setters is source-locked: an unknown skin is
         refused, a known skin is written onto the record (a.skin / b.skin), World.setSkin repoints the live
-        body, StationUI.setRoster repaints the picker, and persist() writes it for reload.
+        body, KeepUI.setRoster repaints the picker, and persist() writes it for reload.
 
    HONESTLY OUT OF HEADLESS SCOPE: the actual canvas sprite swap and the .sel selected-tile marker move are
    rAF/canvas-only (world.js is not node-loadable) — those stay covered by the live Atlas sweep, not here.
@@ -54,7 +54,7 @@ A.ok(/bodyForAgent\(agentId\)/.test(wBody) && /return false/.test(wBody), 'world
 A.ok(/b\.skin = sk/.test(wBody), 'world.setSkin repoints the live body skin (the sprite-swap seam)');
 A.ok(/setSkin\b/.test(worldSrc) && /return \{[\s\S]*\bsetSkin\b/.test(worldSrc), 'world.js exports setSkin on the World surface');
 
-/* ---- 2b. BAY-BOUND REHYDRATE: loadStation creates these bodies before spawnAgent restores the roster. ---- */
+/* ---- 2b. BAY-BOUND REHYDRATE: loadKeep creates these bodies before spawnAgent restores the roster. ---- */
 const sm = /function spawnAgent\(a\)\s*\{([\s\S]*?)\n  \}/.exec(worldSrc);
 A.ok(sm, 'world.js still defines spawnAgent(a)');
 const existing = sm && /const ex = crew\.find\([^;]+\);[\s\S]*?if \(ex\)\s*\{([\s\S]*?)return;\s*\}/.exec(sm[1]);
@@ -71,7 +71,7 @@ const aBody = am ? am[1] : '';
 A.ok(/!DATA\.SKINS\[sk\][\s\S]*return false/.test(aBody), 'setAgentSkin refuses a skin absent from the catalog (returns false)');
 A.ok(/a\.skin = sk/.test(aBody), 'setAgentSkin persists the skin onto the agent RECORD (the roster property that survives reload)');
 A.ok(/World\.setSkin\(a\.id, sk\)/.test(aBody), 'setAgentSkin live-updates the floor sprite via World.setSkin');
-A.ok(/StationUI\.setRoster\(/.test(aBody), 'setAgentSkin repaints the dossier picker (the re-rendered selected value)');
+A.ok(/KeepUI\.setRoster\(/.test(aBody), 'setAgentSkin repaints the dossier picker (the re-rendered selected value)');
 A.ok(/\bpersist\(\)/.test(aBody), 'setAgentSkin persists so the skin survives a reload');
 A.ok(/setSkin:\s*setAgentSkin/.test(appSrc), 'setAgentSkin is exposed on the dossier config access surface (access.config.setSkin)');
 

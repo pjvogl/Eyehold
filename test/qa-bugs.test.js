@@ -281,12 +281,12 @@ function filled(reg, over) {
     fingerprint: 'abcdef12', fix: 'f4d03511',
     sections: {
       Evidence: '`frontend/app/tooltip.js:136`\n\nThe handler opens with `if (!anchor) return;` (tooltip.js:136). ' +
-        'test/station-tooltip.test.js never drives init(). Also `sidecar/loop.js` — `let activeCredKey = (o.credKey != null) ? o.credKey : null` seeds it.',
+        'test/keep-tooltip.test.js never drives init(). Also `sidecar/loop.js` — `let activeCredKey = (o.credKey != null) ? o.credKey : null` seeds it.',
       Verdict: 'Fixed in `f4d03511`; regression in test/tooltip-pending.test.js. Not the fingerprint abcdef12.'
     }
   });
   A.eq(a.commits, ['f4d03511'], 'the fix commit is an anchor once (fix: and Verdict agree); the fingerprint is never a commit');
-  A.eq(a.tests, ['test/station-tooltip.test.js', 'test/tooltip-pending.test.js'], 'every named test path is a test anchor');
+  A.eq(a.tests, ['test/keep-tooltip.test.js', 'test/tooltip-pending.test.js'], 'every named test path is a test anchor');
   A.eq(a.regressionTests, ['test/tooltip-pending.test.js'], 'only a Verdict-named test is the regression left by the fix');
   A.eq(a.files.map(f => f.file + ':' + f.line), ['frontend/app/tooltip.js:136', 'sidecar/loop.js:null'], 'file[:line] citations are file anchors');
   A.eq(a.snippets.map(s => s.file + ' ' + s.text), [

@@ -68,7 +68,7 @@ Tear down each worktree after merge (`remove-agent-tree.ps1 <name> -DeleteBranch
 | C: Memory/question overhaul | Locked 2026-06-29 design entirely unbuilt: asked/proposed/rejected ledgers in DossierStore, ignore→stop-forever, discard→denylist, salience-driven ask budget (reuse mint.js detector) | dossierstore.js | 8-10h |
 | D: No-op turn refund | Last ref-parity item: refund iterations that produced zero tool calls + no assistant text; `iteration.refunded` event + test/iteration-budget.test.js | loop.js | 4h |
 | E: Discord inbound | Gateway WS client for `connectGateway` (transport + normalize + UI card all exist; ingress inert). Remove the "send-only" disclosure once live | discord.transport.js:36-56 | M |
-| F: Settings P1 sweep | P1-7 export/import/reset (top gap), P1-6 per-agent model override, P1-8 notification prefs, P1-9 advanced knobs UI, P1-10 memory controls UI | stationui.js | M-L |
+| F: Settings P1 sweep | P1-7 export/import/reset (top gap), P1-6 per-agent model override, P1-8 notification prefs, P1-9 advanced knobs UI, P1-10 memory controls UI | keepui.js | M-L |
 
 Lanes are independent — run as parallel Opus 4.8 worktree lanes per the delegation directive.
 

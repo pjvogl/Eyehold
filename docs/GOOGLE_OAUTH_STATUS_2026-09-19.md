@@ -31,7 +31,7 @@ Focused checks passed on Node v22.23.0 using existing dependency modules through
 - `node test/google-release-deferred.e2e.test.js`: PASS — real isolated sidecar, five services and legacy/custom endpoints, no Google network, preserved grants, restart and removal.
 - `node test/google-signin.e2e.test.js`: PASS — real isolated sidecar with mocked Google endpoints and test-only future-release injection; PKCE callback, denied/partial consent, replay, cancellation, persistence failure, restart, refresh, revocation, removal and redaction.
 
-These checks establish local implementation behavior, not Google's approval or current public-account access. No production source was changed. Full fast/HTTP gates, qa:ready and fresh signed-installer acceptance were not run; no station-wide release verdict is claimed.
+These checks establish local implementation behavior, not Google's approval or current public-account access. No production source was changed. Full fast/HTTP gates, qa:ready and fresh signed-installer acceptance were not run; no keep-wide release verdict is claimed.
 
 ## Remaining path to activation
 

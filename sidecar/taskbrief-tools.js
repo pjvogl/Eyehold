@@ -37,7 +37,7 @@ function registerTaskBriefTools(registry, store, state, deps) {
       };
       return { type: 'object', required: ['dimension', 'question', 'reason', 'discoverable'], properties: Object.assign({}, qProps, {
         // live-caught 2026-07-16: with no description the model reads 'discoverable' as an open judgment call
-        // and stalls; it is an attestation, not a research report.
+        // and stalls; it is an attekeep, not a research report.
         discoverable: { type: 'boolean', description: 'Pass false to attest you checked the available context (conversation, task brief, granted files) and the answer is not there. Only false is accepted. Attested once for the whole call.' },
         newBlocker: { type: 'boolean' },
         also: { type: 'array', maxItems: 2, description: 'Up to two MORE material questions (distinct dimensions) asked in the same interruption. Never split related questions across calls.',

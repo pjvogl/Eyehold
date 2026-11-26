@@ -70,7 +70,7 @@ const Lifecycle = (() => {
   }
 
   // The live armed-work summary: { supervised, armed, reasons[] }. `supervised` is true only in the desktop tray
-  // build — the ONLY build where closing the window can keep the station running. Browser => supervised:false.
+  // build — the ONLY build where closing the window can keep the keep running. Browser => supervised:false.
   async function status(opts) {
     opts = opts || {};
     const core = tauriCore(opts.win || currentWindow());

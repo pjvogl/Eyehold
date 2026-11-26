@@ -26,15 +26,15 @@ not merged into integration and not an installed-build or release-readiness clai
 - Live disposable-server probes: header instruments **34**, session attention **33**,
   prop abilities **36**, conveyor setup **46** — **149 checks passed**, no runtime exceptions.
   These ran before the final Extensions-only sync. Reloaded and visually inspected the
-  final candidate in the in-app browser; station, header, rail, and COMMS rendered online.
+  final candidate in the in-app browser; keep, header, rail, and COMMS rendered online.
 - Live custom-world capture: **74 light sources**, **144 props**, active light canvas,
   no browser exceptions, and no suspended pendant hardware in the command-room close-up.
-  The saved station matches its pre-restart backup. Demo runs with `dev/seed.js --keep`.
+  The saved keep matches its pre-restart backup. Demo runs with `dev/seed.js --keep`.
 - Clean merge-tree check against the recorded trunk; trunk is an ancestor of the candidate.
 
 Local ignored evidence: `.worldshots/merge-readiness/` contains `current-fast.log`,
 `current-fast-result.json`, `http-final.log`, `gates-result.json`, `world-proof.json`,
-and `station-without-pendants.png`. Individual live reports are in
+and `keep-without-pendants.png`. Individual live reports are in
 `.worldshots/{header-instruments,session-attention,prop-abilities,workflow-setup}/report.json`.
 
 Preview: `http://127.0.0.1:9177/` in this worktree. No provider run or paid-model behavior is
@@ -68,5 +68,5 @@ Only documentation changed between the frozen source and its integration candida
 Receipts: `.worldshots/merge-readiness/frozen-world-fast.log`, `integrated-world-fast.log`,
 `merge-candidate-http.log`, their result JSON files, and `merge-spacing-live.log`.
 Unrelated integration-tree QA notes and the Rooms handoff were preserved. The preview worktree
-is retained for the custom station at `http://127.0.0.1:9177/`. This is source integration;
+is retained for the custom keep at `http://127.0.0.1:9177/`. This is source integration;
 no installed release or publication is claimed.

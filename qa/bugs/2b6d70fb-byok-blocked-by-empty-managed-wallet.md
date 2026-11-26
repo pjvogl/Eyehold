@@ -24,7 +24,7 @@ A linked account with zero managed credit cannot wake using its own valid provid
 
 ## Repro
 
-Link a station to a zero-balance managed account, select a custom BYOK provider and run; repeat as managed Eyehold.
+Link a keep to a zero-balance managed account, select a custom BYOK provider and run; repeat as managed Eyehold.
 
 ## Evidence
 

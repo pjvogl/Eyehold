@@ -1,5 +1,5 @@
 /* node test/cron.degraded.e2e.test.js — EMPTY-STORE FAIL-LOUD (routine hardening item 2, 2026-08-21).
-   Boots a real sidecar (child process, isolated temp WORKSPACES — never the real station) against a workspace
+   Boots a real sidecar (child process, isolated temp WORKSPACES — never the real keep) against a workspace
    whose cron.jobs.json AND cron.jobs.json.bak are BOTH corrupt and proves:
      · GET /api/cron reports degraded:{ quarantinePath, since } (and the corrupt main was quarantined, not wiped)
      · the scheduler does not tick while degraded (health.lastTickError names the degradation; no tick success)

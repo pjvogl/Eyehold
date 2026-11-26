@@ -122,7 +122,7 @@
       "id": "updater-key-backup",
       "label": "updater key backed up offline (≥2 copies)",
       "status": "SKIP",
-      "detail": "unverifiable by machine — human attestation",
+      "detail": "unverifiable by machine — human attekeep",
       "fix": "runbook §4.1: confirm two offline copies exist before you push the tag"
     },
     {

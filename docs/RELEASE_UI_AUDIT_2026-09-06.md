@@ -48,14 +48,14 @@ installer rebuild, publication, or deployment was performed. The original audit 
    `--only J6` result passed 6/6 and was correctly rejected by readiness.
    Record: `qa/bugs/3d9dce85-filtered-journey-run-can-replace-the-full-releas.md`.
 
-3. **P2, source fixed: station backups silently lose appearance choices.** The
+3. **P2, source fixed: keep backups silently lose appearance choices.** The
    export omitted backdrop, text size, and session-row preferences. A real export
    of ANDROMEDA followed by switching to VOID and importing reported success but
    kept VOID. Commit `336919446` includes all three fields in the existing browser
    settings section and synchronizes the website mirror. After repair, real export,
    changed preferences, import, and a sidecar restart retained ANDROMEDA, HIGH room
    lighting, 130% text, and INBOX rows. The omission predates the latest backdrop
-   redesign. Record: `qa/bugs/f5a90439-station-backup-omits-backdrop-text-size-and-sess.md`.
+   redesign. Record: `qa/bugs/f5a90439-keep-backup-omits-backdrop-text-size-and-sess.md`.
 
 No newly introduced regression was confirmed in the latest recruitment, lighting,
 wall, or backdrop changes within the tested interactions. This is a bounded audit,

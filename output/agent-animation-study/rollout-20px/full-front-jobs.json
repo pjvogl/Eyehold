@@ -27,9 +27,9 @@
     "name": "CRT-head",
     "stage": "pending",
     "targetStandingHeight": 19,
-    "description": "A smaller phosphor monitor over navy workwear; familiar character, more station hardware.",
+    "description": "A smaller phosphor monitor over navy workwear; familiar character, more keep hardware.",
     "source": "C:/Users/andro/gen-trees/sprite-reimagine-0914/output/agent-animation-study/rollout-20px/crthead-source.png",
-    "prompt": "Create ONE front-facing full-body game sprite of CRT-head. Identity: A smaller phosphor monitor over navy workwear; familiar character, more station hardware.. Reference image defines approved industrial pixel art style and proportions. Match its anatomical head/body ratio and limb lengths exactly for humanoids: compact natural adult build, small head around one fifth total height, shoulders about 40% total height, not chibi and not long skinny legs. Preserve recognizable species and character traits. Crisp angular chunky pixel clusters, broad matte shaded planes, readable details at 19 world pixels tall. Upright standing, subtle overhead head/shoulder tops, feet under hips, relaxed arms. Transparent background. No floor, shadow, text or scene.",
+    "prompt": "Create ONE front-facing full-body game sprite of CRT-head. Identity: A smaller phosphor monitor over navy workwear; familiar character, more keep hardware.. Reference image defines approved industrial pixel art style and proportions. Match its anatomical head/body ratio and limb lengths exactly for humanoids: compact natural adult build, small head around one fifth total height, shoulders about 40% total height, not chibi and not long skinny legs. Preserve recognizable species and character traits. Crisp angular chunky pixel clusters, broad matte shaded planes, readable details at 19 world pixels tall. Upright standing, subtle overhead head/shoulder tops, feet under hips, relaxed arms. Transparent background. No floor, shadow, text or scene.",
     "status": "generated"
   },
   {
@@ -110,14 +110,14 @@
     "status": "generated"
   },
   {
-    "id": "station_minion",
-    "skin": "station_minion",
-    "name": "Station Minion",
+    "id": "keep_minion",
+    "skin": "keep_minion",
+    "name": "Keep Minion",
     "stage": "pending",
     "targetStandingHeight": 19,
     "description": "Graphite and bronze work plating with compact cyan optics and practical joints.",
-    "source": "C:/Users/andro/gen-trees/sprite-reimagine-0914/output/agent-animation-study/rollout-20px/station_minion-source.png",
-    "prompt": "Create ONE front-facing full-body game sprite of Station Minion. Identity: Graphite and bronze work plating with compact cyan optics and practical joints.. Reference image defines approved industrial pixel art style and proportions. Match its anatomical head/body ratio and limb lengths exactly for humanoids: compact natural adult build, small head around one fifth total height, shoulders about 40% total height, not chibi and not long skinny legs. Preserve recognizable species and character traits. Crisp angular chunky pixel clusters, broad matte shaded planes, readable details at 19 world pixels tall. Upright standing, subtle overhead head/shoulder tops, feet under hips, relaxed arms. Transparent background. No floor, shadow, text or scene.",
+    "source": "C:/Users/andro/gen-trees/sprite-reimagine-0914/output/agent-animation-study/rollout-20px/keep_minion-source.png",
+    "prompt": "Create ONE front-facing full-body game sprite of Keep Minion. Identity: Graphite and bronze work plating with compact cyan optics and practical joints.. Reference image defines approved industrial pixel art style and proportions. Match its anatomical head/body ratio and limb lengths exactly for humanoids: compact natural adult build, small head around one fifth total height, shoulders about 40% total height, not chibi and not long skinny legs. Preserve recognizable species and character traits. Crisp angular chunky pixel clusters, broad matte shaded planes, readable details at 19 world pixels tall. Upright standing, subtle overhead head/shoulder tops, feet under hips, relaxed arms. Transparent background. No floor, shadow, text or scene.",
     "status": "generated"
   },
   {

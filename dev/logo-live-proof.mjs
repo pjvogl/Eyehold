@@ -57,10 +57,10 @@ async function main() {
     mkdirSync(OUT_DIR, { recursive: true });
 
     for (const theme of THEMES) {
-      // StationUI.setTheme, NOT a className swap: applySettings() re-derives the theme classes from
+      // KeepUI.setTheme, NOT a className swap: applySettings() re-derives the theme classes from
       // the store, so a hand-set class is wiped the next time anything touches settings — the first
       // run of this probe reported GREEN while --ph was still amber.
-      await evalJS(cdp, `StationUI.setTheme(${JSON.stringify(theme)})`);
+      await evalJS(cdp, `KeepUI.setTheme(${JSON.stringify(theme)})`);
       await sleep(600);
 
       const info = await evalJS(cdp, `(() => {

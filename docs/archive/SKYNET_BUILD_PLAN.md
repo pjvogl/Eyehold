@@ -11,10 +11,10 @@ keep their recommended defaults unless changed, and can be settled by the end of
 
 | # | Decision | Locked choice |
 |---|---|---|
-| **D1** | Billing at launch | **Hybrid, BYOK-first.** User supplies their own OpenRouter/Anthropic key, stored in the OS keychain, read only by the sidecar, zero markup, no backend. The $50/mo managed-credits "Station Pass" is a later flip-the-switch upgrade (Phase 4). |
+| **D1** | Billing at launch | **Hybrid, BYOK-first.** User supplies their own OpenRouter/Anthropic key, stored in the OS keychain, read only by the sidecar, zero markup, no backend. The $50/mo managed-credits "Keep Pass" is a later flip-the-switch upgrade (Phase 4). |
 | **D4** | When an agent runs | **Pull + scheduled.** Directive-driven by default; optional scheduled jobs; fully autonomous self-initiation is an explicit **per-agent toggle**, off by default. |
 | **D5** | Tool scope / capabilities | **Full sandbox — the user decides.** No artificial capability ceiling: every capability type (model, shell, files, web, image, comms) is available and is enabled **by the user** through object placement + permission grants. This is a gamified harness — the user determines what their agent does. Build *order* still lands the model spine first (tools ride on top of the model loop), but the product target is full power, not a locked subset. |
-| **D8** | World tech for v1 | **Existing room + runtime-placeable objects.** Reuse v7's fixed station; add a build/placement mode. Pan/zoom camera + multi-room deferred to Phase 3. |
+| **D8** | World tech for v1 | **Existing room + runtime-placeable objects.** Reuse v7's fixed keep; add a build/placement mode. Pan/zoom camera + multi-room deferred to Phase 3. |
 
 **Safety posture implied by D5 (full sandbox, user-decides):** freedom by choice, not recklessness by
 default. Shipped defaults stay **informed-consent**: per-action permission prompts + a jailed per-agent
@@ -24,19 +24,19 @@ downloaders keep the guardrails until they deliberately lower them; the object�
 visible, legible control surface either way. The sandbox itself is always **real** — "full access" widens
 scope, it does not remove metering, the kill-switch, or spend backpressure.
 
-> **Builder reframe (2026-06-13).** Eyehold's core identity is now a **station builder** (Tuber-Simulator-style):
+> **Builder reframe (2026-06-13).** Eyehold's core identity is now a **keep builder** (Tuber-Simulator-style):
 > spawn in one shabby room, expand outward, and the layout you draw *configures your real agent org*. This makes
 > a **mutable, data-driven, scrollable world** the foundational rebuild, and adds **THE BUILDER** as a first-class
 > phase after the Phase 1 spine. The §8 roadmap below is the original product-level sketch; it is now superseded
 > by two companion documents that are the source of truth for execution:
-> - **[BUILDER_AND_WORLD_FOUNDATION.md](BUILDER_AND_WORLD_FOUNDATION.md)** — the architectural bible (world model, Mutation API, save versioning, renderer, builder, station-as-workflow).
+> - **[BUILDER_AND_WORLD_FOUNDATION.md](BUILDER_AND_WORLD_FOUNDATION.md)** — the architectural bible (world model, Mutation API, save versioning, renderer, builder, keep-as-workflow).
 > - **[INCREMENTAL_ROADMAP.md](INCREMENTAL_ROADMAP.md)** — the granular, test-gated step-by-step build order.
 
 ---
 
 ## 1. Executive Summary
 
-The product is a downloadable Windows desktop app that turns a pixel-art space station into a living dashboard for **real** AI agents: you create an agent like a Terraria character (pick a model, design a pixel avatar, name it), raise it through a gamified onboarding chat that writes its real system prompt, then watch it walk around a room and sit down at objects you place — and when it sits at a computer it is genuinely running a model, calling real tools, and spending real money you can watch tick up. Every number on screen is truthful: the typing animation means a model call is in flight, the cost meter reads real provider usage, and the deliverables are real files written to disk. Agents can only do what the room physically contains — placing a "computer" grants compute, a "terminal" grants shell, a "filing cabinet" grants disk — so the room layout *is* the permission system, visible and legible. The business model is a ref-style $50/mo credit subscription with Bring-Your-Own-Key as the launch default, surfaced in-game as a per-agent spend meter and a station-wide credit gauge.
+The product is a downloadable Windows desktop app that turns a pixel-art space keep into a living dashboard for **real** AI agents: you create an agent like a Terraria character (pick a model, design a pixel avatar, name it), raise it through a gamified onboarding chat that writes its real system prompt, then watch it walk around a room and sit down at objects you place — and when it sits at a computer it is genuinely running a model, calling real tools, and spending real money you can watch tick up. Every number on screen is truthful: the typing animation means a model call is in flight, the cost meter reads real provider usage, and the deliverables are real files written to disk. Agents can only do what the room physically contains — placing a "computer" grants compute, a "terminal" grants shell, a "filing cabinet" grants disk — so the room layout *is* the permission system, visible and legible. The business model is a ref-style $50/mo credit subscription with Bring-Your-Own-Key as the launch default, surfaced in-game as a per-agent spend meter and a keep-wide credit gauge.
 
 **The single biggest technical bet:** that we can keep v7's entire vanilla-JS canvas world (renderer, tile map, movement/sit/work state machine, sprite recolor, prop-terminal, CRT theme) essentially **unchanged** as the frontend, and make it real solely by **replacing the fake `SIM` module with a thin event adapter that re-emits real agent-runtime events onto the exact same `U.bus` event vocabulary the frontend already listens for.** If that seam holds, we ship the look-and-feel of v7 with real agents behind it; if it doesn't, the rebuild balloons. Everything below is structured to validate that bet as early as Phase 1.
 
@@ -146,11 +146,11 @@ ObjectInstance {
 
 | Object (sprite) | Grants (real tools) | Sandbox / scope | Safety gate | Phase |
 |---|---|---|---|---|
-| **Computer / workstation** (`pixelrig`,`desk2`) | `model.chat` (run the agent's LLM), `agent.think` | Model call only — no host access | Always-on once seated; this is the baseline "is working" object | **P1** |
+| **Computer / workkeep** (`pixelrig`,`desk2`) | `model.chat` (run the agent's LLM), `agent.think` | Model call only — no host access | Always-on once seated; this is the baseline "is working" object | **P1** |
 | **Terminal / console** (`desk`,`console`) | `shell.exec`, `code.run` | Docker/WSL2 container **or** restricted subprocess, jailed to `workspaces/<agentId>/`, no host mount, network allowlist, CPU/mem caps | Default-deny **per-action prompt** (allow once / session / always this agent / deny) | **P3** |
 | **Filing cabinet** (`cabinet`) | `fs.read`, `fs.write`, `fs.list` | Confined to `workspaces/<agentId>/` only | Prompt on first write per session; reads within jail auto-allowed | **P3** |
 | **Uplink / satellite dish** (`dish`) | `web.fetch`, `web.search` | Domain **allowlist**; no localhost/private-IP ranges | Prompt per new domain; treat fetched content as untrusted (prompt-injection surface) | **P3** |
-| **Easel / render station** (`holotable`) | `image.generate` (PixelLab/image API) | API call; output written to jailed workspace | Cost-gated (counts against credits); no host access | **P3** |
+| **Easel / render keep** (`holotable`) | `image.generate` (PixelLab/image API) | API call; output written to jailed workspace | Cost-gated (counts against credits); no host access | **P3** |
 | **Comms desk** (`djbooth`→repurpose) | `email.send`, `message.post` | Allowlisted recipients/endpoints only | Explicit per-recipient confirm; off by default | **P4 / aspirational** |
 | **Mailbox / outbox** (`belt`) | `deliverable.publish` (save to disk + show in-game) | Local disk only by default | None for local save; publishing to external services (Printify/Medium/etc.) is **out of scope for v1** | **P3** |
 
@@ -182,7 +182,7 @@ Onboarding is a **diegetic 6-screen ritual** ("CRADLE BAY"), never a settings fo
 3. The user gives a **directive** (chat) or the agent has a scheduled job. A real task is dispatched.
 4. The agent **paths to the computer, sits, and `b.working` flips true** — driven by a real model call in flight.
 5. The user **clicks the agent** → the prop-terminal opens as a live session (real streamed tokens, real tool lines, real cost). Ambient $/hr chip floats over the agent's head; topbar shows live spend + credits remaining.
-6. **Growth:** shipped work / credits spent earn Station XP → unlock buyable room modules and additional Cradle slots → recruit more agents through the same ritual. The full 17-agent Eyehold station is the **ghosted "destiny" silhouette** the crew grows into.
+6. **Growth:** shipped work / credits spent earn Keep XP → unlock buyable room modules and additional Cradle slots → recruit more agents through the same ritual. The full 17-agent Eyehold keep is the **ghosted "destiny" silhouette** the crew grows into.
 
 ---
 
@@ -241,7 +241,7 @@ host: SessionManager.dispatch(agentId, task)  ── creates durable RunJob (rel
 **Billing — ship BYOK-first, credits-second (hybrid).** Both paths feed **one `CostEngine` and one in-game spend UI**; only the *source of the dollar number* and *who holds the upstream key* differ, so shipping BYOK first costs nothing toward the credits build.
 
 - **BYOK (launch default):** user's OpenRouter/Anthropic key stored in OS keychain locally, real usage read straight off the provider response (markup = 0). Ships in weeks: zero proxy infra, zero upstream-key custody, zero payment/PCI/money-transmitter exposure. Makes "see how much it's costing you" trivially honest.
-- **Credits ("Station Pass", $50/mo, opt-in):** all traffic routed through a thin hosted **gen-gateway** proxy that holds upstream keys server-side, authenticates the app with a short-lived per-account token, meters tokens, applies markup, decrements the ledger atomically, and streams back. **The desktop app never ships an upstream key.** Stripe-backed; credits non-refundable / non-cash / single-purpose / expiring to minimize stored-value regulatory exposure.
+- **Credits ("Keep Pass", $50/mo, opt-in):** all traffic routed through a thin hosted **gen-gateway** proxy that holds upstream keys server-side, authenticates the app with a short-lived per-account token, meters tokens, applies markup, decrements the ledger atomically, and streams back. **The desktop app never ships an upstream key.** Stripe-backed; credits non-refundable / non-cash / single-purpose / expiring to minimize stored-value regulatory exposure.
 - **Cost honesty:** show a live streaming *estimate*, then **reconcile to the provider's final usage report** before committing to the ledger.
 
 **Repurpose v7's existing billing surfaces** — `LEDGER` agent, `treasury_ledger` window, `BURNED` (`ag.spent`), `TOP BURNERS`, `DAILY LEDGER` — by swapping their data source from RNG to the real `CostEngine`. Add a **CREDITS REMAINING** gauge + low-balance warning to the topbar (repurposing the revenue/NET slot). Drop simulated revenue entirely: the economy becomes **credits-spent + deliverables-shipped**.
@@ -255,10 +255,10 @@ host: SessionManager.dispatch(agentId, task)  ── creates durable RunJob (rel
 Each phase lists **deliverables**, **v7 files to port**, and a **definition of done (DoD)**. Phases are ordered to validate the central bet (Section 1) as early as possible — Phase 1 proves a real agent run drives the reused world before any onboarding or billing work.
 
 ### Phase 0 — Scaffold + reuse the v7 engine
-**Goal:** the v7 station runs inside a Tauri webview talking to a Node sidecar over WS, still visually identical, with the fake `SIM` swapped for a stub adapter.
+**Goal:** the v7 keep runs inside a Tauri webview talking to a Node sidecar over WS, still visually identical, with the fake `SIM` swapped for a stub adapter.
 - **Deliverables:** Tauri project + WebView2 host; Node sidecar spawned/supervised by Tauri; localhost WS handshake (random port); v7 frontend dropped in unchanged; `SIM` replaced by a **stub WS bridge** that re-emits canned events onto `U.bus` (proves the seam); VT323 vendored locally; SQLite initialized in app-data dir.
 - **Port from v7:** `util.js`, `map.js`, `agents.js`, `render.js`, `assets.js`, `sprites.js`, `ui.js`, `propterm.js`, `css/style.css`, `index.html`, `assets/sprites/*` — all near-verbatim. Replace only `sim.js` + `main.js` boot wiring.
-- **DoD:** app launches as a signed-dev build, the station renders and animates, an agent walks/sits when the stub bridge emits a fake `agent.run.start`, and the webview never imports a secret. The "swap SIM for an event adapter" bet is demonstrated end-to-end with stub data.
+- **DoD:** app launches as a signed-dev build, the keep renders and animates, an agent walks/sits when the stub bridge emits a fake `agent.run.start`, and the webview never imports a secret. The "swap SIM for an event adapter" bet is demonstrated end-to-end with stub data.
 
 ### Phase 1 — One real agent, one room, one working computer, real streaming + cost
 **Goal:** prove the whole truthful-telemetry chain with a single hardcoded agent and a single placed computer. **This is the make-or-break phase.**
@@ -268,19 +268,19 @@ Each phase lists **deliverables**, **v7 files to port**, and a **definition of d
 
 ### Phase 2 — Onboarding / character creator
 **Goal:** the user creates their first agent in-fiction; agents are dynamic, not a hardcoded roster.
-- **Deliverables:** Cradle Bay S1–S6; live avatar recolor sliders; PixelLab FORGE track with hot-swap + generalized readiness gate (per-agent, not hardcoded `minion.rot.south`); `ConfigCompiler` (interview → editable real system prompt); first-run gate (no agent → onboarding, else boot); dynamic single-agent roster with **null-guards** for missing buddies/rooms/stations/belts (the journey planners assume the 17-agent station).
+- **Deliverables:** Cradle Bay S1–S6; live avatar recolor sliders; PixelLab FORGE track with hot-swap + generalized readiness gate (per-agent, not hardcoded `minion.rot.south`); `ConfigCompiler` (interview → editable real system prompt); first-run gate (no agent → onboarding, else boot); dynamic single-agent roster with **null-guards** for missing buddies/rooms/keeps/belts (the journey planners assume the 17-agent keep).
 - **Port from v7:** `main.js` `#boot`/`bootSeq`; `assets.js` `filterFor`/`tintFrames`/`drawBody`; `ui.js` chat input; `@keyframes rt-power`.
 - **DoD:** a brand-new user lands in Cradle Bay, picks a model, designs an avatar, names it, watches it wake, gives it purpose via real chat, edits the compiled prompt, and it drops into a room — then Phase-1's loop works for that user-created agent.
 
 ### Phase 3 — Object → tool expansion + multi-agent
 **Goal:** the room becomes a real capability surface; multiple agents coexist.
-- **Deliverables:** full BuildMode + inventory tray (place/move/pick-up, ghost preview, validity); `CapabilityManager` (object→tool grants, seated-only enforcement); `PermissionBroker` + sandbox (terminal→jailed shell, cabinet→jailed fs, uplink→allowlisted web, easel→image gen); **camera** (pan/zoom; `toLocal` inverts the transform); StationGrowth (XP→room modules + Cradle slots); multiple concurrent agents with per-agent session keying; reconciled flush semantics (a cancelled walk must **not** fire a real paid action or mark a deliverable shipped).
+- **Deliverables:** full BuildMode + inventory tray (place/move/pick-up, ghost preview, validity); `CapabilityManager` (object→tool grants, seated-only enforcement); `PermissionBroker` + sandbox (terminal→jailed shell, cabinet→jailed fs, uplink→allowlisted web, easel→image gen); **camera** (pan/zoom; `toLocal` inverts the transform); KeepGrowth (XP→room modules + Cradle slots); multiple concurrent agents with per-agent session keying; reconciled flush semantics (a cancelled walk must **not** fire a real paid action or mark a deliverable shipped).
 - **Port from v7:** `sprites.js` `F{}` furniture art for new objects; `map.js` zone model extended to runtime-addable modules; `agents.js` `scanWorld` for multi-agent ambience; XP/level/milestone engine from `sim.js` (rewards re-pointed to real capacity).
 - **DoD:** a user places a terminal, an agent runs a **real sandboxed shell command** (after a permission prompt) and writes a file to its workspace; two agents work concurrently without racing; the camera pans a room larger than 936×674; placing/removing objects grants/revokes capabilities live.
 
 ### Phase 4 — Billing/credits + packaging/distribution
 **Goal:** real recurring revenue and a shippable, auto-updating signed product.
-- **Deliverables:** `gen-gateway` hosted proxy (server-side keys, metering, markup, atomic ledger, hard balance stop); Stripe Station Pass + top-ups; credits-mode CREDITS REMAINING gauge + low-balance/austerity warnings; account flow (credits only; BYOK needs none); code-signed MSI/NSIS installer; signed auto-update channel; first-run mode picker (BYOK vs Station Pass); privacy/ToS, markup disclosure, transcript opt-in.
+- **Deliverables:** `gen-gateway` hosted proxy (server-side keys, metering, markup, atomic ledger, hard balance stop); Stripe Keep Pass + top-ups; credits-mode CREDITS REMAINING gauge + low-balance/austerity warnings; account flow (credits only; BYOK needs none); code-signed MSI/NSIS installer; signed auto-update channel; first-run mode picker (BYOK vs Keep Pass); privacy/ToS, markup disclosure, transcript opt-in.
 - **Port from v7:** topbar revenue/NET slot → CREDITS; `earn()`/`S.costs` accounting seam → real credit decrement; `treasury_ledger` UI finalized.
 - **DoD:** a user installs the signed app, subscribes, runs agents on managed credits with a live in-game gauge that matches their Stripe bill, and receives a signed auto-update — or chooses BYOK and runs with their own key, no account.
 
@@ -355,7 +355,7 @@ gen/
 3. **Runaway spend** — real async paid calls + game-time fan-out can burn credits fast. *Mitigation:* game-time fully decoupled from call cadence; hard concurrency/budget/balance gates; retry-loop limits.
 4. **Secrets in a downloadable binary** — any embedded upstream key is extractable. *Mitigation:* BYOK key in OS keychain read only by sidecar; credits-mode keys server-side behind the proxy; never in client code or the save blob.
 5. **Placement fights v7's bake-once world + no camera** — placing objects requires incremental `zoneGrid`/`blocked`/`sitTiles`/`pwGrid` updates + re-bake (no invalidate API today), and rooms can exceed the fixed 936×674 buffer. *Mitigation:* build the mutable-world API + camera in P1/P3 deliberately.
-6. **Single-agent breaks fixed-17 assumptions** — stations/buddies/HERALD ceremonies/belts assume the full roster. *Mitigation:* null-guards + dynamic station allocation in P2.
+6. **Single-agent breaks fixed-17 assumptions** — keeps/buddies/HERALD ceremonies/belts assume the full roster. *Mitigation:* null-guards + dynamic keep allocation in P2.
 7. **Streaming cadence + transcript growth** — bursty network vs smooth ~7fps typing; 1Hz innerHTML rebuild thrashes long transcripts. *Mitigation:* typewriter drain buffer + stable append-only scrollback (P1).
 8. **PixelLab latency/palette** — async ~minutes, credit-billed; global hue-rotate distorts multi-color palettes. *Mitigation:* wake as recolored minion, hot-swap later; prefer generating final-colored avatars over hue-rotating.
 9. **Regulatory (credits)** — prepaid stored-value can trigger money-transmitter rules. *Mitigation:* BYOK launch sidesteps it; credits non-refundable/non-cash/single-purpose/expiring; legal review before scaling.
@@ -372,10 +372,10 @@ gen/
 | **D5** | **Tool scope at v1:** model+image only, or also shell/fs/web? | **Computer (model) only in P1; terminal/cabinet/uplink in P3 behind prompts.** Staged by object placement. | Sandbox effort; safety surface. |
 | **D6** | **Sandbox strictness:** workspace-dir-only, or broader behind prompts? | **Workspace-dir-only by default; broader access is explicit advanced-mode escalation.** | "Do real work on my computer" scope vs safety. |
 | **D7** | **Multi-agent coordination:** real inter-agent messaging/orchestration, or independent workers with cosmetic org? | **Independent workers in v1; HERALD/ULTRON walk-choreography as flavor.** Real orchestration is a large scope jump — defer. | P3 scope. |
-| **D8** | **Single-room vs multi-room for v1:** reuse fixed station + placeable objects, or full data-driven world + camera now? | **Placeable objects in the existing room for P1; camera + room modules in P3.** | P1 vs P3 size. |
+| **D8** | **Single-room vs multi-room for v1:** reuse fixed keep + placeable objects, or full data-driven world + camera now? | **Placeable objects in the existing room for P1; camera + room modules in P3.** | P1 vs P3 size. |
 | **D9** | **Deliverable destinations:** disk-only, or wire real publishing (Printify/Fiverr/Medium/YouTube)? | **Disk-only + show in-game for v1.** External publishing is aspirational set-dressing — out of scope. | P3 tool list. |
 | **D10** | **Quality/review signal:** human approval only, or add a real LLM-judge eval? | **Human (Commander) approval only for v1.** An eval itself costs tokens — defer. | Feedback-gate behavior. |
-| **D11** | **Keep any simulated economy for game-feel?** | **No — fully truthful (credits-spent + work-shipped).** Station-growth is the reward substitute for "money goes up." | Right-panel/treasury UI. |
+| **D11** | **Keep any simulated economy for game-feel?** | **No — fully truthful (credits-spent + work-shipped).** Keep-growth is the reward substitute for "money goes up." | Right-panel/treasury UI. |
 | **D12** | **Avatar generation default:** PixelLab core for everyone, or premium/credit-gated with sliders free? | **Sliders free + default; PixelLab FORGE credit-gated.** Protects first-launch pacing + credit economics. | Onboarding pacing. |
 | **D13** | **Orchestrator ("ULTRON") cost:** charged to user credits, bundled, or run on a cheap fixed model? | **Cheap fixed model, bundled into base** so directive-parsing doesn't surprise-bill the user. | Cost engine routing. |
 | **D14** | **Who bears failed-call cost** (errors/timeouts/refusals still bill tokens)? | **Platform absorbs retries in credits-mode; BYOK users see real provider behavior.** | Trust + margin. |

@@ -1,7 +1,7 @@
 /* node test/link-down-recovery.test.js — LINK DOWN says why and offers a way out (customer report 2026-10-07:
    "I tried quitting/restarting the application, but I could not find where I could do this").
 
-   F2: after the game loaded, a crash-loop-held or hung station service showed only a red LINK DOWN — no reason,
+   F2: after the game loaded, a crash-loop-held or hung keep service showed only a red LINK DOWN — no reason,
    no restart, silent polling forever. The reason probe and the restart lived only on the boot SAVE-UNKNOWN screen.
    Now one shared reading (Harness.engineState: the sidecar's verbatim 503 'degraded: …' line or the guardian halt,
    bounded so a hung service cannot strand it) and one restart door (Harness.restartEngine, single-flight) serve both
@@ -22,7 +22,7 @@ const harnessSrc = read('app/harness.js');
 const topbarSrc = read('app/topbar.js');
 const chatSrc = read('app/chat.js');
 const appSrc = read('app/app.js');
-const stationuiSrc = read('app/stationui.js');
+const keepuiSrc = read('app/keepui.js');
 const Friendly = require('../frontend/app/friendlyerror.js');
 
 const DEGRADED = 'degraded: crash-loop: 3 faults in 10m — last: TypeError: boom';
@@ -59,7 +59,7 @@ const textReply = (status, text) => async () => ({ ok: status === 200, status, t
     const invoked = [];
     const desk = { __TAURI__: { core: { invoke: async (cmd) => { invoked.push(cmd); if (cmd === 'eyehold_sidecar_status') return { halted: true, reason: 'sidecar crashed 5 times' }; return true; } } } };
     H = liftHarness(async () => { throw new TypeError('Failed to fetch'); }, desk);
-    A.eq((await H.engineState(200)).reason, 'station service halted: sidecar crashed 5 times', 'a halted guardian is the reason for a dead service');
+    A.eq((await H.engineState(200)).reason, 'keep service halted: sidecar crashed 5 times', 'a halted guardian is the reason for a dead service');
     H = liftHarness(textReply(200, 'ok'), desk);
     await H.engineState(200);
     A.ok(!invoked.slice(1).includes('eyehold_sidecar_status'), 'a healthy service never consults the guardian');
@@ -106,7 +106,7 @@ const textReply = (status, text) => async () => ({ ok: status === 200, status, t
       Date: { now: () => now },
       document: { readyState: 'complete', addEventListener() {}, getElementById: () => null, querySelector: s => (s === '#sig' ? sig : null) },
       World: { linkState: () => link },
-      StationUI: { notify: (t, c) => notes.push([t, c]) },
+      KeepUI: { notify: (t, c) => notes.push([t, c]) },
       Harness: {
         canRestartEngine: () => !!opts.desktop,
         engineState: async () => engine,
@@ -128,13 +128,13 @@ const textReply = (status, text) => async () => ({ ok: status === 200, status, t
     A.ok(!m.cls.has('recoverable'), 'no restart door before the link has stayed down');
     m.advance(15000); m.T._paintSig(); await m.settle(); await m.settle();
     A.ok(m.sig.title.indexOf(DEGRADED) === 0, 'after 15s the tip carries the service\'s own reason verbatim: ' + m.sig.title);
-    A.ok(/click to restart the station service/.test(m.sig.title), 'and, on the desktop, the way out');
+    A.ok(/click to restart the keep service/.test(m.sig.title), 'and, on the desktop, the way out');
     A.eq(m.sig.childNodes[0].nodeValue, 'BEACON DARK · RESTART ', 'the label itself shows the door (a tip alone is undiscoverable)');
     A.ok(m.cls.has('recoverable') && m.attrs.role === 'button', 'the connection box becomes a keyboard-reachable button');
     m.listeners.click[0](); m.listeners.click[0]();
     await m.settle(); await m.settle(); await m.settle();
     A.eq(m.restarts.length, 1, 'a double click restarts once');
-    A.ok(m.notes.some(n => /restarting the station service/.test(n[0])), 'the restart is announced');
+    A.ok(m.notes.some(n => /restarting the keep service/.test(n[0])), 'the restart is announced');
     A.ok(m.notes.some(n => /still reports: degraded: crash-loop/.test(n[0])), 'a respawn that comes back degraded is not claimed as healed');
     m.setEngine({ state: 'ok', reason: '' });
     m.setLink({ bridged: true, down: false, paused: false }); m.T._paintSig();
@@ -205,10 +205,10 @@ const textReply = (status, text) => async () => ({ ok: status === 200, status, t
     A.ok(/isn't available in this build/.test(L({ status: 404, j: { error: 'linking_unavailable' } })), 'no cloud URL configured is not a network failure');
     A.eq(L(undefined), 'could not reach the link service — try again', 'unknown failures keep the old line');
     // both link doors route through it and keep the facts (rejection = local)
-    for (const [name, src, fn] of [['app.js', appSrc, 'function startEyeholdLink'], ['stationui.js', stationuiSrc, 'function startCreditsLink']]) {
+    for (const [name, src, fn] of [['app.js', appSrc, 'function startEyeholdLink'], ['keepui.js', keepuiSrc, 'function startCreditsLink']]) {
       const b = A.fnBody(src, fn);
       A.ok(b.length > 200, name + ' ' + fn + ' located');
-      A.ok(/\(\) => \{ throw startFail\(\{ local: true \}\); \}/.test(b), name + ': a rejected station POST is tagged local');
+      A.ok(/\(\) => \{ throw startFail\(\{ local: true \}\); \}/.test(b), name + ': a rejected keep POST is tagged local');
       A.ok(/Friendly\.linkStartFailure\(e && e\.linkStart\)/.test(b), name + ': the copy comes from Friendly.linkStartFailure');
       A.ok(/!r \|\| !r\.ok/.test(b), name + ': a null reply is guarded');
     }

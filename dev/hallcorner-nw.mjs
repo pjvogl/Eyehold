@@ -26,7 +26,7 @@ const CDP_PORT = Number(process.env.SKYNET_CDP_PORT || 9383);
 const URL = `http://127.0.0.1:${PORT}/`;
 
 const PROBE = `(() => {
-  const SB = StationBake, OX = 40, OY = 40;
+  const SB = KeepBake, OX = 40, OY = 40;
   const mk = (w, h) => { const c = document.createElement('canvas'); c.width = w; c.height = h; const g = c.getContext('2d'); g.imageSmoothingEnabled = false; return { c, g }; };
 
   // the shape in the photo: a hall east, a hall dropping south from its west end. Shared NW corner.

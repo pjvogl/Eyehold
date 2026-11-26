@@ -95,7 +95,7 @@ body.glass-demo:not(.hud-mode) #screen-game #bottombar .bb-group.open > .bb-grp 
 body.glass-demo:not(.hud-mode) #screen-game #bottombar .bb-group.has-active > .bb-grp { box-shadow: inset 0 -2px 0 var(--ph); }
 
 /* ---------- 7 · ASCII gauges ---------- */
-body.glass-demo:not(.hud-mode) #topbar #tb-station .tb-xp {
+body.glass-demo:not(.hud-mode) #topbar #tb-keep .tb-xp {
   height: 3px;
   background: repeating-linear-gradient(90deg, transparent 0 6px, rgba(5, 3, 1, .95) 6px 8px), rgba(var(--gold-rgb), .18);
 }
@@ -144,7 +144,7 @@ body.glass-demo:not(.hud-mode) #chat-panel .cmsg-empty-hint { color: var(--cg-mu
    NO CRT EFFECTS ON THE PANELS (Andrew 10-01: "remove the crt effects … make it look as clean as possible with
    our aesthetic"). The colour fringe, the phosphor glow on type and the dithered ▒ fields go; a lit row / open
    tab is a clean flat phosphor tint with a crisp edge. Kept: matte black, crisp shapes, the Pip-Boy ticked rules,
-   the ▮▯ gauge and the ASCII decode. The station's own screen overlay (style.css body::after) is untouched.
+   the ▮▯ gauge and the ASCII decode. The keep's own screen overlay (style.css body::after) is untouched.
    ============================================================ */
 body.glass-demo:not(.hud-mode) {
   --pg-glow: none;
@@ -246,7 +246,7 @@ body.glass-demo:not(.hud-mode) #crew .crew-row.asking { box-shadow: 0 0 12px rgb
 /* ============================================================
    NO ASCII EFFECTS (Andrew 10-02: "remove these ASCII effects … feels kind of cheap"). The glyph-static decode is
    gone from crewcards.js; the CTX gauge's ▮▯ character cells become a clean segmented glass bar fed by the same
-   real fraction (stationui ctxTick → --ctx-fill). Colour still follows its level (idle / warn / crit).
+   real fraction (keepui ctxTick → --ctx-fill). Colour still follows its level (idle / warn / crit).
    ============================================================ */
 body.glass-demo:not(.hud-mode) #bottombar .ctx-gauge .ctx-cells {
   display: inline-block; width: 92px; height: 6px; border-radius: 3px; vertical-align: middle;
@@ -283,7 +283,7 @@ body.glass-demo:not(.hud-mode) .term:not(.pw) .term-title { text-shadow: var(--p
 
 /* ============================================================
    CAM CORNERS (Andrew 10-02, from his mock: "a thin line cam overlay, just thin lines at the corners no words
-   needed"). Four 1px L-marks inset from the station view's edges — a viewfinder, nothing printed. The 09-30 rule
+   needed"). Four 1px L-marks inset from the keep view's edges — a viewfinder, nothing printed. The 09-30 rule
    that hid the old ┌┐└┘ glyphs and every cam word stays (glass-demo.css); these are drawn lines on
    .cam-hud::after, so the CINEMA key remains the only control and the BR mark frames it from outside.
    ============================================================ */
@@ -310,31 +310,31 @@ body.glass-demo:not(.hud-mode) #screen-game #stage-wrap .cam-cine { right: 24px;
    pinned to the bottom edge, a different border tone, no light on UPLINK. Now: no outer well; each instrument is
    one glass card like the crew cards; values glow like the panel titles; XP is the same segmented glass bar as
    the CTX gauge; UPLINK carries a housed lamp keyed to the pill's own state class (written by app.js /
-   stationui.js: '' online · working · standby · down) — so the light only says what the link already says.
+   keepui.js: '' online · working · standby · down) — so the light only says what the link already says.
    ============================================================ */
 body.glass-demo:not(.hud-mode) #topbar .tb-stats { background: none; box-shadow: none; padding: 0; gap: 8px; }
-body.glass-demo:not(.hud-mode) #topbar :is(#tb-station, .tb-connection) {
+body.glass-demo:not(.hud-mode) #topbar :is(#tb-keep, .tb-connection) {
   min-height: 46px; padding: 7px 14px; border: 1px solid rgba(var(--ph-rgb), .22); border-radius: 8px;
   background: var(--cg-card); box-shadow: inset 0 1px 0 var(--gd-light);
 }
-body.glass-demo:not(.hud-mode) #topbar #tb-station { border-color: rgba(var(--gold-rgb), .26); grid-template-rows: auto auto auto; row-gap: 2px; }
-body.glass-demo:not(.hud-mode) #topbar #tb-station .tb-lbl,
+body.glass-demo:not(.hud-mode) #topbar #tb-keep { border-color: rgba(var(--gold-rgb), .26); grid-template-rows: auto auto auto; row-gap: 2px; }
+body.glass-demo:not(.hud-mode) #topbar #tb-keep .tb-lbl,
 body.glass-demo:not(.hud-mode) #topbar #sig { font-size: 11px; letter-spacing: 1.8px; opacity: 1; text-shadow: none; }
-body.glass-demo:not(.hud-mode) #topbar #tb-station .tb-lbl { color: color-mix(in srgb, var(--gold) 75%, var(--panel2)); }
+body.glass-demo:not(.hud-mode) #topbar #tb-keep .tb-lbl { color: color-mix(in srgb, var(--gold) 75%, var(--panel2)); }
 body.glass-demo:not(.hud-mode) #topbar #sig { color: var(--cg-mute); }
-body.glass-demo:not(.hud-mode) #topbar :is(#tb-station .tb-val, #status-pill) { font-size: 21px; line-height: 1; color: var(--ph-bright); text-shadow: var(--pg-glow); }
+body.glass-demo:not(.hud-mode) #topbar :is(#tb-keep .tb-val, #status-pill) { font-size: 21px; line-height: 1; color: var(--ph-bright); text-shadow: var(--pg-glow); }
 /* XP: the segmented glass bar, in the card's flow under the level (no longer a sliver on the edge) */
-body.glass-demo:not(.hud-mode) #topbar #tb-station .tb-xp {
+body.glass-demo:not(.hud-mode) #topbar #tb-keep .tb-xp {
   position: relative; left: auto; right: auto; bottom: auto; grid-column: 2; width: 100%; min-width: 64px; height: 5px;
   border-radius: 3px; overflow: hidden; background: rgba(var(--gold-rgb), .16);
   box-shadow: inset 0 0 0 1px rgba(0, 0, 0, .35);
 }
-body.glass-demo:not(.hud-mode) #topbar #tb-station .tb-xp::after {
+body.glass-demo:not(.hud-mode) #topbar #tb-keep .tb-xp::after {
   content: ''; position: absolute; inset: 0; pointer-events: none;
   background: repeating-linear-gradient(90deg, transparent 0 8px, rgba(5, 3, 1, .9) 8px 10px);
 }
-body.glass-demo:not(.hud-mode) #topbar #tb-station .tb-xp-fill { background: var(--gold); box-shadow: 0 0 6px rgba(var(--gold-rgb), .45); }
-body.glass-demo:not(.hud-mode) #topbar .tb-station-mark { grid-row: 1 / 4; }
+body.glass-demo:not(.hud-mode) #topbar #tb-keep .tb-xp-fill { background: var(--gold); box-shadow: 0 0 6px rgba(var(--gold-rgb), .45); }
+body.glass-demo:not(.hud-mode) #topbar .tb-keep-mark { grid-row: 1 / 4; }
 /* UPLINK: a housed lamp that follows the pill's real state */
 body.glass-demo:not(.hud-mode) #topbar #status-pill { display: flex; align-items: center; gap: 8px; }
 body.glass-demo:not(.hud-mode) #topbar #status-pill::before {
@@ -345,7 +345,7 @@ body.glass-demo:not(.hud-mode) #topbar #status-pill.working::before { background
 body.glass-demo:not(.hud-mode) #topbar #status-pill.standby::before { background: var(--ph-dim); box-shadow: 0 0 0 1px rgba(0, 0, 0, .55); }
 body.glass-demo:not(.hud-mode) #topbar #status-pill.down::before { background: var(--link-down, #ff5a4a); box-shadow: 0 0 0 1px rgba(0, 0, 0, .55), 0 0 6px rgba(255, 90, 74, .4); }
 body.glass-demo:not(.hud-mode) #topbar :is(.tb-stats, .tb-status) { align-items: stretch; }
-body.glass-demo:not(.hud-mode) #topbar :is(#tb-station, .tb-connection) { height: 50px; min-height: 50px; box-sizing: border-box; align-content: center; }
+body.glass-demo:not(.hud-mode) #topbar :is(#tb-keep, .tb-connection) { height: 50px; min-height: 50px; box-sizing: border-box; align-content: center; }
 
 /* ============================================================
    PIP-BOY KNOB +1 (Andrew 10-02: "just ever so slightly a bit more of the fallout pip boy / terminal esq vibe").
@@ -448,9 +448,9 @@ body.glass-demo:not(.hud-mode) #chat-panel .workshop-return .ws-pane { border-ra
 /* ============================================================
    TOP-RIGHT INSTRUMENTS v2 — BARE READOUTS (Andrew 10-02 picked B of three: "B looks cleanest"). No housing at
    all: glowing terminal readouts straight on the bar — [shield] COMMANDER over LV 1 · segmented XP │ UPLINK ● state.
-   Every value comes from the same writers (topbar.js level/XP, app.js + stationui.js pill state class).
+   Every value comes from the same writers (topbar.js level/XP, app.js + keepui.js pill state class).
    ============================================================ */
-body.glass-demo:not(.hud-mode) #topbar :is(#tb-station, .tb-connection) {
+body.glass-demo:not(.hud-mode) #topbar :is(#tb-keep, .tb-connection) {
   height: auto; min-height: 0; padding: 0; border: 0; background: none; box-shadow: none; border-radius: 0;
 }
 body.glass-demo:not(.hud-mode) #topbar .tb-stats { display: flex; align-items: center; gap: 0; height: 42px; padding: 0 6px; }
@@ -459,13 +459,13 @@ body.glass-demo:not(.hud-mode) #topbar #save-dot { position: static; margin-left
 body.glass-demo:not(.hud-mode) #topbar .tb-link-copy { flex-direction: row; align-items: center; gap: 10px; }
 body.glass-demo:not(.hud-mode) #topbar .tb-status { padding-left: 16px; margin-left: 16px; border-left: 1px solid rgba(var(--ph-rgb), .28); align-self: stretch; display: flex; align-items: center; }
 body.glass-demo:not(.hud-mode) #topbar .tb-connection { min-width: 0; }
-body.glass-demo:not(.hud-mode) #topbar #tb-station {
+body.glass-demo:not(.hud-mode) #topbar #tb-keep {
   display: grid; grid-template-columns: auto auto auto; grid-template-rows: auto auto; column-gap: 12px; row-gap: 2px; align-items: center;
 }
-body.glass-demo:not(.hud-mode) #topbar #tb-station .tb-station-mark { grid-column: 1; grid-row: 1 / 3; width: 20px; height: 22px; }
-body.glass-demo:not(.hud-mode) #topbar #tb-station .tb-lbl { grid-column: 2; grid-row: 1; }
-body.glass-demo:not(.hud-mode) #topbar #tb-station .tb-val { grid-column: 2; grid-row: 2; }
-body.glass-demo:not(.hud-mode) #topbar #tb-station .tb-xp { grid-column: 3; grid-row: 1 / 3; align-self: center; width: 72px; min-width: 72px; height: 6px; }
+body.glass-demo:not(.hud-mode) #topbar #tb-keep .tb-keep-mark { grid-column: 1; grid-row: 1 / 3; width: 20px; height: 22px; }
+body.glass-demo:not(.hud-mode) #topbar #tb-keep .tb-lbl { grid-column: 2; grid-row: 1; }
+body.glass-demo:not(.hud-mode) #topbar #tb-keep .tb-val { grid-column: 2; grid-row: 2; }
+body.glass-demo:not(.hud-mode) #topbar #tb-keep .tb-xp { grid-column: 3; grid-row: 1 / 3; align-self: center; width: 72px; min-width: 72px; height: 6px; }
 
 /* ============================================================
    QUIETER COMMS BEATS (Andrew 10-02: "the chat just needs these improvements … so its not annoying to communicate
@@ -587,7 +587,7 @@ body.glass-demo:not(.hud-mode) .term .nf { border-radius: 6px; }
    · the intent groups (INSTALLED / DISCOVER / CREATE) = ONE segmented glass capsule, not three loose rows
    · a hairline, then the sections as compact one-line rows: fixed icon column, ellipsis, tight rhythm
    · selection = the lit row the CREW / SESSIONS rails use, not a separate card with a bar
-   Applies to every window rail built by StationUI (ABILITIES, SETTINGS, COMMANDER, CHANNELS, AUTOMATE …).
+   Applies to every window rail built by KeepUI (ABILITIES, SETTINGS, COMMANDER, CHANNELS, AUTOMATE …).
    ============================================================ */
 body.glass-demo:not(.hud-mode) .term.sn-menu .con-intents {
   display: flex; flex-direction: column; gap: 0; margin: 0 0 12px; padding: 3px;
@@ -672,7 +672,7 @@ body.glass-demo .con-rail-item.con-toptab .con-rail-glyph.has-ico { width: 16px;
    NAME on top in its own colour (as on its CREW card) with the time, the session title under it (two lines at
    most). The latest message is the row's hover tip (app.js
    railRowTip), never a sentence under the name. Rows rest quiet on hairlines; only the selected one is a
-   card. The lamp stays the station's square glass lamp with every state glyph; a row that needs
+   card. The lamp stays the keep's square glass lamp with every state glyph; a row that needs
    you says "Approval needed" / "Reply needed" in gold where the time sits.
    ============================================================ */
 body.glass-demo.rows-inbox:not(.hud-mode) #left #workstreams { gap: 1px; padding: 4px 4px 8px; }
@@ -704,7 +704,7 @@ body.glass-demo.rows-inbox:not(.hud-mode) #left #workstreams .ws-row.attn:not(.s
   background: linear-gradient(165deg, rgba(var(--gold-rgb), .08), transparent 60%); border-color: rgba(var(--gold-rgb), .3);
 }
 
-/* the lamp is the station's own SQUARE glass lamp (glass-demo.css: empty when read, lit core when unread, the
+/* the lamp is the keep's own SQUARE glass lamp (glass-demo.css: empty when read, lit core when unread, the
    scan / reply strokes / approval mark / failure X inside it). Andrew 10-03: the one thing he did not want
    changed. This block only seats it on the agent's line. */
 body.glass-demo.rows-inbox:not(.hud-mode) #left #workstreams .ws-row > .ws-dot { justify-self: start; align-self: center; margin: 0; }

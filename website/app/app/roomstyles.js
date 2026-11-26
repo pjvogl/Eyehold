@@ -1,8 +1,8 @@
-/* frontend/app/roomstyles.js — THE ZONE STYLES the station builder furnishes with (vibe design, 2026-09-29).
+/* frontend/app/roomstyles.js — THE ZONE STYLES the keep builder furnishes with (vibe design, 2026-09-29).
 
    Pure, zero-dep, UMD (node tests + the browser). When the Commander says "the left side cozy, the right side a line", the
    lead names a STYLE for each part of the room and Eyehold furnishes it from here: never a piece the model chose or placed.
-   A style is a few hand-arranged SETS of furniture, largest first, in the same pieces the station presets are made of; the
+   A style is a few hand-arranged SETS of furniture, largest first, in the same pieces the keep presets are made of; the
    builder takes the largest set that fits the zone and seats it against the room's outer walls. Each set is
    [type, x, y, facing?] in its own tiles (y grows toward the front of the room). A chair left of a table faces 3, right of
    it faces 1 (the presets' own convention). Some pieces are EQUIPMENT (object = capability: a desk is a computer, a rack
@@ -30,7 +30,7 @@
         { w: 8, h: 5, pieces: [['bookshelf', 0, 0], ['bookshelf', 2, 0], ['bookshelf', 4, 0], ['tallplant', 7, 0], ['rug_small', 2, 2], ['recliner_r', 1, 3], ['sidetable', 6, 3], ['bookstack', 7, 4]] },
         { w: 6, h: 4, pieces: [['bookshelf', 0, 0], ['bookshelf', 2, 0], ['plant', 5, 0], ['recliner_r', 1, 2], ['sidetable', 3, 2], ['bookstack', 4, 3]] },
       ] },
-    desks: { name: 'work desks', about: 'desks (each seats its own agent)', words: ['desk', 'office', 'workspace', 'work', 'workstations', 'computers'],
+    desks: { name: 'work desks', about: 'desks (each seats its own agent)', words: ['desk', 'office', 'workspace', 'work', 'workkeeps', 'computers'],
       sets: [
         // spaced for either desk: the classic one is 2 tiles wide, the remastered one 3
         { w: 12, h: 3, pieces: [['desk', 0, 0], ['desk', 4, 0], ['desk', 8, 0], ['plant', 11, 0]] },
@@ -106,9 +106,9 @@
   }
   const menu = () => ORDER.map(id => ({ id, name: STYLES[id].name, about: STYLES[id].about }));
 
-  /* WHOLE-ROOM STYLES (2026-09-30): a room furnished from wall to wall the way the hand-built showcase stations were —
+  /* WHOLE-ROOM STYLES (2026-09-30): a room furnished from wall to wall the way the hand-built showcase keeps were —
      its own floor and walls, a FEATURE WALL lined with its signature pieces, a CENTREPIECE cluster, plants in the corners,
-     accents along the side walls. StationLayouts.dressRoom places them: the feature wall is the one opposite the door, the
+     accents along the side walls. KeepLayouts.dressRoom places them: the feature wall is the one opposite the door, the
      centrepiece faces it, a lane from every door stays clear, and a piece that cannot be walked up to is left out.
      feature / front: { left, centre, right } lists of piece types lined along that wall. centre: clusters, largest first,
      [type, x, y, facing?] as in the zone sets (y grows away from the feature wall). */

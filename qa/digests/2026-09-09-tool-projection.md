@@ -5,7 +5,7 @@ Initial baseline: ed768880a505c26de4ba318c3c428359abfe8c9b. Final integration ba
 
 ## Behavior
 
-An interactive request without a placed field used to ignore the saved floor, leaving a Station Gear agent with compute/orchestration despite its cabinet. The request now derives the saved assigned-room grants using the existing world model. An unassigned agent retains the established station-wide fallback. Explicit empty placement remains authoritative, and the frontend now transmits that empty array so removing equipment cannot resurrect a saved prop.
+An interactive request without a placed field used to ignore the saved floor, leaving a Keep Gear agent with compute/orchestration despite its cabinet. The request now derives the saved assigned-room grants using the existing world model. An unassigned agent retains the established keep-wide fallback. Explicit empty placement remains authoritative, and the frontend now transmits that empty array so removing equipment cannot resurrect a saved prop.
 
 The toolsets endpoint accepts agent and agentId, rejects conflicting selections, defaults to the same primary identity as /api/run, and uses the same saved-floor fallback when placement is omitted. It explicitly discloses interactive lead orchestration as a runtime grant, respecting the family switch. Profiles, Full Access, delegated/headless offices and consent enforcement are unchanged.
 

@@ -70,7 +70,7 @@ const S = require('../frontend/app/study.js');
   const noMatch = await S.study(run, { propose: async () => 'goals RETIRE: a goal we never held', clock: makeClock(0), redact, beliefs, declined: [] });
   A.eq(noMatch.proposals.length, 0, 'a RETIRE with no matching existing belief is dropped');
 
-  // ---- dedup: an ADD the station already believes (exact or paraphrase) is dropped ----
+  // ---- dedup: an ADD the keep already believes (exact or paraphrase) is dropped ----
   const dd = await S.study(run, { propose: async () => 'goals ADD: ship the dossier\ngoals ADD: build a brand new pipeline', clock: makeClock(0), redact, beliefs, declined: [] });
   A.eq(dd.proposals.length, 1, 'an ADD duplicating a known belief is dropped; the genuinely-new one survives');
   A.eq(dd.proposals[0].text, 'build a brand new pipeline', 'the new belief survives dedup');

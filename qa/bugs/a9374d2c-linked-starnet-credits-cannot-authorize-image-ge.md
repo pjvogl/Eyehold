@@ -20,11 +20,11 @@ recovery: unconfirmed
 
 ## Symptom
 
-A linked credits-only station refuses an image task and asks the customer to connect OpenRouter, despite having a StarNet credential.
+A linked credits-only keep refuses an image task and asks the customer to connect OpenRouter, despite having a StarNet credential.
 
 ## Repro
 
-1. Save a funded station link; configure no OpenRouter key.
+1. Save a funded keep link; configure no OpenRouter key.
 2. Run a StarNet agent with STUDIO and request an image.
 3. Original ImageTask.resolveRoute rejects before any provider call with openrouter-key-required.
 

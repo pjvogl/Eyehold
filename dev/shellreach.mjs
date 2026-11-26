@@ -22,7 +22,7 @@ const PROBE = `(() => {
     const st = WorldModel.create(WorldModel.defaultDoc());
     const A = st.addRoom({ kind: 'hab', rects: [{ x1: 20, y1: 20, x2: 33, y2: 28 }] });
     if (mat) st.setHull(A.id, { mat, style: style || 'follow' });
-    const geo = st.projectGeometry(), bk = StationBake.bake(geo);
+    const geo = st.projectGeometry(), bk = KeepBake.bake(geo);
     const lit = mk(bk.W, bk.H);
     lit.g.fillStyle = '#000'; lit.g.fillRect(0, 0, bk.W, bk.H);
     lit.g.drawImage(bk.baseCv, 0, 0); lit.g.drawImage(bk.lightCv, 0, 0);

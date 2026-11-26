@@ -23,7 +23,7 @@ http.createServer(async (req, res) => {
       localStorage.setItem('eyehold.return.v1', JSON.stringify({lastSeenAt:${ts - 10000},pending:[],digested:[]}));
       localStorage.setItem('repair.fixture.seeded','1');
     }
-    ${state.failSettings ? "const originalSet = Storage.prototype.setItem; Storage.prototype.setItem = function(key,value) { if(key === 'eyehold.station.v1') throw new DOMException('Controlled storage quota failure','QuotaExceededError'); return originalSet.call(this,key,value); };" : ''}`);
+    ${state.failSettings ? "const originalSet = Storage.prototype.setItem; Storage.prototype.setItem = function(key,value) { if(key === 'eyehold.keep.v1') throw new DOMException('Controlled storage quota failure','QuotaExceededError'); return originalSet.call(this,key,value); };" : ''}`);
   }
   if (u.pathname === '/api/runs') {
     state.runReads++;

@@ -4,7 +4,7 @@
       heals — planlines derives the dock maps (docksDerived:true) — and routes IDENTICALLY to a fresh compile.
       ⛔ The old healPlan returned early on `lineOfAgent` alone, which every plan since 2026-08-07 carries.
    2. A multi-dock floor (writer quill @A → editor mira @B → writer quill @C): resolveDock names the dock,
-      entryDockOf is the oldest INBOX-fed dock, and brief / station / line / ship-out are per DOCK. */
+      entryDockOf is the oldest INBOX-fed dock, and brief / keep / line / ship-out are per DOCK. */
 'use strict';
 const A = require('./_assert.js');
 const Pipeline = require('../frontend/app/pipeline.js');
@@ -32,7 +32,7 @@ const strip = (p, keys) => { const c = JSON.parse(JSON.stringify(p)); for (const
       for (const tag of ['general', 'code', 'research']) out.push(r.resolveTarget({ tag }), r.resolveDock({ tag }));
       for (const a of Object.keys(fresh.reach).sort()) {
         const lineId = r.lineOfAgent(a);
-        out.push(lineId, r.lineOriginFor(a), r.stageBrief(a), JSON.stringify(r.stationFor(a)), r.chainShipsToOutbox(a), r.entryDockOf(a),
+        out.push(lineId, r.lineOriginFor(a), r.stageBrief(a), JSON.stringify(r.keepFor(a)), r.chainShipsToOutbox(a), r.entryDockOf(a),
           r.chainStep(a, { lineId, tag: 'general' }), r.chainNext(a, { lineId, tag: 'general' }), r.fanSiblings(a), r.loopGateAfter(a, lineId));
       }
       return JSON.stringify(out);
@@ -89,14 +89,14 @@ for (const shape of ['compiled', 'stored']) {
   A.eq(r.dockRef('quill', line), { agentId: 'quill', dockId: 'p2' }, 'dockRef(agent) = its entry dock on the line');
   A.eq(r.dockRef('p4', line), { agentId: 'quill', dockId: 'p4' }, 'dockRef(dockId) = that bay');
   A.eq(r.dockRef('nobody', line), null, 'an unknown ref resolves to nothing');
-  // station isolation: the dock record THIS run is at, never the union
+  // keep isolation: the dock record THIS run is at, never the union
   const sp = r.getPlan();
   for (const b of sp.bays) b.objects = b.propId === 'p4' ? ['computer', 'dish'] : ['computer'];
   for (const b of sp.dockBays) b.objects = b.propId === 'p4' ? ['computer', 'dish'] : ['computer'];
   const objs = st => st.rooms.bay.objects.map(o => o.objectType).join(',');
-  A.eq(objs(r.stationFor('quill', 'p4')), 'computer,dish', 'a run at bay C gets bay C’s room');
-  A.eq(objs(r.stationFor('quill', 'p2')), 'computer', 'a run at bay A gets bay A’s room — never the union');
-  A.eq(objs(r.stationFor('quill')), 'computer', 'no dock named -> the entry dock’s room');
+  A.eq(objs(r.keepFor('quill', 'p4')), 'computer,dish', 'a run at bay C gets bay C’s room');
+  A.eq(objs(r.keepFor('quill', 'p2')), 'computer', 'a run at bay A gets bay A’s room — never the union');
+  A.eq(objs(r.keepFor('quill')), 'computer', 'no dock named -> the entry dock’s room');
 }
 
 A.report('routing.multibay');

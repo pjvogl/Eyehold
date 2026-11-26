@@ -121,7 +121,7 @@
       "name": "journey stale generation",
       "status": 409,
       "ok": false,
-      "error": "station generation changed; reload before updating journey",
+      "error": "keep generation changed; reload before updating journey",
       "resultKeys": [
         "status",
         "ok",

@@ -16,11 +16,11 @@
    floor ("summoned agents now move"), not hero-parity.
 2. **Idle behavior has NO lane discipline.** Both the hero idle pickers AND `crewWander()` choose
    targets from the WHOLE reachable floor (`geo.allRects`, any walkable tile; only belts avoided).
-   Agents drift out of their assigned area, lounge on couches across the station, and "explore" new
-   props — breaking the visual legibility of "assigned agent → assigned station → work happens here."
+   Agents drift out of their assigned area, lounge on couches across the keep, and "explore" new
+   props — breaking the visual legibility of "assigned agent → assigned keep → work happens here."
 
 Work routing is already correct and is **out of scope**: a tasked agent already walks only to its own
-assigned workstation (`deskPropFor(agentId)` matches `prop.agentId`), and capability is per-room/bay.
+assigned workkeep (`deskPropFor(agentId)` matches `prop.agentId`), and capability is per-room/bay.
 We do not touch work routing.
 
 ## THE GOAL (definition of done — the "standard" the loop runs until it meets)
@@ -29,10 +29,10 @@ We do not touch work routing.
 - A1. No agent — hero or crew — ever targets a tile or prop **outside its own zone** during idle.
   This holds for every idle picker (wander, novelty/inspect/POI, lounge/prop, rounds, gaze, revisit,
   mourn, quirk movement) AND for `crewWander`.
-- A2. An agent's **zone** = the room containing its assigned bay/workstation; if it sits on open floor
-  with no enclosing room, a bounded **leash radius** around its workstation; if it is unassigned/
+- A2. An agent's **zone** = the room containing its assigned bay/workkeep; if it sits on open floor
+  with no enclosing room, a bounded **leash radius** around its workkeep; if it is unassigned/
   unplaced, it has **no zone and does not roam** (stays dormant at spawn).
-- A3. **Solo / single-agent stations are NOT regressed**: when one agent effectively owns the space,
+- A3. **Solo / single-agent keeps are NOT regressed**: when one agent effectively owns the space,
   its zone is large and its existing rich behavior is unchanged. (Same rule, derived from the user's
   own layout — no "mode switch.")
 
@@ -48,7 +48,7 @@ We do not touch work routing.
   branch, exactly as today. No zone guard may ever delay or block a summon.
 - I2. **Hero parity.** With one agent, hero behavior is observationally identical to pre-change
   (the 8 sentience passes still work). Zone-caging only narrows target *selection*, never removes a
-  beat for the solo hero whose zone is the whole station.
+  beat for the solo hero whose zone is the whole keep.
 - I3. **Determinism preserved.** Only `U.irnd/U.chance/U.pick` (no `Math.random`/`Date.now`/
   `new Date`). `test/lint-determinism.js` stays green.
 - I4. **No shared-contract edits.** Zero changes to `shared/events.js` or `shared/schema.js`. Zones
@@ -102,7 +102,7 @@ We do not touch work routing.
   `node --check`, new tests pass, `test:fast` still green. SAFE, isolated, builds confidence first.
 - **P1 — Cage the HERO idle pickers** through `inZone`. Every idle target picker filters candidates to
   the hero's zone; a picker with no in-zone candidate falls through to in-place beats (stand-still /
-  look-around / fidget). Solo hero zone = whole station ⇒ no regression. Gate + adversarial verify.
+  look-around / fidget). Solo hero zone = whole keep ⇒ no regression. Gate + adversarial verify.
 - **P2 — Cage `crewWander`** to the crew body's zone (same primitive). **After P2, Tier A is
   delivered** — the user-visible lane-discipline pain is solved for hero and crew. Gate + verify.
 - **P3 — Generalize the reusable engine core to crew** via the `self` pointer + crew state init, so

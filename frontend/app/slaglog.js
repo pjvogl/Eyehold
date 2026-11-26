@@ -32,7 +32,7 @@
   // a provider's outage or rate limit, an agent still busy with its last run. Their own message is the fix; a resend in a
   // moment CAN go through, so the cause must not say it won't (2026-10-08: a refused link / an unanswered balance check
   // became "copy the diagnostics … report it"). network + timeout stay generic with unknown/server_error.
-  // managed_credit_held: the balance sits in this station's own running runs' holds and comes back as they settle.
+  // managed_credit_held: the balance sits in this keep's own running runs' holds and comes back as they settle.
   const RETRY_ERROR_KINDS = { managed_credit_unavailable: 1, managed_credit_held: 1, provider_server_error: 1, provider_unreachable: 1, rate_limit: 1, agent_busy: 1 };
 
   function clampFrac(n) { n = Number(n); if (!isFinite(n) || n < 0) return 0; return n > 1 ? 1 : n; }
@@ -78,7 +78,7 @@
             fix: String(ctx.error.msg) };
         return { reason, title: 'errored out',
           cause: 'The run failed partway, so no useful work was produced.',
-          // no "agent log" exists and the cause is often the station's own bug (first-hour walk 2026-09-28): name
+          // no "agent log" exists and the cause is often the keep's own bug (first-hour walk 2026-09-28): name
           // what a person can actually do — see the failed step, send it again, report it if it repeats.
           fix: 'Open the agent’s RECORD tab to see which step failed, then send the request again. If it fails the same way, copy the diagnostics from the failed reply and report it.' };
       case 'refusal':

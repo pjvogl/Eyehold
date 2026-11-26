@@ -3,7 +3,7 @@
  *
  * Tauri embeds application code from `frontend-embed`; media ships once in the
  * `frontend-dist` resource tree shared with the sidecar browser mirror.
- * Previously, Tauri embedded every byte of the staged frontend into the executable. Since the 2026-09 station
+ * Previously, Tauri embedded every byte of the staged frontend into the executable. Since the 2026-09 keep
  * remaster, `frontend/assets/industrial/` also carries the art SOURCES the remaster was calibrated from
  * (review batches, camera audits, calibration sheets: ~1 GB of 2K PNGs) next to the ~200 MB the app
  * actually loads at runtime. Embedding all of it produced a 926 MB executable and made NSIS fail
@@ -13,7 +13,7 @@
  * build) and drops ONLY the industrial review/source folders that no runtime code path requests. The
  * kept set is the runtime evidence, not a guess:
  *   · `assets/industrial/*.png` (root)          — industrialtextures.js loads shell/floor/wall packs here
- *   · `assets/industrial/remaster/`              — industrialtextures.js floors/walls/workstation facings
+ *   · `assets/industrial/remaster/`              — industrialtextures.js floors/walls/workkeep facings
  *   · `assets/industrial/projection-correction/` — propremaster.js default ROOT (DENSITY 6) + manifest
  *   · `assets/industrial/complete-sheet/`        — referenced by projection-correction/manifest.json
  *   · `assets/industrial/approved-sheet/`        — propremaster.js `?propSet=approved` / classic fallback

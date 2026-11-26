@@ -178,7 +178,7 @@ function blitInto(dst, dw, dh, crop, kind) {
 }
 
 const geometryPath = 'frontend/assets/industrial/projection-correction/runtime-geometry.json';
-const coveragePath = 'docs/station-remaster/projection-effects/coverage.json';
+const coveragePath = 'docs/keep-remaster/projection-effects/coverage.json';
 const geometry = JSON.parse(readFileSync(join(root, geometryPath), 'utf8'));
 const crops = new Map();
 for (const view of Object.values(geometry.views)) {

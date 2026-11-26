@@ -1,4 +1,4 @@
-/* Project controls belong entirely to COMMS; the station layout is untouched. */
+/* Project controls belong entirely to COMMS; the keep layout is untouched. */
 #comms-title { min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
 #chat-panel > h3 { gap:8px; }
 #chat-panel > h3 .h3-right { flex-shrink:0; }

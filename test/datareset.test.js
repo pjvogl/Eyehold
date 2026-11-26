@@ -1,6 +1,6 @@
-/* node test/datareset.test.js — #65 ERASE EVERYTHING + #61 RESET STATION BROWSER (frontend/app/datareset.js) and the
+/* node test/datareset.test.js — #65 ERASE EVERYTHING + #61 RESET KEEP BROWSER (frontend/app/datareset.js) and the
    desktop wiring they depend on. The erase itself is native (src-tauri/src/erase_all.rs, cargo-tested); this proves the
-   page side: the typed+armed confirmation reaches the native command, the window cannot write the OLD station into
+   page side: the typed+armed confirmation reaches the native command, the window cannot write the OLD keep into
    the fresh one while it erases, and every line the UI shows is backed by the shell's receipt. */
 'use strict';
 const A = require('./_assert.js');
@@ -22,7 +22,7 @@ function fakeWindow() {
 }
 
 (async () => {
-  /* ---- the freeze: the old in-memory station cannot write into the fresh one ---- */
+  /* ---- the freeze: the old in-memory keep cannot write into the fresh one ---- */
   {
     const f = fakeWindow();
     const lift = DR.freezeWrites(f.w);
@@ -32,7 +32,7 @@ function fakeWindow() {
     A.eq(f.beacons.length, 0, 'the unload save beacon is dropped');
     let refused = false;
     try { await f.w.fetch('/api/save', { method: 'POST' }); } catch (e) { refused = /frozen/.test(e.message); }
-    A.ok(refused, 'a station API write is refused');
+    A.ok(refused, 'a keep API write is refused');
     let refusedAbs = false;
     try { await f.w.fetch('http://127.0.0.1:8787/api/agents', { method: 'POST' }); } catch (e) { refusedAbs = true; }
     A.ok(refusedAbs, 'the rewritten absolute sidecar URL is refused too');
@@ -54,11 +54,11 @@ function fakeWindow() {
       invoke: async (cmd, args) => {
         calls.push([cmd, args]);
         f.store.setItem('skynet.world', 'old');   // what an unload hook would try mid-erase
-        return { ok: true, listening: true, removed: ['/a/ai.skynet.harness/.erasing-station-1'], failed: [], keychainCleared: 41, keychainFailed: [], autostartDisabled: true, browserDataCleared: true };
+        return { ok: true, listening: true, removed: ['/a/ai.skynet.harness/.erasing-keep-1'], failed: [], keychainCleared: 41, keychainFailed: [], autostartDisabled: true, browserDataCleared: true };
       }
     };
     const v = await DR.eraseDesktop({ core, win: f.w });
-    A.eq(f.fetches[0], ['/api/browser/reset', 'POST'], 'the station browser is reset (orphans ended) before the erase');
+    A.eq(f.fetches[0], ['/api/browser/reset', 'POST'], 'the keep browser is reset (orphans ended) before the erase');
     A.eq(calls, [['eyehold_erase_everything', { confirm: 'ERASE' }]], 'the native erase is invoked with the typed confirmation word');
     A.eq(f.writes.length, 0, 'no storage write landed during the erase');
     A.ok(v.browserDataCleared === true, 'receipt passed through');
@@ -69,12 +69,12 @@ function fakeWindow() {
   {
     // refused before any deletion: the window must work again (freeze lifted) and the error is shown verbatim
     const f = fakeWindow();
-    const core = { invoke: async () => { throw new Error('nothing was erased - another Eyehold process still owns this station'); } };
+    const core = { invoke: async () => { throw new Error('nothing was erased - another Eyehold process still owns this keep'); } };
     let err = null;
     try { await DR.eraseDesktop({ core, win: f.w }); } catch (e) { err = e; }
     A.ok(err && /^nothing was erased/.test(err.message), 'a refused erase surfaces the shell\'s own words');
     f.store.setItem('k', 'v');
-    A.eq(f.writes.length, 1, 'and the freeze is lifted so the station keeps saving');
+    A.eq(f.writes.length, 1, 'and the freeze is lifted so the keep keeps saving');
   }
   {
     // the native WebView clear failed: Eyehold's own keys are cleared through the fallback before any reload
@@ -87,7 +87,7 @@ function fakeWindow() {
     const f2 = fakeWindow();
     const v2 = await DR.eraseDesktop({ core, win: f2.w, freshStart: { clearBrowserState: () => { throw new Error('storage blocked'); } } });
     const s2 = DR.eraseSummary(v2);
-    A.ok(!s2.reloadSafe, 'when no layer cleared the window, a reload is NOT offered (it would replay the old station)');
+    A.ok(!s2.reloadSafe, 'when no layer cleared the window, a reload is NOT offered (it would replay the old keep)');
     A.ok(/Could NOT clear this window's stored data \(storage blocked\)/.test(s2.lines.join(' ')), 'and the UI says so: ' + s2.lines.join(' '));
   }
 
@@ -97,15 +97,15 @@ function fakeWindow() {
       removed: ['a'], failed: [{ path: 'C:/Users/a/AppData/Roaming/ai.skynet.harness/update-snapshots', error: 'Access is denied.' }],
       keychainFailed: ['credits:device: locked'] });
     const t = s.lines.join(' ');
-    A.ok(!s.complete && s.reloadSafe, 'partial: not complete, but the fresh station can open');
+    A.ok(!s.complete && s.reloadSafe, 'partial: not complete, but the fresh keep can open');
     A.ok(/Could NOT delete 1: C:\/Users\/a\/AppData\/Roaming\/ai\.skynet\.harness\/update-snapshots \(Access is denied\.\)/.test(t), 'the leftover path and the OS reason are named');
     A.ok(/Could NOT remove 1 saved credential/.test(t) && !/Removed Eyehold's saved keys/.test(t), 'a keychain failure is never reported as removed');
     A.ok(/Launch at login could not be turned off/.test(t), 'autostart failure named');
     const dead = DR.eraseSummary({ ok: true, listening: false, browserDataCleared: true, removed: [], failed: [], keychainFailed: [] });
-    A.ok(!dead.reloadSafe && /did not start answering/.test(dead.lines.join(' ')), 'a fresh station that is not answering is said plainly');
+    A.ok(!dead.reloadSafe && /did not start answering/.test(dead.lines.join(' ')), 'a fresh keep that is not answering is said plainly');
   }
 
-  /* ---- RESET STATION BROWSER copy follows the sweep receipt ---- */
+  /* ---- RESET KEEP BROWSER copy follows the sweep receipt ---- */
   {
     const t = DR.browserResetSummary(200, { ok: true, closed: true, sweep: { ok: true, found: 3, killed: [300, 301, 302], survivors: [], ours: [], locks: { removed: ['lockfile'], failed: [] } } });
     A.ok(/Ended 3 of 3 leftover Eyehold browser processes/.test(t) && /Cleared its stale profile lock/.test(t) && /sign-ins were kept/.test(t), t);
@@ -120,12 +120,12 @@ function fakeWindow() {
     const root = path.join(__dirname, '..');
     const main = fs.readFileSync(path.join(root, 'src-tauri', 'src', 'main.rs'), 'utf8');
     const erase = fs.readFileSync(path.join(root, 'src-tauri', 'src', 'erase_all.rs'), 'utf8');
-    const ui = fs.readFileSync(path.join(root, 'frontend', 'app', 'stationui.js'), 'utf8');
+    const ui = fs.readFileSync(path.join(root, 'frontend', 'app', 'keepui.js'), 'utf8');
     const html = fs.readFileSync(path.join(root, 'frontend', 'index.html'), 'utf8');
     A.ok(/fn eyehold_erase_everything\(/.test(main) && /generate_handler!\[[\s\S]*eyehold_erase_everything/.test(main), 'the native erase command exists and is registered');
     A.ok(/confirm\.trim\(\) != "ERASE"/.test(main), 'the native side re-checks the typed word (the page is not the only gate)');
     A.ok(/set_aside_for_erase[\s\S]{0,1600}nothing was erased/.test(main), 'a failed set-aside deletes nothing and says so');
-    A.ok(/stop_sidecar_gracefully\(st\)[\s\S]{0,400}set_aside_for_erase/.test(main), 'the sidecar (and its station browser) stops before any file moves');
+    A.ok(/stop_sidecar_gracefully\(st\)[\s\S]{0,400}set_aside_for_erase/.test(main), 'the sidecar (and its keep browser) stops before any file moves');
     A.ok(main.includes('erase_all::remove_all(&targets)') && main.includes('window.clear_all_browsing_data()'), 'deletion + WebView storage clear are both wired');
     A.ok(/!path\.starts_with\(&install_root\)/.test(main), 'the install folder (and its bundled seed) is never an erase target');
     A.ok(/fn is_eyehold_owned/.test(erase) && /refused: not a Eyehold-owned location/.test(erase), 'every target passes the Eyehold-ownership guard');

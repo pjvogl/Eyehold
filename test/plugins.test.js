@@ -4,7 +4,7 @@
    a config line rather than an installable unit, and pay a process spawn on every tool call. A plugin is the
    same idea packaged. These assertions pin the surface a plugin is handed (only the spine), the consent gate
    (keyed to the CODE's hash, so an edit re-asks), and the isolation that actually matters here — one broken
-   third-party folder must never stop the station booting.
+   third-party folder must never stop the keep booting.
 
    Uses real folders and a real require, because "does this actually load" is the whole question. */
 'use strict';
@@ -109,7 +109,7 @@ async function writePlugin(id, source, manifest) {
       A.eq(global.__spineReachable, false, 'and it cannot reach the spine object itself to clear() everyone else');
     }
 
-    // ---- 5. ONE BROKEN PLUGIN MUST NEVER STOP THE STATION BOOTING ----
+    // ---- 5. ONE BROKEN PLUGIN MUST NEVER STOP THE KEEP BOOTING ----
     {
       await fsp.rm(ALLOW, { force: true });
       await fsp.rm(path.join(PLUGINS, 'nosy'), { recursive: true, force: true });
@@ -160,7 +160,7 @@ async function writePlugin(id, source, manifest) {
       const loader = makePluginLoader({ fsp, pathMod: path, dir: path.join(DIR, 'nope'), allowFile: ALLOW, requireModule: require, hash: sha });
       const { plugins, errors } = await loader.discover();
       A.eq(plugins.length, 0, 'no plugins directory -> no plugins');
-      A.eq(errors.length, 0, 'and no complaints — most stations will never install one');
+      A.eq(errors.length, 0, 'and no complaints — most keeps will never install one');
       A.eq((await loader.load(makeHooks())).loaded.length, 0, 'load() is a clean no-op');
     }
     // ---- 9. REVOKE — a consent gate with no way back is a one-way door, not a gate ----

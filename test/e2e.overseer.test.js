@@ -129,7 +129,7 @@ const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
     await fixture.json('POST', '/api/update/cancel', {});
     await fixture.stop();
     // A schema-invalid envelope cannot recover from a JSON backup: preserve it,
-    // keep coordination disabled, and let the rest of the station start normally.
+    // keep coordination disabled, and let the rest of the keep start normally.
     fs.writeFileSync(statePath, JSON.stringify({ version: 1, value: { threads: 'invalid', reviews: [] } }));
     await fixture.start();
     const damaged = (await fixture.json('GET', '/api/overseer')).body;

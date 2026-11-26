@@ -12,13 +12,13 @@ try {
   const load = async () => {
     await cdp.send('Page.navigate', { url: 'http://127.0.0.1:9197/' });
     for (let i = 0; i < 100; i++) {
-      if (await evalJS(cdp, "typeof StationUI !== 'undefined' && typeof World !== 'undefined' && !!World.stationDoc()")) return;
+      if (await evalJS(cdp, "typeof KeepUI !== 'undefined' && typeof World !== 'undefined' && !!World.keepDoc()")) return;
       await sleep(150);
     }
-    throw Error('Station did not load');
+    throw Error('Keep did not load');
   };
   const open = async () => {
-    await evalJS(cdp, "StationUI.openTerm('settings', 'appearance'); true");
+    await evalJS(cdp, "KeepUI.openTerm('settings', 'appearance'); true");
     for (let i = 0; i < 60; i++) {
       if (await evalJS(cdp, "!!document.querySelector('#set-lighting button')")) { await sleep(600); return; }
       await sleep(100);
@@ -26,8 +26,8 @@ try {
     throw Error('Lighting controls did not open');
   };
   const read = () => evalJS(cdp, `(() => {
-    const geo = WorldModel.create(World.stationDoc()).projectGeometry();
-    const bake = StationBake.bake(geo), c = bake.lightCv.getContext('2d');
+    const geo = WorldModel.create(World.keepDoc()).projectGeometry();
+    const bake = KeepBake.bake(geo), c = bake.lightCv.getContext('2d');
     let total = 0, count = 0;
     for (const r of geo.allRects) {
       for (let y = r.y1 * 12 + 3; y < (r.y2 + 1) * 12; y += 6) {
@@ -37,7 +37,7 @@ try {
       }
     }
     const buttons = [...document.querySelectorAll('#set-lighting button')];
-    return { ambient: StationBake.LIGHT.ambient, glow: World.crt.glow,
+    return { ambient: KeepBake.LIGHT.ambient, glow: World.crt.glow,
       illumination: total / count, lamps: bake.lamps,
       selected: buttons.filter(b => b.getAttribute('aria-pressed') === 'true').map(b => b.dataset.lighting),
       buttons: buttons.map(b => ({ text: b.textContent, bg: getComputedStyle(b).backgroundColor, border: getComputedStyle(b).borderColor })) };

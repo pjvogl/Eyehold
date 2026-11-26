@@ -43,7 +43,7 @@ the gap. Onboarding is the first and densest context-pursuit episode; the pursui
    (`index.html:136`). If wake happens with no working brain (keyless degrade), the fake scripted
    interview is DELETED — replaced by a short honest holding beat + KeyCTA; the real interview
    fires on the first session after the brain comes alive.
-4. **The gate.** Every proactive recommendation surface checks station readiness first. Below
+4. **The gate.** Every proactive recommendation surface checks keep readiness first. Below
    threshold: structurally OFF, not toned down. Above it: every pitch must be traceable to the
    specific beliefs that justify it. The magic moment is protected, never counterfeited.
 5. **Hunt mode.** Below readiness, the agent's standing job is closing the gap: scene-based probes
@@ -66,7 +66,7 @@ the gap. Onboarding is the first and densest context-pursuit episode; the pursui
 
 ## 3. The interview — beat-by-beat script (RED-PEN ZONE)
 
-Voice: station voice — lowercase, eerie-not-cute, hungry to understand, never corporate.
+Voice: keep voice — lowercase, eerie-not-cute, hungry to understand, never corporate.
 Timing: deep path ≈ 6–8 min, 9–12 exchanges. Every generated beat degrades per the failure
 doctrine in §8 (honest, never fake). All questions below are the EXACT proposed wording.
 
@@ -130,7 +130,7 @@ A second dig fires only if the coverage map says identity is still thin AND tota
 > what exists at the end of that year that doesn't exist right now?"
 
 - chips: `honestly — no idea yet. let's find out` (→ writes
-  `ambition: "Direction open — wants the station to help discover what to build."`, readiness for
+  `ambition: "Direction open — wants the keep to help discover what to build."`, readiness for
   `ambition` marked LOW-BY-CHOICE, hunt mode inherits) / 2 generated chips from B2–B5 (*this
   user's* plausible year-outcomes, steering-only).
 - **writes:** `ambition` beliefs via `buildYearReply` (ACK + one dig into the concrete shape:
@@ -242,7 +242,7 @@ A pre-readiness profile of the existing curiosity engine (no new engine):
   moment — no cold pop-ups.
 - Silent harvest continues regardless: worksignal lanes, profile EWMA, interests, study — all
   already corroborate `understanding` confidence. Real work raises readiness without a single
-  question; the gate opens the moment the station honestly knows enough, whichever road got it
+  question; the gate opens the moment the keep honestly knows enough, whichever road got it
   there.
 
 ## 8. Failure doctrine (stranded-user law applied)

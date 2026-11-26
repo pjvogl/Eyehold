@@ -65,7 +65,7 @@ A.eq(dossier.dims.goals[0].source, 'interview', 'the dossier records the intervi
 /* ---------- a TYPED skip is a skip, never a belief (bug-sweep P0) ----------
    The interview's opening line invites it ("answer or tap, “skip” anything") and the chip is labelled
    `skip`, so the typed word is the vocabulary the copy teaches. It used to land as the Commander's own
-   words at weight 'stated' — the strongest belief the station holds. */
+   words at weight 'stated' — the strongest belief the keep holds. */
 A.eq(I.beliefFromAnswer(q0, 'skip'), null, 'a typed "skip" yields no belief');
 A.eq(I.beliefFromAnswer(q0, 'Skip.'), null, 'punctuation + case do not smuggle a skip past the check');
 A.eq(I.beliefFromAnswer(q0, 'idk'), null, 'a typed "idk" yields no belief');

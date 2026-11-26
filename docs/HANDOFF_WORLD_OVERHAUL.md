@@ -14,7 +14,7 @@ textures + lighting, Stardew-level; more depth and detail; the exterior must not
 The branch FOLDS IN two older unmerged lanes first, so one verdict covers all three:
 - `agent/world-gorgeous` (09-02 lighting glow-up: physical falloff, cool plate, warm film, reach 1.3)
 - `agent/prop-gorgeous` (v46 props) — **its prop ART was later removed** (§3, Andrew rejected the
-  beige "golden" workstations); only its harness files under `gal/` remain.
+  beige "golden" workkeeps); only its harness files under `gal/` remain.
 
 ## 2. What Andrew has judged (this is the map — do not re-walk rejected ground)
 
@@ -23,9 +23,9 @@ The branch FOLDS IN two older unmerged lanes first, so one verdict covers all th
 | ❌ "not even slightly a fan… brown tint, too bright, cheaper" | round 1: bloom 0.45, warm film 0.3, dither 0.45, sepia grade, brown stock deck |
 | ❌ "way too dark, basically pitch black" | hull exposure 0.25 |
 | ❌ "clusterfuck, lower quality… CRT way too strong, curve ridiculous" | the old-TV CRT pass (pitch-2 lines, RGB mask, bleed, roll bar, curve 0.13). **Reverted to previous filter values; the passes still exist at 0 on lab knobs.** |
-| ❌ "not sure how I feel about the golden workstations" | v46 prop rebuild — **removed**, trunk's original prop art restored |
+| ❌ "not sure how I feel about the golden workkeeps" | v46 prop rebuild — **removed**, trunk's original prop art restored |
 | ✅ (accepted, silently) | cool steel stock deck (`#3a3b41`), no sepia, cast shadows, prop light sources, hue-shifted shading, per-room fixture colour, pendants, 30px walls, running lights, exterior exposure 0.4 |
-| ✅ "proceed" + reference image | the *Pixel Art Space Station* look: big bolted plates, 2px seams, lit bevels, chunky framed wall panels with braces/pipes, standing tube lamps with fat glows |
+| ✅ "proceed" + reference image | the *Pixel Art Space Keep* look: big bolted plates, 2px seams, lit bevels, chunky framed wall panels with braces/pipes, standing tube lamps with fat glows |
 | ❓ not judged yet | four new decks (DIAMOND/CARGO/CERAMIC/RESIN), the SPINE polish, the wall/deck polish pass, the prop polish pass |
 
 Standing laws he restated this lane: **subtle CRT, not strong** · exterior darker than interior but not
@@ -33,7 +33,7 @@ black · no brown tint · "keep the essence" when polishing (SPINE stayed 4×3 p
 
 ## 3. What changed (by file)
 
-`frontend/app/stationbake.js`
+`frontend/app/keepbake.js`
 - `shade()` — hue-shifted shading for every INTERIOR painter (deck, walls, side faces, corner crowns).
   Hull keeps `U.shade` (hull test pins its ladder).
 - `HULL_EXPOSURE = 0.4` + `hshade()` — every hull palette scaled darker; hull-skin draw-time LIFTS scaled
@@ -126,7 +126,7 @@ shadows and interior exposure are unchanged. Interior clip construction now happ
 Real Chromium probes: 192 prop-art comparisons were pixel-identical; 96 shadow comparisons across
 four zooms averaged 1.66/255 channel difference in shadow-covered pixels. Cached shadow-pass pixels
 matched a fresh render after focus, resize and simulated context loss. Interior/exterior/window
-regression probe passed. GPU benchmark (RTX 5060 Ti, 1440x900, 20s settled sample): full station
+regression probe passed. GPU benchmark (RTX 5060 Ti, 1440x900, 20s settled sample): full keep
 improved from approximately 37 FPS to 56.8 FPS, with p95 frame interval 16.8ms. The close-up held
 60 FPS, with 3.8ms median / 5.5ms p95 frame callback cost. This is a local
 renderer measurement, not an all-device performance guarantee. Reproduce with
@@ -142,7 +142,7 @@ records. Jambs receive interior light; crown tops remain excluded, and glass sta
 It is a bake-only repair bounded to the entrance tiles, with no per-frame work or traversal changes.
 `node dev/junction-probe.mjs` compares the custom demo against 14f7ac19a and checks one- through
 four-tile entrances with both bulkhead and viewport walls in Chromium. All eight variants remain
-walkable, and the custom station's base/light pixel changes stay entirely inside doorway regions
+walkable, and the custom keep's base/light pixel changes stay entirely inside doorway regions
 (zero changes outside). The interior/exterior/window probe and six focused test steps also passed.
 
 September 5 doorway depth correction: Andrew observed agents painting through those new jambs.
@@ -150,7 +150,7 @@ The doorway had only been drawn in baseCv, beneath every entity. The bake now su
 solid entrance overlays in the custom demo, sorted with props/bodies at the wall's floor contact.
 These include the adjacent solid shoulders so an occluded arm cannot reappear on the next wall
 panel. The glass tint stays in the base only; glass panes are excluded from the solid overlays.
-Empty station pixels and bodies already in front remain identical. Overlays are created during
+Empty keep pixels and bodies already in front remain identical. Overlays are created during
 bake, skipped offscreen, and rebaked after context loss. Movement/collision rules are unchanged.
 `node dev/door-depth-probe.mjs` verifies opaque wall occlusion, visible aperture pixels, unchanged
 empty/front views and transparent panes for eight width/material combinations; it also walks the
@@ -179,7 +179,7 @@ September 5 cockpit UI pass (the six approved UI recommendations):
 calls. Its 21 live checks cover portrait bounds and live skin refresh without transcript replay, truthful idle/approval filters, toolset state,
 config expansion/editing, preserved drafts and return navigation, selected prop orientation, and
 composer fit at 1049/700/475px. Screenshots and results are in `.worldshots/interface/`.
-Station art, lighting, chair shape, movement and doorway depth were not modified by this UI pass.
+Keep art, lighting, chair shape, movement and doorway depth were not modified by this UI pass.
 
 ## September 5 command-room material study
 
@@ -201,7 +201,7 @@ at two unchanged coordinates; no new error is introduced. Headless material test
 distinctness and chunk parity. Evidence and the comparison viewer: `.worldshots/command-room/`.
 `dev/apply-command-room-demo.mjs` applies only the reviewed fields to the owned scratch save,
 refusing if those fields moved since the comparison. Original room data remains in the review
-artifact for reversal. This is a command-room pilot, not a station-wide rollout or installed build.
+artifact for reversal. This is a command-room pilot, not a keep-wide rollout or installed build.
 
 ## September 5 wall-corner colour repair
 
@@ -218,7 +218,7 @@ Run `node dev/wall-blend-probe.mjs --before`, then `node dev/wall-blend-probe.mj
 custom demo. The live Chromium check records zero missed face pixels and zero crown coverage,
 with byte-identical crown art/light, exterior lighting and glass panes versus fe88f76b3. Captures
 of the command room and solid-walled quarters are under `.worldshots/wall-blend/`. This repair is
-baked with existing materials, does not edit the station save and adds no frame-loop work.
+baked with existing materials, does not edit the keep save and adds no frame-loop work.
 
 ## September 5 construction inventory
 
@@ -236,7 +236,7 @@ when text is enlarged. Search preserves focus; selecting a card preserves shelf 
 existing canvases. Each thumbnail paints once, then only selected/hovered items animate.
 
 `node dev/build-kit-probe.mjs` verifies 25 live checks on a disposable in-memory copy of the
-custom station: full catalog, search/recovery, six viewport sizes, enlarged text, real pointer
+custom keep: full catalog, search/recovery, six viewport sizes, enlarged text, real pointer
 placement, undo/redo, contextual guidance, and exit. It leaves the user's scratch save untouched.
 `--gpu` also samples the full 144-item shelf; the local RTX 5060 Ti run measured 59.6 FPS,
 16.8 ms p95 frame intervals, and 8.1 ms mean build-render callback time. This is a local sample,
@@ -244,7 +244,7 @@ not a frame-rate guarantee on other hardware. Evidence lives in `.worldshots/bui
 
 ## September 5 left-sidebar correction
 
-Andrew rejected the bottom catalog because it took too much away from the station. The build
+Andrew rejected the bottom catalog because it took too much away from the keep. The build
 console is now anchored on the left, bounded to 340 physical pixels. Search and every category
 stay directly accessible above a two-column prop grid; a compact selected-item preview sits
 below it. ITEM DETAILS replaces the inventory inside that same panel. MINIMIZE folds the
@@ -258,7 +258,7 @@ tray and its independent right-hand inspector are superseded by this correction.
 
 ## September 5 build-sidebar clarity pass
 
-The left console now separates Build & Decorate, Edit Your Station, and Workflows into three
+The left console now separates Build & Decorate, Edit Your Keep, and Workflows into three
 permanently visible groups. COPY and LAYOUTS replace the less explicit DUPE and LINES labels.
 A single CATEGORY picker replaces the crowded chip grid, retaining every real category/count;
 search still spans the complete catalog. The Select landing has a short three-step guide and
@@ -268,9 +268,9 @@ The selected prop always exposes supported Turn/Flip controls, PLACE PROP and CA
 this prop stays in the same sidebar. Place focuses the deck without hiding the panel; Cancel
 returns to Select. Escape closes the category picker or About view before deselecting. Clicking
 the deck to dismiss the picker does not also stamp a prop. Props preview their validated
-footprint before clicking, with validation cached by station revision, prop, facing and tile.
+footprint before clicking, with validation cached by keep revision, prop, facing and tile.
 
-`node dev/build-kit-probe.mjs --gpu` passed 33 live checks on a disposable in-memory station,
+`node dev/build-kit-probe.mjs --gpu` passed 33 live checks on a disposable in-memory keep,
 including pointer placement, undo/redo, picker dismissal, hover validation caching, six screen
 sizes and 145% text zoom. No runtime exceptions were recorded. The 144-item shelf measured
 60 FPS, 16.7 ms p95 frame intervals and 7.1 ms mean build-render callback time on the local
@@ -285,15 +285,15 @@ suggested prop, purpose, sharing scope and actual per-agent tool access above Pl
 shows every prop with the same capability mapping and explains that they provide the same tools.
 The chosen alternate remains selected when returning to the core list. No grants or saves change.
 
-Workstations & Workflows and Decoration are separate purpose sections. Classification checks the
+Workkeeps & Workflows and Decoration are separate purpose sections. Classification checks the
 real capability map before the old catalog tier; decorative-looking functional props cannot be
-misfiled as appearance-only. Functional station controls stay separate from decoration too. All
+misfiled as appearance-only. Functional keep controls stay separate from decoration too. All
 search results and selected previews explicitly label their purpose. Connected services remain
 optional, with connection/access guidance rather than a promise that a placed prop is ready.
 
 The core choices display current tool-access states. Outside the core view, the same five states
 remain in a compact overview. The selected agent can be changed and access explicitly refreshed.
-States come from the existing /api/toolsets projection and refresh after station edits and undo/redo;
+States come from the existing /api/toolsets projection and refresh after keep edits and undo/redo;
 equivalent-design selection reuses that response. Failed reads show CHECK ACCESS, not missing gear.
 Profile/Full Access grants and switched-off toolsets retain their real meaning. The tutorial uses
 the new ability choices and preserves its existing requisition-the-rest action.
@@ -308,13 +308,13 @@ sizes and enlarged text. No runtime exceptions. The 112-item decoration shelf me
 ## September 5 direct prop placement and hover identification
 
 The selected-prop footer no longer has PLACE PROP or CANCEL buttons. Choosing a catalog item
-already arms placement: move onto the station to preview its footprint, then click a clear spot.
+already arms placement: move onto the keep to preview its footprint, then click a clear spot.
 Escape returns to Select. The footer now keeps the sprite, name, purpose badge, short description,
 supported orientation controls and a plain placement hint. Detailed access and sharing explanations
 remain under About; the live ability overview stays above the catalog. Decoration shows its own
 description. The smaller footer and reduced minimum panel height give space back to browsing.
 
-Catalog hover and keyboard focus use the existing shared station tooltip for the prop name and
+Catalog hover and keyboard focus use the existing shared keep tooltip for the prop name and
 purpose. They never change selection or open an inspector. The tooltip clears on departure;
 there is no new tooltip controller, native title bubble or per-frame work.
 
@@ -339,10 +339,10 @@ Names, briefs and gate settings retain their existing save behavior; schedules a
 have explicit save buttons. No backend APIs, routing semantics or execution permissions changed.
 The body scrolls independently of the header and Done footer, keyboard focus stays inside setup,
 and generic placement coaching waits until setup closes so it cannot obscure the form. This adds
-no per-frame rendering work. The left Build kit and custom station layout are preserved.
+no per-frame rendering work. The left Build kit and custom keep layout are preserved.
 
-`node dev/workflow-setup-probe.mjs` passes 46 live checks on a disposable in-memory station, covering
-agent search/assignment, brief persistence, workstation creation, schedule preview, route/gate saves,
+`node dev/workflow-setup-probe.mjs` passes 46 live checks on a disposable in-memory keep, covering
+agent search/assignment, brief persistence, workkeep creation, schedule preview, route/gate saves,
 keyboard behavior, four smaller viewport sizes and enlarged text. No runtime exceptions. Evidence:
 `.worldshots/workflow-setup/`. The existing `dev/inbox-when-picker-shots.mjs` also verifies that Save
 Schedule persists the chosen cadence through the real seeded server and reads back its agent,
@@ -372,7 +372,7 @@ No runtime exceptions. Evidence: `.worldshots/session-attention/`. The custom de
 
 ## September 5 header instruments
 
-The station level, E-STOP and connection readout now share the dashboard's recessed, matte
+The keep level, E-STOP and connection readout now share the dashboard's recessed, matte
 hardware styling. The level has a rank emblem and its existing measured XP progress. E-STOP
 has a larger target, a stop symbol and a HALT RUNS subtitle. Uplink and activity share a
 two-line readout with a connection symbol, replacing the old signal bars and oval status pill.
@@ -382,11 +382,11 @@ This adds no timers, animation loops, network requests or world-render work.
 
 `dev/header-instruments-probe.mjs` exercises layout from 320 to 1440 pixels, enlarged text,
 theme changes, real E-STOP requests and connection loss/recovery on a disposable seeded server.
-Evidence lives in `.worldshots/header-instruments/`. The custom station at port 9177 is preserved.
+Evidence lives in `.worldshots/header-instruments/`. The custom keep at port 9177 is preserved.
 
 ### September 6: E-STOP moved to SYSTEM
 
-Per user feedback, the header now keeps only station level and the connection readout.
+Per user feedback, the header now keeps only keep level and the connection readout.
 E-STOP is the last SYSTEM menu item, labeled "halt all runs · Alt+H". The menu's existing
 keyboard navigation and close-on-selection behavior apply. The halt handler and global Alt+H
 shortcut are unchanged. Updated header verification checks the menu action at narrow widths
@@ -406,7 +406,7 @@ This removes an overlay draw pass rather than changing the room's lighting calcu
 
 Final source candidate `03f098895` also includes trunk `948557c62` and its newer Extensions UI.
 Merge preparation passed all 723 fast steps, 100 HTTP steps, and 149 live UI checks; the custom
-144-prop station is preserved. Verification scope and receipts are recorded in
+144-prop keep is preserved. Verification scope and receipts are recorded in
 `docs/WORLD_INTERFACE_MERGE_READINESS_2026-09-06.md`. The lane is prepared for integration,
 not yet merged or packaged as an installed release.
 

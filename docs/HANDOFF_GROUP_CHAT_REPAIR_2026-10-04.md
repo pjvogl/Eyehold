@@ -12,7 +12,7 @@ Branch `agent/group-chat-fix-1004` (worktree `gen-trees\group-chat-fix-1004`), f
 
 | Symptom | Root cause | Evidence |
 |---|---|---|
-| Added agent gone after minimize | **ADD AGENTS only STAGED.** `+ ADD` moved the row under IN THIS CHAT and saved nothing until START GROUP CHAT / SAVE — which, with a real 26-agent crew, sat ~110 px below the docked window's visible edge. Minimize/close = the add was never sent. | Andrew's live `group-sessions.json`: no group created since 09-09. Live repro on a 26-agent station: footer at y=1005–1046 in a body ending at y=898. |
+| Added agent gone after minimize | **ADD AGENTS only STAGED.** `+ ADD` moved the row under IN THIS CHAT and saved nothing until START GROUP CHAT / SAVE — which, with a real 26-agent crew, sat ~110 px below the docked window's visible edge. Minimize/close = the add was never sent. | Andrew's live `group-sessions.json`: no group created since 09-09. Live repro on a 26-agent keep: footer at y=1005–1046 in a body ending at y=898. |
 | Can't @ the agents | The @ list only existed inside an already-existing group, and had no keyboard: `@fi` + Enter sent the literal text and failed "Unknown or ambiguous @fi". | Live: `@fi` in a direct chat → no menu; in a group → Tab moved focus to SEND, Enter → error. |
 | Can't tell the group is there | A dim one-line names row in the header, no marker on the compact rail row, an empty transcript, and group messages in the OLD COMMS style (the conversation CSS was scoped to `#chat-log`). | Live DOM: rail row = "Group chat 6m"; group rows had no stamps/rails. |
 | Doesn't show all the agents | Header names were one ellipsized line; the picker's nested 28vh lists showed ~3 agents at a time with the save key below the fold. | Live layout measurements. |
@@ -26,7 +26,7 @@ Also proven: adding agents from **General** converted the General home stream it
 - `@` menu over the composer in **every** chat: ↑↓ move, Enter/Tab pick, Esc closes (it no longer falls through to STOP-ALL), `@all` in a group. Picking someone not in the chat adds them first; a direct chat becomes a group. Typing `@finn …` and sending from a direct chat does the same.
 - General is never converted: a fresh group ("NOVA + FINN") opens beside it.
 - A group looks like one: `[ GROUP ]` header with every member in their colour (two lines, then `+N`), "Message the group · @ picks one agent", a `GROUP CHAT · names` masthead line, `[GROUP]` on compact rail rows, and the transcript in the COMMS conversation style (stamps, time breaks, gold `>` Commander lines, each agent's rail in its own colour).
-- Groups you are not viewing: a 4 s station-wide watch (never while hidden; at once on restore) lights the rail row Working / Reply needed / Approval needed and marks new activity unread.
+- Groups you are not viewing: a 4 s keep-wide watch (never while hidden; at once on restore) lights the rail row Working / Reply needed / Approval needed and marks new activity unread.
 - The transcript reconciles by key (a selection survives streaming), every message has a copy key, adjacent replies from different agents keep their names, paused work shows CONTINUE, replies a pause stopped show a RETRY line, a blocked queued turn says whose answer it waits for, a reply aimed at the asker answers the waiting question, approval keys are never clipped, a gone group stops polling and can be deleted, and picking an agent for a 1:1 never lands in a group it leads.
 
 **Backend (`sidecar/group-sessions.js`, `sidecar/index.js`):**
@@ -37,7 +37,7 @@ Also proven: adding agents from **General** converted the General home stream it
 
 ## How the scope was found
 
-1. Live repro of each symptom on a 26-agent mock station (the four rows above).
+1. Live repro of each symptom on a 26-agent mock keep (the four rows above).
 2. A read-only sweep of all group-chat code — 4 dimensions × finder + adversarial verifier: **24 confirmed, 0 refuted**
    (deleted crew members breaking groups, `@RESEARCHER 2` misrouting, E-STOP/pause replaying stopped work, groups you
    are not viewing never polled so approvals auto-deny unseen, a corrupt store crashing E-STOP, conversion blocked

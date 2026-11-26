@@ -6,7 +6,7 @@
  *   1. refusal JSON        — POST /api/routing/sample with NO armed plan (409, honest reason)
  *   2. sample-card.png     — the REAL canvas click on the INBOX opens the RUN-A-SAMPLE-JOB card
  *   3. sample-riding.png   — the real button clicked; the card's honest in-flight state
- *   4. inflight JSON       — a second POST while the first rides (409 one-per-station)
+ *   4. inflight JSON       — a second POST while the first rides (409 one-per-keep)
  *   5. sample-delivered.png— the card's delivered state (reply glance + OUTBOX pointer)
  *   6. outbox-window.png   — the OUTBOX window holding the sample crate (ReturnStore fold)
  *   7. happy JSON          — a direct endpoint transcript (replies/runs/delivered/totalUsd)
@@ -87,11 +87,11 @@ async function main() {
     out.refusalNoPlan = await evalJS(cdp, POST_SAMPLE);
     console.log('REFUSAL (no plan):', JSON.stringify(out.refusalNoPlan));
 
-    // ---- 2. draw a REAL line: stamp a blueprint, bind its bay (the station model's own APIs) ----
+    // ---- 2. draw a REAL line: stamp a blueprint, bind its bay (the keep model's own APIs) ----
     await evalJS(cdp, `(() => { if (typeof Build !== 'undefined' && !Build.isOpen()) Build.open(); const card = document.querySelector('.refit-firstrun'); if (card) { const go = card.querySelector('#refit-guide-go'); if (go) go.click(); } })()`);
     await sleep(500);
     const spot = await evalJS(cdp, `(() => {
-      const st = Build.__test__.station();
+      const st = Build.__test__.keep();
       const b = st.bounds();
       for (let ty = b.minTy - 2; ty <= b.maxTy + 2; ty++)
         for (let tx = b.minTx - 2; tx <= b.maxTx + 2; tx++)
@@ -100,7 +100,7 @@ async function main() {
     })()`);
     if (!spot) throw new Error('no stampable spot for research_line');
     const setup = await evalJS(cdp, `(() => {
-      const st = Build.__test__.station();
+      const st = Build.__test__.keep();
       const res = st.stampBlueprint('research_line', ${spot.tx}, ${spot.ty});
       if (!res.ok) return { error: res.error || 'stamp failed' };
       const bays = st.props().filter(p => p.t === 'bay');
@@ -111,11 +111,11 @@ async function main() {
     })()`);
     console.log('line setup:', JSON.stringify(setup));
     if (setup.error) throw new Error(setup.error);
-    // the blueprint bay's room grants no compute — place a REAL workstation (console → 'computer' cap) in
+    // the blueprint bay's room grants no compute — place a REAL workkeep (console → 'computer' cap) in
     // the bay's room, or the run honestly errors "no compute" (the cost-safe gate; proven on the first run
-    // of this script). bayObjects('w0') is the same truth the sidecar's station projection reads.
+    // of this script). bayObjects('w0') is the same truth the sidecar's keep projection reads.
     const pc = await evalJS(cdp, `(() => {
-      const st = Build.__test__.station();
+      const st = Build.__test__.keep();
       const bay = st.props().find(p => p.t === 'bay' && p.agentId === 'w0');
       if (!bay) return { ok: false, why: 'no bound bay' };
       for (let dy = -4; dy <= 4; dy++) for (let dx = -4; dx <= 4; dx++) {
@@ -166,7 +166,7 @@ async function main() {
 
     // ---- 4. click the REAL button; while riding, a second POST refuses 409 ----
     await evalJS(cdp, `(() => { const b = [...document.querySelectorAll('.sample-card .consent-btn.primary')].find(x => /RUN A SAMPLE JOB/.test(x.textContent)); b.click(); return b.textContent; })()`);
-    await sleep(150);   // let the button's own POST claim the one-per-station lock first
+    await sleep(150);   // let the button's own POST claim the one-per-keep lock first
     out.refusalInFlight = await evalJS(cdp, POST_SAMPLE);
     console.log('REFUSAL (one in flight):', JSON.stringify(out.refusalInFlight));
     const inflight = await evalJS(cdp, `(document.querySelector('.sample-card .consent-btn.primary') || {}).textContent || '(button gone)'`);
@@ -190,7 +190,7 @@ async function main() {
     shots.push(await capture(cdp, OUT, 'sample-delivered'));
     const pending = await evalJS(cdp, `({ count: ReturnStore.pendingCount(), rows: ReturnStore.pendingRows() })`);
     console.log('OUTBOX pending:', JSON.stringify(pending));
-    await evalJS(cdp, `StationUI.openTerm('outbox')`);
+    await evalJS(cdp, `KeepUI.openTerm('outbox')`);
     await sleep(1200);
     shots.push(await capture(cdp, OUT, 'outbox-window'));
     const obRow = await evalJS(cdp, `(() => { const r = document.querySelector('#ob-list .ob-row'); return r ? r.textContent.replace(/\\s+/g, ' ').slice(0, 240) : null; })()`);

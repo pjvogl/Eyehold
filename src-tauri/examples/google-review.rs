@@ -4,7 +4,7 @@
 //! Opens EVERY Google Workspace service (dev/google-review-release.cjs) against real Google endpoints in an
 //! isolated review workspace, so the data-access verification demo can be recorded. See
 //! docs/GOOGLE_REVIEW_BUILD.md. --with-model keeps the model/key from dev/.env.dev (or your shell) so an
-//! agent can actually drive the Google tools on camera; without it the station runs the offline replay model.
+//! agent can actually drive the Google tools on camera; without it the keep runs the offline replay model.
 #[allow(dead_code)]
 #[path = "../src/credentials.rs"]
 mod credentials;

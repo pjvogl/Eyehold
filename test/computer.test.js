@@ -102,7 +102,7 @@ const ATTENDED = { surface: 'interactive', isTask: true, ownerTrusted: true, rem
 
     // typing into Eyehold's own window is always refused, even without expectApp
     const selfDriver = fakeDriver();
-    selfDriver.foreground = async () => ({ title: 'EYEHOLD — station', process: 'msedge' });
+    selfDriver.foreground = async () => ({ title: 'EYEHOLD — keep', process: 'msedge' });
     const ST = makeComputerTools({ driver: selfDriver, allowPhysicalInput: true }).useTool;
     await ST.run({ action: 'type', text: 'hi' }, ATTENDED);
     await ST.run({ action: 'hotkey', keys: ['Ctrl', 'l'] }, ATTENDED);

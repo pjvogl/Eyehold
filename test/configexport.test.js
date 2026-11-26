@@ -1,5 +1,5 @@
 'use strict';
-/* configexport.test.js — pure-engine tests for the STATION BACKUP module (P1-7): buildExport / parseImport +
+/* configexport.test.js — pure-engine tests for the KEEP BACKUP module (P1-7): buildExport / parseImport +
    the secret-redaction law. No IO — the module is dependency-free (index.js wires the live stores). Proves:
      - the envelope is schema-versioned (eyeholdExport: 1) so future imports can migrate;
      - a full round-trip (build -> parse) preserves the non-secret config;

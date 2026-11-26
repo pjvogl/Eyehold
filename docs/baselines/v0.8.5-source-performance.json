@@ -117,7 +117,7 @@
       "medianIncreasePct": 10
     },
     "pendingInstalledMeasurements": [
-      "cold boot to interactive station",
+      "cold boot to interactive keep",
       "send to first visible token",
       "send to first tool activity",
       "send to verified useful artifact",

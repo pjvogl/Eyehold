@@ -34,7 +34,7 @@ A.ok(/'▶ SEND IT DOWN THE LINE'/.test(sendDyn) && /H\.runSample\(cc, \{ text: 
   '…the same real job as RUN ONE REAL JOB, with the typed text (an empty job is refused with the reason)');
 A.ok(/S\.testJob\[S\.lineKey\] = job\.value; saveTests\(\);/.test(trig) && !/id="wf-job"/.test(panel), '…and the typed job is the line\'s test job (one box, not two)');
 A.ok(/id="wf-send-stop"/.test(sendDyn) && /H\.stopSample\(\)/.test(sendDyn), '…and a job riding the line can be stopped from there');
-/* found walking a fresh station: the job ran, and a card whose job box kept the cursor never showed it riding or what came back */
+/* found walking a fresh keep: the job ran, and a card whose job box kept the cursor never showed it riding or what came back */
 A.ok(/'<div data-live="send">' \+ sendDynHTML\(f\) \+ '<\/div><\/section>'/.test(trig) && /LIVE\.send = \(f, n\) => \(n\.contains\(document\.activeElement\) \? null : sendDynHTML\(f\)\);/.test(panel),
   'the SEND box\'s moving parts are a LIVE region: they follow the job whatever has focus, never rebuilt under the cursor');
 A.ok(/const h = fn\(f, n\); if \(h != null\) n\.innerHTML = h;/.test(panel) && /function wireLive\(\) \{[^\n]*wireSend\(\); \}/.test(panel) && /if \(!send \|\| send\._wired\) return;/.test(sendDyn),
@@ -64,7 +64,7 @@ A.ok(/const prev = S\.prevJob && S\.prevJob\.stamp !== mine\.stamp && S\.prevJob
 A.ok(/Suggested by ' \+ esc\(fx\.model/.test(nr) && /\$' \+ \(\+fx\.usd\)\.toFixed\(4\)/.test(nr), 'the suggestion says which model made it and what it cost');
 /* ---------- ★ KEEP AS THE EXAMPLE — consistency: the last step matches a result the Commander liked ---------- */
 const ex = at(panel, '  const EX_HEAD = ', '  // after a job\'s card is painted');
-A.ok(/const last = \(mine\.runs \|\| \[\]\)\[0\], dockId = last && last\.dockId/.test(ex) && /H\.station\(\)\.setPropBrief\(dockId, next\)/.test(ex),
+A.ok(/const last = \(mine\.runs \|\| \[\]\)\[0\], dockId = last && last\.dockId/.test(ex) && /H\.keep\(\)\.setPropBrief\(dockId, next\)/.test(ex),
   'KEEP AS THE EXAMPLE writes the result into the instructions of the step whose reply shipped (the delivered run), one UNDO');
 A.ok(/replace\(\/\\n\*MATCH THIS EXAMPLE of a good result\[\\s\\S\]\*\$\/, ''\)/.test(ex) && /Math\.min\(1200, room\)/.test(ex) && /if \(room < 300\) return null;/.test(ex),
   '…as one marked block that replaces any earlier example, bounded to fit the 2000-character brief');
@@ -103,8 +103,8 @@ A.ok(/⚠ FINISHED WITH A PROBLEM/.test(res) && /const bad = v\.ok \? null : run
 A.ok(/v\.ok \? 'THE RESULT' : 'WHAT CAME OUT'/.test(res) && /\(!v\.ok \? '' : '<div class="wf-row">'/.test(res), '…still shows what came out and every step (no KEEP AS THE EXAMPLE on a problem job)');
 A.ok(/empty: 'gave no final answer', error: 'hit an error', max_iters: 'ran out of turns'/.test(panel) && /esc\(runEnd\(r\.reason\)\)/.test(res), 'each step says how its run ended in words, never the raw reason code');
 A.ok(/placeholder="e\.g\. Find this week’s AI news and summarize the three biggest stories\.">' \+ esc\(S\.testJob\[S\.lineKey\] \|\| ''\) \+ '<\/textarea>'/.test(panel), 'a new schedule\'s task starts as the job this line was last sent ("do that every morning" is one click)');
-/* ---------- a READY line says what to do next — and its pill keeps the station's word (station-layout.e2e: panel pill == the status an
-   agent reads with station.layout) ---------- */
+/* ---------- a READY line says what to do next — and its pill keeps the keep's word (keep-layout.e2e: panel pill == the status an
+   agent reads with keep.layout) ---------- */
 A.ok(/<button type="button" class="bb sm refit-primary" id="wf-sendnow" hidden>▶ SEND IT A JOB<\/button>/.test(panel) && /sendNow\.hidden = !sendTo \|\| S\.sel === sendTo; sendNow\.onclick = toSend;/.test(panel),
   'a READY line shows ▶ SEND IT A JOB beside its pill, taking you to the send box (hidden while the INBOX card is open)');
 A.ok(/if \(r\) \{ pill\.textContent = W\.pillText\(r\);/.test(panel) && !/READY · SEND IT A JOB ▸/.test(panel), '…and the pill itself says exactly what an agent reads: READY TO RUN');
@@ -121,16 +121,16 @@ A.ok(!/LAST stage/.test(P.handoffPrompt('req', 'writer', 'draft', 1, 'be picky',
 const turnAt = lastStage => Chain.hopTurn({ originalText: 'req', from: 'a', upstream: 'up', hop: 1, target: 'w', targetDock: 'd2', lineId: 'L', lastStage });
 A.ok(/LAST stage/.test(turnAt((a, d) => a === 'w' && d === 'd2')) && !/LAST stage/.test(turnAt(() => false)) && !/LAST stage/.test(turnAt(undefined)), 'the chain asks lastStage(target, dock) — no helper, no change');
 A.ok(/lastStage: \(agentId, dockId\) => router\.chainShipsToOutbox\(agentId, dockId\)/.test(sidecar) && /lastStage: \(a, d\) => router\.chainShipsToOutbox\(a, d\)/.test(sidecar),
-  '…and the station answers it for real runs and step tests alike: the dock whose lane ships to the OUTBOX');
-// the one billed station call NOT RIGHT? and SET IT UP FOR ME share (2026-09-30: stationOneShot)
-const oneShot = at(sidecar, 'async function stationOneShot(prompt, tag, failLead) {', 'async function handleRoutingFixSuggest(req, res) {');
+  '…and the keep answers it for real runs and step tests alike: the dock whose lane ships to the OUTBOX');
+// the one billed keep call NOT RIGHT? and SET IT UP FOR ME share (2026-09-30: keepOneShot)
+const oneShot = at(sidecar, 'async function keepOneShot(prompt, tag, failLead) {', 'async function handleRoutingFixSuggest(req, res) {');
 const route = at(sidecar, 'async function handleRoutingFixSuggest(req, res) {', 'async function stepTestRunDock(h) {');
 A.ok(/\{ m: 'POST', exact: '\/api\/routing\/fix-suggest', h: handleRoutingFixSuggest \}/.test(sidecar), 'POST /api/routing/fix-suggest is a route');
 A.ok(oneShot.indexOf('budget.check(null, \'agent\', 0, Date.now(), null)') > 0 && oneShot.indexOf('budget.check(') < oneShot.indexOf('provider.stream('), '…the spending cap is read BEFORE the model call');
-A.ok(/cfg = sampleRunConfigFor\('agent'\)/.test(oneShot) && /ledger\.record\(\{ runId: tag \+ '-' \+ crypto\.randomUUID\(\), agentId: 'station'/.test(oneShot) && /catch \(e\) \{ failNote\(tag \+ '\.ledger', e\); \}/.test(oneShot)
-  && /stationOneShot\(LineFix\.buildPrompt\(input\), 'linefix', /.test(route), '…one call on the station default model, its spend booked on the ledger (a failed booking is noted)');
+A.ok(/cfg = sampleRunConfigFor\('agent'\)/.test(oneShot) && /ledger\.record\(\{ runId: tag \+ '-' \+ crypto\.randomUUID\(\), agentId: 'keep'/.test(oneShot) && /catch \(e\) \{ failNote\(tag \+ '\.ledger', e\); \}/.test(oneShot)
+  && /keepOneShot\(LineFix\.buildPrompt\(input\), 'linefix', /.test(route), '…one call on the keep default model, its spend booked on the ledger (a failed booking is noted)');
 // (sweep 10-02) a call that times out or errors after usage arrived still books it — those tokens were billed
-A.ok(/\} catch \(e\) \{\s*book\(\);\s*return \{ ok: false, status: 502/.test(oneShot) && /\} finally \{ clearTimeout\(timer\); stationOneShots\.delete\(ctrl\); \}\s*book\(\);/.test(oneShot), '…and a failed or timed-out call books the usage it already used');
+A.ok(/\} catch \(e\) \{\s*book\(\);\s*return \{ ok: false, status: 502/.test(oneShot) && /\} finally \{ clearTimeout\(timer\); keepOneShots\.delete\(ctrl\); \}\s*book\(\);/.test(oneShot), '…and a failed or timed-out call books the usage it already used');
 A.ok(/const parsed = LineFix\.parseFixes\(call\.out, input\);/.test(route) && /return json\(400, \{ ok: false, error: input\.error \}\);/.test(route), '…the reply checked (LineFix), bad input refused');
 A.ok(/dockId: r\.dockId \|\| null, lineId: r\.lineId \|\| null/.test(sidecar), 'the server names the BAY each stage ran at');
 

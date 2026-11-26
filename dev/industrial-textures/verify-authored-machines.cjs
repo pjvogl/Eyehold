@@ -3,7 +3,7 @@
 const fs=require('node:fs'),path=require('node:path'),crypto=require('node:crypto');
 const {createCanvas,loadImage}=require('@napi-rs/canvas');
 const Motion=require('../../frontend/app/authored-prop-motion'),Configs=require('../../frontend/app/authored-machine-config');
-const root=path.resolve(__dirname,'../..'),at=p=>path.join(root,p),out=at('docs/station-remaster/authored-machines');
+const root=path.resolve(__dirname,'../..'),at=p=>path.join(root,p),out=at('docs/keep-remaster/authored-machines');
 const hash=data=>crypto.createHash('sha256').update(data).digest('hex');
 const fit=(bounds,w,h)=>{const k=Math.min(bounds.width/w,bounds.height/h);return {x:bounds.x+(bounds.width-w*k)/2,y:bounds.y+bounds.height-h*k,width:w*k,height:h*k};};
 (async()=>{

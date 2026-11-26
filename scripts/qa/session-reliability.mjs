@@ -51,7 +51,7 @@ async function stop() {
 async function page() {
   await cdp.send('Page.navigate', { url });
   await sleep(500);
-  assert.ok(await waitDevReady(cdp, evalJS, { url }), 'station becomes usable');
+  assert.ok(await waitDevReady(cdp, evalJS, { url }), 'keep becomes usable');
 }
 try {
   await boot();

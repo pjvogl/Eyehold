@@ -1,13 +1,13 @@
-/* EYEHOLD — windows/routines.js : the ROUTINES lane of the AUTOMATION window (extracted from stationui.js).
-   Loads AFTER stationui.js and windows/automation.js (see index.html) and registers itself as an
+/* EYEHOLD — windows/routines.js : the ROUTINES lane of the AUTOMATION window (extracted from keepui.js).
+   Loads AFTER keepui.js and windows/automation.js (see index.html) and registers itself as an
    AutomationWindow LANE — its two sections (ACTIVE ROUTINES · CREATE ROUTINE) mount inside the shared
-   AUTOMATION console rather than a window of their own (NAV CONDENSE 2026-08-04). The only stationui
-   internals it touches are the enumerated StationUI.h helper surface
+   AUTOMATION console rather than a window of their own (NAV CONDENSE 2026-08-04). The only keepui
+   internals it touches are the enumerated KeepUI.h helper surface
    (esc/sfx/notify/fmtRel, consoleSection, and the live present/sel views). */
 'use strict';
 (() => {
-  if (typeof StationUI === 'undefined' || typeof AutomationWindow === 'undefined') return;
-  const H = StationUI.h;
+  if (typeof KeepUI === 'undefined' || typeof AutomationWindow === 'undefined') return;
+  const H = KeepUI.h;
   const esc = H.esc, sfx = H.sfx, notify = H.notify, fmtRel = H.fmtRel;
   const consoleSection = H.consoleSection;
   let routineAgentId = 'agent'; // selected roster agent for new scheduled routines (window-local state)
@@ -101,7 +101,7 @@
           '<div data-auto-panel="1" hidden><p class="sn-menu-note">Optional script and tool restrictions for this job.</p>' +
             '<label class="sn-menu-field">Pre-check script<input id="rt-script" class="key-input" placeholder="Path relative to the project"></label>' +
             '<label class="rt-term"><input type="checkbox" id="rt-no-agent"> Run the script only, without a model</label>' +
-            '<label class="sn-menu-field">Allowed toolsets<input id="rt-toolsets" class="key-input" placeholder="Toolset ids, e.g. web, cabinet; blank uses station defaults"></label></div>' +
+            '<label class="sn-menu-field">Allowed toolsets<input id="rt-toolsets" class="key-input" placeholder="Toolset ids, e.g. web, cabinet; blank uses keep defaults"></label></div>' +
           '<div data-auto-panel="2" hidden><p class="sn-menu-note">Choose where the result goes.</p>' +
             '<label class="sn-menu-field">Result destination<select id="rt-deliver" class="key-input"><option value="local">Keep in Eyehold</option><option value="origin">Return to this conversation</option></select></label>' +
             '<label class="rt-term"><input type="checkbox" id="rt-continue"> Allow follow-up in that conversation</label></div>' +
@@ -418,7 +418,7 @@
         schedulerArmed = false;
         listedJobs = [];
         const createState = body.querySelector('#rt-create-state');
-        if (createState) createState.textContent = 'Scheduling status could not be checked. Reconnect to the station before relying on an automatic run.';
+        if (createState) createState.textContent = 'Scheduling status could not be checked. Reconnect to the keep before relying on an automatic run.';
         listEl.innerHTML = '<div class="mc-detail">sidecar offline — start it to manage routines.</div>';
       }
     }
@@ -530,10 +530,10 @@
       host.className = 'rt-edit mc-form';
       // RUN AS — reassign a routine to another crew member without asking the lead in COMMS (user feedback
       // 10-03: recipe schedules landed on the Overseer and could only be moved by chat). A routine whose agent
-      // left the station keeps its own id as an option, so opening the form never silently retargets it.
+      // left the keep keeps its own id as an option, so opening the form never silently retargets it.
       const curAgent = job.agentId || 'agent';
       const runAsOpts = roster.map(a => ({ id: a.id, name: a.name || a.id }));
-      if (!runAsOpts.some(a => a.id === curAgent)) runAsOpts.unshift({ id: curAgent, name: curAgent + ' (not on station)' });
+      if (!runAsOpts.some(a => a.id === curAgent)) runAsOpts.unshift({ id: curAgent, name: curAgent + ' (not on keep)' });
       const runAsField = job.noAgent ? '' :
         '<label class="sn-menu-field">Run as<select class="key-input" data-edit-agent>' +
           runAsOpts.map(a => '<option value="' + esc(a.id) + '"' + (a.id === curAgent ? ' selected' : '') + '>' + esc(a.name) + '</option>').join('') +
@@ -559,7 +559,7 @@
         if (action.dataset.edit === 'cancel') { sfx('click'); closeEdit(); return; }
         const name = nameEl.value.trim(), prompt = promptEl.value.trim();
         const error = !name ? 'give this routine a name' : (!prompt && !job.script ? 'enter instructions for this routine' : '')
-          || (utf8Bytes(JSON.stringify({ id, patch: { name, prompt } })) > EDIT_BODY_MAX ? 'these instructions are too long (the station accepts up to 64 KB) — shorten them' : '');
+          || (utf8Bytes(JSON.stringify({ id, patch: { name, prompt } })) > EDIT_BODY_MAX ? 'these instructions are too long (the keep accepts up to 64 KB) — shorten them' : '');
         if (error) { errorEl.textContent = error; errorEl.hidden = false; sfx('bad'); return; }
         // Only send changed fields. An agent may have edited the other field since this form opened;
         // posting both old values would silently undo that newer edit.
@@ -581,7 +581,7 @@
           }
           notify('routine updated', 'good'); sfx('click'); closeEdit(); refresh();
         } catch (e) {
-          errorEl.textContent = (e && e.message) || 'could not reach the station — changes were not saved';
+          errorEl.textContent = (e && e.message) || 'could not reach the keep — changes were not saved';
           errorEl.hidden = false; sfx('bad');
         } finally {
           editSaving = false;
@@ -603,7 +603,7 @@
       btn.classList.add('on');
       const savedTz = rowEl.dataset.tz || '';
       const zoneLabel = host.querySelector('.sp-tz');
-      if (zoneLabel) zoneLabel.textContent = 'repeating: ' + (savedTz || 'station time') + ' · once: your time';
+      if (zoneLabel) zoneLabel.textContent = 'repeating: ' + (savedTz || 'keep time') + ' · once: your time';
       const inp = host.querySelector('[data-sp-input]'), pv = host.querySelector('.rt-resched-pv');
       if (inp && pv) wirePreview(inp, pv, savedTz);
       const p = (typeof SchedPicker !== 'undefined') ? SchedPicker.mount(host, {}) : null;
@@ -622,7 +622,7 @@
           if (r && r.ok) { notify('rescheduled — ' + human((r.job && r.job.scheduleDisplay) || value), 'good'); sfx('click'); closeResched(); }
           else { notify((r && r.error) || 'could not reschedule — it still runs on its old schedule', 'warn'); sfx('bad'); b.disabled = false; b.textContent = '✓ SAVE SCHEDULE'; return; }
         } catch (_) {
-          notify('could not reach the station — the schedule was NOT changed', 'warn'); sfx('bad');
+          notify('could not reach the keep — the schedule was NOT changed', 'warn'); sfx('bad');
           b.disabled = false; b.textContent = '✓ SAVE SCHEDULE'; return;
         }
         refresh();
@@ -657,7 +657,7 @@
         box.innerHTML = runs == null ? '<div class="mc-detail" style="color:var(--bad)">could not read this routine’s history</div>'
           : runs.length ? runs.map(historyLine).join('')
           : '<div class="mc-detail dim">no recorded runs yet</div>';
-      } catch (_) { if (box.isConnected) box.innerHTML = '<div class="mc-detail" style="color:var(--bad)">could not reach the station</div>'; }
+      } catch (_) { if (box.isConnected) box.innerHTML = '<div class="mc-detail" style="color:var(--bad)">could not reach the keep</div>'; }
     }
 
     // row actions: run-now (stream + show the reply), toggle enable/disable, delete (two-step arm/confirm).
@@ -687,7 +687,7 @@
         // announce a delete the sidecar had REFUSED — and then refresh() re-drew the still-present row underneath it.
         sfx('bad');
         try { const r = await post('/api/cron/remove', { id }); notify(r.ok ? 'routine deleted' : 'could not delete this routine', r.ok ? 'good' : 'warn'); }
-        catch (_) { notify('could not reach the station — the routine was not deleted', 'warn'); }
+        catch (_) { notify('could not reach the keep — the routine was not deleted', 'warn'); }
         refresh(); return;
       }
       if (act === 'revoke') {
@@ -695,9 +695,9 @@
         // safe direction, so it must never be harder than granting it was (delete keeps its two-step arm).
         sfx('click');
         // A REVOKE CLAIM MUST BE PROVEN, not assumed: a rejected request left the standing unattended grant in
-        // force while the station said "access revoked" — the one lie a permission surface can never tell.
+        // force while the keep said "access revoked" — the one lie a permission surface can never tell.
         try { const r = await post('/api/cron/update', { id, patch: { unattendedGrants: [] } }); notify(r.ok ? 'access revoked' : 'could NOT revoke access — the routine still has it', r.ok ? 'good' : 'warn'); }
-        catch (_) { notify('could not reach the station — access was NOT revoked', 'warn'); }
+        catch (_) { notify('could not reach the keep — access was NOT revoked', 'warn'); }
         refresh(); return;
       }
       if (act === 'toggle') {
@@ -708,7 +708,7 @@
         try {
           const r = await post('/api/cron/update', { id, patch: { enabled: !on } });
           if (!r.ok) notify(on ? 'could NOT pause — the routine is still armed' : 'could NOT enable this routine', 'warn');
-        } catch (_) { notify('could not reach the station — the routine was NOT ' + (on ? 'paused' : 'enabled'), 'warn'); }
+        } catch (_) { notify('could not reach the keep — the routine was NOT ' + (on ? 'paused' : 'enabled'), 'warn'); }
         refresh(); return;
       }
       if (act === 'run') {
@@ -764,7 +764,7 @@
       const prompt = (body.querySelector('#rt-prompt').value || '').trim();
       const schedule = (body.querySelector('#rt-sched').value || '').trim();
       const agentId = (body.querySelector('#rt-agent').value || '').trim();
-      // Inherit the selected agent's provider; the station's chat selection is not an override.
+      // Inherit the selected agent's provider; the keep's chat selection is not an override.
       if ((!prompt && !(body.querySelector('#rt-script').value || '').trim()) || !schedule) { sfx('bad'); msgEl.textContent = 'a prompt or script and a schedule are required'; return; }
       addBtn.disabled = true;
       msgEl.textContent = 'saving…';

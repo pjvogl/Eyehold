@@ -18,7 +18,7 @@
 
    FREE vs STUDIO (the honest boundary): Blackmagic only lets EXTERNAL scripts attach to Resolve Studio;
    on free Resolve `scriptapp("Resolve")` returns None whatever the preferences say. resolve_status says which
-   case the station is in and never claims a live connection it did not make. Resolve's scripting module is
+   case the keep is in and never claims a live connection it did not make. Resolve's scripting module is
    Python-only, so live control runs a fixed, embedded Python bridge (BRIDGE_PY below) — no model-authored code
    ever reaches the interpreter; the action + JSON args are validated here first.
 
@@ -451,7 +451,7 @@ out(dict(base, ok=False, error="unknown action " + str(act)))
         + 'Studio). Times are SECONDS. Main-track (lane 0) clips play back to back in the order given; give `at` to '
         + 'leave a gap before one. lane > 0 = a connected clip above the main track (b-roll, overlays), lane < 0 = '
         + 'below (music, voice-over); connected clips need `at`. Media durations and audio/video streams are read '
-        + 'with ffprobe when available. Paths: workspace-relative, or absolute paths the station has granted.',
+        + 'with ffprobe when available. Paths: workspace-relative, or absolute paths the keep has granted.',
       schema: { type: 'object', required: ['name', 'clips'], properties: {
         name: { type: 'string', description: 'timeline / project name' },
         fps: { type: 'number', description: 'timeline frame rate: 23.976, 24, 25, 29.97, 30, 50, 59.94, 60 (default 24)' },

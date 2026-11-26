@@ -10,7 +10,7 @@ const path = require('node:path');
 const vm = require('node:vm');
 const A = require('./_assert.js');
 
-const source = fs.readFileSync(path.join(__dirname, '..', 'frontend', 'app', 'stationui.js'), 'utf8');
+const source = fs.readFileSync(path.join(__dirname, '..', 'frontend', 'app', 'keepui.js'), 'utf8');
 const slice = (from, to) => {
   const s = source.indexOf(from);
   const e = source.indexOf(to, s + from.length);

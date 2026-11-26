@@ -32,9 +32,9 @@ const okSynth = (over) => async (o) => Object.assign({ ok: true, buf: MP3, ext: 
   let seen = null;
   const tool = toolWith(async (o) => { seen = o; return { ok: true, buf: MP3, ext: 'mp3', mime: 'audio/mpeg', provider: 'edge' }; });
   const { ctx, emitted } = ctxOf();
-  const r = await tool.run({ text: '  Station   report:  all systems nominal. ', voice: 'Umbriel', style: 'calm' }, ctx);
+  const r = await tool.run({ text: '  Keep   report:  all systems nominal. ', voice: 'Umbriel', style: 'calm' }, ctx);
 
-  A.eq(seen.text, 'Station report: all systems nominal.', 'whitespace is collapsed before synthesis');
+  A.eq(seen.text, 'Keep report: all systems nominal.', 'whitespace is collapsed before synthesis');
   A.eq(seen.voice, 'Umbriel', 'the requested voice reaches the synthesizer');
   A.eq(seen.style, 'calm', 'the delivery style reaches the synthesizer');
   A.ok(/audio\/voice-[0-9a-f]{12}\.mp3/.test(r.summary), 'saves to a content-addressed audio/voice-<hash>.mp3');
@@ -51,7 +51,7 @@ const okSynth = (over) => async (o) => Object.assign({ ok: true, buf: MP3, ext: 
   A.eq(emitted[0].payload.agentId, 'agent', 'scoped to the agent');
 
   /* ---- B. determinism: the same words produce the same path, not a pile of takes ---- */
-  const again = await tool.run({ text: 'Station report: all systems nominal.' }, ctxOf().ctx);
+  const again = await tool.run({ text: 'Keep report: all systems nominal.' }, ctxOf().ctx);
   A.eq(again.summary, r.summary, 'identical audio re-uses the same content-addressed path');
 
   /* ---- C. a caller-named path, with and without an extension ---- */
@@ -94,7 +94,7 @@ const okSynth = (over) => async (o) => Object.assign({ ok: true, buf: MP3, ext: 
   threw = '';
   try { await makeVoiceTools({ fsp, pathMod: path, root: ROOT }).generateTool.run({ text: 'anyone there' }, ctxOf().ctx); }
   catch (e) { threw = String(e.message || e); }
-  A.ok(/no speech synthesizer wired/.test(threw), 'a station with no synthesizer says so instead of writing a silent file');
+  A.ok(/no speech synthesizer wired/.test(threw), 'a keep with no synthesizer says so instead of writing a silent file');
 
   /* ---- G. CAP_REGISTRY + tool def ---- */
   const grant = (CAP_REGISTRY.studio || []).find(g => g.tool === 'voice_generate');

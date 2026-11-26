@@ -24,7 +24,7 @@ A failed session displays a steady crossed lamp and a separate FAILED pill under
 
 ## Repro
 
-1. Open a station with a session whose recorded latest run failed.
+1. Open a keep with a session whose recorded latest run failed.
 2. View that session in the compact sessions rail.
 3. Observe the steady X and extra FAILED subtitle. This applies to any failed session; the QA-generated 0.11.2 persistence session title does not select a special renderer.
 

@@ -5,7 +5,7 @@
    under node. NO logic here — pure data.
 
    Content contract: every record must clear THE RECIPE BAR documented in core.js (earns its tap /
-   drives the station / lands somewhere / compounds when recurring). The watch/monitor recipes in
+   drives the keep / lands somewhere / compounds when recurring). The watch/monitor recipes in
    this pack are the flagship COMPOUNDING recipes: each keeps notes in the agent's memory and
    reports true deltas, so a standing routine gets sharper the longer it runs. Voice matches the
    core builtins. Schema v2:

@@ -1,18 +1,18 @@
-/* EYEHOLD — understanding.js : the PURE "how well the station understands its Commander" engine.
+/* EYEHOLD — understanding.js : the PURE "how well the keep understands its Commander" engine.
 
    The unifying CONFIDENCE layer over the Commander Dossier (dossier.js). Where dossier.summary()
    reports BREADTH (fraction of dimensions with any belief — dossier.js:166) and profile.summary()
    reports work-observation DEPTH (samples/24 — profile.js:114), this engine reports how well-GROUNDED
-   the station's belief in each dimension is — folding belief count, provenance (Commander-authored /
+   the keep's belief in each dimension is — folding belief count, provenance (Commander-authored /
    pinned vs study-observed), recency (stale beliefs decay, so drift lowers confidence on its own), and
    corroboration from real work. It rolls those into one honest `overall` understanding ∈ [0,1],
    weighted toward the north-star-critical dims (goals / ambition / pain), and names the single
    `weakest` dimension (highest weight × lowest confidence): the value-of-information target a rare
    earned question should aim at.
 
-   TRUTHFUL TELEMETRY (the product's core law): understanding is derived ONLY from beliefs the station
+   TRUTHFUL TELEMETRY (the product's core law): understanding is derived ONLY from beliefs the keep
    actually holds, decayed by staleness — it never fabricates certainty the harness can't prove. A cold
-   station reads 0; a station whose beliefs have gone stale reads DOWN, never up. No autonomous belief
+   keep reads 0; a keep whose beliefs have gone stale reads DOWN, never up. No autonomous belief
    revision happens here — this is a READ-MODEL over state that already persists (the dossier).
 
    PURE + testable, mirroring profile.js / dossier.js / xp.js: an `Understanding` global in the browser,
@@ -98,7 +98,7 @@
   }
 
   // evidence → confidence ∈ [0,1): saturating, so more (or fresher, or Commander-confirmed) evidence always helps
-  // but never asserts a hard 1 (the station is never "certain" — truthful telemetry).
+  // but never asserts a hard 1 (the keep is never "certain" — truthful telemetry).
   function confFromEvidence(ev) { return 1 - Math.exp(-Math.max(0, ev) / DEPTH_SAT); }
 
   // read the beliefs for a dimension out of a dossier blob (the dossier.js shape: { dims: { key: [belief] } }).
@@ -152,7 +152,7 @@
   }
 
   /* ---------- READINESS — the one shared recommendation gate (ONBOARDING V3 §6) ----------
-     The station may only RECOMMEND (pitch / suggest / scout-mint / quest-refresh / starter-chip) once it
+     The keep may only RECOMMEND (pitch / suggest / scout-mint / quest-refresh / starter-chip) once it
      honestly knows enough about its Commander. This predicate is that single source of truth — every
      proactive surface asks it, none carries a private variant. Below it, surfaces are structurally OFF
      (hunt mode owns the gap); it never fabricates readiness a blitzed onboarding didn't earn.

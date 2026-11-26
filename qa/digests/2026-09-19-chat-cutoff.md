@@ -25,6 +25,6 @@ Before/after evidence: `qa/evidence/chat-cutoff-0919/investigation.json` and `ve
 
 ## Integration scope
 
-Merged into `feat/harness-backend` at `7f55d8809d641ca70710ff049462761aac400b79`; the merge tree exactly matches accepted lane `84a050149`. Post-merge full gate passed 819/819 at 2026-09-19 14:16 America/New_York. This receipt-only follow-up changes no application or test source. The serialized reservation is released after recording this receipt; station-save remains next in queue.
+Merged into `feat/harness-backend` at `7f55d8809d641ca70710ff049462761aac400b79`; the merge tree exactly matches accepted lane `84a050149`. Post-merge full gate passed 819/819 at 2026-09-19 14:16 America/New_York. This receipt-only follow-up changes no application or test source. The serialized reservation is released after recording this receipt; keep-save remains next in queue.
 
 Owner authorized fix, sweep and merge. No installer rebuild, push, release or customer-recovery claim. Unrelated operational edits are preserved.

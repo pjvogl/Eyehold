@@ -22,7 +22,7 @@ A.ok(/Submit macOS DMG for asynchronous notarization/.test(yml),
   'manual workflow submits the completed DMG asynchronously');
 A.ok(/os: macos-15-intel[\s\S]{0,120}target: darwin-x64/.test(yml),
   'manual Intel Mac builds run on an actual x86_64 hosted runner');
-A.ok(/Verify v0\.8\.5 station recovery on Intel macOS[\s\S]{0,220}uname -m[\s\S]{0,120}upgrade-085-090\.test\.js/.test(yml),
+A.ok(/Verify v0\.8\.5 keep recovery on Intel macOS[\s\S]{0,220}uname -m[\s\S]{0,120}upgrade-085-090\.test\.js/.test(yml),
   'manual Intel Mac builds exercise the released workspace upgrade on x86_64 hardware');
 A.ok(/matrix\.target == 'darwin-x64'[\s\S]{0,220}hydrate-sharp-macos-x64\.sh/.test(yml),
   'manual Intel Mac builds hydrate the lockfile-pinned x64 Sharp runtime');
@@ -41,7 +41,7 @@ A.ok(/name: eyehold-\$\{\{ matrix\.target \}\}/.test(yml),
   'only the final notarized DMG receives the distributable artifact name');
 A.ok(/intel-macos-installed-acceptance:[\s\S]*?needs: \[build, notarize-macos\][\s\S]*?runs-on: macos-15-intel/.test(yml),
   'manual workflow runs installed-app acceptance on actual Intel hardware after notarization');
-A.ok(/Install, Finder-launch, and recover v0\.9\.0 station[\s\S]*?verify-macos-intel-installed\.sh/.test(yml),
+A.ok(/Install, Finder-launch, and recover v0\.9\.0 keep[\s\S]*?verify-macos-intel-installed\.sh/.test(yml),
   'manual workflow delegates the installed upgrade journey to the named verifier');
 A.ok(/require_signed_mac:[\s\S]*?default: "false"/.test(yml)
   && /EYEHOLD_REQUIRE_NOTARIZED: \$\{\{ inputs\.require_signed_mac \}\}/.test(yml),
@@ -52,7 +52,7 @@ A.ok(/pattern: eyehold-\*/.test(yml),
   'test publication excludes unstapled notarization-input artifacts');
 
 A.eq(v090Fixture.doc.version, 6, 'installed journey uses the save version shipped by v0.9.0');
-A.eq(v090Fixture.doc.agent.name, 'NOVA-090-INTEL', 'installed fixture carries an observable prior-station identity');
+A.eq(v090Fixture.doc.agent.name, 'NOVA-090-INTEL', 'installed fixture carries an observable prior-keep identity');
 A.ok(/set app_file to POSIX file[\s\S]*?tell application "Finder" to open app_file/.test(installedScript),
   'installed verifier asks Finder/LaunchServices to open the copied app');
 A.ok(/\.local\/share\/Eyehold\/workspaces/.test(installedScript)

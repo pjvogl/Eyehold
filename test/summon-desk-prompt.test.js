@@ -18,17 +18,17 @@ const app = fs.readFileSync(path.join(__dirname, '../frontend/app/app.js'), 'utf
 const chat = fs.readFileSync(path.join(__dirname, '../frontend/app/chat.js'), 'utf8');
 
 /* ---- the read: a truthful floor query, never a stored flag ---- */
-const need = /function needsWorkstation\(agentId\)[\s\S]{0,900}?\n  \}/.exec(app);
-A.ok(need, 'app.js owns a needsWorkstation(agentId) read');
-A.ok(/propsByAgent\(id\)\.some\(p => station\.capForProp\(p\.t\) === 'computer'\)/.test(need[0]),
+const need = /function needsWorkkeep\(agentId\)[\s\S]{0,900}?\n  \}/.exec(app);
+A.ok(need, 'app.js owns a needsWorkkeep(agentId) read');
+A.ok(/propsByAgent\(id\)\.some\(p => keep\.capForProp\(p\.t\) === 'computer'\)/.test(need[0]),
   'it answers from the props actually bound to that agent on the live floor (capability = computer), not a flag');
 A.ok(/id === 'agent'[\s\S]{0,40}return false/.test(need[0]),
   'the hero is excluded — its starter desk is seeded at wake and its stream owns the first-run hint');
 A.ok(/!agents\.has\(id\)[\s\S]{0,40}return false/.test(need[0]),
   'an id that is not on the live roster is never claimed to owe a desk');
-A.ok(/if \(!station \|\|[\s\S]{0,180}return false/.test(need[0]),
-  'it fails CLOSED without a station — the app never claims a floor state it cannot prove');
-A.ok(/needsWorkstation: needsWorkstation/.test(app) && /openDeskPlacement: openDeskPlacement/.test(app),
+A.ok(/if \(!keep \|\|[\s\S]{0,180}return false/.test(need[0]),
+  'it fails CLOSED without a keep — the app never claims a floor state it cannot prove');
+A.ok(/needsWorkkeep: needsWorkkeep/.test(app) && /openDeskPlacement: openDeskPlacement/.test(app),
   'both the read and the door it offers are exposed on the App API for the session to use');
 
 /* ---- the session states it on EVERY open, not once at summon ---- */
@@ -36,7 +36,7 @@ A.ok(/maybeEmptyState\(\);[\s\S]{0,140}maybeDeskPrompt\(\);/.test(chat),
   'chat.js load() runs maybeDeskPrompt on every stream open, right after the empty-state hint');
 const beat = /function maybeDeskPrompt\(\)[\s\S]{0,1400}?\n  \}/.exec(chat);
 A.ok(beat, 'chat.js owns maybeDeskPrompt');
-A.ok(/App\.needsWorkstation\(id\)/.test(beat[0]),
+A.ok(/App\.needsWorkkeep\(id\)/.test(beat[0]),
   'the prompt is gated on the live read, so placing the desk retires it for good with no dismissal to store');
 A.ok(/activeWs\.agentId \|\| 'agent'/.test(beat[0]),
   'it asks about THIS stream\'s agent — never the focused one (a switch must not move the prompt)');
@@ -65,10 +65,10 @@ const activeChoiceRows = new Set([chips, unrelated]);
 let emptyRestores = 0;
 const removed = vm.runInNewContext('(' + retire[0] + ')()', {
   log: { querySelectorAll: sel => sel === '.comms-desk-prompt' ? [line, chips] : [] },
-  activeWs: { agentId: 'strategist' }, App: { needsWorkstation: () => false }, activeChoiceRows, Array,
+  activeWs: { agentId: 'strategist' }, App: { needsWorkkeep: () => false }, activeChoiceRows, Array,
   maybeEmptyState: () => { emptyRestores++; }
 });
-A.eq(removed, true, 'a newly proven workstation retires the stale derived prompt');
+A.eq(removed, true, 'a newly proven workkeep retires the stale derived prompt');
 A.ok(line.removed && chips.removed, 'both stale prompt rows leave the open transcript');
 A.ok(!activeChoiceRows.has(chips) && activeChoiceRows.has(unrelated) && !unrelated.removed,
   'retirement cleans its tracked chip row while preserving every unrelated question');
@@ -77,9 +77,9 @@ const stillLine = fakeRow(), stillChips = fakeRow();
 const stillChoices = new Set([stillChips]);
 const kept = vm.runInNewContext('(' + retire[0] + ')()', {
   log: { querySelectorAll: () => [stillLine, stillChips] }, activeWs: { agentId: 'strategist' },
-  App: { needsWorkstation: () => true }, activeChoiceRows: stillChoices, Array, maybeEmptyState: () => {}
+  App: { needsWorkkeep: () => true }, activeChoiceRows: stillChoices, Array, maybeEmptyState: () => {}
 });
-A.eq(kept, false, 'a specialist that still lacks a workstation keeps the required prompt');
+A.eq(kept, false, 'a specialist that still lacks a workkeep keeps the required prompt');
 A.ok(!stillLine.removed && !stillChips.removed && stillChoices.has(stillChips),
   'the missing-desk path leaves its line and action intact');
 
@@ -89,7 +89,7 @@ A.ok(!/Chat\.localLine\([\s\S]{0,120}nowhere to sit/.test(app),
 A.ok(!/Chat\.choices\(\[\{ label: '▤ PLACE ITS DESK'/.test(app),
   '…nor its own chip row, which could otherwise drift from the session\'s');
 
-/* ---- the door itself still lands on the workstation palette ---- */
+/* ---- the door itself still lands on the workkeep palette ---- */
 const door = /function openDeskPlacement\(agentId\)[\s\S]{0,1800}?\n  \}/.exec(app);
 A.ok(door && /if \(agentId && Build\.placeDeskFor\) \{ try \{ if \(Build\.placeDeskFor\(agentId\)\) return; \} catch \(_\) \{\} \}/.test(door[0]),
   'openDeskPlacement arms the desk FOR the agent (2026-10-07): the next floor click drops it already theirs');

@@ -34,16 +34,16 @@ const OPEN_REFIT = `(() => {
 
 // clear every workflow machine + belt off the floor so each blueprint stamps on a fresh deck
 const CLEAR_FLOOR = `(() => {
-  const st = Build.__test__.station();
+  const st = Build.__test__.keep();
   for (const b of st.belts()) st.removeBelt(b.x, b.y);
   const WF = { intake:1, bay:1, outbox:1, filter:1, splitter:1, merger:1 };
   for (const p of st.props().slice()) if (WF[p.t]) st.removeProp(p.id);
   return { props: st.props().filter(p => WF[p.t]).length, belts: st.belts().length };
 })()`;
 
-// find a stampable origin for a blueprint by scanning the station bounds (real validator)
+// find a stampable origin for a blueprint by scanning the keep bounds (real validator)
 const findSpot = (bpId) => `(() => {
-  const st = Build.__test__.station();
+  const st = Build.__test__.keep();
   const b = st.bounds();
   for (let ty = b.minTy - 2; ty <= b.maxTy + 2; ty++)
     for (let tx = b.minTx - 2; tx <= b.maxTx + 2; tx++)
@@ -120,7 +120,7 @@ async function main() {
       // stamp through the REAL pointer path (down at the same tile)
       const stamped = await evalJS(cdp, `(() => {
         const bp = WorldModel.BLUEPRINTS.find(b => b.id === ${JSON.stringify(bpId)});
-        const st = Build.__test__.station();
+        const st = Build.__test__.keep();
         const before = st.props().length;
         const cx = ${spot.tx} + (bp.w >> 1), cy = ${spot.ty} + (bp.h >> 1);
         const cv = document.querySelector('.refit-canvas');
@@ -140,7 +140,7 @@ async function main() {
     const spot2 = await evalJS(cdp, findSpot('research_line'));
     if (!spot2) throw new Error('no spot for the first-ride proof');
     const rideSetup = await evalJS(cdp, `(() => {
-      const st = Build.__test__.station();
+      const st = Build.__test__.keep();
       const res = st.stampBlueprint('research_line', ${spot2.tx}, ${spot2.ty});
       if (!res.ok) return { error: res.error || 'stamp failed' };
       const bays = st.props().filter(p => p.t === 'bay');

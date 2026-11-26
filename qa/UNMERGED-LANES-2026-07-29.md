@@ -8,10 +8,10 @@ App session store: 442 sessions recovered (`recovered=442, failed=0, skipped=0`)
 | `eyehold-bug-fixes-1b1a9f` | 6 | 2026-07-29 03:25 | Eyehold bug fixes |
 | `eyehold-hermes-telegram-gaps-ea8645` | 4 | 2026-07-29 03:08 | Eyehold/Hermes Telegram adapter gaps |
 | `eyehold-improvement-ideas-feef01` | 7 | 2026-07-29 03:04 | Eyehold improvement ideas |
-| `station-backgrounds-design-72b221` | 6 | 2026-07-29 03:03 | Station backgrounds design |
+| `keep-backgrounds-design-72b221` | 6 | 2026-07-29 03:03 | Keep backgrounds design |
 | `eyehold-bug-investigation-1e39e6` | 3 | 2026-07-29 02:47 | Eyehold bug investigation |
-| `station-hallway-walls-handoff-e33a0c` | 8 | 2026-07-29 02:43 | _(no session — resume from the branch)_ |
-| `eyehold-station-decor-props-f9757a` | 5 | 2026-07-29 02:40 | Eyehold station decoration props |
+| `keep-hallway-walls-handoff-e33a0c` | 8 | 2026-07-29 02:43 | _(no session — resume from the branch)_ |
+| `eyehold-keep-decor-props-f9757a` | 5 | 2026-07-29 02:40 | Eyehold keep decoration props |
 | `hermes-eyehold-bridge-gaps-0da54d` | 5 | 2026-07-29 01:06 | Hermes vs Eyehold/Bridge gaps |
 | `eyehold-hermes-gaps-5a71f6` | 1 | 2026-07-28 23:29 | Eyehold vs Hermes agent gaps |
 | `upbeat-driscoll-54446f` | 1 | 2026-07-28 22:28 | _(no session — resume from the branch)_ |

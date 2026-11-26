@@ -90,7 +90,7 @@ function surface() {
   // forget
   busy = true;
   res = fakeRes(); await api.forget(fakeReq('/api/browser/signins/forget', {}), res);
-  A.eq(res.code, 409, 'FORGET refuses while a run holds the station browser profile');
+  A.eq(res.code, 409, 'FORGET refuses while a run holds the keep browser profile');
   busy = false;
   res = fakeRes(); await api.forget(fakeReq('/api/browser/signins/forget', {}), res);
   A.ok(res.code === 200 && res.body.ok, 'FORGET wipes the profile when nothing is using it');

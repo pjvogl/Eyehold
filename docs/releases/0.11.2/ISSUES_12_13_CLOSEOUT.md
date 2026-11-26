@@ -6,9 +6,9 @@ GitHub #12 and #13 are repaired, integrated and verified in the installed bundle
 | --- | --- |
 | #12: saved provider fallback | Codex quota failure continues through the saved OpenRouter model using its own credential. Paid cost, dollar/token limits, restart, overrides and disconnected credentials pass. |
 | #13: delegated MCP tools | Direct and delegated read/write pass, including restart, Ask approval, Full Access, denied writes and connector removal. Other autonomous effects gain no authority. |
-| Queued save revision | Browser and server revisions agree after queued writes. The installed historical upgrade preserves the populated station across install and normal restart, with no false conflict. |
+| Queued save revision | Browser and server revisions agree after queued writes. The installed historical upgrade preserves the populated keep across install and normal restart, with no false conflict. |
 
-The real adapters and MCP transport run against controlled endpoints and isolated stations. These checks establish installed execution; they do not establish recovery on the reporters' actual Codex/OpenRouter or Close OAuth accounts. No issue comments, customer messages or public release were sent.
+The real adapters and MCP transport run against controlled endpoints and isolated keeps. These checks establish installed execution; they do not establish recovery on the reporters' actual Codex/OpenRouter or Close OAuth accounts. No issue comments, customer messages or public release were sent.
 
 Pre-merge and post-merge gates passed **771 fast steps and 113 HTTP steps**. Integration source is `a6f05c505b4e1b75fafbb320f302ba9ebd21cd73`. The signed candidate source is `6e729e4cb2ca151f2ca7f280d500c86393bf0046`; subsequent changes are QA controllers, records and documentation, with no application-runtime difference.
 

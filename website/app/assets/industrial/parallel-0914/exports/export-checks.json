@@ -147,7 +147,7 @@
     },
     {
       "id": "tank",
-      "source": "docs/station-remaster/parallel-0914/utility/tank-source.png",
+      "source": "docs/keep-remaster/parallel-0914/utility/tank-source.png",
       "seeds": [],
       "sourceSha256": "7d4865520d5137af52a300cd1d32b4930323f142a87e2c2ac4abe3c4920eec95",
       "sourceWidth": 1331,

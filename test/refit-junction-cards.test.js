@@ -140,7 +140,7 @@ A.ok(/\['approved', 'APPROVED'\], \['revise', 'REVISE'\]/.test(flow) && /loop-ve
 A.ok(/loopRuleTxt\(p\.when, p\.maxIter \|\| loopMaxDef\)/.test(flow) && /loopRuleTxt\(res\.when/.test(flow), 'the card copy and saved-note use the same rule, including the saved pass limit');
 A.ok(/goes round until the reviewer’s last line says VERDICT: ' \+ when/.test(build) && /or MAX PASSES/.test(build) && /marked unapproved/.test(build), 'the verdict rule copy: round until VERDICT: <word> or MAX PASSES, then DONE marked unapproved — what chain.js runs');
 A.ok(/goes round again ONLY while the reviewer’s output reads as/.test(build), 'the classifier-tag rule copy is unchanged: the tag keeps it looping, anything else leaves on DONE');
-A.ok(/station\(\)\.configureJunction\(p\.id, Object\.keys\(cfg\)\.length \? cfg : null\)/.test(flow), 'gate saves go through configureJunction (the validated model path)');
+A.ok(/keep\(\)\.configureJunction\(p\.id, Object\.keys\(cfg\)\.length \? cfg : null\)/.test(flow), 'gate saves go through configureJunction (the validated model path)');
 A.ok(/el\._saveGate = saveGate;/.test(flow) && /if \(el\._saveGate\) el\._saveGate\(\);/.test(panelSrc), 'closing the panel saves the gate config (ESC never discards it)');
 A.ok(/for \(const n of \[jnTimeout, loopMax\]\)[\s\S]{0,300}addEventListener\('blur', saveGate\)[\s\S]{0,200}e\.key === 'Enter'/.test(flow), 'number fields save on blur AND Enter');
 A.ok(/lbNote\.textContent = \(res\.limits \? '✓ line budget saved/.test(flow), 'LINE BUDGET confirms ON THE CARD after a save (blur or Enter)');
@@ -167,8 +167,8 @@ A.ok(!/sample job dispatched — watch the line/.test(fin), 'the old fire-and-fo
 // STEP (the panel's BAY editor): live line facts, compute rule, display names
 A.ok(/data-live="gets"/.test(panelSrc) && /data-live="to"/.test(panelSrc) && /function refreshLineFacts/.test(build) && /WorkflowPanel\.refresh\(\)/.test(build), 'the GETS/TO line facts are addressable and refresh off the recompiled plan');
 A.ok(/renderFinCard\(\);\n\s*refreshLineFacts\(\);/.test(build), 'line facts refresh after every plan recompile (click-connect lands on the open panel)');
-A.ok(/esc\(nameOf\(p\.agentId\)\) \+ ' needs an assigned workstation in this room/.test(panelSrc), 'the workstation requirement names the assigned agent and room');
-A.ok(/station\.addProp\(\{ t: 'desk', x, y, w: 2, h: 1, agentId: p\.agentId \}\)/.test(build) && /H\.requisitionPcFor\(S\.sel\)/.test(panelSrc), 'the one-click fix places a real desk in the room, bound to the agent (object=capability)');
+A.ok(/esc\(nameOf\(p\.agentId\)\) \+ ' needs an assigned workkeep in this room/.test(panelSrc), 'the workkeep requirement names the assigned agent and room');
+A.ok(/keep\.addProp\(\{ t: 'desk', x, y, w: 2, h: 1, agentId: p\.agentId \}\)/.test(build) && /H\.requisitionPcFor\(S\.sel\)/.test(panelSrc), 'the one-click fix places a real desk in the room, bound to the agent (object=capability)');
 A.ok(/esc\(String\(a\.name \|\| a\.id\)\.toUpperCase\(\)\)/.test(panelSrc) && /H\.flashTip\('bay → ' \+ nameOf\(b\.dataset\.aid\)/.test(panelSrc), 'assignment shows the display name, never the raw id');
 
 // FINISH card follows the focused line; coach bubbles stack

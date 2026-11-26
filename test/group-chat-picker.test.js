@@ -38,7 +38,7 @@ async function boot({ general = false, crew = roster } = {}) {
   const ctx = vm.createContext({ document, console, crypto: { randomUUID: () => 'test' }, clearTimeout() {}, setTimeout() {}, queueMicrotask, Chat: {},
     fetch: (url, init) => { const b = init && init.body ? JSON.parse(init.body) : null; sent.push({ url, body: b }); return request(url, b); },
     App: { pushRoster: () => push(), agents: () => crew, persist() {}, refreshRail() {}, openWorkstream: id => opened.push(id) },
-    StationUI: { toggleTerm(key, title, build, opts) { opens++; const shell = new Element('div'); shell.id = 'test-window'; body.append(shell); build(shell); onClose = opts.onClose; }, closeTerm() { onClose?.(); find('test-window')?.remove(); }, notify() {} },
+    KeepUI: { toggleTerm(key, title, build, opts) { opens++; const shell = new Element('div'); shell.id = 'test-window'; body.append(shell); build(shell); onClose = opts.onClose; }, closeTerm() { onClose?.(); find('test-window')?.remove(); }, notify() {} },
     Workstreams: { get: id => workstreams.get(id), adopt: o => { const w = { ...o }; workstreams.set(o.id, w); return w; }, generalId: () => general ? 'direct' : 'general-home' } });
   vm.runInContext(source + '\nglobalThis.GroupChat = GroupChat;\nGroupChat.bind({id:"direct",agentId:"agent",history:[{role:"user",content:"hi"}],title:"Direct"});', ctx);
   await settle();
@@ -68,7 +68,7 @@ const group = (members, extra = {}) => ({ id: 'direct', title: 'Direct', members
   for (const status of [401, 403, 500]) {
     app.request(async () => ({ status, ok: false, json: async () => { throw new SyntaxError('invalid JSON'); } }));
     await app.click('+ Add agents');
-    assert.match(text(app.find('gc-picker')), status === 500 ? /server could not load group chat/ : /Reconnect to this station/);
+    assert.match(text(app.find('gc-picker')), status === 500 ? /server could not load group chat/ : /Reconnect to this keep/);
     await app.click('CANCEL');
   }
   app.push(async () => { throw new Error('Roster sync failed'); });

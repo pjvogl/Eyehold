@@ -4,7 +4,7 @@ Code merge: 050e1eec55901a3de156e27ccde5c4aa8f62702b, from trunk 76d06117d and
 agent/managed-image-repair-0909. Source repair: 05fbfbd28; regression and bug record: 6218ab4c9.
 
 The image router previously accepted only OpenRouter credentials and rejected a linked
-Eyehold station before any image request. It now pairs the linked account credential with
+Eyehold keep before any image request. It now pairs the linked account credential with
 its cloud endpoint and lets the cloud use its server-held upstream key and meter credits.
 Conversation-provider switches can use the same managed image route. Missing managed
 credentials do not silently redirect a Eyehold run to BYOK, and image-generation failures

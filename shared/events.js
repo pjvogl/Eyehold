@@ -148,7 +148,7 @@
       promptId: str, agentId: str, tool: str, scope: str, argsSummary: str
     }),
     // a backend->frontend COMMAND (mirrors permission.prompt): the orchestrator's team.summon tool asks the
-    // LIVE station to create a new worker agent — the SAME action the Commander takes in the Recruitment Bay.
+    // LIVE keep to create a new worker agent — the SAME action the Commander takes in the Recruitment Bay.
     // The browser runs the real summonAgent() and POSTs /api/summon/ack with the new agentId, resolving the
     // tool. agentId = the requesting LEAD (attribution); the new agent's id comes back on the ack, not here.
     'crew.summon.request': obj(['requestId', 'agentId'], {
@@ -166,7 +166,7 @@
     // Reusing it would have made `usd` mean two different things. Emitted once per crossing (the latch
     // lives in credits.js), re-armed only after a top-up clears the threshold with hysteresis.
     // `exhausted` true = balance <= 0, i.e. the next managed run WILL be refused, not merely warned about.
-    // Inert on a BYOK station: nothing emits it unless managed credits are configured.
+    // Inert on a BYOK keep: nothing emits it unless managed credits are configured.
     'credits.low': obj(['balanceUsd', 'thresholdUsd'], {
       balanceUsd: num, thresholdUsd: num, purchaseUrl: str, exhausted: bool
     }),
@@ -231,7 +231,7 @@
     }),
     // the agent's reply was delivered back to the platform (chunk count + ok/why) — outbound delivery telemetry.
     // agentId (additive, optional 2026-07-06): WHICH roster agent produced the reply, so the floor pulses the
-    // RIGHT agent's dish on a multi-agent station instead of any dish. Optional — absent on legacy/command sends.
+    // RIGHT agent's dish on a multi-agent keep instead of any dish. Optional — absent on legacy/command sends.
     'channel.delivery': obj(['channel', 'chatId', 'runId', 'ok'], {
       channel: str, chatId: str, runId: str, ok: bool, chunks: int, reason: str, agentId: str
     }),
@@ -256,14 +256,14 @@
     'workitem.superseded': obj(['workitemId'], { workitemId: str, agentId: str, ts: num }),
     // queue-depth telemetry for the backpressure HUD — emitted whenever a per-agent queue depth changes.
     'queue.status': obj(['queueId'], { queueId: str, depth: int, maxCapacity: int, nextAdvanceAt: num }),
-    /* STATION BRIDGE (additive, 2026-07-30): a sidecar tool asking the live page to perform a station action
+    /* KEEP BRIDGE (additive, 2026-07-30): a sidecar tool asking the live page to perform a keep action
        that only the page can do — open a session, switch agent, delegate. `id` correlates the page's reply on
-       POST /api/station/ack. Carries no result: this is the REQUEST half only. */
-    'station.command': obj(['id', 'verb'], { id: str, verb: str, args: any }),
+       POST /api/keep/ack. Carries no result: this is the REQUEST half only. */
+    'keep.command': obj(['id', 'verb'], { id: str, verb: str, args: any }),
     // ADDITIVE (STEP-IN, 2026-09-29): a browser HANDOFF changed state — the agent paused on a login/2FA/CAPTCHA and
     // asked the Commander to take its live browser (sidecar/browser-handoff.js). State-carrying and replayable: the
-    // station renders exactly this record. `id` is the handoff's OWN id (never a consent promptId). `where` is
-    // host + path only (no query string). Rides the station SSE bridge, not the /api/run socket.
+    // keep renders exactly this record. `id` is the handoff's OWN id (never a consent promptId). `where` is
+    // host + path only (no query string). Rides the keep SSE bridge, not the /api/run socket.
     'browser.handoff': obj(['id', 'agentId', 'runId', 'state'], {
       id: str, agentId: str, runId: str,
       state: { enum: ['waiting', 'taken', 'returned', 'cancelled', 'expired', 'aborted'] },

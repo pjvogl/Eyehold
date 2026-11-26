@@ -18,7 +18,7 @@ The existing COPY DIAGNOSTICS action appends the last 64 continuity transitions.
 
 ## Artifact acceptance and limits
 
-`t0-clean-install-proof.yml` runs this journey through `installed-customer-regressions.cjs` after its public-to-candidate Windows upgrade. The wrapper requires the installed Node runtime, hashes the executable and relevant installed source files, and serves the installed frontend/sidecar against an isolated station. Evidence is collected with the candidate receipts. That campaign uses Chrome with installed assets; it does not establish native WebView behavior or preserve the user's live profile.
+`t0-clean-install-proof.yml` runs this journey through `installed-customer-regressions.cjs` after its public-to-candidate Windows upgrade. The wrapper requires the installed Node runtime, hashes the executable and relevant installed source files, and serves the installed frontend/sidecar against an isolated keep. Evidence is collected with the candidate receipts. That campaign uses Chrome with installed assets; it does not establish native WebView behavior or preserve the user's live profile.
 
 For release acceptance, also run the same user sequence in the actual Windows and macOS native renderer, using an isolated profile containing existing sessions. Record exact version, executable/installer hash, upgrade baseline, before/after session identities and restart results. A source result cannot satisfy this requirement. The new lane does not claim native macOS coverage, an installer build, public release, or affected-customer confirmation. Existing clean-install, public-upgrade and packaged lifecycle gates continue to own their separate scopes.
 

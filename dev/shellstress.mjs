@@ -17,7 +17,7 @@ const ROOMS = [
   [0, 0, 17, 10], [-5, 2, -1, 8], [18, 2, 22, 8], [4, -3, 13, -1], [4, 11, 13, 13],
   [23, 3, 25, 7], [-8, 3, -6, 6], [6, 14, 11, 16], [6, -6, 11, -4]
 ];
-const SKINS = [['station', 'follow'], ['timber', 'walnut'], ['brick', 'rust'], ['clapboard', 'bone'],
+const SKINS = [['keep', 'follow'], ['timber', 'walnut'], ['brick', 'rust'], ['clapboard', 'bone'],
   ['shingle', 'ember'], ['stone', 'sterile'], ['stucco', 'amber'], ['curtain', 'cobalt'], ['hedge', 'fern']];
 
 const PROBE = `(() => {
@@ -27,13 +27,13 @@ const PROBE = `(() => {
     for (const id of st.doc().order.slice()) st.removeRoom(id);
     const ids = [];
     for (const [x1, y1, x2, y2] of ${JSON.stringify(ROOMS)}) ids.push(st.addRoom({ kind: 'hab', rects: [{ x1, y1, x2, y2 }] }).id);
-    ${JSON.stringify(SKINS)}.forEach(([mat, style], i) => { if (mat !== 'station') st.setHull(ids[i], { mat, style }); });
+    ${JSON.stringify(SKINS)}.forEach(([mat, style], i) => { if (mat !== 'keep') st.setHull(ids[i], { mat, style }); });
     return st;
   };
-  const flat = (bk, Bake) => { const o = mk(bk.W, bk.H); o.g.fillStyle = '#000'; o.g.fillRect(0, 0, bk.W, bk.H); (Bake||StationBake).drawBase(o.g, bk, 0, 0); (Bake||StationBake).drawLight(o.g, bk, 0, 0); return o; };
+  const flat = (bk, Bake) => { const o = mk(bk.W, bk.H); o.g.fillStyle = '#000'; o.g.fillRect(0, 0, bk.W, bk.H); (Bake||KeepBake).drawBase(o.g, bk, 0, 0); (Bake||KeepBake).drawLight(o.g, bk, 0, 0); return o; };
   const st = build(), geo = st.projectGeometry();
-  const mono = flat(StationBake.bake(geo));
-  const chunked = flat(StationBake.bakeIncremental(geo, null, null, {}));
+  const mono = flat(KeepBake.bake(geo));
+  const chunked = flat(KeepBake.bakeIncremental(geo, null, null, {}));
   const da = mono.g.getImageData(0, 0, mono.c.width, mono.c.height).data;
   const db = chunked.g.getImageData(0, 0, chunked.c.width, chunked.c.height).data;
   let n = 0; for (let i = 0; i < da.length; i += 4) if (Math.abs(da[i]-db[i])+Math.abs(da[i+1]-db[i+1])+Math.abs(da[i+2]-db[i+2]) > 6) n++;
@@ -43,7 +43,7 @@ const PROBE = `(() => {
   return JSON.stringify({
     groups: ${JSON.stringify(SKINS)}.length,
     chunkParityDiffPx: n,
-    msTrunk: time(window.StationBakeBefore), msBranch: time(StationBake),
+    msTrunk: time(window.KeepBakeBefore), msBranch: time(KeepBake),
     crops: { stress: o2.c.toDataURL('image/png').split(',')[1] }
   });
 })()`;
@@ -63,8 +63,8 @@ if (!(await waitDevReady(cdp, evalJS, { url: URL }))) {
   try { proc.kill(); } catch {} try { side.kill(); } catch {}
   process.exit(2);
 }
-const beforeSrc = execFileSync('git', ['show', 'HEAD:frontend/app/stationbake.js'], { encoding: 'utf8', maxBuffer: 1 << 26 })
-  .replace('const StationBake = (() =>', 'window.StationBakeBefore = (() =>')
+const beforeSrc = execFileSync('git', ['show', 'HEAD:frontend/app/keepbake.js'], { encoding: 'utf8', maxBuffer: 1 << 26 })
+  .replace('const KeepBake = (() =>', 'window.KeepBakeBefore = (() =>')
   .replace(/if \(typeof module[\s\S]*$/, '');
 await evalJS(cdp, beforeSrc + '\n;"ok"');
 const data = JSON.parse(await evalJS(cdp, PROBE));

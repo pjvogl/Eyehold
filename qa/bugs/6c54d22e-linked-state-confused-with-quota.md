@@ -24,7 +24,7 @@ Settings says linked while a prompt suggests linking again; diagnostics show pro
 
 ## Repro
 
-Use a linked station with exhausted Codex/Grok allowance and classify the provider error plus linked-state display.
+Use a linked keep with exhausted Codex/Grok allowance and classify the provider error plus linked-state display.
 
 ## Evidence
 

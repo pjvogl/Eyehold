@@ -25,7 +25,7 @@
   'use strict';
 
   const LANES = ['todo', 'active', 'shipped'];
-  const LANE_OF_COL = { todo: 'todo', doing: 'active', done: 'shipped' };  // station kanban col -> lane
+  const LANE_OF_COL = { todo: 'todo', doing: 'active', done: 'shipped' };  // keep kanban col -> lane
 
   // ---------- internal store (the single source of truth for sessions) ----------
   let ws = [];          // Workstream[]
@@ -581,7 +581,7 @@
     return out;
   }
 
-  // ---------- migrations / imports (pure; save.js + stationui.js delegate here) ----------
+  // ---------- migrations / imports (pure; save.js + keepui.js delegate here) ----------
   // eyehold.save v1 { agent, history, usage } -> the v2 workstreams slice. The entire legacy
   // conversation becomes a single General stream; its cost is SEEDED from the existing lifetime
   // usage so the per-stream number matches reality (nothing invented). agent + lifetime usage stay
@@ -599,7 +599,7 @@
     return { workstreams: [general], activeId: general.id, generalId: general.id };
   }
 
-  // one-shot import of the legacy station kanban tasks[] into real workstreams (col -> lane,
+  // one-shot import of the legacy keep kanban tasks[] into real workstreams (col -> lane,
   // empty history). The caller (slice 3) guards this to run exactly once, then clears tasks[].
   // Every legacy kanban card was a BOARD card, so kind is passed explicitly: without it, make()'s
   // lane inference read a 'doing' card (lane active) as kind:'chat' and silently dropped it off

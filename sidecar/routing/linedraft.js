@@ -6,7 +6,7 @@
    PURE (no IO, no clock): normalizeInput bounds what the window sent (the description, the starters it offers and each one's step
    roles, in order), buildPrompt writes the ONE model prompt, parseDraft reads the model's JSON back and trusts it only for a starter
    that was offered and the roles that starter really has. The caller (index.js handleRoutingLineDraft) makes the one billed call on
-   the station's default model (stationOneShot) and books its spend. */
+   the keep's default model (keepOneShot) and books its spend. */
 'use strict';
 (function (root, factory) {
   const api = factory();
@@ -72,9 +72,9 @@
 
   function parseDraft(text, input) {
     const o = firstObject(text);
-    if (!o) return { ok: false, error: 'the station\'s model did not answer with a line — try again, or pick one below' };
+    if (!o) return { ok: false, error: 'the keep\'s model did not answer with a line — try again, or pick one below' };
     const s = input.starters.find(x => x.id === String(o.starter || '').trim());
-    if (!s) return { ok: false, error: 'the station\'s model picked a line that was not offered — try again, or pick one below' };
+    if (!s) return { ok: false, error: 'the keep\'s model picked a line that was not offered — try again, or pick one below' };
     const steps = (o.steps && typeof o.steps === 'object') ? o.steps : {};
     const byRole = {};
     for (const k of Object.keys(steps)) byRole[flat(k, 24).toUpperCase()] = steps[k];
@@ -83,7 +83,7 @@
       const t = String(byRole[role] == null ? '' : byRole[role]).replace(/[ \t]+/g, ' ').replace(/\s*\n\s*/g, '\n').trim().slice(0, MAX.does);
       if (t) briefs[role] = t;
     }
-    if (!Object.keys(briefs).length) return { ok: false, error: 'the station\'s model wrote no instructions for the steps — try again, or pick one below' };
+    if (!Object.keys(briefs).length) return { ok: false, error: 'the keep\'s model wrote no instructions for the steps — try again, or pick one below' };
     const name = flat(o.name, 60).replace(/^["'“”]+|["'“”]+$/g, '').slice(0, MAX.name).trim();
     return { ok: true, starter: s.id, name: name || s.name, briefs, job: flat(o.job, MAX.job) };
   }

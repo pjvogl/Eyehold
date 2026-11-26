@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <title>{{NAME_HTML}}</title>
-<!-- The station kit (sn-* classes, glass tokens, VT323, the `eyehold` bridge) is added to this page automatically.
+<!-- The keep kit (sn-* classes, glass tokens, VT323, the `eyehold` bridge) is added to this page automatically.
      Your own CSS always wins over it — restyle anything you like. -->
 <style>
   .note-time { color: var(--ph); font-size: 15px; white-space: nowrap; }
@@ -32,12 +32,12 @@
     </form>
     <div>
       <h4 class="sn-sect">▮ Saved notes</h4>
-      <ul class="sn-list" id="list"><li class="sn-empty">No notes yet. They are saved by the station, so they survive a restart.</li></ul>
+      <ul class="sn-list" id="list"><li class="sn-empty">No notes yet. They are saved by the keep, so they survive a restart.</li></ul>
     </div>
   </section>
 
   <section data-pane="kit" class="sn-stack" hidden>
-    <p class="sn-hint">Every class the kit gives you, drawn in your station's live colours. Change the phosphor in SETTINGS and watch this repaint.</p>
+    <p class="sn-hint">Every class the kit gives you, drawn in your keep's live colours. Change the phosphor in SETTINGS and watch this repaint.</p>
     <div class="sn-row-flex">
       <button class="sn-btn">sn-btn</button>
       <button class="sn-btn primary">primary</button>
@@ -77,7 +77,7 @@
     document.getElementById('stat-notes').textContent = notes.length;
     listEl.innerHTML = '';
     if (!notes.length) {
-      listEl.innerHTML = '<li class="sn-empty">No notes yet. They are saved by the station, so they survive a restart.</li>';
+      listEl.innerHTML = '<li class="sn-empty">No notes yet. They are saved by the keep, so they survive a restart.</li>';
       return;
     }
     notes.forEach((n) => {
@@ -131,7 +131,7 @@
   render();
 
   // Stay live: notes the crew adds (add_note) and the backend's own count (api.handle('stats') in index.js).
-  // A timeout CHAIN, not setInterval: a slow station never stacks up overlapping polls.
+  // A timeout CHAIN, not setInterval: a slow keep never stacks up overlapping polls.
   async function poll() {
     try {
       const fresh = (await eyehold.store.get('notes')) || [];

@@ -21,7 +21,7 @@
     bar.append(capture, compare); host.appendChild(bar);
     const output = document.createElement('pre'); output.id = 'world-lab-output';
     output.style.cssText = 'white-space:pre-wrap;max-height:50vh;overflow:auto;margin:0;font:12px VT323,monospace;color:#ccdde0';
-    output.textContent = 'Capture records the current frame, station, crew and real event history.';
+    output.textContent = 'Capture records the current frame, keep, crew and real event history.';
     host.appendChild(output); document.body.appendChild(host);
     capture.addEventListener('click', () => {
       const cv = document.querySelector('#stage'), world = typeof World !== 'undefined' ? World : null;
@@ -37,12 +37,12 @@
         }
         pixels = { meanLuminance: +(sum / 3072).toFixed(2), litSamples: lit, distinctColors: unique.size };
       }
-      const d = world && world.stationDoc ? world.stationDoc() : null;
+      const d = world && world.keepDoc ? world.keepDoc() : null;
       const api = window.__SKYNET_TEST__;
       const events = api && api.events ? api.events().filter(e => /agent.run|agent.tool|workitem|deliverable/.test(e.name)).slice(-20).map(e => ({name:e.name,runId:e.payload && e.payload.runId,status:e.payload && e.payload.status})) : [];
       output.textContent = JSON.stringify({ capturedAt: new Date().toISOString(),
         renderer: world && world.renderStats ? world.renderStats() : null,
-        pixels, station: d ? {rooms:d.rooms,props:d.props,belts:d.belts} : null,
+        pixels, keep: d ? {rooms:d.rooms,props:d.props,belts:d.belts} : null,
         bodies: world && world.bodies ? world.bodies() : [],
         link: world && world.dbg ? (world.dbg() || {}).bridge : null,
         capabilities: world && world.heroCaps ? world.heroCaps('agent') : [], events }, null, 2);

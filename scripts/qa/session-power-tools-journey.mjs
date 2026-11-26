@@ -26,7 +26,7 @@ try {
   await cdp.send('Page.enable'); await cdp.send('Runtime.enable');
   const { exceptions } = collectDiagnostics(cdp);
   await cdp.send('Page.navigate', { url: `http://127.0.0.1:${PORT}/` });
-  await waitFor(cdp, `typeof App === 'object' && typeof Workstreams === 'object' && !!document.querySelector('#screen-game.active')`, 'seeded station');
+  await waitFor(cdp, `typeof App === 'object' && typeof Workstreams === 'object' && !!document.querySelector('#screen-game.active')`, 'seeded keep');
 
   const seeded = await evalJS(cdp, `(() => {
     const now=Date.now(), day=86400000, rows=[{id:'power-general',title:null,kind:'chat',lane:'active',createdAt:now,lastActiveAt:now,history:[]}];

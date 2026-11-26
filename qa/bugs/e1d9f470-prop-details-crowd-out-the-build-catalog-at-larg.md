@@ -24,7 +24,7 @@ Selected prop details occupy the bottom of the Build Kit while the gallery shrin
 
 ## Repro
 
-1. Open Build Station, then Props and Decoration.
+1. Open Build Keep, then Props and Decoration.
 2. Select BIG SCREEN at 1366 x 768 with 115% text size.
 3. Observe the gallery and selected-prop card heights; repeat with larger text.
 
@@ -40,7 +40,7 @@ Source repair committed as c6f77fff4 and verified in the seeded running app. The
 
 Before: seeded 1366 x 768 at 115% scale, gallery 92.86px and inspector 185.53px.
 After: gallery 184px and inspector 110.25px. Live DOM checks passed for decoration,
-workstations/workflows, and abilities at 1366x768/115%, 1280x720/150%,
+workkeeps/workflows, and abilities at 1366x768/115%, 1280x720/150%,
 1024x600/130%, 1920x1080/100%, and 562x619/150%. Gallery scrolling and
 About this prop -> Back to props (including focus restoration) passed in all 15 cases.
 No browser warnings or exceptions. Scale was emulated with the production body zoom
@@ -54,5 +54,5 @@ committed layout passed the 15 live cases again. Fast-gate completion pending.
 
 ## Sibling coverage
 
-{"adapters":[{"target":"desktop and website CSS mirrors","state":"blocked","reason":"Mirrors synchronized and seeded browser verified; packaged WebView not tested."}],"entrypoints":[{"target":"Props: decoration, workstations/workflows, abilities; About and Back","state":"blocked","reason":"All 15 live DOM combinations passed; no registered automated layout scenario yet."}],"displays":[{"target":"short, narrow, desktop and 100-150% text scales","state":"blocked","reason":"Five viewport/scale combinations passed live emulation; physical customer display and installer unverified."}],"lifecycle":[{"target":"reload and catalog/detail transitions","state":"blocked","reason":"Fresh page loads and detail/back focus verified live; no registered layout lifecycle test."}]}
+{"adapters":[{"target":"desktop and website CSS mirrors","state":"blocked","reason":"Mirrors synchronized and seeded browser verified; packaged WebView not tested."}],"entrypoints":[{"target":"Props: decoration, workkeeps/workflows, abilities; About and Back","state":"blocked","reason":"All 15 live DOM combinations passed; no registered automated layout scenario yet."}],"displays":[{"target":"short, narrow, desktop and 100-150% text scales","state":"blocked","reason":"Five viewport/scale combinations passed live emulation; physical customer display and installer unverified."}],"lifecycle":[{"target":"reload and catalog/detail transitions","state":"blocked","reason":"Fresh page loads and detail/back focus verified live; no registered layout lifecycle test."}]}
 

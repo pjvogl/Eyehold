@@ -64,7 +64,7 @@ function startMockOpenRouter() {
       if (!messages.some(m => m && m.role === 'tool')) {
         writeSse(res, [{ tool_calls: [{
           index: 0, id: 'inspect_once', type: 'function',
-          function: { name: 'station_inspect', arguments: '{}' }
+          function: { name: 'keep_inspect', arguments: '{}' }
         }] }], { prompt_tokens: 8, completion_tokens: 2, total_tokens: 10 }, 'tool_calls');
         return;
       }

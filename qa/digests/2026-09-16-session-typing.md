@@ -18,7 +18,7 @@ The existing model-requested session-focus rule retains its prior behavior: a va
 - The existing live voice/model-focus/upload campaign also passed, including valid foreground focus, refusal of stale/background requests, and no cross-post after upload-time navigation. Both browser campaigns had zero page errors.
 - Final `npm run test:fast`: **812/812 PASS**. Final `npm run qa:customer-journeys`: **35/35 PASS**. Syntax and diff checks passed. Earlier exploratory runs stopped for the foreground-navigation compatibility refinement are not acceptance receipts.
 
-Portable receipts and gate-log hashes: `qa/evidence/session-typing-0916/`. Repeatable live runner: `scripts/qa/session-typing-live.cjs`; regression: `test/session-typing-safety.test.js` (registered in fast and customer journeys). Real seeded UI/stores were exercised with controlled delivery and connector/model transports; no paid provider or personal station was used. No backend, shared contract, credential storage or packaging source changed.
+Portable receipts and gate-log hashes: `qa/evidence/session-typing-0916/`. Repeatable live runner: `scripts/qa/session-typing-live.cjs`; regression: `test/session-typing-safety.test.js` (registered in fast and customer journeys). Real seeded UI/stores were exercised with controlled delivery and connector/model transports; no paid provider or personal keep was used. No backend, shared contract, credential storage or packaging source changed.
 
 ## Delivery boundary
 

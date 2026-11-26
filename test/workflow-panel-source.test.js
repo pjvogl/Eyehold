@@ -1,7 +1,7 @@
 /* test/workflow-panel-source.test.js — the docked Workflow panel's wiring laws, held against the SOURCE
    (workflowpanel.js is a browser module over live DOM + build.js's host, like build.js itself; its truth
    layer is node-tested in workflow-line.test.js). Each assertion is a law the panel must not drift from:
-     · station UI law: no native tooltip, no native dialog;
+     · keep UI law: no native tooltip, no native dialog;
      · the step test is FEATURE-DETECTED (an older sidecar keeps the whole-line sample button);
      · "Try this step" is the SAME mechanism with single:true + startAt (STEPTEST contract);
      · a schedule made here is the line's own trigger (runsLine:true) and grants nothing unattended;
@@ -44,7 +44,7 @@ A.ok(/SchedPicker\.mount\(/.test(panel) && /api\('\/api\/cron\/preview'/.test(pa
 A.ok(/H\.openTerm\('messaging'\)/.test(panel), 'one click to the Channels panel to connect a channel');
 
 // hands off is saved through the model
-A.ok(/H\.station\(\)\.setPropHands\(p\.id, hands\.value\)/.test(panel), 'HANDS OFF saves through worldmodel.setPropHands');
+A.ok(/H\.keep\(\)\.setPropHands\(p\.id, hands\.value\)/.test(panel), 'HANDS OFF saves through worldmodel.setPropHands');
 
 // the doors
 A.ok(/if \(t === 'bay'\) return openStepCard\(p\.id, ev\);/.test(build), 'a BAY configures through openStepCard');

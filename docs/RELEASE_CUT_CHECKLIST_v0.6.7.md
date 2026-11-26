@@ -390,7 +390,7 @@ Result:
   whose shape the new frontend can't read.
 - **`agent.save.json` was not modified at all.** Its 17 `doc` keys and the agent survived intact.
 - Five files were rewritten at boot, all of them runtime state, none of them user config:
-  `_commander.autonomy.json`, `_station.questrefresh.json`, `agent.roster.json`,
+  `_commander.autonomy.json`, `_keep.questrefresh.json`, `agent.roster.json`,
   `agent.workshop.json`, `scout.state.json`. `agent.roster.json`'s `agents` array is
   **byte-identical** — only its `updatedAt` moved.
 - `skills.jsonl` is compacted at boot (`5,597,419 B → 17 entries`). This looks alarming in the
@@ -402,9 +402,9 @@ Result:
 None of these break anything. All of them are visible on first launch, which is exactly why they
 belong in the release notes — an unexplained change reads as a regression.
 
-1. **The station looks different.** The default deck moved `plate` → `spine` and the default wall
-   `plating` → `bulkhead`. Both commits state the change reaches **stations already built**
-   deliberately (a station that never chose a floor carries `floorMat: null` and renders the
+1. **The keep looks different.** The default deck moved `plate` → `spine` and the default wall
+   `plating` → `bulkhead`. Both commits state the change reaches **keeps already built**
+   deliberately (a keep that never chose a floor carries `floorMat: null` and renders the
    default). `plate`/`plating` remain in the palette. → covered in the notes draft.
 2. **Spend caps start firing on Anthropic and Google.** `sidecar/providers/prices.js` gives those
    two providers real per-token pricing; previously `spentUsd` stayed `0.00` on them, so a

@@ -2,7 +2,7 @@
 
    THE BUG THIS FIXES (2026-07-28, visible in a member's own screenshots). Every reply left the sidecar as
    plain text with NO `parse_mode`, so an LLM's ordinary markdown arrived on the phone as raw syntax: literal
-   `**bold**`, backticked `code`, `## headings`, ``` fences. The station reads as broken formatting on the one
+   `**bold**`, backticked `code`, `## headings`, ``` fences. The keep reads as broken formatting on the one
    surface most members actually use.
 
      toTelegramHtml(text) -> { html, converted }

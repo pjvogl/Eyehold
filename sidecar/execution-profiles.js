@@ -12,17 +12,17 @@
 'use strict';
 
 const IDS = Object.freeze(['safe-cell', 'remote-ssh', 'trusted-project', 'this-computer']);
-const VALID_IDS = Object.freeze(['station-gear'].concat(IDS));
+const VALID_IDS = Object.freeze(['keep-gear'].concat(IDS));
 
 const PROFILES = Object.freeze({
-  'station-gear': Object.freeze({
-    id: 'station-gear', label: 'STATION GEAR', backend: 'current',
-    filesystemScope: 'station-grants',
+  'keep-gear': Object.freeze({
+    id: 'keep-gear', label: 'KEEP GEAR', backend: 'current',
+    filesystemScope: 'keep-grants',
     filesystemLabel: 'Placed gear + approved project folders',
     capabilityObjects: Object.freeze([]),
     connectors: false,
     physicalDesktop: 'lease-required',
-    description: 'Compatibility profile for existing stations. Capability objects on the floor remain the only tool grants.'
+    description: 'Compatibility profile for existing keeps. Capability objects on the floor remain the only tool grants.'
   }),
   'safe-cell': Object.freeze({
     id: 'safe-cell', label: 'SAFE CELL', backend: 'docker',
@@ -31,7 +31,7 @@ const PROFILES = Object.freeze({
     capabilityObjects: Object.freeze(['computer', 'cabinet', 'workbench']),
     connectors: false,
     physicalDesktop: 'never',
-    description: 'Runs terminal and file work inside the isolated agent workspace. Connected services stay off unless a station prop grants them.'
+    description: 'Runs terminal and file work inside the isolated agent workspace. Connected services stay off unless a keep prop grants them.'
   }),
   'remote-ssh': Object.freeze({
     id: 'remote-ssh', label: 'REMOTE SSH', backend: 'ssh',
@@ -67,7 +67,7 @@ function validId(value) { return VALID_IDS.indexOf(String(value || '')) >= 0; }
 function normalizeId(value, legacy) {
   if (validId(value)) return String(value);
   legacy = legacy || {};
-  return 'station-gear';
+  return 'keep-gear';
 }
 
 function resolve(value, runtime) {

@@ -2,7 +2,7 @@
 
    dialogue.js is browser-flow code, but its naming primitives (codename / isUnnamed) are PURE and touch no DOM
    at module load, so they load under node like xp.js. The invariant: a blank / whitespace / placeholder overseer
-   name never leaves the awakening labelled with the bland generic 'AGENT' — it mints a real station codename
+   name never leaves the awakening labelled with the bland generic 'AGENT' — it mints a real keep codename
    instead, WITHOUT hard-blocking the flow (sandbox-no-gating: never trap the Commander on the name field). A real
    typed name is always honoured verbatim (trimmed + clamped to the 18-char nameplate cap). */
 'use strict';
@@ -15,7 +15,7 @@ const picks = [];
 for (let i = 0; i < 200; i++) picks.push(Dialogue.codename());
 A.ok(picks.every(n => typeof n === 'string' && n.length > 0), 'every codename is a non-empty string');
 A.ok(picks.every(n => n.length <= 18), 'every codename honours the 18-char nameplate cap');
-A.ok(picks.every(n => n === n.toUpperCase()), 'codenames are uppercase (station designation style)');
+A.ok(picks.every(n => n === n.toUpperCase()), 'codenames are uppercase (keep designation style)');
 A.ok(picks.every(n => n.trim().toUpperCase() !== 'AGENT'), 'a minted codename is NEVER the bland generic AGENT');
 A.ok(new Set(picks).size >= 5, 'the codename pool has real variety (>=5 distinct over 200 draws)');
 

@@ -137,7 +137,7 @@ button:active {
 
 /* ============================================================
    6 · TAB / SECTION CROSSFADE — builder-swapped bodies fade in.
-   StationUI stamps .swap-in on the injected content root; the
+   KeepUI stamps .swap-in on the injected content root; the
    class is short-lived (removed after the animation) so a repeat
    swap re-triggers it.
    ============================================================ */
@@ -148,8 +148,8 @@ button:active {
 .swap-in { animation: swap-in var(--t-med) var(--ease-out); }
 
 /* ============================================================
-   7 · TOAST / NOTIFICATION — a station READOUT CARD, not a web toast.
-   StationUI.notify() mirrors the stored notification to a transient
+   7 · TOAST / NOTIFICATION — a keep READOUT CARD, not a web toast.
+   KeepUI.notify() mirrors the stored notification to a transient
    card in #toast-stack. Each card is a piece of rack hardware:
 
      ▐✓▌  MODEL                      [01:48]
@@ -164,7 +164,7 @@ button:active {
      hairline (the bench-instrument material from widgets.css).
    · an ENGRAVED LABEL over a BRIGHT VALUE when the caller led with
      "LABEL: …" — the dim-label/bright-figure grammar of every gauge
-     in the station. Plain prose just gets the one message line.
+     in the keep. Plain prose just gets the one message line.
    · a bracketed corner STAMP + the panel-chrome registration ticks,
      framing the readout area on its plate.
    · a DWELL RAIL that drains for exactly as long as the card will
@@ -188,7 +188,7 @@ button:active {
    and the stage starts at x 400 while the rack stayed at 268 — the card was then sitting ON the
    crew list it was supposed to be parked beside.
 
-   So the seat is MEASURED off the cabinet by StationUI.seatToastRack() (the syncTermBand idiom:
+   So the seat is MEASURED off the cabinet by KeepUI.seatToastRack() (the syncTermBand idiom:
    read the real rects, divide by the TEXT SIZE zoom exactly once, publish the answer as vars):
      --toast-x   the columns' LEFT edge  (#bottombar.left — the shell's outer padding line, the
                  same x as #topbar, the CREW rail and the dock: the longest alignment line in the
@@ -559,7 +559,7 @@ button:active {
     background-color var(--t-fast) var(--ease-soft),
     transform var(--t-fast) var(--ease-out);
 }
-/* live task-board refresh (stationui refreshBoardLive): a background data poke rebuilds the board
+/* live task-board refresh (keepui refreshBoardLive): a background data poke rebuilds the board
    in place — replaying the entrance stagger on every rail refresh reads as a full-board flicker.
    Entrance motion belongs to user-initiated opens only. */
 .kb-live-refresh .kb-card, .kb-live-refresh .empty-state { animation: none; }
@@ -658,7 +658,7 @@ button:active {
    .bar-active, but with a collapsed 0-height parent it's clipped and invisible). */
 
 /* ============================================================
-   16 · QUEST JOURNAL — readable briefing and station console material.
+   16 · QUEST JOURNAL — readable briefing and keep console material.
    Scoped so GROWTH and TROPHY grids sharing .gx-tros are untouched.
    ============================================================ */
 /* History and deferred quests retain a responsive grid. The active briefing overrides it below.
@@ -806,7 +806,7 @@ button:active {
 
 /* ============================================================
    18 · MINIMIZE-TO-STRIP — a dock strip of minimized-window chips. Built by
-   StationUI (stationui.js): header double-click minimizes; minimizing collapses
+   KeepUI (keepui.js): header double-click minimizes; minimizing collapses
    the window toward the strip (a compressed power-off), hides it (kept alive),
    and drops a chip into #term-strip in the bottom bar. Chip click restores.
    Phosphor / VT323 only, theme vars only, transform/opacity motion only.

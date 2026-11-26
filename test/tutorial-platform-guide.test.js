@@ -6,7 +6,7 @@ const path = require('node:path');
 const calls = [], writes = [];
 const context = {
   localStorage: { getItem: () => null, setItem: (...args) => writes.push(args) },
-  StationUI: { openTerm: (...args) => calls.push(['open', ...args]), closeTerm: (...args) => calls.push(['close', ...args]) }
+  KeepUI: { openTerm: (...args) => calls.push(['open', ...args]), closeTerm: (...args) => calls.push(['close', ...args]) }
 };
 vm.runInNewContext(fs.readFileSync(path.join(__dirname, '../frontend/app/tutorial.js'), 'utf8') + '\nthis.tutorial = Tutorial;', context);
 const tutorial = context.tutorial;

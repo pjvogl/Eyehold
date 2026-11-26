@@ -1,7 +1,7 @@
 /* EYEHOLD — nightreport.js : the PURE engine for the MORNING REPORT (NS-4).
 
    THE PROMISE: Andrew must never again wonder "what did you do all night, and if nothing, why?". On the first
-   activity after a real absence, the station owes ONE honest digest — the acts it fired AND the honest other half
+   activity after a real absence, the keep owes ONE honest digest — the acts it fired AND the honest other half
    (what it DECLINED, and the one plain reason it did nothing at all). This module composes that digest from the
    three truthful-telemetry surfaces the night-shift already serves:
 
@@ -28,27 +28,27 @@
     posture: 'it is set to WAIT or SUGGEST, so it is not allowed to act on its own',
     // "present" confused real users (2026-07-15): "while you're away" read as "while the app is closed". It isn't —
     // away = no clicks/keys for the idle threshold; the app stays open 24/7. Say the actual rule.
-    present: 'you were using the station — it waits until you step away (no clicks or keys for a while); the app stays open',
+    present: 'you were using the keep — it waits until you step away (no clicks or keys for a while); the app stays open',
     halt: 'the emergency stop was engaged — press any ON ITS OWN button in SETTINGS › AUTONOMY to lift it',
     leash: 'today’s job limit was already used',
-    // NS-2 pre-spend readiness: the station lacks grounded knowledge (a fresh/stale dossier AND too little recent
+    // NS-2 pre-spend readiness: the keep lacks grounded knowledge (a fresh/stale dossier AND too little recent
     // activity) so a beat could not have reached a model call. Honest about what feeds it: real work + answers.
-    readiness: 'the station doesn’t know you well enough yet to act unattended — run a few real tasks (or answer its questions) so it learns',
+    readiness: 'the keep doesn’t know you well enough yet to act unattended — run a few real tasks (or answer its questions) so it learns',
     // NS-2 pre-spend gates the precheck can also bind on (they flow through statusDecision as bindings):
     budget: 'the spending budget is exhausted — raise the cap or resume to let jobs run',
     // NOT an exhausted budget: spend history is uncertain (usually an interrupted run that never recorded its spend), so
     // a limit the Commander chose can't be checked. Raising the cap or resuming changes nothing; SPENDING LIMITS names
     // the cause and its fix (settle that run, or restart after a failed save).
     'spend-unknown': 'Eyehold can’t verify past spending (usually a run that was interrupted before it recorded its spend), so your spending limits can’t be checked — see SETTINGS › SPENDING LIMITS',
-    // #89: the provider-less form of the station's ONE no-credential sentence (sidecar/engine-credential.js
+    // #89: the provider-less form of the keep's ONE no-credential sentence (sidecar/engine-credential.js
     // UNATTENDED_REMEDY, locked equal in test/engine-credential.test.js) — a key saved in a browser page now reaches the
-    // station when it is saved, so re-saving it is a real way out, and so is the env var on a headless station.
+    // keep when it is saved, so re-saving it is a real way out, and so is the env var on a headless keep.
     'no-provider': 'no runnable provider/model is configured for unattended runs — connect or re-save a provider key under SETTINGS → AI & MODELS (or set its API key variable in the environment that starts Eyehold) and pick a model',
     cooldown: 'it wasn’t time for the next job yet',
     concurrency: 'the desk was busy with another run',
     'in-flight': 'a job was still running',
-    'precheck-error': 'the station could not verify its budget, provider, or readiness checks, so it stood down safely',
-    'persist-failed': 'the station couldn’t safely record the work, so it stood down'
+    'precheck-error': 'the keep could not verify its budget, provider, or readiness checks, so it stood down safely',
+    'persist-failed': 'the keep couldn’t safely record the work, so it stood down'
   };
 
   // a stable, HONEST label for a binding we don't recognise (forward-compat: a new gate name renders as itself,
@@ -87,7 +87,7 @@
     const ms = status && Number(status.awayAfterMs);
     const mins = (Number.isFinite(ms) && ms > 0) ? Math.round(ms / 60000) : 0;
     const span = mins > 0 ? (mins + ' min without clicks or keys') : 'a stretch without clicks or keys';
-    return 'Leave the app running — “away” just means ' + span + '. Autonomy starts by itself once you stop using the station, and stands down the moment you’re back.';
+    return 'Leave the app running — “away” just means ' + span + '. Autonomy starts by itself once you stop using the keep, and stands down the moment you’re back.';
   }
 
   // ---- report composition ----------------------------------------------------------------------------------------
@@ -110,7 +110,7 @@
     const awaySince = Number(input.awaySince) || 0;
     const tz = input.tzOffsetMin;
 
-    // ledger: only THIS station's night-shift decisions inside the away window, newest-first as given.
+    // ledger: only THIS keep's night-shift decisions inside the away window, newest-first as given.
     const rawLedger = Array.isArray(input.ledger) ? input.ledger : [];
     const scoped = rawLedger.filter(e => e && e.source === 'nightshift' && Number(e.ts) >= awaySince && e.kind !== 'note');
     const acts = scoped.filter(e => e.kind === 'act');
@@ -197,7 +197,7 @@
     const s = input.status;
     const tz = input.tzOffsetMin;
     if (!s || typeof s !== 'object') {
-      return { reachable: false, stateText: 'station telemetry unreachable', detail: '' };
+      return { reachable: false, stateText: 'keep telemetry unreachable', detail: '' };
     }
     const active = !!s.active;
     const away = !!s.away;
@@ -238,7 +238,7 @@
       halted: false,
       stateText: stateText,
       why: whyOff,
-      presence: away ? 'you’re away — it can act' : 'you’re at the station — it’s waiting',
+      presence: away ? 'you’re away — it can act' : 'you’re at the keep — it’s waiting',
       awayRuleText: awayRuleText(s),
       leashText: leashText,
       leashSpent: leash != null && used >= leash,
@@ -259,7 +259,7 @@
     return 'drafts only — to let it build real things while you’re away, set REACH to SANDBOX under FINE-TUNE in SETTINGS › AUTONOMY';
   }
 
-  // the cold-start explanation behind a 'readiness' stand-down: how far the station is from EITHER hot bar
+  // the cold-start explanation behind a 'readiness' stand-down: how far the keep is from EITHER hot bar
   // (dossier breadth or recent-run evidence). '' when already hot / no detail (an empty line is never invented).
   function readinessText(rd) {
     if (!rd || typeof rd !== 'object' || rd.tier === 'hot') return '';
@@ -271,11 +271,11 @@
   }
 
   // THE DIAL-RAISE OUTLOOK (NS visibility 2026-07-13): the one honest sentence shown the INSTANT the Commander raises
-  // the autonomy dial (the awakening cadence beat / the station panel) — what a beat will ACTUALLY do while they're
-  // away (build vs draft) and how far the station still is from being allowed to act (cold-start readiness). Composed
+  // the autonomy dial (the awakening cadence beat / the keep panel) — what a beat will ACTUALLY do while they're
+  // away (build vs draft) and how far the keep still is from being allowed to act (cold-start readiness). Composed
   // straight from a /api/nightshift/status payload via the SAME modeText/readinessText the panel uses — so the dial
   // feedback and the panel can never disagree (truthful telemetry). Returns '' when there is nothing honest to add:
-  // an unreachable/absent status, OR a fully-hot build-capable station whose only truthful line ('beats BUILD…') the
+  // an unreachable/absent status, OR a fully-hot build-capable keep whose only truthful line ('beats BUILD…') the
   // caller may still choose to show. NEVER invents — every clause maps to a status field. Pure + node-testable.
   function postureOutlook(status) {
     if (!status || typeof status !== 'object') return '';

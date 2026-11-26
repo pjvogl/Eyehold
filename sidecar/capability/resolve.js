@@ -3,11 +3,11 @@
    not its body tile. room.capabilities is derived, never hand-stored. Called fresh every turn so
    placing/reclaiming an object changes the agent's reach on the very next model call.
 
-   station = {
+   keep = {
      rooms:  { <roomId>: { id, objects: [ { instanceId, objectType } ] } },
      agents: { <agentId>: { id, room: <roomId> } }
    }
-   resolveTools(agentId, station, capRegistry?, opts?) ->
+   resolveTools(agentId, keep, capRegistry?, opts?) ->
      { agentId, room, hasCompute, tools[], grants[], approvalRules{}, networkCaps{} }
 
    opts.disabledCaps: an object/Set of capIds the user has switched OFF in the TOOLSETS console (the
@@ -24,7 +24,7 @@
 
   const DEFAULT = capReg.CAP_REGISTRY;
 
-  function resolveTools(agentId, station, capRegistry, opts) {
+  function resolveTools(agentId, keep, capRegistry, opts) {
     capRegistry = capRegistry || DEFAULT;
     // disabledCaps may be a Set, an array, or a plain map { capId: true }. Normalise to a has(capId) probe.
     const dc = opts && opts.disabledCaps;
@@ -32,9 +32,9 @@
       : (typeof dc.has === 'function') ? (c => dc.has(c))
       : Array.isArray(dc) ? (c => dc.indexOf(c) >= 0)
       : (c => !!dc[c]);
-    const agent = station && station.agents && station.agents[agentId];
+    const agent = keep && keep.agents && keep.agents[agentId];
     const roomId = agent && agent.room;
-    const room = roomId && station.rooms && station.rooms[roomId];
+    const room = roomId && keep.rooms && keep.rooms[roomId];
     const objects = (room && room.objects) || [];
 
     const tools = [], deferred = [], grants = [], approvalRules = {}, networkCaps = {};

@@ -83,7 +83,7 @@ A.eq(empty, [], 'every catalog prop actually paints (this is what "drew nothing"
 A.eq(escaped, [], 'every catalog prop paints ON its own footprint (w/h are PIXELS in a draw fn, never tiles)');
 A.ok(checked >= 118, 'walked the whole catalog (' + checked + ' props)');
 
-/* Andrew's v0.9 restart escape: a workstation west of world zero threw only during the first seconds of
+/* Andrew's v0.9 restart escape: a workkeep west of world zero threw only during the first seconds of
    process uptime. `scr()` used a negative JS remainder as an array index, produced undefined, and desk's
    U.shade(sc) killed REFIT's only animation callback. Positive-origin / warm-uptime smoke never saw it. */
 {

@@ -2,7 +2,7 @@
 
    cron-store keeps an optional `dockId` only when it is a safe id (additive: a job without one carries no key,
    so every existing record is byte-identical); updateJob sets or clears it. The cron driver hands the dock to
-   the brief/station seams, the crate and the chain seed. */
+   the brief/keep seams, the crate and the chain seed. */
 'use strict';
 const A = require('./_assert.js');
 const cron = require('../sidecar/cron.js');

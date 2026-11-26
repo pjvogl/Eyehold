@@ -52,11 +52,11 @@ try {
   chrome = launchChrome({ cdpPort, profileDir: resolve(out, 'chrome') });
   cdp = await connectCDP(cdpPort); const diag = collectDiagnostics(cdp);
   await cdp.send('Runtime.enable'); await cdp.send('Page.enable'); await cdp.send('Page.navigate', { url });
-  assert(await waitDevReady(cdp, evalJS, { url }), 'dev station did not enter game');
-  await ev(`StationUI.openTerm('quests')`);
+  assert(await waitDevReady(cdp, evalJS, { url }), 'dev keep did not enter game');
+  await ev(`KeepUI.openTerm('quests')`);
   await until(`!!document.querySelector('.q-goal-create') && !!JourneyStore.status()`, 'quest log not ready');
   // This process owns the disposable worktree seed; reset only its prior proof data for reruns.
-  await ev(`(async () => { GoalStore.reset(); await JourneyStore.reset(); const j = await (await fetch('/api/quests')).json(); for (const q of j.quests || []) if(q.status==='open') await QuestLedgerStore.dismiss(q.id); StationUI.rerender('quests',false); })()`);
+  await ev(`(async () => { GoalStore.reset(); await JourneyStore.reset(); const j = await (await fetch('/api/quests')).json(); for (const q of j.quests || []) if(q.status==='open') await QuestLedgerStore.dismiss(q.id); KeepUI.rerender('quests',false); })()`);
   const base = await ev(`JourneyStore.status().progression.points`);
   await fill('.q-new-goal', 'Play a whole song for a friend');
   await fill('.q-new-success', 'Play the whole song without stopping for a friend');
@@ -82,7 +82,7 @@ try {
   receipt.refresh = await ev(`(async () => { const r = await fetch('/api/quests/refresh/run',{method:'POST',headers:{'Content-Type':'application/json'},body:'{}'}); return r.json(); })()`);
   assert(receipt.refresh.ok && receipt.refresh.started, 'refresh refused: ' + JSON.stringify(receipt.refresh));
   await until(`(async () => { const j = await (await fetch('/api/quests')).json(); return j.quests.some(q => q.title === ${JSON.stringify(questTitle)} && q.status === 'open'); })()`, 'grounded quest refresh did not mint');
-  await ev(`QuestLedgerStore.init()`); await sleep(500); await ev(`StationUI.rerender('quests', false)`);
+  await ev(`QuestLedgerStore.init()`); await sleep(500); await ev(`KeepUI.rerender('quests', false)`);
   const qid = await ev(`QuestLedgerStore.quests().find(q => q.title === ${JSON.stringify(questTitle)} && q.status === 'open').id`);
   await click(`.q-life-quest[data-qid="${qid}"] .q-quest-disposition[data-action="too_big"]`);
   await until(`!!document.querySelector('.q-deferred')`, 'paused quest did not move out of actionable slate');
@@ -93,15 +93,15 @@ try {
   await until(`QuestLedgerStore.quests().some(q => q.id === ${JSON.stringify(qid)} && q.status === 'done')`, 'real-world quest report not recorded');
   await fill('.q-goal-evidence', 'Played the whole song without stopping for my friend today'); await click('.q-goal-confirm');
   await until(`GoalStore.activeGoal() === null`, 'goal confirmation did not close goal');
-  receipt.achieved = await ev(`({points:JourneyStore.status().progression.points,level:JourneyStore.status().progression.level,stage:JourneyStore.status().evolution.stage,headline:document.getElementById('gt-station').textContent})`);
+  receipt.achieved = await ev(`({points:JourneyStore.status().progression.points,level:JourneyStore.status().progression.level,stage:JourneyStore.status().evolution.stage,headline:document.getElementById('gt-keep').textContent})`);
   assert.equal(receipt.achieved.points, base + 160); assert.equal(receipt.achieved.stage, receipt.plan.goalCount + 1);
   receipt.paint = await ev(`Array.from(document.querySelectorAll('.gx-quests button,.gx-quests input,.gx-quests textarea')).filter(e=>{ const c=getComputedStyle(e); return ['rgb(255, 255, 255)','rgb(239, 239, 239)'].includes(c.backgroundColor)||c.borderColor==='rgb(118, 118, 118)'; }).length`); assert.equal(receipt.paint, 0);
   await stopSeed(); await boot(); await cdp.send('Page.reload'); assert(await waitDevReady(cdp, evalJS, { url }), 'restart failed');
   await sleep(500);
-  await until(`typeof StationUI !== 'undefined' && typeof GoalStore !== 'undefined' && GoalStore._state() !== null`, 'app modules did not rehydrate');
-  await ev(`StationUI.openTerm('quests'); JourneyStore.sync(true)`);
+  await until(`typeof KeepUI !== 'undefined' && typeof GoalStore !== 'undefined' && GoalStore._state() !== null`, 'app modules did not rehydrate');
+  await ev(`KeepUI.openTerm('quests'); JourneyStore.sync(true)`);
   await until(`JourneyStore.status() && JourneyStore.status().progression.points === ${receipt.achieved.points}`, 'progression failed restart');
-  receipt.restart = await ev(`({points:JourneyStore.status().progression.points,stage:JourneyStore.status().evolution.stage,active:GoalStore.activeGoal(),headline:document.getElementById('gt-station').textContent})`);
+  receipt.restart = await ev(`({points:JourneyStore.status().progression.points,stage:JourneyStore.status().evolution.stage,active:GoalStore.activeGoal(),headline:document.getElementById('gt-keep').textContent})`);
   assert.equal(receipt.restart.active, null); assert.equal(receipt.restart.stage, receipt.achieved.stage);
   receipt.repeat = await ev(`JourneyStore.confirmGoal({id:${JSON.stringify(receipt.goalId)},evidence:'same outcome repeated after restart'})`);
   assert.equal(receipt.repeat.journey.progression.points, receipt.achieved.points);

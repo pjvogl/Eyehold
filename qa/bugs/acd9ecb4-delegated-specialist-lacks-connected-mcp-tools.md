@@ -41,7 +41,7 @@ Source fixed in 44c6b4952. The worker inherited the lead's consent broker, but a
 
 ## Installed verification
 
-Private signed build `6e729e4cb2ca151f2ca7f280d500c86393bf0046`, workflow 34569801784, passed this scenario using the installed Node runtime and source-matched installed sidecar. The executable SHA-256 is `28bca2f1196426eec6f4afaefa5a2f5b67cbafd3b354078e889c9d262ee87366`. Controlled provider/MCP endpoints and isolated stations were used; no customer account was contacted. Exact logs and receipts: `qa/evidence/0.11.2-issues-12-13/installer-verification.json`.
+Private signed build `6e729e4cb2ca151f2ca7f280d500c86393bf0046`, workflow 34569801784, passed this scenario using the installed Node runtime and source-matched installed sidecar. The executable SHA-256 is `28bca2f1196426eec6f4afaefa5a2f5b67cbafd3b354078e889c9d262ee87366`. Controlled provider/MCP endpoints and isolated keeps were used; no customer account was contacted. Exact logs and receipts: `qa/evidence/0.11.2-issues-12-13/installer-verification.json`.
 
 ## Regression
 

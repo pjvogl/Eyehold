@@ -1,8 +1,8 @@
 /* EYEHOLD — navdock.js : the grouped bottom-bar navigation.
-   The 13 station panels were a flat, undifferentiated row of cryptic glyphs. They're now
+   The 13 keep panels were a flat, undifferentiated row of cryptic glyphs. They're now
    regrouped (in index.html) into 4 labelled docks — CREW / WORK / BUILD / SYSTEM — each a
    .bb-grp trigger that opens a .bb-menu popover of its items. The item buttons keep their
-   original id / data-term, so stationui/app handlers fire unchanged; this file only manages
+   original id / data-term, so keepui/app handlers fire unchanged; this file only manages
    the popover open/close + reflects each group's live state (a panel open under it, or a
    pending notification) onto the collapsed trigger so nothing important hides in a closed menu. */
 'use strict';
@@ -14,10 +14,10 @@
   if (!groups.length) return;
 
   // the menuitem buttons inside a group's popover (role=menuitem; see index.html .bb-menu)
-  // (an item whose station system is not online yet carries data-offline — systems.js — and is skipped too)
+  // (an item whose keep system is not online yet carries data-offline — systems.js — and is skipped too)
   const itemsOf = g => Array.from(g.querySelectorAll('.bb-menu .bb')).filter(item => !item.hidden && !item.hasAttribute('data-offline'));
 
-  /* The four triggers wrap onto different rows on phone-width stations, so a fixed
+  /* The four triggers wrap onto different rows on phone-width keeps, so a fixed
      left:0 popover cannot be made viewport-safe with one CSS alignment. Clamp the open
      menu in its group's local frame. getBoundingClientRect/innerWidth are VISUAL px;
      style.left is a zoom-scaled CSS px, hence the one deliberate division. The divisor is
@@ -86,7 +86,7 @@
   }
 
   /* ---------- one-time "what now" coach: teach the new grouped-dock model ----------
-     The interaction model changed (flat buttons -> dock popovers), so a brand-new station
+     The interaction model changed (flat buttons -> dock popovers), so a brand-new keep
      gets one dismissible hint pointing at the docks. Shown on first game-screen view, then
      retired permanently the moment the Commander opens any dock or taps ✕. */
   const COACH_KEY = 'eyehold.navcoach.seen';
@@ -177,11 +177,11 @@
   window.addEventListener('resize', () => groups.forEach(g => clampMenu(g)));
 
   /* ---------- reflect live state onto the collapsed trigger ----------
-     A group underlines its trigger while one of its panels is open (mirrors stationui's
+     A group underlines its trigger while one of its panels is open (mirrors keepui's
      .bb.active), and the SYSTEM trigger mirrors the pending NOTIFS COUNT into its own chip
      so the badge isn't buried inside a closed menu. NOTE: never probe the in-menu badge via
      offsetParent — a closed .bb-menu is display:none, so offsetParent is null exactly when
-     the mirror matters; read the textContent + inline display that stationui.badges() writes. */
+     the mirror matters; read the textContent + inline display that keepui.badges() writes. */
   const nfBadge = document.getElementById('nf-badge');
   const sysBadge = document.getElementById('bb-sys-badge');
   function syncGroupState() {
@@ -203,7 +203,7 @@
     }
   }
 
-  // stationui toggles .bb.active and the nf-badge imperatively — observe the bar so the
+  // keepui toggles .bb.active and the nf-badge imperatively — observe the bar so the
   // collapsed triggers stay truthful without coupling the two files together.
   const mo = new MutationObserver(syncGroupState);
   mo.observe(bar, { subtree: true, attributes: true, attributeFilter: ['class', 'style'], childList: true, characterData: true });

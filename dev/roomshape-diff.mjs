@@ -11,7 +11,7 @@ const CDP_PORT = Number(process.env.SKYNET_CDP_PORT || 9373);
 const URL = `http://127.0.0.1:${PORT}/`;
 
 const PROBE = `(() => {
-  const SB = StationBake;
+  const SB = KeepBake;
   const st = WorldModel.create(WorldModel.defaultDoc());
   const A = st.addRoom({ kind: 'hab', rects: [{ x1: 20, y1: 20, x2: 37, y2: 33 }] });
   const geo = st.projectGeometry(), T = geo.TILE;

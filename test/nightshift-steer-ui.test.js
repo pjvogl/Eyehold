@@ -8,7 +8,7 @@
    Two levels, each honest:
      1. GENUINE — NightReport.compose (the pure engine LAST REPORT renders) is require-able: an empty night
         composes hasReport:false; a night with acts composes a real headline. This is the render truth.
-     2. SOURCE-LOCK the DOM→fetch wiring inside the StationUI IIFE (browser-flow, fetch-bound — not node-loadable),
+     2. SOURCE-LOCK the DOM→fetch wiring inside the KeepUI IIFE (browser-flow, fetch-bound — not node-loadable),
         matching the settings-p1-ui / outbox-window house pattern.
 
    OUT OF SCOPE HERE (covered elsewhere): the route's validation/persistence contract = nightshift-focus.e2e.test.js. */
@@ -30,7 +30,7 @@ const acted = NightReport.compose({
 A.ok(acted && acted.hasReport === true && typeof acted.headline === 'string' && acted.headline, 'a night with an act composes a real headline (the report the button renders)');
 
 /* ---- 2. SOURCE-LOCK the DOM→fetch steer + report wiring ---- */
-const src = fs.readFileSync(path.join(__dirname, '../frontend/app/stationui.js'), 'utf8');
+const src = fs.readFileSync(path.join(__dirname, '../frontend/app/keepui.js'), 'utf8');
 
 // ONE WORD: AUTONOMY (2026-09-29): the away status lives INSIDE Settings › AUTONOMY, and the focus steer exists ONCE —
 // the DIRECTION control (#auto-steer). The old NIGHT SHIFT section carried a second, identical steer box (#ns-steer)

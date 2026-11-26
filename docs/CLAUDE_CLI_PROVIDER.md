@@ -22,7 +22,7 @@ Eyehold never holds the Claude credential. `sidecar/providers/claude-cli-login.j
 stores the token in its own credential store. Routes: `GET /api/auth/claude-cli/status`,
 `POST /api/auth/claude-cli/{start,poll,code,cancel}`.
 
-- The brain-screen tile (app.js) and the Settings → PROVIDERS card (stationui.js, via `ClaudeCliSignIn` in
+- The brain-screen tile (app.js) and the Settings → PROVIDERS card (keepui.js, via `ClaudeCliSignIn` in
   codexsignin.js) show: not installed · signed out (⏼ SIGN IN) · signing in (↗ OPEN SIGN-IN PAGE, a paste box for the
   code the fallback page shows — relayed to the CLI's stdin, never logged — and CANCEL, which kills the child) ·
   signed in, **only** once `claude auth status` proves it.
@@ -39,7 +39,7 @@ claude -p --output-format stream-json --verbose --include-partial-messages
        --tools "" --strict-mcp-config --mcp-config {"mcpServers":{}}
        --disable-slash-commands --setting-sources "" --no-session-persistence
        --model <sonnet|opus|haiku> [--effort <level>] --system-prompt-file <tmp file>
-# env: the station-free child env (child-env.js) + CLAUDE_CODE_DISABLE_AUTO_MEMORY=1
+# env: the keep-free child env (child-env.js) + CLAUDE_CODE_DISABLE_AUTO_MEMORY=1
 ```
 
 - The leading system messages go to a temporary system-prompt file (deleted after the turn); the transcript goes

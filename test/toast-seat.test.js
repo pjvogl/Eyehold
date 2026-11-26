@@ -10,7 +10,7 @@
  * centred. And because the CREW seam is DRAGGABLE (--crew-w, leftrail.js), a wide rail walked the
  * stage out from under the rack and the card ended up sitting ON the crew list.
  *
- * The fix is a MEASURED seat (StationUI.seatToastRack, the syncTermBand idiom): read the real
+ * The fix is a MEASURED seat (KeepUI.seatToastRack, the syncTermBand idiom): read the real
  * cabinet rects, divide by the TEXT SIZE zoom exactly once, publish --toast-x / --toast-b /
  * --toast-cap. This test locks both halves so neither can quietly regress to arithmetic:
  *   1. the sheet consumes the vars and carries no hard-coded anchor for the rack
@@ -26,9 +26,9 @@ const A = require('./_assert.js');
 const root = path.resolve(__dirname, '..');
 const read = (...p) => fs.readFileSync(path.join(root, ...p), 'utf8');
 const motion = read('frontend', 'css', 'motion.css');
-const ui = read('frontend', 'app', 'stationui.js');
+const ui = read('frontend', 'app', 'keepui.js');
 const motionMirror = read('website', 'app', 'css', 'motion.css');
-const uiMirror = read('website', 'app', 'app', 'stationui.js');
+const uiMirror = read('website', 'app', 'app', 'keepui.js');
 
 // pull the #toast-stack rule body out of the sheet by exact selector
 function ruleFor(css, selector) {
@@ -56,7 +56,7 @@ A.ok(!/@media[^{]*1120px[^{]*\{[^}]*#toast-stack/.test(motion.replace(/\s+/g, ' 
   'no per-breakpoint #toast-stack fork — the cap is measured, not guessed');
 
 // ---- 2 · the positioner ------------------------------------------------------------------
-A.ok(/function seatToastRack\(/.test(ui), 'StationUI defines seatToastRack()');
+A.ok(/function seatToastRack\(/.test(ui), 'KeepUI defines seatToastRack()');
 
 // brace-counted, not char-sliced (the _assert.js fnBody note) — plus the length guard that
 // catches a mis-scan running long into the neighbouring toast().

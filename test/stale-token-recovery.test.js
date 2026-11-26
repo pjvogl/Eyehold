@@ -154,14 +154,14 @@ const forbiddenToken = () => new Response('forbidden token', { status: 403 });
   A.eq(polls.length, 2, 'both restart polls (START FRESH, RECOVER) stop and reload once on a 403 instead of greying out forever');
   A.ok(/const next = body && body\.lineage;[\s\S]{0,400}checked again — still nothing recoverable here/.test(gate),
     'RETRY with nothing recoverable re-asks the sidecar and SAYS so instead of a no-op reload');
-  A.ok(/Harness\.sessionStale\(\)\) \? 'the station restarted; reload this page' : 'report unavailable'/.test(gate),
+  A.ok(/Harness\.sessionStale\(\)\) \? 'the keep restarted; reload this page' : 'report unavailable'/.test(gate),
     'report export names a stale session instead of "report unavailable"');
   // the connect screen: a stale session is not an offline catalog, and not the user's network.
   const models = A.fnBody(app, 'async function loadModels(');
-  A.ok(/Harness\.sessionStale\(\)\)\s*\?\s*'\(the station restarted — reload this page to load the catalog\)'\s*:\s*'\(catalog offline — type or pick a slug\)'/.test(models),
-    'loadModels says "the station restarted — reload" on a stale session, "catalog offline" only otherwise');
+  A.ok(/Harness\.sessionStale\(\)\)\s*\?\s*'\(the keep restarted — reload this page to load the catalog\)'\s*:\s*'\(catalog offline — type or pick a slug\)'/.test(models),
+    'loadModels says "the keep restarted — reload" on a stale session, "catalog offline" only otherwise');
   const wake = A.fnBody(app, 'async function onWake(');
-  A.ok(/stale \? 'the station restarted; reload this page'/.test(wake), 'WAKE names a stale session instead of "Failed to fetch"');
+  A.ok(/stale \? 'the keep restarted; reload this page'/.test(wake), 'WAKE names a stale session instead of "Failed to fetch"');
 
   A.report('stale-token-recovery');
 })().catch(e => { console.error(e); process.exit(1); });

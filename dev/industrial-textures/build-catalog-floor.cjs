@@ -1,6 +1,6 @@
 'use strict';
 const fs=require('node:fs'),sharp=require('sharp'),crypto=require('node:crypto');
-const dir='docs/station-remaster/catalog-floor',out='frontend/assets/industrial/catalog-floor',source=dir+'/sheet-source.png';
+const dir='docs/keep-remaster/catalog-floor',out='frontend/assets/industrial/catalog-floor',source=dir+'/sheet-source.png';
 const structure=JSON.parse(fs.readFileSync('dev/industrial-textures/prop-structure-manifest.json'));
 const hash=b=>crypto.createHash('sha256').update(b).digest('hex');
 const items=[['airlock',170,65,255,255],['arc_floorlight',665,75,220,225],['cablerun',40,400,510,160],['hazardpad',570,350,445,220],['industrial_cabletray',40,640,510,145],['industrial_floorvent',570,600,445,220],['rug',100,830,395,270],['rug_small',650,830,285,275],['rug_large',130,1105,335,315],['bridge_deckperimeter',565,1110,450,310]];

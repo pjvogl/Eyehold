@@ -45,7 +45,7 @@ doc.links = [{ id: 'l3', from: { prop: 'p10', port: 'out' }, to: { prop: 'p11', 
   routing fixture corpus, every blueprint, a seeded fuzz).
 - **Adoption**: a floor that never had links (a v1 save) derives them exactly on load and adopts them only when
   they compile to the identical plan (else `null`, and the ring rule stands — every old behaviour, TOO CLOSE
-  included). Read with `station.links()` / `station.isLinked()`; `projectGeometry()` emits them in the LOCAL
+  included). Read with `keep.links()` / `keep.isLinked()`; `projectGeometry()` emits them in the LOCAL
   frame. Belts stay in the save, so an older build still routes a v2 save by tiles.
 - **The floor keeps its links (phase B)**: after every edit `Pipeline.reconcileLinks` keeps each link the floor
   still stands behind (its belt laid tile for tile, its machines where it meets them), drops the rest (a cut or
@@ -88,16 +88,16 @@ and the floor (`rects` deck, `blocked` props, `belts` already laid, optional `ju
   first) where no old belt runs into it and none of its belts sits beside another line's junction.
 - Locked by test/line-layout.test.js: every blueprint, laid out fresh, routes EXACTLY as the stamped original; as many
   fit a fresh starter room as-is as the hand-drawn ones do (12 of 20 on 09-29; the rest in a room grown for them) and every machine
-  and belt passes the station's own placement checks; on cluttered decks (free and pinned) every line it lays still
+  and belt passes the keep's own placement checks; on cluttered decks (free and pinned) every line it lays still
   routes the same; a junction pinned against a wall keeps its lane order or answers NO_ROUTE.
 - Speed (measured 09-29): ~2 ms on average for a line on a cluttered 60×36 deck (worst seen 45 ms); 9–21 ms on a
   cluttered 160×100 one, pins far apart included. It runs on an edit, never per frame.
 
 ### Line edits — the Workflow panel builds the line (lineedit.js, conveyor-links phase D)
 
-Every change to a line's SHAPE is one edit of its graph: `LineEdit.run(station, propId, op, args, { near, sizes })` reads the line
-(`station.lineGraph(id)` — every machine pinned where it stands, every link with its belt, and the floor without the line),
-applies the op, lays it out with the engine and writes it back in ONE undo slot (`station.applyLineLayout`). Ops: `insertStep`
+Every change to a line's SHAPE is one edit of its graph: `LineEdit.run(keep, propId, op, args, { near, sizes })` reads the line
+(`keep.lineGraph(id)` — every machine pinned where it stands, every link with its belt, and the floor without the line),
+applies the op, lays it out with the engine and writes it back in ONE undo slot (`keep.applyLineLayout`). Ops: `insertStep`
 (the + on a belt, by role) · `appendStep` · `addBranch` (around a step or on a belt; COPY TO EACH = SPLITTER + JOINER, TAKE
 TURNS = SPLITTER + MERGER; a partner round a step is named like it) · `addLoop` (a REVIEWER + a LOOP gate: back until approved,
 3 passes) · `addSorter` (a FILTER: CODE → ENGINEER, RESEARCH → RESEARCHER, everything else on) · `removeStep` (a split left
@@ -124,18 +124,18 @@ everything else goes) · `removeSorter` (the FILTER and every route step it sort
 - A refusal changes nothing and says what would help: TIDY LINE only when the same edit fits with the line re-laid, else a
   bigger room. `LineEdit.check` answers without laying anything, so the panel shows an impossible edit OFF with its reason.
 - In the panel: the + on a belt (a step by role, a BRANCH either way, a SORTER in front of a step or the OUTBOX), a BAY's
-  ROLE chips (`station.setPropRole`) and SHAPE THE LINE (earlier / later / a review / second opinion / share the load / remove),
+  ROLE chips (`keep.setPropRole`) and SHAPE THE LINE (earlier / later / a review / second opinion / share the load / remove),
   REMOVE THE REVIEW on a LOOP gate, a SPLITTER's ADD A BRANCH and ✕ per branch, a FILTER's + A STEP FOR CODE / RESEARCH (a
   type it has no route for) and REMOVE THE SORTER, MAKE IT A LINE on a lone BAY, + OUTBOX where a line that ends on a step has
   none, TIDY LINE in the footer. The Conveyors tab has BUILD YOUR OWN LINE. Locked by test/line-edit.test.js (every op on a real
-  station, the audit's newsletter line built from edits alone, one undo each) and test/line-edit-panel.test.js.
+  keep, the audit's newsletter line built from edits alone, one undo each) and test/line-edit-panel.test.js.
 
 ### Ready-made lines, laid out to fit (conveyor-links phase E)
 
-A shelf line is also a GRAPH: `station.blueprintGraph(id, { limits, maxIter })` — its machines with everything a stamp gives
+A shelf line is also a GRAPH: `keep.blueprintGraph(id, { limits, maxIter })` — its machines with everything a stamp gives
 them (roles, an INBOX's name and budget, junction routes / passes / verdict, the card's SET UP BEFORE YOU PLACE cap and tries)
 and the links its drawn belts make. Where the DRAWN tile map fits at the click, Build mode stamps it as drawn
-(`stampBlueprint` — presets keep using this, at their fixed spots). Where it does not, `LineEdit.placeBlueprint(station, id,
+(`stampBlueprint` — presets keep using this, at their fixed spots). Where it does not, `LineEdit.placeBlueprint(keep, id,
 near, { stamp })` lays the same line out near the click: its tidy engine shape where a clear rectangle holds it, else anchored
 on its INBOX (aimed half the line's length west of the click, so it lands centred) with every other machine stepping round
 what stands there — one undo, routing exactly as the drawn line.
@@ -180,7 +180,7 @@ RECLAIM removes belt tiles. Belts stay **quiet** until a real work-item rides th
 
 ## Cargo, motion & belt craft (polish pass)
 
-The boxes encode the station's SEMANTIC COLOR ECONOMY — each box hashes deterministically (by id)
+The boxes encode the keep's SEMANTIC COLOR ECONOMY — each box hashes deterministically (by id)
 to a cargo type, weighted so loud colours stay rare: **utility/steel 34% · production/amber 30% ·
 data/cyan 16% · command/red 13% · money/gold 7%**. All share one 2.5D `cargoChassis` (lit top face
 + shaded front face + leading-edge rim light keyed to travel dir); data is a flatter cassette and
@@ -235,7 +235,7 @@ economy accent — keeps cyan/green meaningful) + a small drive LED.
   `sidecar/routing/chain.js` executes it for channel messages (all four hubs), scheduled routines
   (`cron-driver` `advanceChain`) and Run Now; an in-app COMMS turn is owned by the BROWSER, so `chat.js`
   drives the same hops itself against `GET /api/routing/chain`. All four surfaces run the same line.
-  The reply that leaves the station is the LAST stage's.
+  The reply that leaves the keep is the LAST stage's.
   - **The handoff prompt lives in `pipeline.js`** — the pure module the sidecar executor and the browser BOTH
     load. Two copies of that string would let one floor produce different runs on different surfaces.
   - **Every stage is attributed to the agent that produced it.** `row()` takes `opts.who` and a work-line turn

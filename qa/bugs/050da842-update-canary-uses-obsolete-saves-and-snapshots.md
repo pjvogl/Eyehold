@@ -19,11 +19,11 @@ The installed update canary fails at fixture seeding with a save conflict. Once 
 
 ## Repro
 
-Build the old and new canaries, serve their localhost signed feed, install the old client and run `node scripts/update-canary.mjs drive`. On the candidate at `31ce0e785`, the original seed POST omitted `_saveRevision` and was refused at revision 3. The original fixture also lacked a valid station document and complete provider settings.
+Build the old and new canaries, serve their localhost signed feed, install the old client and run `node scripts/update-canary.mjs drive`. On the candidate at `31ce0e785`, the original seed POST omitted `_saveRevision` and was refused at revision 3. The original fixture also lacked a valid keep document and complete provider settings.
 
 ## Evidence
 
-Raw before/after logs are in `.dogfood/release-0112-closeout/canary-drive*.log`. The repaired live path completed 0.11.1 -> 0.11.2, signed download, installer exit, relaunch and equal populated-state fingerprints. `scripts/update-canary.mjs` now reads the current revision, writes durable state before the local cache, creates real workstation props, boots the old client and verifies the population before taking the baseline. It waits for the actual app origin/modules after relaunch and retains before/attempt evidence on failure. `scripts/lib/update-continuity.mjs` uses the current save schema and explicit provider configuration. All seven update-continuity assertions pass.
+Raw before/after logs are in `.dogfood/release-0112-closeout/canary-drive*.log`. The repaired live path completed 0.11.1 -> 0.11.2, signed download, installer exit, relaunch and equal populated-state fingerprints. `scripts/update-canary.mjs` now reads the current revision, writes durable state before the local cache, creates real workkeep props, boots the old client and verifies the population before taking the baseline. It waits for the actual app origin/modules after relaunch and retains before/attempt evidence on failure. `scripts/lib/update-continuity.mjs` uses the current save schema and explicit provider configuration. All seven update-continuity assertions pass.
 
 ## Verdict
 

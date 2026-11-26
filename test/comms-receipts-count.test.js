@@ -1,5 +1,5 @@
 /* node test/comms-receipts-count.test.js — the COMMS "remembered · N" header counts what is STILL remembered (QA 2026-10-02).
-   Forgetting a memory with its ✕ undoes the save on the station, but the header kept saying "remembered · 3" — COMMS
+   Forgetting a memory with its ✕ undoes the save on the keep, but the header kept saying "remembered · 3" — COMMS
    asserted saves the backend had undone. Runs the real renderReceipts from frontend/app/chat.js on a minimal fake DOM. */
 'use strict';
 const A = require('./_assert.js');
@@ -28,7 +28,7 @@ const ctx = {
   row: () => ({ d: el('div'), body: el('div') }),
   autoscroll: () => {},
   Harness: { memoryVeto: async (p) => { vetoed.push(p.id); return { ok: p.id !== 'stuck' }; } },
-  StationUI: { notify() {} }
+  KeepUI: { notify() {} }
 };
 vm.createContext(ctx);
 vm.runInContext(fnSrc + '\nthis.renderReceipts = renderReceipts;', ctx);
@@ -45,7 +45,7 @@ vm.runInContext(fnSrc + '\nthis.renderReceipts = renderReceipts;', ctx);
   await vetoOf(1).onclick();
   A.eq(cap.textContent, 'remembered · 1 (2 forgotten)', 'and again');
   await vetoOf(2).onclick();
-  A.eq(cap.textContent, 'remembered · 1 (2 forgotten)', 'a forget the station refused changes nothing');
-  A.eq(vetoed, ['a', 'b', 'stuck'], 'each ✕ asked the station');
+  A.eq(cap.textContent, 'remembered · 1 (2 forgotten)', 'a forget the keep refused changes nothing');
+  A.eq(vetoed, ['a', 'b', 'stuck'], 'each ✕ asked the keep');
   A.report('comms-receipts-count');
 })().catch(e => { console.log('FAIL: threw ' + (e && e.stack || e)); process.exit(1); });

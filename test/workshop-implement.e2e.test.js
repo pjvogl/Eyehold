@@ -87,7 +87,7 @@ function startMockOpenRouter() {
             } else if (toolResults === 1) {
               const manifest = { v: 1, runId: runId, agentId: 'builder', backlogId: doomed ? 'item-doomed' : 'item-plan',
                 title: doomed ? 'Doomed plan' : 'Recent-work automation backlog', kind: 'doc', planOnly: true,
-                summary: 'A backlog turning repeated workstation questions into automation candidates.',
+                summary: 'A backlog turning repeated workkeep questions into automation candidates.',
                 files: [{ path: 'automation-backlog.md', bytes: 60 }], howToUse: 'Open automation-backlog.md.', notVerified: ['pick which to build first'] };
               tool('w2', 'fs_write', { path: dir + '/deliverable.json', content: JSON.stringify(manifest) });
             } else { text('Wrote the backlog.'); }
@@ -297,7 +297,7 @@ fs.renameSync = function(src,dst){
     await post('/api/autonomy/posture', { posture: { initiative: 'free', reach: 'sandbox' } });
     // prove the rung actually took — otherwise every assertion below silently tests the DEFAULT rung.
     const rung = await (await fetch(B + '/api/autonomy/posture', { headers })).json();
-    A.eq(((rung.summary) || {}).initiative, 'free', 'the station really is at FREE for this leg');
+    A.eq(((rung.summary) || {}).initiative, 'free', 'the keep really is at FREE for this leg');
     await post('/api/workshop/queue', { agentId: 'builder', id: 'item-freeplan', title: 'Free-rung plan' });
     const freeShift = await readNdjson(await post('/api/workshop/shift', { agentId: 'builder' }));
     const freeRes = ((freeShift.find(e => e.name === 'workshop.shift.result') || {}).payload || {});

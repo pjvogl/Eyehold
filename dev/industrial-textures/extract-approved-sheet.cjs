@@ -1,7 +1,7 @@
 'use strict';
 const fs=require('node:fs'),path=require('node:path'),crypto=require('node:crypto'),sharp=require('sharp');
 const source='frontend/assets/industrial/complete-sheet/eyehold-props-full-sheet.png';
-const out='frontend/assets/industrial/approved-sheet',docs='docs/station-remaster/approved-sheet';
+const out='frontend/assets/industrial/approved-sheet',docs='docs/keep-remaster/approved-sheet';
 const ids=Object.keys(JSON.parse(fs.readFileSync('dev/industrial-textures/prop-structure-manifest.json')).props);
 const rows=[0,120,227,332,439,548,653,759,850,934,1024];
 const centers=[64,154,245,339,432,525,619,714,809,908,1004,1100,1196,1289,1385,1482];

@@ -2,7 +2,7 @@
 
    Closes Atlas finding e08db5b6: only STUDIO had a per-prop-id lock (test/g1bprops.test.js); the other
    20 cap-prop ids in frontend/app/worldmodel.js CAP_PROP_MAP were guarded only at the OBJECTTYPE level
-   (test/capgate.test.js / test/routing.b5.test.js build synthetic stations from objectTypes, NOT from prop
+   (test/capgate.test.js / test/routing.b5.test.js build synthetic keeps from objectTypes, NOT from prop
    ids). So dropping e.g. `vault` or `comms_beacon` from CAP_PROP_MAP would ship silently — the objectType
    (cabinet/dish) still passes those tests. This table-driven lock fails BY NAME on any such drop/rename:
 
@@ -23,7 +23,7 @@ const MAP = WM.CAP_PROP_MAP;
 // silent edit to the shipped map diverges from this lock and fails by the exact prop id). Keep in sync WITH
 // intent: adding a genuinely-new cap prop means adding it here too (that's the point — new grants get a lock).
 const EXPECTED = {
-  // a workstation = compute
+  // a workkeep = compute
   console: 'computer', consoleL: 'computer', desk: 'computer', desk2: 'computer', pixelrig: 'computer', bench: 'computer',
   // a locked cabinet = files
   war_intelcab: 'cabinet', safe: 'cabinet', vault: 'cabinet', rack: 'cabinet', shelf: 'cabinet',

@@ -16,7 +16,7 @@ Goal: close the four failure classes that hurt real users — **unstoppable/hung
 | B stores | `agent/harden-stores` | `sidecar/durable-store.js`, `savestore.js`, `checkpoint-store.js`, `skillstore.js`, `subagents.js`, `runstore.js`, `ledger.js`, `transcriptstore.js` | io adapters only (~30 lines) |
 | C lifecycle | `agent/harden-lifecycle` | `sidecar/index.js` (halt/shutdown/cron sections), `cron-driver.js`, `cron-lock.js`, `workshop-store.js`, `shellbg.js`, `mcp/manager.js`, `mcp/transport.stdio.js` | HEAVY |
 | D routes | `agent/harden-routes` | `sidecar/index.js` (router/readBody/loop-guard), `concurrency.js`, `channels/sse.js`, `tools/registry.js`, `tools/builtin/computer.js`, `tools/builtin/desktop.js` | HEAVY |
-| E frontend | `agent/harden-frontend` | `frontend/app/world.js`, `chat.js`, `stationui.js`, `conveyor.js`, `frontend/js/util.js`, `main.js` | none |
+| E frontend | `agent/harden-frontend` | `frontend/app/world.js`, `chat.js`, `keepui.js`, `conveyor.js`, `frontend/js/util.js`, `main.js` | none |
 
 **Sequencing rule:** C and D both gut-edit `sidecar/index.js`. Run **C first, merge, then D**
 (D rebases via `sync-agent-tree.ps1` before starting real work). A, B, E run fully parallel
@@ -41,7 +41,7 @@ Small, independent, high-value diffs. One branch, one merge.
 3. **rAF crash guard** — `world.js frame()`: schedule next frame FIRST (guarded by `running`),
    wrap body in try/catch; after 30 consecutive throws show a "RENDER FAULT" overlay
    (honest, not silent). Same for `redrawNow()`.
-   *Done =* inject a throw in a draw pass via console; station keeps animating; fault overlay after sustained throws.
+   *Done =* inject a throw in a draw pass via console; keep keeps animating; fault overlay after sustained throws.
 4. **Windows errno conflation** — `durable-store.js readOne` + `savestore.js readWrapper`:
    only `ENOENT` → `absent`; any other errno → new `'unreadable'` kind treated like
    `'corrupt'` (loud, refuse the from-empty write path).
@@ -119,7 +119,7 @@ Gate: test:fast + the two mock-server live checks. Note in report which items we
    one reconnect; no eternal RUN clock.
 3. **ws.history cap** — chat.js: cap at N turns (match server compaction horizon), truncation
    marker; stop re-sending the full array (send capped window).
-4. **`r.ok` gates** — stationui.js:967, :2448 (+ sweep every `fetch().then(r=>r.json())`):
+4. **`r.ok` gates** — keepui.js:967, :2448 (+ sweep every `fetch().then(r=>r.json())`):
    reject on !ok, render the existing sidecar-unreachable affordance.
 5. **`U.bus.off()`** + panel-scoped unsubscribe on close.
 6. Small sweep: conveyor `mbuf` clear on junction change; roster-change map sweep

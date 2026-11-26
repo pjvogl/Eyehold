@@ -29,9 +29,9 @@ until the account backend evidence and a physical Mac run confirm it.
 
 ## What he has reported, in order
 
-1. First run: overseer would not wake. He reset by hand → landed on **PRIOR STATION DATA FOUND** (dead end).
+1. First run: overseer would not wake. He reset by hand → landed on **PRIOR KEEP DATA FOUND** (dead end).
 2. After my fixes shipped: **"model didn't answer"** → then **"catalog is offline"**.
-3. On v0.10.9: **STATION DATA UNREACHABLE** on first launch. RESTART STATION SERVICE did nothing.
+3. On v0.10.9: **KEEP DATA UNREACHABLE** on first launch. RESTART KEEP SERVICE did nothing.
    RETRY NOW did nothing. Also noted: it auto-logs him in (green dot), and there is **no log-out button**.
 4. Latest: WAKE now says **"your Eyehold account has no credits yet"** — while he has **$22**.
 
@@ -44,8 +44,8 @@ Tag `v0.10.9` = `d69931f46`, cut 2026-08-23 00:09, AFTER my merges. Every one of
 | commit | what |
 |---|---|
 | `0c311e8c8` | workspace owner: reclaim a claim stamped before the current OS boot |
-| `1e651a03e` | `eyehold_restart_sidecar` + RESTART STATION SERVICE button + auto-restart |
-| `166552a7e` | START FRESH exit on the PRIOR STATION DATA gate |
+| `1e651a03e` | `eyehold_restart_sidecar` + RESTART KEEP SERVICE button + auto-restart |
+| `166552a7e` | START FRESH exit on the PRIOR KEEP DATA gate |
 | `d338fe95c` | empty-wallet truth on the connect screen + billing refusal copy |
 | `ac1188fe7` | same-session link adoption (token survives the keychain move) |
 
@@ -53,16 +53,16 @@ So **he is running the fixes and is still stuck.** They did not address his caus
 
 ## VERIFIED: my UNREACHABLE fix was aimed at the wrong thing
 
-The STATION DATA UNREACHABLE screen is **Eyehold's own HTML, served by the sidecar**. If the sidecar were
+The KEEP DATA UNREACHABLE screen is **Eyehold's own HTML, served by the sidecar**. If the sidecar were
 dead, that page could not render at all. Therefore on his machine **the engine is up and serving**; what
 fails is the page's `/api/save` call. My restart button restarts something that was never down — which is
 exactly why it changed nothing for him. That fix is not wrong, it is *irrelevant to this user*.
 
 The screen's own subtitle splits the two remaining causes, and **nobody has read it yet**:
-- `"station service refused this window (stale session)"` → 401/403, page/engine disagree on the per-launch
+- `"keep service refused this window (stale session)"` → 401/403, page/engine disagree on the per-launch
   token (`X-Eyehold-Token`; page is `tauri://localhost`, token injected by `main.rs:3624`, header attached by
   `frontend/app/harness.js:~218`).
-- `"station service not answering"` → the fetch threw; engine died after serving the page.
+- `"keep service not answering"` → the fetch threw; engine died after serving the page.
 
 **Ask him for one screenshot and read that grey line.** Zero effort for him. Do this first.
 
@@ -78,23 +78,23 @@ It fires **only** when the sidecar reports a **finite number ≤ 0**. Critically
 `sidecar/credits.js` `refresh()` — VERIFIED at the shipped tag — sets balance to **`null`, never 0**, whenever
 the balance call fails or returns malformed data. And `null` does **not** trip my gate. Its own comment says:
 
-> "This was the 0.10.8 escape: a station revoked on the account site kept its cached $0, so the app asserted
-> both 'LINKED' and 'no credits' while the real account held **$22** and listed no linked stations."
+> "This was the 0.10.8 escape: a keep revoked on the account site kept its cached $0, so the app asserted
+> both 'LINKED' and 'no credits' while the real account held **$22** and listed no linked keeps."
 
 **That comment is describing this exact user.** There is already a hotfix for that scenario on trunk
-(`977294cbc` fix(credits): recover revoked station links truthfully, `ad5a55f1a` relock).
+(`977294cbc` fix(credits): recover revoked keep links truthfully, `ad5a55f1a` relock).
 
 So, given the balance can only be `null` (silent) or a real number, and he IS seeing the refusal:
 
-> **The cloud is authoritatively answering `balanceUsd: 0` for the account his station token belongs to.**
+> **The cloud is authoritatively answering `balanceUsd: 0` for the account his keep token belongs to.**
 
 Which means the app is telling the truth about a **different account than the one holding his $22**. The
 likely causes, in order:
 
 1. **His device token is linked to a different account than the one he bought credits on** — e.g. he signed in
-   with a different method/email on account.eyehold.com than the one the station paired to. This alone
+   with a different method/email on account.eyehold.com than the one the keep paired to. This alone
    explains "worked for everybody else except this guy."
-2. **His station link was revoked/replaced** on the account site (the 0.10.8 scenario), and the recovery path
+2. **His keep link was revoked/replaced** on the account site (the 0.10.8 scenario), and the recovery path
    in `977294cbc` is not covering his case.
 3. The balance is scoped to an `accountId` the sidecar is sending as empty/stale (`resolveCreditsConfig()` →
    `accountId` comes from `credits.json`; the shell strips only `deviceToken`).
@@ -106,7 +106,7 @@ account holds.** If that account shows $0 while his web login shows $22, the dia
 this was never a client bug at all. Andrew can do this without Brandon touching anything.
 
 Second-best, still no Terminal for him: have him open **account.eyehold.com** in a browser and check
-(a) the balance shown there, and (b) whether a **linked station/device is listed at all**. If no station is
+(a) the balance shown there, and (b) whether a **linked keep/device is listed at all**. If no keep is
 listed but the app says LINKED, it is cause #2.
 
 ---

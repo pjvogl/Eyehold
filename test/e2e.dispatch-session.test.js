@@ -1,8 +1,8 @@
 /* node test/e2e.dispatch-session.test.js — TRUE end-to-end of session-targeted delegation.
 
    Boots the REAL sidecar with a MOCK OpenRouter that makes the lead call team.dispatch with a `session`, then
-   ACTS AS THE BROWSER: it holds the real SSE hub open, answers station.sessions with a live session list and
-   station.deliver with an ack, exactly as stationcommands.js does in the page. Nothing is stubbed inside the
+   ACTS AS THE BROWSER: it holds the real SSE hub open, answers keep.sessions with a live session list and
+   keep.deliver with an ack, exactly as keepcommands.js does in the page. Nothing is stubbed inside the
    sidecar — the bridge, the routes, the run host and the stores are all the shipped ones.
 
    THE BUG THIS PROVES CLOSED. team.dispatch was agent-addressed only, so a run the Commander asked to happen
@@ -87,9 +87,9 @@ function boot(port, env, attemptsLeft) {
   });
 }
 
-/* BE THE PAGE. Hold the real SSE hub open and answer station.command exactly as stationcommands.js would —
-   the same verbs, the same /api/station/ack route. `sessions` is the live list a name is resolved against. */
-function attachStationPage(B, token, sessions) {
+/* BE THE PAGE. Hold the real SSE hub open and answer keep.command exactly as keepcommands.js would —
+   the same verbs, the same /api/keep/ack route. `sessions` is the live list a name is resolved against. */
+function attachKeepPage(B, token, sessions) {
   const seen = [];
   const ctrl = new AbortController();
   const ready = fetch(B + '/api/channels/events?' + require('./_httpToken.js').sseQuery(token), { signal: ctrl.signal }).then(async res => {
@@ -107,15 +107,15 @@ function attachStationPage(B, token, sessions) {
             const line = buf.slice(0, nl).trim(); buf = buf.slice(nl + 1);
             if (!line.startsWith('data:')) continue;
             let ev; try { ev = JSON.parse(line.slice(5).trim()); } catch (_) { continue; }
-            if (!ev || ev.name !== 'station.command') continue;
+            if (!ev || ev.name !== 'keep.command') continue;
             const p = ev.payload || {};
             seen.push(p);
-            const out = p.verb === 'station.sessions' ? { ok: true, result: { sessions: sessions } }
-              : p.verb === 'station.deliver' ? { ok: true, result: { folded: true, session: 'research' } }
-                : (p.verb === 'station.dispatch_start' || p.verb === 'station.dispatch_end')
+            const out = p.verb === 'keep.sessions' ? { ok: true, result: { sessions: sessions } }
+              : p.verb === 'keep.deliver' ? { ok: true, result: { folded: true, session: 'research' } }
+                : (p.verb === 'keep.dispatch_start' || p.verb === 'keep.dispatch_end')
                   ? { ok: true, result: { session: 'research' } }
-                  : { ok: false, error: 'unknown station verb: ' + p.verb };
-            await fetch(B + '/api/station/ack', {
+                  : { ok: false, error: 'unknown keep verb: ' + p.verb };
+            await fetch(B + '/api/keep/ack', {
               method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Eyehold-Token': token, Origin: B },
               body: JSON.stringify(Object.assign({ id: p.id }, out))
             }).catch(() => {});
@@ -168,12 +168,12 @@ async function run(label, dispatchArgs, sessions, body) {
       { agentId: 'researcher', system: 'You research things.', name: 'RESEARCHER', model: 'test/model' }
     ] }) });
     A.eq(roster.status, 200, label + ': the researcher is on the roster');
-    const attached = attachStationPage(B, token, sessions);
+    const attached = attachKeepPage(B, token, sessions);
     Object.assign(page, attached);
     await attached.ready;
     await new Promise(r => setTimeout(r, 250));   // let the hub register this client before the run emits
     const events = await drive(B, token, 'have the researcher summarise the moons of Mars in the research session');
-    await body({ B, H, token, events, station: attached.seen, mock, label });
+    await body({ B, H, token, events, keep: attached.seen, mock, label });
   } finally {
     page.close();
     try { child.kill(); } catch (_) {}
@@ -187,9 +187,9 @@ async function run(label, dispatchArgs, sessions, body) {
 await run('targeted',
   { workers: [{ agentId: 'researcher', prompt: 'summarise the moons of Mars', session: 'research' }] },
   [{ id: 'ws_r1', title: 'research', agentId: 'researcher' }, { id: 'ws_gen', title: 'General', agentId: 'agent' }],
-  async ({ B, H, events, station, label }) => {
+  async ({ B, H, events, keep, label }) => {
     // 1) the sidecar really asked the page to resolve the name (the bridge is live, not simulated)
-    const asked = station.filter(c => c.verb === 'station.sessions');
+    const asked = keep.filter(c => c.verb === 'keep.sessions');
     A.eq(asked.length, 1, label + ': the tool asked the live page for its session list, once');
 
     // 2) the run completed and the worker really ran
@@ -198,13 +198,13 @@ await run('targeted',
     A.eq(ends[ends.length - 1].payload.reason, 'done', label + ': the lead completed cleanly');
 
     // 3) the finished answer was delivered to the page, into the RESOLVED session
-    const delivered = station.filter(c => c.verb === 'station.deliver');
+    const delivered = keep.filter(c => c.verb === 'keep.deliver');
     A.eq(delivered.length, 1, label + ': the answer was delivered to the page exactly once');
     A.eq(delivered[0].args.streamId, 'ws_r1', label + ': delivered into the session the Commander named');
     A.eq(delivered[0].args.sessionTitle, 'research', label + ': delivery carries the stable title that heals page-local id drift');
     A.eq(delivered[0].args.agentId, 'researcher', label + ': attributed to the worker that did it');
     A.ok(delivered[0].args.text.indexOf('Phobos') >= 0, label + ": the delivered text is the worker's real output");
-    A.eq(station.filter(c => c.verb === 'station.dispatch_start').length, 1, label + ': target-session activity starts from a real worker run');
+    A.eq(keep.filter(c => c.verb === 'keep.dispatch_start').length, 1, label + ': target-session activity starts from a real worker run');
 
     /* 4) ⛔ THE LOAD-BEARING PROOF. Everything above is the tool describing its own behaviour. THIS reads the
           sidecar's own durable ledger: the worker's run must be recorded under the named stream. Before this
@@ -247,8 +247,8 @@ await run('targeted',
 await run('unknown-session',
   { workers: [{ agentId: 'researcher', prompt: 'summarise the moons of Mars', session: 'marketing' }] },
   [{ id: 'ws_r1', title: 'research', agentId: 'researcher' }, { id: 'ws_gen', title: 'General', agentId: 'agent' }],
-  async ({ B, H, station, mock, label }) => {
-    A.eq(station.filter(c => c.verb === 'station.deliver').length, 0, label + ': nothing was delivered anywhere');
+  async ({ B, H, keep, mock, label }) => {
+    A.eq(keep.filter(c => c.verb === 'keep.deliver').length, 0, label + ': nothing was delivered anywhere');
     A.eq(mock.requests.filter(r => !r.__lead).length, 0, label + ': the WORKER never ran — no work happened in the wrong place');
     const runs = await (await fetch(B + '/api/runs?agent=researcher&limit=20', { headers: H })).json();
     A.eq((runs.runs || []).filter(r => r && r.agentId === 'researcher').length, 0, label + ': and no worker run was recorded at all');

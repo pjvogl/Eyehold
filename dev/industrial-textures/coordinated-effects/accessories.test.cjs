@@ -5,7 +5,7 @@ const fs=require('node:fs');
 const path=require('node:path');
 const vm=require('node:vm');
 const factory=vm.runInNewContext(fs.readFileSync(path.join(__dirname,'accessories.js.inc'),'utf8'));
-const recipe=JSON.parse(fs.readFileSync(path.join(__dirname,'../../../docs/station-remaster/batch03/crew/accessory-motion-recipes.json'),'utf8'));
+const recipe=JSON.parse(fs.readFileSync(path.join(__dirname,'../../../docs/keep-remaster/batch03/crew/accessory-motion-recipes.json'),'utf8'));
 function fixture() {
   const calls=[],stack=[];
   const ctx={globalAlpha:.7,strokeStyle:'initial',lineWidth:.1,

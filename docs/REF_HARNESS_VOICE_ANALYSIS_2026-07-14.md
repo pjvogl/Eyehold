@@ -25,31 +25,31 @@ stub; `api_server.py` hardcodes `"realtime_voice": false`).
 **So "the reference harness sounds decent, ours is terrible" is not the pipeline. It's four feel factors
 plus two self-inflicted degrade traps on our side.**
 
-## The defining principle: voice is a STATION subsystem, never a model property
+## The defining principle: voice is a KEEP subsystem, never a model property
 
 Andrew's observation (2026-07-14): the reference harness works fluidly with any model. Correct — and the
 reason is structural: the reference harness's voice stack is **fully decoupled from the LLM**. TTS provider
 is config (default = free keyless Edge), STT provider is config (default = local Whisper);
 the agent brain can be anything. Eyehold v3 did the opposite on purpose: the `/api/tts`
 chain prefers the RUN provider's native voice API (`preferProvider`), and `/api/stt` rides
-OpenRouter/Gemini chat models. Consequence: an Anthropic-only or Codex station has **no
+OpenRouter/Gemini chat models. Consequence: an Anthropic-only or Codex keep has **no
 audio API at all** → robotic browser voice + no desktop STT. Voice quality varies with
 which brain you picked. That coupling is the root defect, not any single provider branch.
 
 **The replication bar (Andrew: "we get it right or we remove voice mode entirely"):**
-1. Voice works IDENTICALLY on every station regardless of roster model or credential mix —
-   including an Anthropic-only station and a zero-key fresh install.
+1. Voice works IDENTICALLY on every keep regardless of roster model or credential mix —
+   including an Anthropic-only keep and a zero-key fresh install.
 2. The robotic speechSynthesis voice becomes unreachable. Once a free neural floor exists,
    "get it right or remove it" applies to the robotic fallback: if every neural tier fails
    (total network loss), degrade to TEXT + honest speaker-tooltip reason — silence over
    cringe. Delete the speechSynthesis speak path (keep the synth object only for feature
    detection).
-3. ONE station voice identity survives every tier. Bit-identical timbre across providers is
+3. ONE keep voice identity survives every tier. Bit-identical timbre across providers is
    impossible (OpenAI branch already approximates Algenib with onyx); identity is carried by
    (a) nearest-voice mapping per tier and (b) the machine-shell DSP, which is client-side
    and applies to ALL tiers including Edge. Same character, occasionally a different actor —
    never a different species.
-4. Acceptance matrix, live-proven per eyehold-verify (not existence-audited): stations with
+4. Acceptance matrix, live-proven per eyehold-verify (not existence-audited): keeps with
    {gemini key, openai key, openrouter key, anthropic-only, zero-key} × {speak reply,
    hands-free round-trip} — 10 cells, all neural, all transcribing.
 
@@ -104,11 +104,11 @@ tool call** (`gateway/run.py:17005 play_ack_in_voice`). That overlap is the "Gro
 mode" feel — the thing that reads as "decent".
 
 Eyehold already has the perfect substrate: prewarmed `ambientLines` in the voice cache and a
-WebAudio graph. During a long tool-using turn our station is just silent.
+WebAudio graph. During a long tool-using turn our keep is just silent.
 
 **Replicate (respecting locked laws):** spoken ack lines on first tool-call (cache-hit
 instant, they're prewarmed) + duck SFX under speech (we already duck). The ambient bed must
-be pitched as an eerie station-processing HUM (SFX, Director-triggered), NOT music — the
+be pitched as an eerie keep-processing HUM (SFX, Director-triggered), NOT music — the
 score was deliberately deleted (memory: music-removed-sfx-redesign); do not re-add anything
 melodic. This needs Andrew's taste call on the bed itself; the acks don't.
 
@@ -154,7 +154,7 @@ Python-local models as a hard dependency. Off-moat breadth; we want the feel, no
 ## Suggested lane order (each independently shippable, test-gated)
 1. **V-STT** — dedicated ASR chain in `/api/stt`: Groq/OpenAI Whisper when those keys
    exist → current chat-model path (OpenRouter/Gemini creds) → **local sherpa-onnx/whisper
-   floor** (on-demand model download) so zero-key/Anthropic-only stations still transcribe.
+   floor** (on-demand model download) so zero-key/Anthropic-only keeps still transcribe.
    Backend-only. Biggest perceived-latency win + closes the STT half of the decoupling bar.
 2. **V-EDGE** — free neural floor in `/api/tts` via msedge-tts, nearest-Algenib Edge voice
    + client-side shell DSP; un-latch `ttsDisabled`; **delete the robotic speechSynthesis

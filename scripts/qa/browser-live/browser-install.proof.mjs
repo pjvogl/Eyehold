@@ -22,7 +22,7 @@ try {
   const t0 = Date.now();
   const exe = await inst.ensure();
   ok('Chrome for Testing downloaded and unpacked', existsSync(exe), exe + ' in ' + Math.round((Date.now() - t0) / 1000) + ' s');
-  ok('the station stayed responsive during download + unpack (worst event-loop stall < 1 s)', worst < 1000, worst + ' ms');
+  ok('the keep stayed responsive during download + unpack (worst event-loop stall < 1 s)', worst < 1000, worst + ' ms');
   T.setExtraChrome(() => inst.find());
   const own = resolve(exe);
   ok('with nothing else visible, the driver resolves the downloaded browser', (T.resolveChrome(true, p => resolve(p) === own) || {}).path === exe);

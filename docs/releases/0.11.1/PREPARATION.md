@@ -24,7 +24,7 @@ The likely incoming task is "Optimize deliverable purpose"; the glass task is "E
 
 Provisional additional bullet, only after the remaining work lands and passes acceptance:
 
-> Recipe Bay and station menus have clearer workflows and controls, including recruitment, abilities, settings, agent profiles, quests, channels, automation and task outputs.
+> Recipe Bay and keep menus have clearer workflows and controls, including recruitment, abilities, settings, agent profiles, quests, channels, automation and task outputs.
 
 Read the final diff and replace this broad bullet with the actual shipped behavior. Do not advertise every subtask in a long-running conversation as included merely because its task title mentions it.
 
@@ -65,7 +65,7 @@ The release ritual hard-stops on NOT READY. Final merges alone do not clear thes
    `gh workflow run t0-clean-install-proof.yml -R Eyehold/eyehold -f tag=v0.11.1`
    `gh workflow run g1-packaged-lifecycle.yml -R Eyehold/eyehold -f tag=v0.11.1`
    Require both green. Review all signed platform artifacts, latest.json, installer digests and Mac acceptance. G1 updater-smoke is read-only; it is not proof of a full upgrade.
-7. On an isolated installed profile, preserve representative station state (crew, layout, themes, chats, ratings, linked account and routine settings), install the candidate, relaunch twice and compare state. Exercise the urgent managed run. Do not run lifecycle tooling against the owner's real station. Retain a whole-station backup and app version before any real-user update; never restore over a profile without protecting newer state.
-8. Publish only after concrete final artifact acceptance and the owner's release direction. Then run `npm run release:verify-host -- --expect-version 0.11.1`, perform an actual older-client Update Center download/install/relaunch canary, and confirm the new version and preserved station data. The public check interval can delay discovery; the affected user can use CHECK NOW after publication. Run sync-source-release for prompt source-repository mirroring if needed.
+7. On an isolated installed profile, preserve representative keep state (crew, layout, themes, chats, ratings, linked account and routine settings), install the candidate, relaunch twice and compare state. Exercise the urgent managed run. Do not run lifecycle tooling against the owner's real keep. Retain a whole-keep backup and app version before any real-user update; never restore over a profile without protecting newer state.
+8. Publish only after concrete final artifact acceptance and the owner's release direction. Then run `npm run release:verify-host -- --expect-version 0.11.1`, perform an actual older-client Update Center download/install/relaunch canary, and confirm the new version and preserved keep data. The public check interval can delay discovery; the affected user can use CHECK NOW after publication. Run sync-source-release for prompt source-repository mirroring if needed.
 
 Rollback: never move an already-built tag or overwrite a published installer. A pre-publication failure leaves the old public feed untouched. Follow RELEASE_RUNBOOK.md section 2 for a public-feed incident; installed newer clients generally need a higher patch version for recovery, not an assumed automatic downgrade. Preserve both pre-update backups and subsequent user work.

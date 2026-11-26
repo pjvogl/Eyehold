@@ -36,7 +36,7 @@ assert.equal(W.get('cron-one').history[0].content, 'needle in older output');
 assert.ok(W.search('needle').some(r => r.id === 'cron-one'), 'collapsed history stays searchable after restart');
 
 // Exercise the actual async renderer at its backend seam, including overrides and failed reads.
-const source = fs.readFileSync(require.resolve('../frontend/app/stationui.js'), 'utf8');
+const source = fs.readFileSync(require.resolve('../frontend/app/keepui.js'), 'utf8');
 const accessFn = source.slice(source.indexOf('  function loadEffectiveAccess('), source.indexOf('  function fileCard('));
 async function renderAccess(response, rejects = false, connected = true) {
   const actions = {}, target = { innerHTML: '', textContent: '', querySelector(s) { return actions[s] ||= {}; } };
@@ -50,7 +50,7 @@ async function renderAccess(response, rejects = false, connected = true) {
   return { target, summary, paths };
 }
 (async () => {
-  let out = await renderAccess({ authority: { unrestricted: true, approvalLabel: 'FULL ACCESS', filesystemLabel: 'Whole computer', profileLabel: 'STATION GEAR', revoke: 'Turn off override' },
+  let out = await renderAccess({ authority: { unrestricted: true, approvalLabel: 'FULL ACCESS', filesystemLabel: 'Whole computer', profileLabel: 'KEEP GEAR', revoke: 'Turn off override' },
     toolsets: [{ label: 'FILES', available: true, enabled: false, consentGated: false, grantSource: 'Full Access' }] });
   assert.match(out.paths[0], /agent=nova&placed=cabinet/);
   assert.match(out.target.innerHTML, /AVAILABLE/);

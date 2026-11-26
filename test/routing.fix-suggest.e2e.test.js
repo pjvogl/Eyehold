@@ -1,7 +1,7 @@
 'use strict';
 /* routing.fix-suggest.e2e — NOT RIGHT? on a real sidecar (2026-09-30, ease of use). A job ridden through a line names the BAY each
    stage ran at (so the panel can show each step's own reply), and POST /api/routing/fix-suggest turns the Commander's "what's wrong"
-   into checked changes to the line's step instructions: ONE call on the station default (the Overseer's roster model and
+   into checked changes to the line's step instructions: ONE call on the keep default (the Overseer's roster model and
    credential), only fixes for steps it was sent, bad input refused before any spend. */
 const test = require('node:test');
 const assert = require('node:assert/strict');
@@ -9,7 +9,7 @@ const http = require('node:http');
 const { SidecarFixture } = require('./helpers/sidecar-fixture.js');
 const Pipeline = require('../frontend/app/pipeline.js');
 
-test('fix-suggest answers checked fixes on the station default model; sample runs name their bay', async () => {
+test('fix-suggest answers checked fixes on the keep default model; sample runs name their bay', async () => {
   const calls = [];
   const server = http.createServer((req, res) => {
     if (req.url.includes('/chat/completions')) {
@@ -62,7 +62,7 @@ test('fix-suggest answers checked fixes on the station default model; sample run
     assert.equal(empty.status, 400);
     assert.equal(calls.filter(c => c.fix).length, 0, 'no spend on a refused ask (post-run passes of the job above may still call: only the fix prompt counts)');
 
-    // …and a real ask: one call on the station default, only fixes for steps it was sent
+    // …and a real ask: one call on the keep default, only fixes for steps it was sent
     const ask = await fixture.json('POST', '/api/routing/fix-suggest', {
       complaint: 'Too long. Two sentences please.', job: 'Write about sleep.', result: 'Sample complete.',
       steps: [{ dockId: 'w', role: 'WRITER', agent: 'OVERSEER', does: 'Write a 200-word digest.', hands: '', output: 'Sample complete.' }]
