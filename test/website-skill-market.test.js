@@ -49,7 +49,7 @@ const missing = pages.filter(p => /class="topnav"/.test(read(p)) && !/>Skills<\/
 A.eq(missing, [], 'every page with the site nav has a Skills link');
 const noFooter = pages.filter(p => /class="footer-links"/.test(read(p)) && !/>SKILLS<\/a>/.test(read(p)));
 A.eq(noFooter, [], 'and every footer has SKILLS');
-A.ok(read('sitemap.xml').indexOf('<loc>https://starnetos.com/market.html</loc>') >= 0, 'the sitemap lists the page');
+A.ok(read('sitemap.xml').indexOf('<loc>https://eyehold.com/market.html</loc>') >= 0, 'the sitemap lists the page');
 A.ok(/href="\.\.\/market\.html"/.test(read('docs/skills.html')), 'the skills reference in the docs points to it');
 const shell = spawnSync(process.execPath, [path.join(ROOT, 'scripts', 'website-shell.mjs'), '--check'], { cwd: ROOT, encoding: 'utf8' });
 A.eq(shell.status, 0, 'the shared shell is stamped: ' + (shell.stdout || shell.stderr).trim().split('\n').pop());

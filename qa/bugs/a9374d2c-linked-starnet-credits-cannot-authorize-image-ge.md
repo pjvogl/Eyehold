@@ -1,7 +1,7 @@
 ---
 fingerprint: a9374d2c
-slug: linked-eyehold-credits-cannot-authorize-image-ge
-title: Linked Eyehold credits cannot authorize image generation
+slug: linked-starnet-credits-cannot-authorize-image-ge
+title: Linked StarNet credits cannot authorize image generation
 surface: providers
 severity: P1
 status: fixed
@@ -16,25 +16,25 @@ installer: unverified
 recovery: unconfirmed
 ---
 
-# Linked Eyehold credits cannot authorize image generation
+# Linked StarNet credits cannot authorize image generation
 
 ## Symptom
 
-A linked credits-only station refuses an image task and asks the customer to connect OpenRouter, despite having a Eyehold credential.
+A linked credits-only station refuses an image task and asks the customer to connect OpenRouter, despite having a StarNet credential.
 
 ## Repro
 
 1. Save a funded station link; configure no OpenRouter key.
-2. Run a Eyehold agent with STUDIO and request an image.
+2. Run a StarNet agent with STUDIO and request an image.
 3. Original ImageTask.resolveRoute rejects before any provider call with openrouter-key-required.
 
 ## Evidence
 
-The new test/managed-image.e2e.test.js fails against the original router with the exact customer-facing OpenRouter-key blocker and an error terminal. With the repair, the actual sidecar saves and serves the fixture PNG, returns done, and repeats after restart. Running the same journey with EYEHOLD_TEST_CLOUD_ROOT pointed at a local eyehold-cloud checkout exercises its actual createApp and SQLite ledger: an upstream image cost of 0.02 debits exactly 0.025 with configured 1.25 margin. Credentials are disposable and the upstream image response is synthetic; no customer account or live vendor call was used.
+The new test/managed-image.e2e.test.js fails against the original router with the exact customer-facing OpenRouter-key blocker and an error terminal. With the repair, the actual sidecar saves and serves the fixture PNG, returns done, and repeats after restart. Running the same journey with STARNET_TEST_CLOUD_ROOT pointed at a local starnet-cloud checkout exercises its actual createApp and SQLite ledger: an upstream image cost of 0.02 debits exactly 0.025 with configured 1.25 margin. Credentials are disposable and the upstream image response is synthetic; no customer account or live vendor call was used.
 
 ## Verdict
 
-The desktop router only recognized OpenRouter credentials; the cloud already supports image modalities and meters non-streamed image completions. Managed media now uses the linked credential and endpoint together, independently of a conversation endpoint override. Eyehold runs fail closed when that route is missing, and no longer instruct customers to connect OpenRouter. No cloud source change is needed. The local cloud checkout used for ledger proof was 518e6ce. The same proof also passed through node dev/seed.js --keep. Installer verification and reporter recovery remain unverified.
+The desktop router only recognized OpenRouter credentials; the cloud already supports image modalities and meters non-streamed image completions. Managed media now uses the linked credential and endpoint together, independently of a conversation endpoint override. StarNet runs fail closed when that route is missing, and no longer instruct customers to connect OpenRouter. No cloud source change is needed. The local cloud checkout used for ledger proof was 518e6ce. The same proof also passed through node dev/seed.js --keep. Installer verification and reporter recovery remain unverified.
 
 ## Regression
 
@@ -45,7 +45,7 @@ Before: the real sidecar emitted the original blocker with a saved managed link.
 {
   "adapters": [
     {
-      "target": "Eyehold managed media",
+      "target": "StarNet managed media",
       "state": "covered",
       "test": "test/managed-image.e2e.test.js",
       "scenario": "credits-only image, exact fixture debit, failure responses",

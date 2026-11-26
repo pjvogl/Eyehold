@@ -24,7 +24,7 @@ const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..', 'website');
 const CHECK = process.argv.includes('--check');
 const V = '20260913-brand-nav';
 const ORIGIN = 'https://eyehold.com';
-const GITHUB = 'https://github.com/Eyehold/eyehold';
+const GITHUB = 'https://github.com/pjvogl/Eyehold';
 const RELEASES = '/index.html#download';
 const CONTACT = 'mailto:androo.agi@gmail.com';
 const FALLBACK_RELEASE = /var FALLBACK_VERSION = '([^']+)'/.exec(readFileSync(join(ROOT, 'site.js'), 'utf8'))?.[1];
