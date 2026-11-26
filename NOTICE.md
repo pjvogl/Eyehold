@@ -55,7 +55,7 @@ published as **Eyehold Originals** in the Skill Market (`skills-catalog/original
 The Skill Market catalog (`website/skills/`, built by `scripts/build-skill-catalog.mjs`) publishes the
 **Eyehold Originals** listed above plus these market-only originals, written for Eyehold:
 
-`address-pr-comments`, `bills-and-subscriptions`, `brand-assets`, `calendar-scheduling`, `changelog-writing`, `channel-updates`, `crew-handoff`, `daily-briefing`, `data-cleanup-and-analysis`, `deliverable-handoff`, `fitness-and-nutrition`, `fix-failing-ci`, `flashcards`, `grounded-citations`, `issue-triage`, `line-design`, `link-and-video-summary`, `meeting-prep`, `notebook-gardening`, `persistent-reminders`, `project-onboarding`, `receipt-organizer`, `routine-craft`, `skill-authoring`, `spend-aware-work`, `keep-self-check`, `studio-video`.
+`address-pr-comments`, `bills-and-subscriptions`, `brand-assets`, `calendar-scheduling`, `changelog-writing`, `channel-updates`, `crew-handoff`, `daily-briefing`, `data-cleanup-and-analysis`, `deliverable-handoff`, `fitness-and-nutrition`, `fix-failing-ci`, `flashcards`, `grounded-citations`, `issue-triage`, `line-design`, `link-and-video-summary`, `meeting-prep`, `notebook-gardening`, `persistent-reminders`, `project-onboarding`, `receipt-organizer`, `routine-craft`, `skill-authoring`, `spend-aware-work`, `station-self-check`, `studio-video`.
 
 and these **community picks**, adapted for Eyehold. Each package ships its full license text
 (`skills-catalog/skills/<slug>/LICENSE`) naming the original author and Eyehold's modifications; Apache-2.0 packages also ship a `NOTICE`.
