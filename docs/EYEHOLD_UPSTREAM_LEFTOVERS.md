@@ -8,7 +8,7 @@ This fork's visible product name is Eyehold. The strings below still say Eyehold
 | --- | --- |
 | MIT notice that the Eyehold name, logo, and station sheets are not licensed | Required reservation from the upstream README. This fork must not ship as Eyehold. |
 | `eyehold.save`, `EYEHOLD_*`, `X-Eyehold-Token`, `ai.skynet.harness` | Existing stations, keychain entries, and desktop identity. New UI writes do not rename those stores in this milestone. |
-| `eyehold-skill-registry/v1`, `Eyehold Skill Market`, `Eyehold skill package`, `website/skills/**`, `website/.well-known/eyehold-skills*.json` | Signed, hash-pinned catalog. Rewriting the name changes the bytes and the signature cannot be reissued here. |
+| `starnet-skill-registry/v1`, `StarNet Skill Market`, `StarNet skill package`, `website/skills/**`, `website/.well-known/starnet-skills*.json` | Signed, hash-pinned catalog. Rewriting the name changes the bytes and the signature cannot be reissued here. |
 | `https://eyehold.com` canonical tags | The website tests and sitemap still publish that host. It is not an Eyehold domain. The owner must replace it before a public site. |
 | `github.com/pjvogl/eyehold` and `github.com/Eyehold/eyehold` | This GitHub repository was not renamed. Community links that still name the upstream source repo are called out here. |
 | `frontend/assets/**` industrial sheets and character sprite sheets | Upstream station art. Not replaced in this milestone. The default ground, splash, wordmark, and crew sprites are original. |

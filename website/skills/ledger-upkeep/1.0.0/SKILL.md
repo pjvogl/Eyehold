@@ -5,7 +5,7 @@ license: "MIT"
 metadata:
   title: "Ledger Upkeep"
   category: "Planning"
-  author: "Eyehold"
+  author: "StarNet"
   version: "1.0.0"
 ---
 

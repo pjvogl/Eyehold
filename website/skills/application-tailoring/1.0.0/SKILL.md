@@ -5,7 +5,7 @@ license: "MIT"
 metadata:
   title: "Application Tailoring"
   category: "Writing"
-  author: "Eyehold"
+  author: "StarNet"
   version: "1.0.0"
 ---
 

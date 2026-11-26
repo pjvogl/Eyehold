@@ -5,7 +5,7 @@ license: "MIT"
 metadata:
   title: "Accessibility Audit"
   category: "Engineering"
-  author: "Eyehold"
+  author: "StarNet"
   version: "1.0.0"
 ---
 

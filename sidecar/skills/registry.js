@@ -1,6 +1,6 @@
 'use strict';
 
-const FORMAT = 'eyehold-skill-registry/v1';
+const FORMAT = 'starnet-skill-registry/v1';
 function str(v) { return v == null ? '' : String(v); }
 function makeSkillRegistry(deps) {
   const fetchDocument = deps && deps.fetchDocument;
@@ -33,7 +33,7 @@ function makeSkillRegistry(deps) {
   async function discover(input) {
     let site; try { site = new URL(str(input && input.site)); } catch (_) { throw new Error('enter a public HTTPS site URL'); }
     if (site.protocol !== 'https:' || site.username || site.password) throw new Error('well-known discovery requires public HTTPS');
-    return search({ url: new URL('/.well-known/eyehold-skills.json', site.origin).href, query: input && input.query });
+    return search({ url: new URL('/.well-known/starnet-skills.json', site.origin).href, query: input && input.query });
   }
   return { search, discover, _cache: cache };
 }

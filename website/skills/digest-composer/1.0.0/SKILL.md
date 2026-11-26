@@ -5,7 +5,7 @@ license: "MIT"
 metadata:
   title: "Digest Composer"
   category: "Research"
-  author: "Eyehold"
+  author: "StarNet"
   version: "1.0.0"
 ---
 

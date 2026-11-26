@@ -5,7 +5,7 @@ license: "MIT"
 metadata:
   title: "Landing Copy"
   category: "Marketing"
-  author: "Eyehold"
+  author: "StarNet"
   version: "1.0.0"
 ---
 

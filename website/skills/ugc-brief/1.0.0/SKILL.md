@@ -5,7 +5,7 @@ license: "MIT"
 metadata:
   title: "UGC Brief"
   category: "Creative"
-  author: "Eyehold"
+  author: "StarNet"
   version: "1.0.0"
 ---
 

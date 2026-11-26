@@ -1,18 +1,18 @@
 /* website/market.js — the public Skill Market page (market.html).
 
-   Reads the SAME catalog every Eyehold station installs from (/.well-known/eyehold-skills.json, built and signed by
-   scripts/build-skill-catalog.mjs) and lists it: Eyehold Originals first, then credited community picks. "Read the
+   Reads the SAME catalog every StarNet station installs from (/.well-known/starnet-skills.json, built and signed by
+   scripts/build-skill-catalog.mjs) and lists it: StarNet Originals first, then credited community picks. "Read the
    skill" fetches that skill's published SKILL.md. Same-origin requests only (the site's CSP allows nothing else),
    and everything that comes from the catalog is inserted as text, never as HTML. No tracking, no storage. */
 (function () {
   'use strict';
 
-  var INDEX = '/.well-known/eyehold-skills.json';
+  var INDEX = '/.well-known/starnet-skills.json';
   // the app's own gear names (REFIT palette labels, the same ones the in-app SKILL LIBRARY and market show)
   var GEAR = { cabinet: 'INTEL CAB', dish: 'DISH', workbench: 'WORKBENCH', notebook: 'NOTEBOOK', studio: 'STUDIO', orchestrator: 'ORCHESTRATOR', computer: 'COMPUTER' };
   var SHELVES = [
-    { id: 'originals', title: 'EYEHOLD ORIGINALS', note: 'Written and tested by Eyehold for your station\'s gear and tools.' },
-    { id: 'community', title: 'COMMUNITY', note: 'Skills by other authors, each credited: open-source picks adapted for Eyehold, and skills Eyehold users shared, read by a person before they were published.' }
+    { id: 'originals', title: 'STARNET ORIGINALS', note: 'Written and tested by StarNet for your station\'s gear and tools.' },
+    { id: 'community', title: 'COMMUNITY', note: 'Skills by other authors, each credited: open-source picks adapted for StarNet, and skills StarNet users shared, read by a person before they were published.' }
   ];
   var shelf = 'all';
   var list = document.getElementById('mk-list');
@@ -45,10 +45,10 @@
     c.appendChild(el('p', 'mk-desc', s.description));
 
     var meta = el('p', 'mk-meta');
-    if (s.shelf === 'originals') meta.appendChild(el('b', null, 'Eyehold Original'));
+    if (s.shelf === 'originals') meta.appendChild(el('b', null, 'StarNet Original'));
     else { meta.appendChild(document.createTextNode('by ')); meta.appendChild(el('b', null, s.author || 'credited authors')); }
     meta.appendChild(document.createTextNode(' · ' + (s.license || 'license in package') + ' · v' + str(s.version)));
-    if (s.uploaded === true) meta.appendChild(document.createTextNode(' · shared by a Eyehold user'));
+    if (s.uploaded === true) meta.appendChild(document.createTextNode(' · shared by a StarNet user'));
     var up = s.upstream && safeHttps(str(s.upstream.url));
     if (up) {
       meta.appendChild(document.createTextNode(' · '));
@@ -138,8 +138,8 @@
     var originals = skills.filter(function (s) { return s.shelf === 'originals'; }).length;
     var shared = skills.filter(function (s) { return s.shelf !== 'originals' && s.uploaded === true; }).length;
     var picks = skills.length - originals - shared;
-    if (count) count.textContent = skills.length + ' skills: ' + originals + ' Eyehold Originals, written for your station\'s gear, ' +
-      (shared ? picks + ' credited picks from the open-source community, and ' + shared + ' shared by Eyehold users.' : 'and ' + picks + ' credited picks from the open-source community.');
+    if (count) count.textContent = skills.length + ' skills: ' + originals + ' StarNet Originals, written for your station\'s gear, ' +
+      (shared ? picks + ' credited picks from the open-source community, and ' + shared + ' shared by StarNet users.' : 'and ' + picks + ' credited picks from the open-source community.');
     status.textContent = '';
     status.hidden = true;
     apply();

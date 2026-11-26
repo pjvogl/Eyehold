@@ -5,7 +5,7 @@ license: "MIT"
 metadata:
   title: "Work Splitting"
   category: "Station"
-  author: "Eyehold"
+  author: "StarNet"
   version: "1.0.0"
 ---
 

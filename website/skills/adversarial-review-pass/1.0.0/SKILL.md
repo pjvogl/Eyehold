@@ -5,7 +5,7 @@ license: "MIT"
 metadata:
   title: "Adversarial Review Pass"
   category: "Engineering"
-  author: "Eyehold"
+  author: "StarNet"
   version: "1.0.0"
 ---
 

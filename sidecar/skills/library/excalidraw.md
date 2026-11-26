@@ -15,7 +15,7 @@ Good for architecture diagrams, flowcharts, sequence diagrams, and concept maps 
 ## Envelope
 Wrap your elements in this and save with fs.write to `<name>.excalidraw`:
 ```json
-{ "type": "excalidraw", "version": 2, "source": "eyehold",
+{ "type": "excalidraw", "version": 2, "source": "starnet",
   "elements": [ /* your elements */ ],
   "appState": { "viewBackgroundColor": "#ffffff" } }
 ```

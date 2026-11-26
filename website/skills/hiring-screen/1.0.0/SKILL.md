@@ -5,7 +5,7 @@ license: "MIT"
 metadata:
   title: "Hiring Screen"
   category: "Planning"
-  author: "Eyehold"
+  author: "StarNet"
   version: "1.0.0"
 ---
 

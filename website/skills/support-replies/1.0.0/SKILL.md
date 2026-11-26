@@ -5,7 +5,7 @@ license: "MIT"
 metadata:
   title: "Support Replies"
   category: "Communication"
-  author: "Eyehold"
+  author: "StarNet"
   version: "1.0.0"
 ---
 

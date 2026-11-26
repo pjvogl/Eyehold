@@ -5,7 +5,7 @@ license: "MIT"
 metadata:
   title: "Pitch Deck"
   category: "Planning"
-  author: "Eyehold"
+  author: "StarNet"
   version: "1.0.0"
 ---
 

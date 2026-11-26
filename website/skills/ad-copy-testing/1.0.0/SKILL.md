@@ -5,7 +5,7 @@ license: "MIT"
 metadata:
   title: "Ad Copy Testing"
   category: "Marketing"
-  author: "Eyehold"
+  author: "StarNet"
   version: "1.0.0"
 ---
 

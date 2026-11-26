@@ -5,7 +5,7 @@ license: "MIT"
 metadata:
   title: "Voice Match"
   category: "Writing"
-  author: "Eyehold"
+  author: "StarNet"
   version: "1.0.0"
 ---
 

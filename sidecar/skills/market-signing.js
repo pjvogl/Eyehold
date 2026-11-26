@@ -8,15 +8,15 @@
 
    Two keys are trusted: the working key that signs every catalog build, and a backup kept offline. If the working
    key is ever lost or exposed, the backup signs while a new pair ships in an app update, and no installed station
-   is stranded. A station pointed at its own catalog (EYEHOLD_SKILL_MARKET_URL) adds that catalog's public key with
-   EYEHOLD_SKILL_MARKET_KEYS (see keysFromEnv).
+   is stranded. A station pointed at its own catalog (STARNET_SKILL_MARKET_URL) adds that catalog's public key with
+   STARNET_SKILL_MARKET_KEYS (see keysFromEnv).
 
    Pure: no network, no clock. */
 'use strict';
 
 const crypto = require('node:crypto');
 
-const SIG_FORMAT = 'eyehold-signature/v1';
+const SIG_FORMAT = 'starnet-signature/v1';
 const KEY_ID_RE = /^[a-z0-9][a-z0-9-]{0,62}$/;
 
 // public keys as base64 SPKI DER (what publicKeyOf returns)
@@ -79,7 +79,7 @@ function sigUrl(url) {
   return u.href;
 }
 
-/* keysFromEnv(value) -> extra trusted keys from EYEHOLD_SKILL_MARKET_KEYS: a JSON list of { id, publicKey } for a
+/* keysFromEnv(value) -> extra trusted keys from STARNET_SKILL_MARKET_KEYS: a JSON list of { id, publicKey } for a
    station that runs its own catalog. Malformed entries are ignored; the built-in keys are always trusted. */
 function keysFromEnv(value) {
   if (!str(value).trim()) return [];

@@ -5,7 +5,7 @@ license: "MIT"
 metadata:
   title: "Hard Conversation"
   category: "Communication"
-  author: "Eyehold"
+  author: "StarNet"
   version: "1.0.0"
 ---
 

@@ -23,7 +23,7 @@ const FAMILIES = new Set([...TOOLS].filter(t => t.indexOf('.') > 0).map(t => t.s
 const UNDERSCORE = /^(web|image|voice)_[a-z_]+$/;
 
 // every published skill: the 46 bundled originals + the market-only folders
-const index = JSON.parse(fs.readFileSync(path.join(ROOT, 'website', '.well-known', 'eyehold-skills.json'), 'utf8'));
+const index = JSON.parse(fs.readFileSync(path.join(ROOT, 'website', '.well-known', 'starnet-skills.json'), 'utf8'));
 const sources = [];
 for (const s of index.skills) {
   const bundled = s.librarySlug ? path.join(ROOT, 'sidecar', 'skills', 'library', s.librarySlug + '.md') : '';

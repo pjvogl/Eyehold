@@ -113,11 +113,11 @@ installed. You can stop automatic checks by turning off **AUTO-CHECK FOR UPDATES
 ### 7. The Skill Market — when you open it, and while you use its skills
 
 When you open **ABILITIES › DISCOVER › SKILL MARKET**, the app downloads the public skill catalog from
-`https://eyehold.com/.well-known/eyehold-skills.json`, and when you install a skill it downloads
+`https://starnetos.com/.well-known/starnet-skills.json`, and when you install a skill it downloads
 that skill's files from `https://eyehold.com/skills/`. These are plain `GET`s for static files:
 **no user data, no identifier and no telemetry are sent.** While at least one skill you installed from the
 market is on this station, the app also re-reads the small list of skills the market has pulled
-(`https://eyehold.com/.well-known/eyehold-skills-revoked.json`) shortly after it starts and every few minutes,
+(`https://starnetos.com/.well-known/starnet-skills-revoked.json`) shortly after it starts and every few minutes,
 so a skill found to be unsafe is switched off; with no market skills installed, nothing is fetched in the
 background. Every catalog and pulled list is checked against Eyehold's signature before it is used.
 

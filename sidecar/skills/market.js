@@ -1,7 +1,7 @@
-/* sidecar/skills/market.js — the Skill Market client: browse the Eyehold catalog, install a skill into the station
+/* sidecar/skills/market.js — the Skill Market client: browse the StarNet catalog, install a skill into the station
    library, keep it honest.
 
-   The catalog (skills/market-format.js) is a public index on eyehold.com, fetched when the Commander opens the
+   The catalog (skills/market-format.js) is a public index on starnetos.com, fetched when the Commander opens the
    market. TRUST: the index and the pulled-skills list are both signed (skills/market-signing.js); a document whose
    signature does not verify with a key this app trusts, or whose serial is lower than the highest this station has
    accepted from that catalog (or, for the official catalog, than the floor this app build ships), is refused whole
@@ -34,7 +34,7 @@ const signing = require('./market-signing.js');
 const catalog = require('./catalog.js');
 const { note: failNote } = require('../failopen.js');   // a cleanup step that fails stays visible, never silent
 
-const DEFAULT_CATALOG_URL = 'https://eyehold.com/.well-known/eyehold-skills.json';
+const DEFAULT_CATALOG_URL = 'https://starnetos.com/.well-known/starnet-skills.json';
 const CACHE_MS = 5 * 60 * 1000;
 const REFERENCE_CAP = 60000;       // references ride inline in the recipe body, bounded
 const INDEX_MAX_BYTES = 2000000;   // the catalog index (~1 KB per skill); SKILL.md files keep the fetcher's 256 KB cap
