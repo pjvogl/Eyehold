@@ -44,7 +44,7 @@ assert.doesNotMatch(runbook, /all five platform keys/i,
 assert.match(website, /release checks do not prove that an installer works on your computer/i,
   'website preserves the evidence boundary');
 
-const stale = /unsigned and un-notarized|isn't Apple-notarized|Until StarNet is Apple-notarized|None of the builds are code-signed|Linux builds come off[\s\S]{0,80}release train|fully supported from day one/i;
+const stale = /unsigned and un-notarized|isn't Apple-notarized|Until Eyehold is Apple-notarized|None of the builds are code-signed|Linux builds come off[\s\S]{0,80}release train|fully supported from day one/i;
 for (const [name, source] of [
   ['README', readme],
   ['install guide', install],

@@ -1,5 +1,5 @@
 {
-  "name": "starnet-chibi-character",
+  "name": "eyehold-chibi-character",
   "version": 1,
   "description": "Locked recipe for generating diverse but format-identical agent characters (cute chibi, high-top-down). Only the character `description` changes between characters; everything else is fixed so every character is the same size, proportions, view and animation set.",
   "pixellab_create_character": {
@@ -17,7 +17,7 @@
   "animations": {
     "walk":  { "tool": "animate_character", "template_animation_id": "walk", "directions": ["south","north","east","west"] },
     "blink": { "tool": "create_character_state", "edit_description": "both eyes fully closed, blinking, relaxed closed eyelids", "use_color_palette_from_reference": true },
-    "sit":   { "tool": "create_character_state", "edit_description": "sitting down with knees bent in front, upright posture, hands resting forward as if typing, NO chair, NO desk, no furniture at all, same slim body size", "use_color_palette_from_reference": true, "_note": "NEVER mention chair/desk — the game has its own chair+workstation props; a baked-in chair makes the agent look ~40% wider when seated" },
+    "sit":   { "tool": "create_character_state", "edit_description": "sitting down with knees bent in front, upright posture, hands resting forward as if typing, NO chair, NO desk, no furniture at all, same slim body size", "use_color_palette_from_reference": true, "_note": "NEVER mention chair/desk — the game has its own chair+workkeep props; a baked-in chair makes the agent look ~40% wider when seated" },
     "type":  { "tool": "animate_character", "mode": "v3", "action_description": "typing on a keyboard, both hands moving up and down, seated", "directions": ["north"], "frame_count": 6, "_source": "run on the (chairless) sit state id; do NOT say 'at a desk' or it bakes a desk in" }
   },
   "postprocess": {

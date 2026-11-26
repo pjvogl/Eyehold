@@ -2,19 +2,19 @@
 
 /* textsize-screen-space.test.js — THE "TEXT SIZE is a type dial, not a magnifying glass" gate.
  *
- * Two reports from Andrew, one root cause. TEXT SIZE is a `zoom` on <body> (stationui.js
+ * Two reports from Andrew, one root cause. TEXT SIZE is a `zoom` on <body> (keepui.js
  * applySettings) and zoom multiplies into EVERY descendant length, so it scaled things that are
  * HARDWARE rather than content:
  *   2026-08-02, the tube: "it kind of ruins the look… enlarges it in a strange way." The glass
  *     overlay's beam pitch is authored in hard px, so it stretched with the text — measured live at
  *     1440x900, a 3px pitch rendered at 3.45 / 3.90 / 4.35px at LARGE / X-LARGE / HUGE.
  *   2026-08-03, the cabinet: measured live at 1911x935, the crew rail went 232→336px and COMMS
- *     360→522px, which squeezed the station view 1279→995px — asking for bigger text made the thing
+ *     360→522px, which squeezed the keep view 1279→995px — asking for bigger text made the thing
  *     you actually watch 29% SMALLER, while the nameplates, the baked logo, the dock and every
  *     corner radius inflated 45%.
  *
  * The law: the tube and the cabinet are HARDWARE — they sit in front of and around the picture,
- * they are not part of it. Only what you READ scales. stationui publishes `--sn-unzoom` (the exact
+ * they are not part of it. Only what you READ scales. keepui publishes `--sn-unzoom` (the exact
  * reciprocal of the zoom it applies); `body` binds it to `--cz`, and every hardware length is
  * written `calc(<designed>px * var(--cz))` so it lands back at the size it was drawn at.
  *
@@ -23,7 +23,7 @@
  *      again, or 100% stops being the untouched shipped default;
  *   2. a gradient re-tune drops `* var(--cz)` off one stop -> that stop stretches while its
  *      neighbours don't, which is worse than the original bug;
- *   3. a cabinet dimension gets written as a bare px -> the frame starts eating the station again;
+ *   3. a cabinet dimension gets written as a bare px -> the frame starts eating the keep again;
  *   4. something inside a counter-zoomed block positions itself with U.uiZoom() -> it lands off by
  *      the zoom factor, because the cabinet's local frame is visual px while <body> is zoomed.
  *
@@ -39,21 +39,21 @@ const root = path.resolve(__dirname, '..');
 // strip comments: this file's own prose names the very things it forbids (`background-size`,
 // `zoom:`), and control-floor-theming.test hit the same self-trip before it.
 const read = (...p) => fs.readFileSync(path.join(root, ...p), 'utf8').replace(/\/\*[\s\S]*?\*\//g, '');
-const stationui = read('frontend', 'app', 'stationui.js');
+const keepui = read('frontend', 'app', 'keepui.js');
 const styleCss = read('frontend', 'css', 'style.css');
 const marketCss = read('frontend', 'css', 'marketplace.css');
 
-// ---- 1. stationui publishes the reciprocal beside the zoom it applies ---------------------
-A.ok(/document\.body\.style\.zoom\s*=\s*String\(tz\s*\/\s*100\)/.test(stationui),
-  'stationui still applies TEXT SIZE as a body zoom (this gate is about that zoom)');
-A.ok(/setProperty\(\s*'--sn-unzoom'\s*,\s*String\(100\s*\/\s*tz\)\s*\)/.test(stationui),
-  'stationui publishes --sn-unzoom as the EXACT reciprocal of the applied zoom (100 / tz)');
-A.ok(/removeProperty\(\s*'--sn-unzoom'\s*\)/.test(stationui),
-  'stationui removes --sn-unzoom at 100%, so the plain-desktop default leaves no inline style behind');
+// ---- 1. keepui publishes the reciprocal beside the zoom it applies ---------------------
+A.ok(/document\.body\.style\.zoom\s*=\s*String\(tz\s*\/\s*100\)/.test(keepui),
+  'keepui still applies TEXT SIZE as a body zoom (this gate is about that zoom)');
+A.ok(/setProperty\(\s*'--sn-unzoom'\s*,\s*String\(100\s*\/\s*tz\)\s*\)/.test(keepui),
+  'keepui publishes --sn-unzoom as the EXACT reciprocal of the applied zoom (100 / tz)');
+A.ok(/removeProperty\(\s*'--sn-unzoom'\s*\)/.test(keepui),
+  'keepui removes --sn-unzoom at 100%, so the plain-desktop default leaves no inline style behind');
 // The reciprocal is only correct if it is written from the SAME resolved scale as the zoom. Both
 // must read `tz` (resolveTextScale's output), never the raw stored setting — AUTO stores 0 and
 // resolves to a screen-derived percent, so a reciprocal taken from the raw value would be nonsense.
-A.ok(/const tz = resolveTextScale\(s\.textScale\);[\s\S]{0,2000}?'--sn-unzoom'/.test(stationui),
+A.ok(/const tz = resolveTextScale\(s\.textScale\);[\s\S]{0,2000}?'--sn-unzoom'/.test(keepui),
   'the --sn-unzoom publish sits in the same applySettings block that resolves tz');
 // ...and `body` turns it into the multiplier every hardware length is written against.
 A.ok(/--cz:\s*var\(--sn-unzoom,\s*1\)/.test(styleCss),
@@ -63,7 +63,7 @@ A.ok(/--cz:\s*var\(--sn-unzoom,\s*1\)/.test(styleCss),
 // marketplace.css's own comment names body::after as its source of truth ("retune both together"),
 // so they are gated together by that same rule.
 const LAYERS = [
-  { what: 'style.css body::after (the station glass)', css: styleCss, sel: 'body::after' },
+  { what: 'style.css body::after (the keep glass)', css: styleCss, sel: 'body::after' },
 ];
 
 // every rule in the sheet whose selector ENDS in this exact selector (base rule + @media overrides)
@@ -117,10 +117,10 @@ for (const layer of LAYERS) {
 const appCss = read('frontend', 'css', 'app.css');
 
 // ---- 5. every cabinet DIMENSION is written against the multiplier -------------------------
-// This is the one that keeps the station view whole: the rails, the bar heights and the frame
+// This is the one that keeps the keep view whole: the rails, the bar heights and the frame
 // padding must resolve to the size they were designed at, so `1fr` hands the rest to the stage.
 const grid = rulesFor(appCss, '#screen-game.active')[0];   // rulesFor escapes the selector itself
-A.ok(grid, 'app.css still lays the station grid out on #screen-game.active');
+A.ok(grid, 'app.css still lays the keep grid out on #screen-game.active');
 /* Strip every balanced `calc(… * var(--cz))` group. Whatever px survives is a length that does
    NOT ride the multiplier — a bare regex can't do this because `calc(var(--chat-w, 360px) *
    var(--cz))` nests parens, and that 360px IS covered (the whole var expression is multiplied). */
@@ -147,7 +147,7 @@ for (const prop of ['grid-template-rows', 'grid-template-columns', 'padding', 'g
   const left = (stripMultiplied(m[1]).match(/\b\d+(?:\.\d+)?px\b/g) || []).filter(s => parseFloat(s) !== 0);
   A.eq(left, [],
     `${prop} is cabinet — every px must be calc(<designed>px * var(--cz)), or the frame eats the ` +
-    `station again. Not riding the multiplier: ${left.join(', ') || 'none'}`);
+    `keep again. Not riding the multiplier: ${left.join(', ') || 'none'}`);
 }
 // --chat-w rides the multiplier too, so a width the Commander dragged means the same thing at
 // every text size instead of silently meaning 45% more at HUGE.
@@ -219,11 +219,11 @@ A.eq((finPos.match(/\/\s*uiz/g) || []).length, 2,
    (2026-08-05), then every floating window grew taller than the frame and hid its own titlebar
    under the chrome bars (2026-08-06, "the top of the popup windows get cut off under the header
    bar (I'm using the largest possible font)").
-   Windows are capped by the measured BAND (StationUI.syncTermBand — the strip between #topbar /
+   Windows are capped by the measured BAND (KeepUI.syncTermBand — the strip between #topbar /
    the desktop shell's #sn-titlebar and #bottombar); the vh/vw fallbacks behind it, and the width
    caps beside it, must ride --sn-unzoom. */
-A.ok(/setProperty\('--term-top'/.test(stationui) && /setProperty\('--term-band'/.test(stationui),
-  'stationui publishes the window band so the CSS shell and the JS clamps agree on where a window may live');
+A.ok(/setProperty\('--term-top'/.test(keepui) && /setProperty\('--term-band'/.test(keepui),
+  'keepui publishes the window band so the CSS shell and the JS clamps agree on where a window may live');
 
 // every vw/vh length in a declaration must sit inside a calc() that multiplies by --sn-unzoom
 function unzoomed(decl) {
@@ -252,7 +252,7 @@ for (const r of WINDOW_RULES) {
 A.ok(!/(^|[\s;{])top:\s*50%/.test(rulesFor(styleCss, '.term')[0] || ''),
   'the window shell centres in the band, never on the raw glass');
 
-/* ================= NO SURFACE MAY BE TOO BIG TO FIT IN STARNET =================
+/* ================= NO SURFACE MAY BE TOO BIG TO FIT IN EYEHOLD =================
  * Reported 2026-08-15: at any TEXT SIZE above STANDARD the RECRUITMENT BAY and the RECIPES bay
  * hung off the top AND the bottom of the frame, taking the ✕ with them — the only mouse way out
  * of a modal sat OFF the glass, so the bay could not be used or closed without going back to
@@ -295,7 +295,7 @@ for (const r of OVERLAY_RULES) {
 }
 // Recruitment and Recipes now inherit the normal terminal's zoom-aware geometry and glass.
 const marketJs = require('fs').readFileSync(require('path').join(__dirname, '../frontend/app/marketplace.js'), 'utf8');
-A.ok(/StationUI\.toggleTerm\('marketplace'/.test(marketJs), 'the catalog uses the shared terminal manager');
+A.ok(/KeepUI\.toggleTerm\('marketplace'/.test(marketJs), 'the catalog uses the shared terminal manager');
 A.ok(/wide: true/.test(marketJs), 'the catalog uses the standard wide tier');
 A.ok(!/mkEl\('div', 'mkt-scrim'\)/.test(marketJs), 'no independent viewport overlay is mounted');
 const mkt = rulesFor(marketCss, '.mkt').join('\n');

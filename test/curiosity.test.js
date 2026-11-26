@@ -27,7 +27,7 @@ A.eq(C.pick({}), null, 'no options → quiet, never throws');
 A.eq(C.pick({ blank: null, dismissed: null }), null, 'malformed inputs → quiet, never throws');
 
 /* ---------- WORK-EARNED ask floor (beat-fat trim 2026-07-03): no get-to-know-you question until the
-   station has completed MIN_WORK real task-runs this session — an unearned ask reads as pre-generated ---------- */
+   keep has completed MIN_WORK real task-runs this session — an unearned ask reads as pre-generated ---------- */
 A.eq(C.MIN_WORK, 3, 'the earned-ask floor is three task-runs per session');
 A.eq(C.pick({ blank: ['identity'], dismissed: {}, count: 0, cap: 1, work: 0 }), null, 'zero work done → the ask is unearned (quiet)');
 A.eq(C.pick({ blank: ['identity'], dismissed: {}, count: 0, cap: 1, work: 2 }), null, 'under the work floor → still quiet');

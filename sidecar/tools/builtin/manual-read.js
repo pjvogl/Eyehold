@@ -1,9 +1,9 @@
-/* sidecar/tools/builtin/manual-read.js — manual.read: one section of the StarNet operator manual, verbatim.
+/* sidecar/tools/builtin/manual-read.js — manual.read: one section of the Eyehold operator manual, verbatim.
 
    The interactive task prompt carries the manual's orientation + behaviour rules inline and only a table of
    contents for its REFERENCE sections (navigation, props, troubleshooting — see sidecar/manual.js). This tool is
    where those sections are read, so the prompt's "call manual.read before naming a window" always points at a
-   callable tool. Same grant class as station.inspect (the always-present `computer`, capId 'stationinfo'):
+   callable tool. Same grant class as keep.inspect (the always-present `computer`, capId 'keepinfo'):
    harness self-knowledge is part of being able to operate at all. Pure: a constant text lookup — no IO, no
    network, no secrets, no state, nothing to consent to. */
 'use strict';
@@ -14,10 +14,10 @@ const IDS = MANUAL_SECTIONS.map(s => s.id);
 
 function makeManualReadTool() {
   const tool = {
-    name: 'manual.read', capability: 'stationinfo', scope: 'read', requiresConsent: false,
-    description: 'Read one section of the StarNet operator manual, verbatim — how the station works, for guiding the '
+    name: 'manual.read', capability: 'keepinfo', scope: 'read', requiresConsent: false,
+    description: 'Read one section of the Eyehold operator manual, verbatim — how the keep works, for guiding the '
       + 'Commander: "navigation" (every window and control), "props" (which prop grants which power), '
-      + '"troubleshooting" (the fix for each stuck case), "concepts" (what each thing is), or "all". Call it before naming any StarNet window, '
+      + '"troubleshooting" (the fix for each stuck case), "concepts" (what each thing is), or "all". Call it before naming any Eyehold window, '
       + 'menu, button or prop. Read-only, local, consent-free.',
     schema: { type: 'object', properties: { section: { type: 'string', enum: IDS.concat(['all']) } } },
     run: (args) => {

@@ -1,5 +1,5 @@
 {
-  "schema": "starnet.release-preparation.v1",
+  "schema": "eyehold.release-preparation.v1",
   "targetVersion": "0.11.1",
   "observedPublicVersion": "0.11.0",
   "initialSource": "209ce13579ba919329d96886ed1c0b2e9997ecfe",

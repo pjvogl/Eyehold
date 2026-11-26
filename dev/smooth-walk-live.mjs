@@ -16,7 +16,7 @@ try {
   const diagnostics = collectDiagnostics(cdp);
   await cdp.send('Page.enable'); await cdp.send('Runtime.enable');
   await cdp.send('Page.navigate', { url });
-  if (!(await waitDevReady(cdp, evalJS, { url, tries: 24 }))) throw new Error('Station did not become ready');
+  if (!(await waitDevReady(cdp, evalJS, { url, tries: 24 }))) throw new Error('Keep did not become ready');
   const skins = process.argv.slice(2).length ? process.argv.slice(2) : await evalJS(cdp, 'Object.keys(DATA.SKINS)');
   const results = {};
   for (const skin of skins) {

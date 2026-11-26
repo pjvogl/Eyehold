@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// dev/walljoin-attrib.mjs — attribute the wall-junction artifacts on Andrew's live station by
+// dev/walljoin-attrib.mjs — attribute the wall-junction artifacts on Andrew's live keep by
 // re-baking with passes isolated: (a) as-is, (b) chamfers stripped, (c) skirt collapsed to 4px.
 // Also dumps an outline overlay so canvas px map to room rects. Pattern per dev/walljoin-live.mjs.
 //   node dev/walljoin-attrib.mjs
@@ -15,26 +15,26 @@ const URL = `http://127.0.0.1:${PORT}/`;
 
 const savePath = join(process.env.APPDATA, 'ai.skynet.harness', 'workspaces', 'agent.save.json');
 const save = JSON.parse(readFileSync(savePath, 'utf8'));
-const stationDoc = save.doc && save.doc.station;
+const keepDoc = save.doc && save.doc.keep;
 
 const PROBE = `(() => {
-  const doc = ${JSON.stringify(JSON.stringify(stationDoc))};
+  const doc = ${JSON.stringify(JSON.stringify(keepDoc))};
   const st = WorldModel.deserialize(JSON.parse(doc));
   const mk = (w, h) => { const c = document.createElement('canvas'); c.width = w; c.height = h; const g = c.getContext('2d'); g.imageSmoothingEnabled = false; return { c, g }; };
   const render = (mut) => {
     const geo = st.projectGeometry();
     if (mut) mut(geo);
-    const bk = StationBake.bake(geo);
+    const bk = KeepBake.bake(geo);
     const lit = mk(bk.W, bk.H);
     lit.g.drawImage(bk.baseCv, 0, 0); lit.g.drawImage(bk.lightCv, 0, 0);
     return { geo, bk, lit };
   };
   const cur = render(null);
   const noch = render(g => { g.chamfers.length = 0; });
-  const oldSkirt = StationBake.WALL.skirt;
-  StationBake.WALL.skirt = 4;
+  const oldSkirt = KeepBake.WALL.skirt;
+  KeepBake.WALL.skirt = 4;
   const thin = render(null);
-  StationBake.WALL.skirt = oldSkirt;
+  KeepBake.WALL.skirt = oldSkirt;
   // outline overlay on the current render
   const ov = mk(cur.bk.W, cur.bk.H);
   ov.g.drawImage(cur.lit.c, 0, 0);

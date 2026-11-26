@@ -1,5 +1,5 @@
 /* node test/browser-dead-browser.test.js — a browser that goes away must fail fast and come back, never hang.
-   Measured 2026-09-30 on the station window: after it was closed, every call sat out a full 15 s CDP timeout (a
+   Measured 2026-09-30 on the keep window: after it was closed, every call sat out a full 15 s CDP timeout (a
    snapshot 46 s), because the CDP client never noticed its socket had closed. Proves:
      - CdpClient rejects every command in flight the moment the socket closes, and rejects new ones at once;
      - navigate in a session whose browser died under the call starts a fresh browser and goes there ONCE;

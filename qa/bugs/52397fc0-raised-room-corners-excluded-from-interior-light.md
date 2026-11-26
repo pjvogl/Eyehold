@@ -28,7 +28,7 @@ Open the seeded :9197 preview on source c0ca851e2. Inspect either top corner of 
 
 ## Evidence
 
-`.worldshots/corner-light/results.json` covers three wall materials, four heights and two corner shapes (24 cases). On the 30px chamfer, 694 painted face pixels were missing from the old receiver; none are missing after the correction. Every case has zero missing face coverage, zero unrelated receiver changes and zero base-art changes. Before/after PNGs and the live capture are in the same directory. `test/stationbake.chunk.test.js` includes raised-face coverage and sky exclusion at both top corners plus chunk/full-lightmap parity.
+`.worldshots/corner-light/results.json` covers three wall materials, four heights and two corner shapes (24 cases). On the 30px chamfer, 694 painted face pixels were missing from the old receiver; none are missing after the correction. Every case has zero missing face coverage, zero unrelated receiver changes and zero base-art changes. Before/after PNGs and the live capture are in the same directory. `test/keepbake.chunk.test.js` includes raised-face coverage and sky exclusion at both top corners plus chunk/full-lightmap parity.
 
 ## Verdict
 
@@ -36,8 +36,8 @@ The interior receiver was assembled from the floor outline and straight north-wa
 
 ## Regression
 
-Registered fast test/stationbake.chunk.test.js checks both top corners at heights 14/30/50 for chamfers and round corners, sky exclusion, and full/chunk parity. The real-canvas driver also covers flat walls and wall materials; the original reproduction fails on the old receiver. Lighting controls, material colours and wall artwork are unchanged.
+Registered fast test/keepbake.chunk.test.js checks both top corners at heights 14/30/50 for chamfers and round corners, sky exclusion, and full/chunk parity. The real-canvas driver also covers flat walls and wall materials; the original reproduction fails on the old receiver. Lighting controls, material colours and wall artwork are unchanged.
 
 ## Sibling coverage
 
-{"adapters":[{"target":"wall materials and shapes","state":"blocked","reason":"Real browser proof covers ribbed, plating and viewport materials at four heights and two shapes; this native canvas driver is outside the fast suite."}],"entrypoints":[{"target":"top-left and top-right raised corners","state":"covered","test":"test/stationbake.chunk.test.js","scenario":"Both top faces receive light at three heights and two shapes while sky stays excluded","gate":"fast"}],"displays":[{"target":"full and chunked lightmap","state":"covered","test":"test/stationbake.chunk.test.js","scenario":"Corner lighting has identical composed light pixels in full and chunked bakes","gate":"fast"}],"lifecycle":[{"target":"wall height and corner shape rebake","state":"covered","test":"test/stationbake.chunk.test.js","scenario":"Repeated bakes change wall height and shape without stale corner coverage","gate":"fast"}]}
+{"adapters":[{"target":"wall materials and shapes","state":"blocked","reason":"Real browser proof covers ribbed, plating and viewport materials at four heights and two shapes; this native canvas driver is outside the fast suite."}],"entrypoints":[{"target":"top-left and top-right raised corners","state":"covered","test":"test/keepbake.chunk.test.js","scenario":"Both top faces receive light at three heights and two shapes while sky stays excluded","gate":"fast"}],"displays":[{"target":"full and chunked lightmap","state":"covered","test":"test/keepbake.chunk.test.js","scenario":"Corner lighting has identical composed light pixels in full and chunked bakes","gate":"fast"}],"lifecycle":[{"target":"wall height and corner shape rebake","state":"covered","test":"test/keepbake.chunk.test.js","scenario":"Repeated bakes change wall height and shape without stale corner coverage","gate":"fast"}]}

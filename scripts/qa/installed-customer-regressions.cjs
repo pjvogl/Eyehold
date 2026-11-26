@@ -1,6 +1,6 @@
 'use strict';
 // Reuse the real-provider-adapter/MCP scenarios against the actual installed bundle on the
-// disposable Windows runner. Each SidecarFixture owns an isolated scratch station/profile.
+// disposable Windows runner. Each SidecarFixture owns an isolated scratch keep/profile.
 const fs = require('node:fs');
 const path = require('node:path');
 const crypto = require('node:crypto');
@@ -19,11 +19,11 @@ if (!['saved-provider-fallback.e2e.test.js', 'delegated-connectors.e2e.test.js',
 const files = ['sidecar/index.js', 'sidecar/loop.js', 'sidecar/tools/builtin/orchestration.js', 'sidecar/inputpolicy.js'];
 if (suite === 'session-reliability.e2e.test.js') {
   files.push(...['chat','harness','workstreams','save','cloudsave','diagnostics'].map(name=>'frontend/app/'+name+'.js'));
-  process.env.STARNET_SESSION_INSTALLED_ROOT = installed;
+  process.env.EYEHOLD_SESSION_INSTALLED_ROOT = installed;
 }
 if (suite === 'spend-authority.http.test.js') {
   files.push('sidecar/ledger.js', 'sidecar/budget.js', 'sidecar/logbound.js');
-  process.env.STARNET_SPEND_INSTALLED_ENTRY = path.join(installed, 'sidecar/index.js');
+  process.env.EYEHOLD_SPEND_INSTALLED_ENTRY = path.join(installed, 'sidecar/index.js');
 }
 const identities = {};
 for (const file of files) {
@@ -35,5 +35,5 @@ const { SidecarFixture } = require(path.join(root, 'test/helpers/sidecar-fixture
 const create = SidecarFixture.create;
 SidecarFixture.create = options => create.call(SidecarFixture, { ...options, entry: suite === 'spend-authority.http.test.js' ? options.entry : path.join(installed, 'sidecar/index.js') });
 console.log(JSON.stringify({ suite, executableSha256: hash(process.env.EXE), installedRuntimeSha256: hash(process.execPath), identities,
-  scope: 'Installed Node and sidecar; isolated stations; controlled upstream providers and MCP, no customer account' }));
+  scope: 'Installed Node and sidecar; isolated keeps; controlled upstream providers and MCP, no customer account' }));
 require(path.join(root, 'test', suite));

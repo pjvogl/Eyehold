@@ -1,7 +1,7 @@
 /* frontend/app/apiticket.js — mint SCOPED, SHORT-LIVED URL tickets so the MASTER API token never rides a URL.
    The wire format, scopes and lifetimes are defined (and verified) by sidecar/apitickets.js; read its header first.
 
-   Surfaces that cannot attach the X-StarNet-Token header — a link/tab open of a workspace file, a workshop tool
+   Surfaces that cannot attach the X-Eyehold-Token header — a link/tab open of a workspace file, a workshop tool
    opened in a tab, the SSE bridge (EventSource) and the unload save beacon — get a ticket that names exactly ONE
    resource and dies within minutes. Every fetch() keeps the header (harness.js); nothing here replaces it.
 
@@ -11,7 +11,7 @@
    tickets to the Node verifier. */
 (function (root) {
   'use strict';
-  const DOMAIN = 'starnet-ticket-v1';
+  const DOMAIN = 'eyehold-ticket-v1';
   const KINDS = { file: { method: 'GET', ttl: 5 * 60 * 1000 }, run: { method: 'GET', ttl: 10 * 60 * 1000 },
     view: { method: 'GET', ttl: 10 * 60 * 1000 },
     sse: { method: 'GET', ttl: 2 * 60 * 1000 }, save: { method: 'POST', ttl: 2 * 60 * 1000 },
@@ -105,13 +105,13 @@
     const msg = DOMAIN + '\n' + k.method + '\n' + scope + '\n' + exp + '\n' + nonce;
     return 'st1.' + exp.toString(36) + '.' + nonce + '.' + b64url(hmacSha256(utf8(key), utf8(msg)));
   }
-  function key() { try { return (root && root.__STARNET_API_TOKEN__) ? String(root.__STARNET_API_TOKEN__) : ''; } catch (_) { return ''; } }
-  function base() { try { return (root && root.__STARNET_API__) ? String(root.__STARNET_API__) : ''; } catch (_) { return ''; } }
+  function key() { try { return (root && root.__EYEHOLD_API_TOKEN__) ? String(root.__EYEHOLD_API_TOKEN__) : ''; } catch (_) { return ''; } }
+  function base() { try { return (root && root.__EYEHOLD_API__) ? String(root.__EYEHOLD_API__) : ''; } catch (_) { return ''; } }
   function mint(kind, scope) { const k = key(); if (!k) return ''; try { return mintWith(k, kind, scope, Date.now(), randomHex(16)); } catch (_) { return ''; } }
 
   // ---- URL builders: every one returns a URL that carries NO master token ----
   // Desktop: the page runs on the Tauri origin and only window.fetch is rewritten to the sidecar, so a URL a
-  // native load/tab/beacon uses must carry the absolute loopback base (window.__STARNET_API__); browser: ''.
+  // native load/tab/beacon uses must carry the absolute loopback base (window.__EYEHOLD_API__); browser: ''.
   function fileUrl(agentId, relPath) {
     const agent = agentId || 'agent', p = String(relPath || '');
     const t = mint('file', scopeFile(agent, p));

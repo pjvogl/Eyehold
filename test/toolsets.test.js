@@ -15,8 +15,8 @@ const { CAP_REGISTRY } = require('../sidecar/capability/registry.js');
 const { resolveTools } = require('../sidecar/capability/resolve.js');
 const { toolsetRows, toggleableCaps } = require('../sidecar/capability/toolsets.js');
 
-// a station with the given objectTypes placed in the agent's one room.
-function stationWith(types) {
+// a keep with the given objectTypes placed in the agent's one room.
+function keepWith(types) {
   return {
     agents: { hero: { id: 'hero', room: 'office' } },
     rooms: { office: { id: 'office', objects: types.map((t, i) => ({ instanceId: 'o' + i, objectType: t })) } }
@@ -48,26 +48,26 @@ function stationWith(types) {
   A.eq(byId.memory.consentGated, memConsent, 'memory consent summary matches its registry grants');
 
   // ---------- 2. FILTER: resolveTools honours disabledCaps ----------
-  const full = resolveTools('hero', stationWith(['computer', 'dish', 'cabinet']));
+  const full = resolveTools('hero', keepWith(['computer', 'dish', 'cabinet']));
   A.ok(full.tools.indexOf('web_search') >= 0, 'baseline: web_search granted when dish placed + no filter');
   A.ok(full.tools.indexOf('fs.read') >= 0, 'baseline: fs.read granted when cabinet placed');
   A.eq(full.hasCompute, true, 'baseline: compute present from the computer');
 
   // disable web -> its tools vanish, cabinet untouched, compute untouched
-  const noWeb = resolveTools('hero', stationWith(['computer', 'dish', 'cabinet']), undefined, { disabledCaps: { web: true } });
+  const noWeb = resolveTools('hero', keepWith(['computer', 'dish', 'cabinet']), undefined, { disabledCaps: { web: true } });
   A.ok(noWeb.tools.indexOf('web_search') < 0, 'disabled web family: web_search dropped');
   A.ok(noWeb.tools.indexOf('browser.navigate') < 0, 'disabled web family: browser tools dropped too');
   A.ok(noWeb.tools.indexOf('fs.read') >= 0, 'disabling web leaves cabinet tools intact (only that family drops)');
   A.eq(noWeb.hasCompute, true, 'disabling web never touches the compute gate');
 
   // compute can never be filtered even if someone puts it in disabledCaps
-  const tryKillCompute = resolveTools('hero', stationWith(['computer', 'dish']), undefined, { disabledCaps: { compute: true, web: true } });
+  const tryKillCompute = resolveTools('hero', keepWith(['computer', 'dish']), undefined, { disabledCaps: { compute: true, web: true } });
   A.eq(tryKillCompute.hasCompute, true, 'compute is NEVER filtered even when named in disabledCaps');
 
   // disabledCaps accepts a Set and an array too (normalised)
-  const viaSet = resolveTools('hero', stationWith(['computer', 'cabinet']), undefined, { disabledCaps: new Set(['cabinet']) });
+  const viaSet = resolveTools('hero', keepWith(['computer', 'cabinet']), undefined, { disabledCaps: new Set(['cabinet']) });
   A.ok(viaSet.tools.indexOf('fs.read') < 0, 'disabledCaps as a Set works');
-  const viaArr = resolveTools('hero', stationWith(['computer', 'cabinet']), undefined, { disabledCaps: ['cabinet'] });
+  const viaArr = resolveTools('hero', keepWith(['computer', 'cabinet']), undefined, { disabledCaps: ['cabinet'] });
   A.ok(viaArr.tools.indexOf('fs.read') < 0, 'disabledCaps as an array works');
 
   // sparse round-trip semantics of the store (mirrors index.js: only OFF families persisted):
@@ -77,10 +77,10 @@ function stationWith(types) {
   const disabledView = () => { const s = {}; for (const c of toggleableCaps(CAP_REGISTRY)) if (disabledMap[c] === false) s[c] = true; return s; };
   setToolset('jukebox', false);
   A.eq(disabledMap, { jukebox: false }, 'disabling persists exactly { capId:false } (sparse)');
-  A.ok(resolveTools('hero', stationWith(['computer', 'jukebox']), undefined, { disabledCaps: disabledView() }).tools.indexOf('spotify_search') < 0, 'store view drops jukebox tools');
+  A.ok(resolveTools('hero', keepWith(['computer', 'jukebox']), undefined, { disabledCaps: disabledView() }).tools.indexOf('spotify_search') < 0, 'store view drops jukebox tools');
   setToolset('jukebox', true);
   A.eq(disabledMap, {}, 're-enabling removes the key (fresh install == empty map)');
-  A.ok(resolveTools('hero', stationWith(['computer', 'jukebox']), undefined, { disabledCaps: disabledView() }).tools.indexOf('spotify_search') >= 0, 'jukebox tools return once re-enabled');
+  A.ok(resolveTools('hero', keepWith(['computer', 'jukebox']), undefined, { disabledCaps: disabledView() }).tools.indexOf('spotify_search') >= 0, 'jukebox tools return once re-enabled');
 
   // ---------- 3. SOURCE GUARD: sidecar store + endpoints ----------
   const idx = fs.readFileSync(path.join(__dirname, '..', 'sidecar', 'index.js'), 'utf8');
@@ -93,21 +93,21 @@ function stationWith(types) {
     'the run path live-applies disabled toolsets in restricted modes and ignores them in Full Power');
 
   // ---------- 4. SOURCE GUARD: frontend surface + every guarded connectors/Spotify string kept ----------
-  const station = fs.readFileSync(path.join(__dirname, '..', 'frontend', 'app', 'windows', 'connectors.js'), 'utf8');   // CONNECTORS window extracted from stationui.js (BUILDERS split)
-  A.ok(/TOOLSETS/.test(station), 'the console surfaces a TOOLSETS section');
-  A.ok(/\/api\/toolsets/.test(station), 'the frontend reads /api/toolsets');
+  const keep = fs.readFileSync(path.join(__dirname, '..', 'frontend', 'app', 'windows', 'connectors.js'), 'utf8');   // CONNECTORS window extracted from keepui.js (BUILDERS split)
+  A.ok(/TOOLSETS/.test(keep), 'the console surfaces a TOOLSETS section');
+  A.ok(/\/api\/toolsets/.test(keep), 'the frontend reads /api/toolsets');
   // guarded strings from connectors-ui.test.js MUST survive the retitle/reorg:
-  A.ok(/function buildConnectors/.test(station), 'buildConnectors builder preserved');
-  A.ok(/setupSpotify\(body\)/.test(station), 'Spotify wiring preserved');
-  A.ok(/id="sp-connect"/.test(station) && /id="sp-status"/.test(station) && /id="sp-disconnect"/.test(station), 'Spotify ids preserved');
-  A.ok(/Harness\.api\.post\('\/api\/spotify\/disconnect'\)[\s\S]{0,500}!out\.ok/.test(station), 'Spotify disconnect UI requires a confirmed 2xx response');
-  A.ok(/Spotify was NOT disconnected/.test(station), 'Spotify disconnect UI names a refused change honestly');
+  A.ok(/function buildConnectors/.test(keep), 'buildConnectors builder preserved');
+  A.ok(/setupSpotify\(body\)/.test(keep), 'Spotify wiring preserved');
+  A.ok(/id="sp-connect"/.test(keep) && /id="sp-status"/.test(keep) && /id="sp-disconnect"/.test(keep), 'Spotify ids preserved');
+  A.ok(/Harness\.api\.post\('\/api\/spotify\/disconnect'\)[\s\S]{0,500}!out\.ok/.test(keep), 'Spotify disconnect UI requires a confirmed 2xx response');
+  A.ok(/Spotify was NOT disconnected/.test(keep), 'Spotify disconnect UI names a refused change honestly');
   A.ok(/handleSpotifyDisconnect[\s\S]{0,500}spotifyJson\(res, 500, \{ ok: false/.test(idx), 'Spotify disconnect route fails when durable clear fails');
   // HTTP and isolated stdio are both real routes; stdio stays bound to a named Safe Cell agent.
-  A.ok(/id="mc-transport"/.test(station) && /id="mc-url"/.test(station) && /id="mc-timeout"/.test(station), 'MCP HTTP form ids preserved');
-  A.ok(/id="mc-agent"/.test(station) && /id="mc-command"/.test(station) && /id="mc-args"/.test(station), 'MCP Safe Cell stdio form ids preserved');
-  A.ok(/function startEdit/.test(station) && /data-act="edit"/.test(station) && /data-act="reload"/.test(station), 'MCP per-row actions preserved');
-  A.ok(/function badge/.test(station) && /parseKV/.test(station) && /never round-trip the token/.test(station), 'MCP helpers + token-safety preserved');
+  A.ok(/id="mc-transport"/.test(keep) && /id="mc-url"/.test(keep) && /id="mc-timeout"/.test(keep), 'MCP HTTP form ids preserved');
+  A.ok(/id="mc-agent"/.test(keep) && /id="mc-command"/.test(keep) && /id="mc-args"/.test(keep), 'MCP Safe Cell stdio form ids preserved');
+  A.ok(/function startEdit/.test(keep) && /data-act="edit"/.test(keep) && /data-act="reload"/.test(keep), 'MCP per-row actions preserved');
+  A.ok(/function badge/.test(keep) && /parseKV/.test(keep) && /never round-trip the token/.test(keep), 'MCP helpers + token-safety preserved');
 
   A.report('toolsets');
 })().catch(e => { console.log('FAIL: threw ' + (e && e.stack || e)); process.exit(1); });

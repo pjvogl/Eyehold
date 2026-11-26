@@ -1,7 +1,7 @@
 # Orchestrator control lane (`agent/orchestrator-control`)
 
-Goal: agents that (a) **understand StarNet** so they can help a stuck Commander, and (b) let the
-**orchestrator actually control StarNet live** — summon/equip crew and hand them work, exactly as
+Goal: agents that (a) **understand Eyehold** so they can help a stuck Commander, and (b) let the
+**orchestrator actually control Eyehold live** — summon/equip crew and hand them work, exactly as
 the Commander would. Locked decisions: APPROVAL-mode-gated authority; orchestrator/lead-only actuates;
 all agents get the knowledge.
 
@@ -37,7 +37,7 @@ Branch is rebased onto trunk (absorbed the COMMS interrupt/inline-media work) an
 
 - **M5 — Equip-visual.** Show the summoned worker's capability props on its floor (object=capability truth).
   Touches `world.js`/`worldmodel.js` — the repo's most contended files (summon-fixes / world-game /
-  workstation-ui are live there). **Coordinate with that lane; do not duplicate.**
+  workkeep-ui are live there). **Coordinate with that lane; do not duplicate.**
 
 ## Coordination
 

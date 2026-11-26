@@ -42,16 +42,16 @@ building; this repo's audits go stale in hours.
    `marketplace.css:522-523`).
 8. **CHANNELS success messages render in the error color** — `.msg` defaults to `--bad`
    (`app.css:235`); `buildMessaging` never toggles `.ok`, so "✓ connected" paints red
-   (`stationui.js:3652, 3671, 3679`).
+   (`keepui.js:3652, 3671, 3679`).
 9. **CHANNELS asserts CONNECTED before any transport proof** on telegram/slack/matrix/signal —
    sidecar sets `{connected:true,state:'up'}` optimistically (`sidecar/index.js:3532, 3813`,
    POSTs at `7481, 7679`); the "✓ connected" line never corrects itself. Discord (gateway
-   READY) is the correct pattern (`stationui.js:3593-3599`).
+   READY) is the correct pattern (`keepui.js:3593-3599`).
 10. **Esc destroys unsaved drafts in any window** — window-level Esc closes from any focused
     element including open CONFIG/memory/belief editors; `closeTerm` has no dirty guard
-    (`stationui.js:449-450, 310`).
+    (`keepui.js:449-450, 310`).
 11. **ROUTINES ▶ RUN NOW streams output into a hidden pane** — `#rt-out` is CREATE-section
-    markup while the button lives in ACTIVE (`stationui.js:4291` vs `4257`;
+    markup while the button lives in ACTIVE (`keepui.js:4291` vs `4257`;
     `.con-sec-hidden` `app.css:2610`) — a real paid run whose result the user never sees.
 12. **tutorial.css is off-system** — ~37 hardcoded amber/green colors on the FIRST-RUN surface
     (coachmarks, briefing, field manual); breaks wholesale on every non-default theme
@@ -70,7 +70,7 @@ the primitives (custom dropdown, z-scale tokens) the other lanes consume.
 
 ### LANE F1 — Foundation primitives (BLOCKS: A, D, G partially)
 - Custom dropdown primitive replacing all 10 native `<select>`s (4 skins today):
-  `index.html:346` (COMMS agent line), `modelpicker.js:28,33`, `stationui.js:2942,2957-2959`
+  `index.html:346` (COMMS agent line), `modelpicker.js:28,33`, `keepui.js:2942,2957-2959`
   (settings fallback/tier ×4), `marketplace.js:1365,1608,1609`. Build the closed state as one
   shared class; open state = the already-themed model-dock popover vocabulary
   (`app.css:~920-1050`) / `.ws-menu` (`app.css:1829`). Keep `<select>` semantics for a11y
@@ -81,7 +81,7 @@ the primitives (custom dropdown, z-scale tokens) the other lanes consume.
   composer corner (see fork Q2).
 - Custom checkbox scope: motion.css:175-212 covers only `.set-row` — re-scope so
   `marketplace.js:386` and the stock-browser checkbox at `marketplace.js:1558` inherit.
-- Kill native number spinners app-wide (9 spots: `stationui.js:986, 2704, 2920-2926, 3770`,
+- Kill native number spinners app-wide (9 spots: `keepui.js:986, 2704, 2920-2926, 3770`,
   `build.js:606`).
 
 ### LANE A — GENESIS (CREATE YOUR OVERSEER)
@@ -184,7 +184,7 @@ P0s #6, #7, plus:
 ### LANE E — CHANNELS honesty + catalog grammar (touches sidecar — backend law, additive)
 P0s #8, #9, plus:
 - Hide DISCONNECT unless connected/configured; CONNECT→RESUME when saved-but-offline
-  (`stationui.js:3577-3580`).
+  (`keepui.js:3577-3580`).
 - Card grammar: per-platform accent strip + coin plate glyph + hover/entrance (style.css:921 vs
   marketplace.css:135-166); keep the `.on` green glow. Dedicated `.ch-lbl`/`.ch-title` — stop
   reusing `.ms-h` (stray ◆ + divider dressing, style.css:834-842).
@@ -192,7 +192,7 @@ P0s #8, #9, plus:
   present[0] prompt with active-stream agentId); show "ANSWERS AS: <name>" on connected cards
   (add agentName to `channelStatusPayload`, sidecar/index.js:7610-7631).
 - Armed FORGET purging record + keychain (no path today, 7505); naming: footer plate prints
-  "MESSAGING" under the CHANNELS title (stationui.js:411-415), dock subtitle stale
+  "MESSAGING" under the CHANNELS title (keepui.js:411-415), dock subtitle stale
   (index.html:434); error copy names the removed "title screen" (3650, 7478, 7675) — recopy +
   Settings deep-link door (openTerm 5161-5171).
 - P2: CONNECT in-flight state (3638-3677); armed disconnect + no "disconnected" lie when idle
@@ -207,12 +207,12 @@ P0s #8, #9, plus:
 
 ### LANE G — Window manager + chrome + CREW/SYSTEM windows
 P0 #10, plus:
-- Dock click on a buried window should RAISE it, not close it (`toggleTerm` stationui.js:350-352).
+- Dock click on a buried window should RAISE it, not close it (`toggleTerm` keepui.js:350-352).
 - Focus: fresh windows focus the minimize button (472-473) → focus window/first body control;
   Esc only works when focus is inside the window (449 + 420) → focus on mousedown or
   document-level Esc-topmost; rename Esc double-fires (1337, missing stopPropagation);
   minimize handoff focuses a hidden popover item (279-281).
-- AGENTS window: BRIEF "RUNS" stat is station totals wearing an agent label (810-822) — per-
+- AGENTS window: BRIEF "RUNS" stat is keep totals wearing an agent label (810-822) — per-
   agent truth or relabel; search glyph swallows placeholder first char (app.css:2534-2543,
   visible in two screenshots — verify + pad); HAB-01 hardcoded ×3 (678, 801, 1499) — derive
   from world state; DANGER block off the landing tab (829, 855-860); dup disabled-delete
@@ -220,11 +220,11 @@ P0 #10, plus:
 - REWIND: bound to dossier's last-selected agent with raw id in title (4462-4464) — name +
   switcher; consequence-stating confirm ("removes N files since <time>", 4495-4499); refresh
   affordance (4504).
-- LOGBOOK: agent-scoped but never says so (4513, 4570, 4601 vs "the station's event record"
+- LOGBOOK: agent-scoped but never says so (4513, 4570, 4601 vs "the keep's event record"
   dock copy) — name agent + switcher; INSIGHTS leaks raw enum keys (4548, LB_REASON at 4511
   unused there); row-click vs text-selection (4575).
 - SETTINGS: mojibake `â€”`/`Â·` in the Ollama row (2186-2188 — the only mojibake in the
-  frontend); CLEAR NOTIFICATIONS buried in SYSTEM›STATION DATA with no success feedback
+  frontend); CLEAR NOTIFICATIONS buried in SYSTEM›KEEP DATA with no success feedback
   (3020-3021, 3260-3265); "SCHEDULED TASKS" header holds only keep-awake (2981-2982); AUTONOMY
   secretly holds three subsystems incl. the PERMISSIONS ledger (2863-2912) — split rail items;
   TERMINAL AUDIO under DISPLAY (2967-2969); provider card role=button wrapping an ADD KEY
@@ -233,25 +233,25 @@ P0 #10, plus:
 - COMMANDER: 560px scroll with guillotined bottom edge — sections/jump links + fade cue
   (4646-4722); familiarity gauge vs gate provenance (4657-4663).
 - Topbar/dock: STANDBY paints full signal bars beside an ONLINE pill (`topbar.js:56-59`,
-  `stationui.js:106-110`) — dim neutral bars pre-bridge; RECRUIT carries the "workstream"
+  `keepui.js:106-110`) — dim neutral bars pre-bridge; RECRUIT carries the "workstream"
   glossary hint (`index.html:413`); RESTORE/LOGBOOK dock copy misdescribes scope
   (`index.html:444-445`); NOTIFS label vs LABEL LAW (398-400); ArrowLeft/Right across dock
   groups (navdock.js:86-103).
 - NOTIFS: date on non-today rows (82 vs 60-entry persistence 3293-3294); rows inert (no
   click-through/per-item dismiss); copy voice drift.
-- friendlyerror/settings emoji → CRT glyphs (`friendlyerror.js:290-311`, `stationui.js:3015`);
+- friendlyerror/settings emoji → CRT glyphs (`friendlyerror.js:290-311`, `keepui.js:3015`);
   "🛒 Open STORE" mislabels the PROVIDERS door (309). Glossary gaps: SLAG, KUDOS, LEASH,
   E-STOP, restore point, uplink (glossary.js:19-44).
 - P2 window-manager batch: per-window user resize (fork Q5); persist termPos/consoleSection;
   re-clamp on browser resize (fitTermInViewport dead at 171/468); aria-modal lie (371);
   pointer-events for touch drag (124-145); cascade counts minimized windows (153); chip ✕
   (235).
-- "on station since" fixture date renders as truth — dev-seed only; ignore.
+- "on keep since" fixture date renders as truth — dev-seed only; ignore.
 
 ### LANE H — WORK+BUILD surfaces
 P0 #11 (ROUTINES rt-out), plus:
 - ROUTINES honesty: create-confirm says "scheduled" while the scheduler is disarmed
-  (stationui.js:4446) — consume `AutoJobs.armStateLine()` (autojobs.js:207-220, built for
+  (keepui.js:4446) — consume `AutoJobs.armStateLine()` (autojobs.js:207-220, built for
   exactly this); promote the disarmed state from a one-line whisper (4307-4309) to the
   `.brief-block` banner. (Quest APPROVE at 5038-5040 already does this right — copy it.)
 - SKILLS: locked cards at opacity .34 + 10px dim text are illegible (style.css:844,
@@ -277,7 +277,7 @@ P0 #11 (ROUTINES rt-out), plus:
 - One `.x-btn` close primitive (8 implementations today; `.term-x` stays as the window
   instance; `.tut-brief-x` hardcodes #9fb0a4).
 - ArmConfirm migration: 8+ bespoke copies → armconfirm.js everywhere (app.js:2447-2451,
-  2657-2661; marketplace.js:1206-1208, 1233-1235; stationui.js:2290-2298, 3243, 3262-3264,
+  2657-2661; marketplace.js:1206-1208, 1233-1235; keepui.js:2290-2298, 3243, 3262-3264,
   4399, 4495); one `.armed` rule (5 re-declarations); one label voice + one disarm timeout.
 - Empty-state consolidation: 12+ one-off classes → `.empty-state` (+small variant):
   .fb-empty, .up-empty, .mkt-empty, .mkt-dos-empty, .key-empty, .proj-empty, .mc-empty,

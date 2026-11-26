@@ -1,13 +1,13 @@
 'use strict';
-/* sidecar/mcp/google-relay-guard.js — RESTRICTED-tier Google data never reaches a StarNet-operated server.
+/* sidecar/mcp/google-relay-guard.js — RESTRICTED-tier Google data never reaches a Eyehold-operated server.
 
    Google's security assessment (CASA) applies when restricted-scope data (Gmail read/compose, whole-Drive read)
-   is stored on or transmitted through the DEVELOPER's servers. StarNet is local-first: the one StarNet-operated
-   path model traffic can take is the StarNet Managed provider ('starnet', the credits relay). This guard keeps
+   is stored on or transmitted through the DEVELOPER's servers. Eyehold is local-first: the one Eyehold-operated
+   path model traffic can take is the Eyehold Managed provider ('eyehold', the credits relay). This guard keeps
    restricted Google content off that path in both directions it could travel:
 
-     • LIVE  — a run on StarNet Managed is not offered restricted Google connector tools (projectable()).
-     • REPLAY — every request streamed to StarNet Managed (primary, fallback, auxiliary pass) has the results of
+     • LIVE  — a run on Eyehold Managed is not offered restricted Google connector tools (projectable()).
+     • REPLAY — every request streamed to Eyehold Managed (primary, fallback, auxiliary pass) has the results of
                 earlier restricted Google tool calls replaced by a notice (guardProvider()). The agent's LOCAL
                 transcript is untouched; only the outgoing copy is filtered.
 
@@ -23,7 +23,7 @@
    Not covered (derived content, see docs/GOOGLE_REVIEW_BUILD.md): an assistant's own prose that restates a
    message, memory notes or files the agent wrote from Google content. */
 const { note: failNote } = require('../failopen.js');
-const WITHHELD = '[Withheld: this Gmail / Google Drive result stays on this computer and is never sent to StarNet Managed. '
+const WITHHELD = '[Withheld: this Gmail / Google Drive result stays on this computer and is never sent to Eyehold Managed. '
   + 'Switch this agent to your own model provider to work with it.]';
 
 function makeGoogleRelayGuard({ googleClient, tools, mcpToolName, configs, extraRestricted }) {
@@ -57,7 +57,7 @@ function makeGoogleRelayGuard({ googleClient, tools, mcpToolName, configs, extra
   }
   // LIVE: may this room object's connector be projected into a run on this provider?
   function projectable(connectorId, providerId) {
-    return providerId !== 'starnet' || !restrictedConnectors().has(String(connectorId || ''));
+    return providerId !== 'eyehold' || !restrictedConnectors().has(String(connectorId || ''));
   }
   // REPLAY: the outgoing copy of a conversation with restricted Google tool results withheld.
   function scrub(messages) {

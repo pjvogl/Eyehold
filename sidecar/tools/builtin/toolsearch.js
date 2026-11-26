@@ -34,7 +34,7 @@
   function terms(s) {
     const out = String(s == null ? '' : s).toLowerCase().split(/[^a-z0-9_.]+/)
       .filter(t => t && t.length > 1 && !STOP.has(t));
-    /* a model searches by the WIRE name it was shown ("station_control"), which is the registry's dotted name with '_'
+    /* a model searches by the WIRE name it was shown ("keep_control"), which is the registry's dotted name with '_'
        for '.' — the search found "no match" for it (Gemini real-model run, 2026-10-08). Each underscored term also
        searches as its dotted twin; the original stays, because some real names have underscores (web_search). */
     for (const t of out.slice()) if (t.indexOf('_') >= 0) { const d = t.replace(/_/g, '.'); if (out.indexOf(d) < 0) out.push(d); }
@@ -166,7 +166,7 @@
     const hit = COMMAND_WORDS.test(String(q)) || names.some(n => qs.some(w => String(n).toLowerCase().indexOf(w) >= 0));
     if (!hit) return '';
     const first = withheld[names[0]] || {};
-    return 'WITHHELD on this run (these exist on this station, but you cannot call them here): ' + names.join(', ')
+    return 'WITHHELD on this run (these exist on this keep, but you cannot call them here): ' + names.join(', ')
       + '. Why: ' + first.why + '. What works instead: ' + first.enable + '.';
   }
 

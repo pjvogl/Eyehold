@@ -1,2 +1,2 @@
-delete process.env.STARNET_WORKSPACES;
+delete process.env.EYEHOLD_WORKSPACES;
 require('../dev/seed.js');

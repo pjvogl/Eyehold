@@ -49,7 +49,7 @@
     {
       "name": "loop missing project",
       "status": 400,
-      "error": "that folder does not exist: C:\\not-a-real-starnet-audit-project",
+      "error": "that folder does not exist: C:\\not-a-real-eyehold-audit-project",
       "resultKeys": [
         "status",
         "error"
@@ -121,7 +121,7 @@
       "name": "journey stale generation",
       "status": 409,
       "ok": false,
-      "error": "station generation changed; reload before updating journey",
+      "error": "keep generation changed; reload before updating journey",
       "resultKeys": [
         "status",
         "ok",
@@ -131,7 +131,7 @@
     {
       "name": "future configuration import",
       "status": 400,
-      "error": "missing or invalid \"starnetExport\" version marker",
+      "error": "missing or invalid \"eyeholdExport\" version marker",
       "resultKeys": [
         "status",
         "error"

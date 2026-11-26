@@ -12,11 +12,14 @@ const indexJs = fs.readFileSync(path.join(root, 'sidecar', 'index.js'), 'utf8');
 const browserJs = fs.readFileSync(path.join(root, 'sidecar', 'tools', 'builtin', 'browser.js'), 'utf8');
 const cargoToml = fs.readFileSync(path.join(root, 'src-tauri', 'Cargo.toml'), 'utf8');
 
-// Eyehold has no owned signing identity/channel configured yet. The unsigned
-// fork must neither impersonate the upstream publisher nor enable updates.
-A.eq(conf.bundle && conf.bundle.publisher, undefined, 'unsigned Eyehold does not claim a publisher signing identity');
+// The feed URL is Eyehold's own domain. Artifacts stay off until the baked
+// pubkey is replaced. See docs/EYEHOLD_PUBLISHER.md.
+const host = JSON.parse(fs.readFileSync(path.join(root, 'eyehold.host.json'), 'utf8'));
+const eyeholdFeed = 'https://' + host.baseDomain + host.updaterPath;
+A.eq(conf.bundle && conf.bundle.publisher, 'Eyehold', 'publisher name is Eyehold');
 A.eq(conf.bundle && conf.bundle.createUpdaterArtifacts, false, 'unsigned Eyehold does not create updater artifacts');
-A.eq(JSON.stringify(conf.plugins && conf.plugins.updater && conf.plugins.updater.endpoints), '[]', 'unsigned Eyehold has no update channel');
+A.eq(JSON.stringify(conf.plugins && conf.plugins.updater && conf.plugins.updater.endpoints), JSON.stringify([eyeholdFeed]), 'update channel is the Eyehold feed');
+A.ok(!/eyehold\.com|Eyehold|github\.com/.test(eyeholdFeed), 'update channel does not follow an upstream host');
 A.ok(!cargoToml.includes('???'), 'desktop package metadata contains no corrupted placeholder punctuation');
 
 const csp = String(conf.app && conf.app.security && conf.app.security.csp || '');
@@ -52,31 +55,31 @@ const remoteUrls = (caps.remote && caps.remote.urls) || [];
 A.ok(remoteUrls.length === 0 || (remoteUrls.length === 1 && remoteUrls[0] === 'http://127.0.0.1:*/api/**'), 'remote capability is absent or narrowed to the 127.0.0.1 sidecar API');
 A.ok(remoteUrls.every(u => u.indexOf('localhost') < 0), 'remote capability does not trust localhost aliases');
 A.ok(remoteUrls.every(u => /\/api\/\*\*$/.test(u)), 'remote capability does not expose all loopback paths');
-A.ok(/fn sidecar_command[\s\S]*?\.env\("STARNET_COMPUTER_DRIVER", "1"\)/.test(mainRs), 'desktop host enables the native driver; paired remote-owner authority still gates every call in the sidecar');
-A.ok(!/fn sidecar_command[\s\S]*?\.env\("STARNET_BROWSER_HEADLESS", "1"\)/.test(mainRs), 'desktop sidecar does not globally disable the attended browser-login exception');
+A.ok(/fn sidecar_command[\s\S]*?\.env\("EYEHOLD_COMPUTER_DRIVER", "1"\)/.test(mainRs), 'desktop host enables the native driver; paired remote-owner authority still gates every call in the sidecar');
+A.ok(!/fn sidecar_command[\s\S]*?\.env\("EYEHOLD_BROWSER_HEADLESS", "1"\)/.test(mainRs), 'desktop sidecar does not globally disable the attended browser-login exception');
 // A run's browser options live in ONE object (runBrowserDeps) used both for its own tools and for the private browser it
-// falls back to when the shared station browser is busy (2026-10-01) — so neither path can drop the headless rules.
+// falls back to when the shared keep browser is busy (2026-10-01) — so neither path can drop the headless rules.
 A.ok(/const runBrowserDeps = \{[\s\S]*?forceHeadless:\s*true[\s\S]*?syntheticInputOnly:\s*true[\s\S]*?attendedLogin:[\s\S]*?\n  \};/.test(indexJs), 'ordinary desktop research stays headless and input-isolated while the watched login channel is wired separately');
 A.ok(/makePrivate: \(\) => browserInternals\.makeBrowserSession\(runBrowserDeps\)/.test(indexJs), 'the private fallback browser is built from those same options');
-A.ok(/runBrowser = makeBrowserTools\(Object\.assign\(\{ session: runStationBrowser \|\| undefined \}, runBrowserDeps\)\)/.test(indexJs), 'and so are the run\'s own browser tools');
+A.ok(/runBrowser = makeBrowserTools\(Object\.assign\(\{ session: runKeepBrowser \|\| undefined \}, runBrowserDeps\)\)/.test(indexJs), 'and so are the run\'s own browser tools');
 A.ok(/relaunch\(\{ headed: true, forceHeadless: false, headless: false, syntheticInputOnly: false \}\)/.test(browserJs), 'browser.login is the narrow human-consented exception that may open a real visible Chrome window');
-A.ok(/fn sidecar_command[\s\S]*?\.env\("STARNET_USER_CONTROL_MODE", "preserve"\)/.test(mainRs), 'every desktop sidecar launch pins user-control preservation');
-A.ok(/fn sidecar_command[\s\S]*?\.env\("STARNET_MCP_STDIO", "0"\)/.test(mainRs), 'installed desktop refuses unsandboxed local MCP children');
-A.ok(/fn set_sidecar_branded_env[\s\S]*?strip_prefix\("SKYNET_"\)[\s\S]*?STARNET_\{suffix\}/.test(mainRs), 'desktop-owned sidecar values replace both brand aliases');
+A.ok(/fn sidecar_command[\s\S]*?\.env\("EYEHOLD_USER_CONTROL_MODE", "preserve"\)/.test(mainRs), 'every desktop sidecar launch pins user-control preservation');
+A.ok(/fn sidecar_command[\s\S]*?\.env\("EYEHOLD_MCP_STDIO", "0"\)/.test(mainRs), 'installed desktop refuses unsandboxed local MCP children');
+A.ok(/fn set_sidecar_branded_env[\s\S]*?strip_prefix\("EYEHOLD_"\)[\s\S]*?EYEHOLD_\{suffix\}/.test(mainRs), 'desktop-owned sidecar values replace both brand aliases');
 for (const suffix of ['PORT', 'IPC_TOKEN', 'API_TOKEN', 'WORKSPACES', 'OPENROUTER_KEY']) {
-  A.ok(new RegExp(`set_sidecar_branded_env\\(&mut cmd, "SKYNET_${suffix}"`).test(mainRs), `desktop pins both aliases for ${suffix}`);
+  A.ok(new RegExp(`set_sidecar_branded_env\\(&mut cmd, "EYEHOLD_${suffix}"`).test(mainRs), `desktop pins both aliases for ${suffix}`);
 }
 A.ok(/for \(provider, env_name\) in SIDECAR_PROVIDER_KEY_ENVS[\s\S]*?set_sidecar_branded_env\(&mut cmd, env_name, key\)/.test(mainRs), 'provider keychain values cannot be shadowed by inherited canonical aliases');
 A.ok(/for \(channel, env_name\) in SIDECAR_CHANNEL_TOKEN_ENVS[\s\S]*?set_sidecar_branded_env\(&mut cmd, env_name, token\)/.test(mainRs), 'channel keychain values cannot be shadowed by inherited canonical aliases');
 A.ok(/fn desktop_owned_env_replaces_poisoned_brand_aliases[\s\S]*?poisoned-parent-value[\s\S]*?fresh-launch-token/.test(mainRs), 'Rust regression test poisons both alias directions before applying desktop-owned values');
 A.ok(/fn harness_clear_key\(state: State<AppState>\)[\s\S]*?harness_store_key\(String::new\(\), state\)/.test(mainRs),
   'OpenRouter FORGET uses the transactional provider-key path instead of swallowing keychain deletion failure');
-A.ok(!/starnet_open_workshop_file/.test(mainRs), 'webview IPC exposes no workshop file launcher');
-A.ok(!/starnet_open_user_directory/.test(mainRs), 'webview IPC exposes no directory launcher');
+A.ok(!/eyehold_open_workshop_file/.test(mainRs), 'webview IPC exposes no workshop file launcher');
+A.ok(!/eyehold_open_user_directory/.test(mainRs), 'webview IPC exposes no directory launcher');
 
 // 2026-09-23 audit: the token-bearing main window must never show a foreign page. Init scripts re-run on every
 // top-level navigation and the native drag-drop handler is disabled, so a dragged-in link used to load inside
-// the frameless window and receive __STARNET_API_TOKEN__. (Behaviour is unit-tested in main.rs
+// the frameless window and receive __EYEHOLD_API_TOKEN__. (Behaviour is unit-tested in main.rs
 // navigation_guard_tests via `cargo test --bin skynet-desktop navigation_guard`.)
 A.ok(/\.on_navigation\(move \|url\| is_app_navigation\(url, sidecar_port\)\)/.test(mainRs), 'the main window refuses navigation outside the bundled app origin');
 // The guard + origin-gated token must live in the ONE builder shared by startup and WebView2 crash recovery,
@@ -94,7 +97,7 @@ A.ok(/fn is_sidecar_page\(url: &tauri::Url, sidecar_port: u16\) -> bool \{\s*sid
 // …and those routes are exactly the sidecar's SANDBOXED page routes (each served with a CSP sandbox header)
 A.ok(/const SIDECAR_PAGE_ROUTES: \[&str; 5\] = \["\/view\/", "\/workshop-run\/", "\/plugin-ui\/", "\/plugin-draft\/", "\/app-ui\/"\];/.test(mainRs),
   'the frame exception covers the BROWSER window and the APPS / plugin windows, and nothing else');
-A.ok(/let init = format!\(\s*"if\(location\.protocol==='tauri:'\|\|location\.hostname==='tauri\.localhost'\)\{\{window\.__STARNET_API__=/.test(mainRs),
+A.ok(/let init = format!\(\s*"if\(location\.protocol==='tauri:'\|\|location\.hostname==='tauri\.localhost'\)\{\{window\.__EYEHOLD_API__=/.test(mainRs),
   'the API token is injected only into the bundled app origin (second layer behind on_navigation)');
 
 A.report('tauri.hardening.test');

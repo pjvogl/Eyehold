@@ -13,7 +13,7 @@ const fs = require('fs');
 const path = require('path');
 const vm = require('node:vm');
 const read = f => fs.readFileSync(path.join(__dirname, '..', f), 'utf8');
-const ui = read('frontend/app/stationui.js');
+const ui = read('frontend/app/keepui.js');
 const chat = read('frontend/app/chat.js');
 const world = read('frontend/app/world.js');
 const app = read('frontend/app/app.js');
@@ -83,7 +83,7 @@ A.ok(/function answer\(text, doneLabel\) \{\s*\n\s*if \(ws[^\n]*settleNotifs\('n
 A.ok(/async function decide\(decision, doneLabel, isDeny\) \{\s*\n\s*if \(ws[^\n]*settleNotifs\('needs:' \+ ws\.id\)/.test(chat), 'deciding an approval settles it');
 A.ok(/' finished'\) \+ sessionNote\(ws\)/.test(chat) && /kind: 'result', go: \{ ws: ws\.id \}/.test(chat), 'a background session that finished says so and opens it');
 A.ok(/settleNotifs\('needs:' \+ ws\.id\);   \/\/ the run is over/.test(chat), 'a run that ends clears what it was waiting on');
-A.ok(/StationUI\.seenSession\(id\)/.test(app.slice(app.indexOf('function switchWorkstream'), app.indexOf('function switchWorkstream') + 300)), 'switching to a session reads its entries');
+A.ok(/KeepUI\.seenSession\(id\)/.test(app.slice(app.indexOf('function switchWorkstream'), app.indexOf('function switchWorkstream') + 300)), 'switching to a session reads its entries');
 A.ok(/budget cap hit[^\n]*kind: 'alert'[^\n]*go: \{ term: 'settings', section: 'budget' \}/.test(world), 'budget alerts open SPENDING LIMITS');
 A.ok(/settleNotifs\(toastKey\)/.test(world), 'a channel that reconnects settles its outage entry');
 A.ok(!/hudNote\('◈ recalled[^\n]*kind:/.test(world) && !/hudNote\('✎ memory saved'[^\n]*kind:/.test(world), 'memory telemetry stays a toast (never history)');

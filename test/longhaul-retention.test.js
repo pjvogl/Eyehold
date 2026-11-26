@@ -43,7 +43,7 @@ const sidecarSource = fs.readFileSync(path.join(__dirname, '..', 'sidecar', 'ind
   A.eq(page.offset, 100, 'journal pagination keeps a stable offset');
 
   // More than the old 2,000-row ceiling survives a new append and a fresh store instance.
-  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'starnet-deliverables-'));
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'eyehold-deliverables-'));
   try {
     const rows = Array.from({ length: 2100 }, (_, i) => ({ id: 'd' + i, agentId: 'agent', runId: 'r' + i, title: 'Deliverable ' + i, status: 'kept', files: [{ path: 'out/' + i + '.md', bytes: 1 }], createdAt: i, updatedAt: i }));
     fs.writeFileSync(path.join(root, 'deliverables.library.json'), JSON.stringify({ v: 1, rows, undo: [] }));

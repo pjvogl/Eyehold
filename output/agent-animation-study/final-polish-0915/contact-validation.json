@@ -15,7 +15,7 @@
       "previousFootDrift": 1
     },
     {
-      "id": "astronaut",
+      "id": "warden",
       "frames": 64,
       "cycleUnits": 16.5,
       "cyclesPerSecondAt28": 1.696969696969697,
@@ -177,7 +177,7 @@
       "previousFootDrift": 1.75
     },
     {
-      "id": "station_minion",
+      "id": "keep_minion",
       "frames": 64,
       "cycleUnits": 17.5,
       "cyclesPerSecondAt28": 1.6,

@@ -23,7 +23,7 @@ function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
 function boot(port, env, attemptsLeft) {
   return new Promise((resolve, reject) => {
     const child = spawn(process.execPath, [INDEX], {
-      env: Object.assign({}, process.env, env, { SKYNET_PORT: String(port) }),
+      env: Object.assign({}, process.env, env, { EYEHOLD_PORT: String(port) }),
       stdio: ['ignore', 'pipe', 'pipe']
     });
     let out = '', settled = false;
@@ -43,16 +43,16 @@ function boot(port, env, attemptsLeft) {
 
 function signedHeaders(token, origin, timestamp, nonce, body) {
   return {
-    'Content-Type': 'application/json', 'X-StarNet-Token': token, Origin: origin,
-    'x-starnet-timestamp': timestamp, 'x-starnet-nonce': nonce,
-    'x-starnet-signature': crypto.createHmac('sha256', SECRET).update(timestamp + '.' + nonce + '.' + body).digest('hex')
+    'Content-Type': 'application/json', 'X-Eyehold-Token': token, Origin: origin,
+    'x-eyehold-timestamp': timestamp, 'x-eyehold-nonce': nonce,
+    'x-eyehold-signature': crypto.createHmac('sha256', SECRET).update(timestamp + '.' + nonce + '.' + body).digest('hex')
   };
 }
 
 (async () => {
   const ws = fs.mkdtempSync(path.join(os.tmpdir(), 'sk-webhook-replay-'));
-  const env = { SKYNET_WORKSPACES: ws, STARNET_CHANNEL_WEBHOOK_SECRET: SECRET };
-  const body = JSON.stringify({ message: { chatId: 'chat-1', text: 'hello station' } });
+  const env = { EYEHOLD_WORKSPACES: ws, EYEHOLD_CHANNEL_WEBHOOK_SECRET: SECRET };
+  const body = JSON.stringify({ message: { chatId: 'chat-1', text: 'hello keep' } });
   const timestamp = String(Date.now());
   const nonce = 'nonce_e2e_' + crypto.randomBytes(12).toString('hex');
   let child, port;

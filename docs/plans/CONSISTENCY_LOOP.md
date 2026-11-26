@@ -18,10 +18,10 @@
   `deliveryText` for session-scoped runs). Goldens attach only to skills the run LOADED (preload / skill.view) or
   the review managed — an index-only match mints nothing (honest: no skill governed that run).
 
-**Problem (Andrew, 2026-08-21):** the same task gives different output week to week. StarNet's thesis is
+**Problem (Andrew, 2026-08-21):** the same task gives different output week to week. Eyehold's thesis is
 that it extracts what the user wants and how; today it captures that (dossier, verdicts) but never turns a
 correction into a *tested, reusable procedure*. Hermes' answer is "correction → `skill_manage` write-back".
-StarNet already has most of the machinery — the lane is to CONNECT it, not build it.
+Eyehold already has most of the machinery — the lane is to CONNECT it, not build it.
 
 ## What already exists (re-grepped 2026-08-22 — do not rebuild)
 
@@ -64,7 +64,7 @@ Commander's own words, not only a chip. Free text beats the six chips — this i
 Skill review writes land as `state: proposed` (additive enum value in skillstore), emit `skill.proposed`, and
 the COMMS turn-in card (the same deck memory uses, `chat.js` memory beat) shows the diff with keep/edit/discard.
 Accept → `active` + allow-by-digest; discard → archived + a `declined` mark the review must honor.
-- Popup law holds: the card appears only when a skill actually changed, and the answer changes station state.
+- Popup law holds: the card appears only when a skill actually changed, and the answer changes keep state.
 - Done = propose → card → keep → skill active in the next run's index; discard → never re-proposed.
 
 ### Slice 4 — Golden tests per skill (the consistency proof)

@@ -1,8 +1,8 @@
 /* node test/world-agent-click.test.js — every visible floor body opens its own AGENT DOSSIER.
 
    The regression had two coupled causes: world.js discarded every agentHit that was not the hero, and
-   app.js hard-coded the surviving click to StationUI.openAgent(0). The canvas and app are browser IIFEs,
-   so this test executes the id-to-roster-index resolver against a two-agent station and source-locks the
+   app.js hard-coded the surviving click to KeepUI.openAgent(0). The canvas and app are browser IIFEs,
+   so this test executes the id-to-roster-index resolver against a two-agent keep and source-locks the
    mouse-up seam that supplies the clicked body's stable id. Live canvas proof remains part of verification. */
 'use strict';
 const fs = require('fs');
@@ -22,7 +22,7 @@ if (!resolverMatch) A.report('world-agent-click.test');
 const roster = [{ id: 'agent', name: 'NOVA' }, { id: 'strategist-1', name: 'STRATEGIST' }];
 const opened = [];
 // eslint-disable-next-line no-new-func
-const openWorldAgent = new Function('liveAgents', 'StationUI', resolverMatch[0] + '; return openWorldAgent;')(
+const openWorldAgent = new Function('liveAgents', 'KeepUI', resolverMatch[0] + '; return openWorldAgent;')(
   () => roster.slice(),
   { openAgent: i => opened.push(i) }
 );

@@ -47,38 +47,38 @@ A.eq(ModelDock._internals.isAgentModel({ provider: 'openai', id: 'gpt-5.5' }), t
 
 // The configured provider/model remains the agent route. Only credentials proven compatible with
 // a dedicated STUDIO transport may be selected for the separate generation call.
-const direct = ImageTask.resolveRoute({ providerId: 'openrouter', runKey: 'run-or-key', stationOpenRouterKey: 'station-or-key' });
+const direct = ImageTask.resolveRoute({ providerId: 'openrouter', runKey: 'run-or-key', keepOpenRouterKey: 'keep-or-key' });
 A.eq(direct.key, 'run-or-key', 'an OpenRouter run uses its own configured key');
 A.eq(direct.keySource, 'run', 'the route records that the run key authorized generation');
 const directOpenAI = ImageTask.resolveRoute({ providerId: 'openai', runKey: 'run-openai-key', providerBaseUrl: 'https://api.openai.com/v1/' });
 A.eq(directOpenAI, { ok: true, provider: 'openai', protocol: 'openai-images', key: 'run-openai-key', baseUrl: 'https://api.openai.com/v1', keySource: 'run' }, 'an OpenAI run keeps its key and selects the Images API transport');
-const borrowed = ImageTask.resolveRoute({ providerId: 'gemini', runKey: 'gemini-key', stationOpenRouterKey: 'station-or-key' });
-A.eq(borrowed.key, 'station-or-key', 'a non-OpenRouter run uses the separately connected station OpenRouter key');
-A.eq(borrowed.keySource, 'station', 'the route never relabels the configured provider key');
-const managedInput = { providerId: 'starnet', runKey: 'untrusted-request-key', providerBaseUrl: 'https://wrong.example/v1', managedKey: 'device-token', managedBaseUrl: 'https://account.starnetos.com/v1/' };
+const borrowed = ImageTask.resolveRoute({ providerId: 'gemini', runKey: 'gemini-key', keepOpenRouterKey: 'keep-or-key' });
+A.eq(borrowed.key, 'keep-or-key', 'a non-OpenRouter run uses the separately connected keep OpenRouter key');
+A.eq(borrowed.keySource, 'keep', 'the route never relabels the configured provider key');
+const managedInput = { providerId: 'eyehold', runKey: 'untrusted-request-key', providerBaseUrl: 'https://wrong.example/v1', managedKey: 'device-token', managedBaseUrl: 'https://account.eyehold.com/v1/' };
 const managed = ImageTask.resolveRoute(managedInput);
-A.eq(managed, { ok: true, provider: 'starnet', protocol: 'openrouter-chat', key: 'device-token', baseUrl: 'https://account.starnetos.com/v1', keySource: 'managed' }, 'credits-only route keeps the linked credential and endpoint together');
+A.eq(managed, { ok: true, provider: 'eyehold', protocol: 'openrouter-chat', key: 'device-token', baseUrl: 'https://account.eyehold.com/v1', keySource: 'managed' }, 'credits-only route keeps the linked credential and endpoint together');
 for (const providerId of ['gemini', 'codex', 'custom', 'anthropic']) {
-  A.eq(ImageTask.resolveRoute({ ...managedInput, providerId }).provider, 'starnet', providerId + ' conversation can generate using linked credits');
+  A.eq(ImageTask.resolveRoute({ ...managedInput, providerId }).provider, 'eyehold', providerId + ' conversation can generate using linked credits');
 }
-A.eq(ImageTask.resolveRoute({ ...managedInput, managedBaseUrl: '', stationOpenRouterKey: 'byok' }).ok, false, 'missing managed endpoint cannot leak device token or silently spend BYOK');
+A.eq(ImageTask.resolveRoute({ ...managedInput, managedBaseUrl: '', keepOpenRouterKey: 'byok' }).ok, false, 'missing managed endpoint cannot leak device token or silently spend BYOK');
 A.eq(ImageTask.resolveRoute({ ...managedInput, managedKey: '' }).ok, false, 'missing managed credential fails closed');
 A.eq(ImageTask.admissionBlocker({ hasStudio: true, studioEnabled: true, route: managed }), null, 'linked credits admit generation without an OpenRouter key');
-const impossible = ImageTask.resolveRoute({ providerId: 'gemini', runKey: 'gemini-key', stationOpenRouterKey: '' });
+const impossible = ImageTask.resolveRoute({ providerId: 'gemini', runKey: 'gemini-key', keepOpenRouterKey: '' });
 A.eq(impossible.ok, false, 'a Gemini key alone is not treated as an OpenRouter STUDIO route');
 A.eq(impossible.code, 'media-route-required', 'the incompatible credential path has an exact blocker code');
-const borrowedOpenAI = ImageTask.resolveRoute({ providerId: 'gemini', runKey: 'gemini-key', stationOpenAIKey: 'station-openai-key', stationOpenAIBaseUrl: 'https://api.openai.com/v1' });
+const borrowedOpenAI = ImageTask.resolveRoute({ providerId: 'gemini', runKey: 'gemini-key', keepOpenAIKey: 'keep-openai-key', keepOpenAIBaseUrl: 'https://api.openai.com/v1' });
 A.eq(borrowedOpenAI.provider, 'openai', 'a text run can use a separately connected OpenAI key for STUDIO generation');
-A.eq(borrowedOpenAI.protocol, 'openai-images', 'the station OpenAI route selects the dedicated Images API');
+A.eq(borrowedOpenAI.protocol, 'openai-images', 'the keep OpenAI route selects the dedicated Images API');
 
 // The ChatGPT sign-in is a keyless STUDIO route: first for a run on the plan, last resort for any other text run,
-// never for a StarNet-credits run.
+// never for a Eyehold-credits run.
 const planRoute = { ok: true, provider: 'codex', protocol: 'codex-responses', key: '', baseUrl: '', keySource: 'plan' };
 A.eq(ImageTask.resolveRoute({ providerId: 'codex', codexSignedIn: true }), planRoute, 'a Codex run renders on its own ChatGPT plan');
 A.eq(ImageTask.resolveRoute({ ...managedInput, providerId: 'codex', codexSignedIn: true }).provider, 'codex', 'a Codex run uses the plan before spending linked credits');
-A.eq(ImageTask.resolveRoute({ providerId: 'anthropic', runKey: 'k', stationOpenRouterKey: 'or', codexSignedIn: true }).provider, 'openrouter', 'a connected OpenRouter key still wins for a non-Codex run');
+A.eq(ImageTask.resolveRoute({ providerId: 'anthropic', runKey: 'k', keepOpenRouterKey: 'or', codexSignedIn: true }).provider, 'openrouter', 'a connected OpenRouter key still wins for a non-Codex run');
 A.eq(ImageTask.resolveRoute({ providerId: 'anthropic', runKey: 'k', codexSignedIn: true }), planRoute, 'a keyless non-Codex run falls back to the ChatGPT sign-in');
-A.eq(ImageTask.resolveRoute({ providerId: 'starnet', codexSignedIn: true }).ok, false, 'a StarNet-credits run never moves onto the ChatGPT account');
+A.eq(ImageTask.resolveRoute({ providerId: 'eyehold', codexSignedIn: true }).ok, false, 'a Eyehold-credits run never moves onto the ChatGPT account');
 A.eq(ImageTask.resolveRoute({ providerId: 'codex', codexSignedIn: false }).code, 'media-route-required', 'a dead or missing sign-in is no route');
 A.ok(/sign in to ChatGPT/.test(ImageTask.admissionBlocker({ hasStudio: true, studioEnabled: true, route: { ok: false }, providerId: 'codex', model: 'gpt-5.5' })), 'the blocker names the ChatGPT sign-in as a fix');
 
@@ -87,7 +87,7 @@ A.ok(/Open BUILD MODE, place a STUDIO/.test(noGear), 'missing gear names the exa
 const disabled = ImageTask.admissionBlocker({ hasStudio: true, studioEnabled: false, route: direct });
 A.ok(/MEDIA STUDIO is disabled/.test(disabled) && /ABILITIES > TOOLSETS/.test(disabled), 'disabled STUDIO names the exact toolset action instead of asking for another prop');
 const noRoute = ImageTask.admissionBlocker({ hasStudio: true, studioEnabled: true, route: impossible, providerId: 'gemini', model: 'gemini-2.5-pro' });
-A.ok(/gemini \/ gemini-2\.5-pro/.test(noRoute) && /link this station/.test(noRoute), 'incompatible model/key path names both the configured route and exact fix');
+A.ok(/gemini \/ gemini-2\.5-pro/.test(noRoute) && /link this keep/.test(noRoute), 'incompatible model/key path names both the configured route and exact fix');
 A.eq(ImageTask.admissionBlocker({ hasStudio: true, studioEnabled: true, route: direct }), null, 'a placed, enabled STUDIO plus compatible credential is admitted');
 
 // Completion is artifact-backed. Successful prose, successful unrelated tools, or a generic file
@@ -123,8 +123,8 @@ A.ok(/reason: taskQuestionAsked \? 'clarifying' : \(\(result && result\.reason\)
 
 
 const byokRecovery = ImageTask.admissionBlocker({ hasStudio: true, studioEnabled: true, providerId: 'custom', model: 'local-model', route: { ok: false } });
-A.ok(/OpenAI or OpenRouter API key/.test(byokRecovery) && /StarNet account/.test(byokRecovery), 'BYOK media recovery exposes all supported routes');
-const managedRecovery = ImageTask.admissionBlocker({ hasStudio: true, studioEnabled: true, providerId: 'starnet', route: { ok: false } });
+A.ok(/OpenAI or OpenRouter API key/.test(byokRecovery) && /Eyehold account/.test(byokRecovery), 'BYOK media recovery exposes all supported routes');
+const managedRecovery = ImageTask.admissionBlocker({ hasStudio: true, studioEnabled: true, providerId: 'eyehold', route: { ok: false } });
 A.ok(/relink/.test(managedRecovery) && !/OpenRouter/.test(managedRecovery), 'managed failure stays on the linked-account route');
 
 A.report('image-task.test');

@@ -20,7 +20,7 @@ A.eq(F.shouldOffer({ dims: {} }), false, 'missing style dim → fail closed');
 const d = F.directive();
 A.ok(d.indexOf('AT MOST ONCE per task') >= 0, 'the directive caps the fork at one per task');
 A.ok(d.indexOf('FORK: <the question') >= 0, 'the directive teaches the exact marker format');
-A.ok(d.indexOf('never ask a fork twice') >= 0, 'the directive forbids re-asking (the station remembers)');
+A.ok(d.indexOf('never ask a fork twice') >= 0, 'the directive forbids re-asking (the keep remembers)');
 A.ok(d.indexOf('one-off task details') >= 0, 'the directive excludes one-off task details (durable preferences only)');
 
 /* ---------- parse: tolerant but never a broken chip row ---------- */

@@ -1,6 +1,6 @@
-/* DESK SCREEN (2026-09-29) — frontend/app/deskscreen.js. Click an agent's workstation on the live floor: the DESK SCREEN
+/* DESK SCREEN (2026-09-29) — frontend/app/deskscreen.js. Click an agent's workkeep on the live floor: the DESK SCREEN
    window opens on that agent's COMPUTER — the app its current step is working in (editor · diff · terminal · web ·
-   browser), rendered from the run transcript. It is a normal station window (StationUI 'desk', PANEL shell): the term
+   browser), rendered from the run transcript. It is a normal keep window (KeepUI 'desk', PANEL shell): the term
    system owns the glass chrome, the dock rise, resizing and the roster switcher; this file lays out the body. The
    activity feed is COMMS, never repeated here. Matte, no glow; theme tokens only. */
 /* the window body is a column so the monitor FILLS it: resize the window and the screen grows with it */
@@ -43,7 +43,7 @@
 .ds-partial { padding: 4px 10px; }
 .ds-view { flex: 1 1 auto; min-height: 0; overflow: auto; }
 
-/* the apps' surfaces — all monospace station type, no syntax colour (a matte screen, not an IDE skin) */
+/* the apps' surfaces — all monospace keep type, no syntax colour (a matte screen, not an IDE skin) */
 .ds-code { list-style: none; margin: 0; padding: 6px 0; counter-reset: ln; font-size: 15px; line-height: 1.3; }
 .ds-code li { counter-increment: ln; padding: 0 10px 0 0; white-space: pre-wrap; overflow-wrap: anywhere; color: var(--text); }
 .ds-code li::before { content: counter(ln); display: inline-block; width: 38px; margin-right: 10px; text-align: right; color: var(--ph-dim); opacity: .6; }
@@ -53,7 +53,7 @@
 .ds-diff .ds-hunk { color: var(--ph-dim); }
 .ds-app[data-app="terminal"] .ds-view { background: rgba(0,0,0,.28); }
 .ds-app > .ds-page { flex: 1 1 auto; min-height: 0; overflow: auto; }
-/* screen off: an empty monitor says what it is waiting for, in the station's quiet voice */
+/* screen off: an empty monitor says what it is waiting for, in the keep's quiet voice */
 .ds-off { flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; text-align: center; border: 1px solid var(--gd-edge, rgba(var(--ph-rgb),.24)); border-radius: 5px; background: rgba(0,0,0,.34); box-shadow: inset 0 1px 6px rgba(0,0,0,.45); padding: 16px; }
 .ds-off span { font-size: 17px; letter-spacing: 2px; color: var(--ph-dim); text-transform: uppercase; }
 .ds-off small { font-size: 14px; color: var(--ph-dim); max-width: 46ch; }
@@ -61,7 +61,7 @@
 /* hands: tell it something mid-run, stop it, open its chat */
 .ds-steer { display: flex; gap: 6px; flex: none; }
 .ds-steer[hidden] { display: none; }
-/* (0,2,0) on purpose: the station's base field rule input[type=text] is (0,1,1) and would paint a 19px console field */
+/* (0,2,0) on purpose: the keep's base field rule input[type=text] is (0,1,1) and would paint a 19px console field */
 .ds-screen .ds-in { flex: 1; width: auto; min-width: 0; font: 15px/1.2 'VT323', monospace; color: var(--text); text-shadow: none; background: rgba(0,0,0,.28); border: 1px solid var(--gd-edge, rgba(var(--ph-rgb),.24)); border-radius: 4px; padding: 4px 8px; box-shadow: inset 0 1px 3px rgba(0,0,0,.3); }
 .ds-screen .ds-in:focus { outline: none; border-color: rgba(var(--ph-rgb), .55); }
 .ds-screen .ds-in::placeholder { color: var(--ph-dim); }

@@ -1,6 +1,6 @@
-# StarNet adversarial audit — 2026-09-10
+# Eyehold adversarial audit — 2026-09-10
 
-Three new P1 failures reproduced against source 2aa8305c0 in an isolated seeded station. All three persisted across a real sidecar restart. No product fix, trunk edit, merge, production-station mutation, or paid model call was performed.
+Three new P1 failures reproduced against source 2aa8305c0 in an isolated seeded keep. All three persisted across a real sidecar restart. No product fix, trunk edit, merge, production-keep mutation, or paid model call was performed.
 
 | Priority | Finding | Observed consequence | Record |
 | --- | --- | --- | --- |
@@ -10,15 +10,15 @@ Three new P1 failures reproduced against source 2aa8305c0 in an isolated seeded 
 
 The Git race reproduced twice in separate disposable repositories; the [second receipt](../evidence/adversarial-0910/loop-race-repeat.json) has a different candidate and undo commit.
 
-The loop race deserves the first repair: it violates the review decision at the actual Git boundary. Save conflict protection is next because it replaces the full station snapshot. Attachment migration should be transactional before conversion is acknowledged.
+The loop race deserves the first repair: it violates the review decision at the actual Git boundary. Save conflict protection is next because it replaces the full keep snapshot. Attachment migration should be transactional before conversion is acknowledged.
 
 ## Evidence and reproduction
 
 [Restart receipt](../evidence/adversarial-0910/restart-receipt.json) contains the concrete before/after fields, original file reference, candidate and undo commits, and persisted verdict. [Boundary probe receipt](../evidence/adversarial-0910/boundary-probes.json) records concurrent routine creation and malformed-input results.
 
-The live browser used http://127.0.0.1:9236; a deterministic local model at :9237 supported successful runs, held streams and cancellation. The loop fixture placed a known file during the held run, following the existing loops-git.e2e fixture technique; StarNet itself performed the real Git harvest and undo. This proves the review transaction failure, not real-model coding quality.
+The live browser used http://127.0.0.1:9236; a deterministic local model at :9237 supported successful runs, held streams and cancellation. The loop fixture placed a known file during the held run, following the existing loops-git.e2e fixture technique; Eyehold itself performed the real Git harvest and undo. This proves the review transaction failure, not real-model coding quality.
 
-The API reproducers are under dev/: audit-stale-save.cjs, audit-conversion.cjs, audit-loop-verdict.cjs, with audit-api.cjs and audit-mock.cjs. Use only a disposable seeded station. The mock and API helper default to ports 9237/9236. Launch the mock with node dev/audit-mock.cjs; launch node dev/seed.js --keep with SKYNET_PORT=9236, SKYNET_DEFAULT_MODEL=anthropic/claude-haiku-4.5, SKYNET_OPENROUTER_BASE=http://127.0.0.1:9237/api/v1, and SKYNET_OPENROUTER_KEY=audit-local-mock. Worktree dependency resolution used NODE_PATH pointing to the integration checkout's installed node_modules. The loop reproducer creates and grants its own disposable repository; it never operates on the integration checkout's Git history.
+The API reproducers are under dev/: audit-stale-save.cjs, audit-conversion.cjs, audit-loop-verdict.cjs, with audit-api.cjs and audit-mock.cjs. Use only a disposable seeded keep. The mock and API helper default to ports 9237/9236. Launch the mock with node dev/audit-mock.cjs; launch node dev/seed.js --keep with SKYNET_PORT=9236, SKYNET_DEFAULT_MODEL=anthropic/claude-haiku-4.5, SKYNET_OPENROUTER_BASE=http://127.0.0.1:9237/api/v1, and SKYNET_OPENROUTER_KEY=audit-local-mock. Worktree dependency resolution used NODE_PATH pointing to the integration checkout's installed node_modules. The loop reproducer creates and grants its own disposable repository; it never operates on the integration checkout's Git history.
 
 ## Scope and negative controls
 

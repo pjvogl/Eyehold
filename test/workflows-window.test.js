@@ -1,14 +1,14 @@
 /* test/workflows-window.test.js — WORK › WORKFLOWS, its own docked window (frontend/app/windows/workflows.js, 2026-09-30 — Andrew: "the
    easiest conveyor system we can possibly put together. It should be clear as day to the user how to use it").
 
-   Run for real against a REAL station model (worldmodel + the layout engine + the routing compiler), the window's own code in a vm:
-     1. a fresh one-agent station: NEW WORKFLOW → pick "Research + write" → that one agent does every step → CREATE lays the line on
+   Run for real against a REAL keep model (worldmodel + the layout engine + the routing compiler), the window's own code in a vm:
+     1. a fresh one-agent keep: NEW WORKFLOW → pick "Research + write" → that one agent does every step → CREATE lays the line on
         the floor (LineEdit.placeBlueprint), crewed, with each step's instructions and the line's name, READY TO RUN — no Build Mode;
      2. a line is READY only by WorkflowLine.readiness over the compiled plan, with the facts the Workflow panel and the lead's
-        station.layout use; an unstaffed step makes it NEEDS SETUP;
+        keep.layout use; an unstaffed step makes it NEEDS SETUP;
      3. SEND IT A JOB posts the line, the job and its name to the job route after the plan gate, folds a clean delivery into the
         OUTBOX, and shows the job's server record; a refusal says why and shows no job;
-   and source-locked: the WORK menu opens this window (never Build Mode), the OUTBOX opens a job's record here, the station's glass. */
+   and source-locked: the WORK menu opens this window (never Build Mode), the OUTBOX opens a job's record here, the keep's glass. */
 'use strict';
 const A = require('./_assert.js');
 const fs = require('fs');
@@ -29,9 +29,9 @@ const tick = () => new Promise(r => setTimeout(r, 15));
   const ctx = vm.createContext({
     console, setTimeout, clearTimeout, setInterval, clearInterval, Promise, JSON, Math, Date, Set, Map, encodeURIComponent,
     module: { exports: {} }, window: {}, document: { activeElement: null, querySelector: () => null },
-    StationUI: { registerWindow: (k, t, fn, o) => { registered[k] = { t, fn, o }; }, openTerm: k => opened.push(k),
+    KeepUI: { registerWindow: (k, t, fn, o) => { registered[k] = { t, fn, o }; }, openTerm: k => opened.push(k),
       h: { present: [{ id: 'nova', name: 'NOVA' }], sfx() {}, notify() {}, navigateWork: (from, to) => opened.push(from + '>' + to) } },
-    App: { station: () => st },
+    App: { keep: () => st },
     Pipeline: P, WorkflowLine: WL, LineEdit: LE, WorldModel: WM,
     Build: { nagWhy: c => 'nag:' + c, lineSchematic: () => null, machineStill: () => '',
       lineWords: () => ({ plain: { research_line: 'Research + write', front_desk: 'One agent', revision_loop: 'Draft + review', build_test: 'Build + test' }, purpose: { research_line: 'one agent digs up sources, the next writes the answer' } }) },
@@ -41,13 +41,13 @@ const tick = () => new Promise(r => setTimeout(r, 15));
   });
   vm.runInContext(src, ctx, { filename: 'workflows.js' });
   const WW = ctx.module.exports, S = WW._state;
-  A.ok(registered.workflows && registered.workflows.t === 'WORKFLOWS' && registered.workflows.o.className === 'wfw-win', 'it is a station window: StationUI.registerWindow(\'workflows\', \'WORKFLOWS\', …) — the dock raises it from the bottom like every other');
+  A.ok(registered.workflows && registered.workflows.t === 'WORKFLOWS' && registered.workflows.o.className === 'wfw-win', 'it is a keep window: KeepUI.registerWindow(\'workflows\', \'WORKFLOWS\', …) — the dock raises it from the bottom like every other');
 
-  /* ---------- 1. a fresh one-agent station: a workflow in three clicks, no Build Mode ---------- */
-  A.ok(WW._floor().lines.length === 0, 'a fresh station has no workflows (the window opens on "Make your first workflow")');
+  /* ---------- 1. a fresh one-agent keep: a workflow in three clicks, no Build Mode ---------- */
+  A.ok(WW._floor().lines.length === 0, 'a fresh keep has no workflows (the window opens on "Make your first workflow")');
   WW._pick('research_line');
   A.ok(S.pick && S.pick.bp === 'research_line' && S.pick.name === 'Research + write', 'picking a starter names it the way the Build Library does');
-  A.ok(JSON.stringify(S.pick.agents) === '["nova","nova"]', 'one agent does every step — a one-agent station needs no recruiting');
+  A.ok(JSON.stringify(S.pick.agents) === '["nova","nova"]', 'one agent does every step — a one-agent keep needs no recruiting');
   A.ok(S.pick.briefs.RESEARCHER.does === WL.defaultBrief('RESEARCHER').does && S.pick.briefs.WRITER.does === WL.defaultBrief('WRITER').does, 'each step comes with its instructions written');
   const propsBefore = st.props().length;
   WW._create();
@@ -87,7 +87,7 @@ const tick = () => new Promise(r => setTimeout(r, 15));
   WW._send(WW._floor().lines[0], 'again', null);
   for (let i = 0; i < 8; i++) await tick();
   A.ok(S.out === null && S.job === null && S.msg && S.msg.bad && /already riding the line/.test(S.msg.text), 'a refused job says why, and no result is shown');
-  // the plan gate: a floor the station refused is never run
+  // the plan gate: a floor the keep refused is never run
   ctx.World.syncPlan = () => Promise.resolve({ errors: [{ code: 'CYCLE' }] });
   fetches.length = 0;
   WW._send(WW._floor().lines[0], 'gated', null);
@@ -127,21 +127,21 @@ const tick = () => new Promise(r => setTimeout(r, 15));
 
   /* ---------- source locks ---------- */
   const html = rd('frontend/index.html'), app = rd('frontend/app/app.js'), build = rd('frontend/app/build.js'), outbox = rd('frontend/app/windows/outbox.js');
-  const css = rd('frontend/css/workflows-window.css'), glass = rd('frontend/app/glass-demo.js'), sc = rd('frontend/app/stationcommands.js');
-  A.ok(/<button class="bb" id="bb-automate" data-family="automate"/.test(html) && /\{ id: 'workflows', k: 'workflows', label: 'WORKFLOWS'/.test(fs.readFileSync(path.join(__dirname, '..', 'frontend', 'app', 'stationui.js'), 'utf8')) && !/bbWorkflows\.onclick/.test(app), 'WORK › AUTOMATE › WORKFLOWS opens this window through the dock (never Build Mode)');
-  A.ok(html.indexOf('app/windows/workflows.js') > html.indexOf('app/stationui.js') && /css\/workflows-window\.css/.test(html), 'it loads after the window manager, with its stylesheet');
+  const css = rd('frontend/css/workflows-window.css'), glass = rd('frontend/app/glass-demo.js'), sc = rd('frontend/app/keepcommands.js');
+  A.ok(/<button class="bb" id="bb-automate" data-family="automate"/.test(html) && /\{ id: 'workflows', k: 'workflows', label: 'WORKFLOWS'/.test(fs.readFileSync(path.join(__dirname, '..', 'frontend', 'app', 'keepui.js'), 'utf8')) && !/bbWorkflows\.onclick/.test(app), 'WORK › AUTOMATE › WORKFLOWS opens this window through the dock (never Build Mode)');
+  A.ok(html.indexOf('app/windows/workflows.js') > html.indexOf('app/keepui.js') && /css\/workflows-window\.css/.test(html), 'it loads after the window manager, with its stylesheet');
   A.ok(/function editLine\(propId\) \{[\s\S]{0,400}openFlowCard\(propId\)/.test(build) && /lineWords: \(\) => \(\{ plain: LINE_PLAIN, purpose: LINE_PURPOSE \}\)/.test(build), 'EDIT WORKFLOW opens the full editor on this line; the window speaks the shelf\'s own words');
   A.ok(/class="consent-btn ob-wf">OPEN IN WORKFLOWS<\/button>/.test(outbox) && /WorkflowsWindow\.openByStream\(rw\.streamId, 'deliverables'\)/.test(outbox), 'DELIVERABLES › TO REVIEW opens a workflow job\'s own record here');
   A.ok(/const work = w\.classList\.contains\('wfw-win'\);/.test(glass) && /work \? available \* \.8/.test(glass), 'it opens tall enough for the job and its result');
-  // the window's status reads the panel's facts — the ones station.layout gives the lead (stationcommands.js describeLayout)
+  // the window's status reads the panel's facts — the ones keep.layout gives the lead (keepcommands.js describeLayout)
   A.ok(/hasCompute = \(aid, pid\) => [^\n]*bayObjects\(aid, pid\)[^\n]*'computer'/.test(src) && /toolsAt = \(aid, pid\) => [^\n]*bayObjects\(aid, pid\)/.test(sc) && /hasCompute = \(aid, pid\) => !!aid && toolsAt\(aid, pid\)\.indexOf\('computer'\) >= 0/.test(sc),
-    'the window and station.layout read compute the same way: PER BAY (bayObjects(agent, bay) has a computer)');
-  for (const fact of [/errors: plan\.errors \|\| \[\]/, /isCrew/, /briefOf/]) A.ok(fact.test(src) && fact.test(sc), 'the window and station.layout read the same readiness fact: ' + fact);
+    'the window and keep.layout read compute the same way: PER BAY (bayObjects(agent, bay) has a computer)');
+  for (const fact of [/errors: plan\.errors \|\| \[\]/, /isCrew/, /briefOf/]) A.ok(fact.test(src) && fact.test(sc), 'the window and keep.layout read the same readiness fact: ' + fact);
   A.ok(/labelOf = code => \(B\(\) && B\(\)\.nagWhy\) \? B\(\)\.nagWhy\(code\) : code/.test(src), '…and the floor\'s own nag copy');
   // KEEP THIS STYLE writes the panel's own example block, so the panel and the window both see it
   const panel = rd('frontend/app/workflowpanel.js');
   A.ok(WW.EX_HEAD === (panel.match(/const EX_HEAD = '([^']+)';/) || [])[1], 'KEEP THIS STYLE uses the Workflow panel\'s exact example block');
-  // station UI laws: hover tips are the station tooltip (data-tip), keys are the current glass, no native popups
+  // keep UI laws: hover tips are the keep tooltip (data-tip), keys are the current glass, no native popups
   A.ok(!/\stitle="/.test(src) && !/window\.(alert|confirm|prompt)\(/.test(src) && !/<select/.test(src) && !/key-input/.test(src), 'no OS tooltip, no native dialog, no native select, no old CRT field');
   A.ok(/\.term\.wfw-win \.bb \{[\s\S]{0,400}min-height: 36px;[\s\S]{0,200}border-radius: 8px;/.test(css) && /--refit-glass: linear-gradient\(125deg/.test(css), 'its keys are the Build Library / Workflow panel glass key (36px, 8px), on the panel\'s own glass tokens');
   A.ok(/\.term\.wfw-win \.bb:hover::before, \.term\.wfw-win \.bb:hover::after \{ content: none; \}/.test(css), 'never the old pip-boy [ ] hover brackets');

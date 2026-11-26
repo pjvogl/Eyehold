@@ -55,14 +55,14 @@
   /* LEGACY HOP TURNS IN A PER-AGENT HISTORY (sec-taint2 09-25). Before hop history was keyed per chat lineage (hub.js
      hopHistoryKey, commit d37b81a57), a downstream work-line hop appended its handoff turn (the upstream stage's
      OUTPUT — possibly text that stage read from a hostile page) and its own reply under the BARE agentId, i.e. into
-     the very file that agent's direct chat replays. Those turns survive on disk in existing stations. They are
+     the very file that agent's direct chat replays. Those turns survive on disk in existing keeps. They are
      recognised by the exact head chain.js/pipeline.js handoffPrompt has always written, and are dropped from what is
      REPLAYED: the handoff user turn plus the hop's reply straight after it. Hop-keyed histories (hop_<32 hex>) are
      where handoffs legitimately live and are never filtered. Non-destructive: loadHistory only filters; the first
      appendTurn that would rewrite such a file first archives the untouched envelope beside it
      (<agentId>.history.legacy-hops.json, written once, never overwritten), and only then drops the turns. */
   const HOP_KEY_RE = /^hop_[0-9a-f]{32}$/;
-  const LEGACY_HOP_TURN = /^PIPELINE HANDOFF — you are stage \d+ of a work line on this station\.\n\nThe original request was:\n/;
+  const LEGACY_HOP_TURN = /^PIPELINE HANDOFF — you are stage \d+ of a work line on this keep\.\n\nThe original request was:\n/;
   function withoutLegacyHops(msgs) {
     const kept = [];
     let dropped = 0;

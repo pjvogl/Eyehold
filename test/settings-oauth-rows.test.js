@@ -12,7 +12,7 @@
 const A = require('./_assert.js');
 const fs = require('fs'); const path = require('path');
 const read = (...p) => fs.readFileSync(path.join(__dirname, '..', ...p), 'utf8');
-const ui = read('frontend', 'app', 'stationui.js');
+const ui = read('frontend', 'app', 'keepui.js');
 const dock = read('frontend', 'app', 'modeldock.js');
 const keycta = read('frontend', 'app', 'keycta.js');
 const signin = read('frontend', 'app', 'codexsignin.js');
@@ -45,7 +45,7 @@ A.ok(/id="'\s*\+\s*esc\(pid\)\s*\+\s*'-inline-code"/.test(ui) && /id="'\s*\+\s*e
 // ---- ONE shared engine, no bespoke poll loops in the UI ----
 A.ok(/OAuthSignIn\.for\(pid\)/.test(ui), 'RE-SIGN-IN / DISCONNECT drive the shared OAuthSignIn engine');
 A.ok(/act\.match\(\/\^\(grok\|kimi\)-\(resign\|logout\)\$\//.test(ui), 'the grok/kimi row actions are handled by ONE parameterized handler, not a block per provider');
-A.ok(!/\/api\/auth\/grok\/poll/.test(ui) && !/\/api\/auth\/kimi\/poll/.test(ui), 'stationui.js never grows its own grok/kimi poll loop (the engine owns it)');
+A.ok(!/\/api\/auth\/grok\/poll/.test(ui) && !/\/api\/auth\/kimi\/poll/.test(ui), 'keepui.js never grows its own grok/kimi poll loop (the engine owns it)');
 
 // ---- modeldock lists grok + kimi, enabled via status, discovered via /models, ranked right after codex ----
 A.ok(/codex: 0, grok: 1, kimi: 2/.test(dock), 'grok + kimi rank immediately after codex in the model dock');
@@ -55,7 +55,7 @@ A.ok(/async function oauthProviderEnabled/.test(dock) && /'\/api\/auth\/'\s*\+\s
 A.ok(/'\/api\/auth\/'\s*\+\s*p\s*\+\s*'\/models'/.test(dock), 'grok/kimi model discovery hits /api/auth/<pid>/models');
 A.ok(/if \(p === 'grok'[^\n]*\) return 'grok'/.test(dock) && /return 'kimi'/.test(dock), 'grok/kimi are their OWN providers in normalizeProvider (not aliased to xai)');
 
-// ---- keycta treats grok/kimi as keyless (no "add a key" banner for an OAuth station) ----
+// ---- keycta treats grok/kimi as keyless (no "add a key" banner for an OAuth keep) ----
 A.ok(/p !== 'codex' && p !== 'grok' && p !== 'kimi'/.test(keycta), 'keycta treats grok/kimi as keyless OAuth providers');
 
 // ---- friendlyerror doors: RECONNECT GROK / RECONNECT KIMI, plus the xAI 403-allowlist escape ----
@@ -98,7 +98,7 @@ A.ok(/p !== 'codex' && p !== 'grok' && p !== 'kimi'/.test(keycta), 'keycta treat
 // there) the card button is the ONLY reachable sign-in — gating it to OAUTH_EXTRA was the user-reported
 // escape where a removed ChatGPT sign-in could never be re-connected.
 {
-  const ui = read('frontend', 'app', 'stationui.js');
+  const ui = read('frontend', 'app', 'keepui.js');
   A.ok(/data-act="prov-oauth-signin"/.test(ui), 'the provider card renders a ⏼ SIGN IN action for a not-signed-in device-code provider');
   A.ok(/wantsOAuthSignin\s*=\s*p\.live\s*&&\s*isOAuthProvider\(p\.id\)\s*&&\s*!credentialSaved/.test(ui), 'the card sign-in covers EVERY device-code provider (codex included) without a stored sign-in — never just OAUTH_EXTRA');
   A.ok(!/wantsOAuthSignin\s*=[^;]*!codexDead/.test(ui) && /codexDead \? '⏼ RECONNECT' : '⏼ SIGN IN'/.test(ui), '#92: a KNOWN-dead sign-in keeps the card button, labelled ⏼ RECONNECT (the RE-SIGN-IN row under API KEYS was the only way back in)');
@@ -114,7 +114,7 @@ A.ok(/p !== 'codex' && p !== 'grok' && p !== 'kimi'/.test(keycta), 'keycta treat
 // ---- 2026-07-22 auth-lifecycle hardening (source-locks; the live races/keychain failures need real tokens
 // or a packaged exe to reproduce, so these pin the mechanisms) ----
 {
-  const ui = read('frontend', 'app', 'stationui.js');
+  const ui = read('frontend', 'app', 'keepui.js');
   const harness = read('frontend', 'app', 'harness.js');
   const sidecar = read('sidecar', 'index.js');
   // single-flight refresh: concurrent refreshes on a ROTATING refresh token false-expire a live sign-in

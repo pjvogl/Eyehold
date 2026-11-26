@@ -31,7 +31,7 @@ cold-off, circuit breaker and cooldown in the frontend and sidecar, and ask of e
 3. **Concurrency against one provider.** Turn the speaker on (which prewarms ~6 stock lines) and
    immediately drive a live reply. Prewarm must yield while draining, not race the reply.
 4. **The whole ladder.** Keyed neural chain → free keyless Edge floor. Break each rung in turn
-   and prove a zero-key station still speaks, and that a total failure NAMES every leg it tried
+   and prove a zero-key keep still speaks, and that a total failure NAMES every leg it tried
    and writes nothing.
 5. **Over-cap scripts are REFUSED, never truncated.** Verify, then check whether any sibling
    surface truncates instead.
@@ -41,7 +41,7 @@ cold-off, circuit breaker and cooldown in the frontend and sidecar, and ask of e
 
 ## The rig worth reusing
 
-Boot a seeded dev station; patch `HTMLMediaElement.prototype.play` and `window.fetch` to log;
+Boot a seeded dev keep; patch `HTMLMediaElement.prototype.play` and `window.fetch` to log;
 force a failure on the Nth `/api/tts`; drive five `Voice.speakChunk()` then `endReply()`; count
 `play()` calls. Before/after counts are the evidence.
 

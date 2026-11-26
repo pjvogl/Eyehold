@@ -24,7 +24,7 @@ const specs={
  }
  fs.copyFileSync(at('frontend/assets/industrial/batch03/lab/fabricator_carriage.png'),at(dir+'fabricator_carriage.png'));
  fs.writeFileSync(mp,JSON.stringify(manifest,null,2)+'\n');
- const cp=at('docs/station-remaster/props-v3/coverage.json'),coverage=JSON.parse(fs.readFileSync(cp));
+ const cp=at('docs/keep-remaster/props-v3/coverage.json'),coverage=JSON.parse(fs.readFileSync(cp));
  for(const row of coverage.props)if(manifest.props[row.id])Object.assign(row,{status:'new-design-awaiting-review',views:Object.keys(manifest.props[row.id].views)});
  coverage.newDesigns=coverage.props.filter(p=>p.status==='new-design-awaiting-review').length;coverage.remainingFullRedesign=coverage.catalog-coverage.approved-coverage.newDesigns;fs.writeFileSync(cp,JSON.stringify(coverage,null,2)+'\n');
  console.log(JSON.stringify({added:Object.keys(specs),newDesigns:coverage.newDesigns}));

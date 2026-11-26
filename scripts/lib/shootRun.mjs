@@ -52,7 +52,7 @@ export async function runShoot({ port, cdpPort, outDir, win = '1440,900', only =
     console.log('navigating + booting to the floor...');
     await cdp.send('Page.navigate', { url: APP_URL });
     const ready = await waitDevReady(cdp, evalJS, { tries: 24, url: APP_URL });
-    const dev = await evalJS(cdp, '!!window.__STARNET_DEV__').catch(() => false);
+    const dev = await evalJS(cdp, '!!window.__EYEHOLD_DEV__').catch(() => false);
     const screen = await evalJS(cdp, `(document.querySelector('.screen.active')||{}).id || '?'`).catch(() => '?');
     console.log(`  dev=${dev} activeScreen=${screen} ready=${ready}`);
     manifest.ready = ready; manifest.dev = dev; manifest.activeScreen = screen;
@@ -81,7 +81,7 @@ export async function runShoot({ port, cdpPort, outDir, win = '1440,900', only =
         return 'world-link-timeout';
       })()`);
       manifest.frozen = frozen;
-      if (frozen !== 'world-frozen:live') throw new Error('capture requires a live station before freezing: ' + frozen);
+      if (frozen !== 'world-frozen:live') throw new Error('capture requires a live keep before freezing: ' + frozen);
       // 4. Capture every state.
       const states = buildStates();
       for (const st of states) {
@@ -90,7 +90,7 @@ export async function runShoot({ port, cdpPort, outDir, win = '1440,900', only =
         if (st.drive) { try { driveResult = await evalJS(cdp, st.drive); } catch (e) { driveResult = 'DRIVE_ERR:' + e.message; } }
         await sleep(st.wait ?? 1400);
         // Golden frames represent durable panel layout, not timing-dependent transient toasts.
-        // A BUILD STATION close emits "Station layout saved"; depending on capture speed it used
+        // A BUILD KEEP close emits "Keep layout saved"; depending on capture speed it used
         // to overlap a later panel and poison the blessed signature. Remove only the ephemeral DOM
         // stack immediately before capture; persistent notification records remain untouched.
         // Also FINISH any still-running CSS animation before the frame is read. The card family

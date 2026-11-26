@@ -91,7 +91,7 @@ const fc = require('../sidecar/fallbackchain.js');
 
 // ---------- 3. PERSISTENCE round-trip through the host's {version,models} envelope ----------
 {
-  const tmp = path.join(require('os').tmpdir(), 'starnet-fallback-test-' + process.pid + '.json');
+  const tmp = path.join(require('os').tmpdir(), 'eyehold-fallback-test-' + process.pid + '.json');
   try {
     // host writes: saveResilient(FALLBACK_FILE, { version: 1, models: fallbackSaved })
     const saved = fc.validateChainPatch({ models: ['c/z', 'd/w'] }).chain;
@@ -123,25 +123,25 @@ const fc = require('../sidecar/fallbackchain.js');
   A.ok(/fallbackChain\.promoteToolCapable\(model, fallbackModels/.test(idx), 'task admission consumes the configured chain before refusing a tool-less primary');
   A.ok(/initialFallback/.test(idx), 'preflight promotion is passed to the loop for truthful telemetry');
   A.ok(/fallbackChain\.resolveChain\(ENV_FALLBACK, fallbackSaved\)/.test(idx), 'effective chain = pure resolve(env, saved)');
-  A.ok(/parseEnvChain\(ENV\('FALLBACK_MODELS'\)/.test(idx), 'env SKYNET/STARNET_FALLBACK_MODELS remains the default baseline');
+  A.ok(/parseEnvChain\(ENV\('FALLBACK_MODELS'\)/.test(idx), 'env SKYNET/EYEHOLD_FALLBACK_MODELS remains the default baseline');
   // honest validation posture: catalog lookups warn, never refuse
   A.ok(/warmModelCatalogSet/.test(idx) && /warnings/.test(idx), 'catalog validation is wired as warnings (never a refusal)');
 }
 
 // ---------- 5. SOURCE GUARD: the frontend MODELS panel ----------
 {
-  const station = fs.readFileSync(path.join(__dirname, '..', 'frontend', 'app', 'stationui.js'), 'utf8');
+  const keep = fs.readFileSync(path.join(__dirname, '..', 'frontend', 'app', 'keepui.js'), 'utf8');
   const css = fs.readFileSync(path.join(__dirname, '..', 'frontend', 'css', 'app.css'), 'utf8');
-  A.ok(/>Backup models </.test(station), 'MODELS section header present in SETTINGS');
-  A.ok(/function wireFallbackChain/.test(station) && /wireFallbackChain\(body\)/.test(station), 'wireFallbackChain builder present and called');
-  A.ok(/id="fbc-list"/.test(station) && /id="fbc-add"/.test(station), 'ordered list + add-from-catalog picker present');
-  A.ok(/data-act="up"/.test(station) && /data-act="dn"/.test(station) && /data-act="rm"/.test(station), 'reorder up/down + remove controls present');
-  A.ok(/id="fbc-save"/.test(station) && /id="fbc-reset"/.test(station), 'SAVE + RESET controls present');
-  A.ok(/\/api\/fallback\/chain/.test(station), 'the panel reads + posts the chain endpoint');
-  A.ok(/\/api\/models\/openrouter/.test(station), 'the add-picker is fed from the real model catalog');
+  A.ok(/>Backup models </.test(keep), 'MODELS section header present in SETTINGS');
+  A.ok(/function wireFallbackChain/.test(keep) && /wireFallbackChain\(body\)/.test(keep), 'wireFallbackChain builder present and called');
+  A.ok(/id="fbc-list"/.test(keep) && /id="fbc-add"/.test(keep), 'ordered list + add-from-catalog picker present');
+  A.ok(/data-act="up"/.test(keep) && /data-act="dn"/.test(keep) && /data-act="rm"/.test(keep), 'reorder up/down + remove controls present');
+  A.ok(/id="fbc-save"/.test(keep) && /id="fbc-reset"/.test(keep), 'SAVE + RESET controls present');
+  A.ok(/\/api\/fallback\/chain/.test(keep), 'the panel reads + posts the chain endpoint');
+  A.ok(/\/api\/models\/openrouter/.test(keep), 'the add-picker is fed from the real model catalog');
   // inline help must describe the REAL trigger behavior (errorClass shouldFallback/shouldRotateCredential classes)
-  A.ok(/fails mid-run/.test(station) && /availability/.test(station) && /rate limits/.test(station), 'inline help names the real error classes that trigger fallback');
-  A.ok(/environment default \(not yet saved here\)/.test(station), 'saved-vs-env source is annotated honestly');
+  A.ok(/fails mid-run/.test(keep) && /availability/.test(keep) && /rate limits/.test(keep), 'inline help names the real error classes that trigger fallback');
+  A.ok(/environment default \(not yet saved here\)/.test(keep), 'saved-vs-env source is annotated honestly');
   A.ok(/\.fbc-row/.test(css) && /select\.fbc-sel/.test(css), 'MODELS panel styles present (row + picker, phosphor vars)');
 }
 

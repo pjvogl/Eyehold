@@ -24,11 +24,11 @@ Settings says linked while a prompt suggests linking again; diagnostics show pro
 
 ## Repro
 
-Use a linked station with exhausted Codex/Grok allowance and classify the provider error plus linked-state display.
+Use a linked keep with exhausted Codex/Grok allowance and classify the provider error plus linked-state display.
 
 ## Evidence
 
-docs/EMAIL_BUG_FOLLOWUP_2026-09-04.md; test/genesis-starnet-link.test.js; source fix 756ebec88
+docs/EMAIL_BUG_FOLLOWUP_2026-09-04.md; test/genesis-eyehold-link.test.js; source fix 756ebec88
 
 ## Verdict
 
@@ -36,13 +36,13 @@ Source repair is present. Installer behavior and customer recovery remain unveri
 
 ## Regression
 
-The linked/quota convergence commit distinguishes linked state from exhausted allowance. genesis-starnet-link, errorclass and friendlyerror protect these presentation/classification rules. It does not replenish a provider subscription.
+The linked/quota convergence commit distinguishes linked state from exhausted allowance. genesis-eyehold-link, errorclass and friendlyerror protect these presentation/classification rules. It does not replenish a provider subscription.
 
 ## Sibling coverage
 
 {
   "adapters": [
-    {"target":"starnet","state":"covered","test":"test/customer-journey.e2e.test.js","scenario":"Saved starnet configuration, successful tool and second inference; direct, routine and sample; two boots","gate":"http"},
+    {"target":"eyehold","state":"covered","test":"test/customer-journey.e2e.test.js","scenario":"Saved eyehold configuration, successful tool and second inference; direct, routine and sample; two boots","gate":"http"},
     {"target":"openrouter","state":"covered","test":"test/customer-journey.e2e.test.js","scenario":"Saved openrouter configuration, successful tool and second inference; direct, routine and sample; two boots","gate":"http"},
     {"target":"custom","state":"covered","test":"test/customer-journey.e2e.test.js","scenario":"Saved custom configuration, successful tool and second inference; direct, routine and sample; two boots","gate":"http"},
     {"target":"gemini","state":"covered","test":"test/customer-journey.e2e.test.js","scenario":"Saved gemini configuration, successful tool and second inference; direct, routine and sample; two boots","gate":"http"},
@@ -58,7 +58,7 @@ The linked/quota convergence commit distinguishes linked state from exhausted al
   "displays": [
     {"target":"stream and sample output","state":"covered","test":"test/customer-journey.e2e.test.js","scenario":"Success requires a tool result, normal terminal event and final output","gate":"http"},
     {"target":"customer desktop and physical Mac","state":"blocked","reason":"Source-side receipts are not a visual or installed-binary proof. Run the release journey on supported hardware."},
-    {"target":"linked label","state":"covered","test":"test/genesis-starnet-link.test.js","scenario":"Linked UI derives current linked state","gate":"fast"},
+    {"target":"linked label","state":"covered","test":"test/genesis-eyehold-link.test.js","scenario":"Linked UI derives current linked state","gate":"fast"},
     {"target":"quota recovery copy","state":"covered","test":"test/friendlyerror.test.js","scenario":"Allowance errors do not prescribe relinking","gate":"fast"}
   ],
   "lifecycle": [

@@ -45,13 +45,13 @@ A.notThrows(() => QLS._apply(null), '_apply(null) never throws');
 A.eq(QLS.quests().length, 0, '…and clears the cache to empty');
 
 /* ---------- new-quest detection: first fetch seeds SILENTLY, a later new open quest fires the COMMS
-   broadcast ONLY — notification diet (2026-08-18): a new quest never reaches StationUI.notify (the quest
+   broadcast ONLY — notification diet (2026-08-18): a new quest never reaches KeepUI.notify (the quest
    log is the quest surface; the bell is reserved for things that need the Commander). ---------- */
 {
-  // capture StationUI.notify + Chat.broadcast via the globals the store guards on (typeof StationUI/Chat).
+  // capture KeepUI.notify + Chat.broadcast via the globals the store guards on (typeof KeepUI/Chat).
   const toasts = [];
   const casts = [];
-  global.StationUI = { notify: (t, c) => toasts.push({ t, c }) };
+  global.KeepUI = { notify: (t, c) => toasts.push({ t, c }) };
   global.Chat = { broadcast: (t, o) => casts.push({ t, o }) };
   QLS.reset();
   A.eq(QLS._seededOnce(), false, 'a reset store has not yet seeded its new-quest baseline');
@@ -87,9 +87,9 @@ A.eq(QLS.quests().length, 0, '…and clears the cache to empty');
     { id: 'q:9', status: 'done', kind: 'work', title: 'Already finished', contract: { type: 'run', key: 'r9' } }
   ]);
   A.eq(casts.length, 1, 'a quest that appears already-done is not announced as a new quest');
-  A.eq(toasts.length, 0, 'StationUI.notify was never touched across the whole sequence');
+  A.eq(toasts.length, 0, 'KeepUI.notify was never touched across the whole sequence');
 
-  delete global.StationUI; delete global.Chat;
+  delete global.KeepUI; delete global.Chat;
   QLS.reset();
 }
 

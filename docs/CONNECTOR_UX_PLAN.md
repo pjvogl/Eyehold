@@ -1,16 +1,16 @@
-# Connector / plugin / platform UX — the plan to make StarNet's the easiest in open source
+# Connector / plugin / platform UX — the plan to make Eyehold's the easiest in open source
 
 **Status:** plan, nothing built. **Grounded:** every finding below was walked LIVE on a seeded
-station (`dev/seed.js`, port 8931, trunk `87b61564`) on 2026-07-28 — not read off docs.
+keep (`dev/seed.js`, port 8931, trunk `87b61564`) on 2026-07-28 — not read off docs.
 Supersedes nothing; `docs/CONNECTORS_MCP_PLAN.md` is the original bridge design and still holds.
 
 ## The one idea
 
-Today StarNet makes the user answer a question they cannot answer: **"which of six mechanisms
+Today Eyehold makes the user answer a question they cannot answer: **"which of six mechanisms
 does the thing I want use?"** MCP connector, platform API key, messaging channel, AI provider,
 hook, plugin — each lives behind a different door, and picking the wrong door is a dead end.
 
-Invert it. **The user names the thing; the station picks the mechanism.** One search box, one
+Invert it. **The user names the thing; the keep picks the mechanism.** One search box, one
 result list, the setup card rendered inline wherever it lives. Mechanism becomes a badge, not a
 navigation decision. Then two more rules that no open-source harness does well:
 
@@ -19,7 +19,7 @@ navigation decision. Then two more rules that no open-source harness does well:
 - **A failure must end in the NEXT ACTION, not an error string.** `fetch failed` is a shrug.
 
 Competitive read (honest): Claude Desktop / Claude Code use a hand-edited JSON config; LibreChat
-and Open WebUI use YAML; Goose ships a GUI list. StarNet already beats all of them with a live
+and Open WebUI use YAML; Goose ships a GUI list. Eyehold already beats all of them with a live
 GUI catalog carrying real connection status. The differentiator is **search-first + diagnosed
 failure + proof of life** — none of them have any of the three.
 
@@ -33,7 +33,7 @@ document and it reprioritizes everything below it.**
 
 ### R1 — The search box cannot see a single one of the 48 connectable platforms
 
-`stationui.js:1031` filters on a **hardcoded class allowlist**:
+`keepui.js:1031` filters on a **hardcoded class allowlist**:
 `.set-row, label.set-row, .prov-card, .key-row, .set-about, .ms-h, .perk, .sk-card, .mc-hint, .mc-row, .ts-row`
 
 Every catalog entry and every KEYS platform renders as **`.cc-card`** — which is not on that list.
@@ -70,7 +70,7 @@ So the agent's entire model of "how does the Commander gain a capability" comes 
 `sidecar/manual.js`, whose NAVIGATION section lists COMMS, ROUTINES, TASKS, DOCK/BUILD, REFIT,
 Recruitment Bay, and APPROVALS — and **never mentions ABILITIES, CATALOG, KEYS, MCP CONNECTORS,
 EXTENSIONS, or CHANNELS.** Its TROUBLESHOOTING section has six entries; none is "how do I connect a
-platform." Asked a question it has no grounding for, the model invents a plausible StarNet menu path.
+platform." Asked a question it has no grounding for, the model invents a plausible Eyehold menu path.
 
 ### R4 — And the manual actively teaches the WRONG model for connectors
 
@@ -85,12 +85,12 @@ to place a connector portal, which is (a) unnecessary and (b) a dead end, becaus
 `connectorId` binding that only exists **after** the connector was already added in ABILITIES.
 
 The user follows instructions that sound authoritative, nothing works, and the agent — grounded in a
-manual that says this is how it works — insists. That is the gaslighting, and it is a StarNet bug,
+manual that says this is how it works — insists. That is the gaslighting, and it is a Eyehold bug,
 not a model failure.
 
 ### The fix, in the order that buys the most
 
-1. **Add `.cc-card` to the allowlist at `stationui.js:1031`.** One line. Makes all 48 platforms
+1. **Add `.cc-card` to the allowlist at `keepui.js:1031`.** One line. Makes all 48 platforms
    findable by name today. Verify by typing `google` and landing on the Google Workspace card.
 2. **Correct `manual.js`** — add ABILITIES › CATALOG / KEYS / MCP CONNECTORS / EXTENSIONS and the
    CHANNELS window to NAVIGATION; add a "how do I connect <platform>" troubleshooting entry; and
@@ -99,7 +99,7 @@ not a model failure.
    unified index from S1, so "how do I connect Google Drive" is answered from real rows. It must be
    able to return the honest negatives: *not directly — via Zapier*, and *no MCP server exists for
    this; paste a key in KEYS and I'll call the REST API*. Pair it with an explicit instruction:
-   **never invent a StarNet menu path; if it is not in the catalog block, say so.**
+   **never invent a Eyehold menu path; if it is not in the catalog block, say so.**
 4. **`aliases[]` on catalog rows.** Even with `.cc-card` indexed, `gmail` only matches because a blurb
    happens to say "Gmail"; `gdrive`, `google docs`, `g suite` match nothing. Alias the obvious names.
 5. **Make the `via` hop a guided flow**, not a jump — "CONNECT VIA ZAPIER" that carries the original
@@ -152,12 +152,12 @@ claims to be the complete list isn't.
 On the interactive (browser) surface `composeOffice` gives an agent **compute only** plus
 whatever props are placed (`sidecar/capability/office.js:35`) — but **every configured connector
 portal rides on unconditionally** (`office.js:38`, "account-level, not a placed floor prop").
-On the seeded station (one `desk` prop, verified in `starnet.save`) that means:
+On the seeded keep (one `desk` prop, verified in `eyehold.save`) that means:
 
 > NOVA can query a third-party MCP server on the public internet, but cannot run `web_search`.
 
 And TOOLSETS diagnoses it without treating it: every row renders
-`<span class="ts-inert">no dish on station — place one to grant these tools</span>`
+`<span class="ts-inert">no dish on keep — place one to grant these tools</span>`
 (`frontend/app/windows/connectors.js:374`) — an inert span with **no button**. The panel tells
 you exactly what is wrong and gives you nothing to click.
 
@@ -174,7 +174,7 @@ with no message and no way out.
 ### F5 — Failure copy is a raw Node error
 Adding `https://example.invalid/mcp` yields exactly `connector request failed: fetch failed`
 (`sidecar/mcp/transport.http.js:103`). It does not distinguish DNS failure, refused connection,
-401-needs-auth, an HTML page that isn't an MCP endpoint, or a legacy `/sse` server StarNet
+401-needs-auth, an HTML page that isn't an MCP endpoint, or a legacy `/sse` server Eyehold
 deliberately cannot drive — which are the five things that actually go wrong.
 
 ### F6 — No payoff after a successful connect
@@ -212,7 +212,7 @@ highest-frequency card an MCP agent raises, so this is the most-trafficked doorw
    - `ECONNREFUSED` / `ETIMEDOUT` → "nothing answered at that address"
    - `401`/`403` with `WWW-Authenticate` → "this server needs a sign-in — add it from CATALOG instead" (+ jump)
    - `content-type: text/html` → "that's a web page, not an MCP endpoint — the URL usually ends in `/mcp`"
-   - `/mcp` 404 but the `/sse` sibling answers → "that's a legacy SSE server; StarNet can't drive those yet"
+   - `/mcp` 404 but the `/sse` sibling answers → "that's a legacy SSE server; Eyehold can't drive those yet"
    - abort → "no answer in 30s — the server may be down"
 3. **Kill the `ts-inert` dead end.** `windows/connectors.js:374` becomes a real
    `+ PLACE A DISH` button that places the prop (or opens BUILD focused on it) and re-renders the
@@ -235,9 +235,9 @@ highest-frequency card an MCP agent raises, so this is the most-trafficked doorw
 
 ### S2 — Fix the inversion
 
-7. **Auto-place on first connect.** When a CATALOG/KEYS connect implies a prop the station
+7. **Auto-place on first connect.** When a CATALOG/KEYS connect implies a prop the keep
    doesn't have (a KEYS platform is useless without `web_request`, i.e. a dish), place it and say
-   so in a visible beat: *"placed a dish on your station so NOVA can reach Printify."* Keeps the
+   so in a visible beat: *"placed a dish on your keep so NOVA can reach Printify."* Keeps the
    moat (placing-grants-reach stays true and visible) while removing the invisible second step.
 8. **Give connectors a TOOLSETS row.** One `CONNECTORS` family listing each connected server with
    its live tools and its own kill-switch, so "every capability your agents can use" is true.
@@ -255,7 +255,7 @@ highest-frequency card an MCP agent raises, so this is the most-trafficked doorw
 ### S4 — Reach
 
 12. **Live MCP registry search** behind "Need something not listed?" — query the public registry,
-    badge results `UNVETTED`, and **filter to Streamable-HTTP endpoints only** so StarNet never
+    badge results `UNVETTED`, and **filter to Streamable-HTTP endpoints only** so Eyehold never
     lists something it cannot drive (the same law that keeps legacy `/sse` servers out of the
     curated catalog).
 13. **Grow `aliases` and the KEYS directory** — the KEYS directory is the honest answer for every

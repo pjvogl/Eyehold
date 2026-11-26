@@ -6,7 +6,7 @@ const fs = require('fs'); const path = require('path');
 const read = f => fs.readFileSync(path.join(__dirname, '..', f), 'utf8');
 const app = read('frontend/app/app.js');
 const mkt = read('frontend/app/marketplace.js');
-const ui = read('frontend/app/stationui.js');
+const ui = read('frontend/app/keepui.js');
 const chat = read('frontend/app/chat.js');
 const world = read('frontend/app/world.js');
 

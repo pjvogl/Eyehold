@@ -1,16 +1,16 @@
 /* node test/skill-market.e2e.test.js — the Skill Market end to end on the real sidecar (2026-09-29).
 
    Boots the REAL sidecar with test/_skill_market_fixture.js preloaded, which answers the market's own catalog URLs
-   on starnetos.com from this checkout's website/ folder (the exact bytes a deploy publishes). A mock OpenRouter
+   on eyehold.com from this checkout's website/ folder (the exact bytes a deploy publishes). A mock OpenRouter
    captures what the model is told. Proves, at the live seams:
      1. the catalog lists our originals as BUILT IN (bundled text == published version) and a market-only
         original as available
-     2. install lands the skill in the station SKILL LIBRARY, switched on
+     2. install lands the skill in the keep SKILL LIBRARY, switched on
      3. the next run's system prompt indexes it (library:<slug>) — installed means the model is told
      4. it survives a sidecar restart
      5. a download whose bytes differ from the catalog is refused and nothing installs
      6. a catalog changed under its signature is refused whole; nothing installs from it
-     7. THE KILL SWITCH: the market publishes a newer signed pulled list naming the installed skill; the station's own
+     7. THE KILL SWITCH: the market publishes a newer signed pulled list naming the installed skill; the keep's own
         background check (no request from the test) switches it off — out of the library, out of the next run's
         prompt, PULLED with the reason — and re-installing it is refused
      8. replaying the older catalog after that is refused and cannot bring the skill back
@@ -27,8 +27,8 @@ const sleep = (ms) => new Promise(r => setTimeout(r, ms));
 
 const HOST = '127.0.0.1';
 const PRELOAD = '--require ' + path.join(__dirname, '_skill_market_fixture.js').replace(/\\/g, '/');
-const TARGET = 'line-design';      // a market-only StarNet Original (needs the orchestrator)
-const TAMPERED = 'routine-craft';  // served with one extra line when STARNET_TEST_MARKET_TAMPER names it
+const TARGET = 'line-design';      // a market-only Eyehold Original (needs the orchestrator)
+const TAMPERED = 'routine-craft';  // served with one extra line when EYEHOLD_TEST_MARKET_TAMPER names it
 
 function startMock() {
   const state = { requests: [] };
@@ -58,7 +58,7 @@ function startMock() {
   const mock = await startMock();
   const fixture = SidecarFixture.create({
     prefix: 'sk-market-e2e-',
-    env: { NODE_OPTIONS: PRELOAD, SKYNET_OPENROUTER_BASE: mock.base, SKYNET_SKILL_REVIEW: '0', SKYNET_SKILL_CURATOR: '0', SKYNET_QUEST_REFRESH: '0' },
+    env: { NODE_OPTIONS: PRELOAD, EYEHOLD_OPENROUTER_BASE: mock.base, EYEHOLD_SKILL_REVIEW: '0', EYEHOLD_SKILL_CURATOR: '0', EYEHOLD_QUEST_REFRESH: '0' },
     timeoutMs: 20000
   });
   await fixture.start();
@@ -81,7 +81,7 @@ function startMock() {
     const by = Object.fromEntries((m.entries || []).map(e => [e.slug, e]));
     A.eq(by['feed-watch'] && by['feed-watch'].status, 'bundled', 'a bundled original reads BUILT IN (our text is exactly the published version)');
     A.eq(by[TARGET] && by[TARGET].status, 'available', 'a market-only original is available to install');
-    A.eq(by[TARGET] && by[TARGET].shelf, 'originals', 'on the StarNet Originals shelf');
+    A.eq(by[TARGET] && by[TARGET].shelf, 'originals', 'on the Eyehold Originals shelf');
     A.ok(!(await library()).some(s => s.slug === TARGET), 'precondition: it is not in the library yet');
 
     // ---- 2. install ----
@@ -110,14 +110,14 @@ function startMock() {
     A.eq((await fixture.json('POST', '/api/skills/toggle', { slug: TARGET, enabled: true })).status, 200, 'back on for the steps below');
 
     // ---- 5. a download that differs from the catalog is refused ----
-    await fixture.restart({ STARNET_TEST_MARKET_TAMPER: TAMPERED });
+    await fixture.restart({ EYEHOLD_TEST_MARKET_TAMPER: TAMPERED });
     const bad = await fixture.json('POST', '/api/skill-market/install', { slug: TAMPERED });
     A.eq(bad.body.ok, false, 'a changed file is refused');
     A.ok(/doesn't match the catalog/.test(bad.body.error || ''), 'and says why: ' + bad.body.error);
     A.ok(!(await library()).some(s => s.slug === TAMPERED), 'nothing from it reached the library');
 
     // ---- 6. a forged catalog ----
-    await fixture.restart({ STARNET_TEST_MARKET_BADSIG: '1' });
+    await fixture.restart({ EYEHOLD_TEST_MARKET_BADSIG: '1' });
     m = await market();
     A.eq(m.ok, false, 'a catalog changed under its signature does not load');
     A.ok(/not trusted: its signature does not match/.test(m.error || ''), 'and the market says it was not trusted: ' + m.error);
@@ -130,10 +130,10 @@ function startMock() {
     const key = signing.generateKeyPair();
     const der = crypto.createPrivateKey(key.privateKeyPem).export({ format: 'der', type: 'pkcs8' }).toString('base64');
     await fixture.restart({
-      STARNET_TEST_MARKET_REVOKE: TARGET, STARNET_TEST_MARKET_KEY: der, SKYNET_SKILL_MARKET_PULL_MS: '1000',
-      STARNET_SKILL_MARKET_KEYS: JSON.stringify([{ id: 'test-market', publicKey: key.publicKey }])
+      EYEHOLD_TEST_MARKET_REVOKE: TARGET, EYEHOLD_TEST_MARKET_KEY: der, EYEHOLD_SKILL_MARKET_PULL_MS: '1000',
+      EYEHOLD_SKILL_MARKET_KEYS: JSON.stringify([{ id: 'test-market', publicKey: key.publicKey }])
     });
-    // no market request from the test: only the station's own background check can find the pull
+    // no market request from the test: only the keep's own background check can find the pull
     const t0 = Date.now(); let off = false;
     while (Date.now() - t0 < 15000) { if (!(await library()).some(s => s.slug === TARGET)) { off = true; break; } await sleep(250); }
     A.ok(off, 'the background check switched the pulled skill off by itself (' + (Date.now() - t0) + ' ms after boot)');
@@ -146,9 +146,9 @@ function startMock() {
     A.ok(again.body.ok === false && /was pulled from the skill market/.test(again.body.error || ''), 're-installing it is refused: ' + again.body.error);
 
     // ---- 8. a replayed older catalog can't bring it back ----
-    await fixture.restart({ SKYNET_SKILL_MARKET_PULL_MS: '1000' });   // the fixture serves the original, older serial again
+    await fixture.restart({ EYEHOLD_SKILL_MARKET_PULL_MS: '1000' });   // the fixture serves the original, older serial again
     m = await market();
-    A.ok(m.ok === false && /older than one this station already saw/.test(m.error || ''), 'the older catalog is refused: ' + m.error);
+    A.ok(m.ok === false && /older than one this keep already saw/.test(m.error || ''), 'the older catalog is refused: ' + m.error);
     await sleep(2500);   // two background checks against the older pulled list
     A.ok(!(await library()).some(s => s.slug === TARGET), 'and the skill stays off');
 

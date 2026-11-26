@@ -8,9 +8,9 @@
  const ROOM_PREFIX={command:'The Eye',opportunities:'Raven Court',strategy:'Star Sages',operations:'Iron Host',production:'Deepforge',quality:'Silver Bough',finance:'Treasury Watch'};
  // Genuine native catalog props; new fantasy illustrations require separate art.
  const PROPS={1000000:'plant',10000000:'shelf',100000000:'vault'};
- function plan(station,tier){
+ function plan(keep,tier){
   if(!Object.prototype.hasOwnProperty.call(PROPS,String(tier)))throw Error('unsupported tier');
-  const doc=station.serialize(),rooms=Object.values(doc.rooms||{});
+  const doc=keep.serialize(),rooms=Object.values(doc.rooms||{});
   return Object.entries(ROOM_PREFIX).map(([department,prefix])=>{
    const room=rooms.find(r=>r.kind!=='corridor'&&String(r.name||'').startsWith(prefix));
    if(!room)throw Error('missing physical room for '+department);
@@ -19,21 +19,21 @@
    return {department,tier,t:PROPS[tier],x:centerX,y,w:1,h:1};
   });
  }
- function applyTrustedMilestone({station,tier,attestation,verifyAttestation,persist}){
-  if(typeof verifyAttestation!=='function'||verifyAttestation(attestation,tier)!==true)
-   throw Error('Trusted milestone attestation required; agents and client UI cannot self-award');
-  if(!station||typeof station.addProp!=='function'||typeof station.serialize!=='function')throw Error('native station required');
-  const planned=plan(station,tier),results=[];
+ function applyTrustedMilestone({keep,tier,attekeep,verifyAttekeep,persist}){
+  if(typeof verifyAttekeep!=='function'||verifyAttekeep(attekeep,tier)!==true)
+   throw Error('Trusted milestone attekeep required; agents and client UI cannot self-award');
+  if(!keep||typeof keep.addProp!=='function'||typeof keep.serialize!=='function')throw Error('native keep required');
+  const planned=plan(keep,tier),results=[];
   let changed=false;
-  const existing=station.serialize().props||[];
+  const existing=keep.serialize().props||[];
   for(const item of planned){
    // Do not modify any occupied tile or overwrite player layout.
    const lootId='Eyehold:'+String(tier)+':'+item.department;
    if(existing.some(p=>p.label===lootId||(!p.label&&p.t===item.t&&p.x===item.x&&p.y===item.y))){
     results.push({department:item.department,ok:true,alreadyPresent:true});continue;
    }
-   const result=station.addProp({t:item.t,x:item.x,y:item.y,w:item.w,h:item.h,block:false});
-   if(result?.ok){changed=true;const prop=typeof station.props==='function'&&station.props().find(p=>p.id===result.id);if(prop)prop.label=lootId;}
+   const result=keep.addProp({t:item.t,x:item.x,y:item.y,w:item.w,h:item.h,block:false});
+   if(result?.ok){changed=true;const prop=typeof keep.props==='function'&&keep.props().find(p=>p.id===result.id);if(prop)prop.label=lootId;}
    results.push({department:item.department,ok:!!result?.ok,error:result?.error||null,propId:result?.id||null});
   }
   if(changed&&typeof persist==='function')persist();

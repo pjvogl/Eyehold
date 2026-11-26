@@ -51,7 +51,7 @@ async function main() {
     }
     if (!ready) throw new Error('app never reached the in-game screen at ' + URL);
     await cdp.send('Emulation.setDeviceMetricsOverride', { width: 1600, height: 1000, deviceScaleFactor: DPR, mobile: false });
-    await evalJS(cdp, `StationUI.setTheme(${JSON.stringify(THEME)})`);
+    await evalJS(cdp, `KeepUI.setTheme(${JSON.stringify(THEME)})`);
     await sleep(700);
 
     const scan = await evalJS(cdp, `(() => { const b = getComputedStyle(document.body, '::after');

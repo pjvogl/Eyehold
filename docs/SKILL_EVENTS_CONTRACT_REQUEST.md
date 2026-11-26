@@ -14,6 +14,6 @@ telemetry, please add these events additively:
 | `skill.curated` | `agentId`, `runId`, `curatorRunId` | `stale`, `archived`, `consolidated` | Curator maintenance completed. |
 | `skill.guard` | `agentId`, `id`, `name`, `verdict` | `action`, `findings` | Guard scanner verdict for generated/imported skill content. |
 
-Until this is accepted, StarNet uses the existing `deliverable` event with
+Until this is accepted, Eyehold uses the existing `deliverable` event with
 `kind: "skill"` plus current memory feedback events for user-approved reflection
 turn-in quality.

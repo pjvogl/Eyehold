@@ -1,6 +1,6 @@
 # Final support intake for 0.12.0
 
-Reviewed September 16, 2026, after the earlier preparation snapshot. Gmail became available in this task, superseding the earlier note that private inbox access was unavailable. The scoped search for StarNet messages after September 11 (excluding sent, drafts, spam and trash) returned 11 inbound messages across nine threads, all after the September 11 20:16 UTC publication of 0.11.2. Public repository issues were refreshed as well. The new comment on issue #17 discusses setup guidance; it does not provide a latency retest or confirm recovery.
+Reviewed September 16, 2026, after the earlier preparation snapshot. Gmail became available in this task, superseding the earlier note that private inbox access was unavailable. The scoped search for Eyehold messages after September 11 (excluding sent, drafts, spam and trash) returned 11 inbound messages across nine threads, all after the September 11 20:16 UTC publication of 0.11.2. Public repository issues were refreshed as well. The new comment on issue #17 discusses setup guidance; it does not provide a latency retest or confirm recovery.
 
 No support messages, refunds, account changes or issue-closing actions were performed. Customer identifiers and private diagnostics are excluded from this document. Source inclusion, installer verification and customer recovery remain distinct outcomes.
 
@@ -14,7 +14,7 @@ No support messages, refunds, account changes or issue-closing actions were perf
 | OpenAI image model selected for chat | Source-fixed `6c6c34e1`, repair `7a9349aa071c8fd97f04b520333d37d821f55c69`, already included in immutable 0.12.0. Studio/native image transport and saved output are covered by regressions. Customer recovery and exact installer behavior remain separately unconfirmed. |
 | Mac shared catalog boot failure, with a separate Windows Edge report naming the same module | Existing `2f156837` retains the included BootGuard hardening. The Mac reporter now confirms the installed app and continued failure on the public build. This is not a retest of the unpublished candidate. The Windows report's full origin is unknown. |
 | Purchased credits remain on a different account; unlink does not expose relinking | Existing `99a1517b` includes source recovery fixes. The owner had already correlated the purchase to the other account. No new successful reporter retest was received. |
-| Moving a station to another computer | Support/documentation question, not a demonstrated defect. Preserve the existing station and use documented backup/export and restore; no customer machine was modified. |
+| Moving a keep to another computer | Support/documentation question, not a demonstrated defect. Preserve the existing keep and use documented backup/export and restore; no customer machine was modified. |
 
 The updated register has **83 customer/owner records: 76 source-fixed, one documented policy disposition, and six open P2 investigations**. No open P0/P1 is established by this intake. The four new P2 records preserve uncorrelated uncertainty under the owner engineering-acceptance rule; they are not fabricated fixes. The earlier two-P2 summary is superseded.
 

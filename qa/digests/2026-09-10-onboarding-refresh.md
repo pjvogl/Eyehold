@@ -26,7 +26,7 @@ request plumbing and persistence, not real-model response quality or paid authen
   `Turn my meeting notes into clear action lists.\nKeep owners and deadlines tied to the source.`
   Selecting Wait for me saved initiative `wait`, reach `observe`, leash 3.
 - A real sidecar restart and browser reload retained that exact purpose, autonomy and
-  `onboarded: true`; the ceremony did not replay. The station showed COMMS online,
+  `onboarded: true`; the ceremony did not replay. The keep showed COMMS online,
   NOVA idle, and no conversation dialog.
 - The first-task form selected meeting-note actions and quoted the saved purpose.
 - The optional full interview opened, accepted a two-line custom answer, and advanced
@@ -36,7 +36,7 @@ request plumbing and persistence, not real-model response quality or paid authen
 - A second fresh final-candidate pass chose Code & build and Decide later. Saved truth:
   purpose `Help me write, debug, and ship software.`, onboarded true, unchanged default
   posture `{v:1, initiative:"wait", reach:"sandbox", leashPerDay:3}`.
-  It reached `FIRST TASK · YOUR STATION IS READY` with NOVA as speaker.
+  It reached `FIRST TASK · YOUR KEEP IS READY` with NOVA as speaker.
 - Browser warning/error logs and native default-control paint scan were empty.
 
 ## Gates
@@ -54,4 +54,4 @@ request plumbing and persistence, not real-model response quality or paid authen
 
 Installed desktop behavior, paid-provider quality and completing every full-interview
 branch were not verified. No real task was dispatched in this refresh proof. This lane
-has not been merged or released; these checks do not establish station-wide readiness.
+has not been merged or released; these checks do not establish keep-wide readiness.

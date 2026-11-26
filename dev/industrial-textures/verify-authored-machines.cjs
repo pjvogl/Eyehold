@@ -3,14 +3,14 @@
 const fs=require('node:fs'),path=require('node:path'),crypto=require('node:crypto');
 const {createCanvas,loadImage}=require('@napi-rs/canvas');
 const Motion=require('../../frontend/app/authored-prop-motion'),Configs=require('../../frontend/app/authored-machine-config');
-const root=path.resolve(__dirname,'../..'),at=p=>path.join(root,p),out=at('docs/station-remaster/authored-machines');
+const root=path.resolve(__dirname,'../..'),at=p=>path.join(root,p),out=at('docs/keep-remaster/authored-machines');
 const hash=data=>crypto.createHash('sha256').update(data).digest('hex');
 const fit=(bounds,w,h)=>{const k=Math.min(bounds.width/w,bounds.height/h);return {x:bounds.x+(bounds.width-w*k)/2,y:bounds.y+bounds.height-h*k,width:w*k,height:h*k};};
 (async()=>{
   const floor=await loadImage(at('frontend/assets/industrial/remaster/floors/plate.png'));
   const crate=await loadImage(at('frontend/assets/industrial/calibration/crate.png'));
   const sheet=createCanvas(1260,1020),g=sheet.getContext('2d');g.fillStyle='#10191a';g.fillRect(0,0,1260,1020);
-  g.fillStyle='#cfb579';g.font='22px sans-serif';g.fillText('STARNET · NEW AUTHORED MACHINE COMPOSITES',20,34);
+  g.fillStyle='#cfb579';g.font='22px sans-serif';g.fillText('EYEHOLD · NEW AUTHORED MACHINE COMPOSITES',20,34);
   g.font='16px sans-serif';g.fillStyle='#b1bbb2';g.fillText('Fixed 4 display px / world px · approved crate shares scale · fixture states, not real jobs',20,63);
   const receipts=[];
   for(const [col,id]of Configs.ids.entries()){

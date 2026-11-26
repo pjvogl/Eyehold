@@ -51,7 +51,7 @@ A.ok(dirNS.indexOf('CURRENT NORTH STAR') >= 0 && dirNS.indexOf('full-time creato
 A.ok(R.buildDirective({ propKeys: PROPS }).indexOf('NO NORTH STAR IS KNOWN YET') >= 0, 'a cold state asks for the inference');
 // PROGRESSION + RELEVANCE blocks
 const dirProg = R.buildDirective({ goalNote: 'Current goal: Launch.', interestsBlock: '• davinci color grading (asked 4x)', completedQuests: [{ title: 'Publish episode 3' }], propKeys: PROPS });
-A.ok(dirProg.indexOf('RECURRING INTERESTS THE STATION OBSERVED') >= 0 && dirProg.indexOf('davinci color grading') >= 0, 'the interest histogram rides the directive');
+A.ok(dirProg.indexOf('RECURRING INTERESTS THE KEEP OBSERVED') >= 0 && dirProg.indexOf('davinci color grading') >= 0, 'the interest histogram rides the directive');
 A.ok(dirProg.indexOf('RECENTLY COMPLETED') >= 0 && dirProg.indexOf('Publish episode 3') >= 0, 'completed quests ride as the progression anchor');
 A.ok(dirProg.indexOf('NEXT step along the same path') >= 0, 'the directive commands progression, not a reshuffle');
 A.ok(R.buildDirective({ goalNote: 'g', propKeys: PROPS }).indexOf('RECENTLY COMPLETED') < 0, 'no completed quests -> no empty progression block');
@@ -217,12 +217,12 @@ A.eq(R.goalBinding(boundGoal), R.goalBinding({ ...boundGoal, pct: 99 }), 'nonbin
 for (const change of [{ id: 'new' }, { text: 'Learn music' }, { milestoneId: 'm2' }, { next: 'Interview' }]) A.ok(R.goalBinding(boundGoal) !== R.goalBinding({ ...boundGoal, ...change }), 'goal and milestone changes invalidate planning');
 
 // SWEEP 2026-09-29 — a poll must never spend a model turn: an EMPTY slate whose context has not moved since the last
-// cycle stays quiet until the daily cadence (it used to re-fire every hour, forever, on every idle open station).
+// cycle stays quiet until the daily cadence (it used to re-fire every hour, forever, on every idle open keep).
 {
   const H = 3600000, t0 = 5e12;
   const idle = R.stampCycle(R.fresh(), { now: t0, contextKey: 'same' });
   for (const h of [1.01, 6, 23.9]) A.eq(R.decide(idle, { now: t0 + h * H, openCount: 0, contextKey: 'same' }).fire, false, 'idle + unchanged + empty slate does not re-plan at ' + h + 'h');
-  A.eq(R.decide(idle, { now: t0 + 24.01 * H, openCount: 0, contextKey: 'same' }).why, 'daily', 'the daily cadence still refreshes an idle station once a day');
+  A.eq(R.decide(idle, { now: t0 + 24.01 * H, openCount: 0, contextKey: 'same' }).why, 'daily', 'the daily cadence still refreshes an idle keep once a day');
   A.eq(R.decide(idle, { now: t0 + 0.2 * H, openCount: 0, contextKey: 'moved' }).fire, true, 'real progress (the context moved) still earns a cycle');
 }
 A.report();

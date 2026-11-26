@@ -2,7 +2,7 @@
    steptest-stuck investigation).
 
    1. RUN ONE REAL JOB had no stop: while the job rode the line the Workflow panel showed only a disabled "THE JOB IS RIDING
-      THE LINE…", and the one way out was the station-wide E-STOP. POST /api/routing/sample/stop stops THIS station's one
+      THE LINE…", and the one way out was the keep-wide E-STOP. POST /api/routing/sample/stop stops THIS keep's one
       sample (the E-STOP kill scoped to the sample hub), the in-flight sample POST answers stopped:true, and the panel's
       ■ STOP says STOPPED from that answer (the end-to-end proof is test/routing.sample-stop.e2e.test.js).
    2. A line test's runs (a step test's steptest-…, a sample's sample-…) are real work whose words live in the line's TEST
@@ -16,7 +16,7 @@ const path = require('path');
 const vm = require('vm');
 const { killAll } = require('../sidecar/halt.js');
 const read = p => fs.readFileSync(path.join(__dirname, '..', p), 'utf8');
-const sidecar = read('sidecar/index.js'), build = read('frontend/app/build.js'), panel = read('frontend/app/workflowpanel.js'), station = read('frontend/app/stationui.js');
+const sidecar = read('sidecar/index.js'), build = read('frontend/app/build.js'), panel = read('frontend/app/workflowpanel.js'), keep = read('frontend/app/keepui.js');
 // a function's source, from its head to the closing brace at the head's own indent (top-level or inside an IIFE)
 function fnBody(src, head) {
   const i = src.indexOf(head);
@@ -29,13 +29,13 @@ function fnBody(src, head) {
 
 /* ---------- 1. the sidecar: a stop for THIS sample only ---------- */
 A.ok(/\{ m: 'POST', exact: '\/api\/routing\/sample\/stop', h: handleRoutingSampleStop \}/.test(sidecar), 'POST /api/routing/sample/stop is in the route table (behind the same token gate as every /api route)');
-// the stop core is shared with station.test_line (a stopped lead run stops its test job): read both
+// the stop core is shared with keep.test_line (a stopped lead run stops its test job): read both
 const stopFn = fnBody(sidecar, '\nfunction stopSampleJob(') + fnBody(sidecar, '\nfunction handleRoutingSampleStop(');
 A.ok(/if \(!sampleInFlight\) return null;[\s\S]*if \(!r\) return json\(409, \{ ok: false, error: 'no sample job is riding the line/.test(stopFn), 'nothing riding the line → 409 {ok:false,error} (never a route-miss)');
 A.ok(/sampleInFlight\.stopRequested = true;/.test(stopFn), 'it marks the in-flight sample as stopped by the Commander…');
 A.ok(/killAll\(null, \(sampleHub && sampleHub\._internals\) \? sampleHub\._internals\.inflight : null\)/.test(stopFn), '…and kills ONLY the sample hub\'s runs, the way E-STOP does (entry run and every chained stage)');
 A.ok(!/killAll\(runs/.test(stopFn), 'it never touches the browser\'s runs or any other hub');
-// the route's core moved into runSampleJob (2026-10-01) so the lead's station.test_line runs the very same job; the route
+// the route's core moved into runSampleJob (2026-10-01) so the lead's keep.test_line runs the very same job; the route
 // is a thin wrapper over it
 A.ok(/async function handleRoutingSample\(req, res\) \{\n  const r = await runSampleJob\(/.test(sidecar), 'POST /api/routing/sample runs runSampleJob, the one core');
 const sampleFn = fnBody(sidecar, '\nasync function runSampleJob(');
@@ -81,11 +81,11 @@ A.ok(/mine\.stopping \? 'STOPPING…' : '■ STOP'/.test(picker), '…and STOPPI
 A.ok(/const realStop = \$\('#wf-real-stop'\); if \(realStop\) realStop\.onclick = \(\) => \{[\s\S]{0,120}H\.stopSample\(\)\.then\(/.test(panel), 'the button asks the host to stop the job');
 
 /* ---------- 4. the crew row names a line test ---------- */
-const isLine = new Function('return ' + (station.match(/const isLineTestStream = (s => [^;]+);/) || [])[1])();
+const isLine = new Function('return ' + (keep.match(/const isLineTestStream = (s => [^;]+);/) || [])[1])();
 A.ok(isLine('steptest-ab12') && isLine('sample-9f3c1d2e') && !isLine('ws_1234') && !isLine('') && !isLine(null), 'a line test is a steptest-… or sample-… stream, nothing else');
-A.ok(/U\.bus\.on\('agent\.run\.start', p => \{ if \(p && p\.agentId\) \{ if \(p\.runId && isLineTestStream\(p\.streamId\)\) testRunIds\.set\(p\.runId, p\.agentId\);/.test(station)
-  && /U\.bus\.on\('agent\.run\.end', p => \{ if \(p && p\.agentId\) \{ if \(p\.runId\) testRunIds\.delete\(p\.runId\);/.test(station), 'the crew listener keeps which live runs are line tests, from the run events');
-A.ok(/else \{ runningAgents\.delete\(id\); runSeenAt\.delete\(id\); dropTestRuns\(id\); \}/.test(station) && /runningAgents\.delete\(id\); runSeenAt\.delete\(id\); dropTestRuns\(id\);   \/\/ self-heal/.test(station), '…and forgets them whenever the agent\'s run count is cleared (an end, or the world\'s self-heal)');
+A.ok(/U\.bus\.on\('agent\.run\.start', p => \{ if \(p && p\.agentId\) \{ if \(p\.runId && isLineTestStream\(p\.streamId\)\) testRunIds\.set\(p\.runId, p\.agentId\);/.test(keep)
+  && /U\.bus\.on\('agent\.run\.end', p => \{ if \(p && p\.agentId\) \{ if \(p\.runId\) testRunIds\.delete\(p\.runId\);/.test(keep), 'the crew listener keeps which live runs are line tests, from the run events');
+A.ok(/else \{ runningAgents\.delete\(id\); runSeenAt\.delete\(id\); dropTestRuns\(id\); \}/.test(keep) && /runningAgents\.delete\(id\); runSeenAt\.delete\(id\); dropTestRuns\(id\);   \/\/ self-heal/.test(keep), '…and forgets them whenever the agent\'s run count is cleared (an end, or the world\'s self-heal)');
 {
   // the real crewTick, as state-truth-overlap runs it: a line test reads LINE TEST with its tip; a mix or other work reads WORKING
   const ids = ['tester', 'worker', 'idle'];
@@ -96,17 +96,17 @@ A.ok(/else \{ runningAgents\.delete\(id\); runSeenAt\.delete\(id\); dropTestRuns
     present: ids.map(id => ({ id })), runningAgents: new Map(), runSeenAt: new Map(),
     activity: () => 'task', App: { currentAgent: () => ({ id: 'worker' }) },
     agentLive: id => id !== 'idle', crewQuery: '', lineTestOnly: id => id === 'tester',
-    LINE_TEST_TIP: (station.match(/const LINE_TEST_TIP = ('[^\n]+');/) || [])[1] ? eval((station.match(/const LINE_TEST_TIP = ('[^\n]+');/) || [])[1]) : '',
+    LINE_TEST_TIP: (keep.match(/const LINE_TEST_TIP = ('[^\n]+');/) || [])[1] ? eval((keep.match(/const LINE_TEST_TIP = ('[^\n]+');/) || [])[1]) : '',
     $: sel => sel.startsWith('#cs-') ? labels[sel.slice(4)] : null
   });
-  vm.runInContext(A.fnBody(station, 'function crewTick()') + '\ncrewTick();', ctx);
+  vm.runInContext(A.fnBody(keep, 'function crewTick()') + '\ncrewTick();', ctx);
   A.eq([labels.tester.textContent, labels.worker.textContent, labels.idle.textContent], ['ON A WORKFLOW', 'WORKING', 'IDLE'], 'a workflow job or a line test reads ON A WORKFLOW; other work WORKING; no run IDLE');
   A.ok(/WORK › AUTOMATE › WORKFLOWS/.test(tips.tester || '') && /TEST view/.test(tips.tester || '') && /STOP/.test(tips.tester || '') && !tips.worker,
     'the ON A WORKFLOW row says where it shows (the WORKFLOWS window, or a step test in the TEST view) and how it stops; the others carry no such tip');
 }
 {
   // lineTestOnly: only when EVERY live run of the agent is a line test
-  const src = (station.match(/function lineTestOnly\(id\) \{[\s\S]*?\n  \}/) || [])[0];
+  const src = (keep.match(/function lineTestOnly\(id\) \{[\s\S]*?\n  \}/) || [])[0];
   A.ok(!!src, 'lineTestOnly exists');
   const ctx = vm.createContext({ testRunIds: new Map([['r1', 'a'], ['r2', 'b']]), runningAgents: new Map([['a', 1], ['b', 2]]) });
   vm.runInContext(src, ctx);

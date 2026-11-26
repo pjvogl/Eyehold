@@ -1,14 +1,14 @@
 'use strict';
 (async()=>{
  await Promise.all([IndustrialTextures.ready,PropRemaster.ready]);
- await SPRITES.init();await SPRITES.ensureSkin('station_minion');
+ await SPRITES.init();await SPRITES.ensureSkin('keep_minion');
  const query=new URLSearchParams(location.search),newOnly=query.get('set')==='new',projection=query.get('propSet')==='projection';
  let reviewManifest=null;
  if(projection){const response=await fetch('assets/industrial/projection-correction/manifest.json');if(!response.ok)throw Error('Projection manifest HTTP '+response.status);reviewManifest=await response.json();}
  const revised=new Set((reviewManifest?.revisedViews||[]).map(v=>v.id));
  if(projection){for(const a of document.querySelectorAll('nav a')){const url=new URL(a.href);url.searchParams.set('propSet','projection');a.href=url.href;}document.querySelector('#scope').textContent='Full catalog with projection corrections. Fixed 2× world scale; the crate and crew show physical size.';}
  const cards=[],main=document.querySelector('#catalog'),search=document.querySelector('#search'),family=document.querySelector('#family');let work=false,facing=0,placement=false;
- const cadet=(g,x,y,sitting,now)=>SPRITES.drawBody(g,{id:'review-cadet',skin:'station_minion',px:x,py:y,state:'idle',dir:sitting?'north':'south',sitting},now,{reducedMotion:true,skipGroundShadow:sitting});
+ const cadet=(g,x,y,sitting,now)=>SPRITES.drawBody(g,{id:'review-cadet',skin:'keep_minion',px:x,py:y,state:'idle',dir:sitting?'north':'south',sitting},now,{reducedMotion:true,skipGroundShadow:sitting});
  const probe=document.createElement('canvas');probe.width=64;probe.height=64;const cadetHeight=32-cadet(probe.getContext('2d'),32,32,false,0).top;
  search.value=query.get('search')||'';
  if(newOnly){main.style.gridTemplateColumns='minmax(0,1000px)';document.querySelector('#scope').textContent='Showing newly rebuilt props. Each is followed by the approved desk, crate, and agent at the same scale.';}
@@ -39,7 +39,7 @@
    if(mounted)PropSprites.draw(host,false,{still:true});
    const prop={id:'atlas-'+p.id,t:p.id,x:x+(mounted&&fp.w===1?1:0),y,w:fp.w,h:fp.h,r,...(mounted?{mount:'surface'}:{})};
    if(PropSprites.setSurfaceLayout)PropSprites.setSurfaceLayout(mounted?[host,prop]:[prop]);
-   // This labelled gallery owns only its demonstration instances, never the station.
+   // This labelled gallery owns only its demonstration instances, never the keep.
    if(work&&p.id==='workbench'){
     const beat=Math.floor(now/2400);
     if(c.demoBeat!==beat){c.demoBeat=beat;PropSprites.pulseWorkbench(beat%2===0,prop.id);}

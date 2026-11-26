@@ -1,4 +1,4 @@
-/* sidecar/tools/builtin/connectors.js — `connectors.list`: the agent's readout of the station's INTEGRATIONS.
+/* sidecar/tools/builtin/connectors.js — `connectors.list`: the agent's readout of the keep's INTEGRATIONS.
 
    WHY THIS EXISTS (a measured truthful-telemetry gap, not a nice-to-have). Three things were true at once:
      1. CONFIGURED service keys already ride the prompt (servicekeys.promptBlock — names only, never values).
@@ -6,7 +6,7 @@
      3. Nothing ever told the agent about the integrations that are ONE CLICK AWAY but not yet added.
    So an agent asked "what is this harness missing?" answered with things the Commander could have had in
    thirty seconds — GitHub, Notion, Stripe, Google Workspace — because from inside the run they were
-   indistinguishable from unbuildable. That is the station lying by omission about its own reach.
+   indistinguishable from unbuildable. That is the keep lying by omission about its own reach.
 
    This tool closes (3) ONLY. It is a READER: pure local state, no network, no consent, and it can neither
    install nor authenticate anything. Adding a connector spends the Commander's credentials and is their
@@ -17,7 +17,7 @@
    here that reads a key's value.
 
    capability 'web' on the `dish` object — the same grant as web_request, which is the route an agent
-   actually SPENDS a service key through. A station with no dish can neither call an API nor drive a
+   actually SPENDS a service key through. A keep with no dish can neither call an API nor drive a
    connector, so advertising the catalog there would teach a reach the run does not have.
 
    makeConnectorTools({ connectors?, serviceKeys?, connectorCatalog?, keysCatalog?, signInUnavailable? }) -> { listTool, register(reg), _internals }
@@ -51,7 +51,7 @@
   }
 
   /* GOAL -> CONNECTOR (beginner seam Lane 1, `suggestFor`). A newcomer with NOTHING wired never triggers a
-     tool-call throw, so the only way the station can say "you need Gmail for that" is to read the GOAL. The
+     tool-call throw, so the only way the keep can say "you need Gmail for that" is to read the GOAL. The
      goal's words are expanded through a tiny topic table (the words people use for a thing -> the words the
      catalog names it by) and matched against each catalog entry's id/name/aliases — the SAME alias list the
      ABILITIES search and the catalog card already match on. Pure + bounded; never a fabricated match. */
@@ -210,15 +210,15 @@
 
     const listTool = {
       name: 'connectors.list', capability: 'web', scope: 'read', requiresConsent: false, timeoutMs: 8000,
-      description: 'List the station\'s INTEGRATIONS: MCP connectors already connected, platform API keys already '
+      description: 'List the keep\'s INTEGRATIONS: MCP connectors already connected, platform API keys already '
         + 'connected, and — the part you cannot otherwise know — the vetted connectors and platform keys the '
         + 'Commander could add but has not (GitHub, Notion, Stripe, Google Workspace, Printify, Etsy and more). '
-        + 'Check this BEFORE telling the Commander that StarNet cannot reach a service: it usually can, and the '
+        + 'Check this BEFORE telling the Commander that Eyehold cannot reach a service: it usually can, and the '
         + 'honest answer is "that service has a setup path in ABILITIES › DISCOVER › CATALOG — I can walk you through '
         + 'it?". Read-only: you cannot install or authenticate anything, and you never see a key\'s value. '
         + 'Optional `query` filters by service or category; `scope` narrows to connected or available. '
         + 'Pass `goal` (the Commander\'s task in their words, e.g. "email my notes to myself") to get SUGGESTED: '
-        + 'the not-yet-connected connector(s) that task needs — the station then offers the Commander a one-click '
+        + 'the not-yet-connected connector(s) that task needs — the keep then offers the Commander a one-click '
         + 'door to connect it. Call it with `goal` BEFORE declining a task for lack of email/site/calendar/docs access.',
       schema: {
         type: 'object', properties: {
@@ -260,11 +260,11 @@
         if (scope === 'all' || scope === 'available') { parts.push(sectionAvailable(q)); }
 
         const blocks = parts.filter(Boolean).map(s => s.head + '\n' + s.body.join('\n'));
-        if (!blocks.length) return { content: 'No integration state is readable on this station.', summary: 'no data' };
+        if (!blocks.length) return { content: 'No integration state is readable on this keep.', summary: 'no data' };
 
         let text = blocks.join('\n\n');
         if (text.length > MAX_CHARS) text = text.slice(0, MAX_CHARS) + '\n… (truncated — narrow it with `query`)';
-        // The floor summary counts ENTRIES, not rendered lines — "connected:1" for a station with zero
+        // The floor summary counts ENTRIES, not rendered lines — "connected:1" for a keep with zero
         // connectors (one "(none yet)" line) is exactly the kind of small lie this file is against.
         const counts = parts.filter(Boolean).map(s => s.label + ':' + s.count).join(' ');
         return { content: text, summary: counts };

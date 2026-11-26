@@ -4,7 +4,7 @@ const fs = require('fs');
 const path = require('path');
 const read = rel => fs.readFileSync(path.join(__dirname, '..', rel), 'utf8');
 
-const ui = read('frontend/app/stationui.js');
+const ui = read('frontend/app/keepui.js');
 const app = read('frontend/app/app.js');
 const appCss = read('frontend/css/app.css');
 const style = read('frontend/css/style.css');
@@ -14,7 +14,7 @@ const warroom = read('frontend/app/warroom.js');
 
 A.ok(/max-height:\s*680px[\s\S]{0,500}#screen-game\.active[\s\S]{0,300}overflow-y:\s*auto/.test(appCss),
   'PL-01: short responsive layout owns a vertical reachability path');
-A.ok(!/StationUI\.notify\(agent\.name \+ ' is online/.test(app),
+A.ok(!/KeepUI\.notify\(agent\.name \+ ' is online/.test(app),
   'PL-02: resume/reload does not mint another persistent online notification');
 A.ok(/aria-label="Turn ' \+ \(s\.enabled \? 'off' : 'on'\) \+ ' ' \+ esc\(s\.name\)/.test(ui),
   'PL-04: each skill switch names its skill');
@@ -30,7 +30,7 @@ A.ok(/getBoundingClientRect\(\)[\s\S]{0,300}anchor/.test(ui) && /CASCADE_STEP/.t
   'PL-11: large consoles retain a visible offset from the window beneath');
 A.ok(/class="deliverables-toolbar"/.test(deliverables) && /class="bb sm" id="dl-refresh"/.test(deliverables),
   'PL-12: Deliverables toolbar opts into themed controls');
-A.ok(/previews open safely inside StarNet/i.test(deliverables) && !/opaque-origin sandbox/.test(deliverables),
+A.ok(/previews open safely inside Eyehold/i.test(deliverables) && !/opaque-origin sandbox/.test(deliverables),
   'PL-13: Deliverables introduction uses plain outcome language');
 A.ok(/\.deliverables-toolbar/.test(style), 'PL-12: Deliverables toolbar has explicit themed layout');
 A.ok(/controls\.setAttribute\('aria-hidden', 'true'\)/.test(titlebar) && /b\.tabIndex = -1/.test(titlebar),

@@ -82,7 +82,7 @@ A.throws(() => unknown.resolve('unknown', {
 const retiredIo = memoryIo();
 const retired = J.makeRunJournal({ io: retiredIo, clock: { now: () => 2 } });
 retired.begin({ runId: 'retired', messages: [] });
-retired.toolIntent('retired', { callId: 'read', name: 'station.inspect', mutating: false });
+retired.toolIntent('retired', { callId: 'read', name: 'keep.inspect', mutating: false });
 retired.toolResult('retired', { callId: 'read', ok: true, content: 'ok' });
 const cleanRetirement = retired.finishAndRetire('retired', { reason: 'done', transcriptAck: true });
 A.eq(cleanRetirement.retired, true, 'a fully paired, transcript-acknowledged journal retires');

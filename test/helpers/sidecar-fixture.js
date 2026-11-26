@@ -59,14 +59,14 @@ async function terminate(child, timeoutMs) {
 class SidecarFixture {
   constructor(options) {
     const opts = options || {};
-    this.workspace = fs.mkdtempSync(path.join(os.tmpdir(), opts.prefix || 'starnet-sidecar-'));
-    // HERMETIC PROFILE: the sidecar's boot-time station auto-recovery scans the REAL per-user
-    // app-data roots (%APPDATA%/%LOCALAPPDATA%/XDG/~) for a lost station, and a fresh temp
-    // workspace looks exactly like one — so a machine with an installed StarNet station had its
+    this.workspace = fs.mkdtempSync(path.join(os.tmpdir(), opts.prefix || 'eyehold-sidecar-'));
+    // HERMETIC PROFILE: the sidecar's boot-time keep auto-recovery scans the REAL per-user
+    // app-data roots (%APPDATA%/%LOCALAPPDATA%/XDG/~) for a lost keep, and a fresh temp
+    // workspace looks exactly like one — so a machine with an installed Eyehold keep had its
     // real save COPIED INTO every test workspace (2026-08-20: broke schema-stamp on the dev box
     // the day the desktop app was first installed there). Point every profile root the candidate
     // scan reads at an empty scratch sibling so fixture boots never see, or touch, real user data.
-    this.profile = fs.mkdtempSync(path.join(os.tmpdir(), (opts.prefix || 'starnet-sidecar-') + 'profile-'));
+    this.profile = fs.mkdtempSync(path.join(os.tmpdir(), (opts.prefix || 'eyehold-sidecar-') + 'profile-'));
     this.entry = opts.entry || DEFAULT_ENTRY;
     this.args = Array.isArray(opts.args) ? opts.args.slice() : [];
     this.env = Object.assign({}, opts.env || {});
@@ -111,11 +111,14 @@ class SidecarFixture {
     // deliberately leave alone — node/npm subprocesses still need a sane Windows profile.
     if (process.platform !== 'win32') hermeticProfile.HOME = this.profile;
     const env = Object.assign({}, process.env, hermeticProfile, this.env, extraEnv || {}, {
-      SKYNET_PORT: String(this.port),
-      STARNET_PORT: String(this.port),
-      SKYNET_WORKSPACES: this.workspace,
-      STARNET_WORKSPACES: this.workspace
+      EYEHOLD_PORT: String(this.port),
+      EYEHOLD_WORKSPACES: this.workspace
     });
+    for (const [name, value] of Object.entries(env)) {
+      if (name.startsWith('SKYNET_') && (env['EYEHOLD_' + name.slice('SKYNET_'.length)] == null || env['EYEHOLD_' + name.slice('SKYNET_'.length)] === '')) {
+        env['EYEHOLD_' + name.slice('SKYNET_'.length)] = value;
+      }
+    }
     const child = spawn(process.execPath, [this.entry].concat(this.args), {
       env,
       stdio: ['ignore', 'pipe', 'pipe']
@@ -178,8 +181,8 @@ class SidecarFixture {
     const opts = Object.assign({}, options || {});
     const headers = Object.assign({}, opts.headers || {});
     if (!Object.keys(headers).some(key => key.toLowerCase() === 'origin')) headers.Origin = this.baseUrl;
-    if (this.token && !Object.keys(headers).some(key => key.toLowerCase() === 'x-starnet-token')) {
-      headers['X-StarNet-Token'] = this.token;
+    if (this.token && !Object.keys(headers).some(key => key.toLowerCase() === 'x-eyehold-token')) {
+      headers['X-Eyehold-Token'] = this.token;
     }
     opts.headers = headers;
     return fetch(this.baseUrl + route, opts);

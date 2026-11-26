@@ -19,7 +19,7 @@ self.onmessage = ({ data }) => {
       const cam = { scale: data.scale, panX: -data.left * data.scale, panY: -data.top * data.scale };
       ctx.imageSmoothingEnabled = false;
       ctx.setTransform(cam.scale, 0, 0, cam.scale, cam.panX, cam.panY);
-      Terrain.draw(ctx, cam, width, height, data.station);
+      Terrain.draw(ctx, cam, width, height, data.keep);
       const bitmap = canvas.transferToImageBitmap();
       self.postMessage({ token, bitmap }, [bitmap]);
       return;

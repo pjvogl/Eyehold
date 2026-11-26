@@ -1,9 +1,9 @@
 'use strict';
 const studies = [
   ['android','blank','Cadet / Android','Ivory ceramic over graphite joints. A compact head and clearer limb construction.'],
-  ['astronaut','astronaut','Astronaut','Burnt-orange pressure fabric, smoked glass and a more practical suit silhouette.'],
+  ['warden','warden','Warden','Burnt-orange pressure fabric, smoked glass and a more practical suit silhouette.'],
   ['robot','robot','Robot','Brushed metal, recessed optics and articulated machinery with less toy-like bulk.'],
-  ['crthead','crthead','CRT-head','A smaller phosphor monitor over navy workwear; familiar character, more station hardware.'],
+  ['crthead','crthead','CRT-head','A smaller phosphor monitor over navy workwear; familiar character, more keep hardware.'],
   ['alien','alien','Alien','Muted sage skin and a fitted utility suit, with a more restrained head-to-body ratio.'],
   ['ultron','ultron','Ultron Overseer','Layered charcoal titanium and restrained red optics. A leaner, articulated armor silhouette.'],
   ['skeleton','skeleton','Skeleton','Aged ivory bone, a smaller skull and a more natural rib cage, pelvis and limb structure.'],
@@ -19,7 +19,7 @@ const studies = [
   ["pepe","pepe","Pepe","Classic heavy-lidded Pepe face, broad lips and familiar blue shirt."],
   ["capybara","capybara","Capybara","Coarse brown fur, a blunt muzzle and compact paws that retain the capybara shape."],
   ["vaultboy","vaultboy","Fallout 1 Vault Dweller","Rugged brown-haired Vault Dweller, a blue-and-yellow jumpsuit and wrist-mounted Pip-Boy."],
-  ["station_minion","station_minion","Station Minion","Graphite and bronze work plating with compact cyan optics and practical joints."],
+  ["keep_minion","keep_minion","Keep Minion","Graphite and bronze work plating with compact cyan optics and practical joints."],
   ["blank_blue","blank_blue","Blue Cadet","Cobalt ceramic over graphite articulation; a cooler Cadet variant."],
   ["blank_green","blank_green","Green Cadet","Sage ceramic shell with restrained highlights and exposed dark joints."],
   ["blank_red","blank_red","Red Cadet","Oxide-red plating, a compact visor and cleaner mechanical proportions."],

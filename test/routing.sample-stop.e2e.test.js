@@ -1,6 +1,6 @@
 /* node test/routing.sample-stop.e2e.test.js — ■ STOP for RUN ONE REAL JOB, over real sockets against the REAL host
    (2026-09-29, handed over by the steptest-stuck investigation: the Workflow panel's RUN ONE REAL JOB had no stop — the
-   one way out of a running job was the station-wide E-STOP).
+   one way out of a running job was the keep-wide E-STOP).
 
    What it locks (boot + content-driven mock provider per routing.sample.e2e.test.js — zero real spend, no keys):
      1. POST /api/routing/sample/stop sits behind the same per-launch token gate as every /api route;
@@ -8,7 +8,7 @@
      3. a job whose model call HANGS is stopped mid-run: the stop answers {ok, stopped, halted ≥ 1}, and the in-flight
         sample POST settles promptly as a STOP — 502 {stopped:true}, an error that names the stop, nothing delivered —
         instead of waiting out the provider;
-     4. the station is not wedged: the next sample rides the line and delivers;
+     4. the keep is not wedged: the next sample rides the line and delivers;
      5. the run's stream rides agent.run.start (additive streamId) — how the crew row tells a line test from other work.
 
    In test/http.list (a child-process boot test does not gate test:fast). */
@@ -69,7 +69,7 @@ function startMockOpenRouter(script) {
 function boot(port, env, attemptsLeft) {
   return new Promise((resolve, reject) => {
     const child = spawn(process.execPath, [INDEX], {
-      env: Object.assign({}, process.env, env, { SKYNET_PORT: String(port), STARNET_PORT: String(port) }),
+      env: Object.assign({}, process.env, env, { EYEHOLD_PORT: String(port), EYEHOLD_PORT: String(port) }),
       stdio: ['ignore', 'pipe', 'pipe']
     });
     let out = '', settled = false;
@@ -94,7 +94,7 @@ async function startSseCollector(url) {
   const ac = new AbortController();
   const events = [];
   const res = await fetch(url, { signal: ac.signal });
-  A.eq(res.status, 200, 'the station SSE feed opens');
+  A.eq(res.status, 200, 'the keep SSE feed opens');
   const reader = res.body.getReader();
   (async () => {
     const dec = new TextDecoder();
@@ -141,15 +141,15 @@ function twoStagePlan() {
   ]);
   const ws = fs.mkdtempSync(path.join(os.tmpdir(), 'sk-sample-stop-'));
   const env = {
-    SKYNET_WORKSPACES: ws, STARNET_WORKSPACES: ws, STARNET_DEV: '', SKYNET_DEV: '',
-    SKYNET_OPENROUTER_BASE: mock.base, SKYNET_OPENROUTER_KEY: 'sk-or-v1-sample-stop-fake', SKYNET_DEFAULT_MODEL: 'test/model'
+    EYEHOLD_WORKSPACES: ws, EYEHOLD_WORKSPACES: ws, EYEHOLD_DEV: '', EYEHOLD_DEV: '',
+    EYEHOLD_OPENROUTER_BASE: mock.base, EYEHOLD_OPENROUTER_KEY: 'sk-or-v1-sample-stop-fake', EYEHOLD_DEFAULT_MODEL: 'test/model'
   };
   const { child, port } = await boot(9180 + (process.pid % 50), env, 20);
   const B = 'http://' + HOST + ':' + port;
   let sse = null;
   try {
     const token = await bootToken(B, B);
-    const headers = { 'Content-Type': 'application/json', 'X-StarNet-Token': token, Origin: B };
+    const headers = { 'Content-Type': 'application/json', 'X-Eyehold-Token': token, Origin: B };
     const call = (route, body) => fetch(B + route, { method: 'POST', headers, body: JSON.stringify(body == null ? {} : body) })
       .then(r => r.json().then(j => ({ status: r.status, j })));
 
@@ -173,7 +173,7 @@ function twoStagePlan() {
     for (let i = 0; i < 200 && !mock.hung.size; i++) await sleep(50);
     A.ok(mock.hung.size >= 1, 'fixture: the entry dock\'s model call is in flight and hanging');
     const busy = await call('/api/routing/sample', {});
-    A.eq(busy.status, 409, 'while it rides, a second sample is still refused (one per station)');
+    A.eq(busy.status, 409, 'while it rides, a second sample is still refused (one per keep)');
     const stop = await call('/api/routing/sample/stop');
     A.eq(stop.status, 200, 'the stop is accepted');
     A.ok(stop.j && stop.j.ok === true && stop.j.stopped === true && stop.j.halted >= 1, 'it killed the running job\'s run: ' + JSON.stringify(stop.j));
@@ -199,9 +199,9 @@ function twoStagePlan() {
     const again = await call('/api/routing/sample/stop');
     A.eq(again.status, 409, 'once it has settled there is nothing left to stop');
 
-    /* ---- 4. the station is not wedged: the next sample rides the line and delivers ---- */
+    /* ---- 4. the keep is not wedged: the next sample rides the line and delivers ---- */
     const next = await call('/api/routing/sample', {});
-    A.eq(next.status, 200, 'the next sample delivers — the stop released the one-per-station lock');
+    A.eq(next.status, 200, 'the next sample delivers — the stop released the one-per-keep lock');
     A.ok(next.j && next.j.ok === true && !!next.j.delivered, 'and it reached the OUTBOX');
 
     /* ---- 5. the run's stream rides agent.run.start (additive) ---- */

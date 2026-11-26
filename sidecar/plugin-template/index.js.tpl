@@ -1,18 +1,18 @@
-/* {{NAME_COMMENT}} — a StarNet plugin.
+/* {{NAME_COMMENT}} — a Eyehold plugin.
  *
- * THIS FILE runs in the station, in its own process, once you approve the plugin in ABILITIES → EXTENSIONS.
+ * THIS FILE runs in the keep, in its own process, once you approve the plugin in ABILITIES → EXTENSIONS.
  * It has your computer's permissions. register(api) runs once; everything is registered inside it:
  *
  *   api.on(event, fn)      hook every run: pre_tool_call (return {decision:"block", reason} to stop a tool),
  *                          post_tool_call, pre_llm_call (return {context:"…"} to add a note), on_session_end, …
  *   api.tool({...})        a tool your crew can call. It reaches an agent when this plugin's TERMINAL stands in
  *                          that agent's room, and every call shows you an approval card.
- *   api.handle(name, fn)   answer this plugin's own window: starnet.backend.call(name, args) in ui/index.html
+ *   api.handle(name, fn)   answer this plugin's own window: eyehold.backend.call(name, args) in ui/index.html
  *   api.every(ms, fn)      a background job (10 s minimum)
  *   api.store              the SAME storage the window uses (get / set / delete / keys)
  *
- * ui/index.html is the plugin's WINDOW: any HTML/JS you like, opened in a real StarNet window with the station
- * kit loaded (glass sn-* classes + `starnet`). docs/PLUGINS.md in the StarNet repo lists every class and call.
+ * ui/index.html is the plugin's WINDOW: any HTML/JS you like, opened in a real Eyehold window with the keep
+ * kit loaded (glass sn-* classes + `eyehold`). docs/PLUGINS.md in the Eyehold repo lists every class and call.
  * Delete this file (and "main" in plugin.json) for a window-only plugin. Any edit turns the plugin off until
  * you approve the new code.
  */
@@ -46,7 +46,7 @@ module.exports = {
       }
     });
 
-    // 3. WINDOW CALLS — ui/index.html asks: starnet.backend.call('stats')
+    // 3. WINDOW CALLS — ui/index.html asks: eyehold.backend.call('stats')
     api.handle('stats', () => ({ toolCalls }));
   }
 };

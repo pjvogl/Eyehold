@@ -6,7 +6,7 @@
 import { spawn } from 'node:child_process';
 import { mkdtempSync, rmSync } from 'node:fs';
 import { createServer } from 'node:net';
-import { tmpdir } from 'node:os';
+import { tmpdir, userInfo } from 'node:os';
 import { join } from 'node:path';
 import { findChrome, connectCDP, evalJS, collectDiagnostics, sleep } from '../scripts/lib/cdp.mjs';
 import { materializeSeedWorkspace, bootSeededSidecar, waitUp, waitDevReady } from '../scripts/lib/seed.mjs';
@@ -42,7 +42,7 @@ const stopChild = (child, graceful = false) => new Promise(resolve => {
   if (graceful) killTimer = setTimeout(kill, 3000); else kill();
 });
 
-const root = mkdtempSync(join(tmpdir(), 'starnet-crt-loss-'));
+const root = mkdtempSync(join(tmpdir(), 'eyehold-crt-loss-'));
 const workspace = join(root, 'workspace');
 const profile = join(root, 'profile');
 const appPort = await freePort();
@@ -51,10 +51,10 @@ const appUrl = `http://127.0.0.1:${appPort}/`;
 materializeSeedWorkspace(workspace);
 const sidecar = bootSeededSidecar({ port: appPort, scratchDir: workspace });
 const chrome = spawn(findChrome(), [
-  '--headless=new', '--no-first-run', '--no-default-browser-check', '--hide-scrollbars', '--mute-audio',
+  '--headless=new', '--no-sandbox', '--disable-dev-shm-usage', '--no-first-run', '--no-default-browser-check', '--hide-scrollbars', '--mute-audio',
   '--use-angle=swiftshader', '--enable-unsafe-swiftshader',
   `--remote-debugging-port=${cdpPort}`, '--window-size=1280,720', `--user-data-dir=${profile}`, 'about:blank'
-], { stdio: 'ignore' });
+], { stdio: 'ignore', env: { ...process.env, HOME: userInfo().homedir } });
 
 let cdp = null;
 try {
@@ -63,7 +63,7 @@ try {
   await cdp.send('Page.enable'); await cdp.send('Runtime.enable');
   const diagnostics = collectDiagnostics(cdp);
   await cdp.send('Page.navigate', { url: appUrl });
-  check('seeded station reaches the live floor', await waitDevReady(cdp, evalJS, { url: appUrl }));
+  check('seeded keep reaches the live floor', await waitDevReady(cdp, evalJS, { url: appUrl }));
 
   let before = null;
   for (let i = 0; i < 50; i++) {
@@ -98,10 +98,10 @@ try {
   try { cdp?.ws.close(); } catch {}
   await Promise.all([stopChild(chrome, true), stopChild(sidecar)]);
   const resolvedRoot = root.replace(/\\/g, '/');
-  if (resolvedRoot.startsWith(tmpdir().replace(/\\/g, '/') + '/') && /starnet-crt-loss-/.test(resolvedRoot)) {
+  if (resolvedRoot.startsWith(tmpdir().replace(/\\/g, '/') + '/') && /eyehold-crt-loss-/.test(resolvedRoot)) {
     // Chrome's children can hold chrome_debug.log for seconds after the parent exits on a loaded
     // Windows box (2s was not enough under a full gate) — the same transient-lock window
-    // stationbake.connections.test.mjs allows, and it still fails if the lock never lifts.
+    // keepbake.connections.test.mjs allows, and it still fails if the lock never lifts.
     for (let attempt = 0; attempt < 50; attempt++) {
       try { rmSync(root, { recursive: true, force: true }); break; }
       catch (error) { if (!['EBUSY', 'EPERM', 'ENOTEMPTY'].includes(error.code) || attempt === 49) throw error; await sleep(200); }

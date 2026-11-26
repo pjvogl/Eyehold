@@ -1,8 +1,8 @@
-# StarNet world generation II
+# Eyehold world generation II
 
 Status, 2026-09-08: the owner rejected and cancelled the separate New Horizon rebuild.
 Its source, generated assets, website mirror, tests, and entry wiring were removed in
-`445edcde0`; the preceding source tree and preview station were restored. This document
+`445edcde0`; the preceding source tree and preview keep were restored. This document
 describes the earlier experiment and is historical context, not an active rebuild queue.
 
 Owner request: rebuild the 2D world with a generational improvement in material art,
@@ -10,7 +10,7 @@ lighting, depth and interaction quality while preserving the complete existing m
 
 Done means: in the seeded running app, build and repaint connected rooms, place and rotate
 props, move through doorways, observe real task activity and an openable artifact, then
-restart and recover the same station. The new material and lighting passes must remain
+restart and recover the same keep. The new material and lighting passes must remain
 consistent between REFIT and the live world. The full fast gate must pass. Art superiority
 over other games remains an owner judgment, not a test result.
 
@@ -36,7 +36,7 @@ external game engine was installed.
 
 | Domain | Existing authority retained | Required observations |
 | --- | --- | --- |
-| Rooms, halls, doors, paint | WorldModel + StationBake geometry | REFIT/world parity, undo, reload |
+| Rooms, halls, doors, paint | WorldModel + KeepBake geometry | REFIT/world parity, undo, reload |
 | Props, rotation, mounting | PropSprites + PropAnchor | footprint, rotation, seat/bed occlusion |
 | Crew | World simulation + SPRITES | feet anchors, containment, navigation |
 | Tool grants | existing capability projection | props still resolve real capabilities |
@@ -44,11 +44,11 @@ external game engine was installed.
 | Runs, handoffs, approvals | existing harness events | real run start/end; disconnected state |
 | Goals, quests, trophies | existing durable stores | current projection remains wired |
 | Chat, voice, connectors | existing panels and services | unchanged entry points stay accessible |
-| Save and recovery | existing save envelope | station/roster survive restart |
+| Save and recovery | existing save envelope | keep/roster survive restart |
 
 ## Evidence
 
-The isolated acceptance station runs at `http://127.0.0.1:9207` using
+The isolated acceptance keep runs at `http://127.0.0.1:9207` using
 `node dev/seed.js --keep`. It started with three rooms, three connecting halls, 43 props,
 50 belt tiles and three crew members. The fixture compiler reported zero routing warnings.
 The local scripted model runs at port 9208; it is an explicit test provider, not an external
@@ -60,8 +60,8 @@ Observed in the running app on 2026-09-07/08:
 - Viewed the new materials, practical fixtures, wall occlusion and crew depth in the world
   and REFIT. Eighteen deck materials and seven industrial wall finishes have new painters.
 - Changed COMMAND from cobalt alloy to sterile hex through SURFACE, used Undo and Redo,
-  then DONE. The live station reported `floorMat: hex` and `floorStyle: sterile`.
-- Used the catalog's TURN control to place a chair. The live station reported 44 props and
+  then DONE. The live keep reported `floorMat: hex` and `floorStyle: sterile`.
+- Used the catalog's TURN control to place a chair. The live keep reported 44 props and
   `p50: { t: chair, x: 22, y: 19, r: 1 }`.
 - Drew a new HAB room and a two-tile-wide connecting corridor in REFIT. The saved live world
   reported four rooms, four halls, a 540 x 506 rendering extent and 47 light sources. Undoing
@@ -80,7 +80,7 @@ Observed in the running app on 2026-09-07/08:
 - One warm 120-frame sample at high quality reported 42 light sources, zero dropped sources,
   about 6.8 MB of lighting caches, rendering median 2.1 ms and p95 2.8 ms. This measures the
   instrumented rendering pass on this machine; it excludes earlier simulation/background
-  work and is not a whole-frame, large-station or cross-hardware performance guarantee.
+  work and is not a whole-frame, large-keep or cross-hardware performance guarantee.
 
 Independent review caught and corrected raised-source occlusion, exact chunk masks,
 context recovery, full lamp collection and atmosphere controls. The focused checks cover

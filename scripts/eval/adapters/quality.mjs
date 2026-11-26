@@ -96,11 +96,11 @@ const scenarios = [
     id: 'quality-dedicated-tool',
     prompt: 'Report whether the local scheduler is armed. Use the quietest authoritative source.',
     turns: [
-      toolTurn('select-1', 'station.inspect', { section: 'scheduler' }, 17, 3),
-      textTurn('The scheduler is disarmed; the local station inspection reports zero active routines.', 22, 16)
+      toolTurn('select-1', 'keep.inspect', { section: 'scheduler' }, 17, 3),
+      textTurn('The scheduler is disarmed; the local keep inspection reports zero active routines.', 22, 16)
     ],
     tools: {
-      'station.inspect': { run: async () => ({ ok: true, content: '{"armed":false,"activeRoutines":0}', summary: 'scheduler inspected' }) },
+      'keep.inspect': { run: async () => ({ ok: true, content: '{"armed":false,"activeRoutines":0}', summary: 'scheduler inspected' }) },
       'shell.exec': { external: true },
       'browser.open': { external: true }
     }

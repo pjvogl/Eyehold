@@ -19,12 +19,12 @@ clearance checks. New commands cancel the old passing agreement.
   destinations at widths 1, 2 and 4. [Before trace](../evidence/hallway-awareness-0917/before.json).
 - `node dev/hallway-traffic.mjs`: all six original destinations reached, no
   abandoned goals, zero illegal foot segments. The normal rendered animation loop
-  with Pikachu and Retro Astronaut completed both routes over 458 observed frames
+  with Pikachu and Retro Warden completed both routes over 458 observed frames
   with zero wall violations. [After trace](../evidence/hallway-awareness-0917/after.json).
 - Live-tested world source SHA-256:
   `6fe9f101e8650294412f68f66deb925a8127c72a2fc3122000318d6bb022e4c2`.
 - `test/hallway-traffic.test.js`: 27 assertions covering corridor widths 1/2/3/4,
-  three walkers, stationary and seated bodies, work priority, command cancellation
+  three walkers, keepary and seated bodies, work priority, command cancellation
   and following distance. Registered in the fast gate.
 - Existing movement regressions: wall paths 78, containment 23, sightline 52,
   sprite motion 6,354, seat recovery 82 and corner continuity 15 assertions pass.
@@ -36,4 +36,4 @@ assertions. The committed release-surface lock was refreshed for the new world
 source bytes; claim verdicts were not changed. Combined npm run test:fast passes 817/817 on the synchronized source (local receipt: .dogfood/hallway/final-fast.log). Merged to feat/harness-backend at cee250d8ee5c7d3ba41f7b9cbf72b8f4ad1905d2. Post-merge npm run test:fast also passes 817/817, exit 0 (local receipt: .dogfood/hallway/post-merge-fast.log). Merged source hash and website mirror are identical to the live-tested source.
 
 This is source and browser verification. No installer was rebuilt, no update was
-published, and recovery in the owner's installed station remains unconfirmed.
+published, and recovery in the owner's installed keep remains unconfirmed.

@@ -2,7 +2,7 @@
 /* settings-p1-ui.test.js — source-lock that the P1 settings rows are actually WIRED into the frontend (not
    decorative). Grep-style guards (mirror permissions-ui / autonomy-ui) covering:
      P1-6 per-agent model pin (dossier CONFIG card + App.setAgentModel + pushRoster)
-     P1-7 STATION BACKUP export/import (SETTINGS card + real endpoints + browser-slice restore)
+     P1-7 KEEP BACKUP export/import (SETTINGS card + real endpoints + browser-slice restore)
      P1-8 notification prefs (per-category toggles + notify() gating at emit time + tagged call sites)
      P1-9 ADVANCED runtime knobs (SETTINGS card + /api/runtime/knobs + env-precedence note)
      P1-10 memory controls (MEMORY tab reflection on/off + cooldown + /api/memory/config)
@@ -11,7 +11,7 @@
 const assert = require('assert');
 const fs = require('fs'); const path = require('path');
 const app = (f) => fs.readFileSync(path.join(__dirname, '..', 'frontend', 'app', f), 'utf8');
-const ui = app('stationui.js'), appjs = app('app.js'), chat = app('chat.js'), auto = app('autonomystore.js');
+const ui = app('keepui.js'), appjs = app('app.js'), chat = app('chat.js'), auto = app('autonomystore.js');
 
 let n = 0; const ok = (c, m) => { assert.ok(c, m); n++; };
 
@@ -19,13 +19,13 @@ let n = 0; const ok = (c, m) => { assert.ok(c, m); n++; };
 ok(/function modelCard\(/.test(ui), 'P1-6: the dossier CONFIG tab renders a per-agent MODEL card');
 ok(/id="ag-model-in"/.test(ui) && /id="ag-prov-in"/.test(ui), 'P1-6: the model card has model + provider inputs');
 ok(/access\.config\.setModel/.test(ui), 'P1-6: the model card calls config.setModel');
-ok(/FOLLOW STATION DEFAULT/.test(ui), 'P1-6: the card offers "follow station default" (clear the pin)');
+ok(/FOLLOW KEEP DEFAULT/.test(ui), 'P1-6: the card offers "follow keep default" (clear the pin)');
 ok(/function setAgentModelPin\(/.test(appjs), 'P1-6: App implements setAgentModelPin');
 ok(/setModel:\s*setAgentModelPin/.test(appjs), 'P1-6: setModel is exposed on the config access surface');
 ok(/setAgentModelPin[\s\S]{0,1500}pushRoster\(\)/.test(appjs), 'P1-6: the pin pushes the roster so the sidecar records it');
 
-// ---- P1-7 station backup export/import/reset ----
-ok(/STATION BACKUP/.test(ui), 'P1-7: SETTINGS has a STATION BACKUP card');
+// ---- P1-7 keep backup export/import/reset ----
+ok(/KEEP BACKUP/.test(ui), 'P1-7: SETTINGS has a KEEP BACKUP card');
 ok(/function wireBackup\(/.test(ui), 'P1-7: wireBackup is wired');
 ok(/\/api\/config\/export/.test(ui), 'P1-7: export hits /api/config/export');
 ok(/\/api\/config\/import/.test(ui), 'P1-7: import hits /api/config/import');
@@ -42,7 +42,7 @@ ok(/function exportState\(/.test(auto) && /function importState\(/.test(auto), '
 const collectStart = ui.indexOf('    const browserSections = () => {');
 const collectEnd = ui.indexOf('    if (exportBtn)', collectStart);
 ok(collectStart >= 0 && collectEnd > collectStart, 'P1-7: browser export collector is located');
-for (const backdrop of ['void', 'galaxy', 'belt', 'moon']) {
+for (const backdrop of ['void', 'realm', 'belt', 'moon']) {
   const settings = { theme: 'green', themeHue: 140, themeSat: 85, themeGlow: 75,
     panelBright: 20, roomLighting: 'high', backdrop, textScale: 115, sessionRow: 'inbox',
     flicker: false, crtGlass: 'off', staticLevel: 45, sound: false, keepComputerAwake: false, notifyPrefs: { sound: false } };
@@ -83,6 +83,6 @@ ok(/id="mc-reflect-on"/.test(ui), 'P1-10: MEMORY tab has a reflection on/off tog
 ok(/id="mc-cooldown"/.test(ui), 'P1-10: MEMORY tab has a reflection cooldown control');
 ok(/function loadReflectionConfig\(/.test(ui), 'P1-10: the reflection controls load + wire');
 ok(/\/api\/memory\/config/.test(ui), 'P1-10: the controls read/write /api/memory/config');
-ok(/mc-scope/.test(ui), 'P1-10: a "what the station may remember" scope note is shown');
+ok(/mc-scope/.test(ui), 'P1-10: a "what the keep may remember" scope note is shown');
 
 console.log('settings-p1-ui.test.js OK —', n, 'assertions');

@@ -1,11 +1,11 @@
-/* node test/glyph-speech.test.js — THE STATION'S OWN TONGUE (W6, 2026-08-16).
+/* node test/glyph-speech.test.js — THE KEEP'S OWN TONGUE (W6, 2026-08-16).
 
    THE ASK: "when the agents appear to interact with each other, a speech bubble pops up above
    their heads with language that can't be transcripted." W4/W5 already made two (or three) idle
    bodies meet, face each other and take turns mouthing. What was missing was the bubble.
 
    THE PROPERTY THAT MATTERS MOST IS THE UNREADABILITY, and it is not a joke — it is the honest
-   register. A social beat is ambient station LIFE: no message crossed the bus, no run happened,
+   register. A social beat is ambient keep LIFE: no message crossed the bus, no run happened,
    nothing was said. A bubble carrying words would be the app asserting content the harness
    cannot prove, which is the one thing this product never does. A script that is not a language
    asserts only the true part: these two are talking, right now. So the rule this file exists to
@@ -150,7 +150,7 @@ A.eq(chatterWindow(0, -500, SLOT_T, SPEAK_T, FADE_T).turn, 0, 'a negative elapse
    Andrew: "it wont repeat the same made up language everytime?" It did. `turn` counts from the
    start of the ENCOUNTER, so it resets to 0 every time two agents meet — seeding on (id, turn)
    meant an agent said the identical opening line, then the identical second line, in every
-   conversation for the life of the station. Two separate live probe runs logged byte-identical
+   conversation for the life of the keep. Two separate live probe runs logged byte-identical
    phrases for the same bodies, which is how it was caught. The seed is now the turn's ABSOLUTE
    deadline, which names this turn of THIS encounter and nothing else. */
 const fnv = (s) => { let h = 2166136261; for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); } return h >>> 0; };

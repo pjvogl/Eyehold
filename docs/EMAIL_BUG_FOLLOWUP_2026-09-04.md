@@ -17,7 +17,7 @@ merging another lane's fixes. Reporter identities and private diagnostics are de
 ## Reproduced gaps repaired here
 
 1. **Managed-compatible tool history.** The generic Chat Completions adapter, used by managed
-   StarNet, forwarded an orphan tool result with an empty call id. A local HTTP upstream enforcing
+   Eyehold, forwarded an orphan tool result with an empty call id. A local HTTP upstream enforcing
    the pair invariant returned `400 — Tool message must have either name or tool_call_id`.
    The existing direct-OpenRouter repair now lives once in `providers/provider.js`, and both
    adapters use it. Orphan information is retained as explicitly labeled recovery text; interrupted
@@ -58,7 +58,7 @@ merging another lane's fixes. Reporter identities and private diagnostics are de
   original-history immutability and valid-history preservation.
 - Real sidecar `/api/run` integration: 55 assertions; compatible endpoint recovery includes
   the original evidence and a reconciled cost event.
-- `node dev/email-support-live-proof.mjs` against an isolated `node dev/seed.js --keep` station:
+- `node dev/email-support-live-proof.mjs` against an isolated `node dev/seed.js --keep` keep:
   scheduler off, stale arm snapshot, response lost after durable save, missing readback row,
   and duplicate refusal all passed. Failure cases kept the draft; no false success.
 - After restarting that sidecar, `node dev/email-support-live-proof.mjs --restart` proved exactly
@@ -80,7 +80,7 @@ merging another lane's fixes. Reporter identities and private diagnostics are de
 | Idle agents / high usage | No customer-specific billing defect established | Run receipts, model, enabled routines/loops/night shift, and expected work cadence |
 | Beginner setup / connecting work sources | Owned by value-loop lane | Actual customer workflow validation |
 
-The idle/spend report supplied no run ledger or diagnostic block. The seeded idle station reports
+The idle/spend report supplied no run ledger or diagnostic block. The seeded idle keep reports
 `idle — awaiting orders`; this is not evidence of a failed scheduler. Existing scheduling, budget,
 and billing controls must be tested rather than replacing idle with invented activity or imposing
 new default quotas. A generic assertion that BYOK is always more expensive is not justified.

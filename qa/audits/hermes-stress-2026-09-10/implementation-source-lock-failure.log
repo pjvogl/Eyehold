@@ -1,9 +1,9 @@
 
-> starnet-harness@0.11.1 test:fast
+> eyehold-harness@0.11.1 test:fast
 > node scripts/timeout.mjs --label test:fast --timeout=900000 -- npm run test:fast:raw
 
 
-> starnet-harness@0.11.1 test:fast:raw
+> eyehold-harness@0.11.1 test:fast:raw
 > node scripts/run-fast-tests.mjs
 
 schema.test: OK (42 assertions)
@@ -19,7 +19,7 @@ clock-rng.test: OK (14 assertions)
 context.test: OK (180 assertions)
 runtimeinfo: OK (15 assertions)
 harness-snapshot: OK (23 assertions)
-station-inspect: OK (12 assertions)
+keep-inspect: OK (12 assertions)
 [failopen] aux.test.envelope (x1): aux pass died sk-or-v1-abcdef0123456789abcdef0123456789
 [failopen] aux.test.envelope (x2): again
 [failopen] maint.test.loop (x1): once
@@ -199,7 +199,7 @@ concurrency.test: OK (65 assertions)
 workspace-lease.test: OK (27 assertions)
 workspace-owner.test: OK (34 assertions)
 workspace-safety.test: OK (12 assertions)
-[recovery] auto station recovery SKIPPED: target workspace is a scratch root (C:\Users\andro\AppData\Local\Temp\starnet-fake-real-home-ErXcSH\ci-scratch-pubp8M\ws is under C:\Users\andro\AppData\Local\Temp\starnet-fake-real-home-ErXcSH\ci-scratch-pubp8M); a real station is never ingested into a temp workspace. Explicit recovery (request file / CLI restore) is unaffected.
+[recovery] auto keep recovery SKIPPED: target workspace is a scratch root (C:\Users\andro\AppData\Local\Temp\eyehold-fake-real-home-ErXcSH\ci-scratch-pubp8M\ws is under C:\Users\andro\AppData\Local\Temp\eyehold-fake-real-home-ErXcSH\ci-scratch-pubp8M); a real keep is never ingested into a temp workspace. Explicit recovery (request file / CLI restore) is unaffected.
 workspace-recovery.test: OK (66 assertions)
 workspace-lineage.test: OK (86 assertions)
 agent-lifecycle: OK (45 assertions)
@@ -523,7 +523,7 @@ ok 7 - related fix prose cannot promote an unresolved customer report in reconci
     P1 onboarding  Mac paid onboarding becomes unreachable after reload and relink
     P1 providers   Compatible API hides partial run failures and limits
     P1 providers   Compatible API retries dispatch duplicate agent runs
-    P1 providers   Funded working station still displays a zero-credit warning
+    P1 providers   Funded working keep still displays a zero-credit warning
     P1 providers   Managed Sonnet request still returns an uncorrelated HTTP 400
     P1 providers   Saved equipment omitted from interactive tool projection and toolset diagnostics
     P1 sessions    COMMS loses report tables list hierarchy quotes and named links

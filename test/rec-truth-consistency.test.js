@@ -5,7 +5,7 @@
 
      1. ONE goal matcher — the bay's specialist shelf, the recruiter's dossier term and the FOR YOU row all read
         Recipes.goalKeywordHits. No file may carry a second, divergent one.
-     2. The autojobs grounding VETO — a proposal's GROUNDS must overlap what the station actually knows, not
+     2. The autojobs grounding VETO — a proposal's GROUNDS must overlap what the keep actually knows, not
         merely be non-empty (presence-only let invented grounds become scheduled cron jobs).
      3. ONE card grammar on the shelves — every shelf reason goes through whyGrammar, every shelf header names
         the noticer under one glyph family.
@@ -147,13 +147,13 @@ A.ok(/const coldHead = \(tail\) => '◈ ' \+ esc\(tail\);/.test(mkt),
     '…it renders as the literal text the Commander typed');
   A.ok(evil.indexOf('NOTICED — picked from your real work') > 0, '…and the rest of the eyebrow is unchanged');
   A.eq(mkHead('"quoted" & \'apos\'')('x').indexOf('"'), -1, 'quotes escape too — the header is safe in an attribute context');
-  A.eq(mkHead('')('nothing noticed'), '◈ NOTICED — nothing noticed', 'an unnamed station still gets the bare eyebrow');
+  A.eq(mkHead('')('nothing noticed'), '◈ NOTICED — nothing noticed', 'an unnamed keep still gets the bare eyebrow');
 }
 
 /* ══════════════════════════════════════════════════════════════════════════════════════════════════════════
    6. THE FOR YOU HEADER MAY NOT CLAIM A ROW THE RANKER DID NOT PERSONALIZE
    ══════════════════════════════════════════════════════════════════════════════════════════════════════════
-   Readiness says the station has learned enough to be ASKED. It does not say THIS row used any of it. */
+   Readiness says the keep has learned enough to be ASKED. It does not say THIS row used any of it. */
 const catalog = Recipes.list();
 const cold = Recipes.rankRecipesExplained(catalog, { limit: 3 });
 A.eq(cold.personalized, false, 'no signal at all → the row reports itself as a spread');
@@ -173,7 +173,7 @@ A.eq(Recipes.rankRecipes(catalog, { limit: 3 }).map(r => r.id).join(','), cold.i
 /* ── 6b. …AND THE CLAIM IS SIZED TO THE ROW ────────────────────────────────────────────────────────────────
    `personalized` flips on ONE real hit and the ranker then TOPS THE ROW UP from the cold-start category
    spread. Those filler cards render no why at all, so the plural whole-row claim was sitting over catalog
-   cards the station had never seen the Commander touch. Three states, and the ranker reports the count. */
+   cards the keep had never seen the Commander touch. Three states, and the ranker reports the count. */
 A.eq(cold.scored, 0, 'a pure spread reports zero earned cards');
 A.eq(silent.scored, 0, '…so does a ready-but-silent Commander');
 A.eq(earned.scored, 1, 'one launch counter earns exactly ONE card — the other two are top-up filler');
@@ -204,7 +204,7 @@ A.eq(TopicMatch.reason(m), 'you keep working on gpu price tracking (seen 4×) �
   'the reason SHOWS the verbatim fragment the topic was earned on, whitespace-normalized');
 /* It must NOT say "you said". interests quotes an ACTIVITY LINE, and contextpack's activity pool mixes chat
    openings (speech) with run titles (often machine-composed: a recipe launch, a scheduled brief) and LANDED
-   DELIVERABLE titles (the station's own words). Authorship is unknown, so the frame claims none — the same
+   DELIVERABLE titles (the keep's own words). Authorship is unknown, so the frame claims none — the same
    answer chat.js recCite already gives an unlabelled quote. */
 A.eq(/you said|you told|your words/i.test(TopicMatch.reason(m)), false,
   'the citation never puts the quote in the Commander’s mouth — the activity pool is not all speech');
@@ -252,8 +252,8 @@ A.ok(warmPick.items.length && warmPick.items[0].confidence > 0 && warmPick.items
    7. A HAND-LAUNCHED RECIPE WITH NO AUTHORED CADENCE CAN STILL EARN THE ROUTINE OFFER
    ══════════════════════════════════════════════════════════════════════════════════════════════════════════
    (behaviour is exercised in routinenudgestore.test.js; this pins the STRUCTURAL dead end that made it
-   unreachable — the station's own minting path stamps cadence:null.) */
-A.eq(Recipes.draft({}).cadence, null, 'a station-minted draft carries NO cadence (recipes.js draft)');
+   unreachable — the keep's own minting path stamps cadence:null.) */
+A.eq(Recipes.draft({}).cadence, null, 'a keep-minted draft carries NO cadence (recipes.js draft)');
 const nudgeSrc = read('frontend/app/routinenudgestore.js');
 A.eq(/if \(!r \|\| !r\.cadence\) continue;/.test(nudgeSrc), false, 'the cadence gate that excluded every seed-born recipe is gone');
 A.ok(/if \(!r\) continue;/.test(nudgeSrc), '…replaced by "the recipe still exists", which is the only real precondition');
@@ -372,7 +372,7 @@ A.ok(/function invalidateFit\(\) \{ fitProjects = null; fitChannels = null; fitP
   const id4 = reloaded.noteRecommendation('recruit', CARD, { why: 'because you have launched this 3×' });
   A.eq(id4, id3, '…and the re-mint suppression inside the window is untouched');
   reloaded.reset();
-  A.eq(mem['starnet.prospects.shown.v1'], undefined, 'reset clears the impression memory with everything else');
+  A.eq(mem['eyehold.prospects.shown.v1'], undefined, 'reset clears the impression memory with everything else');
 }
 
 /* ══════════════════════════════════════════════════════════════════════════════════════════════════════════
@@ -463,7 +463,7 @@ A.eq((ajsSrc.match(/id: 'routine-grounds', type: 'rationale', text: pr\.grounds/
 // …and it really is model prose: autojobs parses GROUNDS out of the aux reply, and the veto only checks OVERLAP
 A.ok(/const grounds = grab\(block, 'GROUNDS'\);/.test(jobsSrc), 'GROUNDS is parsed from the model reply');
 A.ok(/if \(!V \|\| !V\.grounded\(grounds, pool\)\) continue;/.test(jobsSrc),
-  '…and the veto checks that it overlaps what the station knows — which makes it grounded, not quoted');
+  '…and the veto checks that it overlaps what the keep knows — which makes it grounded, not quoted');
 
 Promise.all(PENDING).then(() => A.report('rec truth & consistency (W3)'),
   e => { console.error(e); process.exit(1); });

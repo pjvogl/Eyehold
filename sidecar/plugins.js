@@ -7,9 +7,9 @@
 
    SCOPED means SCOPED SURFACE, NOT SCOPED PRIVILEGE — and the difference is worth stating plainly rather than
    implied by a word. The only thing this loader HANDS a plugin is `on(event, handler)` against the hook spine:
-   no registry, no station internals, no capability set, no provider keys. But it is ordinary in-process
+   no registry, no keep internals, no capability set, no provider keys. But it is ordinary in-process
    JavaScript, so nothing stops it requiring whatever Node exposes. Real isolation would need a worker or a VM
-   boundary and a serialized bridge; this deliberately does not pretend to have one. What protects the station
+   boundary and a serialized bridge; this deliberately does not pretend to have one. What protects the keep
    is the same thing that protects it from shell hooks: the code is INSTALLED BY the Commander, every plugin is
    inert until explicitly allowed, and the allowlist is keyed to the code's own hash so a silent edit re-asks.
 
@@ -44,7 +44,7 @@
   const idOk = (s) => /^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$/.test(String(s || ''));
 
   /* SCREENS — a plugin's own windows (2026-09-29, plugin extensions phase 1). Each one is an HTML entry inside the
-     plugin folder that the station opens in a real StarNet window: a sandboxed frame under the station's own glass
+     plugin folder that the keep opens in a real Eyehold window: a sandboxed frame under the keep's own glass
      chrome (sidecar /plugin-ui/ route + frontend/app/pluginhost.js). The manifest only NAMES them; nothing here
      runs them. Validated hard because every field ends up in the page: the id keys a window, the title is
      rendered, the entry becomes a URL path.
@@ -135,7 +135,7 @@
       }
       try { await walk(base, '', 0); }
       catch (e) { return { error: (e && e.message) || String(e) }; }
-      const digest = hash('starnet-plugin-tree-v1\n' + entries.map(e => e.rel + '\0' + hash(e.bin)).join('\n'));
+      const digest = hash('eyehold-plugin-tree-v1\n' + entries.map(e => e.rel + '\0' + hash(e.bin)).join('\n'));
       return { digest, files: entries.map(e => ({ rel: e.rel, text: e.text })) };
     }
 
@@ -166,7 +166,7 @@
       const base = P.join(dir, id);
       const manifest = await readJson(P.join(base, 'plugin.json'), null);
       if (!manifest || typeof manifest !== 'object') return { error: 'no readable plugin.json' };
-      // A plugin may be UI-only: screens and no code for the station to load. `main` defaults to index.js only
+      // A plugin may be UI-only: screens and no code for the keep to load. `main` defaults to index.js only
       // when the manifest names no screens (the original, hook-only shape keeps working untouched).
       const uiOnly = manifest.main == null && Array.isArray(manifest.screens) && manifest.screens.length > 0;
       const main = uiOnly ? '' : String(manifest.main || 'index.js');
@@ -239,15 +239,15 @@
       const id = String((spec && spec.id) || '').trim();
       if (!idOk(id)) return { ok: false, error: 'use letters, numbers, dot, dash or underscore (max 64)' };
       const name = String((spec && spec.name) || '').trim() || id;
-      const description = String((spec && spec.description) || '').trim() || 'A StarNet plugin.';
+      const description = String((spec && spec.description) || '').trim() || 'A Eyehold plugin.';
       const base = P.join(dir, id);
       try { await fsp.stat(base); return { ok: false, error: 'a plugin folder named "' + id + '" already exists' }; }
       catch (_) { /* good — it does not exist yet */ }
 
       const source = [
-        '/* ' + name + ' — a StarNet plugin.',
+        '/* ' + name + ' — a Eyehold plugin.',
         ' *',
-        ' * register(api) runs once at station boot. api.on(event, handler) is the whole surface:',
+        ' * register(api) runs once at keep boot. api.on(event, handler) is the whole surface:',
         ' *   pre_tool_call    before a tool runs — return {decision:"block", reason:"…"} to stop it',
         ' *   post_tool_call   after it ran (observe only)',
         ' *   pre_llm_call     before a model call — return {context:"…"} to add a standing note',
@@ -276,7 +276,7 @@
         ''
       ].join('\n');
       const manifest = JSON.stringify({ name, version: '1.0.0', description, main: 'index.js' }, null, 2) + '\n';
-      // With a template (sidecar/plugin-template.js) the starter also carries a WINDOW built from the station kit;
+      // With a template (sidecar/plugin-template.js) the starter also carries a WINDOW built from the keep kit;
       // without one (tests, older hosts) it is the hook-only starter above.
       let files = { 'plugin.json': manifest, 'index.js': source };
       if (typeof deps.template === 'function') {
@@ -299,7 +299,7 @@
     }
 
     /* DESTROY the folder. Deliberately separate from revoke, and deliberately NOT offered for a plugin the
-       station did not write: deleting someone's source tree because they clicked the wrong row is the one
+       keep did not write: deleting someone's source tree because they clicked the wrong row is the one
        mistake there is no undo for. The caller must pass the id it read back from discover(). */
     async function destroy(id) {
       const pid = String(id || '').trim();
@@ -337,7 +337,7 @@
 
     /* load(hookSpine, { accept }) -> { loaded, pending, errors }
        The plugin's `register(api)` is called with a surface that is ONLY the hook spine. Anything it throws
-       during registration costs that plugin and nothing else — a station must still boot with a broken
+       during registration costs that plugin and nothing else — a keep must still boot with a broken
        plugin installed, or one bad third-party folder becomes an un-startable app. */
     async function load(hookSpine, opts) {
       opts = opts || {};
@@ -377,7 +377,7 @@
           onError({ plugin: p.id, error: 'its files changed since approval (' + (cur.error || 'digest mismatch') + ') — disabled until re-approved' });
           return false;
         };
-        // UI-only plugin: approved and live (its screens may open), with no code for the station to load.
+        // UI-only plugin: approved and live (its screens may open), with no code for the keep to load.
         if (!p.main) { loaded.push(Object.assign({}, p, { subscribed: 0 })); continue; }
         if (runtime) {
           let s = runtime.digestOf(p.id) === p.digest ? runtime.surface(p.id) : null;

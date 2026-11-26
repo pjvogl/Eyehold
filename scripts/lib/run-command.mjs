@@ -1,6 +1,6 @@
 import { spawn } from 'node:child_process';
 
-export const DEFAULT_TIMEOUT_MS = Math.max(1000, Number(process.env.STARNET_COMMAND_TIMEOUT_MS || 600000) || 600000);
+export const DEFAULT_TIMEOUT_MS = Math.max(1000, Number(process.env.EYEHOLD_COMMAND_TIMEOUT_MS || 600000) || 600000);
 
 export function coerceTimeoutMs(value, fallback = DEFAULT_TIMEOUT_MS) {
   const n = Number(value);

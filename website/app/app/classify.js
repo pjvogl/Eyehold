@@ -1,8 +1,8 @@
-/* STARNET — classify.js : is the Commander assigning a TASK (go act, with real tools) or just TALKING?
+/* EYEHOLD — classify.js : is the Commander assigning a TASK (go act, with real tools) or just TALKING?
    Pure + testable (UMD: a `Classify` global in the browser, module.exports under node).
 
    isTaskDirective gates ONE thing now: TOOL AVAILABILITY (the sidecar wires tools only when isTask). It no
-   longer forces the agent to run to its workstation — that desk trip is REACTIVE, fired by a real tool call
+   longer forces the agent to run to its workkeep — that desk trip is REACTIVE, fired by a real tool call
    (see chat.js walkToDesk). So the bias stays deliberately toward TASK: a missed task would hand the agent
    ZERO tools ("I can't reach the web / files"), whereas a missed chat only offers unused tools that the
    reactive walk keeps invisible until something is actually used. Explicit actionable intent ALWAYS wins,

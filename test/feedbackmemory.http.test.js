@@ -13,7 +13,7 @@ const {spawn} = require('node:child_process');
 const {once} = require('node:events');
 const {bootToken} = require('./_httpToken.js');
 const root = path.resolve(__dirname, '..');
-const workspace = fs.mkdtempSync(path.join(os.tmpdir(), 'starnet-feedback-memory-'));
+const workspace = fs.mkdtempSync(path.join(os.tmpdir(), 'eyehold-feedback-memory-'));
 let child, base, headers;
 const seen = [];   // every chat request body the provider received
 const mock = http.createServer((req, res) => {
@@ -29,9 +29,9 @@ const mock = http.createServer((req, res) => {
 async function boot() {
   const socket = http.createServer(); socket.listen(0, '127.0.0.1'); await once(socket, 'listening'); const port = socket.address().port; await new Promise(r => socket.close(r));
   base = 'http://127.0.0.1:' + port;
-  child = spawn(process.execPath, ['sidecar/index.js'], {cwd: root, env: {...process.env, SKYNET_WORKSPACES: workspace, SKYNET_PORT: String(port), SKYNET_OPENROUTER_BASE: 'http://127.0.0.1:' + mock.address().port + '/api/v1', SKYNET_OPENROUTER_KEY: 'sk-or-v1-feedback-fixture', SKYNET_EDGE_TTS: '0', SKYNET_REFLECT: '0', SKYNET_SKILL_REVIEW: '0'}, stdio: ['ignore', 'pipe', 'pipe']});
+  child = spawn(process.execPath, ['sidecar/index.js'], {cwd: root, env: {...process.env, EYEHOLD_WORKSPACES: workspace, EYEHOLD_PORT: String(port), EYEHOLD_OPENROUTER_BASE: 'http://127.0.0.1:' + mock.address().port + '/api/v1', EYEHOLD_OPENROUTER_KEY: 'sk-or-v1-feedback-fixture', EYEHOLD_EDGE_TTS: '0', EYEHOLD_REFLECT: '0', EYEHOLD_SKILL_REVIEW: '0'}, stdio: ['ignore', 'pipe', 'pipe']});
   await new Promise((resolve, reject) => { let out = ''; const timer = setTimeout(() => reject(new Error('boot timeout: ' + out.slice(-1200))), 30000); const read = d => { out += d; if (out.includes('Open in your browser:')) { clearTimeout(timer); resolve(); } }; child.stdout.on('data', read); child.stderr.on('data', read); child.once('exit', c => { clearTimeout(timer); reject(new Error('boot exit ' + c + out.slice(-1200))); }); });
-  headers = {'Content-Type': 'application/json', 'X-StarNet-Token': await bootToken(base, base), Origin: base};
+  headers = {'Content-Type': 'application/json', 'X-Eyehold-Token': await bootToken(base, base), Origin: base};
 }
 async function stop() { if (child && child.exitCode === null) { const exit = once(child, 'exit'); child.kill(); await exit; } }
 async function api(url, body) { const r = await fetch(base + url, {headers, method: body === undefined ? 'GET' : 'POST', body: body === undefined ? undefined : JSON.stringify(body)}); return {status: r.status, body: await r.json()}; }
@@ -81,7 +81,7 @@ const feedbackRecs = async () => ((await api('/api/memory/records?agent=agent'))
     A.ok(r2.prompt.indexOf('Commander\'s own verdicts on past work') >= 0, 'under the taste header');
     A.ok(r2.prompt.indexOf('[user-confirmed reference] Preference') >= 0, 'marked as the Commander\'s confirmed preference');
 
-    // 3b. station-wide: a DIFFERENT agent's next run carries the Commander's correction too (no foreign note id)
+    // 3b. keep-wide: a DIFFERENT agent's next run carries the Commander's correction too (no foreign note id)
     const rs = await run('Compose a short poem about autumn leaves.', 'scribe');
     A.ok(rs.prompt.indexOf('way too long, give me 3 bullet points max') >= 0, 'another agent\'s run carries the correction (taste is about the Commander)');
     A.ok(!/\[note_\d+\] \[user-confirmed reference\] Preference — DISLIKED/.test(rs.prompt), 'the foreign record shows no note id in the other agent\'s prompt');

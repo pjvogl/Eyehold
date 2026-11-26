@@ -24,9 +24,9 @@ Owner reports lag in REFIT, especially while placing objects.
 
 ## Repro
 
-1. Boot an isolated seeded station using `node dev/seed.js --keep --workspace <private-directory>`.
+1. Boot an isolated seeded keep using `node dev/seed.js --keep --workspace <private-directory>`.
 2. Enter REFIT and place five plants on empty deck tiles.
-3. Measure the click through two animation frames and calls to `StationBake.bakeIncremental`.
+3. Measure the click through two animation frames and calls to `KeepBake.bakeIncremental`.
 4. Run `scripts/qa/refit-placement.mjs` for pointer, mixed-edit and lifecycle checks.
 
 ## Evidence
@@ -35,13 +35,13 @@ Baseline 713951f89: five placements took 397, 463, 454, 473 and 459 ms through t
 
 ## Verdict
 
-Source fix `0afbde0cf` passed the live small and 100-prop station campaigns. Ordinary prop placement, movement, rotation, mirroring and deletion now advertise that static environment pixels are unchanged. REFIT retains those pixels but refreshes geometry and routing. Airlocks, floor edits, undo/redo, unknown patches and global changes retain conservative invalidation. Installed WebView performance and owner recovery remain unverified.
+Source fix `0afbde0cf` passed the live small and 100-prop keep campaigns. Ordinary prop placement, movement, rotation, mirroring and deletion now advertise that static environment pixels are unchanged. REFIT retains those pixels but refreshes geometry and routing. Airlocks, floor edits, undo/redo, unknown patches and global changes retain conservative invalidation. Installed WebView performance and owner recovery remain unverified.
 
 ## Regression
 
 Before: every ordinary placement rebaked an unchanged environment. After: the same five placements took 80, 77, 74, 75 and 88 ms, with zero placement rebakes. A later undo did rebake. `test/refit-bake-reuse.test.js` executes production event and rebake paths, checking cache reuse, geometry/routing refresh, both orders of mixed edits, pan invalidation, airlocks and history. Timing is a diagnostic measurement on this host, not a universal latency guarantee.
 
-The live `scripts/qa/refit-placement.mjs` campaign additionally passed real pointer preview/click agreement, move/rotate/mirror, functional equipment, collision, serialization, undo/redo, same-frame floor plus prop edits, airlocks and reopening on both small and populated stations. Receipts: `.refit-proof/live/receipt.json` and `.refit-proof/populated/receipt.json`; the latter finishes with 100 props. Actual pointer timing includes UI feedback and concurrent gate load; see `qa/digests/2026-09-19-refit-placement.md` for the separate measurements.
+The live `scripts/qa/refit-placement.mjs` campaign additionally passed real pointer preview/click agreement, move/rotate/mirror, functional equipment, collision, serialization, undo/redo, same-frame floor plus prop edits, airlocks and reopening on both small and populated keeps. Receipts: `.refit-proof/live/receipt.json` and `.refit-proof/populated/receipt.json`; the latter finishes with 100 props. Actual pointer timing includes UI feedback and concurrent gate load; see `qa/digests/2026-09-19-refit-placement.md` for the separate measurements.
 
 ## Sibling coverage
 

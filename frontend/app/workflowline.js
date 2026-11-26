@@ -63,7 +63,7 @@
     ['Summarize', 'Summarize what you receive in 5 short bullets.', '5 bullets']] };
   const roleInfo = role => ROLE[role] || GENERIC;
   const starters = role => roleInfo(role).starters.map(s => ({ label: s[0], does: s[1], hands: s[2] }));
-  /* A NEW LINE'S STEPS COME WITH INSTRUCTIONS (2026-09-30, found walking a fresh station): a line from the shelf used to land with
+  /* A NEW LINE'S STEPS COME WITH INSTRUCTIONS (2026-09-30, found walking a fresh keep): a line from the shelf used to land with
      every BAY blank — "BAY 1 (RESEARCHER) has no instructions" — and a WRITER with no brief, handed research, wrote an essay about
      "the upstream report" instead of the answer. Each role stamps with a NEUTRAL default (what that step is for, no guesses about the
      job); the roles whose first starter is job-specific ("a 200-word newsletter blurb") get one written for any job. The Commander
@@ -101,7 +101,7 @@
   function lineFlow(plan, comp, P, props) {
     const out = { cols: [], docks: {}, gates: [], order: [], edges: {}, probeIn: {}, probeNext: {}, outbox: { propId: null, reached: false, reachedOnceCrewed: false }, trigger: { propId: null } };
     // UNDER A BELT CYCLE the compiler never computes reach (every dock reads unreached), so no connectivity claim can
-    // be made from it: readers say the one true thing — the loop stops all routing (station.layout audit 2026-09-28)
+    // be made from it: readers say the one true thing — the loop stops all routing (keep.layout audit 2026-09-28)
     out.cyclic = !!(plan && (plan.errors || []).some(e => e && e.code === 'CYCLE'));
     if (!comp) return out;
     out.trigger.propId = (comp.intakes && comp.intakes[0]) || null;
@@ -262,7 +262,7 @@
         const nd = pidOf(s.next), bd = pidOf(s.backTo), ed = s.loop ? pidOf(s.esc) : null;
         if (nd) q.push({ a: nd, c: c + 1, by: 'single' });
         else if (ch && ch.outbox) res.outboxReached = true;
-        /* the ESCALATION lane is not a next step (station.layout audit 2026-09-28): its dock runs ONLY when the loop
+        /* the ESCALATION lane is not a next step (keep.layout audit 2026-09-28): its dock runs ONLY when the loop
            spends its passes with its condition still unmet (sidecar/routing/chain.js loopDecision) — so it is walked
            as 'esc', never as a forward 'oneof' fork the sentence would chain with "then". */
         if (ed) q.push({ a: ed, c: c + 1, by: 'esc' });
@@ -381,7 +381,7 @@
     const o = opt || {}, nameOf = o.nameOf || (a => String(a || '').toUpperCase()), segs = [];
     const T = s => segs.push({ t: 'text', s });
     const dockName = d => d.agentId ? nameOf(d.agentId) : (d.role || 'an empty BAY');
-    /* UNDER A BELT CYCLE (station.layout audit 2026-09-28) reach is never computed and the router refuses the whole
+    /* UNDER A BELT CYCLE (keep.layout audit 2026-09-28) reach is never computed and the router refuses the whole
        floor, so any "who hands to whom" or "not connected" line would be invented: say the one true thing. */
     if (flow && flow.cyclic) {
       segs.push({ t: 'miss', s: '[a belt LOOP on the floor stops all routing: break the circle, then this line can run]', propId: null });
@@ -459,10 +459,10 @@
   /* ---------- readiness: what is missing, blocking first ----------
      facts = { hasCompute(agentId, dockId)->bool, errors:[{code, propId, tile, warn}], labelOf(code)->string, briefOf(propId),
                triggers (lineStarts), isCrew(agentId)->bool (optional: is this id on the crew roster?) }
-     A BLOCKING item is one the harness would fail on: no INBOX, an uncrewed dock, a dock with no workstation
+     A BLOCKING item is one the harness would fail on: no INBOX, an uncrewed dock, a dock with no workkeep
      (the compute gate stays shut), no route to an OUTBOX, a compiler error on this line — or a BLOCKING error
      ANYWHERE on the floor, because the router refuses the whole plan while one stands. A HINT is advice.
-     (station.layout audit 2026-09-28: the station-wide refusal, the per-BAY compute gate, crew membership, a loop's
+     (keep.layout audit 2026-09-28: the keep-wide refusal, the per-BAY compute gate, crew membership, a loop's
      dead escalation lane, paused starts and the belt CYCLE were all read wrong or not at all.) */
   function readiness(flow, comp, facts) {
     const f = facts || {}, blocking = [], hints = [];
@@ -476,7 +476,7 @@
     for (const e of (f.errors || [])) {
       if (!e || e.warn || onLine(e) || away[e.code]) continue;
       away[e.code] = true;
-      blocking.push({ what: 'routing is off for the whole station until this is fixed: ' + label(e.code), propId: e.propId || null });
+      blocking.push({ what: 'routing is off for the whole keep until this is fixed: ' + label(e.code), propId: e.propId || null });
     }
     const cyclic = !!flow.cyclic;
     if (!flow.trigger.propId) blocking.push({ what: 'add an INBOX', propId: null });
@@ -485,10 +485,10 @@
       n++;
       const d = flow.docks[pid], lbl = 'BAY ' + n + (d.role ? ' (' + d.role + ')' : '');
       if (!d.agentId) { blocking.push({ what: lbl + ' needs an agent', propId: pid }); continue; }
-      // an id that is not on the crew still RUNS — on the station's default identity (runOnce identityFallback)
-      if (f.isCrew && !f.isCrew(d.agentId)) hints.push({ what: lbl + '\'s agent "' + d.agentId + '" is not on the crew: its runs use the station\'s default identity. Assign a crew agent', propId: pid });
-      // PER BAY: a run gets the tools of the dock it runs at (router.stationFor(agentId, dockId))
-      if (f.hasCompute && !f.hasCompute(d.agentId, pid)) blocking.push({ what: lbl + ' needs a workstation', propId: pid });
+      // an id that is not on the crew still RUNS — on the keep's default identity (runOnce identityFallback)
+      if (f.isCrew && !f.isCrew(d.agentId)) hints.push({ what: lbl + '\'s agent "' + d.agentId + '" is not on the crew: its runs use the keep\'s default identity. Assign a crew agent', propId: pid });
+      // PER BAY: a run gets the tools of the dock it runs at (router.keepFor(agentId, dockId))
+      if (f.hasCompute && !f.hasCompute(d.agentId, pid)) blocking.push({ what: lbl + ' needs a workkeep', propId: pid });
       if (f.briefOf && !f.briefOf(pid)) hints.push({ what: lbl + ' has no instructions', propId: pid });
     }
     // under a belt CYCLE reach is unknown: "not connected" and "no route to the OUTBOX" would be guesses
@@ -535,7 +535,7 @@
   /* ---------- channels: which connected channels start THIS line ----------
      status = GET /api/channels/status (id -> payload). A channel runs a line only when the agent it answers as
      crews one of the line's ENTRY docks (Pipeline.lineOriginOf: reach, never the chat binding). Proven by id
-     for per-agent Telegram bots; by display name for the station channels (the payload names, never ids). */
+     for per-agent Telegram bots; by display name for the keep channels (the payload names, never ids). */
   const CHAN_LABEL = { telegram: 'Telegram', discord: 'Discord', slack: 'Slack', matrix: 'Matrix', signal: 'Signal' };
   // (a channel addresses an AGENT; on a multi-bay line it enters at that agent's ENTRY dock — the plan's
   //  entryDock — so "feeds this line" = the agent's entry dock is one of this line's entry docks)
@@ -595,7 +595,7 @@
   }
 
   /* ---------- what STARTS a line: every trigger fact, composed ONCE (2026-09-28) ----------
-     The Workflow panel and the lead's station.layout tool both read a line's starts through THIS, so the two can
+     The Workflow panel and the lead's keep.layout tool both read a line's starts through THIS, so the two can
      never disagree about what runs a line. facts = { lt: GET /api/routing/triggers, lineKey, cron: GET /api/cron,
      chans: GET /api/channels/status, agents: the roster, human: a routine's display -> words }; a fact that was
      not read is simply absent (its list stays empty). Entry docks = the routed column-0 docks of the compiled flow. */

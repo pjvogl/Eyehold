@@ -1,5 +1,5 @@
 // APPS — AUTO-UPDATE (2026-09-30): an app runs on automation, and an update may change the dashboard itself.
-//   node dev/apps-auto-proof.mjs [port] [appId]     against a RUNNING station with a real model → .worldshots/apps-auto/
+//   node dev/apps-auto-proof.mjs [port] [appId]     against a RUNNING keep with a real model → .worldshots/apps-auto/
 // Andrew: "shouldnt it be allowed to run on automation? meaning the dashboard can change if the user wants, or maybe
 // it can constantly update smth". Proof, in real Chromium: AUTO-UPDATE under the app → pick Hourly, write what each
 // update does → SAVE makes the app's own routine; then that routine is fired NOW (the same run the clock would start —
@@ -14,7 +14,7 @@ import { findChrome, connectCDP, evalJS, capture, sleep } from '../scripts/lib/c
 const PORT = Number(process.argv[2] || 8871), APP = process.argv[3] || 'focus-timer', CDP_PORT = 9493;
 const out = '.worldshots/apps-auto';
 mkdirSync(out, { recursive: true });
-const scratch = mkdtempSync(join(tmpdir(), 'starnet-apps-auto-'));
+const scratch = mkdtempSync(join(tmpdir(), 'eyehold-apps-auto-'));
 const MARK = 'AUTO ' + Date.now().toString(36).toUpperCase();
 let chrome, cdp, failed = 0;
 const facts = {};

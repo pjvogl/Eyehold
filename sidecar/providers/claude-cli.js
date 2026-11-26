@@ -3,12 +3,12 @@
    Instead of an HTTP call, every stream() turn spawns ONE `claude -p` child process, feeds it the transcript on
    stdin and translates its `--output-format stream-json` lines into the LLMProvider HarnessEvents (provider.js).
    The child's life IS the turn: text streams only while it runs, and exactly one 'done' is emitted when it has
-   really exited with a result — the station never animates a brain that is not running.
+   really exited with a result — the keep never animates a brain that is not running.
 
    CAPABILITY BOUNDARY. The CLI is an agent with its own tools (Bash, Edit, MCP connectors…). Letting it use them
-   would bypass StarNet's capability gate and consent broker, so the child is started with NO tools at all:
+   would bypass Eyehold's capability gate and consent broker, so the child is started with NO tools at all:
    `--tools ""`, an empty `--strict-mcp-config`, no skills/slash commands, no setting sources, no session file.
-   StarNet's own tools are described in the system prompt, and the model requests them with
+   Eyehold's own tools are described in the system prompt, and the model requests them with
    <tool_call>{"name":…,"arguments":{…}}</tool_call> blocks. This adapter turns those blocks into the ordinary
    tool_start/tool_args/tool_done events, so loop.js executes them through the same gate as every other provider.
 
@@ -42,7 +42,7 @@
   /* What `claude --model` runs on a subscription sign-in — every id here was proven live 2026-09-29 (a one-line call
      each; the CLI answered on exactly that model). Named models first; the `[1m]` ids are the CLI's own 1M-context
      variants. The bare aliases come last: they always follow the newest model of each family, and they stay listed
-     because a station pinned to one (every claude-cli station before this list) must keep a model the catalog
+     because a keep pinned to one (every claude-cli keep before this list) must keep a model the catalog
      proves — ModelDock clears a pin the live catalog no longer carries. Fable is left out on purpose: the CLI
      accepts it but an account without Fable is silently served Opus 4.8, so listing it would name a model the run
      did not use. */
@@ -77,7 +77,7 @@
      in its place: the model is told a picture was there, never handed a description of one it did not get. */
   const IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
   const MAX_IMAGES = 20;   // the newest are sent; the loop already ages old screenshots out (TOOL_IMAGE_KEEP)
-  const IMAGE_MARK = '\u0000starnet-image-';
+  const IMAGE_MARK = '\u0000eyehold-image-';
   function imageBlockOf(p) {
     let s = p && p.type === 'image_url' ? (p.image_url && (p.image_url.url != null ? p.image_url.url : p.image_url)) : null;
     if (p && p.type === 'image' && p.source && typeof p.source === 'object') {
@@ -123,7 +123,7 @@
       list.push('- ' + name + (fn.description ? ': ' + String(fn.description).trim() : '') +
         '\n  parameters: ' + JSON.stringify(fn.parameters || { type: 'object', properties: {} }));
     }
-    // A turn with NO tools still says so: a Claude Code model told about station powers in the system prompt otherwise
+    // A turn with NO tools still says so: a Claude Code model told about keep powers in the system prompt otherwise
     // improvises its own native tool-call markup as TEXT (live 09-28: '<invoke name="Bash">…' leaked into a chat reply).
     if (!list.length) return '# Tools\nNo tools are available in this turn. Answer in plain prose only: never write tool-call markup (<tool_call>, <invoke>, <function_calls>) and never claim to have run anything.';
     /* THE MODEL'S OWN CALL FORMAT (2026-10-02). The protocol used to be <tool_call>{json}</tool_call>, and Claude
@@ -133,7 +133,7 @@
        file as-is, with none of the JSON escaping that broke big writes. <tool_call> blocks are still understood. */
     return [
       '# Tools',
-      'You cannot execute anything yourself; StarNet runs tools for you. To call tools, end your reply with a block exactly like:',
+      'You cannot execute anything yourself; Eyehold runs tools for you. To call tools, end your reply with a block exactly like:',
       '<function_calls>',
       '<invoke name="TOOL_NAME">',
       '<parameter name="PARAM_NAME">value</parameter>',
@@ -220,7 +220,7 @@
     if (!images.length) return prompt;
     const first = Math.max(0, images.length - MAX_IMAGES);
     const blocks = [];
-    const text = prompt.input.replace(/\u0000starnet-image-(\d+)\u0000/g, (_, k) => {
+    const text = prompt.input.replace(/\u0000eyehold-image-(\d+)\u0000/g, (_, k) => {
       const idx = Number(k);
       if (idx < first) return '[earlier image no longer attached]';
       const n = idx - first + 1;
@@ -429,7 +429,7 @@
     return { name, args: head + (head.length > 1 ? ',' : '') + JSON.stringify(open[1]) + ':' + JSON.stringify(open[2]).slice(0, -1) };
   }
 
-  /* The local-CLI plumbing the provider AND the sign-in driver share: find the binary, build its station-free env,
+  /* The local-CLI plumbing the provider AND the sign-in driver share: find the binary, build its keep-free env,
      kill its process tree, ask `claude auth status`. */
   function makeCliHost(opts) {
     opts = opts || {};
@@ -458,7 +458,7 @@
       return '';
     }
     function command() {
-      const configured = String(opts.bin || env.STARNET_CLAUDE_BIN || '').trim();
+      const configured = String(opts.bin || env.EYEHOLD_CLAUDE_BIN || '').trim();
       let bin = configured || which('claude');
       if (!bin && platform === 'win32' && env.USERPROFILE) {
         const native = path.join(env.USERPROFILE, '.local', 'bin', 'claude.exe');
@@ -477,7 +477,7 @@
       }
       if (!bin) return null;
       // an npm-installed `claude` is a link to a JS file with a `#!/usr/bin/env node` line — and that bare PATH has no
-      // `node` either: run the script with the station's own Node instead of trusting the shebang
+      // `node` either: run the script with the keep's own Node instead of trusting the shebang
       if (platform !== 'win32' && typeof fs.realpathSync === 'function') {
         let real = '';
         try { real = fs.realpathSync(bin); } catch (_) { real = ''; }
@@ -500,10 +500,10 @@
       e.code = 'provider_not_configured';
       return e;
     }
-    /* The CLI gets the station-free env (child-env.js: no STARNET_/SKYNET_ secrets, no station-held key values),
-       and its own memory stays out of the turn: auto-memory would inject the CLI user's notes into a StarNet agent. */
+    /* The CLI gets the keep-free env (child-env.js: no EYEHOLD_/SKYNET_ secrets, no keep-held key values),
+       and its own memory stays out of the turn: auto-memory would inject the CLI user's notes into a Eyehold agent. */
     function childEnv() {
-      const out = childEnvLib.stationChildEnv(env);
+      const out = childEnvLib.keepChildEnv(env);
       delete out.CLAUDECODE;               // a sidecar started from inside a Claude Code session is not a nested session
       delete out.CLAUDE_CODE_ENTRYPOINT;
       out.CLAUDE_CODE_DISABLE_AUTO_MEMORY = '1';
@@ -632,7 +632,7 @@
       if (!cmd) throw notInstalled();
       const prompt = buildPrompt(req.messages, req.tools, req.cacheSystemPrefix);
       const turn = ++seq;
-      const sysFile = path.join(os.tmpdir(), 'starnet-claude-cli-' + process.pid + '-' + turn + '-' + require('crypto').randomBytes(6).toString('hex') + '.txt');
+      const sysFile = path.join(os.tmpdir(), 'eyehold-claude-cli-' + process.pid + '-' + turn + '-' + require('crypto').randomBytes(6).toString('hex') + '.txt');
       const args = cmd.pre.concat(['-p', '--output-format', 'stream-json', '--verbose', '--include-partial-messages'], NO_TOOLS_ARGS);
       if (prompt.streamJson) args.push('--input-format', 'stream-json');   // the turn carries images (see IMAGES)
       if (req.model) args.push('--model', String(req.model));

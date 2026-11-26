@@ -6,11 +6,11 @@
 'use strict';
 
 const Lifecycle = (() => {
-  const AUTOSTART_STATUS = 'starnet_autostart_status';
-  const AUTOSTART_SET = 'starnet_set_autostart';
-  const LIFECYCLE_STATUS = 'starnet_lifecycle_status';
-  const START_MINIMIZED_SET = 'starnet_set_start_minimized';
-  const CLOSE_TO_TRAY_SET = 'starnet_set_close_to_tray';
+  const AUTOSTART_STATUS = 'eyehold_autostart_status';
+  const AUTOSTART_SET = 'eyehold_set_autostart';
+  const LIFECYCLE_STATUS = 'eyehold_lifecycle_status';
+  const START_MINIMIZED_SET = 'eyehold_set_start_minimized';
+  const CLOSE_TO_TRAY_SET = 'eyehold_set_close_to_tray';
 
   function currentWindow() {
     return (typeof window !== 'undefined') ? window : null;
@@ -70,7 +70,7 @@ const Lifecycle = (() => {
   }
 
   // The live armed-work summary: { supervised, armed, reasons[] }. `supervised` is true only in the desktop tray
-  // build — the ONLY build where closing the window can keep the station running. Browser => supervised:false.
+  // build — the ONLY build where closing the window can keep the keep running. Browser => supervised:false.
   async function status(opts) {
     opts = opts || {};
     const core = tauriCore(opts.win || currentWindow());

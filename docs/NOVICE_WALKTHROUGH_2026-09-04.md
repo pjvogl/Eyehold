@@ -1,6 +1,6 @@
-# StarNet: first-use confusion journal
+# Eyehold: first-use confusion journal
 
-Date: 2026-09-04. Direction: improve the existing station dashboard and its existing categories. The separate My Work hub was the wrong response to the user's request: it duplicates destinations and adds another place to understand. This audit does not propose a replacement dashboard.
+Date: 2026-09-04. Direction: improve the existing keep dashboard and its existing categories. The separate My Work hub was the wrong response to the user's request: it duplicates destinations and adds another place to understand. This audit does not propose a replacement dashboard.
 
 ## Method and limits
 
@@ -14,9 +14,9 @@ The journal records visible behavior and copy. Proposed remedies and predicted b
 
 ## Main diagnosis
 
-StarNet asks the user to assemble its operating model from scattered explanations. A single useful workflow crosses several conceptual boundaries: conversation versus workflow entry, bay versus agent, physical gear versus effective access, saved versus enabled automation, completed execution versus accepted output. Each screen explains part of that model, sometimes using different terms or rules.
+Eyehold asks the user to assemble its operating model from scattered explanations. A single useful workflow crosses several conceptual boundaries: conversation versus workflow entry, bay versus agent, physical gear versus effective access, saved versus enabled automation, completed execution versus accepted output. Each screen explains part of that model, sometimes using different terms or rules.
 
-The station can teach these relationships directly through the selected object, the current action, and visible work. Adding more destinations and long explanatory panels increases the work of understanding it.
+The keep can teach these relationships directly through the selected object, the current action, and visible work. Adding more destinations and long explanatory panels increases the work of understanding it.
 
 Priorities: **P1** can mislead an important action, block a common journey, or undermine trust; **P2** causes hesitation or extra navigation; **P3** is secondary friction. IDs describe distinct hesitation points, not independently verified software defects.
 
@@ -24,25 +24,25 @@ Priorities: **P1** can mislead an important action, block a common journey, or u
 
 | ID | Priority | Action and observed evidence | Novice hesitation | Small correction in the existing interface |
 |---|---|---|---|---|
-| 01 | P1 | Arrive at the station: COMMS is available alongside a physical station and Build tools. | Do I talk first, build first, or equip NOVA first? | Explain what the current agent can do now beside COMMS; introduce building when it changes the task the user wants to perform. |
+| 01 | P1 | Arrive at the keep: COMMS is available alongside a physical keep and Build tools. | Do I talk first, build first, or equip NOVA first? | Explain what the current agent can do now beside COMMS; introduce building when it changes the task the user wants to perform. |
 | 02 | P1 | Open WORK: My Work, Tasks, Deliverables, Recipes, Automation, Quests all appear. My Work includes suggestions, progress, decisions, and results. | Which destination owns my work? | Remove the duplicate hub direction. Keep each established category responsible for its own purpose, with contextual links between related records. |
 | 03 | P2 | Sessions and Projects sit in the rail; Tasks is in WORK; Recipes promises a fresh workstream. | Are session, task, project, and workstream different things I must create? | Use consistent user-facing nouns, and show the relationship on the existing task/conversation record. |
 | 04 | P2 | Main screen says NOVA, crew, Commander, COMMS, and agent. | Who am I talking to, and who am I in this system? | Pair thematic labels with brief functional descriptions at first encounter; keep the identity and personality. |
-| 05 | P1 | Initial stopped preview shows LINK DOWN / station unreachable while chat/build controls remain present; no nearby recovery action was apparent. | Can I still work? Will this be saved? How do I reconnect? | Put connection state, affected actions, and a recovery path together. The server stoppage itself was environmental. |
+| 05 | P1 | Initial stopped preview shows LINK DOWN / keep unreachable while chat/build controls remain present; no nearby recovery action was apparent. | Can I still work? Will this be saved? How do I reconnect? | Put connection state, affected actions, and a recovery path together. The server stoppage itself was environmental. |
 | 06 | P2 | COMMS has model selection and three voice controls, alongside slash-command affordance. | Which speaking mode should I use? Do I need to choose a model before asking anything? | Keep a clear default interaction and explain alternative modes when selected or focused. Do not require novice model expertise. |
 
 ## Building and prop placement
 
 | ID | Priority | Action and observed evidence | Novice hesitation | Small correction in the existing interface |
 |---|---|---|---|---|
-| 07 | P2 | BUILD > REFIT STATION opens guidance beginning with drag a room, crew a bay, wire a belt. A room already exists. | Am I supposed to rebuild this before anything works? | Start guidance from the actual station state and the user's selected intention. |
+| 07 | P2 | BUILD > REFIT KEEP opens guidance beginning with drag a room, crew a bay, wire a belt. A room already exists. | Am I supposed to rebuild this before anything works? | Start guidance from the actual keep state and the user's selected intention. |
 | 08 | P2 | Refit toolbar contains Select, Room, Hallway, Surface, Prop, Belt, Lines, Move, Dupe, Delete. | What is structural, functional, or decorative? | Group related tools visually and make each selected tool's purpose apparent. Keep shortcuts available. |
 | 09 | P2 | At the inspected narrow width, the toolbar crowds the right edge; DONE is partly clipped in the screenshot. Starter checklist, palette, and hover copy compete for space. | How do I finish, and where can I see what I am placing? | Keep exit/undo controls visible; let the selected tool own one compact guidance area. Verify responsive layout at this width. |
-| 10 | P2 | PROP advertises 144 props, with Systems/Decor and categories including Workstations, Workflow, Capability, Isolation, Command. | Which one solves my immediate need? | Lead the functional palette with the ability or workflow action; show visual alternatives together after that choice. |
+| 10 | P2 | PROP advertises 144 props, with Systems/Decor and categories including Workkeeps, Workflow, Capability, Isolation, Command. | Which one solves my immediate need? | Lead the functional palette with the ability or workflow action; show visual alternatives together after that choice. |
 | 11 | P1 | STARTER GEAR 0/5 lists Files, Web, Terminal, Memory, Images and says everything else is optional. | Are these five mandatory before I can ask for useful work? | State which are needed for the current action and which are optional; do not imply a universal equipment checklist. |
 | 12 | P1 | Placing Intel Cab produces “that just switched FILES on for me.” Toolsets later shows NOVA Full Access with file tools already active after the cabinet is undone. | Did the cabinet change permission or just the room? Which explanation is true? | Generate placement feedback from effective authority. In this mode, say access already exists and describe the actual placement effect. |
 | 13 | P1 | Prop help says place it in your agent's room; step setup separately distinguishes agent, bay, and desk. | Whose room is this? Who receives the ability? | Highlight the affected room and agent while previewing placement, with the resulting scope stated explicitly. |
-| 14 | P2 | Invalid cabinet click outside floor returns “must sit on a deck.” | Does deck mean room, surface, or the whole station? | Highlight the invalid footprint tiles and say what must change: for example, the entire object must fit on floor tiles. |
+| 14 | P2 | Invalid cabinet click outside floor returns “must sit on a deck.” | Does deck mean room, surface, or the whole keep? | Highlight the invalid footprint tiles and say what must change: for example, the entire object must fit on floor tiles. |
 | 15 | P2 | Several props have the FILES badge; palette mixes desk variants and other functional-looking objects. | Does a more elaborate object give stronger access? Are these interchangeable? | Label equivalent capability variants and separate appearance from actual effects. |
 | 16 | P2 | Clicking an occupied cabinet spot explains MOVE and DELETE; Undo works. | Will moving/removing it also change access, and for whom? | Preserve the useful contextual controls; preview any real access consequence before the geometry change. Runtime removal effects were not tested here. |
 
@@ -89,15 +89,15 @@ Priorities: **P1** can mislead an important action, block a common journey, or u
 | 43 | P2 | Recipes opens a 101-item library; choosing Summarize first shows a dossier with prompt, gear, tweak/export, then setup. | How many screens before I can just summarize something? | Lead the existing recipe detail with inputs and Run; move prompt inspection/tweaking to optional details. Preserve customization. |
 | 44 | P2 | Recipes uses “fresh workstream,” “dossier,” CLASSES, and category tags such as OPS/CODE while browse categories say WORK/DEVELOPER. | Am I choosing a job, an agent class, or a technical capability? | Align category names and place the thematic detail behind a clear job-purpose description. |
 | 45 | P1 | Quest Log simultaneously shows YOUR GOAL saved/path pending and NORTH STAR not set. | Didn't I already give you my goal? | Show the relationship between the saved goal and its milestones explicitly; avoid apparently competing goal states. |
-| 46 | P2 | Open quests lead with recruit a specialist, wire a route, bind a tool portal; later prompts ask about pain points. | Must I expand the station before it helps me? | Order contextual guidance around the user's useful outcome; suggest equipment/crew only with a reason tied to that outcome. |
-| 47 | P2 | Quest Log adds milestones, agent growth, Commander Journey, station evolution, outcome metrics, agent mastery, adaptation receipts. | Which progress system matters, and what should I do next? | Keep one clear current progression story in the existing view; put historical/detail dimensions behind expansion. |
-| 48 | P1 | Recipes contains Station Familiarity, learning pause/forget and recommendations; Commander contains learned facts; Quests contains personal questions and goals. | Where do I see what you learned and how that changed your help? | Give each existing surface a precise responsibility and link recommendations to the evidence in Commander. Do not add another hub. |
+| 46 | P2 | Open quests lead with recruit a specialist, wire a route, bind a tool portal; later prompts ask about pain points. | Must I expand the keep before it helps me? | Order contextual guidance around the user's useful outcome; suggest equipment/crew only with a reason tied to that outcome. |
+| 47 | P2 | Quest Log adds milestones, agent growth, Commander Journey, keep evolution, outcome metrics, agent mastery, adaptation receipts. | Which progress system matters, and what should I do next? | Keep one clear current progression story in the existing view; put historical/detail dimensions behind expansion. |
+| 48 | P1 | Recipes contains Keep Familiarity, learning pause/forget and recommendations; Commander contains learned facts; Quests contains personal questions and goals. | Where do I see what you learned and how that changed your help? | Give each existing surface a precise responsibility and link recommendations to the evidence in Commander. Do not add another hub. |
 | 49 | P1 | Commander says the dossier is local-first and “never leaves this machine,” while explaining agent briefings. Recipes says bounded summaries go to the configured model for recommendations. | Is my information local or sent to an AI provider? | Reconcile storage and transmission wording with the actual data flow. This is a visible trust/copy conflict; network behavior was not audited here. |
 | 50 | P2 | Commander says Familiarity 0% and 3 of 9 dimensions known; Recipes reports two signals and a work-mix percentage. | How can you know three things about me but know me zero percent? | Explain what each measure represents, or avoid redundant percentages that appear contradictory. |
 
 ## What already helps
 
-- The station provides an immersive, spatial representation that can make work understandable when selecting an object reveals its real role.
+- The keep provides an immersive, spatial representation that can make work understandable when selecting an object reveals its real role.
 - Menu subtitles already try to explain each category's purpose. Preserve this concise guidance while correcting the overlaps.
 - Prop badges, placement previews, contextual move/delete instructions, and Undo provide useful feedback. Strengthen their precision and scope.
 - The stamped-line completion checklist is a useful foundation: assignment, input, and sample run. Its status must identify the actual missing step accurately.
@@ -107,13 +107,13 @@ Priorities: **P1** can mislead an important action, block a common journey, or u
 
 ## Recommended first cleanup pass
 
-1. **Restore clear ownership to the existing categories.** Retire My Work as a duplicate destination; preserve the station as home. Give Tasks, Deliverables, Recipes, Automation, and Quests short, consistent purposes.
+1. **Restore clear ownership to the existing categories.** Retire My Work as a duplicate destination; preserve the keep as home. Give Tasks, Deliverables, Recipes, Automation, and Quests short, consistent purposes.
 2. **Make props truthful and predictable.** A selected object should show what it does, who it affects, whether it changes effective access in the current mode, and exactly why placement is invalid. This needs runtime-derived state, not only copy edits.
 3. **Make each conveyor self-explanatory.** On its existing selection panel, show what starts it, who performs each step, where the result goes, and the first unmet requirement. Make routing preview and real execution visibly distinct.
 4. **Close the gaps between connected, permitted, ready, running, and finished.** Keep state and the action that resolves it together. Use clear review/completion language and take users directly to the relevant result.
 5. **Make depth optional within the current interface.** Default to purpose and next action. Expose exact prompts, IDs, transport choices, budgets, and detailed progression on demand. Personalization should explain a concrete suggestion from known context and let the user correct it.
 
-These are cleanup priorities, not a request to introduce another onboarding layer or simplify away customization. Preserve the station's personality; require less memorization of its operating rules.
+These are cleanup priorities, not a request to introduce another onboarding layer or simplify away customization. Preserve the keep's personality; require less memorization of its operating rules.
 
 ## Acceptance criteria for a later implementation
 
@@ -125,6 +125,6 @@ Ask an actual beginner to perform these tasks without explanation from the devel
 4. Identify why a saved automation will or will not execute and fix its first blocking requirement.
 5. Connect a service through its supported setup, understand its scope, and return to the original task.
 6. Find an answer/file, identify whether work needs review, and mark it complete without fear of accidental publishing.
-7. Explain what StarNet knows about them, correct one belief, and understand why a suggestion appeared.
+7. Explain what Eyehold knows about them, correct one belief, and understand why a suggestion appeared.
 
 Separately verify narrow and wide layouts, keyboard navigation, fresh onboarding, normal restricted authority, Full Access, real connector authorization, and real background runs. This walkthrough did not complete those coverage areas.

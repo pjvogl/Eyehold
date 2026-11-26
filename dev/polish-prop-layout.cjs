@@ -1,9 +1,9 @@
 'use strict';
 // One explicit, versioned furnishing pass on the isolated art demo only.
 const VERSION = 'projection-polish-1';
-function polishStation(source, specFor) {
-  const station = structuredClone(source), changed = [], added = [];
-  const byId = new Map(station.props.map(p => [p.id, p]));
+function polishKeep(source, specFor) {
+  const keep = structuredClone(source), changed = [], added = [];
+  const byId = new Map(keep.props.map(p => [p.id, p]));
   function update(id, patch) {
     const prop = byId.get(id); if (!prop) throw Error('Missing demo placement '+id);
     changed.push({id, before: {...prop}, after: {...prop,...patch}}); Object.assign(prop,patch);
@@ -24,8 +24,8 @@ function polishStation(source, specFor) {
     r32:['CREW SUPPORT','walnut','parquet'], r33:['MAINTENANCE','rust','tread']
   };
   for(const [id,[name,floorStyle,floorMat]] of Object.entries(rooms)) {
-    if(!station.rooms[id])throw Error('Missing demo room '+id);
-    Object.assign(station.rooms[id],{name,floorStyle,floorMat});
+    if(!keep.rooms[id])throw Error('Missing demo room '+id);
+    Object.assign(keep.rooms[id],{name,floorStyle,floorMat});
   }
   function add(id,t,x,y,mount) {
     if(byId.has(id))throw Error('Duplicate polish prop '+id);
@@ -33,7 +33,7 @@ function polishStation(source, specFor) {
     const p={id,t,x,y,w:spec.w,h:spec.h,r:0};
     if(spec.blocks===false)p.block=false;
     if(mount)p.mount=mount;
-    station.props.push(p);byId.set(id,p);added.push(p);
+    keep.props.push(p);byId.set(id,p);added.push(p);
   }
   add('polish-archive-books','bookshelf',-2,-29);
   add('polish-archive-locker','industrial_locker',3,-29);
@@ -50,8 +50,8 @@ function polishStation(source, specFor) {
   add('polish-comms-locker','industrial_locker',58,-23);
   add('polish-logistics-crate','crate',32,30);
   add('polish-fabrication-cab','industrial_servicecab',-29,27);
-  // Intentional wall storage and support stations; keep the existing routing network.
-  return {station,receipt:{version:VERSION,changed,added,roomNames:rooms,originalProps:source.props.length,props:station.props.length}};
+  // Intentional wall storage and support keeps; keep the existing routing network.
+  return {keep,receipt:{version:VERSION,changed,added,roomNames:rooms,originalProps:source.props.length,props:keep.props.length}};
 }
 function validatePolish(before,after,specFor,viewAt) {
   const errors=[],oldIds=new Set(before.props.map(p=>p.id));
@@ -87,4 +87,4 @@ function validatePolish(before,after,specFor,viewAt) {
   for(const key of old.seen)if(!next.seen.has(key)&&!next.blocked.has(key))errors.push('Lost circulation at '+key);
   return {errors,props:after.props.length,types:new Set(after.props.map(p=>p.t)).size,walkableReach:next.seen.size};
 }
-module.exports={VERSION,polishStation,validatePolish};
+module.exports={VERSION,polishKeep,validatePolish};

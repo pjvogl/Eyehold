@@ -1,6 +1,6 @@
 /* sidecar/agent-affinity.js — WHICH AGENTS ACTUALLY WORK TOGETHER.
 
-   The station's idle life leans on this: two agents the Commander really does use together
+   The keep's idle life leans on this: two agents the Commander really does use together
    should be seen together. So the bond has to be DERIVED from the append-only run log, never
    assigned, never random. If the world shows two sprites as inseparable, this module has to be
    able to point at the runs that made them so — same rule as deliverable-provenance: prose comes
@@ -16,13 +16,13 @@
                              the two can never drift.
    - SHIFT (weight SHIFT_W) — two agents whose runs STARTED within SHIFT_WINDOW_MS of each other.
                              Weaker and inferred, but it is the signal that actually exists: on a
-                             real 643-row station log, 0 runs carried a parentRunId and 0 pairs
+                             real 643-row keep log, 0 runs carried a parentRunId and 0 pairs
                              overlapped literally (runs serialize), while 22 pairs clustered in
                              time — engineer|writer 20x, researcher|writer 15x. That clustering is
                              a true fact about how the Commander works, not a guess: these agents
                              get reached for in the same stretch of work.
 
-   Weighted so one real delegation outranks a few coincidental adjacencies, and so a station that
+   Weighted so one real delegation outranks a few coincidental adjacencies, and so a keep that
    never delegates still grows bonds instead of staying inert.
 
    STRENGTH is saturating, not relative: strength = score / (score + HALF_SCORE). A pair's number
@@ -49,7 +49,7 @@
   const CREW_W = 3;                       // one proven delegation outranks a handful of coincidental adjacencies
   const SHIFT_W = 1;
   const HALF_SCORE = 6;                   // score at which strength = 0.5 (≈ six shared shifts, or two delegations)
-  const PAIRS_MAX = 240;                  // a station has a social graph, not a phone book — bounds the payload
+  const PAIRS_MAX = 240;                  // a keep has a social graph, not a phone book — bounds the payload
   const SHIFT_PAIRS_PER_ROW_MAX = 24;     // a burst of parallel runs must not turn one row into an O(n) fan-out
 
   function str(v) { return v == null ? '' : String(v); }

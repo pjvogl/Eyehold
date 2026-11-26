@@ -88,7 +88,7 @@ function startMockOpenRouter() {
           const toolResults = msgs.filter(m => m && m.role === 'tool').length;
           const hasToolResult = toolResults > 0;
           const hasMcpTool = (parsed.tools || []).some(t => t && t.function && t.function.name === 'mcp__demo__lookup');
-          const hasInspectTool = (parsed.tools || []).some(t => t && t.function && t.function.name === 'station_inspect');
+          const hasInspectTool = (parsed.tools || []).some(t => t && t.function && t.function.name === 'keep_inspect');
           const wantsInspect = msgs.some(m => m && m.role === 'user' && String(m.content || '').indexOf('SELF_INSPECT') >= 0);
           const messageContent = m => typeof (m && m.content) === 'string' ? m.content : JSON.stringify((m && m.content) || '');
           const hasInspectResult = msgs.some(m => m && m.role === 'tool' && /\"schemaVersion\":1/.test(messageContent(m)) && /\"scheduler\":/.test(messageContent(m)));
@@ -99,7 +99,7 @@ function startMockOpenRouter() {
 
           res.writeHead(200, { 'Content-Type': 'text/event-stream', 'Cache-Control': 'no-cache' });
           if (wantsInspect && hasInspectTool && !hasInspectResult) {
-            res.write('data: ' + JSON.stringify({ choices: [{ delta: { tool_calls: [{ index: 0, id: 'station_inspect_1', type: 'function', function: { name: 'station_inspect', arguments: '{}' } }] } }] }) + '\n\n');
+            res.write('data: ' + JSON.stringify({ choices: [{ delta: { tool_calls: [{ index: 0, id: 'keep_inspect_1', type: 'function', function: { name: 'keep_inspect', arguments: '{}' } }] } }] }) + '\n\n');
             res.write('data: ' + JSON.stringify({ choices: [{ finish_reason: 'tool_calls', delta: {} }], usage: { prompt_tokens: 8, completion_tokens: 4, total_tokens: 12 } }) + '\n\n');
           } else if (wantsInspect && hasInspectResult) {
             res.write('data: ' + JSON.stringify({ choices: [{ delta: { content: 'Harness snapshot checked.' } }] }) + '\n\n');
@@ -135,9 +135,9 @@ function boot(port, env, attemptsLeft) {
       // staged publisher registration must not replace its explicit fixtures.
       // Native Desktop PKCE is covered separately by google-signin.e2e.test.js.
       env: Object.assign({}, process.env, {
-        STARNET_GOOGLE_DESKTOP_CLIENT_JSON: '{}',
-        STARNET_GOOGLE_OAUTH_CLIENT_ID: '', STARNET_GOOGLE_OAUTH_CLIENT_SECRET: '',
-      }, env, { SKYNET_PORT: String(port), STARNET_PORT: String(port) }),
+        EYEHOLD_GOOGLE_DESKTOP_CLIENT_JSON: '{}',
+        EYEHOLD_GOOGLE_OAUTH_CLIENT_ID: '', EYEHOLD_GOOGLE_OAUTH_CLIENT_SECRET: '',
+      }, env, { EYEHOLD_PORT: String(port), EYEHOLD_PORT: String(port) }),
       stdio: ['ignore', 'pipe', 'pipe']
     });
     let out = '', settled = false;
@@ -229,14 +229,14 @@ async function readNdjson(res) {
   const llm = await startMockOpenRouter();
   const ws = fs.mkdtempSync(path.join(os.tmpdir(), 'sk-mcp-e2e-'));
   const env = {
-    SKYNET_WORKSPACES: ws,
-    STARNET_WORKSPACES: ws,
-    SKYNET_OPENROUTER_BASE: llm.base,
-    STARNET_OPENROUTER_BASE: llm.base,
-    SKYNET_OPENROUTER_KEY: 'sk-or-v1-mcp-fake',
-    STARNET_OPENROUTER_KEY: 'sk-or-v1-mcp-fake',
-    SKYNET_DEFAULT_MODEL: 'test/model',
-    STARNET_DEFAULT_MODEL: 'test/model'
+    EYEHOLD_WORKSPACES: ws,
+    EYEHOLD_WORKSPACES: ws,
+    EYEHOLD_OPENROUTER_BASE: llm.base,
+    EYEHOLD_OPENROUTER_BASE: llm.base,
+    EYEHOLD_OPENROUTER_KEY: 'sk-or-v1-mcp-fake',
+    EYEHOLD_OPENROUTER_KEY: 'sk-or-v1-mcp-fake',
+    EYEHOLD_DEFAULT_MODEL: 'test/model',
+    EYEHOLD_DEFAULT_MODEL: 'test/model'
   };
   let booted = await boot(9020 + (process.pid % 50), env, 20);
   let child = booted.child;
@@ -246,7 +246,7 @@ async function readNdjson(res) {
   try {
     let token = await bootToken(B, B);
     A.ok(token.length >= 32, 'got a session API token');
-    let headers = { 'Content-Type': 'application/json', 'X-StarNet-Token': token, Origin: B };
+    let headers = { 'Content-Type': 'application/json', 'X-Eyehold-Token': token, Origin: B };
 
     // PL-06: a permanently-invalid transport URL is INPUT validation, not a failed connection.
     // It must be rejected before either the config or its bearer token reaches durable storage.
@@ -258,7 +258,7 @@ async function readNdjson(res) {
     A.eq(invalid.status, 400, 'non-http(s) connector URL is rejected as bad input');
     const invalidBody = await invalid.json();
     A.ok(invalidBody.ok === false && invalidBody.saved === false && invalidBody.code === 'INVALID_URL', 'invalid URL response explicitly says it was not saved');
-    const afterInvalid = await (await fetch(B + '/api/connectors', { headers: { 'X-StarNet-Token': token, Origin: B } })).json();
+    const afterInvalid = await (await fetch(B + '/api/connectors', { headers: { 'X-Eyehold-Token': token, Origin: B } })).json();
     A.ok(!(afterInvalid.connectors || []).some(c => c.id === 'invalid-scheme'), 'invalid connector is absent from the live/config projection');
     const connectorFile = path.join(ws, 'connectors', 'state.json');
     const invalidDisk = fs.existsSync(connectorFile) ? fs.readFileSync(connectorFile, 'utf8') : '';
@@ -274,7 +274,7 @@ async function readNdjson(res) {
     const customOauth = await fetch(B + '/api/connectors', { method: 'POST', headers,
       body: JSON.stringify({ id: 'custom-oauth', label: 'Custom OAuth', transport: 'http', url: 'https://crew.example.invalid/api/mcp', oauth: true, token: oauthCanary, enabled: false }) });
     A.eq(customOauth.status, 200, 'saved a custom HTTPS OAuth connector through the normal upsert route');
-    const oauthList = await (await fetch(B + '/api/connectors', { headers: { 'X-StarNet-Token': token, Origin: B } })).json();
+    const oauthList = await (await fetch(B + '/api/connectors', { headers: { 'X-Eyehold-Token': token, Origin: B } })).json();
     const oauthRow = (oauthList.connectors || []).find(c => c.id === 'custom-oauth');
     A.ok(oauthRow && oauthRow.oauth === true && oauthRow.oauthAuthorized === false, 'status distinguishes configured OAuth from a stored grant');
     const customStart = await fetch(B + '/api/connectors/oauth/start', { method: 'POST', headers,
@@ -309,7 +309,7 @@ async function readNdjson(res) {
     A.eq(configured.status.hasToken, true, 'connector status reports token presence');
     A.eq('token' in configured.status, false, 'connector status does not leak token value');
 
-    const listed = await (await fetch(B + '/api/connectors', { headers: { 'X-StarNet-Token': token, Origin: B } })).json();
+    const listed = await (await fetch(B + '/api/connectors', { headers: { 'X-Eyehold-Token': token, Origin: B } })).json();
     A.ok((listed.connectors || []).some(c => c.id === 'demo' && c.tools && c.tools.indexOf('lookup') >= 0), '/api/connectors lists the discovered MCP tool');
 
     // EDIT ROUND-TRIP: the panel's EDIT form is filled from the MASKED status (secret query param -> <redacted>,
@@ -319,7 +319,7 @@ async function readNdjson(res) {
     const made = await fetch(B + '/api/connectors', { method: 'POST', headers,
       body: JSON.stringify({ id: 'demo-edit', label: 'Edit me', transport: 'http', url: editUrl, headers: { 'X-Api-Key': 'HDRSECRET_e2e', 'X-Plain': 'plainvalue' } }) });
     A.eq((await made.json()).state, 'up', 'keyed connector with a secret query param + headers connects');
-    const shown = ((await (await fetch(B + '/api/connectors', { headers: { 'X-StarNet-Token': token, Origin: B } })).json()).connectors || []).find(c => c.id === 'demo-edit');
+    const shown = ((await (await fetch(B + '/api/connectors', { headers: { 'X-Eyehold-Token': token, Origin: B } })).json()).connectors || []).find(c => c.id === 'demo-edit');
     A.ok(shown && /redacted/.test(shown.url) && shown.headers['X-Api-Key'] === '<redacted>', 'status masks the secrets (what the edit form is filled from)');
     const formHeaders = {};
     for (const k of Object.keys(shown.headers)) formHeaders[k] = shown.headers[k] === '<redacted>' ? '' : shown.headers[k];   // exactly connectors.js prefill
@@ -343,13 +343,13 @@ async function readNdjson(res) {
     await (await fetch(B + '/api/connectors/remove', { method: 'POST', headers, body: JSON.stringify({ id: 'demo-edit' }) })).text();
 
     // HARNESS SELF-KNOWLEDGE: plant all three mutable sources, then make a REAL /api/run call the
-    // always-present station.inspect tool. The returned bytes must agree with the same live stores the
+    // always-present keep.inspect tool. The returned bytes must agree with the same live stores the
     // APIs above use — not a prompt summary or scripted fixture inside the tool.
     const cronCreate = await fetch(B + '/api/cron', {
       method: 'POST', headers,
-      body: JSON.stringify({ name: 'Inspect proof', prompt: 'report station health', schedule: 'every 1h', agentId: 'mcp-agent', model: 'test/model', provider: 'openrouter' })
+      body: JSON.stringify({ name: 'Inspect proof', prompt: 'report keep health', schedule: 'every 1h', agentId: 'mcp-agent', model: 'test/model', provider: 'openrouter' })
     });
-    A.eq(cronCreate.status, 200, 'planted one real routine for station.inspect');
+    A.eq(cronCreate.status, 200, 'planted one real routine for keep.inspect');
     const failedRun = await fetch(B + '/api/run', {
       method: 'POST', headers,
       body: JSON.stringify({ key: 'sk-or-v1-mcp-fake', model: 'test/no-tools', agentId: 'inspect-agent', streamId: 'inspect-fail', isTask: true, messages: [{ role: 'user', content: 'plant one diagnostic failure' }] })
@@ -366,21 +366,21 @@ async function readNdjson(res) {
       .flatMap(r => (r.tools || []).map(t => t && t.function && t.function.name).filter(Boolean));
     const inspectTrace = llm.requests.filter(r => (r.messages || []).some(m => m && m.role === 'user' && String(m.content || '').indexOf('SELF_INSPECT') >= 0))
       .map(r => (r.messages || []).map(m => ({ role: m.role, name: m.name || '', calls: (m.tool_calls || []).map(c => c && c.function && c.function.name), content: String(m.content || '').slice(0, 120) })));
-    A.ok(!!inspectRequest, 'the model received station.inspect and called it through the real wire-name boundary (advertised: ' + inspectAdvertised.join(',') + '; trace: ' + JSON.stringify(inspectTrace) + ')');
-    A.ok(llm.requests.some(r => (r.tools || []).some(t => t && t.function && t.function.name === 'station_inspect')),
-      'station.inspect is advertised under its provider-legal wire name');
+    A.ok(!!inspectRequest, 'the model received keep.inspect and called it through the real wire-name boundary (advertised: ' + inspectAdvertised.join(',') + '; trace: ' + JSON.stringify(inspectTrace) + ')');
+    A.ok(llm.requests.some(r => (r.tools || []).some(t => t && t.function && t.function.name === 'keep_inspect')),
+      'keep.inspect is advertised under its provider-legal wire name');
     const inspectToolMessage = ((inspectRequest && inspectRequest.messages) || []).find(m => m && m.role === 'tool' && /\"scheduler\":/.test(String(m.content || '')));
     const inspectSnapshot = JSON.parse((inspectToolMessage && inspectToolMessage.content) || '{}');
     A.eq(inspectSnapshot.scheduler.status, 'confirmed', 'scheduler section is confirmed');
-    A.eq(inspectSnapshot.scheduler.data.jobCount, 1, 'station.inspect saw the planted real routine');
-    A.ok(inspectSnapshot.connectors.data.connected.some(c => c.id === 'demo' && c.state === 'up'), 'station.inspect saw the planted live MCP connector');
-    A.ok(inspectSnapshot.diagnostics.data.errorCount >= 1, 'station.inspect saw the planted recorded provider error');
+    A.eq(inspectSnapshot.scheduler.data.jobCount, 1, 'keep.inspect saw the planted real routine');
+    A.ok(inspectSnapshot.connectors.data.connected.some(c => c.id === 'demo' && c.state === 'up'), 'keep.inspect saw the planted live MCP connector');
+    A.ok(inspectSnapshot.diagnostics.data.errorCount >= 1, 'keep.inspect saw the planted recorded provider error');
     A.ok(inspectSnapshot.diagnostics.data.recentErrors.some(e => /does not support tool calls/.test(e.message)), 'the planted error detail reached the bounded diagnostic tail');
     A.eq(inspectSnapshot.build.status, 'confirmed', 'the exact build section is confirmed from the version authority');
     A.eq(inspectSnapshot.runtime.data.agentId, 'inspect-agent', 'the snapshot identifies the live inspecting agent');
 
     // ── connector CATALOG (GET /api/connectors/catalog): the curated one-click browse route ──
-    const catRes = await fetch(B + '/api/connectors/catalog', { headers: { 'X-StarNet-Token': token, Origin: B } });
+    const catRes = await fetch(B + '/api/connectors/catalog', { headers: { 'X-Eyehold-Token': token, Origin: B } });
     A.eq(catRes.status, 200, 'catalog route responds 200');
     const cat = await catRes.json();
     A.ok(Array.isArray(cat.groups) && cat.groups.length >= 1, 'catalog returns category groups');
@@ -401,7 +401,7 @@ async function readNdjson(res) {
     });
     A.eq(googleBeforeSetup.status, 503, 'direct Google sign-in refuses before the one-time app client exists');
     const googleBeforeBody = await googleBeforeSetup.json();
-    A.ok(googleBeforeBody.signInAvailable === false && googleBeforeBody.code === 'google_signin_unavailable', 'unconfigured builds assign setup responsibility to StarNet, not the customer');
+    A.ok(googleBeforeBody.signInAvailable === false && googleBeforeBody.code === 'google_signin_unavailable', 'unconfigured builds assign setup responsibility to Eyehold, not the customer');
 
     const googleMissingSecret = await fetch(B + '/api/connectors/oauth/client', {
       method: 'POST', headers, body: JSON.stringify({ id: 'gmail', clientId: 'fake-client.apps.googleusercontent.com' })
@@ -423,7 +423,7 @@ async function readNdjson(res) {
     A.ok(googleSaveBody.ok === true && googleSaveBody.saved === true && googleSaveBody.authorizationServer === 'https://accounts.google.com', 'Google client save returns only non-secret state');
     A.ok(JSON.stringify(googleSaveBody).indexOf(googleClientId) < 0 && JSON.stringify(googleSaveBody).indexOf(googleClientSecret) < 0, 'Google client save never echoes either credential');
 
-    const catWithGoogle = await (await fetch(B + '/api/connectors/catalog', { headers: { 'X-StarNet-Token': token, Origin: B } })).json();
+    const catWithGoogle = await (await fetch(B + '/api/connectors/catalog', { headers: { 'X-Eyehold-Token': token, Origin: B } })).json();
     const googleCards = catWithGoogle.connectors.filter(c => ['gmail', 'google-drive', 'google-calendar', 'google-docs', 'google-sheets'].indexOf(c.id) >= 0);
     A.eq(googleCards.length, 5, 'catalog exposes the five direct Google product cards exactly once');
     A.ok(googleCards.every(c => c.needsClient === false), 'one saved Google client unlocks SIGN IN for every Google card');
@@ -448,11 +448,11 @@ async function readNdjson(res) {
     const dwUrl = (cat.connectors.find(c => c.id === 'deepwiki') || {}).url;
     const addDw = await fetch(B + '/api/connectors', { method: 'POST', headers, body: JSON.stringify({ id: 'deepwiki', label: 'DeepWiki', transport: 'http', url: dwUrl, enabled: false }) });
     A.eq(addDw.status, 200, 'installed a connector by a catalog id+url');
-    const cat2 = await (await fetch(B + '/api/connectors/catalog', { headers: { 'X-StarNet-Token': token, Origin: B } })).json();
+    const cat2 = await (await fetch(B + '/api/connectors/catalog', { headers: { 'X-Eyehold-Token': token, Origin: B } })).json();
     A.eq((cat2.connectors.find(c => c.id === 'deepwiki') || {}).installed, true, 'catalog marks deepwiki installed after adding its real url (id+url cross-ref)');
     // TRUTHFUL TELEMETRY: a connector that reuses a catalog id but points at a FOREIGN url must NOT flip the vendor card
     await fetch(B + '/api/connectors', { method: 'POST', headers, body: JSON.stringify({ id: 'stripe', label: 'not stripe', transport: 'http', url: 'https://mcp.example.invalid/mcp', enabled: false }) });
-    const cat3 = await (await fetch(B + '/api/connectors/catalog', { headers: { 'X-StarNet-Token': token, Origin: B } })).json();
+    const cat3 = await (await fetch(B + '/api/connectors/catalog', { headers: { 'X-Eyehold-Token': token, Origin: B } })).json();
     A.eq((cat3.connectors.find(c => c.id === 'stripe') || {}).installed, false, 'a foreign-url id collision does NOT mark the vetted vendor card installed');
 
     // EL-3 PU-02: disabled connectors are durable MANAGEMENT state. They must remain visible after
@@ -466,10 +466,10 @@ async function readNdjson(res) {
     port = booted.port;
     B = 'http://' + HOST + ':' + port;
     token = await bootToken(B, B);
-    headers = { 'Content-Type': 'application/json', 'X-StarNet-Token': token, Origin: B };
+    headers = { 'Content-Type': 'application/json', 'X-Eyehold-Token': token, Origin: B };
     let afterRestart = { connectors: [] };
     for (let i = 0; i < 50; i++) {
-      afterRestart = await (await fetch(B + '/api/connectors', { headers: { 'X-StarNet-Token': token, Origin: B } })).json();
+      afterRestart = await (await fetch(B + '/api/connectors', { headers: { 'X-Eyehold-Token': token, Origin: B } })).json();
       if ((afterRestart.connectors || []).some(c => c.id === 'demo' && c.state === 'up')) break;
       await sleep(100);
     }
@@ -489,7 +489,7 @@ async function readNdjson(res) {
     A.ok(JSON.stringify(afterRestart).indexOf(invalidSecret) === -1, 'restart projection never contains the rejected secret');
     const restartDisk = fs.existsSync(connectorFile) ? fs.readFileSync(connectorFile, 'utf8') : '';
     A.ok(restartDisk.indexOf('invalid-scheme') < 0 && restartDisk.indexOf(invalidSecret) < 0, 'restart readback proves invalid connector and token were never persisted');
-    const restartCatalog = await (await fetch(B + '/api/connectors/catalog', { headers: { 'X-StarNet-Token': token, Origin: B } })).json();
+    const restartCatalog = await (await fetch(B + '/api/connectors/catalog', { headers: { 'X-Eyehold-Token': token, Origin: B } })).json();
     const restartedGoogle = restartCatalog.connectors.filter(c => ['gmail', 'google-drive', 'google-calendar', 'google-docs', 'google-sheets'].indexOf(c.id) >= 0);
     A.ok(restartedGoogle.length === 5 && restartedGoogle.every(c => c.needsClient === false), 'Google OAuth client survives sidecar restart and keeps every direct card sign-in-able');
     A.ok(restartDisk.indexOf(googleClientId) >= 0 && restartDisk.indexOf(googleClientSecret) >= 0, 'restart reads the exact protected Google client credentials from durable connector state');
@@ -630,7 +630,7 @@ async function readNdjson(res) {
     A.eq(alwaysRun.calls.length, 4, 'the "always" run also made four connector calls');
     A.eq(alwaysRun.prompts.length, 4, '"Always" cannot suppress fresh post-content confirmations');
     A.eq(alwaysRun.results.filter(r => r.ok === true).length, 4, 'all four calls succeeded after exact confirmations');
-    const perms = await (await fetch(B + '/api/permissions', { headers: { 'X-StarNet-Token': token, Origin: B } })).json();
+    const perms = await (await fetch(B + '/api/permissions', { headers: { 'X-Eyehold-Token': token, Origin: B } })).json();
     A.ok(JSON.stringify(perms).indexOf('mcp:demo') >= 0, 'the "Always" grant is visible in the Permissions panel, so it can be revoked');
 
     const remove = await fetch(B + '/api/connectors/remove', { method: 'POST', headers, body: JSON.stringify({ id: 'demo' }) });
@@ -669,16 +669,16 @@ async function readNdjson(res) {
   let envChild = null;
   try {
     const envBoot = await boot(9080 + (process.pid % 50), {
-      SKYNET_WORKSPACES: envWs,
-      STARNET_WORKSPACES: envWs,
-      STARNET_GOOGLE_OAUTH_CLIENT_ID: envClientId,
-      STARNET_GOOGLE_OAUTH_CLIENT_SECRET: envClientSecret
+      EYEHOLD_WORKSPACES: envWs,
+      EYEHOLD_WORKSPACES: envWs,
+      EYEHOLD_GOOGLE_OAUTH_CLIENT_ID: envClientId,
+      EYEHOLD_GOOGLE_OAUTH_CLIENT_SECRET: envClientSecret
     }, 20);
     envChild = envBoot.child;
     const envBase = 'http://' + HOST + ':' + envBoot.port;
     const envToken = await bootToken(envBase, envBase);
-    const envHeaders = { 'Content-Type': 'application/json', 'X-StarNet-Token': envToken, Origin: envBase };
-    const envCatalog = await (await fetch(envBase + '/api/connectors/catalog', { headers: { 'X-StarNet-Token': envToken, Origin: envBase } })).json();
+    const envHeaders = { 'Content-Type': 'application/json', 'X-Eyehold-Token': envToken, Origin: envBase };
+    const envCatalog = await (await fetch(envBase + '/api/connectors/catalog', { headers: { 'X-Eyehold-Token': envToken, Origin: envBase } })).json();
     A.eq((envCatalog.connectors.find(c => c.id === 'gmail') || {}).needsClient, false, 'complete app-provided Google credentials unlock direct sign-in');
     const envStart = await fetch(envBase + '/api/connectors/oauth/start', {
       method: 'POST', headers: envHeaders, body: JSON.stringify({ id: 'gmail', attemptId: 'google-env-start' })

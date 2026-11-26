@@ -99,10 +99,10 @@ async function waitUntil(fn, timeoutMs, label) {
 (async () => {
   const telegram = await startTelegram();
   const env = {
-    SKYNET_TELEGRAM_API_BASE: telegram.base,
-    STARNET_TELEGRAM_API_BASE: telegram.base
+    EYEHOLD_TELEGRAM_API_BASE: telegram.base,
+    EYEHOLD_TELEGRAM_API_BASE: telegram.base
   };
-  const sidecar = SidecarFixture.create({ prefix: 'starnet-tg-connect-pair-', env, timeoutMs: 20000 });
+  const sidecar = SidecarFixture.create({ prefix: 'eyehold-tg-connect-pair-', env, timeoutMs: 20000 });
   try {
     await sidecar.start();
     const connected = await sidecar.json('POST', '/api/channels/telegram/connect', {

@@ -11,7 +11,7 @@
 
    PRIORITY is LOCKED to the product's beat order (highest first):
      reflection > failure-review > study > threadmine > scout > skill-review > skill-curator
-   so when the budget is scarce the station keeps the turn-in beat + belief updates the Commander actually sees,
+   so when the budget is scarce the keep keeps the turn-in beat + belief updates the Commander actually sees,
    and yields the quieter background passes to the NEXT qualifying run. (failure-review fires only on FAILED
    run-ends, where reflection never qualifies — the two are mutually exclusive per run, never rivals.)
 

@@ -1,11 +1,11 @@
 /* node test/remote.relay.e2e.test.js — the PRODUCT path: a real booted sidecar dials out to a real relay, and the
    WebCrypto phone client pairs and works through it. Mock model, zero spend, all on 127.0.0.1.
-     · the desk switches Remote on -> the station signs in at the relay (GET /api/remote says online)
+     · the desk switches Remote on -> the keep signs in at the relay (GET /api/remote says online)
      · PAIR A PHONE gives a relay pairing link; the phone pairs through the relay with it
      · the relay serves the phone app itself, locked down by CSP
      · a real task from the phone; its shell approval answered on the phone; the reply in the thread
      · revoke at the desk kicks the phone at the relay
-     · with the relay switched off (STARNET_REMOTE_RELAY=off), pairing says so plainly instead of offering a dead link */
+     · with the relay switched off (EYEHOLD_REMOTE_RELAY=off), pairing says so plainly instead of offering a dead link */
 'use strict';
 const A = require('./_assert.js');
 const http = require('http');
@@ -50,21 +50,21 @@ function startMockModel() {
   const relayPort = await relay.listen(0, HOST);
   const relayUrl = 'http://' + HOST + ':' + relayPort;
   const env = {
-    SKYNET_OPENROUTER_BASE: llm.base, STARNET_OPENROUTER_BASE: llm.base,
-    SKYNET_OPENROUTER_KEY: 'sk-or-v1-relay-fake', STARNET_OPENROUTER_KEY: 'sk-or-v1-relay-fake',
-    SKYNET_DEFAULT_MODEL: 'test/model', STARNET_DEFAULT_MODEL: 'test/model'
+    EYEHOLD_OPENROUTER_BASE: llm.base, EYEHOLD_OPENROUTER_BASE: llm.base,
+    EYEHOLD_OPENROUTER_KEY: 'sk-or-v1-relay-fake', EYEHOLD_OPENROUTER_KEY: 'sk-or-v1-relay-fake',
+    EYEHOLD_DEFAULT_MODEL: 'test/model', EYEHOLD_DEFAULT_MODEL: 'test/model'
   };
-  const fx = new SidecarFixture({ prefix: 'sn-relay-e2e-', timeoutMs: 15000, env: Object.assign({ STARNET_REMOTE_RELAY: relayUrl }, env) });
-  const bare = new SidecarFixture({ prefix: 'sn-relay-none-', timeoutMs: 15000, env: Object.assign({ STARNET_REMOTE_RELAY: 'off' }, env) });
+  const fx = new SidecarFixture({ prefix: 'sn-relay-e2e-', timeoutMs: 15000, env: Object.assign({ EYEHOLD_REMOTE_RELAY: relayUrl }, env) });
+  const bare = new SidecarFixture({ prefix: 'sn-relay-none-', timeoutMs: 15000, env: Object.assign({ EYEHOLD_REMOTE_RELAY: 'off' }, env) });
   let c = null;
   try {
     // the relay serves the phone app, locked down
     const page = await fetch(relayUrl + '/');
     A.eq(page.status, 200, 'the relay serves the phone app');
     A.ok(/default-src 'self'/.test(page.headers.get('content-security-policy') || ''), 'with a strict CSP');
-    A.ok(/StarNet Remote/.test(await page.text()), 'it is the Remote deck');
+    A.ok(/Eyehold Remote/.test(await page.text()), 'it is the Remote deck');
     A.eq((await fetch(relayUrl + '/phone-client.js')).status, 200, 'the phone client is served next to it');
-    A.eq((await fetch(relayUrl + '/vt323.woff2')).status, 200, 'and the station font');
+    A.eq((await fetch(relayUrl + '/vt323.woff2')).status, 200, 'and the keep font');
     A.eq((await fetch(relayUrl + '/../sidecar/index.js')).status === 200, false, 'nothing outside the app folder');
 
     await fx.start();
@@ -72,18 +72,18 @@ function startMockModel() {
     const on = await fx.json('POST', '/api/remote/enable', { on: true });
     A.eq(on.body.enabled, true, 'Remote on');
     A.eq(on.body.listening, false, 'no LAN door unless asked for');
-    await waitUntil(async () => ((await fx.json('GET', '/api/remote')).body.relay || {}).state === 'online', 10000, 'station online at the relay');
+    await waitUntil(async () => ((await fx.json('GET', '/api/remote')).body.relay || {}).state === 'online', 10000, 'keep online at the relay');
     const pr = await fx.json('POST', '/api/remote/pair', {});
     A.eq(pr.status, 200, 'pairing code');
     A.ok(pr.body.pairUrl.indexOf(relayUrl + '/#pair=') === 0, 'the pairing link opens the app on the relay, secret in the fragment');
     const blob = JSON.parse(Buffer.from(pr.body.pairBlob.replace(/-/g, '+').replace(/_/g, '/'), 'base64').toString('utf8'));
     A.eq(blob.r, relayUrl, 'the link names the relay');
-    A.eq(await Phone.fingerprint(blob.s), pr.body.fingerprint, 'phone and desk show the same station code');
+    A.eq(await Phone.fingerprint(blob.s), pr.body.fingerprint, 'phone and desk show the same keep code');
 
     const key = await Phone.makeDeviceKey();
-    const paired = await Phone.pairRelay({ relay: blob.r, stationPub: blob.s, pairingId: blob.p, code: blob.c, name: 'E2E phone', key });
+    const paired = await Phone.pairRelay({ relay: blob.r, keepPub: blob.s, pairingId: blob.p, code: blob.c, name: 'E2E phone', key });
     A.ok(/^dev_/.test(paired.deviceId) && paired.relayToken, 'paired through the relay');
-    c = Phone.connectRelay({ relay: blob.r, stationPub: blob.s, deviceId: paired.deviceId, relayToken: paired.relayToken, key });
+    c = Phone.connectRelay({ relay: blob.r, keepPub: blob.s, deviceId: paired.deviceId, relayToken: paired.relayToken, key });
     const events = []; c.onEvent(e => events.push(e));
     const st = await c.call('status');
     A.ok(st.ok && st.data.agents.some(a => a.agentId === 'forge'), 'status through the relay');

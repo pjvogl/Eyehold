@@ -11,7 +11,7 @@ The Commander's idea: *the harness researches and gets to know the user over tim
 
 The panel validated the instinct and sharpened it with two reframes that the moat + skeptic lenses both landed on:
 
-1. **Drop "feed," keep "knows you."** A *feed* implies infinite scroll + engagement-maximizing surfacing — the wrong metaphor for an ops tool, and it needs dense data a single local user can't produce. The same signal powers something better and honest: an **explainable "Recommended for you — *because you…*" re-sort** of the catalogs, plus an optional once-a-day **Station Briefing**. Same magic ("it gets me"), none of the attention-economy downside.
+1. **Drop "feed," keep "knows you."** A *feed* implies infinite scroll + engagement-maximizing surfacing — the wrong metaphor for an ops tool, and it needs dense data a single local user can't produce. The same signal powers something better and honest: an **explainable "Recommended for you — *because you…*" re-sort** of the catalogs, plus an optional once-a-day **Keep Briefing**. Same magic ("it gets me"), none of the attention-economy downside.
 2. **The moat is not the recommendations — it's the compounding *owned asset*.** "An AI that learns you" is table-stakes (ChatGPT/Claude memory already do it, with more data). What they structurally **cannot** copy: this is **local-first** (the profile never leaves the user's machine — they own it) and it compounds into **a growing library of agents, custom specialties, and recipes shaped to exactly how this user works**. That library is the switching cost.
 
 **Positioning sentence:** *The local-first harness that quietly learns how you work and compounds it into a library of agents you own — and it shows its work.*
@@ -20,7 +20,7 @@ The panel validated the instinct and sharpened it with two reframes that the moa
 
 ## 2. Principles (non-negotiable)
 
-- **Local-first, provably.** The profile lives in `localStorage` (`starnet.save`) / per-agent JSON. No central server. The trust promise is architectural, not policy: *"your profile, 0 bytes sent."*
+- **Local-first, provably.** The profile lives in `localStorage` (`eyehold.save`) / per-agent JSON. No central server. The trust promise is architectural, not policy: *"your profile, 0 bytes sent."*
 - **Glass box.** One screen shows everything the harness has learned, each row with its provenance; the user can edit, forget, pause, and export. Cloud assistants can't match this.
 - **Every recommendation explains itself.** A deterministic "because you…" line on every card, sourced from the signal that actually dominated the score — never an LLM guess, always present.
 - **Honest about confidence.** Cold-start says so ("calibrating"), exactly like the existing Confidence% meter. Never fabricate a number the data hasn't earned.
@@ -80,7 +80,7 @@ The panel's code read found the substrate is ~70% there and **the single best si
 - **`learningEnabled` flag** — a single boolean the store checks before folding anything (a local do-not-track). Pause = stop folding; the existing data stays until forgotten.
 - **"Everything I've learned about you" panel** — renders the whole profile slice verbatim, each row with provenance (which signal, when, how many samples), with inline **edit / forget / export / wipe**.
 - **Because-line on every recommendation.**
-- **Consent beat at onboarding** — one optional line: *"STARNET can learn what you work on (locally, never sent anywhere) to tailor your suggestions. [Enable] [Not now]"* → sets `learningEnabled`.
+- **Consent beat at onboarding** — one optional line: *"EYEHOLD can learn what you work on (locally, never sent anywhere) to tailor your suggestions. [Enable] [Not now]"* → sets `learningEnabled`.
 - **Anti-overreach rules:** only reflect back what's observable (never "I noticed you're job-hunting"); durable facts go through Keep/Edit/Discard; never quote raw history back in a recommendation.
 
 ---
@@ -88,10 +88,10 @@ The panel's code read found the substrate is ~70% there and **the single best si
 ## 7. The surfaces (UX) — three, ranked by how earned the attention is
 
 1. **PULL — "Recommended for you" shelf** pinned above `▮ CATALOG` in the Recruitment Bay (and the future Recipe library). The user opened the bay to browse, so a re-rank is pure value, zero interruption. Each card: ITEM (reuse `cardHTML`) + WHY + one-tap act. **Ship this first.**
-2. **SCHEDULED — "Station Briefing"** terminal (a 7th `BUILDERS` entry + a once-per-day dot like `#nf-badge`): a short daily standup the station gives its Commander. Suppressed entirely when confidence is low or nothing changed ("all quiet" beats inventing news).
+2. **SCHEDULED — "Keep Briefing"** terminal (a 7th `BUILDERS` entry + a once-per-day dot like `#nf-badge`): a short daily standup the keep gives its Commander. Suppressed entirely when confidence is low or nothing changed ("all quiet" beats inventing news).
 3. **PUSH — at most one COMMS suggestion pill** (reuse `Chat.choices`), hard-gated: only when idle + just-shipped/session-open, max one per session.
 
-**Gamified framing:** the station is *getting to know its Commander* — surface a "STATION FAMILIARITY — calibrating… → 28% → sharpening" meter reusing the honest Confidence% pattern. Anti-spam is a hard budget, not a vibe.
+**Gamified framing:** the keep is *getting to know its Commander* — surface a "KEEP FAMILIARITY — calibrating… → 28% → sharpening" meter reusing the honest Confidence% pattern. Anti-spam is a hard budget, not a vibe.
 
 ---
 
@@ -106,9 +106,9 @@ The histogram isn't the moat — what it lets the user *produce* is. As the prof
 | Phase | Scope | New/seam |
 |---|---|---|
 | **0 (this branch)** | The substrate: stop discarding the signal. Pure `profile.js` engine + `profilestore.js` wiring + capture the classify tag + seed from onboarding/specialty + save v4 slice + tests. **No UI yet.** | `profile.js`, `profilestore.js`, `save.js` v4, `chat.js`/`onboarding.js`/`app.js` hooks, `index.html`, `test/profile.test.js` |
-| **1** | Make it visible: "Recommended for you" re-sort in the bay (with because-lines) + the glass-box "what I've learned" panel + the consent beat + the familiarity meter. | `feed`/rank surface in `marketplace.js`; a StationUI panel; onboarding consent beat; specialty `tags` |
+| **1** | Make it visible: "Recommended for you" re-sort in the bay (with because-lines) + the glass-box "what I've learned" panel + the consent beat + the familiarity meter. | `feed`/rank surface in `marketplace.js`; a KeepUI panel; onboarding consent beat; specialty `tags` |
 | **2** | The Recipe/Mission library — ships with personalization native (recipes + specialists ranked in one surface). | `recipes.js` registry + library UI |
-| **3** | The moat move: auto-mint user-tuned recipes/specialties + export/import + the Station Briefing + optional LLM-curator. | Cortex `kind:'profile'` dossier writes through Keep/Edit/Discard; briefing terminal |
+| **3** | The moat move: auto-mint user-tuned recipes/specialties + export/import + the Keep Briefing + optional LLM-curator. | Cortex `kind:'profile'` dossier writes through Keep/Edit/Discard; briefing terminal |
 
 Each phase is independently shippable and test-gated, smallest-first — the same cadence as the marketplace.
 

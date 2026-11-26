@@ -35,15 +35,15 @@ const KEEP = process.argv.includes('--keep');
 if (!KEEP && fs.existsSync(SCRATCH)) fs.rmSync(SCRATCH, { recursive: true, force: true });
 fs.mkdirSync(SCRATCH, { recursive: true });
 
-const key = String(process.env.SKYNET_OPENROUTER_KEY || '').trim();
-const port = String(process.env.SKYNET_PORT || process.env.PORT || '8991').trim();
-if (!key) console.warn('[onboard-fresh] WARNING: no SKYNET_OPENROUTER_KEY in dev/.env.dev — the awakening will run all-scripted (quiet mind).');
+const key = String(process.env.EYEHOLD_OPENROUTER_KEY || '').trim();
+const port = String(process.env.EYEHOLD_PORT || process.env.PORT || '8991').trim();
+if (!key) console.warn('[onboard-fresh] WARNING: no EYEHOLD_OPENROUTER_KEY in dev/.env.dev — the awakening will run all-scripted (quiet mind).');
 
 const env = Object.assign({}, process.env, {
-  SKYNET_WORKSPACES: SCRATCH,
-  SKYNET_PORT: port
+  EYEHOLD_WORKSPACES: SCRATCH,
+  EYEHOLD_PORT: port
 });
-console.log('[onboard-fresh] FRESH first-run station: http://127.0.0.1:' + port
+console.log('[onboard-fresh] FRESH first-run keep: http://127.0.0.1:' + port
   + '  key ' + (key ? 'server-held' : 'NOT SET') + '  ws=' + SCRATCH + (KEEP ? ' [kept]' : ' [wiped]'));
 
 const child = spawn(process.execPath, [path.join(REPO, 'sidecar', 'index.js')], { cwd: REPO, env, stdio: 'inherit' });

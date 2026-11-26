@@ -18,7 +18,7 @@ Of those paths, 2,323 are frontend assets and 2,350 are generated website mirror
 | Combined changes reviewed | Review and current proof | Remaining limit |
 | --- | --- | --- |
 | Catalog selection, image cost/cancellation, panel persistence | Cleanup ancestry and current implementation checked; delayed-catalog and resize/reopen/reload browser probe passed | Real paid image/gateway reconciliation on the installer remains owed |
-| Save conflicts, group conversion, loop reviews | Storage/revision, conversion identity/attachments and review exclusion changes traced; maintained fast/HTTP regressions | Exact customer stations and installed multi-window recovery remain unverified |
+| Save conflicts, group conversion, loop reviews | Storage/revision, conversion identity/attachments and review exclusion changes traced; maintained fast/HTTP regressions | Exact customer keeps and installed multi-window recovery remain unverified |
 | API retries, terminal outcomes, structured result repair | Durable reservations, auth recheck, terminal accounting, validator and tool-free repair paths reviewed | Keyed retry protection applies to chat completions, not `/v1/runs` creation; structured streaming is rejected |
 | COMMS reports | Live public renderer exposed and verified the list repair; 54 formatting/copy assertions passed | Browser rendering proof does not certify an installed WebView |
 | Creation, personality and managed setup | Changed flow and recovery code reviewed; fresh Beginner run passed all six UI steps | UI-only run stops at the real-model boundary; account recovery is not proven |
@@ -39,8 +39,8 @@ The generated website mirror and advertised source lock were refreshed for the r
 
 - Initial full fast command: **769/769 passed**. Audit edits began near its end, so this is an initial working-tree run, not the final frozen candidate receipt.
 - Browser journeys on `00de68e0f`: **139/139 passed**. Includes real run lifecycle, Stop, reload, duplicate send, deliverable opening and slash-command paths with controlled provider responses.
-- Fresh Beginner on `00de68e0f`: **6/6 UI steps passed**, 93.021 seconds. It used a disposable fresh station and stopped at the real-model boundary.
-- Cleanup live check on `00de68e0f`: height **420 → 512 → 512 after reopen/reload**, maximize/restore and smaller viewport checked; delayed catalog retained `starnet / anthropic/test-model`; zero page exceptions.
+- Fresh Beginner on `00de68e0f`: **6/6 UI steps passed**, 93.021 seconds. It used a disposable fresh keep and stopped at the real-model boundary.
+- Cleanup live check on `00de68e0f`: height **420 → 512 → 512 after reopen/reload**, maximize/restore and smaller viewport checked; delayed catalog retained `eyehold / anthropic/test-model`; zero page exceptions.
 - Formatting live check: **0/0/0/2 list items before → 2/2/2/2 after**. [DOM evidence](../../../qa/evidence/0.11.2-merge-audit/report-lists.json).
 - Final fast on `1826b558a`: **769/769 passed**, exit 0; customer journeys on that candidate: **34/34 passed**, exit 0.
 - Full normal HTTP command: **111/111 passed**, exit 0. It started on `00de68e0f` and overlapped the report/QA edits; all backend bytes are unchanged between its starting source and the final candidate. This is not labeled a post-bump release gate.
@@ -68,7 +68,7 @@ Before cutting 0.11.2:
 
 - Freeze and integrate the intended source. Re-run Guardian and current visual review; refresh exact-candidate journey and Beginner evidence. Existing audit documents saying cleanup/world repairs are still branch-only are historical: their runtime repairs are present in this snapshot's ancestry.
 - Resolve or explicitly disposition the seven customer P1s with the required evidence: affected-account Sonnet failure, funded-account zero warning, Mac relink/onboarding, idle blank viewport, unexplained idle usage, missing ONCE routine, and Trusted Project/equipment discrepancy. Neighboring passing tests cannot establish customer recovery.
-- Build and verify the exact installer: preserved station and protected credentials, linked-account text/image work with matching receipts, Mac microphone permissions and real audio interruption/noise behavior.
+- Build and verify the exact installer: preserved keep and protected credentials, linked-account text/image work with matching receipts, Mac microphone permissions and real audio interruption/noise behavior.
 - Exercise automatic download/install/relaunch from an older installed client. Manual installation and an updater check do not prove that path.
 - Complete the scripted 20-minute and scale checks, the **720-minute release soak**, and the separate installed/attended acceptance required by the runbook. This pass does not inherit 0.11.1's soak/readiness exception.
 - Earn the canonical `qa:ready` receipt, then follow `release:ritual` for the five-pin bump, final notes, source lock, post-bump gates and tagging. [Draft notes](RELEASE_NOTES_DRAFT.md) are ready for review; the existing public release notes remain 0.11.1 until a cut is permitted.

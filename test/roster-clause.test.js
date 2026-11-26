@@ -49,7 +49,7 @@ A.ok(/function rosterClause\(a\) \{/.test(appjs), 'rosterClause exists');
 A.ok(/a\.role !== 'orchestrator'\) return ''/.test(appjs), 'rosterClause is orchestrator-only (specialist prompts unchanged)');
 A.ok(/function composeSystemPrompt\(a\) \{[\s\S]{0,400}p \+= rosterClause\(a\);/.test(appjs), 'composeSystemPrompt folds the crew posture in right after identity');
 A.ok(/YOUR CREW: none yet/.test(appjs), 'solo posture stays truthful (only-agent claim now lives where it is derived fresh)');
-A.ok(/When you run as the station\\'s lead/.test(appjs), 'the crew clause is LEAD-conditional (the same base prompt runs the hero as a dispatched worker with no delegation tools)');
+A.ok(/When you run as the keep\\'s lead/.test(appjs), 'the crew clause is LEAD-conditional (the same base prompt runs the hero as a dispatched worker with no delegation tools)');
 
 // ---- D. the cached-systemPrompt trap: every roster-change point recomposes the orchestrators ----
 A.ok(/function recomposeOrchestrators\(\) \{/.test(appjs), 'recomposeOrchestrators exists');

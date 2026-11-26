@@ -1,8 +1,8 @@
-/* STARNET — study.js : the PURE STUDY ENGINE — the dossier's missing Phase B (work → understanding).
+/* EYEHOLD — study.js : the PURE STUDY ENGINE — the dossier's missing Phase B (work → understanding).
 
    Phase A (dossier.js) is a one-time intake form: the dossier grows ONLY from the Commander's own onboarding
    docs + explicit panel edits (dossierstore.js:9 — "folds nothing automatically"). This engine is Phase B:
-   after a SALIENT completed run, the station STUDIES the work (its directive + a transcript slice + the
+   after a SALIENT completed run, the keep STUDIES the work (its directive + a transcript slice + the
    existing dossier block) and proposes DOSSIER BELIEF UPDATES, tagged by dimension — observed goals, new pain,
    stack facts, working-style, plus DRIFT/OBSOLETION ("goal X looks shipped — retire it?"). The Commander then
    consents via the same turn-in Keep/Edit/Discard beat (studystore.js + chat.js wire the live half).
@@ -128,7 +128,7 @@
     let body = turns.join('\n');
     const cap = Number.isFinite(o.cap) ? o.cap : PROMPT_CAP;
     if (body.length > cap) body = body.slice(body.length - cap);   // keep the most recent exchange
-    return 'You just finished a task for your Commander. From the WORK below, update what the station believes ' +
+    return 'You just finished a task for your Commander. From the WORK below, update what the keep believes ' +
       'about them. Propose ONLY durable, evidenced belief changes — one per line, tagged with a dimension and ' +
       'ADD (a new belief) or RETIRE (a belief that now looks stale/shipped), plus a short VERBATIM evidence quote. Dimensions: goals, pain, ambition, ' +
       'stack, style, identity, standing_orders, people, schedule. Examples:\n' +
@@ -136,7 +136,7 @@
       'style ADD: prefers terse, verified answers | EVIDENCE: "keep the answer terse and verify it"\n' +
       'goals RETIRE: ship the dossier | EVIDENCE: "the dossier is shipped"\n' +
       'Skip anything transient, guessed, or already known. If nothing changed, reply NONE.\n\n' +
-      (block ? 'WHAT THE STATION ALREADY BELIEVES:\n' + block + '\n\n' : '') +
+      (block ? 'WHAT THE KEEP ALREADY BELIEVES:\n' + block + '\n\n' : '') +
       (directive ? 'THE DIRECTIVE:\n' + directive + '\n\n' : '') +
       'THE WORK:\n' + body;
   }
@@ -175,7 +175,7 @@
   //   opts: { propose(prompt)->text, clock:{now()}, redact(s)->s, beliefs:{dim:[{text}]}, declined:[text], max }
   //   proposals: { id, dim, kind:'add'|'retire', text, evidence, source:'study', sourceRunId, createdAt }
   // 'add' dedups vs existing beliefs + the declined denylist (Jaccard). 'retire' must MATCH an existing belief
-  //   (you can't retire a belief the station doesn't hold) and is deduped only vs the declined list.
+  //   (you can't retire a belief the keep doesn't hold) and is deduped only vs the declined list.
   async function study(run, opts) {
     run = run || {}; opts = opts || {};
     const clock = opts.clock || { now: () => 0 };
@@ -226,12 +226,12 @@
       for (const d of declined) { if (jaccard(d, text) >= SIM_THRESHOLD) { killed = true; break; } }
       if (killed) continue;
       if (cand.kind === 'add') {
-        // an ADD the station already believes (exact or paraphrase) is redundant — drop it.
+        // an ADD the keep already believes (exact or paraphrase) is redundant — drop it.
         let dup = false;
         for (const bt of beliefTexts) { if (bt.toLowerCase() === text.toLowerCase() || jaccard(bt, text) >= SIM_THRESHOLD) { dup = true; break; } }
         if (dup) continue;
       } else {
-        // a RETIRE must reference a belief the station ACTUALLY holds (evidence of what's being retired). Without a
+        // a RETIRE must reference a belief the keep ACTUALLY holds (evidence of what's being retired). Without a
         // match it's a hallucinated retraction — drop it (you can't retire what isn't there).
         let matches = false;
         for (const bt of beliefTexts) { if (jaccard(bt, text) >= SIM_THRESHOLD) { matches = true; break; } }

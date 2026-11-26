@@ -1,6 +1,6 @@
 # Incremental Roadmap
 
-> **StarNet** — converting the v7 fully-simulated pixel-art colony sim into a real, downloadable, gamified AI-agent harness desktop app. This roadmap slices the entire build into the smallest individually-shippable, test-gated steps, ordered to validate the central bet (real agent work on the kept v7 canvas via the U.bus event seam) as early as possible and never take a big risky leap.
+> **Eyehold** — converting the v7 fully-simulated pixel-art colony sim into a real, downloadable, gamified AI-agent harness desktop app. This roadmap slices the entire build into the smallest individually-shippable, test-gated steps, ordered to validate the central bet (real agent work on the kept v7 canvas via the U.bus event seam) as early as possible and never take a big risky leap.
 
 ---
 
@@ -177,11 +177,11 @@
 - **DoD:** double-click launches a desktop window with the working spine; sidecar lifecycle tied to the window; secrets stay in keychain.
 - **Tests:** `smoke:boot-render-clean` in Tauri, sidecar-spawn/teardown, key-stays-in-keychain.
 
-### 2.1 — SQLite persistence (stations + agent identities)
+### 2.1 — SQLite persistence (keeps + agent identities)
 - **Goal:** durable, atomic, multi-slot saves replace the localStorage blob.
 - **Deliverables:** `persistence/sqlite.js` — atomic save (WAL), multi-slot, rolling backups, checksum, debounced autosave; agent identities as rows.
 - **Port/create:** `sidecar/db/sqlite.js`, wire to `SaveEnvelope`.
-- **DoD:** kill-mid-save leaves prior good save intact; corrupt active row falls back to last backup; autosave coalesces a burst into one write; no scenario yields an unloadable station.
+- **DoD:** kill-mid-save leaves prior good save intact; corrupt active row falls back to last backup; autosave coalesces a burst into one write; no scenario yields an unloadable keep.
 - **Tests:** `save.migrate` over SQLite, kill-mid-save fallback, corruption-recovery, autosave-debounce.
 
 ### 2.2 — Character creator (Terraria-style agent identity)
@@ -209,7 +209,7 @@
 
 ## Phase 3 — THE BUILDER *(first-class phase: mutable, data-driven, growing world)*
 
-*Goal of the phase: replace v7's bake-once / fixed-buffer / camera-less / literal-furniture model with the canonical mutable `Station` document behind a closed Mutation API, a chunked renderer with a camera, versioned SQLite saves, and build mode — making the station layout the spatial diagram of the real agent org. This is "The Builder."*
+*Goal of the phase: replace v7's bake-once / fixed-buffer / camera-less / literal-furniture model with the canonical mutable `Keep` document behind a closed Mutation API, a chunked renderer with a camera, versioned SQLite saves, and build mode — making the keep layout the spatial diagram of the real agent org. This is "The Builder."*
 
 ### 3.0 — Read-only world model parity (single fixed chunk set)
 - **Goal:** the new internal representation drives the existing world behind v7-identical accessors.
@@ -247,17 +247,17 @@
 - **Tests:** connectivity==BFS reachability, orphan-reject, strand-seat-reject, moveRoom-tile-scope.
 
 ### 3.5 — Versioned serialization + migration chain
-- **Goal:** the Station document is versioned and migratable; derived state rebuilt deterministically on load.
+- **Goal:** the Keep document is versioned and migratable; derived state rebuilt deterministically on load.
 - **Deliverables:** `world/serialize.ts` (`toSaveDoc`/`fromSaveDoc`) + `migrations/` + checksum.
 - **Port/create:** replaces `SIM.serialize/load` conceptually.
 - **DoD:** serialize→fromSaveDoc→serialize stable; a hand-written v(N-1) fixture migrates and boots passing all invariants; truncated JSON caught by checksum.
 - **Tests:** round-trip-stable, old-fixture-migrates, corrupt-detect.
 
-### 3.6 — SQLite station persistence (builder-grade)
-- **Goal:** the mutable station saves atomically with rolling backups, debounced on `worldChange.seq`.
-- **Deliverables:** extend `persistence/sqlite.js` for the Station doc; multi-slot; corruption fallback.
+### 3.6 — SQLite keep persistence (builder-grade)
+- **Goal:** the mutable keep saves atomically with rolling backups, debounced on `worldChange.seq`.
+- **Deliverables:** extend `persistence/sqlite.js` for the Keep doc; multi-slot; corruption fallback.
 - **Port/create:** wire autosave to seq advance.
-- **DoD:** no save scenario yields an unloadable station; corruption always recovers to the most recent valid backup; autosave invisible and never blocks a frame.
+- **DoD:** no save scenario yields an unloadable keep; corruption always recovers to the most recent valid backup; autosave invisible and never blocks a frame.
 - **Tests:** kill-mid-save, corruption-fallback, autosave-debounce.
 
 ### 3.7 — Identity camera + dpr-aware backing store
@@ -282,14 +282,14 @@
 - **Tests:** chunk-of-tile math, visibleChunks==brute-force, seam-continuity, perf-flat-as-world-grows.
 
 ### 3.10 — Dirty re-bake wired to worldChange
-- **Goal:** an edit re-bakes only its 1–4 chunks, never the whole station.
+- **Goal:** an edit re-bakes only its 1–4 chunks, never the whole keep.
 - **Deliverables:** `ChunkStore.markDirtyTiles` + subscriptions to `worldChange.dirtyChunks`; per-frame bake budget.
 - **Port/create:** edit `chunkBaker.ts`.
 - **DoD:** placing a prop re-bakes exactly its chunks (assert count); an edit in chunk A never alters chunk C pixels; big edits spread across frames stay 60fps.
 - **Tests:** dirty-set-exact, cross-chunk-isolation, bake-budget-holds-fps.
 
 ### 3.11 — Camera controls (pan / snapped zoom / follow / clamp)
-- **Goal:** the station is navigable and crisp.
+- **Goal:** the keep is navigable and crisp.
 - **Deliverables:** `InputController` drives Camera; drag/edge pan, integer-snapped zoom, double-click follow, clamp.
 - **Port/create:** edit input layer.
 - **DoD:** zoom stays pixel-crisp at each snap; pan smooth + clamped; follow centered without jitter; hit-testing correct at every zoom/pan.
@@ -316,7 +316,7 @@
 - **DoD:** tier-0 visibly grimier/dimmer; tier-up brightens emissives WITHOUT swapping sprites; flare goes through the lightmap, not a repaint; geometry pixels identical across tiers.
 - **Tests:** visual-regression geometry-identical-across-tiers, palette validators pass.
 
-### 3.15 — Station economy (Salvage + Station XP from REAL outcomes)
+### 3.15 — Keep economy (Salvage + Keep XP from REAL outcomes)
 - **Goal:** the build currency is minted only by real work shipped + real credits spent.
 - **Deliverables:** `economy.js` subscribes to `deliverable`/`agent.run.end`; catalog gating; charge/refund on commands.
 - **Port/create:** repoint v7 `sim.js` milestone-curve shape from fake revenue to real events.
@@ -324,7 +324,7 @@
 - **Tests:** mint-only-on-real-events, gating-below-level/cost, reconciled-not-estimate.
 
 ### 3.16 — LRU chunk eviction
-- **Goal:** memory stays bounded as the station grows.
+- **Goal:** memory stays bounded as the keep grows.
 - **Deliverables:** LRU eviction of offscreen chunks past a budget; lazy re-bake on revisit.
 - **Port/create:** edit `ChunkStore`.
 - **DoD:** live-canvas count ≤ budget under a 200-chunk world; revisiting an evicted chunk re-bakes identically to its pre-eviction pixels.
@@ -406,11 +406,11 @@
 - **Tests:** cap-halts-spend, HUD-shows-reconciled.
 
 ### 5.2 — Atomic auto-update with save-survival
-- **Goal:** app updates never brick a customer's station.
+- **Goal:** app updates never brick a customer's keep.
 - **Deliverables:** atomic-bundle auto-update (frontend+sidecar together); migration runs on first launch; pre-migration backup.
 - **Port/create:** Tauri updater config + migration boot hook.
-- **DoD:** an update opens the station exactly as left; a failed migration restores from backup; frontend and sidecar update atomically.
-- **Tests:** update-preserves-station, failed-migration-restores, atomic-bundle.
+- **DoD:** an update opens the keep exactly as left; a failed migration restores from backup; frontend and sidecar update atomically.
+- **Tests:** update-preserves-keep, failed-migration-restores, atomic-bundle.
 
 ### 5.3 — Code signing + notarization + installers
 - **Goal:** trusted, installable signed builds per platform.

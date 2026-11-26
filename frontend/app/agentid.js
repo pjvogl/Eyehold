@@ -1,4 +1,4 @@
-/* STARNET — agentid.js : allocate a stable, unique agentId for a SUMMONED agent.
+/* EYEHOLD — agentid.js : allocate a stable, unique agentId for a SUMMONED agent.
 
    The backend keys notebooks, the fs jail, checkpoints, cost and the run loop by agentId, and the
    wire grammar for those paths is ^[A-Za-z0-9_-]{1,40}$ (sidecar/tools/builtin/fs.js + index.js
@@ -19,7 +19,7 @@
 
   const RE = /^[A-Za-z0-9_-]{1,40}$/;
   const NAME_MAX = 18;
-  // Station-owned directories under WORKSPACES (codex/, channels/, connectors/, plugins/ …): an agent with one
+  // Keep-owned directories under WORKSPACES (codex/, channels/, connectors/, plugins/ …): an agent with one
   // of these ids would get that credential/code directory as its private file jail. The sidecar refuses them
   // (sidecar/workspace-reserved.js — test/workspace-reserved.test.js keeps the two lists identical); allocate
   // around them so a custom agent named "Codex" becomes codex-2 instead of a broken agent.

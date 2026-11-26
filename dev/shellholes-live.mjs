@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// dev/shellholes-live.mjs — find the BLACK WEDGES in Andrew's real saved station.
+// dev/shellholes-live.mjs — find the BLACK WEDGES in Andrew's real saved keep.
 //
 // (2026-08-15, Andrew, a tight crop of one junction: "i am only talking about circumstances like
 // this" — a hull run cut off at a hard edge with an unpainted wedge before the next wall.)
@@ -22,17 +22,17 @@ const URL = `http://127.0.0.1:${PORT}/`;
 const ZOOM = Number(process.env.SKYNET_ZOOM || 6);
 
 const savePath = join(process.env.APPDATA, 'ai.skynet.harness', 'workspaces', 'agent.save.json');
-const stationDoc = JSON.parse(readFileSync(savePath, 'utf8')).doc?.station;
-if (!stationDoc) { console.error('no .doc.station in save'); process.exit(2); }
+const keepDoc = JSON.parse(readFileSync(savePath, 'utf8')).doc?.keep;
+if (!keepDoc) { console.error('no .doc.keep in save'); process.exit(2); }
 
 const PROBE = `(() => {
   const ZOOM = ${ZOOM};
-  const st = WorldModel.deserialize(JSON.parse(${JSON.stringify(JSON.stringify(stationDoc))}));
-  const geo = st.projectGeometry(), T = geo.TILE, bk = StationBake.bake(geo);
+  const st = WorldModel.deserialize(JSON.parse(${JSON.stringify(JSON.stringify(keepDoc))}));
+  const geo = st.projectGeometry(), T = geo.TILE, bk = KeepBake.bake(geo);
   const mk = (w, h) => { const c = document.createElement('canvas'); c.width = w; c.height = h; const g = c.getContext('2d'); g.imageSmoothingEnabled = false; return { c, g }; };
   const lit = mk(bk.W, bk.H);
   lit.g.fillStyle = '#ff00ff'; lit.g.fillRect(0, 0, bk.W, bk.H);
-  StationBake.drawBase(lit.g, bk, 0, 0); StationBake.drawLight(lit.g, bk, 0, 0);
+  KeepBake.drawBase(lit.g, bk, 0, 0); KeepBake.drawLight(lit.g, bk, 0, 0);
 
   const W = bk.W, H = bk.H, d = lit.g.getImageData(0, 0, W, H).data;
   // a pixel nothing painted still reads pure magenta; the interstitial-shadow pass composites UNDER

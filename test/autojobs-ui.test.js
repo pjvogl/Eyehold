@@ -1,5 +1,5 @@
 /* node test/autojobs-ui.test.js — source-lock for the SELF-INITIATION entry point in the ROUTINES panel
-   (stationui.js). stationui.js is browser-flow (DOM/terminal panels), not node-loadable, so — like
+   (keepui.js). keepui.js is browser-flow (DOM/terminal panels), not node-loadable, so — like
    autonomy-ui.test.js / newhero-reset.test.js — we lock the invariant by reading the source: the ROUTINES panel
    must expose a "propose standing jobs" control that routes through AutoJobStore.propose() and refreshes the list,
    so the manual entry point can never silently disappear or drift off the store API. */
@@ -8,7 +8,7 @@ const A = require('./_assert.js');
 const fs = require('fs');
 const path = require('path');
 
-const src = fs.readFileSync(path.join(__dirname, '../frontend/app/windows/routines.js'), 'utf8');   // ROUTINES window extracted from stationui.js (BUILDERS split)
+const src = fs.readFileSync(path.join(__dirname, '../frontend/app/windows/routines.js'), 'utf8');   // ROUTINES window extracted from keepui.js (BUILDERS split)
 const chatSrc = fs.readFileSync(path.join(__dirname, '../frontend/app/chat.js'), 'utf8');
 const { AutoJobStore } = require('../frontend/app/autojobstore.js');
 

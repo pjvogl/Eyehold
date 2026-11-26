@@ -10,18 +10,18 @@ try {
   cdp = await connectCDP(9367);
   await cdp.send('Page.enable');
   if(phase==='before') {
-    const baseline=execFileSync('git',['show','07a643772:frontend/app/stationbake.js']);
+    const baseline=execFileSync('git',['show','07a643772:frontend/app/keepbake.js']);
     cdp.on('Fetch.requestPaused', p => cdp.send('Fetch.fulfillRequest',{requestId:p.requestId,responseCode:200,responseHeaders:[{name:'Content-Type',value:'application/javascript'}],body:baseline.toString('base64')}));
-    await cdp.send('Fetch.enable',{patterns:[{urlPattern:'*/app/stationbake.js*',requestStage:'Request'}]});
+    await cdp.send('Fetch.enable',{patterns:[{urlPattern:'*/app/keepbake.js*',requestStage:'Request'}]});
   }
   await cdp.send('Page.navigate',{url:'http://127.0.0.1:9197/'});
-  for(let i=0;i<60;i++) { if(await evalJS(cdp,"typeof World !== 'undefined' && !!World.stationDoc()")) break; await sleep(250); }
+  for(let i=0;i<60;i++) { if(await evalJS(cdp,"typeof World !== 'undefined' && !!World.keepDoc()")) break; await sleep(250); }
   const results = await evalJS(cdp, `(() => {
     const results=[];
     for(const [w,h] of [[9,7],[14,9],[15,14],[18,18],[24,16],[12,24],[40,30]]) {
       const doc=WorldModel.defaultDoc(), room=doc.rooms[doc.order[0]];
       room.rects=[{x1:0,y1:0,x2:w-1,y2:h-1}];
-      const geo=WorldModel.create(doc).projectGeometry(), bake=StationBake.bake(geo);
+      const geo=WorldModel.create(doc).projectGeometry(), bake=KeepBake.bake(geo);
       const r=geo.allRects[0], ctx=bake.lightCv.getContext('2d');
       const sample=(fx,fy)=>{ const x=Math.floor((r.x1+w*fx)*12), y=Math.floor((r.y1+h*fy)*12); return 1-ctx.getImageData(x,y,1,1).data[3]/255; };
       const cv=document.createElement('canvas'); cv.width=bake.baseCv.width; cv.height=bake.baseCv.height;
@@ -51,8 +51,8 @@ try {
         {id:'lamp',t:'desklamp',x:w-3,y:h-3,w:1,h:1},
         {id:'screen',t:'screens',x:w-4,y:2,w:2,h:1}
       ];
-      World.loadStation(WorldModel.create(doc)); World.rebake();
-      return World.stationDoc();
+      World.loadKeep(WorldModel.create(doc)); World.rebake();
+      return World.keepDoc();
     })()`);
     await sleep(1800);
     await capture(cdp,out,phase+'-'+scene);

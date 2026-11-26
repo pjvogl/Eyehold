@@ -1,27 +1,26 @@
 <div align="center">
 
-<img src=".github/media/starnet-logo-glow.png" alt="StarNet" width="560">
+<img src=".github/media/eyehold-logo-glow.png" alt="Eyehold" width="560">
 
-**A living pixel-art station where real AI agents do real work.**
+**A living pixel-art realm where real AI agents do real work.**
 
-[![Download](https://img.shields.io/github/v/release/androoAGI/starnet-releases?label=download&color=f5a623)](https://github.com/androoAGI/starnet-releases/releases/latest)
 [![Platforms](https://img.shields.io/badge/platform-Windows%20%7C%20macOS-4a90d9)](INSTALL.md)
 [![License: MIT](https://img.shields.io/badge/license-MIT-2ea44f)](LICENSE)
 [![Local-first](https://img.shields.io/badge/local--first-your%20machine%2C%20your%20data-8250df)](PRIVACY.md)
 
-[Download](https://github.com/androoAGI/starnet-releases/releases/latest) ·
+[Install](INSTALL.md) ·
 [Install guide](INSTALL.md) ·
 [Run from source](#run-from-source) ·
 [Docs](docs/INDEX.md) ·
 [Contributing](CONTRIBUTING.md)
 
-<img src=".github/media/station-iso.png" alt="The StarNet station — rooms, crew, and workstations rendered from live harness state" width="540">
+<img src=".github/media/eyehold-realm.png" alt="The Eyehold realm — original pixel art of a moonlit keep in a forest" width="540">
 
 </div>
 
-StarNet is a local-first desktop harness where you create AI agents, organize them into a
-pixel-art space station, and watch them perform real work with real models and tools. The
-station is not decoration — it is a projection of live runtime state, and the product contract
+Eyehold is a local-first desktop harness where you create AI agents, organize them into a
+pixel-art fantasy realm, and watch them perform real work with real models and tools. The
+realm is not decoration — it is a projection of live runtime state, and the product contract
 is literal: **A room is a capability-scoped team**, **a hallway is** an authorized handoff
 lane, and **a placed object is a real capability grant**.
 The layout you draw *is* the workflow the agents run.
@@ -37,13 +36,13 @@ simulation.
 | --- | --- |
 | **A crew, not a chatbot** | Create agents with distinct classes, personas, and loadouts. Run several at once — each gets its own workspace, transcript, memory, and bounded permissions. |
 | **Bring your own models** | Paste an OpenRouter key, or sign in with supported provider accounts (Anthropic, OpenAI, Google) — keys live in the OS keychain, never in the frontend. |
-| **Message it from anywhere** | Wire agents to Telegram, Discord, Slack, Signal, or Matrix and talk to your station away from the desk. |
-| **Night Shift** | Leave the station running and agents keep working inside an explicit, adjustable leash — every away-action is logged and reviewable. |
+| **Message it from anywhere** | Wire agents to Telegram, Discord, Slack, Signal, or Matrix and talk to your keep away from the desk. |
+| **Night Shift** | Leave the keep running and agents keep working inside an explicit, adjustable leash — every away-action is logged and reviewable. |
 | **Recipes, skills, schedules** | Launch proven multi-step recipes, grant reusable skills, and put work on cron schedules with visible output. |
 | **Asks before it guesses** | Task Briefs turn ambiguity into one concrete question with options — over any connected channel — instead of a silent wrong guess. |
 | **Finished work has a front door** | Deliverables land in the OUTBOX as real files you open, not chat scrollback you archaeology. |
 | **MCP connectors** | Attach Model Context Protocol servers and paste-a-key/OAuth connectors to extend what agents can touch. |
-| **Voice** | Push-to-talk dictation in, one consistent station voice out. |
+| **Voice** | Push-to-talk dictation in, one consistent keep voice out. |
 | **Real ledgers** | Spend, budgets, and run history persist on disk and are shown as-is. |
 
 ## What is real
@@ -52,21 +51,22 @@ simulation.
 - Tools operate through explicit capability and consent checks.
 - Agent memory, transcripts, spend records, tasks, and schedules persist on disk.
 - Multiple agents run concurrently with separate workspaces and bounded permissions.
-- The visual station projects the same runtime state the harness can prove.
+- The visual keep projects the same runtime state the harness can prove.
 
-StarNet does not simulate revenue, completed work, model activity, or spend. Its core product
+Eyehold does not simulate revenue, completed work, model activity, or spend. Its core product
 law is that **the interface must never assert state the harness cannot prove.**
 
 ## Download
 
-Desktop builds are published on the
-[StarNet releases page](https://github.com/androoAGI/starnet-releases/releases/latest).
+This fork does not publish desktop installers. Upstream release feeds are not used.
+Install from source with [INSTALL.md](INSTALL.md). An owned, signed release repository
+is still required before any public download.
 
 | Platform | Asset |
 | --- | --- |
-| **Windows** (10/11, 64-bit) | `StarNet_<version>_x64-setup.exe` |
-| **macOS — Apple Silicon** (M1 or later) | `StarNet_<version>_aarch64.dmg` |
-| **macOS — Intel** | `StarNet_<version>_x64.dmg` |
+| **Windows** (10/11, 64-bit) | `Eyehold_<version>_x64-setup.exe` |
+| **macOS — Apple Silicon** (M1 or later) | `Eyehold_<version>_aarch64.dmg` |
+| **macOS — Intel** | `Eyehold_<version>_x64.dmg` |
 
 > **Apple Silicon note:** use the native `aarch64` DMG. Avoid the `x64` DMG on Apple Silicon:
 > it runs under Rosetta 2 rather than using the native architecture.
@@ -90,21 +90,21 @@ Requirements: Node.js 18+ (Node.js 22 matches CI), Git. Rust and the
 The sidecar uses Node core modules only, so it runs without installing anything:
 
 ```bash
-git clone https://github.com/androoAGI/starnet.git
-cd starnet
+git clone https://github.com/Eyehold/eyehold.git
+cd eyehold
 node sidecar/index.js
 ```
 
 Open <http://localhost:8787>, then connect a provider —
 **bring your own OpenRouter API key (BYOK)** or use a supported OAuth sign-in. Provider requests leave your machine when you run an agent;
-station state, transcripts, memory, and ledgers stay in the local StarNet workspace unless you
+keep state, transcripts, memory, and ledgers stay in the local Eyehold workspace unless you
 explicitly use a network tool or connector. See [PRIVACY.md](PRIVACY.md) for the full data map.
 
 ### Run free with a local model
 
 No key, no account, no bill: install [Ollama](https://ollama.com), pull a model
 (`ollama pull qwen3:8b`), and pick **OLLAMA** as the provider — on the first-run brain screen, or
-later in **SETTINGS → PROVIDERS**. StarNet talks to Ollama on `127.0.0.1:11434` and only reports
+later in **SETTINGS → PROVIDERS**. Eyehold talks to Ollama on `127.0.0.1:11434` and only reports
 it ready once it can list your local models. Pick a model that supports tools (`ollama show <model>`
 lists them): agents act through tool calls. Honest caveat: local models are smaller than the
 cloud ones, so expect slower and rougher work on long tasks, and a task needs a large context
@@ -120,15 +120,15 @@ npm run desktop:build   # build installers locally
 
 ## Coming from OpenClaw or Hermes?
 
-StarNet can import an existing agent: point it at your on-disk OpenClaw or Hermes home and it
-mints a StarNet agent from the persona, instructions, memory, and model it finds. API keys
+Eyehold can import an existing agent: point it at your on-disk OpenClaw or Hermes home and it
+mints a Eyehold agent from the persona, instructions, memory, and model it finds. API keys
 never transfer — you re-enter those in the KEYS tab.
 
 ## Architecture
 
 | Path | Responsibility |
 | --- | --- |
-| `frontend/` | Vanilla JavaScript station world and desktop UI. |
+| `frontend/` | Vanilla JavaScript keep world and desktop UI. |
 | `sidecar/` | Local Node agent runtime: providers, tools, persistence, budgets, consent. |
 | `shared/` | Additive cross-boundary event and schema contracts. |
 | `src-tauri/` | Rust/Tauri desktop shell and bundled runtime. |
@@ -164,14 +164,19 @@ reporting instructions.
 
 ## License
 
-StarNet is open source under the [MIT License](LICENSE). Third-party components remain
+Eyehold is open source under the [MIT License](LICENSE). Third-party components remain
 under their original licenses — see [NOTICE.md](NOTICE.md).
 
-**The MIT License covers the code only.** The **StarNet** name, the logo, the station artwork
-and sprites, and the rest of the project's brand identity are owned by Andrew Sims and are
+**The MIT License covers the code only.** The **Eyehold** name, the logo, the keep artwork
+and sprites, and the rest of the project's brand identity are owned by Eyehold and are
 **not** licensed with it — no trademark or other brand rights are granted, expressly or by
 implication.
 
 MIT means you may fork, modify, and redistribute the code, including commercially. What you
-may not do is ship it as StarNet: forks and derivatives must use their own name, logo, and
+may not do is ship it as Eyehold: forks and derivatives must use their own name, logo, and
 artwork, and must not present themselves as this project or as endorsed by it.
+
+This checkout is the Eyehold fork. Its visible marks and the default realm art added here
+are original. The reserved Eyehold name, the traced keep sheets under `frontend/assets`,
+and the signed skill catalog are not relicensed. See
+[docs/EYEHOLD_UPSTREAM_LEFTOVERS.md](docs/EYEHOLD_UPSTREAM_LEFTOVERS.md).

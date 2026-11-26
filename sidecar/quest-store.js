@@ -1,19 +1,19 @@
-/* sidecar/quest-store.js — the station-wide, harness-owned, agent-aware QUEST LEDGER (QUEST V2, plan §A).
+/* sidecar/quest-store.js — the keep-wide, harness-owned, agent-aware QUEST LEDGER (QUEST V2, plan §A).
 
-   Quests are StarNet's retention spine: the game's progression must stay in sync with the Commander's REAL
+   Quests are Eyehold's retention spine: the game's progression must stay in sync with the Commander's REAL
    progression (goals, aspirations, work to automate). The v1 system was a frontend-only read projection with
    two fatal holes: completions celebrated unreliably, and any quest that wasn't mechanically observable was
    architecturally UNCOMPLETABLE (the agent couldn't even see it). V2 moves the ledger into the sidecar and
    makes THE CONTRACT RULE the heart of the design: a quest cannot be minted without a valid completion
    contract — so "sits there forever, uncompletable" is impossible by construction.
 
-   One durable single-file store for the whole station — `_station.quests.json` under WORKSPACES — built on
+   One durable single-file store for the whole keep — `_keep.quests.json` under WORKSPACES — built on
    makeDurableJsonStore (crash-safe fsync + .bak last-known-good, per-key async mutex + re-read-under-lock).
    Pure + node-testable over an injected fs/path: NO ambient clock/rng — every timestamp is passed in by the
    caller (`now`), matching the workshop-store / memory-store discipline.
 
    Quest record (plan §A):
-     { id:'q:<seq>', title, desc, reward, kind:'generated'|'work'|'user', createdBy, agentId (nullable=station),
+     { id:'q:<seq>', title, desc, reward, kind:'generated'|'work'|'user', createdBy, agentId (nullable=keep),
        contract:{type:'prop'|'run'|'fact'|'artifact'|'attest', key}, steps:[{key,label,done,note?}],
        status:'open'|'done'|'dismissed', attest: null|{agentId,runId,evidence,at,confirmed:null},
        declineNote: null|{at,note}, groundedIn: null|string, domain, goalId, milestoneId, completedBy,
@@ -30,8 +30,8 @@
 
 const { makeDurableJsonStore } = require('./durable-store.js');
 
-const STORE_KEY = 'station';               // single-file store: one logical key
-const STORE_FILE = '_station.quests.json'; // under WORKSPACES
+const STORE_KEY = 'keep';               // single-file store: one logical key
+const STORE_FILE = '_keep.quests.json'; // under WORKSPACES
 const CONTRACT_TYPES = ['prop', 'run', 'fact', 'artifact', 'attest'];
 const KINDS = ['generated', 'work', 'user'];
 const DOMAINS = ['building', 'research', 'writing', 'growth', 'operations', 'creative', 'planning', 'support'];
@@ -192,7 +192,7 @@ function makeQuestStore(deps) {
   }
   function list() { return read().quests; }
   function get(id) { return read().quests.find(q => q.id === String(id)) || null; }
-  // open quests an agent should see in its prompt: its OWN quests + station-wide (agentId null) ones.
+  // open quests an agent should see in its prompt: its OWN quests + keep-wide (agentId null) ones.
   function openForAgent(agentId, now) {
     const aid = agentIdOrNull(agentId);
     return read().quests.filter(q => actionable(q, numOr(now, 0)) && (q.agentId == null || q.agentId === aid));
@@ -362,7 +362,7 @@ function makeQuestStore(deps) {
       const rec = normalize(cur);
       const q = rec.quests.find(x => x.id === String(id));
       if (!q || q.status !== 'open') { out = { ok: false, error: 'no such open quest' }; return undefined; }
-      if (!q.contract || q.contract.type !== 'attest') { out = { ok: false, error: 'this quest completes mechanically, not by attestation' }; return undefined; }
+      if (!q.contract || q.contract.type !== 'attest') { out = { ok: false, error: 'this quest completes mechanically, not by attekeep' }; return undefined; }
       if (q.attest && q.attest.confirmed == null) { out = { ok: false, error: 'this quest is already awaiting the Commander\'s confirmation' }; return undefined; }
       if (evidence.length < MIN_EVIDENCE) { out = { ok: false, error: 'attesting completion needs real evidence of what was done' }; return undefined; }
       q.attest = {

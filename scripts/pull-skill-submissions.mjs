@@ -34,12 +34,12 @@ const market = require(join(ROOT, 'sidecar/skills/market-format.js'));
 const catalog = require(join(ROOT, 'sidecar/skills/catalog.js'));
 const guard = require(join(ROOT, 'sidecar/skills/guard.js'));
 
-const CLOUD = String(process.env.STARNET_CLOUD_URL || 'https://account.starnetos.com').replace(/\/+$/, '');
-const LIVE_INDEX = process.env.STARNET_SKILL_MARKET_URL || 'https://starnetos.com/.well-known/starnet-skills.json';
+const CLOUD = String(process.env.EYEHOLD_CLOUD_URL || '').replace(/\/+$/, '');
+const LIVE_INDEX = process.env.EYEHOLD_SKILL_MARKET_URL || 'https://eyehold.babelbook.net/.well-known/eyehold-skills.json';
 const TOKEN_FILE = join(homedir(), '.starnet-keys', 'skill-review.token');
 const CATEGORIES = ['Communication', 'Creative', 'Engineering', 'Marketing', 'Planning', 'Productivity', 'Research', 'Writing'];
 const LICENSES = ['MIT', 'CC-BY-4.0'];
-const NOTICE_HEAD = '### Shared by StarNet users';
+const NOTICE_HEAD = '### Shared by Eyehold users';
 
 const str = (v) => (v == null ? '' : String(v));
 const sha = (s) => createHash('sha256').update(str(s), 'utf8').digest('hex');
@@ -69,10 +69,10 @@ export function planPull(submissions, ctx) {
     const bad = files.find((f) => !market.marketFileAllowed(f.path) || f.path.indexOf('..') >= 0 || f.content.indexOf('\u0000') >= 0);
     if (bad) { skip(bad.path + ' is not a file the market allows'); continue; }
     if (packageDigest(files) !== str(s.digest)) { skip('the package does not match the digest the reviewer approved'); continue; }
-    if (ctx.librarySlugs.has(slug)) { skip('a StarNet Original already uses this name'); continue; }
+    if (ctx.librarySlugs.has(slug)) { skip('an Eyehold Original already uses this name'); continue; }
     const prior = ctx.readMeta(slug);
     if (prior && !(prior.submission && prior.submission.owner === s.owner)) {
-      skip(prior.submission ? 'another author\'s upload already holds this name' : 'a skill StarNet publishes already uses this name');
+      skip(prior.submission ? 'another author\'s upload already holds this name' : 'a skill Eyehold publishes already uses this name');
       continue;
     }
     // the authoritative scan: the same guard and tier the catalog build applies (a dangerous package fails the build)
@@ -84,7 +84,7 @@ export function planPull(submissions, ctx) {
       continue;
     }
     const version = prior ? bumpMinor(prior.version) : '1.0.0';
-    const credit = plainCredit(s.credit) || 'StarNet user';
+    const credit = plainCredit(s.credit) || 'Eyehold user';
     const meta = {
       slug, version, shelf: 'community', category: s.category,
       tags: [s.category.toLowerCase(), 'shared'], requires: [], license: s.license, authors: [credit],
@@ -106,7 +106,7 @@ export function creditNotice(text, rows) {
     const next = lines.findIndex((l, i) => i > lines.indexOf('## Skill Market (skills-catalog/)') && /^## /.test(l));
     if (lines.indexOf('## Skill Market (skills-catalog/)') < 0 || next < 0) throw new Error('NOTICE.md has no "## Skill Market (skills-catalog/)" section to credit uploads in');
     lines.splice(next, 0, NOTICE_HEAD, '',
-      'Skills StarNet users shared through the Skill Market upload page (account.starnetos.com › ACCOUNT › SKILLS), each read and',
+      'Skills Eyehold users shared through the Skill Market upload page (account.starnetos.com › ACCOUNT › SKILLS), each read and',
       'approved before it was published. Each package ships its author\'s LICENSE.', '',
       '| Skill | Author | License |', '| --- | --- | --- |', '');
     at = lines.indexOf(NOTICE_HEAD);
@@ -165,6 +165,10 @@ function restore(dir, snap) {
 }
 
 async function pull({ dryRun }) {
+  if (!CLOUD) {
+    console.error('pull-skill-submissions: skill uploads are not hosted yet. Set EYEHOLD_CLOUD_URL when the Eyehold account host can accept them.');
+    return 2;
+  }
   const token = reviewToken();
   const body = await getJson(CLOUD + '/v1/skill-submissions/approved', { headers: { authorization: 'Bearer ' + token } });
   const library = catalog.loadDir(join(ROOT, 'sidecar/skills/library'), { readdirSync, readFileSync }, { join });
@@ -202,7 +206,7 @@ async function markLive() {
   const token = reviewToken();
   const live = market.readCatalog(await getJson(LIVE_INDEX, {}));
   const bySlug = new Map(live.entries.map((e) => [e.slug, e]));
-  const local = JSON.parse(readFileSync(join(ROOT, 'website', '.well-known', 'starnet-skills.json'), 'utf8'));
+  const local = JSON.parse(readFileSync(join(ROOT, 'website', '.well-known', 'eyehold-skills.json'), 'utf8'));
   const localBySlug = new Map(local.skills.map((e) => [e.slug, e]));
   const published = [];
   for (const slug of existsSync(SKILLS_DIR) ? readdirSync(SKILLS_DIR) : []) {

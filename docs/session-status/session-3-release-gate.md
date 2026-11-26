@@ -107,8 +107,8 @@ release smoke require a successful desktop package build.
 
 - HELD-FOR-UPSTREAM: Session 3 remains in WATCH mode while the runbook-listed active
   Tauri/hardening lanes are unmerged. Current board shows
-  `agent/starnet-hardening-integration` clean/merged locally, with unmerged
-  `agent/starnet-hardening-7-8-tests-tauri` and `agent/starnet-tests-tauri`.
+  `agent/eyehold-hardening-integration` clean/merged locally, with unmerged
+  `agent/eyehold-hardening-7-8-tests-tauri` and `agent/eyehold-tests-tauri`.
 - Board check on 2026-06-26T03:50-04:00 reported no uncommitted tracked edits
   matching `docs/session-status/session-3-release-gate.md`.
 - Board check on 2026-06-26T04:51-04:00 reported no uncommitted tracked edits
@@ -117,24 +117,24 @@ release smoke require a successful desktop package build.
   matching `docs/session-status/session-3-release-gate.md`.
 - Board check on 2026-06-26T13:58-04:00 reported no uncommitted tracked edits
   matching `docs/session-status/session-3-release-gate.md`; it still listed
-  `agent/starnet-hardening-7-8-tests-tauri` and `agent/starnet-tests-tauri` as
-  unmerged, with `agent/starnet-hardening-integration` clean/merged locally.
+  `agent/eyehold-hardening-7-8-tests-tauri` and `agent/eyehold-tests-tauri` as
+  unmerged, with `agent/eyehold-hardening-integration` clean/merged locally.
 - Board check on 2026-06-26T14:58-04:00 reported no uncommitted tracked edits
   matching `docs/session-status/session-3-release-gate.md`; it still listed
-  `agent/starnet-hardening-7-8-tests-tauri` and `agent/starnet-tests-tauri` as
-  unmerged, with `agent/starnet-hardening-integration` clean/merged locally.
+  `agent/eyehold-hardening-7-8-tests-tauri` and `agent/eyehold-tests-tauri` as
+  unmerged, with `agent/eyehold-hardening-integration` clean/merged locally.
 - Board check on 2026-06-26T15:59-04:00 reported no uncommitted tracked edits
   matching `docs/session-status/session-3-release-gate.md`; it still listed
-  `agent/starnet-hardening-7-8-tests-tauri` and `agent/starnet-tests-tauri` as
-  unmerged, with `agent/starnet-hardening-integration` clean/merged locally.
+  `agent/eyehold-hardening-7-8-tests-tauri` and `agent/eyehold-tests-tauri` as
+  unmerged, with `agent/eyehold-hardening-integration` clean/merged locally.
 - Board check on 2026-06-26T17:01-04:00 reported no uncommitted tracked edits
   matching `docs/session-status/session-3-release-gate.md`; it still listed
-  `agent/starnet-hardening-7-8-tests-tauri` and `agent/starnet-tests-tauri` as
-  unmerged, with `agent/starnet-hardening-integration` clean/merged locally.
+  `agent/eyehold-hardening-7-8-tests-tauri` and `agent/eyehold-tests-tauri` as
+  unmerged, with `agent/eyehold-hardening-integration` clean/merged locally.
 - Board check on 2026-06-26T18:02-04:00 reported no uncommitted tracked edits
   matching `docs/session-status/session-3-release-gate.md`; it still listed
-  `agent/starnet-hardening-7-8-tests-tauri` and `agent/starnet-tests-tauri` as
-  unmerged, with `agent/starnet-hardening-integration` clean/merged locally.
+  `agent/eyehold-hardening-7-8-tests-tauri` and `agent/eyehold-tests-tauri` as
+  unmerged, with `agent/eyehold-hardening-integration` clean/merged locally.
 - Sync check on 2026-06-26T18:02-04:00 showed this worktree is `11` commits behind
   and `8` commits ahead of local `feat/harness-backend`; no rebase was attempted
   while the lane remains in WATCH mode.

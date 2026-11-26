@@ -1,4 +1,4 @@
-/* STARNET — truststore.js : the live wiring around the pure EARNED-AUTONOMY engine (trust.js) — Growth Tier 3.
+/* EYEHOLD — truststore.js : the live wiring around the pure EARNED-AUTONOMY engine (trust.js) — Growth Tier 3.
 
    Where xpstore.js folds real run outcomes into DESCRIPTIVE meters (level/confidence), this store folds the SAME
    events into a track record that, once earned, MINTS a consent-gated OFFER to raise the autonomy dial — and,
@@ -9,7 +9,7 @@
    - READ-ONLY citizen of U.bus — subscribes to the SAME feed xpstore folds (agent.run.end + memory.feedback) but
      NEVER emits (the frozen shared/events.js contract is owned elsewhere; the schema emitter silently drops
      unknown events anyway — so applying an offer is a DIRECT store call, exactly like xpstore's celebrations).
-   - Self-persists its OWN localStorage key (starnet.trust.v1): the folded track record, the EARNED rung records
+   - Self-persists its OWN localStorage key (eyehold.trust.v1): the folded track record, the EARNED rung records
      with provenance, the declined/ignored negative state, all FIFO-capped + sanitized on hydrate.
    - node-exportable for its test; all DECISION logic lives in the pure Trust engine — this is the edge.
 
@@ -19,7 +19,7 @@
    store for the gate + the consent side-effects. */
 'use strict';
 const TrustStore = (() => {
-  const KEY = 'starnet.trust.v1';
+  const KEY = 'eyehold.trust.v1';
   const IGNORE_LIMIT = 2;        // ignore an offered rung this many times → stop offering it in this level band (stop-forever, per band)
   const SESSION_OFFER_CAP = 1;   // at most ONE trust offer shown per session (anti-nag; rung offers are rare by construction)
   const MAP_CAP = 40;            // FIFO cap for every persisted keyed map (declined / ignores / earned.grant) — rungs

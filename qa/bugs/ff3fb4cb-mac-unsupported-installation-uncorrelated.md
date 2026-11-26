@@ -10,7 +10,7 @@ lane: release-0120-prep-0915
 fix:
 origin: customer
 report: support-2026-09-13-mac-unsupported-application
-affected: Mac; application asset, CPU architecture, macOS version and exact StarNet version not supplied
+affected: Mac; application asset, CPU architecture, macOS version and exact Eyehold version not supplied
 family: mac-install-compatibility
 installer: unverified
 recovery: unconfirmed
@@ -20,7 +20,7 @@ recovery: unconfirmed
 
 ## Symptom
 
-The customer cannot open StarNet because macOS reports that the application is not supported on this Mac.
+The customer cannot open Eyehold because macOS reports that the application is not supported on this Mac.
 
 ## Repro
 

@@ -8,7 +8,7 @@ const entry = path.resolve(__dirname, '../dev/seed.js');
 
 function fixture() {
   const f = SidecarFixture.create({prefix:'seed-isolation-',entry,timeoutMs:30000,
-    env:{SKYNET_DEFAULT_MODEL:'test/model',SKYNET_OPENROUTER_KEY:'seed-fixture'}});
+    env:{EYEHOLD_DEFAULT_MODEL:'test/model',EYEHOLD_OPENROUTER_KEY:'seed-fixture'}});
   f.args = ['--keep','--workspace',f.workspace];
   const stop = f.stop.bind(f);
   f.stop = async () => {

@@ -1,6 +1,6 @@
-# Contributing to StarNet
+# Contributing to Eyehold
 
-Thanks for helping improve StarNet. Bug fixes, tests, documentation, accessibility work, and
+Thanks for helping improve Eyehold. Bug fixes, tests, documentation, accessibility work, and
 carefully scoped features are welcome.
 
 ## Before you start
@@ -17,8 +17,8 @@ carefully scoped features are welcome.
 Node.js 22 is recommended because it matches CI and the release train.
 
 ```bash
-git clone https://github.com/androoAGI/starnet.git
-cd starnet
+git clone https://github.com/Eyehold/eyehold.git
+cd eyehold
 npm ci
 npm run test:fast
 ```
@@ -53,7 +53,7 @@ artifacts. Run `npm run security:secrets` before submitting if you have Gitleaks
 
 | Path | Responsibility |
 | --- | --- |
-| `frontend/` | Station UI and renderer. |
+| `frontend/` | Keep UI and renderer. |
 | `sidecar/` | Agent runtime and local authority. |
 | `shared/` | Cross-boundary schemas and events. |
 | `src-tauri/` | Desktop shell. |

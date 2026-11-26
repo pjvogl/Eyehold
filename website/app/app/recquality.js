@@ -1,11 +1,11 @@
-/* STARNET — recquality.js : THE RECOMMENDATION QUALITY LOOP (pure, node-testable, zero DOM / zero fetch / zero clock).
+/* EYEHOLD — recquality.js : THE RECOMMENDATION QUALITY LOOP (pure, node-testable, zero DOM / zero fetch / zero clock).
 
    The spine (recommend.js) decides WHO speaks: one voice, evidence or silence. It answers "can this offer cite?"
    — a yes/no. This module answers the two questions that come after:
 
      1. HOW STRONG is that citation?  A pain corroborated twice this week is not the same evidence as a one-off
-        remark from three weeks ago, and the station should not present them as if they were. `strength` is a
-        0..1 read over evidence the station ALREADY holds (dimension confidence, belief freshness, a real repeat
+        remark from three weeks ago, and the keep should not present them as if they were. `strength` is a
+        0..1 read over evidence the keep ALREADY holds (dimension confidence, belief freshness, a real repeat
         counter) — never a fabricated certainty. recommend.js turns it into a bounded WITHIN-TIER discount, so
         weak evidence speaks later, never louder. Absent state → null → neutral (no discount at all).
 
@@ -31,9 +31,9 @@
   const DAY_MS = 24 * 60 * 60 * 1000;
 
   /* ── EVIDENCE STRENGTH ──────────────────────────────────────────────────────────────────────────────────
-     Strength is a 0..1 READ, never a score the station invents. Every producer below returns `null` when the
+     Strength is a 0..1 READ, never a score the keep invents. Every producer below returns `null` when the
      state it reads is absent — and null means NEUTRAL everywhere downstream (recommend.js applies no discount).
-     A cold station therefore ranks on pure priority, exactly as it did before this module existed. */
+     A cold keep therefore ranks on pure priority, exactly as it did before this module existed. */
 
   /* NULL IS NOT ZERO (fixed 2026-08-04). `Number(null)`, `Number('')` and `Number(false)` are all a perfectly
      finite 0, so an explicit `conf: null` used to read as CONFIDENCE ZERO — which marked the belief stale and
@@ -110,7 +110,7 @@
        · OLD          — untouched for STALE_DAYS. Age alone is not doubt: a well-corroborated belief stays true.
        · UNDER-CONFIRMED — the dimension holding it reads below STALE_CONF (just under a single fresh authored
                         belief, ≈0.51 in understanding.js), i.e. nothing since has corroborated it.
-     A PINNED belief is never stale — the Commander pinned it as durable truth and the station does not
+     A PINNED belief is never stale — the Commander pinned it as durable truth and the keep does not
      second-guess that. An UNDATABLE belief is never stale either: unknown age is not evidence (fail-open to
      "fresh", the same law understanding.js's freshness() follows). No clock is read here — `now` is injected,
      and an absent `now` yields `stale:false` rather than a guess. */
@@ -139,7 +139,7 @@
        start NEUTRAL (1) — a channel is never presumed good or bad; it has to earn either.
        FLOOR (0.5)       — quality alone can NEVER silence a channel. A dud channel gets structurally quieter and
                            still speaks when nothing better is on the table. Silencing is the job of the per-channel
-                           caps and the Commander's own declines, never of a number the station computed.
+                           caps and the Commander's own declines, never of a number the keep computed.
        CAP (1.25)        — a proven channel earns a small edge, bounded well inside one priority tier (recommend.js
                            converts this whole range into a ±small WITHIN-TIER term), so no amount of good history
                            lets a gentle nudge outrank a turn-in. Priority order remains the spine's law.

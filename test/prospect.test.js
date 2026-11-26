@@ -123,7 +123,7 @@ global.localStorage = { _s: {}, getItem(k){ return this._s[k] == null ? null : t
   };
 
   // a legacy draft staged by a pre-scout build survives the upgrade
-  localStorage.setItem('starnet.prospects.v1', JSON.stringify({ v: 1, prospects: [{ id: 'legacy1', draft: { name: 'Old Draft' }, why: 'w', fingerprint: 'fp-legacy' }], denylist: [] }));
+  localStorage.setItem('eyehold.prospects.v1', JSON.stringify({ v: 1, prospects: [{ id: 'legacy1', draft: { name: 'Old Draft' }, why: 'w', fingerprint: 'fp-legacy' }], denylist: [] }));
 
   ProspectStore.init({
     fetch: fakeFetch,

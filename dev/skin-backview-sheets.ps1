@@ -11,7 +11,7 @@ $man = (Get-Content (Join-Path $root "manifest.json") -Raw | ConvertFrom-Json).s
 # skin sets in catalog order (matches DATA.SKINS in data-shim.js)
 $sets = @('bear','pepe','alien','skeleton','crewmate','capybara','robot','vaultboy',
           'blank','blank_blue','blank_green','blank_red','blank_amber','heisenberg',
-          'crthead','astronaut','endoskeleton','ultrondroid','xenomorph','voidwizard',
+          'crthead','warden','endoskeleton','ultrondroid','xenomorph','voidwizard',
           'samaltman','dario','secretagent','grimreaper','plaguedoctor','freddyfazbear',
           'ghostface','morpheus','ricksanchez','ninjaturtle','robocop','minionchar',
           'masterchief','pikachu','caseyjones','finn')

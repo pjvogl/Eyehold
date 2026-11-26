@@ -38,8 +38,8 @@ const server = http.createServer((req, res) => {
   await new Promise(r => server.listen(0, '127.0.0.1', r));
   const base = 'http://127.0.0.1:' + server.address().port + '/api/v1';
   const fixture = SidecarFixture.create({ prefix: 'group-http-', timeoutMs: 20000,
-    env: { SKYNET_OPENROUTER_BASE: base, STARNET_OPENROUTER_BASE: base,
-      SKYNET_OPENROUTER_KEY: 'sk-or-v1-group-test', STARNET_OPENROUTER_KEY: 'sk-or-v1-group-test', SKYNET_DEFAULT_MODEL: 'test/model', STARNET_DEFAULT_MODEL: 'test/model' } });
+    env: { EYEHOLD_OPENROUTER_BASE: base, EYEHOLD_OPENROUTER_BASE: base,
+      EYEHOLD_OPENROUTER_KEY: 'sk-or-v1-group-test', EYEHOLD_OPENROUTER_KEY: 'sk-or-v1-group-test', EYEHOLD_DEFAULT_MODEL: 'test/model', EYEHOLD_DEFAULT_MODEL: 'test/model' } });
   try {
     await fixture.start();
     const request = async (method, query, b) => {

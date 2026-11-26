@@ -1,6 +1,6 @@
 /* node test/topicmatch.test.js — the LEARNED-TOPIC recommendation lane (2026-07-28).
 
-   The station has always learned WHAT the Commander keeps working on (sidecar/interests.js: an evidence-backed,
+   The keep has always learned WHAT the Commander keeps working on (sidecar/interests.js: an evidence-backed,
    decaying topic histogram), but only the LLM drafting paths could read it. This lane feeds that signal to the
    three DETERMINISTIC recommendation surfaces — the FOR YOU recipe row, the bay's class shelves, and the night
    shift's focus resolver — plus opens the one recommendation the curated shelf structurally cannot make ("you
@@ -8,7 +8,7 @@
 
    WHAT THIS FILE EXISTS TO PROTECT — the promise the lane was built under: it must be IMPOSSIBLE for the topic
    term to make an existing recommendation worse. So the assertions below are mostly NEGATIVE:
-     · the ANCHOR RULE — below the warm floor the contribution is exactly 0, so a cold/calibrating station ranks
+     · the ANCHOR RULE — below the warm floor the contribution is exactly 0, so a cold/calibrating keep ranks
        byte-identically to how it ranked before this code existed (proven by direct comparison, on all 4 surfaces);
      · MAJORITY COVERAGE — a single grazing token is not a match (the precision rule the archetype shelf learned);
      · ADDITIVE ONLY — the term can raise a score, never lower one, so it can never shrink a shelf the way the

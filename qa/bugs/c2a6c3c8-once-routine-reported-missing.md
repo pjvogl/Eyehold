@@ -108,6 +108,6 @@ recovery remain unverified; no closure inferred from this passing local path.
 
 ## September 10 release follow-through
 
-A Just once routine created through the installed UI survived a canary update, remained visible, fired once and showed completed in Automation. Job 1037758e-f7f3-4a77-9287-2add0002b2fb completed run 9a03ff10-6d92-4cb9-be86-ca44b58d6e5f, delivered ONCE_0112_OK, repeat.completed=1, enabled=false, nextRunAt=null. It remained completed after the next install. This proves the current path on the test station; the affected customer's missing job ID/save and recovery remain required.
+A Just once routine created through the installed UI survived a canary update, remained visible, fired once and showed completed in Automation. Job 1037758e-f7f3-4a77-9287-2add0002b2fb completed run 9a03ff10-6d92-4cb9-be86-ca44b58d6e5f, delivered ONCE_0112_OK, repeat.completed=1, enabled=false, nextRunAt=null. It remained completed after the next install. This proves the current path on the test keep; the affected customer's missing job ID/save and recovery remain required.
 
 Current receipts and remaining acceptance: [0.11.2 follow-through](../../docs/releases/0.11.2/FOLLOWTHROUGH.md). Status remains open pending the affected configuration.

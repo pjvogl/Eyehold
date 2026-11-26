@@ -1,9 +1,9 @@
 /* node test/nightshift-floor-visibility.e2e.test.js — real sidecar proof that a SELF-INITIATED night-shift
-   beat is VISIBLE on the station floor while it runs (2026-07-18 fix).
+   beat is VISIBLE on the keep floor while it runs (2026-07-18 fix).
 
    The escape this pins: the beat's broadcast opt-in (added 2026-07-14) reached only the ACT path —
    the reason-only runs (propose/do/critique, the DEFAULT-leash path) went through nightshiftChat with a
-   local sink and no SSE tee, so the station showed an idle wandering agent while the harness provably
+   local sink and no SSE tee, so the keep showed an idle wandering agent while the harness provably
    worked, then a surprise "drafted while you were away" toast. The crate was just as wrong: placed AFTER
    the draft landed, keyed to a runId no run.end ever settles (queue depth leaked +1 per draft forever).
 
@@ -47,7 +47,7 @@ function startMockOpenRouter() {
           } else if (/Do this ONE job now/.test(prompt)) {
             text('TITLE: Beta launch checklist\nA real draft body the Commander can read.');
           } else if (/Propose up to/.test(prompt)) {
-            text(['JOB: Beta launch checklist', 'KIND: advance-goal', 'GROUNDS: ship the StarNet beta to 100 users', 'CONFIDENCE: high', 'SPEC: a checklist draft toward the beta'].join('\n'));
+            text(['JOB: Beta launch checklist', 'KIND: advance-goal', 'GROUNDS: ship the Eyehold beta to 100 users', 'CONFIDENCE: high', 'SPEC: a checklist draft toward the beta'].join('\n'));
           } else {
             text('ok');
           }
@@ -64,7 +64,7 @@ function startMockOpenRouter() {
 
 function boot(port, env, attemptsLeft) {
   return new Promise((resolve, reject) => {
-    const child = spawn(process.execPath, [INDEX], { env: Object.assign({}, process.env, env, { SKYNET_PORT: String(port) }), stdio: ['ignore', 'pipe', 'pipe'] });
+    const child = spawn(process.execPath, [INDEX], { env: Object.assign({}, process.env, env, { EYEHOLD_PORT: String(port) }), stdio: ['ignore', 'pipe', 'pipe'] });
     let out = '', settled = false;
     const onData = d => {
       out += d.toString();
@@ -85,7 +85,7 @@ async function readNdjson(res) {
   return events;
 }
 
-// attach the REAL SSE bridge (the exact stream the station HUD consumes) and accumulate parsed events.
+// attach the REAL SSE bridge (the exact stream the keep HUD consumes) and accumulate parsed events.
 function attachSse(B, token) {
   const ac = new AbortController();
   const events = [];
@@ -111,10 +111,10 @@ function hotBeliefs(now) {
   return {
     known: ['goals', 'pain', 'stack', 'ambition'],
     beliefs: {
-      goals: b('ship the StarNet beta to 100 users'),
+      goals: b('ship the Eyehold beta to 100 users'),
       pain: b('manual release notes eat my fridays'),
       stack: b('node and a pixel-art canvas'),
-      ambition: b('a living agent station people watch')
+      ambition: b('a living agent keep people watch')
     }
   };
 }
@@ -122,14 +122,14 @@ function hotBeliefs(now) {
 (async () => {
   const mock = await startMockOpenRouter();
   const ws = fs.mkdtempSync(path.join(os.tmpdir(), 'sk-nsvis-e2e-'));
-  const env = { SKYNET_WORKSPACES: ws, SKYNET_DEV: '1', SKYNET_OPENROUTER_BASE: mock.base, SKYNET_OPENROUTER_KEY: 'sk-or-v1-nsvis-fake', SKYNET_DEFAULT_MODEL: 'test/model' };
+  const env = { EYEHOLD_WORKSPACES: ws, EYEHOLD_DEV: '1', EYEHOLD_OPENROUTER_BASE: mock.base, EYEHOLD_OPENROUTER_KEY: 'sk-or-v1-nsvis-fake', EYEHOLD_DEFAULT_MODEL: 'test/model' };
   const { child, port } = await boot(8960 + (process.pid % 30), env, 20);
   const B = 'http://' + HOST + ':' + port;
   let sse = null;
   try {
     const token = await bootToken(B, B);
     A.ok(token.length >= 32, 'got a session API token');
-    const headers = { 'Content-Type': 'application/json', 'X-StarNet-Token': token, Origin: B };
+    const headers = { 'Content-Type': 'application/json', 'X-Eyehold-Token': token, Origin: B };
 
     sse = attachSse(B, token);
     await sleep(300);   // let the SSE stream open before the beat fires
@@ -148,7 +148,7 @@ function hotBeliefs(now) {
 
     // ── 1. the run lifecycle reached the floor: agent.run.start with trigger 'nightshift' over REAL SSE.
     //      (world.js binds the work pose to any non-'directive' trigger — this event is what sends the body
-    //      to its workstation; before the fix ZERO nightshift run.start events reached SSE on this path.)
+    //      to its workkeep; before the fix ZERO nightshift run.start events reached SSE on this path.)
     const starts = ev.filter(e => e.name === 'agent.run.start' && e.payload && e.payload.trigger === 'nightshift');
     A.ok(starts.length >= 1, "agent.run.start{trigger:'nightshift'} teed to SSE (" + starts.length + ' seen) — the floor can pose the body');
 

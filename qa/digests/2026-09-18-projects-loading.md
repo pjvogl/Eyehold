@@ -22,9 +22,9 @@ Customer journeys: 36/36 PASS (`customer-journeys.log`). Installer behavior and 
 
 Do not ask the reporter to delete or reset application data. This is a rendering defect, independent of folder size or contents. Clearing project metadata would only hide the trigger until a project is added again. There is no cache reset needed for this repair.
 
-The backend stores project metadata in `projects.json` under its active workspaces directory; trust grants are separately held in `permissions.allow.json`. Neither should be manually removed to address this issue. Agents, sessions and station state need no migration for the fix.
+The backend stores project metadata in `projects.json` under its active workspaces directory; trust grants are separately held in `permissions.allow.json`. Neither should be manually removed to address this issue. Agents, sessions and keep state need no migration for the fix.
 
-Suggested reply after an installer containing the repair is available: We reproduced the Projects loading issue and found a UI error in version 0.12.3. Your folder contents and station data do not need to be cleared. Please keep the application-data folder intact and install the update containing this fix. If it persists afterward, provide the new Diagnostics report and the page error text; do not send credentials or the whole station-data directory.
+Suggested reply after an installer containing the repair is available: We reproduced the Projects loading issue and found a UI error in version 0.12.3. Your folder contents and keep data do not need to be cleared. Please keep the application-data folder intact and install the update containing this fix. If it persists afterward, provide the new Diagnostics report and the page error text; do not send credentials or the whole keep-data directory.
 
 ## Integration receipt
 

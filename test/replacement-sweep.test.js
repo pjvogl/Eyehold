@@ -20,12 +20,12 @@ function writeJson(file, value, bom) {
 }
 function cleanEnv(extra) {
   const env = Object.assign({}, process.env);
-  delete env.STARNET_T0_CLEAN_EVIDENCE;
-  delete env.STARNET_T3_WORKLOAD_EVIDENCE;
-  delete env.STARNET_T4_UPDATE_PROOF;
-  delete env.STARNET_REPLACEMENT_SWEEP_T0_EVIDENCE;
-  delete env.STARNET_REPLACEMENT_SWEEP_T3_EVIDENCE;
-  delete env.STARNET_REPLACEMENT_SWEEP_T4_EVIDENCE;
+  delete env.EYEHOLD_T0_CLEAN_EVIDENCE;
+  delete env.EYEHOLD_T3_WORKLOAD_EVIDENCE;
+  delete env.EYEHOLD_T4_UPDATE_PROOF;
+  delete env.EYEHOLD_REPLACEMENT_SWEEP_T0_EVIDENCE;
+  delete env.EYEHOLD_REPLACEMENT_SWEEP_T3_EVIDENCE;
+  delete env.EYEHOLD_REPLACEMENT_SWEEP_T4_EVIDENCE;
   Object.assign(env, extra || {});
   return env;
 }
@@ -46,7 +46,7 @@ function baseProof(schema, installer) {
 
 const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'replacement-sweep-'));
 try {
-  const installer = path.join(tmp, 'StarNet_0.1.0_x64-setup.exe');
+  const installer = path.join(tmp, 'Eyehold_0.1.0_x64-setup.exe');
   fs.writeFileSync(installer, 'fake installer');
   const installerInfo = { sha256: hashFile(installer), bytes: fs.statSync(installer).size };
   const dogfood = path.join(tmp, '.dogfood');
@@ -54,16 +54,16 @@ try {
   const t0Proof = path.join(dogfood, 't0', 'clean-install-proof.json');
   const t3Proof = path.join(dogfood, 't3', 'installed-workload-proof.json');
   const t4Proof = path.join(dogfood, 't4', 'update-delivery-proof.json');
-  writeJson(t0Proof, Object.assign(baseProof('starnet.clean-install-proof.v1', installerInfo), {
+  writeJson(t0Proof, Object.assign(baseProof('eyehold.clean-install-proof.v1', installerInfo), {
     cleanMachine: true,
     install: { succeeded: true },
     launch: { succeeded: true }
   }), true);
-  writeJson(t3Proof, Object.assign(baseProof('starnet.t3-installed-workload-proof.v1', installerInfo), {
+  writeJson(t3Proof, Object.assign(baseProof('eyehold.t3-installed-workload-proof.v1', installerInfo), {
     installedApp: { source: 'nsis-installed', launched: true, usableHarness: true },
     workload: { completed: true, liveProvider: true, paidSmoke: { succeeded: true, spendUsd: 0.01 } }
   }));
-  writeJson(t4Proof, Object.assign(baseProof('starnet.t4-update-delivery-proof.v1', installerInfo), {
+  writeJson(t4Proof, Object.assign(baseProof('eyehold.t4-update-delivery-proof.v1', installerInfo), {
     update: { mode: 'manual-nsis-reinstall', launchedBefore: true, launchedAfter: true },
     state: { unchanged: true, backupBeforeMigrate: true, failurePreservesOriginal: true },
     workload: { completed: true }
@@ -73,14 +73,14 @@ try {
     const out = path.join(tmp, 'dry-out');
     const latest = path.join(tmp, 'dry-latest');
     const res = run(['--dry-run'], {
-      STARNET_REPLACEMENT_SWEEP_INSTALLER_EXE: installer,
-      STARNET_REPLACEMENT_SWEEP_DOGFOOD_DIR: dogfood,
-      STARNET_REPLACEMENT_SWEEP_DIR: out,
-      STARNET_REPLACEMENT_SWEEP_LATEST_DIR: latest
+      EYEHOLD_REPLACEMENT_SWEEP_INSTALLER_EXE: installer,
+      EYEHOLD_REPLACEMENT_SWEEP_DOGFOOD_DIR: dogfood,
+      EYEHOLD_REPLACEMENT_SWEEP_DIR: out,
+      EYEHOLD_REPLACEMENT_SWEEP_LATEST_DIR: latest
     });
     assert.equal(res.status, 0, res.stderr || res.stdout);
     const status = JSON.parse(fs.readFileSync(path.join(out, 'replacement-sweep-status.json'), 'utf8'));
-    assert.equal(status.schema, 'starnet.replacement-sweep-status.v1');
+    assert.equal(status.schema, 'eyehold.replacement-sweep-status.v1');
     assert.equal(status.verdict, 'green');
     assert.equal(status.replacementSweepReady, true);
     assert.equal(status.dryRun, true);
@@ -93,10 +93,10 @@ try {
   {
     const out = path.join(tmp, 'missing-out');
     const res = run(['--dry-run'], {
-      STARNET_REPLACEMENT_SWEEP_INSTALLER_EXE: installer,
-      STARNET_REPLACEMENT_SWEEP_DOGFOOD_DIR: path.join(tmp, 'empty-dogfood'),
-      STARNET_REPLACEMENT_SWEEP_DIR: out,
-      STARNET_REPLACEMENT_SWEEP_LATEST_DIR: path.join(tmp, 'missing-latest')
+      EYEHOLD_REPLACEMENT_SWEEP_INSTALLER_EXE: installer,
+      EYEHOLD_REPLACEMENT_SWEEP_DOGFOOD_DIR: path.join(tmp, 'empty-dogfood'),
+      EYEHOLD_REPLACEMENT_SWEEP_DIR: out,
+      EYEHOLD_REPLACEMENT_SWEEP_LATEST_DIR: path.join(tmp, 'missing-latest')
     });
     assert.equal(res.status, 2, res.stderr || res.stdout);
     const status = JSON.parse(fs.readFileSync(path.join(out, 'replacement-sweep-status.json'), 'utf8'));
@@ -108,13 +108,13 @@ try {
   {
     const out = path.join(tmp, 'override-out');
     const bad = path.join(dogfood, 'bad-t3.json');
-    writeJson(bad, baseProof('starnet.t3-installed-workload-proof.v1', { sha256: '0'.repeat(64), bytes: installerInfo.bytes }));
+    writeJson(bad, baseProof('eyehold.t3-installed-workload-proof.v1', { sha256: '0'.repeat(64), bytes: installerInfo.bytes }));
     const res = run(['--dry-run'], {
-      STARNET_REPLACEMENT_SWEEP_INSTALLER_EXE: installer,
-      STARNET_REPLACEMENT_SWEEP_DOGFOOD_DIR: dogfood,
-      STARNET_REPLACEMENT_SWEEP_T3_EVIDENCE: bad,
-      STARNET_REPLACEMENT_SWEEP_DIR: out,
-      STARNET_REPLACEMENT_SWEEP_LATEST_DIR: path.join(tmp, 'override-latest')
+      EYEHOLD_REPLACEMENT_SWEEP_INSTALLER_EXE: installer,
+      EYEHOLD_REPLACEMENT_SWEEP_DOGFOOD_DIR: dogfood,
+      EYEHOLD_REPLACEMENT_SWEEP_T3_EVIDENCE: bad,
+      EYEHOLD_REPLACEMENT_SWEEP_DIR: out,
+      EYEHOLD_REPLACEMENT_SWEEP_LATEST_DIR: path.join(tmp, 'override-latest')
     });
     assert.equal(res.status, 2, res.stderr || res.stdout);
     const status = JSON.parse(fs.readFileSync(path.join(out, 'replacement-sweep-status.json'), 'utf8'));

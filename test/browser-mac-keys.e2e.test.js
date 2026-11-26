@@ -1,6 +1,6 @@
-/* node test/browser-mac-keys.e2e.test.js — Mac keyboard in the station browser, on REAL Chromium (2026-10-01).
+/* node test/browser-mac-keys.e2e.test.js — Mac keyboard in the keep browser, on REAL Chromium (2026-10-01).
    On macOS, Chrome runs Cmd+A/C/X/Z and Cmd/Option+arrows in the browser process, which CDP key events never reach;
-   the driver names the editing command (`commands`) instead when the station runs on a Mac (macEditingCommands).
+   the driver names the editing command (`commands`) instead when the keep runs on a Mac (macEditingCommands).
    CDP honours `commands` on every platform, so the exact events a Mac sends are proven here against a live page:
    typing, Cmd+A selects all, Cmd+X cuts, Cmd+Z undoes, Option+Left moves by word, and an Option-composed
    character (Option+L = @ on a German Mac) is typed as text. */
@@ -17,7 +17,7 @@ const { _internals: T } = require('../sidecar/tools/builtin/browser.js');
   const server = http.createServer((req, res) => { res.writeHead(200, { 'Content-Type': 'text/html' }); res.end('<!doctype html><body><input id="f" style="font-size:20px;width:600px"></body>'); });
   await new Promise(r => server.listen(0, '127.0.0.1', r));
   const base = 'http://127.0.0.1:' + server.address().port + '/';
-  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'starnet-mac-keys-'));
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'eyehold-mac-keys-'));
   const d = T.makeCdpDriver({ forceHeadless: true, syntheticInputOnly: true, cdpPort: 0, profileDir: dir, timeoutMs: 20000, platform: 'darwin' });
   d.allowLocal(base);
   const ALT = 1, META = 4, SHIFT = 8;

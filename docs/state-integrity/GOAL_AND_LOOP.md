@@ -8,9 +8,9 @@
 
 ## 1. Why this class exists
 
-StarNet is a long-lived single-page app. The page is loaded **once**; everything after —
+Eyehold is a long-lived single-page app. The page is loaded **once**; everything after —
 waking an agent, resuming a save, pausing to the title screen, creating a NEW AGENT,
-summoning crew, refitting the station, switching workstreams — happens by **re-driving
+summoning crew, refitting the keep, switching workstreams — happens by **re-driving
 module singletons that stay alive in memory**. Each transition is supposed to reset or
 restore the relevant state. Where a reset is missing or asymmetric, the previous
 context bleeds through. Because there is no page reload, the leak is invisible to any
@@ -25,9 +25,9 @@ All happen **without a page reload**:
 | WAKE | `app.js onWake → enterGame({awaitingPurpose:true, wake:true})` | brand-new agent — must be byte-indistinguishable from a fresh page load |
 | RESUME | `app.js resumeInto → enterGame({wake:false})` | restore the saved context **exactly**, nothing more, nothing less |
 | DISCONNECT | `app.js disconnect()` → title | release everything tied to the live agent (timers, streams, audio, panels) |
-| NEW AGENT | `Save.clear() → startCreation() → WAKE` | a full from-scratch restart of agent + station |
+| NEW AGENT | `Save.clear() → startCreation() → WAKE` | a full from-scratch restart of agent + keep |
 | SUMMON | `summonAgent()` | add ONE crew member; touch nothing else |
-| REFIT | Build edits → `World.loadStation` | re-derive the floor; drop anything bound to the old layout |
+| REFIT | Build edits → `World.loadKeep` | re-derive the floor; drop anything bound to the old layout |
 | WS-SWITCH | `switchWorkstream → Chat.load(ws)` | repoint COMMS/run identity; leak no other stream's state |
 
 ## 3. The invariant (the standard)
@@ -114,5 +114,5 @@ This repo is built by many agents in parallel. These are non-negotiable:
 
 - Not a general refactor. Only the reset-on-transition class.
 - Not a behavior change. A fix must not alter what a *correct* session already does.
-- Borderline "is this leak or intended product behavior?" rows (e.g. station-wide
+- Borderline "is this leak or intended product behavior?" rows (e.g. keep-wide
   once-ever tutorial flags) are flagged **NEEDS-PRODUCT-CALL**, not silently changed.

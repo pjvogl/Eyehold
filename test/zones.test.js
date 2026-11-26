@@ -5,7 +5,7 @@
      • an agent anchored inside a room -> a 'room' zone = the SMALLEST enclosing rect
      • an agent on open floor (no enclosing rect) -> a bounded 'leash' zone around the anchor
      • an unassigned / unplaced agent (no anchor) -> null (it does NOT roam)
-     • a SOLO agent whose room spans the station -> a LARGE room zone (no regression)
+     • a SOLO agent whose room spans the keep -> a LARGE room zone (no regression)
      • inZone(null,..) is false; clampPickable filters candidates to the zone, preserving order. */
 'use strict';
 const A = require('./_assert.js');
@@ -16,19 +16,19 @@ A.ok(typeof Z.computeZone === 'function', 'exports computeZone');
 A.ok(typeof Z.inZone === 'function', 'exports inZone');
 A.ok(typeof Z.clampPickable === 'function', 'exports clampPickable');
 
-// a tiny station: one big room (z0) and a small side room (z1), LOCAL inclusive rects
+// a tiny keep: one big room (z0) and a small side room (z1), LOCAL inclusive rects
 const RECTS = [
   { z: 0, x1: 0,  y1: 0,  x2: 20, y2: 12 },   // big main room, area 21*13 = 273
   { z: 1, x1: 22, y1: 0,  x2: 27, y2: 5  },   // small side room, area 6*6 = 36
 ];
-// props: agent 'a1' has a bay foot tile inside the side room; 'a2' has a workstation in the big room
+// props: agent 'a1' has a bay foot tile inside the side room; 'a2' has a workkeep in the big room
 const PROPS = [
   { id: 'p1', t: 'bay',         x: 24, y: 3, w: 1, h: 1, agentId: 'a1' },
-  { id: 'p2', t: 'workstation', x: 8,  y: 6, w: 2, h: 1, agentId: 'a2' },
+  { id: 'p2', t: 'workkeep', x: 8,  y: 6, w: 2, h: 1, agentId: 'a2' },
   { id: 'p3', t: 'couch',       x: 5,  y: 5, w: 1, h: 1, agentId: null },   // unbound
-  // 'a3' has TWO bound props: a non-bay (workstation) that comes BEFORE its bay. anchorFromProps
+  // 'a3' has TWO bound props: a non-bay (workkeep) that comes BEFORE its bay. anchorFromProps
   // must PREFER the bay, discriminating the `bay || any` selection (not just take the first bound).
-  { id: 'p4', t: 'workstation', x: 1,  y: 1, w: 1, h: 1, agentId: 'a3' },   // earlier, non-bay
+  { id: 'p4', t: 'workkeep', x: 1,  y: 1, w: 1, h: 1, agentId: 'a3' },   // earlier, non-bay
   { id: 'p5', t: 'bay',         x: 24, y: 4, w: 1, h: 1, agentId: 'a3' },   // later, the bay (preferred)
 ];
 
@@ -47,22 +47,22 @@ A.eq(zFromProp.kind, 'room', 'anchor resolved from the bay prop when no anchorTi
 A.eq(zFromProp.rect.x1, 22, 'prop-derived anchor lands in the side room');
 
 // ---- bay preference: an earlier non-bay bound prop must NOT win over a later bay ----
-// 'a3' is bound to a workstation at (1,1) in the BIG room AND a bay at (24,4) in the SIDE room,
-// workstation first. If anchorFromProps took the first bound prop it would resolve the big room;
+// 'a3' is bound to a workkeep at (1,1) in the BIG room AND a bay at (24,4) in the SIDE room,
+// workkeep first. If anchorFromProps took the first bound prop it would resolve the big room;
 // preferring the bay resolves the side room. This discriminates the `bay || any` branch.
 const zBayPref = Z.computeZone({ rects: RECTS, props: PROPS, agentId: 'a3' });
 A.eq(zBayPref.kind, 'room', 'a3 anchor resolves to a room via its bay');
-A.eq(zBayPref.rect, { x1: 22, y1: 0, x2: 27, y2: 5 }, 'anchor resolves from the BAY (side room), not the earlier workstation (big room)');
+A.eq(zBayPref.rect, { x1: 22, y1: 0, x2: 27, y2: 5 }, 'anchor resolves from the BAY (side room), not the earlier workkeep (big room)');
 
-// ---- workstation-ONLY agent resolved from a bound PROP (no bay, no anchorTile) ----
-// 'a2' is bound to a single NON-bay prop (a workstation at (8,6) in the big room). With no
+// ---- workkeep-ONLY agent resolved from a bound PROP (no bay, no anchorTile) ----
+// 'a2' is bound to a single NON-bay prop (a workkeep at (8,6) in the big room). With no
 // anchorTile, anchorFromProps has no bay to take, so it MUST fall through to the `any` bound
-// prop and resolve the workstation's room. This exercises the `bay || any` fallback through the
+// prop and resolve the workkeep's room. This exercises the `bay || any` fallback through the
 // public computeZone API: mutating `const p = bay || any` -> `const p = bay` makes a3-style
 // agents still pass but resolves a2 to null here (so this case kills that mutant).
 const zWorkOnly = Z.computeZone({ rects: RECTS, props: PROPS, agentId: 'a2' });
-A.eq(zWorkOnly.kind, 'room', 'workstation-only agent (no bay) resolves a room via the `any` bound-prop fallback');
-A.eq(zWorkOnly.rect, { x1: 0, y1: 0, x2: 20, y2: 12 }, 'a2 anchor resolves from its only prop (the big-room workstation), not null');
+A.eq(zWorkOnly.kind, 'room', 'workkeep-only agent (no bay) resolves a room via the `any` bound-prop fallback');
+A.eq(zWorkOnly.rect, { x1: 0, y1: 0, x2: 20, y2: 12 }, 'a2 anchor resolves from its only prop (the big-room workkeep), not null');
 
 // agent in the big room
 const zMain = Z.computeZone({ rects: RECTS, props: PROPS, agentId: 'a2', anchorTile: { x: 8, y: 6 } });
@@ -101,7 +101,7 @@ A.eq(zLeashDefault.kind, 'leash', 'empty rects -> leash');
 A.eq(zLeashDefault.r, Z.DEFAULT_LEASH, 'leash falls back to DEFAULT_LEASH when none supplied');
 
 // ---- leash-from-current-tile: the deskless placed crew body (world.js anchorFor fallback) ----
-// A freshly-summoned worker is PLACED (unplaced:false) but has no workstation/bay yet, so world.js
+// A freshly-summoned worker is PLACED (unplaced:false) but has no workkeep/bay yet, so world.js
 // anchorFor() falls back to the body's OWN foot tile (tileOf(px,py)) as the anchor. If that tile sits
 // on open floor outside every room rect, computeZone must yield a BOUNDED leash centered there — NOT
 // null. This is what restores BR-4 'summoned agents move' (a null zone froze the body permanently in
@@ -164,23 +164,23 @@ A.eq(Z.computeZone({ rects: RECTS }), null, 'no agentId, no anchorTile, no props
 A.eq(Z.computeZone({}), null, 'empty opts -> null');
 A.eq(Z.computeZone(), null, 'no opts -> null');
 
-// ---- SOLO agent whose room spans the station -> a LARGE room zone (no regression / A3,I2) ----
+// ---- SOLO agent whose room spans the keep -> a LARGE room zone (no regression / A3,I2) ----
 const SOLO_RECTS = [{ z: 0, x1: 0, y1: 0, x2: 63, y2: 47 }];   // whole-floor single room
 const zSolo = Z.computeZone({ rects: SOLO_RECTS, anchorTile: { x: 30, y: 24 } });
 A.eq(zSolo.kind, 'room', 'solo agent gets a room zone, not a leash');
-A.eq(zSolo.rect, { x1: 0, y1: 0, x2: 63, y2: 47 }, 'solo zone spans the whole station rect');
+A.eq(zSolo.rect, { x1: 0, y1: 0, x2: 63, y2: 47 }, 'solo zone spans the whole keep rect');
 A.ok(Z.rectArea(zSolo.rect) === 64 * 48, 'solo zone is large (whole floor) — rich behavior preserved');
 // every corner of the floor is in-zone for the solo agent (no idle beat stripped)
 A.ok(Z.inZone(zSolo, 0, 0) && Z.inZone(zSolo, 63, 47) && Z.inZone(zSolo, 63, 0) && Z.inZone(zSolo, 0, 47),
-  'solo zone admits all four station corners (gaze-out / vigil unaffected)');
+  'solo zone admits all four keep corners (gaze-out / vigil unaffected)');
 
-// ---- SOLE OWNERSHIP (solo) in a MULTI-ROOM station -> a 'multi' zone spanning every room (A3/I2) ----
-// The realistic solo case the I2-regression fix targets: a lone hero in a BUILT-OUT station whose
+// ---- SOLE OWNERSHIP (solo) in a MULTI-ROOM keep -> a 'multi' zone spanning every room (A3/I2) ----
+// The realistic solo case the I2-regression fix targets: a lone hero in a BUILT-OUT keep whose
 // desk room is only ONE of several rooms. Without solo widening, computeZone would resolve the
 // SMALLEST enclosing room (the side room here) and cage the hero out of the big room — stripping
 // previously-valid cross-room idle targets. With solo:true the zone is the UNION of all rects.
 const zSoloMulti = Z.computeZone({ rects: RECTS, props: PROPS, agentId: 'a1', anchorTile: { x: 24, y: 3 }, solo: true });
-A.eq(zSoloMulti.kind, 'multi', 'sole owner in a multi-room station gets a multi zone (whole floor), not its desk room');
+A.eq(zSoloMulti.kind, 'multi', 'sole owner in a multi-room keep gets a multi zone (whole floor), not its desk room');
 A.eq(zSoloMulti.rects.length, 2, 'multi zone unions EVERY room rect');
 // every rect is a normalized COPY — mutating the result must not touch geo's source array
 zSoloMulti.rects[0].x1 = 999;
@@ -228,10 +228,10 @@ A.eq(Z.inZone(COUCH_ZONE, 27, 3), true, 'rightmost in-wall cushion (col 27) is i
 A.eq(Z.inZone(COUCH_ZONE, 28, 3), false, 'a cushion column past the east wall is OUT-of-zone (cushion sx,sy must be gated, not the corner)');
 A.eq(Z.inZone(COUCH_ZONE, 28, 3), false, 'the EAST approach (sx+1) of the rightmost cushion is OUT-of-zone (approach ax,ay must be gated too)');
 
-// ---- TRUE ROAM RADIUS (2026-08-08): station floor ∩ Chebyshev radius around the DESK ----
+// ---- TRUE ROAM RADIUS (2026-08-08): keep floor ∩ Chebyshev radius around the DESK ----
 // Room identity is irrelevant once roamR is present. Walkability/pathfinding remains the caller's
 // reachability gate; this primitive owns only the stable distance boundary and floor membership.
-A.eq(Z.ROAM_RADIUS, 14, 'exports the bounded 14-tile station roam radius');
+A.eq(Z.ROAM_RADIUS, 14, 'exports the bounded 14-tile keep roam radius');
 A.eq(zMain.roam, undefined, 'a zone computed WITHOUT roamR carries no roam field (original caging preserved)');
 A.eq(Z.inZone(zMain, 25, 2), false, 'and without roamR a tile in the NEXT room stays out-of-zone');
 
@@ -239,7 +239,7 @@ const zRoamFar = Z.computeZone({ rects: RECTS, props: PROPS, agentId: 'a2', anch
 A.eq(zRoamFar.kind, 'room', 'a roam zone is still kind:room — zoneRect()/border-meeting consumers keep working');
 A.eq(zRoamFar.rect, { x1: 0, y1: 0, x2: 20, y2: 12 }, 'the home room rect is unchanged by roamR');
 A.eq(zRoamFar.roam, { cx: 8, cy: 6, r: 14, rects: [{ x1: 0, y1: 0, x2: 20, y2: 12 }, { x1: 22, y1: 0, x2: 27, y2: 5 }] },
-  'roam is centered on the desk and considers every station floor plate');
+  'roam is centered on the desk and considers every keep floor plate');
 A.eq(Z.inZone(zRoamFar, 20, 12), true, 'a home-room tile inside the radius is in-zone');
 A.eq(Z.inZone(zRoamFar, 22, 2), true, 'another room is admitted exactly by distance, without a room-identity clip');
 A.eq(Z.inZone(zRoamFar, 23, 2), false, 'one tile past the desk radius is out even when it belongs to a room plate');
@@ -286,7 +286,7 @@ A.eq(Z.computeZone({ rects: RECTS, props: PROPS, agentId: 'ghost', roamR: 9 }), 
 const zSoloRoam = Z.computeZone({ rects: RECTS, props: PROPS, agentId: 'a1', anchorTile: { x: 24, y: 3 }, solo: true, roamR: 9 });
 A.eq(zSoloRoam.kind, 'room', 'an explicit roam radius replaces the solo whole-floor widening');
 A.eq(zSoloRoam.roam.r, 9, 'the sole owner receives the same configured radius as every crew body');
-A.eq(Z.inZone(zSoloRoam, 8, 3), false, 'a far station tile outside that radius remains out for the sole owner');
+A.eq(Z.inZone(zSoloRoam, 8, 3), false, 'a far keep tile outside that radius remains out for the sole owner');
 
 // ---- inZone: leash membership (Chebyshev square) ----
 const lz = { kind: 'leash', cx: 10, cy: 10, r: 3 };

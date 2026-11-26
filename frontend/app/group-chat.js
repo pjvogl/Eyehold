@@ -24,12 +24,12 @@ const GroupChat = (() => {
   function showError(e) {
     notice = e.message || String(e); if ($('gc-notice')) $('gc-notice').textContent = notice;
     // a direct chat has no group notice line on screen: say it where the Commander is looking
-    if (active?.conversationMode !== 'group' && typeof StationUI !== 'undefined' && StationUI.notify) StationUI.notify(notice, 'bad');
+    if (active?.conversationMode !== 'group' && typeof KeepUI !== 'undefined' && KeepUI.notify) KeepUI.notify(notice, 'bad');
   }
   async function api(body, query = '') {
     const r = await fetch('/api/groups' + query, body ? { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) } : { cache: 'no-store' });
-    if (r.status === 401 || r.status === 403) throw new Error('Reconnect to this station by refreshing the page. Your conversation is saved.');
-    if (r.status === 404 && !body && !query) throw new Error('Group chat is unavailable on this server. Run the current StarNet backend, then try again.');
+    if (r.status === 401 || r.status === 403) throw new Error('Reconnect to this keep by refreshing the page. Your conversation is saved.');
+    if (r.status === 404 && !body && !query) throw new Error('Group chat is unavailable on this server. Run the current Eyehold backend, then try again.');
     let out;
     try { out = await r.json(); } catch (_) { throw new Error('The server could not load group chat. Try again.'); }
     if (!r.ok || !out?.ok) throw new Error(out?.error || 'Group request failed'); return out.result;
@@ -57,7 +57,7 @@ const GroupChat = (() => {
     }
     return ws;
   }
-  // the live crew: the station registry first (it is what CREW shows), the backend's roster as the fallback
+  // the live crew: the keep registry first (it is what CREW shows), the backend's roster as the fallback
   function crew() {
     const live = typeof App !== 'undefined' && App.agents ? (App.agents() || []) : [];
     const list = live.length ? live : roster;
@@ -198,7 +198,7 @@ const GroupChat = (() => {
     watch();
   }
   /* A group you are not looking at still owes you its news: replies land, questions wait, approvals expire in 5 minutes.
-     Every few seconds (never while the window is hidden) the station-wide list says what each group is doing, and the
+     Every few seconds (never while the window is hidden) the keep-wide list says what each group is doing, and the
      rail reads it: unread activity, "Reply needed", "Approval needed", working. All of it is backend state. */
   const states = new Map();
   let watching = false, watchTimer = 0;
@@ -258,7 +258,7 @@ const GroupChat = (() => {
     }
     if (active?.id === ws?.id) return;
     // the ADD AGENTS window edits ONE session: leaving it for another closes the window (it would edit the wrong chat)
-    if (pickerFor && pickerFor !== ws?.id && $('gc-picker') && typeof StationUI !== 'undefined') StationUI.closeTerm('group-agents');
+    if (pickerFor && pickerFor !== ws?.id && $('gc-picker') && typeof KeepUI !== 'undefined') KeepUI.closeTerm('group-agents');
     if (openedFileUrl) { URL.revokeObjectURL(openedFileUrl); openedFileUrl = null; openedFile = null; $('gc-preview').replaceChildren(); }
     if (active) composerDrafts.set(active.id, input.value);
     active = ws; group = null; replyTo = null; selected = []; lastPaint = ''; generation++;
@@ -271,7 +271,7 @@ const GroupChat = (() => {
       if (gen !== generation) return;
       group = result; paint();
     } catch (e) {
-      if (gen === generation) showError(/not found/i.test(e.message || '') ? new Error('This group no longer exists on this station. Delete it from the session list.') : e);
+      if (gen === generation) showError(/not found/i.test(e.message || '') ? new Error('This group no longer exists on this keep. Delete it from the session list.') : e);
       if (/not found/i.test(e.message || '')) return;   // never poll a gone group every 900 ms forever
     }
     if (gen === generation && active?.conversationMode === 'group') timer = setTimeout(() => poll(gen), 900);
@@ -280,7 +280,7 @@ const GroupChat = (() => {
   function stampOf(at) { const d = new Date(at); return at && !isNaN(d.getTime()) ? d : null; }
   const clockLabel = d => typeof Chat !== 'undefined' && Chat.clockLabel ? Chat.clockLabel(d) : d.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
   const breakLabel = d => typeof Chat !== 'undefined' && Chat.breakLabel ? Chat.breakLabel(d) : d.toDateString();
-  /* The first line of every group transcript says what this is and who is in it — a station line in the COMMS
+  /* The first line of every group transcript says what this is and who is in it — a keep line in the COMMS
      vocabulary (a ruled line, [ tags ]), rebuilt from backend membership on every paint, so it can't go stale. */
   function masthead(g) {
     const d = h('div', { class: 'cmsg broadcast gc-masthead', role: 'note' }), stack = h('span', { class: 'bc-stack' });
@@ -523,7 +523,7 @@ const GroupChat = (() => {
      backend records the membership FIRST; nothing on screen says "in this chat" until /api/groups answered (the old
      picker showed staged rows as IN THIS CHAT and saved nothing until a SAVE that sat below the window's edge with a
      real-size crew — so "add one and minimize" lost it every time; truthful telemetry).
-     The General home stream is never converted: it stays the station's casual line, and a fresh group starts beside it
+     The General home stream is never converted: it stays the keep's casual line, and a fresh group starts beside it
      (the same rule the rail's + NEW keeps — General is never rebound). */
   function isGeneral(ws) { return !!ws && typeof Workstreams !== 'undefined' && typeof Workstreams.generalId === 'function' && Workstreams.generalId() === ws.id; }
   async function startGroup(origin, ids) {
@@ -742,15 +742,15 @@ const GroupChat = (() => {
     const open = $('gc-picker');
     if (open) {   // already open: a minimized window comes back up; otherwise one is enough
       const w = open.closest ? open.closest('.term') : null;
-      if (w && w.classList.contains('term-min-hidden')) StationUI.toggleTerm('group-agents');
+      if (w && w.classList.contains('term-min-hidden')) KeepUI.toggleTerm('group-agents');
       return;
     }
     const origin = active;
     pickerFor = origin?.id || null;
     const dialog = h('div', { id: 'gc-picker', class: 'gc-picker' });
-    const close = () => StationUI.closeTerm('group-agents');
+    const close = () => KeepUI.closeTerm('group-agents');
     dialog.append(h('p', { role: 'status' }, 'Loading agents…'), button('CANCEL', close));
-    StationUI.toggleTerm('group-agents', origin?.conversationMode === 'group' ? 'AGENTS IN THIS CHAT' : 'ADD AGENTS', body => body.replaceChildren(dialog), { onClose: () => { dialog.remove(); pickerFor = null; pickerRepaint = null; } });
+    KeepUI.toggleTerm('group-agents', origin?.conversationMode === 'group' ? 'AGENTS IN THIS CHAT' : 'ADD AGENTS', body => body.replaceChildren(dialog), { onClose: () => { dialog.remove(); pickerFor = null; pickerRepaint = null; } });
     try {
       if (App.pushRoster) await App.pushRoster();
       const info = await api(); roster = info.roster;

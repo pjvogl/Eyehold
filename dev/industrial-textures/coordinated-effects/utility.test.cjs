@@ -5,7 +5,7 @@ const path = require('node:path');
 const vm = require('node:vm');
 const factory = vm.runInNewContext(fs.readFileSync(path.join(__dirname, 'utility.js.inc'), 'utf8'));
 const fx = factory({});
-const recipes = JSON.parse(fs.readFileSync(path.join(__dirname, '../../../docs/station-remaster/batch03/utility/coordinated-recipes.json'), 'utf8'));
+const recipes = JSON.parse(fs.readFileSync(path.join(__dirname, '../../../docs/keep-remaster/batch03/utility/coordinated-recipes.json'), 'utf8'));
 function record(id, state) {
   const calls = []; let depth = 0;
   const ctx = new Proxy({}, {

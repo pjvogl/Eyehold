@@ -43,7 +43,7 @@ All retained logs below are under `.dogfood/system-polish/` in the owned worktre
 | Session tools | Search across 50 sessions, exact hit navigation, Projects/Session switching and row-specific Markdown/JSON export PASS; `session-tools.log` |
 | Storage/performance | 3,000 conversations, all established budgets PASS; `longhaul.log`. Startup 821ms, RSS 110MiB, UI search 1.65ms, serialization 14.62ms, deliverables query 22.36ms, corruption recovery 60.67ms. Disposable synthetic data; not a production hardware benchmark. |
 
-Panel sweep: station, agents, recruitment, Commander, tasks, deliverables, recipes, automation, quests, refit, connectors, messaging, manual, settings, updates and notifications. Settings sweep: providers, autonomy, night shift, permissions, budget, models, live voice, appearance, notifications and system. These are panel reachability/style/overflow checks, not full functional acceptance of every control or external integration.
+Panel sweep: keep, agents, recruitment, Commander, tasks, deliverables, recipes, automation, quests, refit, connectors, messaging, manual, settings, updates and notifications. Settings sweep: providers, autonomy, night shift, permissions, budget, models, live voice, appearance, notifications and system. These are panel reachability/style/overflow checks, not full functional acceptance of every control or external integration.
 
 Before-fix receipts: `autonomy-before.json`, `preview-before.json`,
 `workshop-before.json`, `routine-before.json`. The new live proof waits for a

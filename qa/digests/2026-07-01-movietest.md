@@ -229,56 +229,56 @@
   - Branch agent/skynet-truth-auditor is fully merged into feat/harness-backend and its working tree is clean. Propose-only removal command: gen-trees\remove-agent-tree.ps1 skynet-truth-auditor -DeleteBranch
   - evidence: `qa/digests/janitor-2026-07-01.md`
   - id: `81bead5e-1782948400620` · fingerprint: `81bead5e`
-- **Removable worktree: starnet-backend-audit (branch merged + clean)**
-  - Branch agent/starnet-backend-audit is fully merged into feat/harness-backend and its working tree is clean. Propose-only removal command: gen-trees\remove-agent-tree.ps1 starnet-backend-audit -DeleteBranch
+- **Removable worktree: eyehold-backend-audit (branch merged + clean)**
+  - Branch agent/eyehold-backend-audit is fully merged into feat/harness-backend and its working tree is clean. Propose-only removal command: gen-trees\remove-agent-tree.ps1 eyehold-backend-audit -DeleteBranch
   - evidence: `qa/digests/janitor-2026-07-01.md`
   - id: `3def80bb-1782948400621` · fingerprint: `3def80bb`
-- **Removable worktree: starnet-gap-analysis (branch merged + clean)**
-  - Branch agent/starnet-gap-analysis is fully merged into feat/harness-backend and its working tree is clean. Propose-only removal command: gen-trees\remove-agent-tree.ps1 starnet-gap-analysis -DeleteBranch
+- **Removable worktree: eyehold-gap-analysis (branch merged + clean)**
+  - Branch agent/eyehold-gap-analysis is fully merged into feat/harness-backend and its working tree is clean. Propose-only removal command: gen-trees\remove-agent-tree.ps1 eyehold-gap-analysis -DeleteBranch
   - evidence: `qa/digests/janitor-2026-07-01.md`
   - id: `5721fc62-1782948400621` · fingerprint: `5721fc62`
-- **Removable worktree: starnet-fullscreen (branch merged + clean)**
-  - Branch agent/starnet-fullscreen is fully merged into feat/harness-backend and its working tree is clean. Propose-only removal command: gen-trees\remove-agent-tree.ps1 starnet-fullscreen -DeleteBranch
+- **Removable worktree: eyehold-fullscreen (branch merged + clean)**
+  - Branch agent/eyehold-fullscreen is fully merged into feat/harness-backend and its working tree is clean. Propose-only removal command: gen-trees\remove-agent-tree.ps1 eyehold-fullscreen -DeleteBranch
   - evidence: `qa/digests/janitor-2026-07-01.md`
   - id: `a87610fa-1782948400621` · fingerprint: `a87610fa`
-- **Removable worktree: starnet-hardening-3-4 (branch merged + clean)**
-  - Branch agent/starnet-hardening-3-4 is fully merged into feat/harness-backend and its working tree is clean. Propose-only removal command: gen-trees\remove-agent-tree.ps1 starnet-hardening-3-4 -DeleteBranch
+- **Removable worktree: eyehold-hardening-3-4 (branch merged + clean)**
+  - Branch agent/eyehold-hardening-3-4 is fully merged into feat/harness-backend and its working tree is clean. Propose-only removal command: gen-trees\remove-agent-tree.ps1 eyehold-hardening-3-4 -DeleteBranch
   - evidence: `qa/digests/janitor-2026-07-01.md`
   - id: `02b07ca2-1782948400622` · fingerprint: `02b07ca2`
-- **Removable worktree: starnet-hermes-audit (branch merged + clean)**
-  - Branch agent/starnet-hermes-audit is fully merged into feat/harness-backend and its working tree is clean. Propose-only removal command: gen-trees\remove-agent-tree.ps1 starnet-hermes-audit -DeleteBranch
+- **Removable worktree: eyehold-hermes-audit (branch merged + clean)**
+  - Branch agent/eyehold-hermes-audit is fully merged into feat/harness-backend and its working tree is clean. Propose-only removal command: gen-trees\remove-agent-tree.ps1 eyehold-hermes-audit -DeleteBranch
   - evidence: `qa/digests/janitor-2026-07-01.md`
   - id: `48421db3-1782948400622` · fingerprint: `48421db3`
-- **Removable worktree: starnet-hardening-integration (branch merged + clean)**
-  - Branch agent/starnet-hardening-integration is fully merged into feat/harness-backend and its working tree is clean. Propose-only removal command: gen-trees\remove-agent-tree.ps1 starnet-hardening-integration -DeleteBranch
+- **Removable worktree: eyehold-hardening-integration (branch merged + clean)**
+  - Branch agent/eyehold-hardening-integration is fully merged into feat/harness-backend and its working tree is clean. Propose-only removal command: gen-trees\remove-agent-tree.ps1 eyehold-hardening-integration -DeleteBranch
   - evidence: `qa/digests/janitor-2026-07-01.md`
   - id: `90b74b7c-1782948400622` · fingerprint: `90b74b7c`
-- **Removable worktree: starnet-keep-awake (branch merged + clean)**
-  - Branch agent/starnet-keep-awake is fully merged into feat/harness-backend and its working tree is clean. Propose-only removal command: gen-trees\remove-agent-tree.ps1 starnet-keep-awake -DeleteBranch
+- **Removable worktree: eyehold-keep-awake (branch merged + clean)**
+  - Branch agent/eyehold-keep-awake is fully merged into feat/harness-backend and its working tree is clean. Propose-only removal command: gen-trees\remove-agent-tree.ps1 eyehold-keep-awake -DeleteBranch
   - evidence: `qa/digests/janitor-2026-07-01.md`
   - id: `972eb4ac-1782948400623` · fingerprint: `972eb4ac`
-- **Removable worktree: starnet-latency-audit (branch merged + clean)**
-  - Branch agent/starnet-latency-audit is fully merged into feat/harness-backend and its working tree is clean. Propose-only removal command: gen-trees\remove-agent-tree.ps1 starnet-latency-audit -DeleteBranch
+- **Removable worktree: eyehold-latency-audit (branch merged + clean)**
+  - Branch agent/eyehold-latency-audit is fully merged into feat/harness-backend and its working tree is clean. Propose-only removal command: gen-trees\remove-agent-tree.ps1 eyehold-latency-audit -DeleteBranch
   - evidence: `qa/digests/janitor-2026-07-01.md`
   - id: `c48e8b35-1782948400623` · fingerprint: `c48e8b35`
-- **Removable worktree: starnet-loop-control (branch merged + clean)**
-  - Branch agent/starnet-loop-control is fully merged into feat/harness-backend and its working tree is clean. Propose-only removal command: gen-trees\remove-agent-tree.ps1 starnet-loop-control -DeleteBranch
+- **Removable worktree: eyehold-loop-control (branch merged + clean)**
+  - Branch agent/eyehold-loop-control is fully merged into feat/harness-backend and its working tree is clean. Propose-only removal command: gen-trees\remove-agent-tree.ps1 eyehold-loop-control -DeleteBranch
   - evidence: `qa/digests/janitor-2026-07-01.md`
   - id: `57c333d1-1782948400624` · fingerprint: `57c333d1`
-- **Removable worktree: starnet-path-intake (branch merged + clean)**
-  - Branch agent/starnet-path-intake is fully merged into feat/harness-backend and its working tree is clean. Propose-only removal command: gen-trees\remove-agent-tree.ps1 starnet-path-intake -DeleteBranch
+- **Removable worktree: eyehold-path-intake (branch merged + clean)**
+  - Branch agent/eyehold-path-intake is fully merged into feat/harness-backend and its working tree is clean. Propose-only removal command: gen-trees\remove-agent-tree.ps1 eyehold-path-intake -DeleteBranch
   - evidence: `qa/digests/janitor-2026-07-01.md`
   - id: `14374183-1782948400625` · fingerprint: `14374183`
-- **Removable worktree: starnet-rebrand (branch merged + clean)**
-  - Branch agent/starnet-rebrand is fully merged into feat/harness-backend and its working tree is clean. Propose-only removal command: gen-trees\remove-agent-tree.ps1 starnet-rebrand -DeleteBranch
+- **Removable worktree: eyehold-rebrand (branch merged + clean)**
+  - Branch agent/eyehold-rebrand is fully merged into feat/harness-backend and its working tree is clean. Propose-only removal command: gen-trees\remove-agent-tree.ps1 eyehold-rebrand -DeleteBranch
   - evidence: `qa/digests/janitor-2026-07-01.md`
   - id: `7dd7f0f7-1782948400625` · fingerprint: `7dd7f0f7`
-- **Removable worktree: starnet-oauth-persist (branch merged + clean)**
-  - Branch agent/starnet-oauth-persist is fully merged into feat/harness-backend and its working tree is clean. Propose-only removal command: gen-trees\remove-agent-tree.ps1 starnet-oauth-persist -DeleteBranch
+- **Removable worktree: eyehold-oauth-persist (branch merged + clean)**
+  - Branch agent/eyehold-oauth-persist is fully merged into feat/harness-backend and its working tree is clean. Propose-only removal command: gen-trees\remove-agent-tree.ps1 eyehold-oauth-persist -DeleteBranch
   - evidence: `qa/digests/janitor-2026-07-01.md`
   - id: `92264093-1782948400625` · fingerprint: `92264093`
-- **Removable worktree: starnet-weakness-scan (branch merged + clean)**
-  - Branch agent/starnet-weakness-scan is fully merged into feat/harness-backend and its working tree is clean. Propose-only removal command: gen-trees\remove-agent-tree.ps1 starnet-weakness-scan -DeleteBranch
+- **Removable worktree: eyehold-weakness-scan (branch merged + clean)**
+  - Branch agent/eyehold-weakness-scan is fully merged into feat/harness-backend and its working tree is clean. Propose-only removal command: gen-trees\remove-agent-tree.ps1 eyehold-weakness-scan -DeleteBranch
   - evidence: `qa/digests/janitor-2026-07-01.md`
   - id: `40d536a6-1782948400626` · fingerprint: `40d536a6`
 - **Removable worktree: summon-fixes (branch merged + clean)**
@@ -325,8 +325,8 @@
   - Branch agent/workforce-zones is fully merged into feat/harness-backend and its working tree is clean. Propose-only removal command: gen-trees\remove-agent-tree.ps1 workforce-zones -DeleteBranch
   - evidence: `qa/digests/janitor-2026-07-01.md`
   - id: `915d82d5-1782948400632` · fingerprint: `915d82d5`
-- **Removable worktree: workstation-ui (branch merged + clean)**
-  - Branch agent/workstation-ui is fully merged into feat/harness-backend and its working tree is clean. Propose-only removal command: gen-trees\remove-agent-tree.ps1 workstation-ui -DeleteBranch
+- **Removable worktree: workkeep-ui (branch merged + clean)**
+  - Branch agent/workkeep-ui is fully merged into feat/harness-backend and its working tree is clean. Propose-only removal command: gen-trees\remove-agent-tree.ps1 workkeep-ui -DeleteBranch
   - evidence: `qa/digests/janitor-2026-07-01.md`
   - id: `c1c0f921-1782948400632` · fingerprint: `c1c0f921`
 - **Root litter: 22 loose artifact(s) at repo root**
@@ -357,8 +357,8 @@
   - A non-plan doc references a path that does not exist. qa/digests/janitor-2026-07-01.md cites `frontend/app/queue.js`, which is absent from the working tree.
   - evidence: `qa/digests/janitor-2026-07-01.md`
   - id: `7a4f3c01-1782948400635` · fingerprint: `7a4f3c01`
-- **Dead doc reference: qa/digests/janitor-2026-07-01.md cites missing qa/QA_STATION.md**
-  - A non-plan doc references a path that does not exist. qa/digests/janitor-2026-07-01.md cites `qa/QA_STATION.md`, which is absent from the working tree.
+- **Dead doc reference: qa/digests/janitor-2026-07-01.md cites missing qa/QA_KEEP.md**
+  - A non-plan doc references a path that does not exist. qa/digests/janitor-2026-07-01.md cites `qa/QA_KEEP.md`, which is absent from the working tree.
   - evidence: `qa/digests/janitor-2026-07-01.md`
   - id: `367cb27d-1782948400636` · fingerprint: `367cb27d`
 - **Dead doc reference: qa/digests/janitor-2026-07-01.md cites missing frontend/data.js**
@@ -421,8 +421,8 @@
   - A non-plan doc references a path that does not exist. qa/digests/janitor-2026-07-01.md cites `test/iteration-budget.test.js`, which is absent from the working tree.
   - evidence: `qa/digests/janitor-2026-07-01.md`
   - id: `8da0c041-1782948400642` · fingerprint: `8da0c041`
-- **Dead doc reference: qa/digests/janitor-2026-07-01.md cites missing test/starnet-release-manifest.test.js**
-  - A non-plan doc references a path that does not exist. qa/digests/janitor-2026-07-01.md cites `test/starnet-release-manifest.test.js`, which is absent from the working tree.
+- **Dead doc reference: qa/digests/janitor-2026-07-01.md cites missing test/eyehold-release-manifest.test.js**
+  - A non-plan doc references a path that does not exist. qa/digests/janitor-2026-07-01.md cites `test/eyehold-release-manifest.test.js`, which is absent from the working tree.
   - evidence: `qa/digests/janitor-2026-07-01.md`
   - id: `aa9de2e5-1782948400642` · fingerprint: `aa9de2e5`
 - **Dead doc reference: qa/digests/janitor-2026-07-01.md cites missing test/world.headless.ts**

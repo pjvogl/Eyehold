@@ -51,7 +51,7 @@ async function main() {
   materializeSeedWorkspace(join(scratch, 'ws'), MODEL);
   const side = bootSeededSidecar({
     port: PORT, model: MODEL, key: 'sk-or-v1-inbox-when-mock', scratchDir: join(scratch, 'ws'),
-    env: { SKYNET_OPENROUTER_BASE: mock.base, STARNET_OPENROUTER_BASE: mock.base }
+    env: { SKYNET_OPENROUTER_BASE: mock.base, EYEHOLD_OPENROUTER_BASE: mock.base }
   });
   let chrome = null, cdp = null;
   const report = {};
@@ -74,7 +74,7 @@ async function main() {
       const st = WorldModel.create();
       const room = st.addRoom({ kind: 'hab', rect: { x1: 30, y1: 0, x2: 82, y2: 27 } });
       if (!room.ok) return { err: 'fixture-room', result: room };
-      Build.init({ getStation: () => st, persist: () => {}, world: World, agents: () => App.agents() });
+      Build.init({ getKeep: () => st, persist: () => {}, world: World, agents: () => App.agents() });
       if (!Build.isOpen()) Build.open();
       const card = document.querySelector('.refit-firstrun');
       if (card) { const go = card.querySelector('#refit-guide-go'); if (go) go.click(); }

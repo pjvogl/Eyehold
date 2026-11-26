@@ -1,6 +1,6 @@
 'use strict';
 const fs=require('node:fs'),crypto=require('node:crypto'),sharp=require('sharp');
-const docs='docs/station-remaster/catalog-crew-facings',out='frontend/assets/industrial/catalog-crew-facings';
+const docs='docs/keep-remaster/catalog-crew-facings',out='frontend/assets/industrial/catalog-crew-facings';
 const hash=b=>crypto.createHash('sha256').update(b).digest('hex');
 (async()=>{
  const layout=JSON.parse(fs.readFileSync(docs+'/layout.json','utf8')),bytes=fs.readFileSync(layout.source);

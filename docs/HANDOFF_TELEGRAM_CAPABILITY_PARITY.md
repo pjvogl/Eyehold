@@ -1,4 +1,4 @@
-# HANDOFF — Telegram must have FULL capability parity with the StarNet desktop app
+# HANDOFF — Telegram must have FULL capability parity with the Eyehold desktop app
 
 **Status: NOTHING BUILT. No files were modified.** This session was read-only (Read/Grep only).
 Everything below is code-grounded investigation + a proposed design. The design is **unverified** —
@@ -12,7 +12,7 @@ Date of investigation: 2026-07-31. Trunk moves hourly — **re-verify every refe
 ## 1. The order
 
 Andrew's requirement, verbatim in intent: **a user must be able to do ANYTHING from Telegram that
-they can do inside StarNet.** Equal capability. The reference product is Hermes, whose Telegram
+they can do inside Eyehold.** Equal capability. The reference product is Hermes, whose Telegram
 adapter gives the agent full access (shell included) because an owner DM *is* the owner.
 
 This is a **product decision already made by Andrew.** It is not open for re-litigation by the
@@ -40,7 +40,7 @@ A Telegram-triggered run is classified `surface: 'autonomous'` and is therefore 
 `unattendedGrants: ['workbench','connectors']` already exists (built 2026-07-25) and wires all three
 halves correctly:
 - normalized/allowlisted: `sidecar/inputpolicy.js:67` (`GRANTABLE_UNATTENDED`), `:75` (`normalizeUnattendedGrants`)
-- object half: `sidecar/index.js:10894` (`stationWithObject(station, agentId, 'workbench')`) and `:10899` (`stationWithConnectors`)
+- object half: `sidecar/index.js:10894` (`keepWithObject(keep, agentId, 'workbench')`) and `:10899` (`keepWithConnectors`)
 - authority half: `sidecar/inputpolicy.js:100-102, 120, 167`
 - consent half: `sidecar/index.js:10979, 10982`
 - durable source: cron job records — `sidecar/cron-store.js:60,169,209`, driver `sidecar/cron-driver.js:293`
@@ -79,7 +79,7 @@ shift / delegated workers are byte-identical.
    EXTERNAL_UNKNOWN. Keep PHYSICAL_INPUT / VISIBLE_DESKTOP denied — `computer.use` / `desktop.open`
    are stripped unconditionally on every surface (`enforceSyntheticOnly`) and that is a separate lane.
 3. **`sidecar/index.js` runOnce** — read `o.ownerTrusted`; add the WORKBENCH object via the existing
-   `stationWithObject` (needed for the bay-docked case too, where an explicit `station` bypasses
+   `keepWithObject` (needed for the bay-docked case too, where an explicit `keep` bypasses
    `composeOffice`); make `terminalGrant`/`connectorGrant` true for it.
 4. **Consent broker** (`index.js:~10947`) — with approvals OFF there is no one to click, so an
    owner-trusted run must not default-deny; with approvals ON, keep asking in-chat. Roughly
@@ -104,8 +104,8 @@ shift / delegated workers are byte-identical.
 - `npm run test:fast` AND `npm run test:http`. **Read the LOG, not the exit code** (`npm test > log; echo $?` reports the ECHO's status).
 - Existing suites that lock this behavior and WILL need updating deliberately (not silently):
   `test/inputpolicy.test.js`, `test/capsummary.test.js`, `test/tool-withheld-message.test.js`,
-  `test/class-loadouts.test.js`, `test/station-tools.test.js`.
-- **Live proof is required, not optional** (`starnet-verify`): message a real bot, run a real command
+  `test/class-loadouts.test.js`, `test/keep-tools.test.js`.
+- **Live proof is required, not optional** (`eyehold-verify`): message a real bot, run a real command
   from Telegram, see real output. The inbound half of Telegram has historically only ever been
   fake-proven — see the memory lane `telegram-hermes-parity-lane`, law: *"a fixture you wrote yourself
   only proves the code matches itself."*
@@ -117,7 +117,7 @@ shift / delegated workers are byte-identical.
 
 ## 5. Context the next agent should read first
 
-- `docs/BRAIN.md`, then the mandatory skills in `.claude/skills/` (`starnet-task-doctrine`,
-  `starnet-backend-law`, `starnet-verify`).
+- `docs/BRAIN.md`, then the mandatory skills in `.claude/skills/` (`eyehold-task-doctrine`,
+  `eyehold-backend-law`, `eyehold-verify`).
 - `docs/TELEGRAM_PARITY_PLAN.md` — the existing Hermes-parity program (§4.5 state of play).
 - Memory lane `telegram-hermes-parity-lane` — 30+ hard-won laws about this exact surface.

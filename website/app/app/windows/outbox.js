@@ -1,11 +1,11 @@
-/* STARNET — windows/outbox.js : the OUTBOX — FINISHED WORK window (extracted verbatim from stationui.js).
-   Loads AFTER stationui.js (see index.html) and registers itself via StationUI.registerWindow;
-   the only stationui internals it touches are the enumerated StationUI.h helper surface
+/* EYEHOLD — windows/outbox.js : the OUTBOX — FINISHED WORK window (extracted verbatim from keepui.js).
+   Loads AFTER keepui.js (see index.html) and registers itself via KeepUI.registerWindow;
+   the only keepui internals it touches are the enumerated KeepUI.h helper surface
    (esc/sfx/fmtRel/notify/openTerm, the WS/persistWS workstream seam, and the live present view). */
 'use strict';
 (() => {
-  if (typeof StationUI === 'undefined' || !StationUI.registerWindow) return;
-  const H = StationUI.h;
+  if (typeof KeepUI === 'undefined' || !KeepUI.registerWindow) return;
+  const H = KeepUI.h;
   const esc = H.esc, sfx = H.sfx, fmtRel = H.fmtRel, notify = H.notify, openTerm = H.openTerm;
   const WS = H.WS, persistWS = H.persistWS;
 
@@ -139,7 +139,7 @@
         const lastReply = (hand && Pipeline.stripVerdictLine) ? Pipeline.stripVerdictLine(rawReply) : rawReply;
         if (!rw.routine && users.length) row.querySelector('.ob-title b').textContent = firstLine(hand ? hand.original : users[0].content, 64);
         desc.textContent = lastReply ? firstLine(plain(lastReply), 150)
-          : (turns === null ? 'couldn’t read the result — is the station running?'
+          : (turns === null ? 'couldn’t read the result — is the keep running?'
             : (turns && turns.length ? 'the run finished with nothing to report.' : 'no transcript recorded for this run. Open the session for older work without run attribution.'));
         const askFull = hand ? String(hand.original) + '\n\n— the result of a work line: this reply is from step ' + hand.stage + ', after ' + String(agentName(hand.from)).toUpperCase() + '.'
           : users.length ? String(users[0].content) : '';
@@ -192,7 +192,7 @@
         wfb.disabled = true;
         const ok = (typeof WorkflowsWindow !== 'undefined' && WorkflowsWindow.openByStream) ? await WorkflowsWindow.openByStream(rw.streamId, 'deliverables') : false;
         wfb.disabled = false;
-        if (!ok) notify('this job’s workflow record is not on the station any more — ↗ OPEN SESSION still reads it', 'warn');
+        if (!ok) notify('this job’s workflow record is not on the keep any more — ↗ OPEN SESSION still reads it', 'warn');
       });
       // ⊕ NEW SESSION — dedicate a fresh chat (same agent) to expanding on this work; the composer
       // is prefilled naming the task so the follow-up ask writes itself. No fabricated turns.

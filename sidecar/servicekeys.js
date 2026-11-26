@@ -112,7 +112,7 @@
   }
 
   // add-or-update by name-slug. Never mutates the input list. `now` injected (no ambient clock).
-  // opts.reservedEnv = the host's model-provider keyEnv names (plus STARNET_/SKYNET_ scoped forms):
+  // opts.reservedEnv = the host's model-provider keyEnv names (plus EYEHOLD_/SKYNET_ scoped forms):
   // a KEYS paste deriving one of those would silently become BILLING credentials via envFirst()'s
   // process.env read — refused here with a pointer to the right surface instead.
   function upsert(list, input, now, opts) {

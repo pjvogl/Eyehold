@@ -1,25 +1,25 @@
 #!/usr/bin/env node
-/* sidecar/acp/serve.js — StarNet's ACP (Agent Client Protocol) agent: the stdio composition root.
+/* sidecar/acp/serve.js — Eyehold's ACP (Agent Client Protocol) agent: the stdio composition root.
 
-   This is what makes StarNet reachable FROM AN EDITOR. An ACP client (Zed, Neovim, any ACP-speaking editor)
-   spawns this process and talks JSON-RPC 2.0 over stdin/stdout; it drives real StarNet agent runs against the
-   running station, streams the answer and every tool call back into the editor's UI, and hands the station's
+   This is what makes Eyehold reachable FROM AN EDITOR. An ACP client (Zed, Neovim, any ACP-speaking editor)
+   spawns this process and talks JSON-RPC 2.0 over stdin/stdout; it drives real Eyehold agent runs against the
+   running keep, streams the answer and every tool call back into the editor's UI, and hands the keep's
    consent prompts to the editor as native approve/reject cards.
 
    Register it with the client, e.g.:
-     { "agent_servers": { "StarNet": { "command": "npm", "args": ["run", "-s", "acp:serve"] } } }
-   (or `node sidecar/acp/serve.js`, with --port=/--host=/--token= or STARNET_PORT/STARNET_TOKEN.)
+     { "agent_servers": { "Eyehold": { "command": "npm", "args": ["run", "-s", "acp:serve"] } } }
+   (or `node sidecar/acp/serve.js`, with --port=/--host=/--token= or EYEHOLD_PORT/EYEHOLD_TOKEN.)
 
    ── THE SHAPE (identical to sidecar/mcp/serve.js on purpose) ─────────────────────────────────────────────────
    Ambient I/O lives HERE; every decision lives in the pure core (./core.js). This file:
      - speaks newline-delimited JSON-RPC on stdin/stdout, logging ONLY to stderr (stdout is the protocol);
      - proxies to the RUNNING sidecar over loopback HTTP with the per-launch API token, discovered the same way
-       the browser does (GET / and scrape window.__STARNET_API_TOKEN__), honouring STARNET_TOKEN and --token=;
+       the browser does (GET / and scrape window.__EYEHOLD_API_TOKEN__), honouring EYEHOLD_TOKEN and --token=;
      - streams POST /api/run's NDJSON and feeds each event to the core;
      - correlates the core's OUTBOUND requests (session/request_permission) with the client's responses.
 
    ONE SIDECAR OWNER PER WORKSPACE is a hard invariant, so nothing here reads or writes a store file. If the
-   station is not running, every method answers with a structured "start StarNet" error — never a fabricated one.
+   keep is not running, every method answers with a structured "start Eyehold" error — never a fabricated one.
 
    ── WHY IT RIDES /api/run AND NOT /v1 ───────────────────────────────────────────────────────────────────────
    The OpenAI-compatible surface (/v1) can run an agent, but its wire only carries text: an editor integration
@@ -29,9 +29,9 @@
 
    ── CAPABILITIES AN EDITOR SESSION GETS ─────────────────────────────────────────────────────────────────────
    A coding session is granted the coding office: computer, cabinet (files), workbench (shell + verify), dish
-   (web/browser), notebook (memory). Every mutation still walks the station's full consent ladder — which is
+   (web/browser), notebook (memory). Every mutation still walks the keep's full consent ladder — which is
    exactly what surfaces in the editor as an approve/reject card. The session's cwd rides as `projectRoot`, so
-   the station's folder-trust prompt asks the editor to bless the folder the first time a file tool touches it. */
+   the keep's folder-trust prompt asks the editor to bless the folder the first time a file tool touches it. */
 'use strict';
 
 const http = require('http');
@@ -41,11 +41,11 @@ const core = require('./core.js');
 // ---- config: flags win over env; env over defaults ---------------------------------------------
 function readConfig(argv, env) {
   const cfg = { host: '127.0.0.1', port: 8787, token: '' };
-  const envPort = env.STARNET_PORT || env.SKYNET_PORT;
+  const envPort = env.EYEHOLD_PORT || env.SKYNET_PORT;
   if (envPort && /^\d+$/.test(String(envPort))) cfg.port = Number(envPort);
-  const envHost = env.STARNET_HOST || env.SKYNET_HOST;
+  const envHost = env.EYEHOLD_HOST || env.SKYNET_HOST;
   if (envHost) cfg.host = String(envHost);
-  cfg.token = String(env.STARNET_TOKEN || env.STARNET_API_TOKEN || env.SKYNET_API_TOKEN || '');
+  cfg.token = String(env.EYEHOLD_TOKEN || env.EYEHOLD_API_TOKEN || env.SKYNET_API_TOKEN || '');
   for (const a of (argv || [])) {
     let m;
     if ((m = /^--port=(\d+)$/.exec(a))) cfg.port = Number(m[1]);
@@ -62,17 +62,17 @@ const BASE_LABEL = 'http://' + CFG.host + ':' + CFG.port;
 function log() { try { process.stderr.write('[acp] ' + Array.prototype.join.call(arguments, ' ') + '\n'); } catch (_) {} }
 
 // ---- token discovery: explicit wins; else scrape the served page once (browser-identical) ------
-// ⛔ THE STATION'S API TOKEN IS PER-LAUNCH, SO A SCRAPED ONE GOES STALE (same defect as sidecar/mcp/serve.js).
-// An editor spawns this agent once and keeps it for the whole editing session, while StarNet is a desktop app the
+// ⛔ THE KEEP'S API TOKEN IS PER-LAUNCH, SO A SCRAPED ONE GOES STALE (same defect as sidecar/mcp/serve.js).
+// An editor spawns this agent once and keeps it for the whole editing session, while Eyehold is a desktop app the
 // Commander closes and reopens — every launch mints a NEW token. A token cached for the process lifetime meant the
-// first station restart broke every prompt until the editor itself was restarted. An EXPLICIT token (--token= /
+// first keep restart broke every prompt until the editor itself was restarted. An EXPLICIT token (--token= /
 // env) is the operator's choice and is never invalidated.
 const TOKEN_IS_EXPLICIT = !!CFG.token;
 let cachedToken = CFG.token || '';
 let tokenPromise = null;
 function invalidateToken(why) {
   if (TOKEN_IS_EXPLICIT || !cachedToken) return false;
-  log('token rejected (' + why + ') — re-discovering; the station was probably restarted');
+  log('token rejected (' + why + ') — re-discovering; the keep was probably restarted');
   cachedToken = '';
   return true;
 }
@@ -82,7 +82,7 @@ function discoverToken() {
   tokenPromise = rawRequest('GET', '/', null, false, '').then(res => {
     tokenPromise = null;
     if (res.ok && res.status === 200 && typeof res.text === 'string') {
-      const m = res.text.match(/window\.__STARNET_API_TOKEN__=("(?:\\.|[^"])*")/);
+      const m = res.text.match(/window\.__EYEHOLD_API_TOKEN__=("(?:\\.|[^"])*")/);
       if (m) { try { cachedToken = String(JSON.parse(m[1]) || ''); } catch (_) {} }
     }
     return cachedToken;
@@ -95,7 +95,7 @@ function rawRequest(method, path, body, withToken, token) {
   return new Promise(resolve => {
     let payload = null;
     const headers = { 'Origin': BASE_LABEL, 'Accept': 'application/json, text/plain, */*' };
-    if (withToken && token) headers['x-starnet-token'] = token;
+    if (withToken && token) headers['x-eyehold-token'] = token;
     if (body != null) {
       payload = Buffer.from(JSON.stringify(body), 'utf8');
       headers['Content-Type'] = 'application/json';
@@ -124,7 +124,7 @@ function rawRequest(method, path, body, withToken, token) {
 async function callSidecar(method, path, body) {
   const token = await discoverToken();
   const res = await rawRequest(method, path, body == null ? null : body, true, token);
-  // ONE re-auth retry on a rejected token: the station restarted and minted a new one (see invalidateToken).
+  // ONE re-auth retry on a rejected token: the keep restarted and minted a new one (see invalidateToken).
   if (res && res.ok && (res.status === 401 || res.status === 403) && invalidateToken('HTTP ' + res.status)) {
     const fresh = await discoverToken();
     if (fresh && fresh !== token) return rawRequest(method, path, body == null ? null : body, true, fresh);
@@ -136,7 +136,7 @@ async function callSidecar(method, path, body) {
 
    /api/run needs an explicit model (the browser always knows which one the Commander picked), so the model +
    provider come from GET /api/runtime/agent — the sidecar's OWN headless resolution, never a guess here. A
-   station with no key or no model configured is reported as such rather than producing a bare 400.
+   keep with no key or no model configured is reported as such rather than producing a bare 400.
 
    The run is cancellable: `onCancel` hands the core a closure that POSTs /api/cancel, which is what
    session/cancel needs (an ACP client's Esc). */
@@ -144,22 +144,22 @@ function openRun(opts) {
   const o = opts || {};
   return new Promise((resolve, reject) => {
     discoverToken().then(async (token) => {
-      if (!token) return reject(new Error('StarNet is not running (or its API token could not be read) at ' + BASE_LABEL + ' — start StarNet and try again'));
+      if (!token) return reject(new Error('Eyehold is not running (or its API token could not be read) at ' + BASE_LABEL + ' — start Eyehold and try again'));
 
       let info = await rawRequest('GET', '/api/runtime/agent', null, true, token);
-      // A rejected token means the station restarted. Re-scrape the live one and retry ONCE, rather than telling
-      // the Commander to restart their editor — closing and reopening StarNet should not cost them that.
+      // A rejected token means the keep restarted. Re-scrape the live one and retry ONCE, rather than telling
+      // the Commander to restart their editor — closing and reopening Eyehold should not cost them that.
       if (info.ok && (info.status === 401 || info.status === 403) && invalidateToken('HTTP ' + info.status)) {
         const fresh = await discoverToken();
         if (fresh && fresh !== token) { token = fresh; info = await rawRequest('GET', '/api/runtime/agent', null, true, token); }
       }
-      if (!info.ok) return reject(new Error('StarNet is not reachable at ' + BASE_LABEL + ': ' + (info.error || 'connection failed')));
-      if (info.status === 401 || info.status === 403) return reject(new Error('StarNet rejected this bridge\'s API token — restart the editor so it re-reads the station token'));
+      if (!info.ok) return reject(new Error('Eyehold is not reachable at ' + BASE_LABEL + ': ' + (info.error || 'connection failed')));
+      if (info.status === 401 || info.status === 403) return reject(new Error('Eyehold rejected this bridge\'s API token — restart the editor so it re-reads the keep token'));
       const rt = info.json || {};
       if (!rt.configured) {
-        return reject(new Error('StarNet has no runnable model configured'
+        return reject(new Error('Eyehold has no runnable model configured'
           + (rt.model ? '' : ' (no default model set)')
-          + ' — open the station and set a provider key + model first'));
+          + ' — open the keep and set a provider key + model first'));
       }
 
       const body = {
@@ -175,7 +175,7 @@ function openRun(opts) {
           { objectType: 'workbench' }, { objectType: 'dish' }, { objectType: 'notebook' }
         ]
       };
-      // the editor's cwd is the project scope. The station injects the folder line only while that root holds a
+      // the editor's cwd is the project scope. The keep injects the folder line only while that root holds a
       // standing path grant, and its folder-trust prompt rides the same permission channel — so the FIRST file
       // tool asks the editor to bless it, and nothing here asserts access the grant layer cannot prove.
       if (o.cwd) body.projectRoot = String(o.cwd);
@@ -197,13 +197,13 @@ function openRun(opts) {
           host: CFG.host, port: CFG.port, method: 'POST', path: '/api/run',
           headers: {
             'Origin': BASE_LABEL, 'Content-Type': 'application/json',
-            'Content-Length': payload.length, 'x-starnet-token': token, 'Accept': 'application/x-ndjson'
+            'Content-Length': payload.length, 'x-eyehold-token': token, 'Accept': 'application/x-ndjson'
           }
         }, res => {
           if (res.statusCode !== 200) {
             const chunks = [];
             res.on('data', d => chunks.push(d));
-            res.on('end', () => finish(reject, new Error('StarNet refused the run (HTTP ' + res.statusCode + '): ' + Buffer.concat(chunks).toString('utf8').slice(0, 300))));
+            res.on('end', () => finish(reject, new Error('Eyehold refused the run (HTTP ' + res.statusCode + '): ' + Buffer.concat(chunks).toString('utf8').slice(0, 300))));
             return;
           }
           res.setEncoding('utf8');
@@ -227,7 +227,7 @@ function openRun(opts) {
           /* A stream that ENDS WITHOUT agent.run.end did not finish. Reporting 'done' there would tell the
              editor the turn completed successfully — the exact class of lie this project forbids.
              But 'error' is equally wrong for a DELIBERATE cancel: it made the core append "the run failed
-             inside StarNet — check the station log", so pressing Esc told the user their work had crashed.
+             inside Eyehold — check the keep log", so pressing Esc told the user their work had crashed.
              So the fallback splits on intent: cancelled if the user asked, error only if it really dropped. */
           const settleReason = () => (sawEnd ? reason : (cancelRequested ? 'cancelled' : 'error'));
           const done = () => { if (graceTimer) { clearTimeout(graceTimer); graceTimer = null; } finish(resolve, { reason: settleReason() }); };
@@ -244,14 +244,14 @@ function openRun(opts) {
         // A cancel destroys the socket on purpose; that surfaces here as ECONNRESET/aborted. Treating it as a
         // transport failure is what produced "could not complete this turn: aborted" on a user-requested stop.
         if (cancelRequested) return finish(resolve, { reason: 'cancelled' });
-        finish(reject, new Error('StarNet run stream failed: ' + ((e && e.message) || e)));
+        finish(reject, new Error('Eyehold run stream failed: ' + ((e && e.message) || e)));
       });
       if (typeof o.onCancel === 'function') {
-        /* GRACEFUL FIRST. POST /api/cancel is the stop the station understands: it aborts the run's controller,
+        /* GRACEFUL FIRST. POST /api/cancel is the stop the keep understands: it aborts the run's controller,
            which emits agent.run.end{reason:'cancelled'} and closes the stream properly — so spend stops AND the
            editor gets the real terminal reason. Destroying the socket immediately (the first cut) raced ahead of
            that every time, so the turn always settled as a failure. The destroy is now only a FALLBACK, in case
-           the station never settles; leaving it out entirely would risk a socket held open forever. */
+           the keep never settles; leaving it out entirely would risk a socket held open forever. */
         o.onCancel(() => {
           if (cancelRequested) return;
           cancelRequested = true;
@@ -267,7 +267,7 @@ function openRun(opts) {
 }
 
 /* How long a cancelled run gets to settle itself through POST /api/cancel before the socket is destroyed as a
-   fallback. Long enough for the station to abort the loop and emit agent.run.end{reason:'cancelled'} (which is
+   fallback. Long enough for the keep to abort the loop and emit agent.run.end{reason:'cancelled'} (which is
    what makes the editor show a real cancel), short enough that a wedged stream is not held forever. */
 const CANCEL_GRACE_MS = 5000;
 
@@ -357,6 +357,6 @@ process.stdin.on('data', chunk => {
 process.stdin.on('end', () => process.exit(0));
 process.stdin.on('close', () => process.exit(0));
 
-log('StarNet ACP agent ready on stdio → ' + BASE_LABEL + (cachedToken ? ' (token from env/flag)' : ' (token via page scrape)'));
+log('Eyehold ACP agent ready on stdio → ' + BASE_LABEL + (cachedToken ? ' (token from env/flag)' : ' (token via page scrape)'));
 
 module.exports = { readConfig, _internals: { discoverToken, callSidecar, openRun } };

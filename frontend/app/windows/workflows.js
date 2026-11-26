@@ -1,21 +1,21 @@
-/* STARNET — windows/workflows.js : WORK › AUTOMATE › WORKFLOWS (2026-09-30 — Andrew: "the easiest conveyor system we can possibly put together.
+/* EYEHOLD — windows/workflows.js : WORK › AUTOMATE › WORKFLOWS (2026-09-30 — Andrew: "the easiest conveyor system we can possibly put together.
    It should be clear as day to the user how to use it").
 
    ONE PATH, in its own docked window — never inside Build Mode:
      pick a workflow → send it a job → see the step working on it → read the result → NEEDS CHANGES / KEEP THIS STYLE → send it again.
    The opening view lists every workflow on the floor: its name, who works it, an honest status and ONE key — ▶ SEND A JOB when it is
-   ready, FINISH SETUP when it is not. NEW WORKFLOW puts a ready-made line on the floor for you — a starter you pick, or one the station
+   ready, FINISH SETUP when it is not. NEW WORKFLOW puts a ready-made line on the floor for you — a starter you pick, or one the keep
    sets up from what you describe — with an agent on every step (one agent may do every step: no recruiting needed). The diagram's
    editing, step instructions, triggers, budgets and floor work stay one key away: EDIT WORKFLOW opens the full editor (REFIT's
    Workflow panel) on this line.
 
-   TRUTH (the station's first law): every status is WorkflowLine.readiness over the compiled plan with the Workflow panel's own facts
-   (the pill an agent reads with station.layout); "now at step N" is the floor's bay lamp (LineWatch: WORKING only once the sidecar
+   TRUTH (the keep's first law): every status is WorkflowLine.readiness over the compiled plan with the Workflow panel's own facts
+   (the pill an agent reads with keep.layout); "now at step N" is the floor's bay lamp (LineWatch: WORKING only once the sidecar
    confirmed the run there); a job, its steps, what came out and what it cost are the job's server record (GET /api/line-jobs — the
    route's own verdict, kept across reloads and restarts); "in the OUTBOX" only while the OUTBOX ledger holds the delivered run. */
 'use strict';
 const WorkflowsWindow = (() => {
-  const UI = () => (typeof StationUI !== 'undefined' ? StationUI : null);
+  const UI = () => (typeof KeepUI !== 'undefined' ? KeepUI : null);
   const H = () => (UI() && UI().h) || null;
   const P = () => (typeof Pipeline !== 'undefined' ? Pipeline : null);
   const W = () => (typeof WorkflowLine !== 'undefined' ? WorkflowLine : null);
@@ -23,11 +23,11 @@ const WorkflowsWindow = (() => {
   const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   const sfx = k => { try { const h = H(); if (h && h.sfx) h.sfx(k); } catch (_) {} };
   const notify = (t, kind) => { try { const h = H(); if (h && h.notify) h.notify(t, kind || ''); } catch (_) {} };
-  const api = p => ((typeof window !== 'undefined' && window.__STARNET_API__) ? window.__STARNET_API__ : '') + p;
+  const api = p => ((typeof window !== 'undefined' && window.__EYEHOLD_API__) ? window.__EYEHOLD_API__ : '') + p;
   const getJSON = p => fetch(api(p), { cache: 'no-store' }).then(r => r.json().catch(() => null).then(j => ({ status: r.status, j })));
   const postJSON = (p, b) => fetch(api(p), { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(b || {}) })
     .then(r => r.json().catch(() => null).then(j => ({ status: r.status, j })));
-  const stationOf = () => { try { return (typeof App !== 'undefined' && App.station) ? App.station() : null; } catch (_) { return null; } };
+  const keepOf = () => { try { return (typeof App !== 'undefined' && App.keep) ? App.keep() : null; } catch (_) { return null; } };
   const roster = () => { const h = H(); const a = h ? h.present : []; return (Array.isArray(a) ? a : []).filter(x => x && x.id); };
   const agentOf = aid => roster().find(a => a.id === aid) || null;
   const nameOf = aid => { const a = agentOf(aid); return String((a && a.name) || aid || 'agent'); };
@@ -53,7 +53,7 @@ const WorkflowsWindow = (() => {
     prev: {},           // jobId → the record it re-ran (LAST TIME, BEFORE YOUR FIX)
     draft: {},          // what is being typed, by field: 'job:<line>', 'fix:<job>', 'describe', 'name'
     pick: null,         // NEW: { bp, name, agents: [aid per step], briefs: {ROLE: {does, hands}}, job, drafted }
-    drafting: null,     // NEW: { state: 'asking'|'error', error } while the station sets a line up from a description
+    drafting: null,     // NEW: { state: 'asking'|'error', error } while the keep sets a line up from a description
     made: null,         // NEW: { error, needs } when placing a line failed
     watching: null,     // the running job (not sent from here) the window is following, to show its result when it settles
   };
@@ -62,10 +62,10 @@ const WorkflowsWindow = (() => {
   /* ---------- the floor, read the way the Workflow panel reads it ---------- */
   /* Every workflow on the floor, compiled the way the router routes: one entry per line that has an INBOX and at least one step.
      Its status is WorkflowLine.readiness with the Workflow panel's own facts (build.js wfHost: hasCompute PER BAY, every blocking
-     error on the floor, the floor's nag copy, crew membership, a step's instructions) — the same facts station.layout gives the lead
-     (stationcommands.js describeLayout), so the window, the panel and the lead never disagree about whether a line can run. */
+     error on the floor, the floor's nag copy, crew membership, a step's instructions) — the same facts keep.layout gives the lead
+     (keepcommands.js describeLayout), so the window, the panel and the lead never disagree about whether a line can run. */
   function floor() {
-    const st = stationOf(), Pp = P(), Wl = W();
+    const st = keepOf(), Pp = P(), Wl = W();
     if (!st || !Pp || !Wl || typeof st.projectGeometry !== 'function') return null;
     let geo, plan, comps;
     try { geo = st.projectGeometry(); plan = Pp.compileRoutingPlan(geo) || {}; comps = Pp.lineComponents(geo) || []; } catch (e) { return null; }
@@ -129,7 +129,7 @@ const WorkflowsWindow = (() => {
 
   /* ---------- sending a job ---------- */
   /* THE LINE IS POSTED BEFORE IT RUNS (build.js finPlanGate's rule): the job is sent only once the sidecar holds THIS floor — a
-     line with a blocking problem, or a station that did not answer, is refused with the floor's own words and nothing runs. */
+     line with a blocking problem, or a keep that did not answer, is refused with the floor's own words and nothing runs. */
   function planGate() {
     if (typeof World === 'undefined' || !World.syncPlan) return Promise.resolve(null);
     let p; try { p = World.syncPlan(); } catch (_) { p = null; }
@@ -137,10 +137,10 @@ const WorkflowsWindow = (() => {
       if (!s) return null;
       const errs = s.errors || [];
       if (errs.length) return { refuse: 'the floor has something to fix first: ' + errs.map(e => (B() && B().nagWhy) ? B().nagWhy(e.code) : e.code).filter((v, i, a) => a.indexOf(v) === i).join(' · ') };
-      if (s.refusedHash && s.refusedHash === s.lastHash) return { refuse: 'the station refused this line — open EDIT WORKFLOW to see what to fix' };
-      if (s.stale || s.inflight || s.retryPending) return { refuse: 'the station did not answer, so the job was not sent' };
+      if (s.refusedHash && s.refusedHash === s.lastHash) return { refuse: 'the keep refused this line — open EDIT WORKFLOW to see what to fix' };
+      if (s.stale || s.inflight || s.retryPending) return { refuse: 'the keep did not answer, so the job was not sent' };
       return null;
-    }, () => ({ refuse: 'the job was not sent: the line could not be saved to the station' }));
+    }, () => ({ refuse: 'the job was not sent: the line could not be saved to the keep' }));
   }
   function send(line, text, retryOf) {
     if (S.out || runningJob()) return;
@@ -169,7 +169,7 @@ const WorkflowsWindow = (() => {
     }
     // nothing was sent down the line (a refusal): say why, the job text stays in the box
     sfx('bad');
-    S.msg = { bad: true, text: (j && j.error) ? String(j.error) : status ? 'the station refused the job (HTTP ' + status + ')' : 'the station could not be reached — is it running?' };
+    S.msg = { bad: true, text: (j && j.error) ? String(j.error) : status ? 'the keep refused the job (HTTP ' + status + ')' : 'the keep could not be reached — is it running?' };
     loadJobs(); schedule();
   }
   function stop() {
@@ -179,7 +179,7 @@ const WorkflowsWindow = (() => {
     postJSON('/api/routing/sample/stop', {}).then(({ j }) => {
       if (!(j && j.ok)) { if (S.out) S.out.stopping = false; notify((j && j.error) || 'the stop was not accepted', 'warn'); }
       schedule();
-    }, () => { if (S.out) S.out.stopping = false; notify('the station could not be reached — E-STOP stops everything', 'warn'); schedule(); });
+    }, () => { if (S.out) S.out.stopping = false; notify('the keep could not be reached — E-STOP stops everything', 'warn'); schedule(); });
   }
 
   /* ---------- where the job is now: the floor's own bay lamps ---------- */
@@ -215,7 +215,7 @@ const WorkflowsWindow = (() => {
         const said = turns.filter(m => m && m.role === 'assistant' && String(m.content || '').trim() && String(m.content).trim() !== '[SILENT]');
         S.stepOut[r.runId] = { output: said.length ? String(said[said.length - 1].content) : '' };
         schedule();
-      }, () => { S.stepOut[r.runId] = { err: 'this step’s reply could not be read — is the station running?' }; schedule(); });
+      }, () => { S.stepOut[r.runId] = { err: 'this step’s reply could not be read — is the keep running?' }; schedule(); });
   }
   // what the line delivered, as the work alone: a reviewer's VERDICT line and a loop's machine note steer the line, they are not the work
   const LOOP_NOTE = /^\[LOOP — (exhausted|escalated): (\d+) pass(?:es)? round the gate[^\n]*\]\s*/gm;
@@ -232,7 +232,7 @@ const WorkflowsWindow = (() => {
   /* ---------- NEEDS CHANGES: say what's wrong → exact changes to the steps → send it again ---------- */
   function askFixes(job, line, complaint) {
     if (!complaint) { sfx('bad'); notify('say what’s wrong with the result first', 'warn'); return; }
-    const st = stationOf();
+    const st = keepOf();
     const byDock = new Map();
     for (const r of (job.runs || []).slice().reverse()) { if (!r.dockId) continue; const got = S.stepOut[r.runId]; byDock.set(r.dockId, got && got.output ? got.output : ''); }
     const steps = [...byDock.entries()].map(([dockId, output]) => { const p = (st && st.propById(dockId)) || {}; return { dockId, role: p.role || '', agent: p.agentId ? nameOf(p.agentId) : '', does: p.brief || '', hands: p.hands || '', output }; });
@@ -245,15 +245,15 @@ const WorkflowsWindow = (() => {
         Object.assign(S.fix, { state: 'done', diagnosis: j.diagnosis || '', usd: j.usd || 0, model: j.model || '',
           fixes: (j.fixes || []).map(x => Object.assign({}, x, { was: ((st && st.propById(x.dockId)) || {}).brief || '', wasHands: ((st && st.propById(x.dockId)) || {}).hands || '' })) });
         sfx('chime'); S.scrollTo = '[data-fixes]';
-      } else { Object.assign(S.fix, { state: 'error', error: (j && j.error) || ('the station refused (HTTP ' + status + ')') }); sfx('bad'); }
+      } else { Object.assign(S.fix, { state: 'error', error: (j && j.error) || ('the keep refused (HTTP ' + status + ')') }); sfx('bad'); }
       schedule();
-    }, () => { if (S.fix && S.fix.jobId === job.id) { Object.assign(S.fix, { state: 'error', error: 'the station could not be reached' }); schedule(); } });
+    }, () => { if (S.fix && S.fix.jobId === job.id) { Object.assign(S.fix, { state: 'error', error: 'the keep could not be reached' }); schedule(); } });
   }
   // a fix is IN USE while the step's instructions say exactly what it suggested (read live: putting it back shows USE THIS again)
-  const fixInUse = x => { const st = stationOf(), p = (st && st.propById(x.dockId)) || {}; return (x.does == null || (p.brief || '') === x.does) && (x.hands == null || (p.hands || '') === x.hands); };
+  const fixInUse = x => { const st = keepOf(), p = (st && st.propById(x.dockId)) || {}; return (x.does == null || (p.brief || '') === x.does) && (x.hands == null || (p.hands || '') === x.hands); };
   function noteJob(job, n) { if (job && job.id) postJSON('/api/line-jobs/' + encodeURIComponent(job.id) + '/note', n).then(({ j }) => { if (j && j.ok && j.job && S.job && S.job.id === job.id) { S.job = j.job; schedule(); } }, () => {}); }
   function useFix(job, i, back) {
-    const x = S.fix && S.fix.fixes[i], st = stationOf(); if (!x || !st) return;
+    const x = S.fix && S.fix.fixes[i], st = keepOf(); if (!x || !st) return;
     const p = st.propById(x.dockId);
     if (!p) { sfx('bad'); notify('this step is not on the floor any more', 'warn'); return; }
     let ok = true;
@@ -280,13 +280,13 @@ const WorkflowsWindow = (() => {
   }
   const lastDockOf = job => { const r = (job && job.runs || [])[0]; return r && r.dockId ? r.dockId : null; };
   function styleKept(job) {
-    const st = stationOf(), d = lastDockOf(job), p = d && st ? st.propById(d) : null;
+    const st = keepOf(), d = lastDockOf(job), p = d && st ? st.propById(d) : null;
     if (!p) return false;
     const want = exampleBrief(p.brief, workOf(job.output).rest);
     return !!want && String(p.brief || '') === want;
   }
   function keepStyle(job) {
-    const st = stationOf(), d = lastDockOf(job), p = d && st ? st.propById(d) : null;
+    const st = keepOf(), d = lastDockOf(job), p = d && st ? st.propById(d) : null;
     if (!p || p.t !== 'bay') { sfx('bad'); notify('the step that made this result is not on the floor any more', 'warn'); return; }
     const text = workOf(job.output).rest;
     if (!text) { sfx('bad'); notify('this result is empty — there is nothing to keep', 'warn'); return; }
@@ -300,7 +300,7 @@ const WorkflowsWindow = (() => {
     schedule();
   }
   function putStyleBack(job) {
-    const st = stationOf(), d = lastDockOf(job), p = d && st ? st.propById(d) : null;
+    const st = keepOf(), d = lastDockOf(job), p = d && st ? st.propById(d) : null;
     const n = (job.notes || []).slice().reverse().find(x => x.kind === 'example' && x.dockId === d);
     if (!p) { sfx('bad'); notify('the step that made this result is not on the floor any more', 'warn'); return; }
     // kept in the Workflow panel (★ KEEP AS THE EXAMPLE notes no job): putting it back takes the example block out (the key did nothing)
@@ -314,22 +314,22 @@ const WorkflowsWindow = (() => {
 
   /* ---------- setting a line up: who works each step, a desk to work at ---------- */
   function assign(stepId, aid) {
-    const st = stationOf(); if (!st) return;
+    const st = keepOf(); if (!st) return;
     const r = st.assignPropAgent(stepId, aid);
     if (r && r.ok) { sfx('click'); syncSoon(); schedule(); } else { sfx('bad'); notify('that step could not be given to ' + NAME(aid), 'warn'); }
   }
   function assignAll(line, aid) {
-    const st = stationOf(); if (!st) return;
+    const st = keepOf(); if (!st) return;
     let ok = true;
     for (const s of line.steps) if (s.agentId !== aid) { const r = st.assignPropAgent(s.id, aid); ok = ok && !!(r && r.ok); }
     sfx(ok ? 'click' : 'bad'); syncSoon(); schedule();
   }
-  /* a step's agent needs a workstation in reach (the router's compute gate): the agent's own desk first (worldmodel.ensureWorkstation
+  /* a step's agent needs a workkeep in reach (the router's compute gate): the agent's own desk first (worldmodel.ensureWorkkeep
      adopts a free one or builds one in the spawn room); else a desk in the step's own room — build.js requisitionPcFor's search */
   function giveDesk(step) {
-    const st = stationOf(); if (!st || !step.agentId) return;
+    const st = keepOf(); if (!st || !step.agentId) return;
     let r = null;
-    try { r = st.ensureWorkstation ? st.ensureWorkstation(step.agentId) : null; } catch (_) { r = null; }
+    try { r = st.ensureWorkkeep ? st.ensureWorkkeep(step.agentId) : null; } catch (_) { r = null; }
     const has = () => { try { return (st.bayObjects(step.agentId, step.id) || []).indexOf('computer') >= 0; } catch (_) { return false; } };
     if (!has()) {
       const p = st.propById(step.id), rid = p && st.roomAt(p.x, p.y), rm = rid && st.roomById(rid);
@@ -379,7 +379,7 @@ const WorkflowsWindow = (() => {
     sfx('click'); schedule();
     setTimeout(() => { const n = body && body.querySelector('#wfw-picked'); if (n && n.scrollIntoView) n.scrollIntoView({ block: 'nearest', behavior: 'smooth' }); }, 30);
   }
-  /* SET IT UP FOR ME: the station's own model reads what you want and picks the starter that fits, a short name, each step's
+  /* SET IT UP FOR ME: the keep's own model reads what you want and picks the starter that fits, a short name, each step's
      instructions and a first job (POST /api/routing/line-draft — one billed call; nothing is placed until you press CREATE). */
   function draftIt(want) {
     if (!want) { sfx('bad'); notify('say what you want the workflow to make first', 'warn'); return; }
@@ -391,14 +391,14 @@ const WorkflowsWindow = (() => {
         const briefs = {}; for (const r in (j.briefs || {})) briefs[r] = { does: String(j.briefs[r] || ''), hands: '' };
         pickStarter(j.starter, { name: j.name || plainName(j.starter), briefs, job: j.job || '', drafted: true, usd: j.usd || 0, model: j.model || '' });
         sfx('chime');
-      } else { S.drafting = { state: 'error', error: (j && j.error) || ('the station refused (HTTP ' + status + ')') }; sfx('bad'); schedule(); }
-    }, () => { S.drafting = { state: 'error', error: 'the station could not be reached' }; schedule(); });
+      } else { S.drafting = { state: 'error', error: (j && j.error) || ('the keep refused (HTTP ' + status + ')') }; sfx('bad'); schedule(); }
+    }, () => { S.drafting = { state: 'error', error: 'the keep could not be reached' }; schedule(); });
   }
   /* CREATE: the line is laid on the floor by the layout engine (LineEdit.placeBlueprint — the Build Library's own MAKE ROOM-aware
-     placement, in the clear floor nearest the middle of the station), each step gets its agent and its instructions, the INBOX
+     placement, in the clear floor nearest the middle of the keep), each step gets its agent and its instructions, the INBOX
      carries the name, and the agent gets a desk if a step needs one. Then the window opens the new line on its job box. */
   function create() {
-    const pk = S.pick, st = stationOf(), bp = pk && bpOf(pk.bp);
+    const pk = S.pick, st = keepOf(), bp = pk && bpOf(pk.bp);
     if (!pk || !st || !bp || typeof LineEdit === 'undefined' || !LineEdit.placeBlueprint) { sfx('bad'); return; }
     const base = String(S.draft.name == null ? pk.name : S.draft.name).replace(/\s+/g, ' ').trim().slice(0, 40) || plainName(pk.bp);
     // one name per workflow: a second "Research + write" is "Research + write 2" (the list and the OUTBOX tell them apart)
@@ -417,7 +417,7 @@ const WorkflowsWindow = (() => {
     const intake = ids.map(id => st.propById(id)).find(p => p && p.t === 'intake');
     bays.forEach((p, i) => { const aid = pk.agents[i] || pk.agents[0]; if (aid) st.assignPropAgent(p.id, aid); });
     if (intake && st.setPropLabel) st.setPropLabel(intake.id, name);
-    // a step with no workstation in reach gets one (the agent's own desk first)
+    // a step with no workkeep in reach gets one (the agent's own desk first)
     for (const p of bays) { const q = st.propById(p.id); if (q && q.agentId) { let ok = false; try { ok = (st.bayObjects(q.agentId, q.id) || []).indexOf('computer') >= 0; } catch (_) {} if (!ok) giveDesk({ id: q.id, agentId: q.agentId }); } }
     syncSoon();
     const f = floor(), made = f && intake ? f.lines.find(l => l.intakeId === intake.id || (l.flow && l.flow.trigger && l.flow.trigger.propId === intake.id)) : null;
@@ -444,7 +444,7 @@ const WorkflowsWindow = (() => {
     const scroller = body.closest('.term-body') || body, top = scroller.scrollTop;
     const f = floor();
     let html;
-    if (!f) { html = '<div class="wfw-empty">The station floor is still loading…</div>'; setTimeout(() => { if (alive() && !floor()) schedule(); else if (alive()) { attachFloor(); schedule(); } }, 1000); }
+    if (!f) { html = '<div class="wfw-empty">The keep floor is still loading…</div>'; setTimeout(() => { if (alive() && !floor()) schedule(); else if (alive()) { attachFloor(); schedule(); } }, 1000); }
     else if (S.view === 'new' || (!f.lines.length && S.view !== 'line')) html = newHTML(f);
     else if (S.view === 'line' && lineOf(f, S.line)) html = lineHTML(f, lineOf(f, S.line));
     else { S.view = 'list'; html = listHTML(f); }
@@ -491,7 +491,7 @@ const WorkflowsWindow = (() => {
       + '<section class="wfw-sec"><h3>What should it make?</h3>'
       + '<textarea id="wfw-describe" class="wfw-field" rows="2" maxlength="600" placeholder="e.g. a weekly digest of AI news for my newsletter">' + esc(S.draft.describe || '') + '</textarea>'
       + '<div class="wf-row"><button type="button" class="bb refit-primary" data-act="draft"' + (dr && dr.state === 'asking' ? ' disabled' : '') + '>' + (dr && dr.state === 'asking' ? 'SETTING IT UP…' : '✦ SET IT UP FOR ME') + '</button>'
-      + '<span class="wfw-note">The station picks the steps and writes their instructions — one short model call.</span></div>'
+      + '<span class="wfw-note">The keep picks the steps and writes their instructions — one short model call.</span></div>'
       + (dr && dr.state === 'error' ? '<p class="wfw-bad">✕ ' + esc(dr.error) + '</p>' : '')
       + '</section>'
       + '<section class="wfw-sec"><h3>Or pick one</h3><div class="wfw-tiles">' + tiles + '</div>'
@@ -512,7 +512,7 @@ const WorkflowsWindow = (() => {
         + '</div>';
     }).join('');
     return '<section class="wfw-sec wfw-picked" id="wfw-picked"><h3>' + esc(plainName(pk.bp)) + (pk.drafted ? ' <span class="wf-tag">SET UP FOR YOU</span>' : '') + '</h3>'
-      + (pk.drafted && pk.usd ? '<p class="wfw-note">Set up by ' + esc(pk.model || 'the station’s model') + ' · ' + usd(pk.usd) + '. Nothing is on the floor until you press CREATE.</p>' : '')
+      + (pk.drafted && pk.usd ? '<p class="wfw-note">Set up by ' + esc(pk.model || 'the keep’s model') + ' · ' + usd(pk.usd) + '. Nothing is on the floor until you press CREATE.</p>' : '')
       + '<label class="wfw-k" for="wfw-name">Name</label><input id="wfw-name" class="wfw-field" type="text" maxlength="40" value="' + esc(S.draft.name != null ? S.draft.name : pk.name) + '">'
       + '<div class="wfw-k">Who does each step?' + (one ? ' <span class="wfw-note">— one agent can do every step</span>' : '') + '</div>'
       + stepRows
@@ -553,7 +553,7 @@ const WorkflowsWindow = (() => {
       + (crew.length ? crew.map(a => '<button type="button" class="wfw-agent" data-assign="' + esc(s.id) + '" data-aid="' + esc(a.id) + '">' + thumb(a.id, 26, 32, 'wfw-av') + '<span>' + esc(String(a.name || a.id).toUpperCase()) + '</span></button>').join('')
         : '<span class="wfw-bad">No agents yet — recruit one from CREW first.</span>') + '</div></div>');
     for (const s of l.steps.filter(s => s.agentId && !s.desk)) items.push('<div class="wfw-fixrow"><div class="wfw-fixh">' + esc(NAME(s.agentId)) + ' needs a desk to work step ' + s.n + '.</div><div class="wf-row"><button type="button" class="bb sm refit-primary" data-desk="' + esc(s.id) + '">GIVE ' + esc(NAME(s.agentId)) + ' A DESK</button></div></div>');
-    const handled = /needs an agent|needs a workstation/;
+    const handled = /needs an agent|needs a workkeep/;
     for (const b of l.ready.blocking.filter(b => !handled.test(b.what))) items.push('<div class="wfw-fixrow"><div class="wfw-fixh">' + esc(b.what.charAt(0).toUpperCase() + b.what.slice(1)) + '</div><div class="wf-row"><button type="button" class="bb sm" data-act="edit">FIX IT IN THE EDITOR</button></div></div>');
     return '<section class="wfw-sec wfw-setup"><h3>Finish setting it up</h3><p class="wfw-note">' + (l.ready.blocking.length === 1 ? 'One thing' : l.ready.blocking.length + ' things') + ' before it can take a job:</p>'
       + (missing.length > 1 && crew.length ? '<div class="wf-row">' + crew.slice(0, 4).map(a => '<button type="button" class="bb sm" data-assign-all="' + esc(a.id) + '">' + esc(String(a.name || a.id).toUpperCase()) + ' DOES EVERY STEP</button>').join('') + '</div>' : '')
@@ -561,14 +561,14 @@ const WorkflowsWindow = (() => {
   }
   function jobRows(l) {
     const rows = jobsOf(l.key).slice(0, 8);
-    if (S.jobsErr && !rows.length) return '<p class="wfw-note">The job history could not be read — is the station running?</p>';
+    if (S.jobsErr && !rows.length) return '<p class="wfw-note">The job history could not be read — is the keep running?</p>';
     if (!rows.length) return '<p class="wfw-note">No jobs yet. The first one will show here.</p>';
     const mark = s => ({ delivered: '<span class="wfw-st ok">✓ DONE</span>', running: '<span class="wfw-st run">RUNNING</span>', stopped: '<span class="wfw-st">STOPPED</span>',
       problem: '<span class="wfw-st warn">⚠ PROBLEM</span>', failed: '<span class="wfw-st warn">DIDN’T RUN</span>', interrupted: '<span class="wfw-st warn">INTERRUPTED</span>' })[s] || '';
     return '<div class="wfw-jobs">' + rows.map(j => '<button type="button" class="wfw-jobrow" data-job="' + esc(j.id) + '">' + mark(j.status) + '<span class="wfw-jtext">' + esc(j.text.replace(/\s+/g, ' ').slice(0, 120) || '(no text)') + '</span><span class="wfw-jmeta">' + esc(ago(j.startedAt) + (j.usd ? ' · ' + usd(j.usd) : '')) + '</span></button>').join('') + '</div>';
   }
   function composeHTML(l) {
-    // one job runs at a time (the station's rule): the one this window sent counts before the server's list shows it
+    // one job runs at a time (the keep's rule): the one this window sent counts before the server's list shows it
     const busy = runningJob() || (S.out ? { line: S.out.line, name: (lineOf(floor(), S.out.line) || {}).name } : null), other = busy && busy.line !== l.key;
     return '<section class="wfw-sec wfw-send"><h3>Send it a job</h3>'
       + '<textarea id="wfw-job" class="wfw-field" rows="3" maxlength="2000" aria-label="The job for this workflow" placeholder="' + esc(exampleJob(l)) + '">' + esc(S.draft['job:' + l.key] || '') + '</textarea>'
@@ -587,7 +587,7 @@ const WorkflowsWindow = (() => {
       + '<span class="wfw-note">The result shows here when the last step is done. You can close this window — the job keeps going.</span></div></section>';
   }
   function resultHTML(l, job) {
-    const st = stationOf(), runs = (job.runs || []).slice().reverse(), work = workOf(job.output), ok = job.status === 'delivered';
+    const st = keepOf(), runs = (job.runs || []).slice().reverse(), work = workOf(job.output), ok = job.status === 'delivered';
     const delivered = ok && (job.runs || [])[0], inOutbox = !!(delivered && typeof ReturnStore !== 'undefined' && ReturnStore.pendingRows && ReturnStore.pendingRows().some(r => r && r.runId === delivered.runId));
     const took = job.endedAt && job.startedAt ? secs(job.endedAt - job.startedAt) : '';
     const bad = runs.find(r => r.reason && r.reason !== 'done');
@@ -595,7 +595,7 @@ const WorkflowsWindow = (() => {
     const head = ok ? '<b class="ok">✓ DONE</b>' : job.status === 'stopped' ? '<b>■ STOPPED</b>' : job.status === 'interrupted' ? '<b class="warn">⚠ INTERRUPTED</b>' : job.status === 'failed' ? '<b class="warn">✕ IT DIDN’T RUN</b>' : '<b class="warn">⚠ FINISHED WITH A PROBLEM</b>';
     const meta = [runs.length + ' step' + (runs.length === 1 ? '' : 's'), usd(job.usd), took, inOutbox ? 'in the OUTBOX' : ''].filter(Boolean).join(' · ');
     const why = ok ? '' : job.status === 'problem' && bad ? (() => { const p = bad.dockId && st ? st.propById(bad.dockId) : null; return 'The ' + ((p && p.role) ? p.role + ' step' : 'step') + ' (' + NAME(bad.agentId) + ') ' + (END[bad.reason] || String(bad.reason || 'did not finish').replace(/_/g, ' ')) + ', so this job did not finish cleanly. Sending it again often works.'; })()
-      : job.status === 'stopped' ? 'You stopped this job. What already ran is counted.' : job.status === 'interrupted' ? 'The station stopped while this job was out. Send it again.' : (job.error || 'Nothing ran.');
+      : job.status === 'stopped' ? 'You stopped this job. What already ran is counted.' : job.status === 'interrupted' ? 'The keep stopped while this job was out. Send it again.' : (job.error || 'Nothing ran.');
     const passes = {};
     const steps = runs.map((r, i) => {
       const p = r.dockId && st ? st.propById(r.dockId) : null, k = r.dockId || r.agentId, pass = passes[k] = (passes[k] || 0) + 1, got = S.stepOut[r.runId];
@@ -629,10 +629,10 @@ const WorkflowsWindow = (() => {
     const fx = S.fix, asking = fx.state === 'asking';
     let h = '<div class="wfw-fix"><div class="wfw-k">What’s wrong with it?</div>'
       + '<textarea id="wfw-fix-in" class="wfw-field" rows="2" maxlength="1200" placeholder="e.g. too long, no sources, the wrong tone, it missed the main point">' + esc(S.draft['fix:' + job.id] != null ? S.draft['fix:' + job.id] : (fx.complaint || '')) + '</textarea>'
-      + '<div class="wf-row"><button type="button" class="bb refit-primary" data-act="suggest"' + (asking ? ' disabled' : '') + '>' + (asking ? 'THINKING…' : 'SUGGEST CHANGES') + '</button><span class="wfw-note">The station reads each step and what it produced, and suggests exact changes. Nothing changes until you use one.</span></div>';
+      + '<div class="wf-row"><button type="button" class="bb refit-primary" data-act="suggest"' + (asking ? ' disabled' : '') + '>' + (asking ? 'THINKING…' : 'SUGGEST CHANGES') + '</button><span class="wfw-note">The keep reads each step and what it produced, and suggests exact changes. Nothing changes until you use one.</span></div>';
     if (fx.state === 'error') h += '<p class="wfw-bad">✕ ' + esc(fx.error) + '</p>';
     if (fx.state === 'done') {
-      const st = stationOf();
+      const st = keepOf();
       h += '<div class="wfw-fixes" data-fixes>' + (fx.diagnosis ? '<p class="wfw-why">' + esc(fx.diagnosis) + '</p>' : '') + fx.fixes.map((x, i) => {
         const p = (st && st.propById(x.dockId)) || {}, inUse = fixInUse(x), n = l ? l.steps.findIndex(s => s.id === x.dockId) + 1 : 0;
         return '<div class="wf-fix' + (inUse ? ' applied' : '') + '"><div class="wf-fix-h"><b>' + esc((n > 0 ? 'STEP ' + n + ' · ' : '') + (p.role || 'STEP') + (p.agentId ? ' · ' + NAME(p.agentId) : '')) + '</b>' + (inUse ? '<span class="wf-tag">IN USE</span>' : '') + '</div>'
@@ -642,7 +642,7 @@ const WorkflowsWindow = (() => {
           + '<div class="wf-row">' + (inUse ? '<button type="button" class="bb sm" data-fix-back="' + i + '">PUT IT BACK</button>' : '<button type="button" class="bb sm refit-primary" data-fix-use="' + i + '">✓ USE THIS</button>') + '</div></div>';
       }).join('')
         + '<div class="wf-row"><button type="button" class="bb' + (fx.fixes.some(fixInUse) ? ' refit-primary' : '') + '" data-act="rerun"' + (runningJob() ? ' disabled' : '') + '>↻ RUN THE SAME JOB AGAIN</button>'
-        + '<span class="wfw-note">Suggested by ' + esc(fx.model || 'the station’s model') + (fx.usd ? ' · ' + usd(fx.usd) : '') + '.</span></div></div>';
+        + '<span class="wfw-note">Suggested by ' + esc(fx.model || 'the keep’s model') + (fx.usd ? ' · ' + usd(fx.usd) : '') + '.</span></div></div>';
     }
     return h + '</div>';
   }
@@ -719,22 +719,22 @@ const WorkflowsWindow = (() => {
     if (liveTimer) { clearInterval(liveTimer); liveTimer = 0; }
     if (pollTimer) { clearInterval(pollTimer); pollTimer = 0; }
     if (unsub) { try { unsub(); } catch (_) {} unsub = null; }
-    watchedStation = null;
+    watchedKeep = null;
   }
 
   /* ---------- the window ---------- */
   // the floor changes (a step re-crewed in REFIT, a line placed or removed): the window repaints with it
-  let watchedStation = null;
+  let watchedKeep = null;
   function attachFloor() {
-    const st = stationOf();
-    if (!st || st === watchedStation || typeof st.onChange !== 'function') return;
+    const st = keepOf();
+    if (!st || st === watchedKeep || typeof st.onChange !== 'function') return;
     if (unsub) { try { unsub(); } catch (_) {} unsub = null; }
-    watchedStation = st;
+    watchedKeep = st;
     unsub = st.onChange(() => { if (!alive()) return stopTimers(); schedule(); });
   }
   function build(el) {
     body = el;
-    watchedStation = null; attachFloor();
+    watchedKeep = null; attachFloor();
     paint();
     loadJobs();
   }
@@ -742,7 +742,7 @@ const WorkflowsWindow = (() => {
     const ui = UI(); if (!ui || !ui.openTerm) return;
     if (view) Object.assign(S, view);
     if (alive()) paint();
-    // from another work window (the OUTBOX): that window steps aside and this one keeps a ‹ back to it (StationUI.navigateWork)
+    // from another work window (the OUTBOX): that window steps aside and this one keeps a ‹ back to it (KeepUI.navigateWork)
     const h = H();
     if (from && h && h.navigateWork) h.navigateWork(from, 'workflows'); else ui.openTerm('workflows');
     // already open under another window: it comes to the top

@@ -25,22 +25,22 @@ const packageVersion = require('../package.json').version;
 const versionPattern = packageVersion.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 // A fixture key FILE (never real key material): --dry-run only proves the key path exists and
 // prints the signing command; it never signs. Without this, the test needs the operator's real
-// ~/.tauri key and goes red on any CI runner (v0.6.3 train run 4). Named starnet-updater.key so
+// ~/.tauri key and goes red on any CI runner (v0.6.3 train run 4). Named eyehold-updater.key so
 // the printed-command assertions below still see the canonical filename.
-const keyDir = mkdtempSync(join(tmpdir(), 'starnet-cut-key-'));
-const keyFile = join(keyDir, 'starnet-updater.key');
+const keyDir = mkdtempSync(join(tmpdir(), 'eyehold-cut-key-'));
+const keyFile = join(keyDir, 'eyehold-updater.key');
 writeFileSync(keyFile, 'dW50-fixture-not-a-real-key\n');
 const result = spawnSync(process.execPath, [
   join(ROOT, 'scripts', 'release-cut.mjs'),
   '--dry-run',
   '--no-pre-build-ctor'
-], { cwd: ROOT, encoding: 'utf8', env: Object.assign({}, process.env, { STARNET_UPDATER_KEY_FILE: keyFile }) });
+], { cwd: ROOT, encoding: 'utf8', env: Object.assign({}, process.env, { EYEHOLD_UPDATER_KEY_FILE: keyFile }) });
 
 assert.equal(result.status, 0, result.stderr || result.stdout);
 const output = result.stdout + result.stderr;
 assert.match(output, /desktop:build .*explicit updater signing follows/i);
 assert.match(output, /--config .*release-unsigned-updater\.conf\.json/i);
-assert.match(output, /signer sign --private-key-path .*starnet-updater\.key --password=/i);
+assert.match(output, /signer sign --private-key-path .*eyehold-updater\.key --password=/i);
 assert.doesNotMatch(output, /TAURI_SIGNING_PRIVATE_KEY\s*=/,
   'the release cutter must not put raw private-key contents in its command output');
 assert.match(output, new RegExp('package\\.json version\\s+: ' + versionPattern),
@@ -70,7 +70,7 @@ assert.match(source, /refusing to select a stale installer for another version/,
 /* ---- THE CUT MUST CRYPTOGRAPHICALLY VERIFY ITS OWN SIGNATURE -------------------------------------
    release-cut checked only that a .sig file EXISTS and is newer than the installer. Neither says it was
    made with the right KEY. A cut with the wrong updater private key (a restored/regenerated
-   ~/.tauri/starnet-updater.key, or STARNET_UPDATER_KEY_FILE pointing elsewhere) passed T1 signing, T5
+   ~/.tauri/eyehold-updater.key, or EYEHOLD_UPDATER_KEY_FILE pointing elsewhere) passed T1 signing, T5
    public-distribution and verify-update-host completely green, published, and then hard-failed the update
    for EVERY installed app — the exact failure minisign-verify.mjs exists to prevent, and whose own header
    names this gap. It was wired into ONE producer (release-assemble-manifest, the CI train + canary) and not
@@ -86,7 +86,7 @@ assert.match(source, /refusing to select a stale installer for another version/,
 
   const installerBytes = Buffer.from('MZ fake installer bytes for the wrong-key proof');
   const wrongKey = makeSigner();
-  const wrongSig = wrongKey.sign(installerBytes, { fileName: 'StarNet_0.0.0_x64-setup.exe' }).sigFileContent;
+  const wrongSig = wrongKey.sign(installerBytes, { fileName: 'Eyehold_0.0.0_x64-setup.exe' }).sigFileContent;
 
   // the pubkey EVERY installed app trusts — the one release-cut now resolves by default
   const bakedPubkey = resolvePubkeyText('', ROOT);

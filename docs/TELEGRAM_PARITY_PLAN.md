@@ -1,8 +1,8 @@
-# TELEGRAM PARITY PLAN — getting StarNet to Hermes' 10/10
+# TELEGRAM PARITY PLAN — getting Eyehold to Hermes' 10/10
 
 Written 2026-07-28, after a live diff of `hermes-ref/plugins/platforms/telegram/adapter.py`
 (8,776 lines, 49 dedicated test files, 25 `config.extra` options, 19 `TELEGRAM_*` env knobs)
-against StarNet's channel stack (`sidecar/channels/*`, ~1,900 lines shared across five
+against Eyehold's channel stack (`sidecar/channels/*`, ~1,900 lines shared across five
 platforms, 6 Telegram test files).
 
 Grounding note: the Hermes side was read selectively — module header, the streaming /
@@ -18,12 +18,12 @@ This is not a quality gap. It is an **architectural** one, and it was a delibera
 
 - **Hermes** has a Telegram-*specific* adapter. It is free to use `message_thread_id`,
   `sendMessageDraft`, forum topics, reactions — anything the platform offers.
-- **StarNet** has ONE generic adapter (`channels/adapter.js`) driving Telegram, Discord,
+- **Eyehold** has ONE generic adapter (`channels/adapter.js`) driving Telegram, Discord,
   Slack, Matrix and Signal. Telegram supplies only `normalize()` and a length limit. That
   design bought us five platforms for the price of one — and it caps us at the
   *intersection* of what all five can do.
 
-We do **not** fork into a Telegram-specific adapter. StarNet already has the correct seam
+We do **not** fork into a Telegram-specific adapter. Eyehold already has the correct seam
 and uses it in four places today: **transport-optional capability methods**. `getFile`,
 `answerCallback`, `editMessage` and `setCommands` all return `{ok:false, error}` when the
 transport lacks them, and the hub falls back (that is exactly what keeps Discord/Slack
@@ -41,10 +41,10 @@ entity string resends as plain text) and it is the acceptance bar for all of it.
 
 ---
 
-## 1. Scorecard — Hermes' 49 Telegram tests mapped onto StarNet
+## 1. Scorecard — Hermes' 49 Telegram tests mapped onto Eyehold
 
 ### HAVE (parity today, some of it better)
-| Hermes test | StarNet |
+| Hermes test | Eyehold |
 |---|---|
 | `approval_buttons` | `/approvals` + `channels/prompts.js` — ours is bounded + token-resolved, Hermes' leaks and FIFO-crosses |
 | `callback_auth_fail_closed` | fixed here; an unclaimed owner is not a licence |
@@ -293,12 +293,12 @@ That is a nuance, not a gap.
 | N1 | **Outbound never carries `message_thread_id`.** `normalize` reads it only to suppress the forum-root reply trap; it is on no inbound event and no send. | In a **forum supergroup our answer lands in General, not the topic the member asked in**. Not polish — a wrong-destination bug. | S–M |
 | N2 | **Outbound never carries `reply_to_message_id`.** Hermes has `reply_to_mode` + `_should_thread_reply`. | In a busy group our reply floats detached from the question. | S |
 | N3 | **The P3 gates are unreachable.** `requireMention` / `ignoreBots` / `allowedUsers` are read in `adapter.js` but **`index.js` passes none of them** — they are hardcoded defaults with no command, no route and no UI. | P3 shipped a behaviour change (groups now answer only when addressed) with **no escape hatch**: a member who wants free response in their group cannot get it. | S |
-| N4 | ~~**No `mention_patterns`**~~ **DONE** — see below. | "StarNet, summarise that" does not wake the bot — the most natural way to address it by name. | S |
+| N4 | ~~**No `mention_patterns`**~~ **DONE** — see below. | "Eyehold, summarise that" does not wake the bot — the most natural way to address it by name. | S |
 | N5 | ~~**No `observe_unmentioned`**~~ **DONE** — see below. | When finally mentioned the agent has **no idea what the room was discussing** — the mention gate bought spend safety and paid in amnesia. | M |
 | N6 | ~~**`edited_message` never arrives**~~ **DONE** — see below. | Fixing a typo in your question does nothing; the bot answers the typo. | S |
 | N7 | ~~**`channel_post` never arrives**~~ **DONE** — see below. | The bot is **completely deaf** when added to a broadcast channel. | S |
 | N8 | ~~**No reactions**~~ **DONE** — see below. | The cheapest possible "I heard you" — one API call, no message, no chunking. | S |
-| N9 | ~~**No status indicator**~~ **DONE** — `setShortDescription` on the transport + adapter, written on connect/disconnect. Opt-in via `TELEGRAM_STATUS_INDICATOR` (with `TELEGRAM_STATUS_ONLINE` / `_OFFLINE`), **off by default exactly as in Hermes**, because it overwrites a public profile field the member may have written themselves. Capped at Telegram's 120 chars. | The bot's profile card never says whether the station is up. | S |
+| N9 | ~~**No status indicator**~~ **DONE** — `setShortDescription` on the transport + adapter, written on connect/disconnect. Opt-in via `TELEGRAM_STATUS_INDICATOR` (with `TELEGRAM_STATUS_ONLINE` / `_OFFLINE`), **off by default exactly as in Hermes**, because it overwrites a public profile field the member may have written themselves. Capped at Telegram's 120 chars. | The bot's profile card never says whether the keep is up. | S |
 | N10 | **No link-preview control** (`disable_link_previews` / `_link_preview_kwargs`). | Any URL in a reply drags a full unfurl card. | XS |
 | N11 | **No `deleteMessage`.** Hermes deletes its own transient progress/status messages. | Prerequisite for P4 streaming cleanup. | XS |
 | N12 | **No `getChat` / `username → chat_id`.** | A member can only be reached by numeric id. | S |
@@ -312,7 +312,7 @@ That is a nuance, not a gap.
 
 - **DM topics / home channel** (`_create_dm_topic`, `ensure_dm_topic`, `rename_dm_topic`, `_setup_dm_topics`,
   `create_handoff_thread`, `TELEGRAM_HOME_CHANNEL`) — Hermes mirrors every DM into a topic of one operator
-  supergroup. That is a *fleet-operator* shape; StarNet's member owns their own station. Refuse on product
+  supergroup. That is a *fleet-operator* shape; Eyehold's member owns their own keep. Refuse on product
   grounds, not capability.
 - **`sendRichMessage` / `sendRichMessageDraft`** — §3 already says probe-and-degrade, never a dependency.
 - **Free-form outbound addressing** — known-targets-only stays law whatever Hermes does.
@@ -485,7 +485,7 @@ the lesson is that a hand-rolled binary fixture is worth generating rather than 
 ### THE INBOUND HALF — PROVEN LIVE (2026-07-30)
 
 Closed with a **real sidecar polling real `api.telegram.org`**, booted from env onto an isolated workspace with
-a local zero-cost model, so it touched neither the station's config nor a paid provider. A real message
+a local zero-cost model, so it touched neither the keep's config nor a paid provider. A real message
 ("what can u do") sent from a phone produced, in order:
 
 - `telegram auto-started from env` → `telegram channel connecting…` — the poll loop, with the new six-kind
@@ -503,7 +503,7 @@ platform**, not only against fakes.
 ### Historical — what this section said while it was still open
 
 The outbound half is now done. What remains is the inbound half, and it is blocked on something simpler than
-it looks: **nothing in StarNet is polling this token.** The bot has never been added to a station (no
+it looks: **nothing in Eyehold is polling this token.** The bot has never been added to a keep (no
 `telegram.token` in any channel-secrets file), so a message to it reaches no hub and gets no reply. Open until
 it is connected in the app's Messaging tab: inbound admission end to end, a real run and its reaction ack,
 streaming on real model output, voice-note STT, album batching, `edited_message`, `channel_post` + the echo
@@ -554,7 +554,7 @@ chat id to a number, so an `@name` passes straight through) · `managed_bot` (mu
 ### DELIBERATE DIFFERENCES — 6, all documented above
 
 - `send_draft_format`, and the rich-draft half of `rich_messages` — §3: probe-and-degrade, never a dependency.
-- `webhook_secret` — StarNet is local-first; long-poll is the correct transport, not a limitation.
+- `webhook_secret` — Eyehold is local-first; long-poll is the correct transport, not a limitation.
 - `closewait_limits` — an httpx/PTB pool artefact. `fetch` + one long-poll has no pool to exhaust.
 - `slash_confirm` — a formatting regression guard for a Hermes-specific feature, not a capability.
 - `photo_interrupts` — they QUEUE a photo that lands mid-run; we SUPERSEDE. Ours is the documented

@@ -1,5 +1,5 @@
 /* sidecar/scout.js — the PURE scout engine (Scout lane 2): the scheduled drafting pass that turns the
-   station's learned interests into NEW options in the recruitment bay.
+   keep's learned interests into NEW options in the recruitment bay.
 
    WHY THIS EXISTS — the bay's dynamic shelves used to mint client-side only: ONE attempt per browser
    session, right after a qualifying run, silently swallowing every rejection. In practice the presets never
@@ -182,9 +182,9 @@
   function buildRecipeDirective(ctx) {
     ctx = ctx || {};
     const lines = [];
-    lines.push('You are the station\'s recipe author, drafting ONE new one-tap mission recipe tailored to what the Commander ACTUALLY keeps doing.');
+    lines.push('You are the keep\'s recipe author, drafting ONE new one-tap mission recipe tailored to what the Commander ACTUALLY keeps doing.');
     lines.push('');
-    lines.push('WHAT THE STATION HAS LEARNED (real observed interests, with evidence):');
+    lines.push('WHAT THE KEEP HAS LEARNED (real observed interests, with evidence):');
     lines.push(str(ctx.interestsBlock).trim() || '(nothing yet)');
     if (ctx.dossierBlock) { lines.push(''); lines.push('COMMANDER DOSSIER:'); lines.push(str(ctx.dossierBlock).trim()); }
     if (ctx.activityBlock) { lines.push(''); lines.push('RECENT ACTIVITY:'); lines.push(str(ctx.activityBlock).trim()); }
@@ -202,7 +202,7 @@
     lines.push('HARD CONSTRAINTS:');
     lines.push('- Propose EXACTLY ONE recipe, serving a SPECIFIC observed interest above — never a generic productivity template.');
     lines.push('- The recipe must EARN ITS TAP: the TASK encodes method and judgment (steps, quality criteria, output shape) the Commander would never bother typing. A one-line paraphrase of the recipe\'s own name is worthless — do not propose it.');
-    lines.push('- Prefer a recipe that DRIVES THE STATION — reads the web or files, checks connected channels, or runs on a cadence — over one that asks the Commander to paste text in.');
+    lines.push('- Prefer a recipe that DRIVES THE KEEP — reads the web or files, checks connected channels, or runs on a cadence — over one that asks the Commander to paste text in.');
     lines.push('- The TASK must LAND somewhere: it ends in a deliverable or a decision (a draft, a ranked call, a delta report), and if the use case naturally recurs it should keep notes in memory and report what CHANGED since last run, not restate the world.');
     lines.push('- TASK is one imperative directive line the agent will execute, containing a {token} for every PARAM you declare.');
     lines.push('- 1-' + MAX_PARAMS + ' PARAM lines; each is: key | Label | placeholder example. Keys are short lowercase identifiers.');
@@ -246,7 +246,7 @@
     if (!name || !tagline || !task || !why) return null;   // the load-bearing fields — a partial draft is malformed
 
     // WHY GROUNDING (mirrors interests.parse's evidence guard): when a grounding corpus is provided, at least
-    // one significant WHY token must appear in it — a WHY that cites nothing the station actually observed is
+    // one significant WHY token must appear in it — a WHY that cites nothing the keep actually observed is
     // an invented pitch, rejected (and ledger-visible via the caller), never staged.
     const grounding = str(opts.grounding).toLowerCase();
     if (grounding) {
@@ -313,7 +313,7 @@
   /* ---- ARCHETYPE MATCHING (recuration 2026-07-14): the curated deep-cut pool seeds prospects ----
      The bay's default roster was trimmed to 12 majority-use classes; the demoted deep cuts live on as
      fully-specified ARCHETYPES (shared/specialties.js). On a prospect turn the cycle checks — BEFORE
-     paying for an LLM authorship pass — whether a dormant archetype already covers what the station has
+     paying for an LLM authorship pass — whether a dormant archetype already covers what the keep has
      LEARNED the Commander keeps doing. Deterministic + truthful telemetry: an archetype only matches on
      the real persisted interest-topic counters, and the WHY names the actual topic + its observed count.
      A match stages the archetype's FULL spec as a normal prospect (propose-and-confirm, same shelf, same
@@ -322,7 +322,7 @@
   // generic words that would match every archetype (or nothing about the JOB) — never count as a topic hit.
   const ARCH_STOP = new Set(['the', 'and', 'for', 'with', 'that', 'this', 'from', 'your', 'their', 'about', 'into',
     'over', 'what', 'when', 'work', 'working', 'works', 'task', 'tasks', 'project', 'projects', 'daily', 'weekly',
-    'general', 'station', 'commander', 'agent', 'agents', 'using', 'help', 'helping', 'stuff', 'things', 'keep',
+    'general', 'keep', 'commander', 'agent', 'agents', 'using', 'help', 'helping', 'stuff', 'things', 'keep',
     'keeps', 'other', 'some', 'more', 'most', 'like', 'time', 'times', 'every', 'each', 'never', 'always']);
   // crude stem so "translation" hits "translates", "pricing" hits "prices" (substring match on the corpus).
   function archStem(tok) { return str(tok).replace(/(ings?|ions?|ed|es|s)$/, ''); }
@@ -371,7 +371,7 @@
     }
     if (!best) return null;
     const top = best.hits.slice().sort((x, y) => ((Number(y.weight) || 0) - (Number(x.weight) || 0)))[0];
-    const why = ('your station keeps working on ' + str(top.label) + ' (seen ' + (Number(top.count) || 0) + '×) — the ' +
+    const why = ('your keep keeps working on ' + str(top.label) + ' (seen ' + (Number(top.count) || 0) + '×) — the ' +
       str(best.archetype.name) + ' archetype covers exactly that').slice(0, WHY_MAX);
     return { archetype: best.archetype, why: why, fingerprint: best.fp, topic: top };
   }
@@ -488,7 +488,7 @@
     for (const k of Object.keys(s.usage.launches)) launches[k] = Object.assign({}, s.usage.launches[k]);
     const cur = launches[id];
     launches[id] = { name: str((rec && rec.name) || (cur && cur.name)).slice(0, 40), n: (cur ? cur.n : 0) + 1, lastAt: now, rated: normRated(cur && cur.rated) };   // a launch never erases the outcome counters
-    // evict past the ceiling: fewest launches first (ties: oldest lastAt) — a long-lived station keeps its heavy hitters.
+    // evict past the ceiling: fewest launches first (ties: oldest lastAt) — a long-lived keep keeps its heavy hitters.
     const keys = Object.keys(launches);
     if (keys.length > USAGE_CAP) {
       keys.sort((a, b) => (launches[b].n - launches[a].n) || (launches[b].lastAt - launches[a].lastAt));

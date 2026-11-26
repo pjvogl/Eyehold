@@ -1,6 +1,6 @@
 /* node test/browser.desktop-login-journey.test.js
    Packaged-desktop acceptance contract for the attended LinkedIn login journey:
-   ordinary browsing stays headless, login opens a visible browser on the station profile,
+   ordinary browsing stays headless, login opens a visible browser on the keep profile,
    Done restores headless automation, and a restarted sidecar reuses the same profile. */
 'use strict';
 
@@ -41,8 +41,8 @@ function makeDriverSeam() {
 function desktopBrowser(seam, lease, prompts) {
   return makeBrowserTools({
     // This models the packaged desktop host after src-tauri starts the sidecar: there is
-    // deliberately no desktop-wide STARNET_BROWSER_HEADLESS pin.
-    env: { STARNET_DESKTOP_SHELL: '1', STARNET_USER_CONTROL_MODE: 'preserve' },
+    // deliberately no desktop-wide EYEHOLD_BROWSER_HEADLESS pin.
+    env: { EYEHOLD_DESKTOP_SHELL: '1', EYEHOLD_USER_CONTROL_MODE: 'preserve' },
     forceHeadless: true,
     syntheticInputOnly: true,
     profileDir: 'C:\\temp\\ephemeral-browser-profile',
@@ -58,8 +58,8 @@ function desktopBrowser(seam, lease, prompts) {
 }
 
 (async () => {
-  const stationProfile = 'C:\\Users\\Commander\\AppData\\Roaming\\StarNet\\browser-profile';
-  const lease = makeLease(stationProfile);
+  const keepProfile = 'C:\\Users\\Commander\\AppData\\Roaming\\Eyehold\\browser-profile';
+  const lease = makeLease(keepProfile);
   const seam = makeDriverSeam();
   const prompts = [];
   const firstRun = desktopBrowser(seam, lease, prompts);
@@ -68,7 +68,7 @@ function desktopBrowser(seam, lease, prompts) {
   A.eq(seam.launches.length, 1, 'ordinary desktop browsing launches once');
   A.eq(seam.launches[0].options.headed, false, 'ordinary desktop browsing remains headless');
   A.eq(seam.launches[0].options.syntheticInputOnly, true, 'ordinary browsing retains synthetic-input isolation');
-  A.eq(seam.launches[0].options.profileDir, stationProfile, 'ordinary browsing uses the persistent station profile');
+  A.eq(seam.launches[0].options.profileDir, keepProfile, 'ordinary browsing uses the persistent keep profile');
 
   const login = firstRun.tools.find(tool => tool.name === 'browser.login');
   const result = await login.run({ url: 'https://www.linkedin.com/login' }, {});
@@ -79,11 +79,11 @@ function desktopBrowser(seam, lease, prompts) {
   A.eq(seam.launches[1].options.headed, true, 'LinkedIn login opens a real visible browser');
   A.eq(seam.launches[1].options.syntheticInputOnly, false, 'human login does not inherit synthetic-input restrictions');
   A.eq(seam.launches[1].options.forceHeadless, false, 'the attended login explicitly overrides ordinary headless policy');
-  A.eq(seam.launches[1].options.profileDir, stationProfile, 'the visible browser uses the station profile');
+  A.eq(seam.launches[1].options.profileDir, keepProfile, 'the visible browser uses the keep profile');
   A.eq(seam.launches[1].navigated, ['https://www.linkedin.com/login'], 'the visible browser opens the requested LinkedIn login page');
   A.eq(seam.launches[2].options.headed, false, 'Done returns control to a headless browser');
   A.eq(seam.launches[2].options.syntheticInputOnly, true, 'Done restores ordinary input isolation');
-  A.eq(seam.launches[2].options.profileDir, stationProfile, 'the restored browser keeps the signed-in profile');
+  A.eq(seam.launches[2].options.profileDir, keepProfile, 'the restored browser keeps the signed-in profile');
   A.ok(/finished logging in/i.test(result.content), 'the completed attended flow is reported truthfully');
 
   await firstRun.session.navigate('https://www.linkedin.com/feed/');
@@ -94,7 +94,7 @@ function desktopBrowser(seam, lease, prompts) {
   await secondRun.session.navigate('https://www.linkedin.com/feed/');
   A.eq(seam.launches.length, 4, 'a restarted sidecar launches a fresh browser process');
   A.eq(seam.launches[3].options.headed, false, 'the restarted sidecar resumes ordinary headless browsing');
-  A.eq(seam.launches[3].options.profileDir, stationProfile, 'the restarted sidecar reuses the authenticated station profile');
+  A.eq(seam.launches[3].options.profileDir, keepProfile, 'the restarted sidecar reuses the authenticated keep profile');
   A.ok(lease.state.released >= 1 && lease.state.acquired >= 2, 'the persistent profile lease survives clean run handoff');
   await secondRun.session.close();
 

@@ -2,7 +2,7 @@ I now have complete ground truth. The findings assumed a greenfield browser app,
 
 I'll write the spec to honor the existing contract exactly. No more reads needed.
 
-# STARNET Sidecar — BUILD SPEC (Lead Engineer, decisive)
+# EYEHOLD Sidecar — BUILD SPEC (Lead Engineer, decisive)
 
 > **Reconciliation note (read first).** The three research findings assumed a greenfield browser app and proposed a fresh ESM single-file sidecar with an invented `{t:'token', d}` NDJSON protocol. **That is wrong for this repo.** The codebase is already at ~M4 of `docs/HARNESS_ARCHITECTURE.md`: a **frozen `agent.*` event bus** (`shared/events.js`), a **deterministic, dependency-injected loop** (`sidecar/loop.js`), a **provider seam** (`stream(req) -> AsyncIterable<HarnessEvent>`), a **cap-gated registry with consent** (`sidecar/tools/registry.js`), a **working `web.js`**, a **cost engine**, and a **UMD module style** (CommonJS-under-node / global-under-browser). This spec builds the MVP **on those real seams**. We do **not** invent a new event vocabulary; the NDJSON wire is literally `{name, payload}` pairs of existing `agent.*` events. We do **not** rewrite the loop; we feed it a real provider + dispatcher + emitter. Two files are genuinely missing (`providers/openrouter.js`, the Node host `sidecar/index.js`) plus `tools/builtin/fs.js`. That's the build.
 
@@ -29,7 +29,7 @@ POST https://openrouter.ai/api/v1/chat/completions
 Authorization: Bearer <USER_BYOK_KEY>
 Content-Type: application/json
 HTTP-Referer: http://127.0.0.1
-X-Title: STARNET
+X-Title: EYEHOLD
 
 {
   "model": "anthropic/claude-sonnet-4.5",
@@ -219,7 +219,7 @@ Naming: tools are `fs.read`/`fs.write`/`fs.list`, capability `cabinet`, matching
 
 ### 4c. Add the `cabinet` capability to the registry
 
-`sidecar/capability/registry.js` — append to `CAP_REGISTRY` so a "cabinet" (or "computer") object grants the fs tools. For the MVP, **grant `cabinet` + `web` off the `computer` object** so a single placed computer gives the agent a usable toolset (matches the game: one workstation = research + write). Two clean options — pick **Option A** for the MVP:
+`sidecar/capability/registry.js` — append to `CAP_REGISTRY` so a "cabinet" (or "computer") object grants the fs tools. For the MVP, **grant `cabinet` + `web` off the `computer` object** so a single placed computer gives the agent a usable toolset (matches the game: one workkeep = research + write). Two clean options — pick **Option A** for the MVP:
 
 **Option A (MVP, simplest):** extend the `computer` grant list so placing one computer grants compute + web + cabinet:
 
@@ -285,7 +285,7 @@ limits = { maxIters: 8, maxCostUsd: 0.50 }   // loop.js reads maxIters + maxCost
 
 - **maxIters (8):** `turns >= maxIters → end('max_iters')` (`loop.js:104`).
 - **maxCostUsd (0.50/run):** checked against **reconciled** spend before each paid call → `end('budget')` (`loop.js:105`).
-- **Compute gate:** if `capCtx.canRun()` is false (no computer in the room) → emit `capdenied`, `end('error')` (`loop.js:107-110`). For the MVP host, the resolved capabilities always include a computer (we synthesize a one-computer station — §6), so this passes.
+- **Compute gate:** if `capCtx.canRun()` is false (no computer in the room) → emit `capdenied`, `end('error')` (`loop.js:107-110`). For the MVP host, the resolved capabilities always include a computer (we synthesize a one-computer keep — §6), so this passes.
 - **Per-tool timeout:** `registry.dispatch` wraps `run()` in `withTimeout(tool.timeoutMs)` (`registry.js:83-91`); on timeout → `isError` result, loop continues.
 - **Stuck-loop breaker:** the findings' `maxRepeat` is **not** in the current `loop.js`. Add it as a small guard in the host's `dispatch` wrapper (count identical `name+argsRaw`, after N=3 return an `isError` result) — see §6. This is a host-side wrapper, not a loop edit, keeping `loop.js` byte-stable and its replay tests green.
 - **Errors never escape the loop:** any tool throw/timeout/deny becomes an `isError` `agent.tool_result` (`loop.js:62-70`); a provider/stream throw becomes `agent.run.error` + `end('error')` (`loop.js:126-129`).
@@ -334,7 +334,7 @@ http.createServer(async (req, res) => {
   if (req.method === 'POST' && req.url === '/api/cancel') return handleCancel(req, res);
   if (req.method === 'GET'  && req.url === '/api/health') return res.writeHead(200).end('ok');
   return serveStatic(req, res);   // everything else -> frontend/ (path-jailed, see below)
-}).listen(PORT, '127.0.0.1', () => console.log('STARNET sidecar → http://127.0.0.1:' + PORT));
+}).listen(PORT, '127.0.0.1', () => console.log('EYEHOLD sidecar → http://127.0.0.1:' + PORT));
 
 async function handleRun(req, res) {
   let body; try { body = JSON.parse(await readBody(req, 1 << 20)); }
@@ -366,11 +366,11 @@ async function handleRun(req, res) {
   makeFsTools({ fsp, pathMod: path, root: WORKSPACES, limits: { writeBytes: 1 << 20, readReturn: 200000 } }).register(registry);
   throttleTool(registry, 'web_search', 1100);   // ≥1.1s between DDG hits (Finding B reliability fix)
 
-  // capabilities: synthesize a one-computer station so the compute gate passes and the
+  // capabilities: synthesize a one-computer keep so the compute gate passes and the
   // computer-grants-web+cabinet rows resolve (CAP_REGISTRY Option A).
-  const station = { agents: { [agentId]: { id: agentId, room: 'office' } },
+  const keep = { agents: { [agentId]: { id: agentId, room: 'office' } },
                     rooms:  { office: { id: 'office', objects: [{ instanceId: 'pc1', objectType: 'computer' }] } } };
-  const resolved = resolveTools(agentId, station);
+  const resolved = resolveTools(agentId, keep);
   // MVP consent shim: auto-allow (no prompt UI yet). SSRF guard + jail are the real boundaries.
   const capCtx = makeCapCtx(resolved, {
     consent: async () => ({ allow: true }),
@@ -535,7 +535,7 @@ AGENT      Done, Commander. I compared four boards and saved keyboards.md …   
 
 ### 7c. `frontend/index.html` — copy + DISCONNECT wiring (no structural change)
 
-Scripts are relative and the sidecar serves the same `frontend/` tree, so paths resolve unchanged. Two edits: (1) connect-panel copy → "Your key + messages go to your **local** STARNET sidecar on this machine, which calls the model and runs the agent's web/file tools" (informed consent). (2) Wire the existing DISCONNECT button to also `POST /api/cancel {runId}` of the active run so closing down stops live spend immediately (belt-and-suspenders with `req.on('close')`).
+Scripts are relative and the sidecar serves the same `frontend/` tree, so paths resolve unchanged. Two edits: (1) connect-panel copy → "Your key + messages go to your **local** EYEHOLD sidecar on this machine, which calls the model and runs the agent's web/file tools" (informed consent). (2) Wire the existing DISCONNECT button to also `POST /api/cancel {runId}` of the active run so closing down stops live spend immediately (belt-and-suspenders with `req.on('close')`).
 
 ---
 
@@ -593,7 +593,7 @@ Run from `gen/`: `npm start` → `http://127.0.0.1:8787`. No `npm install` — N
 
 1. **`providers/openrouter.js` + `provider.openrouter.test.js`** — feed recorded OR SSE bytes (a text-only turn, a tool-call turn with split args, a mid-stream error, a usage chunk) through `stream(req)`; assert the exact `HarnessEvent` sequence and `normalizeFinish`. *Gate: matches the replay provider's event shape.* No network.
 2. **`tools/builtin/fs.js` + `fs.jail.test.js`** — inject an in-memory `fsp` fake + `node:path`; assert traversal/absolute/drive rejection and write→read→list roundtrip + size cap. No real disk.
-3. **`capability/registry.js` edit + rerun `test/capgate.test.js` / `test/tools.test.js`** — confirm `resolveTools` on a one-computer station now yields `web_search/web_fetch/fs.*` and `hasCompute:true`, and existing cap-gate tests still pass.
+3. **`capability/registry.js` edit + rerun `test/capgate.test.js` / `test/tools.test.js`** — confirm `resolveTools` on a one-computer keep now yields `web_search/web_fetch/fs.*` and `hasCompute:true`, and existing cap-gate tests still pass.
 4. **Headless loop integration (node, no browser, no key):** wire `registry` (web with an **injected `fetchImpl` fake** returning canned DDG/Jina bytes) + `fs` (in-mem) + **replay provider** into `runAgentLoop`; assert the full event sequence (`run.start → tool_call → tool_result → … → run.end`) and `assertPaired` holds across a search→fetch→write run. *This proves the whole MVP minus real I/O, deterministically.*
 5. **`sidecar/index.js` smoke (real process):** `npm start`; `GET /api/health` → `ok`; `GET /` serves `index.html`; `POST /api/run` with a **fake/echo key against a stubbed provider base URL** (or a tiny canned model) → assert NDJSON lines parse and end with `agent.run.end`. Verify `req.on('close')` aborts (drop the connection mid-run, confirm spend stops).
 6. **`harness.js` transport swap + manual browser run:** point the connect panel at a real BYOK key + a tool-capable model (`anthropic/claude-sonnet-4.5`); issue a research-and-write directive; confirm COMMS shows `▶/◀` tool lines, the final answer streams, a file lands in `sidecar/workspaces/agent/`, the HUD cost ticks from `agent.cost`, and DISCONNECT/`/api/cancel` stops a run mid-flight.

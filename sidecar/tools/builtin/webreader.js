@@ -1,10 +1,10 @@
-/* sidecar/tools/builtin/webreader.js — the station READER: a shared, headless, cookie-less real-Chrome
+/* sidecar/tools/builtin/webreader.js — the keep READER: a shared, headless, cookie-less real-Chrome
    fallback that web_fetch and web_search borrow when plain HTTP is bot-walled or throttled.
 
    WHY (2026-07-31, field data + the Hermes reach audit): the dominant real-world web failures are bot
    walls (403) and throttled keyless engines — problems a REAL browser fingerprint doesn't have. Hermes
    solves reach architecturally (vendor reader APIs + real browsers, model-driven escalation, no
-   automatic fallback); StarNet is local-first with no vendor keys, but it SHIPS a CDP Chrome. This
+   automatic fallback); Eyehold is local-first with no vendor keys, but it SHIPS a CDP Chrome. This
    module turns that asset into automatic reach: when the cheap path fails in a way a browser can fix,
    the tool quietly reads the page through Chrome instead of reporting weather.
 
@@ -16,7 +16,7 @@
        deps.idleMs    : teardown after this much idle (default 90s)
 
    POSTURE (do not weaken):
-     · ALWAYS headless, ALWAYS an ephemeral profile, NEVER the station's persistent (signed-in)
+     · ALWAYS headless, ALWAYS an ephemeral profile, NEVER the keep's persistent (signed-in)
        profile — web_fetch is a read-scope no-consent tool, so it must never ride the Commander's
        logins: an authenticated page leaking into a no-consent tool would be a real exfil channel.
        The plain-HTTP path carries no cookies; the reader must match it.
@@ -105,7 +105,7 @@
     let driver = null, idleTimer = null, chain = Promise.resolve(), closed = false;
 
     function availability() {
-      if (String(env.SKYNET_WEB_READER || env.STARNET_WEB_READER || '') === '0') return { ok: false, reason: 'disabled' };
+      if (String(env.SKYNET_WEB_READER || env.EYEHOLD_WEB_READER || '') === '0') return { ok: false, reason: 'disabled' };
       if (!makeDriver) return { ok: false, reason: 'browser module unavailable' };
       if (deps.makeDriver) return { ok: true };   // an injected factory needs no Chrome on disk
       try {
@@ -130,8 +130,8 @@
       const OS = req ? req('node:os') : null;
       driver = makeDriver({
         forceHeadless: true, headless: true, cdpPort: 0, env,
-        // ephemeral, reader-owned profile — never the station's signed-in one (see POSTURE above)
-        profileDir: P && OS ? P.join(OS.tmpdir(), 'starnet-webreader-' + process.pid) : undefined,
+        // ephemeral, reader-owned profile — never the keep's signed-in one (see POSTURE above)
+        profileDir: P && OS ? P.join(OS.tmpdir(), 'eyehold-webreader-' + process.pid) : undefined,
         cleanupProfile: true
       });
       return driver;

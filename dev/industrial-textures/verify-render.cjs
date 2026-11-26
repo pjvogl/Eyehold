@@ -76,13 +76,13 @@ async function load(search, broken = false) {
   const calls = [], spy = { save() {}, restore() {}, drawImage(...args) { calls.push(args); } };
   assert.equal(props.spec('desk').w, 3, 'new industrial desk has its real three-tile footprint');
   assert.equal(props.spec('desk2').w, 3);
-  pack.workstation(spy, 12, 12, 36, 12);
+  pack.workkeep(spy, 12, 12, 36, 12);
   const [im, dx, dy, dw, dh] = calls[0];
-  assert.ok(Math.abs(dw / dh - im.width / im.height) < 1e-8, 'no workstation stretching');
+  assert.ok(Math.abs(dw / dh - im.width / im.height) < 1e-8, 'no workkeep stretching');
   assert.equal(dy + dh, 24, 'desk contacts its original floor line');
   assert.ok(dx >= 11 && dx + dw <= 49, 'desk fits its new footprint');
   assert.ok(dw >= 37 && dh >= 23 && dh <= 23.5, 'broader console retains approved height');
-  pack.workstation(spy,12,12,24,12);
+  pack.workkeep(spy,12,12,24,12);
   const [legacy,lx,ly,lw,lh]=calls[1];
   assert.ok(lw <= 26 && lh >= 23 && lh <= 23.5, 'saved two-tile desks retain height within their footprint');
   assert.ok(Math.abs(lw/lh-legacy.width/legacy.height)<1e-8);
@@ -111,11 +111,11 @@ async function load(search, broken = false) {
   }
   const wm=require(path.join(root,'frontend/app/worldmodel.js'));
   wm.setPropRules(props.spec);
-  const station=wm.defaultDoc();
-  station.rooms.r1.rects=[{x1:0,y1:0,x2:21,y2:17}];
-  station.props=require('./command-deck.cjs')();
-  const model=wm.deserialize(station);
-  for (const p of station.props) assert.equal(model.canPlaceProp(p.t,p.x,p.y,p.w,p.h,p.id).ok,true,'valid preview placement '+p.id);
+  const keep=wm.defaultDoc();
+  keep.rooms.r1.rects=[{x1:0,y1:0,x2:21,y2:17}];
+  keep.props=require('./command-deck.cjs')();
+  const model=wm.deserialize(keep);
+  for (const p of keep.props) assert.equal(model.canPlaceProp(p.t,p.x,p.y,p.w,p.h,p.id).ok,true,'valid preview placement '+p.id);
   assert.equal(model.canPlaceProp('bridge_consolebank',2,2,9,1).error,'NEEDS_WALL','bank requires its actual north wall');
   const geometry=model.projectGeometry(),ox=geometry.origin.tx,oy=geometry.origin.ty;
   let reachable=0;
@@ -173,20 +173,20 @@ async function load(search, broken = false) {
   assert.equal(wallPrints.size,7,'all seven real wall constructions remain distinct');
   for(const length of [24,36])for(const facing of ['s','e','n']){
     const side=facing==='e',w=side?12:length,h=side?length:12,draws=[];
-    pack.workstation({save(){},restore(){},drawImage(...a){draws.push(a);}},0,0,w,h,facing);
+    pack.workkeep({save(){},restore(){},drawImage(...a){draws.push(a);}},0,0,w,h,facing);
     const [im,x,y,dw,dh]=draws[0];
     assert.ok(Math.abs(dw/dh-im.width/im.height)<1e-8,'authored '+facing+' aspect preserved');
     assert.ok(Math.abs(y+dh-h)<1e-8,'authored '+facing+' grounded');
     assert.ok(dw*(side?.75:facing==='n'&&length===36?.92:1)<=w+2+1e-8,'actual cabinet stays inside footprint and lip');
     if(side)assert.ok(dh>=h+5,'side view retains physical depth and standing rise');
     else assert.ok(dh>=23 && dh<=23.5,'front and rear retain standing height');
-    const emission=pack.workstationEmitter(0,0,w,h,facing);
+    const emission=pack.workkeepEmitter(0,0,w,h,facing);
     if(facing==='n')assert.equal(emission,null);
     else assert.ok(emission && emission.x>=x && emission.x<=x+dw && emission.y>=y && emission.y<=y+dh,'screen source lies on actual sprite');
   }
 
   console.log(JSON.stringify({ assets: pack.status(), alphaSamples: samples, chairOrientations: 8,
-    seatFrontPixelMatch: 'PASS', workstationAspect: 'PASS', floorContact: 'PASS',
+    seatFrontPixelMatch: 'PASS', workkeepAspect: 'PASS', floorContact: 'PASS',
     wallGeometry: 'PASS', shellDetailAndMasks: 'PASS', wallContinuityMeanError: +(error/count).toFixed(2),
     worldAnchor: 'PASS', missingAssetFallback: 'PASS', normalRenderer: 'PASS', bridgeFootprints: 'PASS',
     bridgeFallbacks: 'PASS', perimeterAlpha: 'PASS', reachableDeckTiles: reachable }));

@@ -1,4 +1,4 @@
-# StarNet — Autonomous Build Loop (P0 → P3)
+# Eyehold — Autonomous Build Loop (P0 → P3)
 
 > The durable brain for the self-paced build loop. The loop reads this file every tick,
 > advances the next item ONE coherent step, gates it, polishes it, merges it, updates the
@@ -6,7 +6,7 @@
 > polish pass, then advances. When all phases are DONE it STOPS the loop.
 >
 > Source of the backlog: the 2026-06-22 ref-readiness sweep (see memory
-> `starnet-hermes-readiness`). Goal: make StarNet a confident daily-driver replacement for the reference harness.
+> `eyehold-hermes-readiness`). Goal: make Eyehold a confident daily-driver replacement for the reference harness.
 
 ## Operating protocol (non-negotiable — the loop obeys these every iteration)
 
@@ -110,7 +110,7 @@ cheap/no-op calls toward the hard stop. Keep the loop-guard circuit-breaker inta
 
 ### P1.1 — Fix QA-1: Settings reflects the active Codex/OAuth connection  ·  STATUS: ✅ DONE (trunk `384a0c3`)
 The in-game SETTINGS panel hardcodes `provider:'openrouter'` and can show "No API keys connected"
-while Codex OAuth is live and runnable (`stationui.js:786-792`). Make it read the real provider
+while Codex OAuth is live and runnable (`keepui.js:786-792`). Make it read the real provider
 (`getProv()`) + `GET /api/auth/codex/status` and show the live Codex card.
 - **Acceptance:** Codex connected → panel shows it; OpenRouter key → unchanged; live-verified both.
 - **Notes:**
@@ -136,7 +136,7 @@ room-seal it delivers (per WIRING_AUDIT P6). Real capability-isolation → P3 fo
 > low-value): retire the documented stale branches (camera/workpipe-b/recruit-fix/etc.) — housekeeping, not a
 > feature gap; left to a manual pass to avoid the loop doing remote-branch deletes autonomously.
 Rebase `origin/agent/beginner-ux` onto trunk (new `frontend/app/tutorial.js` ~470 lines + css),
-resolve additive conflicts in `stationui.js`/`build.js`/`app.js`, green + live-verify the
+resolve additive conflicts in `keepui.js`/`build.js`/`app.js`, green + live-verify the
 First-Command tutorial loads after the Awakening, merge to trunk. Then retire the documented
 stale/redundant branches (camera, workpipe-b, recruit-fix, recruitment-bay, ui-polish,
 design-system, cortex-memory, chat-resize, api-hardening, cleanup, floor-routes-inapp, tutorial).
@@ -238,7 +238,7 @@ Verify + harden the mic → transcript → run path (SpeechRecognition).
   So I SKIPPED redundant frontend rehydration, reframed P0.1 as the server-authoritative headless-transcript
   gap (real + non-redundant), fixed 3 overclaiming comments (polish), re-gated, and merged `agent/autobuild`
   → trunk (`--no-ff`). **Gate GREEN on trunk.** Net P0.1 diff: +253 lines, 4 files, fully additive. Corrected
-  the `starnet-hermes-readiness` memory. NEXT: P0.2 (credential rotation / key-pool).
+  the `eyehold-hermes-readiness` memory. NEXT: P0.2 (credential rotation / key-pool).
 - **2026-06-22 · iter 5 · P0.2 pt1 (commit `d452821`).** Synced worktree onto trunk (post-P0.1). Recon:
   loop.js already advances the fallback chain on `shouldRotateCredential` → rotation is purely an `index.js`
   chain-construction job (no failover-logic change). Wrote `test/credpool.test.js` first, then pure
@@ -272,7 +272,7 @@ Verify + harden the mic → transcript → run path (SpeechRecognition).
   the AIRLOCK picker to say "cosmetic / agent walks freely" per the audit — then verified first: `worldmodel.js`
   bake removes a sealed room's boundary doors, and `worldmodel.test.js:429` (in the gate, passing) proves
   `path()` is null in/out. The seal is REAL; the audit was wrong; the original copy was honest. REVERTED my
-  edit (clean worktree). Corrected the `starnet-hermes-readiness` memory. **🏁 PHASE P1 COMPLETE (3/3):** QA-1
+  edit (clean worktree). Corrected the `eyehold-hermes-readiness` memory. **🏁 PHASE P1 COMPLETE (3/3):** QA-1
   fixed, beginner-ux landed, AIRLOCK verified-honest. Gate green on trunk. **→ advancing to P2 (ship-proof).**
 - **2026-06-23 · iter 10 · P2.1 ✅ DONE → trunk `e87a921`.** Closed the "no test exercises the shipped server"
   gap. New `test/e2e.run.test.js` boots the REAL sidecar process, points the provider at a local mock via a new
@@ -341,5 +341,5 @@ vision (`image_analyze`) + browse-read already shipped · P3.4 STT already shipp
 - **P3.2 live** — the Discord gateway WebSocket connector + index wiring: needs a **Discord bot token** to verify;
   the tested transport/normalize contract is the foundation it plugs into.
 
-Net: StarNet's daily-driver gaps from the 2026-06-22 readiness sweep are closed and verified. The harness was
+Net: Eyehold's daily-driver gaps from the 2026-06-22 readiness sweep are closed and verified. The harness was
 also materially MORE complete than that sweep claimed (4 false-positive gaps).

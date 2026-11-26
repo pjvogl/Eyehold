@@ -2,9 +2,9 @@
 
    sidecar/apps.js + sidecar/tools/builtin/apps.js against real temp folders and the real plugin store:
      - create names a unique id from the name and writes the "building" page (escaped by the host's template);
-     - the page files are bounded (paths, types, sizes, app.json is the station's) and a write moves the digest
+     - the page files are bounded (paths, types, sizes, app.json is the keep's) and a write moves the digest
        (a new URL, so the open window reloads) and tells the window;
-     - publish stores the data plus the station's own _meta { updatedAt } (never writable by the crew) and tells the window;
+     - publish stores the data plus the keep's own _meta { updatedAt } (never writable by the crew) and tells the window;
      - schedule makes ONE routine (replacing any old one), "off" removes it, describe reports the routine's truth
        (a deleted routine reads `missing`, never a schedule that will not fire);
      - remove takes the routine and the data with it;
@@ -22,7 +22,7 @@ const { makePluginLoader, _internals } = require('../sidecar/plugins.js');
 const { makePluginStore } = require('../sidecar/plugin-surface.js');
 const { CAP_REGISTRY } = require('../sidecar/capability/registry.js');
 
-const DIR = path.join(os.tmpdir(), 'starnet-apps-' + process.pid);
+const DIR = path.join(os.tmpdir(), 'eyehold-apps-' + process.pid);
 const loader = makePluginLoader({ fsp, pathMod: path, dir: path.join(DIR, 'plugins'), allowFile: path.join(DIR, 'allow.json'), requireModule: () => ({}), hash: (s) => crypto.createHash('sha256').update(String(s)).digest('hex'), onError() {} });
 const mem = new Map();
 const store = makePluginStore({ store: { get: (k) => mem.get(k), set: (k, v) => mem.set(k, v), update: async (k, fn) => { const n = fn(mem.get(k)); if (n !== undefined) mem.set(k, n); } } });
@@ -50,9 +50,9 @@ const throwsMsg = async (fn) => { try { await fn(); return ''; } catch (e) { ret
   try {
     A.throws(() => makeApps({ fsp, path, dir: DIR }), 'apps without an injected clock is refused');
     // the crew finds app.create by searching "app": its description must keep OUTSIDE builds away (a Netlify site and
-    // a React todo became StarNet apps on 10-02 before this line)
+    // a React todo became Eyehold apps on 10-02 before this line)
     const createDesc = tools.defs.find(d => d.name === 'app.create').description;
-    A.ok(/INSIDE StarNet/.test(createDesc) && /NOT for anything meant to run, be published or be shipped outside StarNet/.test(createDesc) && /framework codebase/.test(createDesc) && /add-on for the Commander's own web browser/.test(createDesc), 'app.create says it is only for apps inside StarNet, never a site/project/script to ship elsewhere');
+    A.ok(/INSIDE Eyehold/.test(createDesc) && /NOT for anything meant to run, be published or be shipped outside Eyehold/.test(createDesc) && /framework codebase/.test(createDesc) && /add-on for the Commander's own web browser/.test(createDesc), 'app.create says it is only for apps inside Eyehold, never a site/project/script to ship elsewhere');
     // (sweep 2026-10-02) …without the words people SEARCH for those asks: tool_search matches description substrings and
     // shows only the first sentence, so "a website, a React project, a browser extension" made it reveal app.create as
     // the top hit for exactly "browser extension" / "host a site" / "react project"
@@ -75,11 +75,11 @@ const throwsMsg = async (fn) => { try { await fn(); return ''; } catch (e) { ret
     const d0 = (await apps.record(a.id)).digest;
     told.length = 0;
     clock += 5000;
-    await apps.writeFile(a.id, 'index.html', '<div class="sn-panel">hi</div><script>starnet.store.get("brief")</script>');
+    await apps.writeFile(a.id, 'index.html', '<div class="sn-panel">hi</div><script>eyehold.store.get("brief")</script>');
     const d1 = (await apps.record(a.id)).digest;
     A.ok(d0 && d1 && d0 !== d1, 'writing the page moves its digest (a new URL)');
     A.eq(told[0], ['reload', a.id, d1], 'a write tells the open window to reload onto the new digest');
-    A.ok(/page file/.test(await throwsMsg(() => apps.writeFile(a.id, 'app.json', '{}'))), 'app.json is the station\'s, never the crew\'s');
+    A.ok(/page file/.test(await throwsMsg(() => apps.writeFile(a.id, 'app.json', '{}'))), 'app.json is the keep\'s, never the crew\'s');
     A.ok(/page file/.test(await throwsMsg(() => apps.writeFile(a.id, '../escape.html', 'x'))), 'a path outside the app is refused');
     A.ok(/page file/.test(await throwsMsg(() => apps.writeFile(a.id, 'index.html:evil', 'x'))), 'an NTFS stream path is refused');
     A.ok(/page file/.test(await throwsMsg(() => apps.writeFile(a.id, 'App.JSON', '{}'))), 'nor under another case (Windows would overwrite it)');
@@ -98,14 +98,14 @@ const throwsMsg = async (fn) => { try { await fn(); return ''; } catch (e) { ret
     told.length = 0;
     await apps.publish(a.id, 'brief', { date: '2026-09-29', items: [{ title: 'T', source: 'S' }] });
     A.eq((await apps.dataGet(a.id, 'brief')).items[0].title, 'T', 'publish stores the data the page reads');
-    A.eq((await apps.dataGet(a.id, '_meta')).updatedAt, clock, 'the station stamps when it was updated');
-    A.eq(await apps.dataKeys(a.id), ['brief'], 'the station\'s _meta is not listed as the app\'s data');
+    A.eq((await apps.dataGet(a.id, '_meta')).updatedAt, clock, 'the keep stamps when it was updated');
+    A.eq(await apps.dataKeys(a.id), ['brief'], 'the keep\'s _meta is not listed as the app\'s data');
     A.eq(told, [['data', a.id]], 'publish tells the open window');
     await apps.publish(a.id, 'brief', JSON.stringify({ items: [{ title: 'S' }] }));
     A.eq((await apps.dataGet(a.id, 'brief')).items[0].title, 'S', 'JSON sent as text (models do this) is stored as the value the page reads');
     await apps.publish(a.id, 'note', '{ not json');
     A.eq(await apps.dataGet(a.id, 'note'), '{ not json', 'plain text stays text');
-    A.ok(/kept by the station/.test(await throwsMsg(() => apps.publish(a.id, '_meta', { updatedAt: 9e12 }))), 'the crew cannot forge the updated time');
+    A.ok(/kept by the keep/.test(await throwsMsg(() => apps.publish(a.id, '_meta', { updatedAt: 9e12 }))), 'the crew cannot forge the updated time');
     A.ok(/store key/.test(await throwsMsg(() => apps.publish(a.id, 'bad key!', 1))), 'a bad key is refused');
 
     // ---- schedule ----
@@ -125,7 +125,7 @@ const throwsMsg = async (fn) => { try { await fn(); return ''; } catch (e) { ret
     A.ok(!jobs.has('job1') && jobs.has('job2'), 'rescheduling replaces the routine (never two)');
     A.ok(/task/.test(await throwsMsg(() => apps.schedule(a.id, { every: 'every 1h' }))), 'a schedule needs a task');
     A.ok(jobs.has('job2') && (await apps.describe(a.id)).schedule.jobId === 'job2', 'a refused schedule keeps the old routine (nothing is retired before the new one exists)');
-    // the station hands back ANOTHER routine as a "duplicate" (its near-name guard): never adopted, never deleted
+    // the keep hands back ANOTHER routine as a "duplicate" (its near-name guard): never adopted, never deleted
     jobs.set('foreign', { id: 'foreign', name: 'App: Tech News', meta: { appId: 'tech-news' } });
     const realCreate = cron.create;
     cron.create = async () => ({ ok: true, job: jobs.get('foreign') });
@@ -145,7 +145,7 @@ const throwsMsg = async (fn) => { try { await fn(); return ''; } catch (e) { ret
     const off = await apps.schedule(a.id, { every: 'off' });
     A.ok(off.off && (await apps.describe(a.id)).schedule === null, '"off" clears the schedule');
     A.ok((await apps.schedule(a.id, { every: 'off' })).unchanged === true, '"off" when already off changes nothing (no write, no false "turned off")');
-    // EDIT IN PLACE: with the station's cron.update the app's own routine is changed, never replaced (history, pause
+    // EDIT IN PLACE: with the keep's cron.update the app's own routine is changed, never replaced (history, pause
     // and grants stay; a running update is not cancelled) — and any orphan routine of this app is retired
     told.length = 0;
     cron.update = async (jid, p) => { const j = jobs.get(jid); if (!j) return { ok: false, error: 'gone' }; Object.assign(j, { schedule: p.schedule, prompt: p.prompt, name: p.name }); return { ok: true, job: j }; };
@@ -156,7 +156,7 @@ const throwsMsg = async (fn) => { try { await fn(); return ''; } catch (e) { ret
     A.ok(s2.jobId === s1.jobId && jobs.get(s1.jobId).schedule === 'every 6h' && /two/.test(jobs.get(s1.jobId).prompt), 'a second SAVE edits the same routine in place');
     { let seenPatch = null; const upd = cron.update; cron.update = async (jid, p) => { seenPatch = p; return upd(jid, p); };
       await apps.schedule(a.id, { every: 'every 6h', task: 'crew task', byAgent: true });
-      A.ok(seenPatch && seenPatch.byAgent === true && /as the crew set it up/.test(seenPatch.prompt) && !/Commander's own words/.test(seenPatch.prompt), 'QA 10-02: a crew edit reaches the station as the crew (its grants drop) and never claims to be the Commander\'s words');
+      A.ok(seenPatch && seenPatch.byAgent === true && /as the crew set it up/.test(seenPatch.prompt) && !/Commander's own words/.test(seenPatch.prompt), 'QA 10-02: a crew edit reaches the keep as the crew (its grants drop) and never claims to be the Commander\'s words');
       await apps.schedule(a.id, { every: 'every 6h', task: 'two' });
       A.ok(seenPatch && seenPatch.byAgent === false && /Commander's own words/.test(seenPatch.prompt), 'the Commander\'s own SAVE stays the Commander\'s words');
       // review 10-02: a crew edit that changes only HOW OFTEN keeps the exact prompt — no grant drop, no relabel
@@ -192,13 +192,13 @@ const throwsMsg = async (fn) => { try { await fn(); return ''; } catch (e) { ret
     const grants = CAP_REGISTRY.computer ? JSON.stringify(CAP_REGISTRY.computer) : JSON.stringify(CAP_REGISTRY);
     A.ok(toolNames().every(n => grants.includes(n)), 'every app tool is granted by the computer');
     const r = await run('app.read', { app: a.id });
-    A.ok(/^Today is \w+day, September 29, 2026/.test(r.content), 'app.read opens with the station\'s real date');
-    A.ok(/Data keys: brief/.test(r.content) && /HOW A STARNET APP WORKS/.test(r.content), 'app.read lists the data keys and carries the build guide');
+    A.ok(/^Today is \w+day, September 29, 2026/.test(r.content), 'app.read opens with the keep\'s real date');
+    A.ok(/Data keys: brief/.test(r.content) && /HOW A EYEHOLD APP WORKS/.test(r.content), 'app.read lists the data keys and carries the build guide');
     A.ok(/OK — no problems/.test((await run('app.check', { app: a.id })).content), 'a good page checks clean');
     await run('app.write', { app: a.id, path: 'index.html', content: '<body style="background:#fff"><script>fetch("https://x"); (</script></body>' });
     const c = (await run('app.check', { app: a.id })).content;
     A.ok(/PROBLEMS/.test(c) && /white background/.test(c) && /no kit classes/.test(c) && /network/.test(c), 'check reports a broken script and the look/network warnings');
-    await run('app.write', { app: a.id, path: 'index.html', content: '<div class="sn-card"></div><script>const h = (u) => `<a href="${u}" onclick="starnet.ui.openLink(${JSON.stringify(u)})">x</a>`;</script>' });
+    await run('app.write', { app: a.id, path: 'index.html', content: '<div class="sn-card"></div><script>const h = (u) => `<a href="${u}" onclick="eyehold.ui.openLink(${JSON.stringify(u)})">x</a>`;</script>' });
     A.ok(/JSON\.stringify inside an onclick/.test((await run('app.check', { app: a.id })).content), 'check flags a URL quoted into an inline onclick (the bug that framed a news site)');
     const made = await run('app.create', { name: 'Reading List' });
     A.ok(/id: reading-list/.test(made.content), 'app.create (from chat) makes a new app');

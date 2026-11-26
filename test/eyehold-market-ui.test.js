@@ -1,0 +1,17 @@
+'use strict';
+const assert = require('node:assert/strict');
+const fs = require('node:fs');
+const path = require('node:path');
+const root = path.join(__dirname, '..');
+const ui = fs.readFileSync(path.join(root, 'frontend/app/eyehold-market.js'), 'utf8');
+const html = fs.readFileSync(path.join(root, 'frontend/index.html'), 'utf8');
+const roles = fs.readFileSync(path.join(root, 'frontend/app/eyehold-roles.js'), 'utf8');
+assert.match(html, /eyehold-market\.js/);
+assert.match(ui, /CREATE STRIPE LINK/);
+assert.match(ui, /confirmed: true/);
+assert.match(ui, /addEventListener\('click', \(\) => act\(row\.id, 'publish'\)\)/);
+assert.doesNotMatch(ui, /window\s*\.\s*(confirm|alert|prompt)\s*\(/);
+assert.match(ui, /VT323/);
+assert.match(roles, /Market outbox/);
+assert.match(roles, /Do not create a Stripe product/);
+console.log('Market UI publishes only from the owner button, and bot instructions say so');

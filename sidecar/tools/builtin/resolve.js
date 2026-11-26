@@ -1,7 +1,7 @@
 /* sidecar/tools/builtin/resolve.js — DaVinci Resolve, the STUDIO's edit bay.
 
    A native port of the Hermes Agent `davinci-resolve` plugin (wassermanproductions, pinned bbd5b207), rebuilt
-   for StarNet and fixed where the original was wrong. Three tools, all granted by the STUDIO object:
+   for Eyehold and fixed where the original was wrong. Three tools, all granted by the STUDIO object:
 
      resolve_timeline_file  (write, consent) — build an FCPXML 1.10 timeline from a clip plan and save it into the
                             workspace. Works with FREE Resolve (File > Import > Timeline), no scripting needed.
@@ -18,7 +18,7 @@
 
    FREE vs STUDIO (the honest boundary): Blackmagic only lets EXTERNAL scripts attach to Resolve Studio;
    on free Resolve `scriptapp("Resolve")` returns None whatever the preferences say. resolve_status says which
-   case the station is in and never claims a live connection it did not make. Resolve's scripting module is
+   case the keep is in and never claims a live connection it did not make. Resolve's scripting module is
    Python-only, so live control runs a fixed, embedded Python bridge (BRIDGE_PY below) — no model-authored code
    ever reaches the interpreter; the action + JSON args are validated here first.
 
@@ -42,7 +42,7 @@
      its full budget (3 x 10s + 45s = 75s). The registry backstop sits above that so it never pre-empts the probe's
      own honest 'not reachable' answer. */
   const STATUS_TIMEOUT_MS = 3 * PY_PICK_TIMEOUT_MS + STATUS_PROBE_MS + 15000;
-  const OUT_MARK = '@@STARNET_RESOLVE@@';
+  const OUT_MARK = '@@EYEHOLD_RESOLVE@@';
 
   /* ── time ──────────────────────────────────────────────────────────────────────────────────────────────
      FCPXML time is a rational number of seconds. A frame at rate R is frameDuration = num/den seconds;
@@ -179,11 +179,11 @@
       ? el('gap', { name: 'Gap', offset: ftime(s.offF, rate), start: '0s', duration: ftime(s.durF, rate) }, s.children)
       : el('asset-clip', { ref: s.clip.ref, name: s.clip.name, offset: ftime(s.offF, rate), start: ftime(s.srcF, rate), duration: ftime(s.durF, rate) }, s.children));
     const fmt = el('format', { id: 'r1', name: 'FFVideoFormat' + H + 'p' + String(plan.fps || 24).replace('.', ''), frameDuration: ftime(1, rate), width: String(W), height: String(H) });
-    const title = str(plan.name) || 'StarNet Timeline';
+    const title = str(plan.name) || 'Eyehold Timeline';
     const xml = '<?xml version="1.0" encoding="UTF-8"?>\n<!DOCTYPE fcpxml>\n' +
       el('fcpxml', { version: '1.10' }, [
         el('resources', {}, [fmt].concat(assets)),
-        el('library', {}, [el('event', { name: 'StarNet' }, [el('project', { name: title }, [
+        el('library', {}, [el('event', { name: 'Eyehold' }, [el('project', { name: title }, [
           el('sequence', { format: 'r1', duration: ftime(total, rate), tcStart: '0s', tcFormat: 'NDF', audioLayout: 'stereo', audioRate: '48k' },
             [el('spine', {}, spineXml)])
         ])])])
@@ -196,7 +196,7 @@
   /* ── the Studio bridge (fixed Python, never model-authored) ──────────────────────────────────────────── */
   const BRIDGE_PY = String.raw`
 import json, os, sys, importlib.util
-MARK = "@@STARNET_RESOLVE@@"
+MARK = "@@EYEHOLD_RESOLVE@@"
 def out(o):
     sys.stdout.write("\n" + MARK + json.dumps(o, default=str) + "\n"); sys.stdout.flush(); sys.exit(0)
 req = json.loads(sys.argv[1]); act = req.get("action"); a = req.get("args") or {}
@@ -353,7 +353,7 @@ out(dict(base, ok=False, error="unknown action " + str(act)))
     const platform = deps.platform || process.platform;
     const envFor = typeof deps.envFor === 'function' ? deps.envFor : () => Object.assign({}, process.env);
     const fileUrl = deps.fileUrl || (p => nodeUrl.pathToFileURL(p).href);
-    // host overrides arrive as config, NOT via the child env: sanitizeChildEnv strips every STARNET_* name.
+    // host overrides arrive as config, NOT via the child env: sanitizeChildEnv strips every EYEHOLD_* name.
     const cfg = deps.config || {};
     const jail = fsMod.makeFsTools({ fsp, pathMod: P, root: ROOT, pathTrust: deps.pathTrust })._internals;
 
@@ -394,7 +394,7 @@ out(dict(base, ok=False, error="unknown action " + str(act)))
       return abs;
     }
 
-    // Python for the bridge: STARNET_RESOLVE_PYTHON, else the platform's usual launchers. First that answers wins.
+    // Python for the bridge: EYEHOLD_RESOLVE_PYTHON, else the platform's usual launchers. First that answers wins.
     async function pickPython(env) {
       const forced = str(cfg.python);
       const cands = forced ? [[forced, []]] : (platform === 'win32' ? [['py', ['-3']], ['python', []], ['python3', []]] : [['python3', []], ['python', []]]);
@@ -420,7 +420,7 @@ out(dict(base, ok=False, error="unknown action " + str(act)))
     async function bridge(action, args, timeoutMs) {
       const env = bridgeEnv();
       const py = await pickPython(env);
-      if (!py.cmd) return { ok: false, reachable: false, error: 'no Python 3 found for the Resolve bridge (' + py.tried.join('; ') + '). Install Python 3.10–3.12 or set STARNET_RESOLVE_PYTHON.' };
+      if (!py.cmd) return { ok: false, reachable: false, error: 'no Python 3 found for the Resolve bridge (' + py.tried.join('; ') + '). Install Python 3.10–3.12 or set EYEHOLD_RESOLVE_PYTHON.' };
       const r = await run(py.cmd, py.pre.concat(['-c', BRIDGE_PY, JSON.stringify({ action, args: args || {} })]), { env, timeoutMs: timeoutMs || BRIDGE_TIMEOUT_MS });
       const at = r.stdout.lastIndexOf(OUT_MARK);
       if (at < 0) return { ok: false, reachable: false, error: 'the Resolve bridge produced no result' + (r.error ? ' (' + r.error + ')' : '') + (r.stderr ? ': ' + str(r.stderr).split('\n').slice(-3).join(' | ') : '') };
@@ -451,7 +451,7 @@ out(dict(base, ok=False, error="unknown action " + str(act)))
         + 'Studio). Times are SECONDS. Main-track (lane 0) clips play back to back in the order given; give `at` to '
         + 'leave a gap before one. lane > 0 = a connected clip above the main track (b-roll, overlays), lane < 0 = '
         + 'below (music, voice-over); connected clips need `at`. Media durations and audio/video streams are read '
-        + 'with ffprobe when available. Paths: workspace-relative, or absolute paths the station has granted.',
+        + 'with ffprobe when available. Paths: workspace-relative, or absolute paths the keep has granted.',
       schema: { type: 'object', required: ['name', 'clips'], properties: {
         name: { type: 'string', description: 'timeline / project name' },
         fps: { type: 'number', description: 'timeline frame rate: 23.976, 24, 25, 29.97, 30, 50, 59.94, 60 (default 24)' },
@@ -482,7 +482,7 @@ out(dict(base, ok=False, error="unknown action " + str(act)))
           else notes.push(baseName(k) + ': not probed (' + m.reason + ') — stream flags guessed from the extension');
         }
         const plan = {
-          name: str(args.name) || 'StarNet Timeline', fps: num(args.fps, 24), width: num(args.width, 1920), height: num(args.height, 1080),
+          name: str(args.name) || 'Eyehold Timeline', fps: num(args.fps, 24), width: num(args.width, 1920), height: num(args.height, 1080),
           clips: clipsIn.map(c => ({ path: absOf[str(c.path)], url: fileUrl(absOf[str(c.path)]), name: c.name, in: num(c.in, 0), out: c.out, lane: c.lane, at: c.at })),
           markers: Array.isArray(args.markers) ? args.markers : []
         };

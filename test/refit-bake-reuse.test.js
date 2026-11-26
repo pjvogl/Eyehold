@@ -8,22 +8,22 @@ const read = name => fs.readFileSync(require.resolve('../frontend/app/' + name),
 const world = read('world.js'), build = read('build.js');
 const handoff = world.match(/refitBake:\s*(st =>[\s\S]*?\? \{ cache, geo \} : null),/);
 assert.ok(handoff, 'world exposes its guarded read-only cache handoff');
-const station = {}, cache = {}, geo = {};
-const context = vm.createContext({ station, cache, geo, geoDirty: false, bakeDirty: false });
+const keep = {}, cache = {}, geo = {};
+const context = vm.createContext({ keep, cache, geo, geoDirty: false, bakeDirty: false });
 vm.runInContext('this.borrow = ' + handoff[1], context);
-assert.equal(context.borrow({}), null, 'different station cannot inherit this image');
+assert.equal(context.borrow({}), null, 'different keep cannot inherit this image');
 for (const key of ['geoDirty', 'bakeDirty']) {
   context[key] = true;
-  assert.equal(context.borrow(station), null, key + ' rejects stale rendered state');
+  assert.equal(context.borrow(keep), null, key + ' rejects stale rendered state');
   context[key] = false;
 }
 for (const key of ['cache', 'geo']) {
   const prior = context[key]; context[key] = null;
-  assert.equal(context.borrow(station), null, 'missing ' + key + ' falls back to baking');
+  assert.equal(context.borrow(keep), null, 'missing ' + key + ' falls back to baking');
   context[key] = prior;
 }
-assert.equal(context.borrow(station).cache, cache, 'handoff shares the already-painted image');
-assert.equal(context.borrow(station).geo, geo, 'geometry and pixels remain paired');
+assert.equal(context.borrow(keep).cache, cache, 'handoff shares the already-painted image');
+assert.equal(context.borrow(keep).geo, geo, 'geometry and pixels remain paired');
 
 const openStart = build.indexOf('    const worldBake =');
 const openEnd = build.indexOf('    frameFailures = 0;', openStart);
@@ -35,14 +35,14 @@ assert.ok(bakeStart > 0 && bakeEnd > bakeStart);
 let calls = 0, projections = 0;
 const editedGeo = { origin: { tx: 5, ty: 8 } }, editedCache = {};
 const editor = vm.createContext({
-  station: { projectGeometry() { projections++; return editedGeo; } },
+  keep: { projectGeometry() { projections++; return editedGeo; } },
   opts: { world: { refitBake() { return { cache, geo }; } } },
   cache: null, cacheGeo: null, bakeDirty: true, bakeDirtyRects: null, projectionDirty: false,
   bakeDirtyRectsGlobal: false, bakeVisibleOnly: false, planDirty: false,
   valPlan: {}, valLive: null, valComps: null, ghost: null, lastStampIds: null,
   maybeFirstRide() {}, renderFinCard() {}, refreshLineFacts() {},
   visibleBakeRect() { return null; }, MAX_REFIT_CHUNKS: 18,
-  StationBake: { bakeIncremental(g) { assert.equal(g, editedGeo); calls++; return editedCache; } }
+  KeepBake: { bakeIncremental(g) { assert.equal(g, editedGeo); calls++; return editedCache; } }
 });
 vm.runInContext(build.slice(bakeStart, bakeEnd), editor);
 const initializeEditor = () => vm.runInContext('{\n' + initialize + '\n}', editor);
@@ -72,10 +72,10 @@ console.log('refit-bake-reuse: same-save handoff, invalidation, entry/reopen and
 // floor/airlock edit into a prop-only frame (including a pending pan bake).
 Object.assign(editor, { clearLineFields() {}, scheduleLineFitSync() {}, bumpGeo() {}, updateUndoRedo() {},
   renderSelection() {}, renderEquipmentInfo() {}, tool: 'select' });
-const listenerStart = build.indexOf('    unsub = station.onChange(p => {');
+const listenerStart = build.indexOf('    unsub = keep.onChange(p => {');
 const listenerEnd = build.indexOf('    const worldBake =', listenerStart);
 vm.runInContext('this.edit = p => {' + build.slice(listenerStart, listenerEnd)
-  .split('station.onChange(p => {')[1].replace(/\}\);\s*$/, '') + '};', editor);
+  .split('keep.onChange(p => {')[1].replace(/\}\);\s*$/, '') + '};', editor);
 const reset = () => Object.assign(editor, { bakeDirty: false, planDirty: false,
   projectionDirty: false, bakeDirtyRects: null, bakeDirtyRectsGlobal: false, bakeVisibleOnly: false });
 const propPatch = { staticBakeUnchanged: true, dirtyRects: [{x1:2,y1:2,x2:3,y2:3}] };

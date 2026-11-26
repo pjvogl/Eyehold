@@ -6,12 +6,12 @@ const out='.worldshots/corner-light';mkdirSync(out,{recursive:true});let proc,cd
 try {
  ({proc}=launchChrome({cdpPort:9391,profileDir:out+'/profile'}));cdp=await connectCDP(9391);
  await cdp.send('Page.navigate',{url:'http://127.0.0.1:9197/'});
- for(let i=0;i<100;i++){if(await evalJS(cdp,"typeof World!=='undefined'&&!!World.stationDoc()"))break;await sleep(200);}
- const old=execFileSync('git',['show','c0ca851e2:frontend/app/stationbake.js'],{encoding:'utf8',maxBuffer:4*1024*1024});
- const source=readFileSync('frontend/app/stationbake.js','utf8').replace('return { baseCv, lightCv, interiorCv,','return { faceRects:cornerFaceRects.slice(), crownRects:crownRects.slice(), baseCv, lightCv, interiorCv,');
+ for(let i=0;i<100;i++){if(await evalJS(cdp,"typeof World!=='undefined'&&!!World.keepDoc()"))break;await sleep(200);}
+ const old=execFileSync('git',['show','c0ca851e2:frontend/app/keepbake.js'],{encoding:'utf8',maxBuffer:4*1024*1024});
+ const source=readFileSync('frontend/app/keepbake.js','utf8').replace('return { baseCv, lightCv, interiorCv,','return { faceRects:cornerFaceRects.slice(), crownRects:crownRects.slice(), baseCv, lightCv, interiorCv,');
  const results=await evalJS(cdp,`(()=>{
-  const previous=new Function(${JSON.stringify(old+';return StationBake;')})();
-  const current=new Function(${JSON.stringify(source+';return StationBake;')})();
+  const previous=new Function(${JSON.stringify(old+';return KeepBake;')})();
+  const current=new Function(${JSON.stringify(source+';return KeepBake;')})();
   const results=[];
   for(const mat of ['ribbed','plating','viewport'])for(const up of [0,14,30,50])for(const n of [1,2]){
    for(const baker of [previous,current]){baker.WALL.up=up;baker.SHAPE.cornerN=n;}

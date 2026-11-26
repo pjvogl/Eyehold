@@ -1,10 +1,10 @@
-# StarNet: whole-product friction audit and implemented improvements
+# Eyehold: whole-product friction audit and implemented improvements
 
 Baseline: `292dc7b41`. Scope: starting work, setup excursions, service connections, agent access, visual workflows, results, recurring work, navigation, and learning. Source-grounded audit plus live checks of the changed journeys; this is not an observed study of independent beginners or installed-desktop certification.
 
 ## Product standard
 
-Users should describe outcomes, recognize what the station is doing, and recover without reconstructing context. The same workflow must support a simple explanation and detailed customization. Existing authentication, task execution, compiled conveyor routes, and configuration panels remain the authorities. Opening a guide does not grant access or launch work.
+Users should describe outcomes, recognize what the keep is doing, and recover without reconstructing context. The same workflow must support a simple explanation and detailed customization. Existing authentication, task execution, compiled conveyor routes, and configuration panels remain the authorities. Opening a guide does not grant access or launch work.
 
 ## Implemented
 
@@ -16,7 +16,7 @@ Users should describe outcomes, recognize what the station is doing, and recover
 | Leaving a draft for setup loses entered material | Preserve request, source mode, sample, folder and finding provenance in page memory; explicit clear and successful launch remove it | `FirstValue`; fresh permission and suggestion validation still run before submission |
 | Saved service configuration mistaken for a connection; disabled ADDED button prevents recovery | Manage Service routes to the actual saved service; Your Services describes saved setups; next-action hints distinguish disabled/error/auth/connected | Existing connector status and management controls |
 | Catalog conflates browser sign-in and manual integration setup | Separate Sign In and Manual Setup labels/filtering; retain API-key and advanced custom setup | Existing catalog capability metadata; no invented OAuth support |
-| Conveyor mechanics scattered across objects | Overview presents actual compiled agent steps, saved instructions, onward routes and output connection; click a step to edit | Existing compiled plan, station props and editor |
+| Conveyor mechanics scattered across objects | Overview presents actual compiled agent steps, saved instructions, onward routes and output connection; click a step to edit | Existing compiled plan, keep props and editor |
 | Advanced configuration competes with first-use explanation | Conveyor budget controls in an expandable section | Same controls, no capability locks |
 
 ## Live evidence
@@ -27,7 +27,7 @@ Users should describe outcomes, recognize what the station is doing, and recover
 - Conveyor lane `127.0.0.1:8982`: placed Front Desk template, viewed unassigned/unknown route, assigned NOVA and saved instructions through the overview's existing editor. Compiled summary became Inbox → 1 step → Outbox; reload retained it; advanced settings remained available. This verifies configuration, not execution of that line.
 - Focused regressions cover direct-task versus template attribution, busy-launch no-op, draft cleanup/provenance, connector management/readback, conveyor overview/stacking, run/sample gates and themed controls.
 
-Unsent drafts intentionally stay only in page memory and are cleared by app reload. Existing station state still persists through the normal stores. No backend permission, credential storage, schema, or external-service authentication implementation changed in this pass.
+Unsent drafts intentionally stay only in page memory and are cleared by app reload. Existing keep state still persists through the normal stores. No backend permission, credential storage, schema, or external-service authentication implementation changed in this pass.
 
 ## Remaining priorities, in order
 
@@ -41,7 +41,7 @@ Unsent drafts intentionally stay only in page memory and are cleared by app relo
 
 ## Completion criteria for the next product milestone
 
-A user can bring a real problem, connect the required source, inspect a proposed approach, obtain a useful result, make it recur, and confidently change or stop it. Every handoff preserves context. Station activity maps to actual work. Progress celebrates accepted outcomes without locking tools or fabricating benefit.
+A user can bring a real problem, connect the required source, inspect a proposed approach, obtain a useful result, make it recur, and confidently change or stop it. Every handoff preserves context. Keep activity maps to actual work. Progress celebrates accepted outcomes without locking tools or fabricating benefit.
 
 ## Historical integration receipt
 2026-09-04 merge digest: agent/seamless-0904 -> trunk 4194a0b54 (exact fast-forward). Whole-product friction audit plus general task entry, intent-based control directory, visible result/recovery actions, in-memory draft continuity, actionable service setup/recovery, and compiled conveyor overview. Candidate and exact postmerge test:fast 710/710 GREEN. Live seeded UI verified task lifecycle, control search/routing, draft setup return/clear, saved connector management, and conveyor assignment/instructions/reload; synthetic/local replay, no production OAuth or installed desktop certification. No backend/route changes; HTTP gate not required for this frontend-only delta. Audit: docs/SEAMLESS_UX_2026-09-04.md. Digest remains isolated because trunk QA file has foreign uncommitted content.

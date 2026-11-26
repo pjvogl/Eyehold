@@ -45,13 +45,13 @@ function startMock() {
         if (rec.main && raw.indexOf('CAPRUN') >= 0) {
           // keep working: a tool turn every time, each one priced, until the per-run cap stops the run
           const n = messages.filter(m => m && m.role === 'tool').length;
-          sse(res, [{ tool_calls: [{ index: 0, id: 'inspect_' + n, type: 'function', function: { name: 'station_inspect', arguments: '{}' } }] }],
+          sse(res, [{ tool_calls: [{ index: 0, id: 'inspect_' + n, type: 'function', function: { name: 'keep_inspect', arguments: '{}' } }] }],
             { prompt_tokens: 400, completion_tokens: 50, total_tokens: 450 }, 'tool_calls');
           return;
         }
         if (rec.main && raw.indexOf('FAILRUN') >= 0) {
           if (!messages.some(m => m && m.role === 'tool')) {
-            sse(res, [{ tool_calls: [{ index: 0, id: 'inspect_once', type: 'function', function: { name: 'station_inspect', arguments: '{}' } }] }], { prompt_tokens: 8, completion_tokens: 2, total_tokens: 10 }, 'tool_calls');
+            sse(res, [{ tool_calls: [{ index: 0, id: 'inspect_once', type: 'function', function: { name: 'keep_inspect', arguments: '{}' } }] }], { prompt_tokens: 8, completion_tokens: 2, total_tokens: 10 }, 'tool_calls');
             return;
           }
           res.writeHead(400, { 'Content-Type': 'application/json' });
@@ -77,17 +77,17 @@ async function settle(state) { let last = -1, since = Date.now(); const until = 
 (async () => {
   const mock = await startMock();
   const fixture = SidecarFixture.create({ prefix: 'sk-capreview-',
-    env: { SKYNET_OPENROUTER_BASE: mock.base, STARNET_AUX_MODEL: AUX_MODEL, SKYNET_AUX_BUDGET: '0', SKYNET_QUEST_REFRESH: '0', SKYNET_FULL_ACCESS: '1', SKYNET_BUDGET_PER_RUN: '1' } });
+    env: { EYEHOLD_OPENROUTER_BASE: mock.base, EYEHOLD_AUX_MODEL: AUX_MODEL, EYEHOLD_AUX_BUDGET: '0', EYEHOLD_QUEST_REFRESH: '0', EYEHOLD_FULL_ACCESS: '1', EYEHOLD_BUDGET_PER_RUN: '1' } });
   await fixture.start();
   try {
     const reviews = () => mock.state.calls.filter(c => c.failReview).length;
     // a run the per-run cap stops: no review after it
-    const ev = await driveRun(fixture, 'cap-agent', 'CAPRUN inspect the station over and over');
+    const ev = await driveRun(fixture, 'cap-agent', 'CAPRUN inspect the keep over and over');
     A.eq(endReason(ev), 'budget', 'the run was stopped by its spending cap');
     await settle(mock.state);
     A.eq(reviews(), 0, 'no failure review was called after a run its cap stopped (it would spend past the cap)');
     // a run that fails another way still gets its review: the gate is the cap, not the failure
-    const ev2 = await driveRun(fixture, 'err-agent', 'FAILRUN inspect the station then push the update');
+    const ev2 = await driveRun(fixture, 'err-agent', 'FAILRUN inspect the keep then push the update');
     A.eq(endReason(ev2), 'error', 'fixture: a run ending error');
     await settle(mock.state);
     A.eq(reviews(), 1, 'a run that failed for another reason still gets its one review');

@@ -10,7 +10,7 @@
 const assert = require('assert');
 const fs = require('fs'); const path = require('path');
 const app = (f) => fs.readFileSync(path.join(__dirname, '..', 'frontend', 'app', f), 'utf8');
-const ui = app('stationui.js'), appjs = app('app.js');
+const ui = app('keepui.js'), appjs = app('app.js');
 
 let n = 0; const ok = (c, m) => { assert.ok(c, m); n++; };
 

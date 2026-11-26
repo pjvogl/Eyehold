@@ -41,14 +41,14 @@ test" has NOVA, RESEARCHER, ENGINEER and the proof transcript.
 - "I actually liked the top bar before you changed it" -> the identity PILL was REVERTED. The
   `▪ NAME ▪ NAME · N agents · + Add agents` row is the keeper. Do not re-pill it.
 - "not a huge fan of the scroll wheel" -> names row is ONE ellipsized line, no scrollbar; hover =
-  station tip with all names, click = picker.
+  keep tip with all names, click = picker.
 
 ## Grok Bot comparison (Andrew asked 09-05) — inspiration queue, cheapest first
 
 Grok Bot (xAI, beta 2026-08-11): named persistent bots, DMs + group chats of 2-6, @mention pulls a
 bot in mid-conversation, bots coordinate on their own and "pass ownership", user pulled in only for
 judgment calls, per-bot status idle/thinking/working/waiting/blocked/done, bots nudge stalled handoffs.
-StarNet matches the shape; the gap is FREE agent-to-agent coordination with ownership (= Rooms P2).
+Eyehold matches the shape; the gap is FREE agent-to-agent coordination with ownership (= Rooms P2).
 
 1. OWNERSHIP IN THE HEADER — `· engineer has it` after the names; the turn queue already knows.
    A handoff renders as an ownership transfer line.

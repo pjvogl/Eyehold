@@ -20,10 +20,10 @@ http.createServer(async (req, res) => {
   if (u.pathname === '/fixture.js') {
     res.writeHead(200, { 'Content-Type': 'text/javascript' });
     return res.end(`if (!localStorage.getItem('repair.fixture.seeded')) {
-      localStorage.setItem('starnet.return.v1', JSON.stringify({lastSeenAt:${ts - 10000},pending:[],digested:[]}));
+      localStorage.setItem('eyehold.return.v1', JSON.stringify({lastSeenAt:${ts - 10000},pending:[],digested:[]}));
       localStorage.setItem('repair.fixture.seeded','1');
     }
-    ${state.failSettings ? "const originalSet = Storage.prototype.setItem; Storage.prototype.setItem = function(key,value) { if(key === 'starnet.station.v1') throw new DOMException('Controlled storage quota failure','QuotaExceededError'); return originalSet.call(this,key,value); };" : ''}`);
+    ${state.failSettings ? "const originalSet = Storage.prototype.setItem; Storage.prototype.setItem = function(key,value) { if(key === 'eyehold.keep.v1') throw new DOMException('Controlled storage quota failure','QuotaExceededError'); return originalSet.call(this,key,value); };" : ''}`);
   }
   if (u.pathname === '/api/runs') {
     state.runReads++;

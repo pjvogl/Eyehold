@@ -1,16 +1,16 @@
-/* STARNET — dockglow.js : the deferred BUILD-dock glow-target (G1c, feature 4b).
+/* EYEHOLD — dockglow.js : the deferred BUILD-dock glow-target (G1c, feature 4b).
 
    The kit-out tour glows the path into REFIT while it's teaching the first floor. This is the SAME idea, but
-   standing on its own AFTER the tour: while a STATION quest is open (an agent reached for a tool its room can't
+   standing on its own AFTER the tour: while a KEEP quest is open (an agent reached for a tool its room can't
    grant — a real capability gap the Commander can close by placing a prop), gently glow the BUILD dock so the
    fix is one obvious click away. The glow is a soft HINT, not the tutorial's imperative ring — it never scrims,
-   never blocks, and vanishes the instant the last station gap closes.
+   never blocks, and vanishes the instant the last keep gap closes.
 
    Reuses the kit-out's resolver DISCIPLINE, honoring its two locked traps:
      • TRAP 1 — dock targets are HIDDEN until the dock is open. So we glow the ALWAYS-VISIBLE BUILD dock toggle
        (.bb-group[data-group="build"] .bb-grp) while the dock popover is closed, and switch to the ⚒ BUILD
-       STATION item (#bb-build) once its dock is open (the same #bb-build-only-visible-when-open rule).
-     • TRAP 2 — never hardcode a prop label/category; the station quest already carries the LIVE-catalog prop
+       KEEP item (#bb-build) once its dock is open (the same #bb-build-only-visible-when-open rule).
+     • TRAP 2 — never hardcode a prop label/category; the keep quest already carries the LIVE-catalog prop
        label, and the dock is the neutral entry point, so nothing here names a prop.
 
    Coordination — TUTORIAL WINS: while the tutorial is actively coaching (Tutorial.isCoaching()), this stands
@@ -25,11 +25,11 @@ const DockGlow = (() => {
 
   const q = sel => { try { return document.querySelector(sel); } catch (_) { return null; } };
 
-  // are any STATION quests currently open? (the capability-gap generator's live count — G1b). Work/maintenance
-  // quests deliberately DON'T drive the BUILD-dock glow: only a station gap is closed by PLACING a prop, which
+  // are any KEEP quests currently open? (the capability-gap generator's live count — G1b). Work/maintenance
+  // quests deliberately DON'T drive the BUILD-dock glow: only a keep gap is closed by PLACING a prop, which
   // is exactly what the BUILD dock is for. A work/maint quest is closed elsewhere (a run finishing / a fix).
-  function stationOpen() {
-    try { return (typeof StationQuestStore !== 'undefined' && StationQuestStore.openCount) ? StationQuestStore.openCount() > 0 : false; } catch (_) { return false; }
+  function keepOpen() {
+    try { return (typeof KeepQuestStore !== 'undefined' && KeepQuestStore.openCount) ? KeepQuestStore.openCount() > 0 : false; } catch (_) { return false; }
   }
   // "on the floor" = the BUILD dock toggle is actually in the DOM + laid out (it lives in the in-game bottom
   // bar; the title/connect screens have no bottom bar). Cheaper + more honest than a body-class flag.
@@ -41,7 +41,7 @@ const DockGlow = (() => {
   // is the same open-ness probe the kit-out uses (tutorial.js kitGuideToRefit).
   function dockOpen() { const el = q('#bb-build'); return !!(el && el.getClientRects().length); }
 
-  // the element to glow RIGHT NOW: the ⌂ REFIT STATION item if its dock is open, else the BUILD dock toggle.
+  // the element to glow RIGHT NOW: the ⌂ REFIT KEEP item if its dock is open, else the BUILD dock toggle.
   function target() {
     if (dockOpen()) return q('#bb-build');
     return q('.bb-group[data-group="build"] .bb-grp');
@@ -56,8 +56,8 @@ const DockGlow = (() => {
 
   function tick() {
     // stand-down conditions (any true → no glow): not in-game, REFIT already open, the tutorial is coaching, or
-    // no station gap is open. Otherwise glow the resolved dock entry.
-    if (!inGame() || refitOpen() || tutorialCoaching() || !stationOpen()) { clear(); return; }
+    // no keep gap is open. Otherwise glow the resolved dock entry.
+    if (!inGame() || refitOpen() || tutorialCoaching() || !keepOpen()) { clear(); return; }
     apply(target());
   }
 

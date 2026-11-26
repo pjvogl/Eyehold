@@ -4,7 +4,7 @@
    The law (2026-09-03 audit): after a genuine uncaught throw the sidecar must NOT keep serving over unproven
    state while /api/health says "ok". It surfaces the fault, marks health degraded, releases locks, and exits(1)
    after a bounded delay so the shell watchdog restarts a clean process. Benign stdio EPIPE stays surface-only;
-   STARNET_UNCAUGHT_KEEP_SERVING is the test-only opt-out. Section E proves it against a REAL node process. */
+   EYEHOLD_UNCAUGHT_KEEP_SERVING is the test-only opt-out. Section E proves it against a REAL node process. */
 'use strict';
 const A = require('./_assert.js');
 const fs = require('fs');

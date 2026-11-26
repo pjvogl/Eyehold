@@ -24,7 +24,7 @@ const opt = (n, d) => { const h = argv.find(a => a.startsWith(`--${n}=`)); retur
 // --svg may repeat: each becomes its own row, so stroke weight can be judged side by side.
 // "path" or "label:path" (a bare drive letter is not a label — C:\... must still work).
 const SVG_ARGS = argv.filter(a => a.startsWith('--svg=')).map(a => a.slice('--svg='.length));
-const SVGS = (SVG_ARGS.length ? SVG_ARGS : [join(REPO, 'frontend/assets/brand/starnet-wordmark.svg')])
+const SVGS = (SVG_ARGS.length ? SVG_ARGS : [join(REPO, 'frontend/assets/brand/eyehold-wordmark.svg')])
   .map(spec => {
     const i = spec.indexOf(':');
     return i > 1 ? { label: spec.slice(0, i), path: spec.slice(i + 1) } : { label: 'SVG (traced)', path: spec };
@@ -42,7 +42,7 @@ const CELL_H = 180;     // every magnifier cell displays at this height, whateve
 const CROP = 0.30;      // magnify the left 30% ("STA") — wide enough to read, narrow enough that all
                         // three DPR columns fit the sheet without clipping
 
-const pngB64 = readFileSync(join(REPO, 'frontend/assets/brand/starnet-logo-small.png')).toString('base64');
+const pngB64 = readFileSync(join(REPO, 'frontend/assets/brand/eyehold-logo-small.png')).toString('base64');
 // row order = the order they are compared in: today's asset first, then each candidate
 const VARIANTS = [
   { label: 'PNG (today)', kind: 'png' },
@@ -72,7 +72,7 @@ const page = `<!doctype html><meta charset="utf-8"><title>logo compare</title>
   .grid .rl { font-size: 10px; letter-spacing: 2px; color: #607d8b; }
   canvas { display: block; border: 1px solid #1c2429; border-radius: 3px; image-rendering: pixelated; }
 </style>
-<h1>STARNET WORDMARK — PLACED PNG vs TRACED SVG</h1>
+<h1>EYEHOLD WORDMARK — PLACED PNG vs TRACED SVG</h1>
 <p class="sub">Both drawn by the same engine at the real topbar box (${MARK_H}px tall). Magnifier =
    rasterize at ${MARK_H}px under each devicePixelRatio, then nearest-upscale those real device pixels
    to a constant ${CELL_H}px. Same physical size in every cell; only the pixel budget differs.</p>

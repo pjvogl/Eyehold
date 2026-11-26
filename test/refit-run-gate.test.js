@@ -72,7 +72,7 @@ const tick = () => new Promise(r => setImmediate(r));
   A.ok(rs.indexOf('finPlanGate(c).then') >= 0 && rs.indexOf('finPlanGate(c).then') < rs.indexOf('/api/routing/sample'), 'finRunSample gates on finPlanGate BEFORE the sample POST');
   A.ok(/phase: 'post'/.test(rs) && /phase: 'run'/.test(rs), 'the sample walks phase post → run');
   A.ok(/POSTING LINE…/.test(build) && /RUNNING — THE JOB IS RIDING THE LINE…/.test(build), 'the FINISH card reads "posting line…" then "running"');
-  A.ok(/syncPlan: \(\) => \{/.test(world) && /if \(station && \(geoDirty \|\| !geo\)\) rederive\(\);/.test(world), 'World.syncPlan recompiles a dirty floor before flushing');
+  A.ok(/syncPlan: \(\) => \{/.test(world) && /if \(keep && \(geoDirty \|\| !geo\)\) rederive\(\);/.test(world), 'World.syncPlan recompiles a dirty floor before flushing');
   const ri = routines.indexOf("if (act === 'run')");
   const run = routines.slice(ri, ri + 3000);
   A.ok(run.indexOf('W.syncPlan()') >= 0 && run.indexOf('W.syncPlan()') < run.indexOf("post('/api/cron/run'"), 'ROUTINES RUN NOW awaits World.syncPlan before /api/cron/run');

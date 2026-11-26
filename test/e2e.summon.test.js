@@ -56,7 +56,7 @@ function startMockOpenRouter() {
 function boot(port, env, attemptsLeft) {
   return new Promise((resolve, reject) => {
     const child = spawn(process.execPath, [INDEX], {
-      env: Object.assign({}, process.env, env, { SKYNET_PORT: String(port) }), stdio: ['ignore', 'pipe', 'pipe']
+      env: Object.assign({}, process.env, env, { EYEHOLD_PORT: String(port) }), stdio: ['ignore', 'pipe', 'pipe']
     });
     let out = '', settled = false;
     const onData = d => {
@@ -74,9 +74,9 @@ function boot(port, env, attemptsLeft) {
 (async () => {
   const mock = await startMockOpenRouter();
   const ws = fs.mkdtempSync(path.join(os.tmpdir(), 'sk-summon-'));
-  // SKYNET_FULL_ACCESS so team.summon's consent gate bypasses (no human in this headless e2e) — exactly the
+  // EYEHOLD_FULL_ACCESS so team.summon's consent gate bypasses (no human in this headless e2e) — exactly the
   // full-auto posture; the APPROVAL-mode prompt path is covered by the consent suites.
-  const env = { SKYNET_WORKSPACES: ws, SKYNET_OPENROUTER_BASE: mock.base, SKYNET_FULL_ACCESS: '1' };
+  const env = { EYEHOLD_WORKSPACES: ws, EYEHOLD_OPENROUTER_BASE: mock.base, EYEHOLD_FULL_ACCESS: '1' };
   const { child, port } = await boot(8890 + (process.pid % 50), env, 20);
   const B = 'http://' + HOST + ':' + port;
   try {
@@ -86,7 +86,7 @@ function boot(port, env, attemptsLeft) {
     // drive a real streaming lead run; the mock makes it call team.summon
     const res = await fetch(B + '/api/run', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'X-StarNet-Token': token, Origin: B },
+      headers: { 'Content-Type': 'application/json', 'X-Eyehold-Token': token, Origin: B },
       body: JSON.stringify({ key: 'sk-or-v1-fake', model: 'test/model', agentId: 'agent', isTask: true, messages: [{ role: 'user', content: 'summon a research agent for me' }] })
     });
     A.eq(res.status, 200, 'POST /api/run streams (200)');
@@ -104,12 +104,12 @@ function boot(port, env, attemptsLeft) {
         let ev; try { ev = JSON.parse(line); } catch (_) { continue; }
         events.push(ev);
         if (ev.name === 'agent.run.start' && !runId) runId = ev.payload.runId;
-        // ACT AS THE BROWSER: the station ran summonAgent() and reports the new agentId back, unblocking the tool.
+        // ACT AS THE BROWSER: the keep ran summonAgent() and reports the new agentId back, unblocking the tool.
         if (ev.name === 'crew.summon.request' && !ackPosted) {
           summonReq = ev.payload; ackPosted = true;
           await fetch(B + '/api/summon/ack', {
-            method: 'POST', headers: { 'Content-Type': 'application/json', 'X-StarNet-Token': token, Origin: B },
-            // `desk` = where the station's summonAgent() actually seeded the new worker's workstation
+            method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Eyehold-Token': token, Origin: B },
+            // `desk` = where the keep's summonAgent() actually seeded the new worker's workkeep
             body: JSON.stringify({ runId, requestId: ev.payload.requestId, agentId: 'researcher-2', desk: 'BRIDGE' })
           });
         }
@@ -117,7 +117,7 @@ function boot(port, env, attemptsLeft) {
     }
 
     // 1) the lead actually emitted a summon COMMAND carrying the class the model chose
-    A.ok(summonReq, 'the run emitted crew.summon.request (the lead asked the station to create a worker)');
+    A.ok(summonReq, 'the run emitted crew.summon.request (the lead asked the keep to create a worker)');
     A.eq(summonReq.name, 'RESEARCHER', 'summon request carries the requested name');
     A.eq(summonReq.specId, 'researcher', 'summon request carries the requested class');
     A.ok(summonReq.requestId, 'summon request carries a requestId for the ack');
@@ -138,9 +138,9 @@ function boot(port, env, attemptsLeft) {
     const second = mock.requests[mock.requests.length - 1];
     A.ok(JSON.stringify(second.messages || []).indexOf('researcher-2') >= 0, 'the new agentId reached the model (ready for team.dispatch)');
 
-    // 5) THE DESK RIDES ALONG: the workstation the station seeded with the new agent reaches the lead too, so it
+    // 5) THE DESK RIDES ALONG: the workkeep the keep seeded with the new agent reaches the lead too, so it
     //    never tells the Commander to go build one. Sourced ONLY from the ack — the sidecar invents nothing.
-    A.ok(JSON.stringify(second.messages || []).indexOf('BRIDGE') >= 0, 'the seeded workstation location reached the model');
+    A.ok(JSON.stringify(second.messages || []).indexOf('BRIDGE') >= 0, 'the seeded workkeep location reached the model');
   } finally {
     try { child.kill(); } catch (_) {}
     try { mock.server.close(); } catch (_) {}

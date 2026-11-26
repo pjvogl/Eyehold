@@ -9,14 +9,14 @@ const { _internals: browser } = require('../../sidecar/tools/builtin/browser.js'
 async function run(directory) {
   const root = path.resolve(directory);
   fs.mkdirSync(root, { recursive: true });
-  const csv = 'project,status\r\nStarNet CUA evaluation,exported\r\n';
+  const csv = 'project,status\r\nEyehold CUA evaluation,exported\r\n';
   const server = http.createServer((req, res) => {
     if (req.url === '/report.csv') {
       res.writeHead(200, { 'Content-Type': 'text/csv', 'Content-Disposition': 'attachment; filename="evaluation-report.csv"' });
       return res.end(csv);
     }
     res.writeHead(200, { 'Content-Type': 'text/html' });
-    res.end('<!doctype html><title>StarNet export fixture</title><h1>Evaluation report</h1><a href="/report.csv" download>Export report</a>');
+    res.end('<!doctype html><title>Eyehold export fixture</title><h1>Evaluation report</h1><a href="/report.csv" download>Export report</a>');
   });
   await new Promise(r => server.listen(0, '127.0.0.1', r));
   const driver = browser.makeCdpDriver({ cdpPort: 0, forceHeadless: true, profileDir: path.join(root, 'chrome-profile'), downloadDir: path.join(root, 'downloads') });

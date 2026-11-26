@@ -5,10 +5,10 @@ let proc,cdp;
 try {
   ({proc}=launchChrome({cdpPort:9350,profileDir:'.worldshots/nav-profile'}));cdp=await connectCDP(9350);
   await cdp.send('Page.enable');await cdp.send('Page.navigate',{url:'http://127.0.0.1:9177/'});
-  for(let i=0;i<40;i++){if(await evalJS(cdp,"typeof StationBake!=='undefined'&&typeof PropSprites!=='undefined'"))break;await sleep(200);}
-  const doc=JSON.parse(readFileSync('dev/.scratch-workspace/agent.save.json','utf8')).doc.station;
+  for(let i=0;i<40;i++){if(await evalJS(cdp,"typeof KeepBake!=='undefined'&&typeof PropSprites!=='undefined'"))break;await sleep(200);}
+  const doc=JSON.parse(readFileSync('dev/.scratch-workspace/agent.save.json','utf8')).doc.keep;
   const nav=await evalJS(cdp,`(()=>{
-    const geo=WorldModel.create(${JSON.stringify(doc)}).projectGeometry(),b=StationBake.bake(geo),lights=b.navLights;
+    const geo=WorldModel.create(${JSON.stringify(doc)}).projectGeometry(),b=KeepBake.bake(geo),lights=b.navLights;
     const pixels=c=>c.getContext('2d').getImageData(0,0,c.width,c.height).data;
     const base=pixels(b.baseCv),inside=pixels(b.interiorCv);
     let invalid=0;

@@ -1,7 +1,7 @@
-//! HUD MODE — the main StarNet window as a small always-on-top corner panel.
+//! HUD MODE — the main Eyehold window as a small always-on-top corner panel.
 //!
 //! For the Commander who is gaming or watching something: the frontend (app/hudmode.js) folds the
-//! station down to the live-activity deck + the real COMMS panel, and these commands turn the
+//! keep down to the live-activity deck + the real COMMS panel, and these commands turn the
 //! SAME `main` window into a compact panel pinned above other windows. It is deliberately not a
 //! second window: the API token, the streaming run, the roster and the group chats all live in the
 //! one page, and a second copy of the app would fight it over the same saved state.
@@ -19,8 +19,8 @@ use std::sync::Mutex;
 use serde::{Deserialize, Serialize};
 use tauri::{AppHandle, Emitter, LogicalSize, Manager, PhysicalPosition, PhysicalSize, State};
 
-/// Event the page listens for (hudmode.js) when the tray asks for the HUD / the full station.
-pub(crate) const HUD_EVENT: &str = "starnet-hud";
+/// Event the page listens for (hudmode.js) when the tray asks for the HUD / the full keep.
+pub(crate) const HUD_EVENT: &str = "eyehold-hud";
 
 /// Default HUD footprint in logical px, and its distance from the work-area corner.
 const HUD_DEFAULT_W: f64 = 400.0;
@@ -36,12 +36,12 @@ const HUD_WIDGET_MIN_W: f64 = 160.0;
 const HUD_FOLD_MAX_H: f64 = 480.0;
 /// The widget (a fold that carries a width) is the Commander's to size: it may stand taller than a folded feed.
 const HUD_WIDGET_MAX_H: f64 = 1000.0;
-/// The station's normal floor — mirrors `.min_inner_size(960.0, 600.0)` in build_main_window
+/// The keep's normal floor — mirrors `.min_inner_size(960.0, 600.0)` in build_main_window
 /// (test/desktop-hud-mode.test.js keeps the two in step).
 const MAIN_MIN_W: f64 = 960.0;
 const MAIN_MIN_H: f64 = 600.0;
 /// A window wider than this (logical) while the HUD is on is not a HUD any more (a WebView2 crash
-/// rebuild re-creates `main` at the station's floor size): put it back in the corner.
+/// rebuild re-creates `main` at the keep's floor size): put it back in the corner.
 const HUD_SANE_MAX_W: f64 = 720.0;
 
 /// A window rect in PHYSICAL px: outer position + inner size (what set_position/set_size take).
@@ -145,9 +145,9 @@ pub fn unfolded_rect(folded: HudRect, unfolded_w: Option<u32>, unfolded_h: u32) 
     HudRect { x: folded.x + folded.w as i32 - w as i32, y: folded.y, w, h: unfolded_h }
 }
 
-/// Where the station goes back to on exit: where it was, while that is still on a connected monitor; if that
+/// Where the keep goes back to on exit: where it was, while that is still on a connected monitor; if that
 /// screen is gone (a laptop undocked while the HUD was up), centred on `here` so it never opens off-screen.
-pub fn station_rect_back(saved: HudRect, areas: &[WorkArea], here: Option<WorkArea>) -> HudRect {
+pub fn keep_rect_back(saved: HudRect, areas: &[WorkArea], here: Option<WorkArea>) -> HudRect {
     if areas.is_empty() || rect_reachable(&saved, areas) {
         return saved;
     }
@@ -260,7 +260,7 @@ fn view(win: Option<&tauri::WebviewWindow>, g: &Inner) -> HudView {
 
 /// The HUD's current state (a reloaded page asks this to put its HUD layout back).
 #[tauri::command]
-pub fn starnet_hud_status(app: AppHandle, state: State<'_, HudState>) -> HudView {
+pub fn eyehold_hud_status(app: AppHandle, state: State<'_, HudState>) -> HudView {
     let g = lock(&state);
     let win = app.get_webview_window("main");
     view(win.as_ref(), &g)
@@ -268,7 +268,7 @@ pub fn starnet_hud_status(app: AppHandle, state: State<'_, HudState>) -> HudView
 
 /// Enter (`active: true`) or leave (`active: false`) HUD mode on the main window.
 #[tauri::command]
-pub fn starnet_hud_set(
+pub fn eyehold_hud_set(
     app: AppHandle,
     state: State<'_, HudState>,
     active: bool,
@@ -281,7 +281,7 @@ pub fn starnet_hud_set(
         let fresh = !g.active;
         if fresh {
             // Leave fullscreen/maximized FIRST so the bounds recorded are the windowed ones the
-            // station returns to; the flags themselves are restored on exit.
+            // keep returns to; the flags themselves are restored on exit.
             let fullscreen = win.is_fullscreen().unwrap_or(false);
             if fullscreen {
                 let _ = win.set_fullscreen(false);
@@ -344,7 +344,7 @@ pub fn starnet_hud_set(
                     .map(|ms| ms.iter().map(work_area_of).collect())
                     .unwrap_or_default();
                 let here = win.current_monitor().ok().flatten().map(|m| work_area_of(&m));
-                let back = station_rect_back(HudRect { x: p.x, y: p.y, w: sz.width, h: sz.height }, &areas, here);
+                let back = keep_rect_back(HudRect { x: p.x, y: p.y, w: sz.width, h: sz.height }, &areas, here);
                 apply_rect(&win, back);
             }
             (Some(p), None) => {
@@ -369,7 +369,7 @@ pub fn starnet_hud_set(
 
 /// Keep the HUD above other windows (or not). The answer is the window's read-back.
 #[tauri::command]
-pub fn starnet_hud_pin(
+pub fn eyehold_hud_pin(
     app: AppHandle,
     state: State<'_, HudState>,
     pinned: bool,
@@ -387,7 +387,7 @@ pub fn starnet_hud_pin(
 /// Fold the HUD down to its activity deck (`height` = the deck's measured logical height), re-fit a
 /// folded HUD to a new deck height, or unfold it back to the height it had before folding.
 #[tauri::command]
-pub fn starnet_hud_fold(
+pub fn eyehold_hud_fold(
     app: AppHandle,
     state: State<'_, HudState>,
     folded: bool,
@@ -439,8 +439,8 @@ pub(crate) fn is_active(app: &AppHandle) -> bool {
     app.try_state::<HudState>().map(|s| lock(&s).active).unwrap_or(false)
 }
 
-/// Tray entry points: ask the page to switch (it owns the layout and calls starnet_hud_set).
-/// `false` is only sent while the HUD is actually on, so Open StarNet stays a plain reveal otherwise.
+/// Tray entry points: ask the page to switch (it owns the layout and calls eyehold_hud_set).
+/// `false` is only sent while the HUD is actually on, so Open Eyehold stays a plain reveal otherwise.
 pub(crate) fn request(app: &AppHandle, active: bool) {
     if active || is_active(app) {
         let _ = app.emit_to("main", HUD_EVENT, serde_json::json!({ "active": active }));
@@ -527,16 +527,16 @@ mod tests {
     }
 
     #[test]
-    fn the_station_never_comes_back_on_a_monitor_that_is_gone() {
+    fn the_keep_never_comes_back_on_a_monitor_that_is_gone() {
         let laptop = area(0, 0, 1920, 1040, 1.0);
         let was = HudRect { x: 2200, y: 100, w: 1600, h: 900 }; // on the unplugged second screen
-        let back = station_rect_back(was, &[laptop], Some(laptop));
+        let back = keep_rect_back(was, &[laptop], Some(laptop));
         assert_eq!(back, HudRect { x: 160, y: 70, w: 1600, h: 900 });
-        let big = station_rect_back(HudRect { x: 4000, y: 0, w: 2560, h: 1400 }, &[laptop], Some(laptop));
+        let big = keep_rect_back(HudRect { x: 4000, y: 0, w: 2560, h: 1400 }, &[laptop], Some(laptop));
         assert_eq!(big, HudRect { x: 0, y: 0, w: 1920, h: 1040 });
         let here = HudRect { x: 100, y: 100, w: 1200, h: 800 };
-        assert_eq!(station_rect_back(here, &[laptop], Some(laptop)), here); // still reachable: exactly where it was
-        assert_eq!(station_rect_back(was, &[], None), was); // monitors unknown: leave it to the OS
+        assert_eq!(keep_rect_back(here, &[laptop], Some(laptop)), here); // still reachable: exactly where it was
+        assert_eq!(keep_rect_back(was, &[], None), was); // monitors unknown: leave it to the OS
     }
 
     #[test]

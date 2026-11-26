@@ -4,7 +4,7 @@
    Usage:
      node scripts/qa/input-isolation-smoke.mjs --url http://127.0.0.1:5173/?smoke
 
-   The target server must already be running. This drives a pointer-lock FPS through StarNet's
+   The target server must already be running. This drives a pointer-lock FPS through Eyehold's
    browser.test_* substrate only. A separate read-only Win32 observer samples GetClipCursor,
    GetCursorPos, and GetLastInputInfo throughout. The observer never moves or releases input. */
 import { spawn } from 'node:child_process';
@@ -31,7 +31,7 @@ const monitorMs = Math.max(3000, Number(arg('--monitor-ms', '8000')) || 8000);
 const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
 
 const PS_MONITOR = String.raw`
-$DurationMs=[int]$env:STARNET_INPUT_MONITOR_MS
+$DurationMs=[int]$env:EYEHOLD_INPUT_MONITOR_MS
 Add-Type @"
 using System;
 using System.Runtime.InteropServices;
@@ -60,7 +60,7 @@ $confinedRects=New-Object System.Collections.ArrayList
 $bc=$base.clip
 $baselineConfined=(($bc[0]-gt$vx)-or($bc[1]-gt$vy)-or($bc[2]-lt($vx+$vw))-or($bc[3]-lt($vy+$vh)))
 [Console]::Out.WriteLine('READY '+(@{confined=$baselineConfined;clip=$base.clip;position=@($base.x,$base.y);last=$base.last;screen=@($vx,$vy,$vw,$vh)}|ConvertTo-Json -Compress));[Console]::Out.Flush()
-while(($clock.ElapsedMilliseconds -lt $DurationMs) -and -not (Test-Path -LiteralPath $env:STARNET_INPUT_STOP_FILE)){
+while(($clock.ElapsedMilliseconds -lt $DurationMs) -and -not (Test-Path -LiteralPath $env:EYEHOLD_INPUT_STOP_FILE)){
   $s=Sample;$samples++
   $c=$s.clip
   if(($c[0]-gt$vx)-or($c[1]-gt$vy)-or($c[2]-lt($vx+$vw))-or($c[3]-lt($vy+$vh))){$confined++;if($confinedRects.Count-lt 12){[void]$confinedRects.Add(@($clock.ElapsedMilliseconds,$c[0],$c[1],$c[2],$c[3]))}}
@@ -78,14 +78,14 @@ if($final.last-ne$base.last){$lastChanged=$true}
 
 function startObserver() {
   if (process.platform !== 'win32') return { ready: Promise.resolve(), stop() {}, done: Promise.resolve({ skipped: true, platform: process.platform }) };
-  const stopFile = join(tmpdir(), 'starnet-input-observer-stop-' + process.pid + '-' + Date.now());
+  const stopFile = join(tmpdir(), 'eyehold-input-observer-stop-' + process.pid + '-' + Date.now());
   try { rmSync(stopFile, { force: true }); } catch {}
   const exe = process.env.SystemRoot
     ? join(process.env.SystemRoot, 'System32', 'WindowsPowerShell', 'v1.0', 'powershell.exe')
     : 'powershell.exe';
   const child = spawn(exe, ['-NoProfile', '-NonInteractive', '-ExecutionPolicy', 'Bypass', '-Command', PS_MONITOR], {
     windowsHide: true, stdio: ['ignore', 'pipe', 'pipe'],
-    env: Object.assign({}, process.env, { STARNET_INPUT_MONITOR_MS: String(monitorMs), STARNET_INPUT_STOP_FILE: stopFile })
+    env: Object.assign({}, process.env, { EYEHOLD_INPUT_MONITOR_MS: String(monitorMs), EYEHOLD_INPUT_STOP_FILE: stopFile })
   });
   let out = '', err = '', readyResolve, readyReject, readySeen = false;
   const ready = new Promise((resolve, reject) => { readyResolve = resolve; readyReject = reject; });
@@ -133,7 +133,7 @@ if (baseline && baseline.confined) {
 }
 const browser = makeBrowserTools({
   allowVisible: false, forceHeadless: true, syntheticInputOnly: true, cdpPort,
-  profileDir: join(tmpdir(), 'starnet-input-proof-' + process.pid + '-' + Date.now()), cleanupProfile: true
+  profileDir: join(tmpdir(), 'eyehold-input-proof-' + process.pid + '-' + Date.now()), cleanupProfile: true
 });
 const tool = name => browser.tools.find(t => t.name === name);
 // The operator-only proof may use the session's internal evaluator for precise assertions.
@@ -151,9 +151,9 @@ try {
   await until(() => evaluate(`!!document.querySelector('#deploy') && !!document.querySelector('canvas')`), 'FPS runtime readiness', 100);
   const initial = await evaluate(`(() => {
     const b=document.querySelector('#deploy'); const r=b&&b.getBoundingClientRect();
-    window.__STARNET_PROOF_MOVES__=[];
-    document.addEventListener('mousemove',e=>window.__STARNET_PROOF_MOVES__.push([e.movementX,e.movementY]),{capture:true});
-    const s=window.__STARNET_SYNTHETIC_INPUT__;
+    window.__EYEHOLD_PROOF_MOVES__=[];
+    document.addEventListener('mousemove',e=>window.__EYEHOLD_PROOF_MOVES__.push([e.movementX,e.movementY]),{capture:true});
+    const s=window.__EYEHOLD_SYNTHETIC_INPUT__;
     try{s.ready=false;Element.prototype.requestPointerLock=function(){throw new Error('forged')};}catch(_){}
     const d=Object.getOwnPropertyDescriptor(Element.prototype,'requestPointerLock');
     const fd=Object.getOwnPropertyDescriptor(Element.prototype,'requestFullscreen');
@@ -184,7 +184,7 @@ try {
   await input({ action: 'key_up', key: 'ShiftLeft' });
   await input({ action: 'key_up', key: 'KeyW' });
 
-  const active = await evaluate(`({locked:document.pointerLockElement?.tagName==='CANVAS',synthetic:!!window.__STARNET_SYNTHETIC_INPUT__?.ready,stance:document.querySelector('#stance')?.textContent||'',hud:!document.querySelector('#hud')?.classList.contains('hidden'),moves:window.__STARNET_PROOF_MOVES__||[]})`);
+  const active = await evaluate(`({locked:document.pointerLockElement?.tagName==='CANVAS',synthetic:!!window.__EYEHOLD_SYNTHETIC_INPUT__?.ready,stance:document.querySelector('#stance')?.textContent||'',hud:!document.querySelector('#hud')?.classList.contains('hidden'),moves:window.__EYEHOLD_PROOF_MOVES__||[]})`);
   if (!active.locked || !active.synthetic || !active.hud) throw new Error('FPS active state was not proven: ' + JSON.stringify(active));
   if (!active.moves.some(m => m[0] === 220 && m[1] === -35)) throw new Error('relative synthetic mouse event was not observed: ' + JSON.stringify(active.moves));
   await input({ action: 'key_press', key: 'Escape' });

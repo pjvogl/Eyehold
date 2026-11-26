@@ -49,10 +49,10 @@ const READY = `(() => {
   return pt ? JSON.stringify(pt) : 'no-outbox';
 })()`;
 
-// The seed's floor has no OUTBOX — stamp a real one through the station store (the same seam REFIT
+// The seed's floor has no OUTBOX — stamp a real one through the keep store (the same seam REFIT
 // uses), on any free 2x2 in-room patch, so every event below rides the true placed-prop path.
 const PLACE_OUTBOX = `(() => {
-  const st = Build.__test__.station();
+  const st = Build.__test__.keep();
   if (st.props().some(p => p.t === 'outbox')) return 'already';
   const free = (x, y) => { for (let dy = 0; dy < 2; dy++) for (let dx = 0; dx < 2; dx++) if (!st.roomAt(x + dx, y + dy) || st.propAt(x + dx, y + dy) || st.beltAt(x + dx, y + dy)) return false; return true; };
   const b = st.bounds();

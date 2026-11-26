@@ -12,11 +12,11 @@
         appends the SAME bounded, provenance-labelled pack (commander-context.js) an ordinary task gets. And
         NOTHING ELSE about the internal path changes: no manual, no capability summary, no skills.
      2. THE SUGGEST EVIDENCE CONTRACT — the model must produce the Commander's OWN words, that quote is VETOED
-        against what the station actually knows (fail-closed), only a survivor is spoken as «because you said»,
+        against what the keep actually knows (fail-closed), only a survivor is spoken as «because you said»,
         and the ledger row finally distinguishes a real quote from the model's own rationale.
 
    Plus the Q3 staleness guard the earlier plan named but never wired: a pitch is never silently aimed at a
-   belief the station itself would not assert. */
+   belief the keep itself would not assert. */
 'use strict';
 const A = require('./_assert.js');
 const fs = require('fs');
@@ -52,7 +52,7 @@ const RecQuality = require('../frontend/app/recquality.js');
   // the dossier is not duplicated when the caller's system prompt already carries it (the composer's own law)
   const dup = CommanderContext.compose({ dossier: 'They run a two-person studio.', existingSystem: 'x They run a two-person studio. y' });
   A.eq(dup.indexOf('<commander_context'), -1, 'the pack never re-injects a dossier the system prompt already holds');
-  A.eq(CommanderContext.compose({}), '', 'a station that knows nothing composes NOTHING (no empty scaffolding)');
+  A.eq(CommanderContext.compose({}), '', 'a keep that knows nothing composes NOTHING (no empty scaffolding)');
 }
 
 /* the wiring, end to end: browser flag → request body → runOnce opt → the one place it is spent.
@@ -111,7 +111,7 @@ for (const [file, label] of [['frontend/app/pitchstore.js', 'the First Pitch'],
   A.eq(Pitch.parsePitch(mk('I check prices every morning')).evidence, 'I check prices every morning', 'a bare quote passes through');
 }
 /* the VETO, proved through the real engine on the real pool shape. `grounded` is the same predicate autojobs
-   uses on its GROUNDS line, so a quote must share a significant token with something the station knows. */
+   uses on its GROUNDS line, so a quote must share a significant token with something the keep knows. */
 {
   const pool = Autopilot.flattenBeliefs({ pain: ['I lose an hour every morning on crypto prices'], goals: ['ship the studio launch'] });
   A.eq(Autopilot.grounded('I check crypto prices every morning', pool), true, 'a quote anchored in a real belief survives');

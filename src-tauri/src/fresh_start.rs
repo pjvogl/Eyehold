@@ -3,7 +3,7 @@ use std::fs::{self, OpenOptions};
 use std::io::Write;
 use std::path::{Path, PathBuf};
 
-const OWNER_FILE: &str = ".starnet-workspace-owner.json";
+const OWNER_FILE: &str = ".eyehold-workspace-owner.json";
 const MIGRATION_MARKER: &str = ".migrated";
 const FRESH_MARKER: &str = ".fresh-start.json";
 const CREDITS_LINK: &str = ".secrets/credits.json";
@@ -99,7 +99,7 @@ fn process_is_alive(pid: u32) -> bool {
     if unsafe { kill(pid, 0) } == 0 {
         return true;
     }
-    // ESRCH is 3 on the Unix platforms StarNet ships (macOS and Linux). Every other result,
+    // ESRCH is 3 on the Unix platforms Eyehold ships (macOS and Linux). Every other result,
     // especially EPERM, means the process exists or liveness could not be proven.
     std::io::Error::last_os_error().raw_os_error() != Some(3)
 }
@@ -115,7 +115,7 @@ fn process_is_alive(pid: u32) -> bool {
         return true;
     }
     // Access denied is still a live/unknown process. Windows documents INVALID_PARAMETER for a
-    // PID that does not exist, which is the only result that authorizes reclaiming the station.
+    // PID that does not exist, which is the only result that authorizes reclaiming the keep.
     (unsafe { GetLastError() }) != ERROR_INVALID_PARAMETER
 }
 
@@ -127,7 +127,7 @@ fn process_is_alive(_pid: u32) -> bool {
 /// Replace the active workspace with a clean, migration-sealed generation while moving the
 /// previous generation to a sibling quarantine. Nothing in the OS keychain is read or changed.
 /// The caller must stop its sidecar first and pass that exact child PID; a different live owner is
-/// refused so an explicit reset can never create two writers for one station. A provably dead PID
+/// refused so an explicit reset can never create two writers for one keep. A provably dead PID
 /// is stale crash residue and must not strand the recovery escape.
 pub fn quarantine_and_prepare(
     workspaces: &Path,
@@ -203,7 +203,7 @@ fn prepare_with_mode(
     if let Some(owner_pid) = valid_owner_pid(workspaces) {
         if Some(owner_pid) != stopped_child_pid && owner_pid_alive(owner_pid) {
             return Err(format!(
-                "another StarNet process still owns this station (PID {owner_pid}); quit it before starting fresh"
+                "another Eyehold process still owns this keep (PID {owner_pid}); quit it before starting fresh"
             ));
         }
     }
@@ -218,14 +218,14 @@ fn prepare_with_mode(
     let quarantine = workspaces.exists().then(|| {
         unique_child(
             &quarantine_root,
-            if erase { ".erasing-station" } else { "station" },
+            if erase { ".erasing-keep" } else { "keep" },
             now_ms,
         )
     });
     let stage = unique_child(parent, ".workspaces-fresh-stage", now_ms);
     fs::create_dir_all(&stage).map_err(|error| {
         format!(
-            "could not stage a fresh station at {}: {error}",
+            "could not stage a fresh keep at {}: {error}",
             stage.display()
         )
     })?;
@@ -249,7 +249,7 @@ fn prepare_with_mode(
         moved: Vec::new(),
     };
     let marker_bytes = serde_json::to_vec_pretty(&marker)
-        .map_err(|error| format!("could not encode fresh-station receipt: {error}"))?;
+        .map_err(|error| format!("could not encode fresh-keep receipt: {error}"))?;
     if let Err(error) = write_durable(&stage.join(MIGRATION_MARKER), b"1")
         .and_then(|_| write_durable(&stage.join(FRESH_MARKER), &marker_bytes))
         .and_then(|_| {
@@ -276,7 +276,7 @@ fn prepare_with_mode(
         fs::rename(workspaces, destination).map_err(|error| {
             let _ = fs::remove_dir_all(&stage);
             format!(
-                "could not preserve the current station in {}: {error}",
+                "could not preserve the current keep in {}: {error}",
                 destination.display()
             )
         })?;
@@ -284,12 +284,12 @@ fn prepare_with_mode(
     }
 
     if let Err(error) = fs::rename(&stage, workspaces) {
-        let mut message = format!("could not activate the fresh station: {error}");
+        let mut message = format!("could not activate the fresh keep: {error}");
         if moved_old {
             if let Some(old) = quarantine.as_ref() {
                 if let Err(rollback) = fs::rename(old, workspaces) {
                     message.push_str(&format!(
-                        "; rollback also failed ({rollback}); preserved station remains at {}",
+                        "; rollback also failed ({rollback}); preserved keep remains at {}",
                         old.display()
                     ));
                 }
@@ -308,20 +308,20 @@ mod tests {
 
     fn scratch(name: &str) -> PathBuf {
         std::env::temp_dir().join(format!(
-            "starnet-{name}-{}-{}",
+            "eyehold-{name}-{}-{}",
             std::process::id(),
             crate::now_ms()
         ))
     }
 
     #[test]
-    fn quarantines_station_seals_migration_and_leaves_sibling_credentials_alone() {
+    fn quarantines_keep_seals_migration_and_leaves_sibling_credentials_alone() {
         let root = scratch("fresh-workspace");
         let workspaces = root.join("workspaces");
         let legacy = root.join("legacy").join("workspaces");
         fs::create_dir_all(&workspaces).unwrap();
         fs::create_dir_all(&legacy).unwrap();
-        fs::write(workspaces.join("agent.save.json"), b"station").unwrap();
+        fs::write(workspaces.join("agent.save.json"), b"keep").unwrap();
         fs::create_dir_all(workspaces.join(".secrets")).unwrap();
         let linked = br#"{"url":"https://credits.example","accountId":"acct-7","linkedAt":7}"#;
         fs::write(workspaces.join(CREDITS_LINK), linked).unwrap();
@@ -333,11 +333,11 @@ mod tests {
         .unwrap();
 
         let result = quarantine_and_prepare(&workspaces, &[legacy.clone()], Some(4242), 12345)
-            .expect("fresh station should activate");
-        let quarantine = result.quarantine.expect("old station is quarantined");
+            .expect("fresh keep should activate");
+        let quarantine = result.quarantine.expect("old keep is quarantined");
         assert_eq!(
             fs::read(quarantine.join("agent.save.json")).unwrap(),
-            b"station"
+            b"keep"
         );
         assert!(workspaces.join(MIGRATION_MARKER).is_file());
         assert_eq!(fs::read(workspaces.join(CREDITS_LINK)).unwrap(), linked);
@@ -356,25 +356,25 @@ mod tests {
     }
 
     #[test]
-    fn erase_mode_carries_nothing_over_and_sets_the_old_station_aside_for_deletion() {
+    fn erase_mode_carries_nothing_over_and_sets_the_old_keep_aside_for_deletion() {
         let root = scratch("erase-workspace");
         let workspaces = root.join("workspaces");
         fs::create_dir_all(workspaces.join(".secrets")).unwrap();
-        fs::write(workspaces.join("agent.save.json"), b"station").unwrap();
+        fs::write(workspaces.join("agent.save.json"), b"keep").unwrap();
         let linked = br#"{"url":"https://credits.example","accountId":"acct-7","linkedAt":7}"#;
         fs::write(workspaces.join(CREDITS_LINK), linked).unwrap();
 
         let result = prepare_with_mode(&workspaces, &[], None, 777, &|_| false, true)
-            .expect("erase set-aside should activate a clean station");
-        let aside = result.quarantine.expect("the old station was set aside");
+            .expect("erase set-aside should activate a clean keep");
+        let aside = result.quarantine.expect("the old keep was set aside");
         assert_eq!(aside.parent().unwrap(), root.as_path());
         assert!(aside
             .file_name()
             .unwrap()
             .to_string_lossy()
-            .starts_with(".erasing-station-"));
+            .starts_with(".erasing-keep-"));
         assert!(!root.join("workspace-quarantine").exists());
-        assert_eq!(fs::read(aside.join("agent.save.json")).unwrap(), b"station");
+        assert_eq!(fs::read(aside.join("agent.save.json")).unwrap(), b"keep");
         // nothing was carried over: no save, and NOT the credit-account link either
         assert!(!workspaces.join("agent.save.json").exists());
         assert!(!workspaces.join(CREDITS_LINK).exists());
@@ -387,7 +387,7 @@ mod tests {
     }
 
     #[test]
-    fn refuses_to_move_a_station_owned_by_a_different_process() {
+    fn refuses_to_move_a_keep_owned_by_a_different_process() {
         let root = scratch("fresh-owner");
         let workspaces = root.join("workspaces");
         fs::create_dir_all(&workspaces).unwrap();
@@ -399,7 +399,7 @@ mod tests {
         let error =
             quarantine_and_prepare_with(&workspaces, &[], Some(9002), 12345, &|pid| pid == 9001)
                 .unwrap_err();
-        assert!(error.contains("another StarNet process"));
+        assert!(error.contains("another Eyehold process"));
         assert!(workspaces.exists());
         let _ = fs::remove_dir_all(root);
     }
@@ -409,7 +409,7 @@ mod tests {
         let root = scratch("fresh-stale-owner");
         let workspaces = root.join("workspaces");
         fs::create_dir_all(&workspaces).unwrap();
-        fs::write(workspaces.join("agent.save.json"), b"old station").unwrap();
+        fs::write(workspaces.join("agent.save.json"), b"old keep").unwrap();
         fs::write(
             workspaces.join(OWNER_FILE),
             br#"{"version":1,"pid":9001,"nonce":"crashed"}"#,
@@ -418,10 +418,10 @@ mod tests {
 
         let result = quarantine_and_prepare_with(&workspaces, &[], None, 12345, &|_| false)
             .expect("a dead PID must not strand recovery");
-        let quarantine = result.quarantine.expect("old station is preserved");
+        let quarantine = result.quarantine.expect("old keep is preserved");
         assert_eq!(
             fs::read(quarantine.join("agent.save.json")).unwrap(),
-            b"old station"
+            b"old keep"
         );
         assert!(workspaces.join(FRESH_MARKER).is_file());
         let _ = fs::remove_dir_all(root);

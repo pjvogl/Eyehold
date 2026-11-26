@@ -2,7 +2,7 @@
 
 Synthesized from a 4-track design investigation (bug RCA, personality system, conversation UX, TTS engine). All work lives in the `voice` worktree (`agent/voice`). Every stage is one-commit-sized, additive-only (no `shared/events.js` / `shared/schema.js` edits), and must pass `npm run test:fast` before merge.
 
-Goal: agents that feel like **your little AI worker homie living in the simulation** — laid-back, casual, themed to station life — with a **fluid hands-free voice conversation**. Voice mode stays short & spoken; **text mode stays detailed**.
+Goal: agents that feel like **your little AI worker homie living in the simulation** — laid-back, casual, themed to keep life — with a **fluid hands-free voice conversation**. Voice mode stays short & spoken; **text mode stays detailed**.
 
 ---
 
@@ -34,11 +34,11 @@ Dependency order: **fix → personality (text) → voice-mode split → neural e
 - Browser seam: `ttsProvider.speak` POSTs `/api/tts` → `new Audio(blob)`; on `{fallback:true}` / fetch throw / `play()` reject → existing `speechSynthesis` path. `currentAudio` so mic-open/new-reply pauses it.
 
 ### Stage 4 — Fluid hands-free conversation loop (auto-listen, barge-in)
-- New persisted **VOICE MODE** toggle (`🎙️`/`💬`, LS `starnet.voice.mode`). OFF = today's push-to-talk; ON = self-driving listen→send→speak→listen.
+- New persisted **VOICE MODE** toggle (`🎙️`/`💬`, LS `eyehold.voice.mode`). OFF = today's push-to-talk; ON = self-driving listen→send→speak→listen.
 - Loop pivot: `speak()` passes a real `onReplyEnded` into `ttsProvider.speak` (today it passes `null`); on true `onend`, if `convoMode && !busy` → guarded `rearmMic()`.
 - Barge-in: a light always-on listener during `speaking`; first non-empty interim → `stopSpeaking()` + capture. Silence/endpointing via `onend→onFinal` hardened with a ~1.3s `silenceTimer`. Exit: toggle / spoken "stop voice mode" / Escape / DISCONNECT. Echo mitigation: never capture while speaking; ~300ms re-arm guard; `getUserMedia` AEC; half-duplex fallback without AEC.
 
-### Stage 5 — Ambient station-life remarks (spoken + conversation-aware)
+### Stage 5 — Ambient keep-life remarks (spoken + conversation-aware)
 - Make `world.js` `curiositySay` remarks **spoken** (lower/muttered) and **silent mid-conversation**. Tag curio lines `say(text,{ambient:true})`; only auto-speak ambient ones (real replies already speak via chat.js). Extend the no-stomp guard with an `inConversation` check (`World.setConversing(bool)` from voice.js). Rides world.js's existing throttles — no new timers, stays sparse.
 
 ---

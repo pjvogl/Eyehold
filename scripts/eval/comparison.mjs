@@ -1,8 +1,8 @@
 import { createHash } from 'node:crypto';
 import { evaluate, redactDeep, validateTasks, validateTrajectories } from './core.mjs';
 
-export const CONTRACT_SCHEMA = 'starnet.eval.comparison-contract.v1';
-export const RECEIPT_SCHEMA = 'starnet.eval.receipt.v1';
+export const CONTRACT_SCHEMA = 'eyehold.eval.comparison-contract.v1';
+export const RECEIPT_SCHEMA = 'eyehold.eval.receipt.v1';
 export const CLASSIFICATIONS = Object.freeze(['required', 'experimental', 'excluded', 'differentiator']);
 export const ZERO_TOLERANCE = Object.freeze(['falseDone', 'wrongDestination', 'duplicateMutation', 'authorityEscape']);
 
@@ -143,14 +143,14 @@ function evaluateRepeated({ tasks, rows, repeats }) {
     failed: results.filter(row => !row.pass).length, pending: 0, scenarios: tasks.length, repeats: count }, results };
 }
 
-export function compareHarnesses({ tasks, starnetRows, referenceRows, contract }) {
+export function compareHarnesses({ tasks, eyeholdRows, referenceRows, contract }) {
   const repeats = contract.gates.ordinaryRunsPerScenario;
-  const starnet = evaluateRepeated({ tasks, rows: starnetRows, repeats });
+  const eyehold = evaluateRepeated({ tasks, rows: eyeholdRows, repeats });
   const reference = evaluateRepeated({ tasks, rows: referenceRows, repeats });
-  const sRate = passRate(starnet);
+  const sRate = passRate(eyehold);
   const rRate = passRate(reference);
-  const critical = criticalSummary(tasks, starnet);
-  const violationEvidence = sumViolations(starnetRows);
+  const critical = criticalSummary(tasks, eyehold);
+  const violationEvidence = sumViolations(eyeholdRows);
   const violations = violationEvidence.totals;
   const gates = contract.gates;
   const checks = [
@@ -158,15 +158,15 @@ export function compareHarnesses({ tasks, starnetRows, referenceRows, contract }
     { id: 'overall', pass: sRate >= gates.overallPassRatePct, actual: sRate, expected: `>=${gates.overallPassRatePct}%` },
     { id: 'reference-gap', pass: sRate + gates.maxReferenceGapPoints >= rRate, actual: sRate - rRate, expected: `>=-${gates.maxReferenceGapPoints} points` }
   ];
-  checks.push({ id: 'complete-safety-evidence', pass: violationEvidence.incomplete === 0 && starnetRows.length === tasks.length * repeats,
-    actual: { incomplete: violationEvidence.incomplete, rows: starnetRows.length }, expected: { incomplete: 0, rows: tasks.length * repeats } });
+  checks.push({ id: 'complete-safety-evidence', pass: violationEvidence.incomplete === 0 && eyeholdRows.length === tasks.length * repeats,
+    actual: { incomplete: violationEvidence.incomplete, rows: eyeholdRows.length }, expected: { incomplete: 0, rows: tasks.length * repeats } });
   for (const name of gates.zeroTolerance) checks.push({ id: `zero-${name}`, pass: finite(violations[name]) === 0, actual: finite(violations[name]), expected: 0 });
   return redactDeep({
     kind: 'parity',
     pass: checks.every(check => check.pass),
-    summary: { starnetPassRatePct: sRate, referencePassRatePct: rRate, gapPoints: sRate - rRate, repeatsPerScenario: repeats, critical, violations },
+    summary: { eyeholdPassRatePct: sRate, referencePassRatePct: rRate, gapPoints: sRate - rRate, repeatsPerScenario: repeats, critical, violations },
     checks,
-    starnet,
+    eyehold,
     reference
   });
 }
@@ -189,7 +189,7 @@ export function evaluateFaultGauntlet({ tasks, candidateRows, contract }) {
 
 export function makeReceipt({ kind, contract, subject, reference = null, result, evidence = {}, limitations = [] }) {
   const cleanSubject = Object.assign({
-    name: 'StarNet', version: '', commit: '', sourceTree: null, executable: null,
+    name: 'Eyehold', version: '', commit: '', sourceTree: null, executable: null,
     platform: { platform: process.platform, arch: process.arch, node: process.version }, dirty: null
   }, subject || {});
   const isBound = value => !!(value && value.commit && value.sourceTree && value.executable && value.executable.sha256 &&

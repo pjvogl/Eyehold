@@ -22,7 +22,7 @@ global.localStorage = {
   setItem: (k, v) => { mem[k] = String(v); },
   removeItem: k => { delete mem[k]; }
 };
-const KEY = 'starnet.trust.v1';
+const KEY = 'eyehold.trust.v1';
 
 const bus = A.makeBus();
 let emitted = 0;
@@ -217,7 +217,7 @@ A.ok(TrustStore._state().declined['initiative:leash'] >= 1, 'the declined bands 
 mem[KEY] = '{not valid json';
 initStore();
 A.eq(TrustStore._state().earned, {}, 'an unparseable key degrades to a clean record, never throws');
-mem[KEY] = JSON.stringify({ track: { posStreak: 'x' }, earned: { initiative: { to: 'orbit', floor: 'wait' } }, declined: { 'initiative:leash': -2 }, ignores: { a: 'b' } });
+mem[KEY] = JSON.stringify({ track: { posStreak: 'x' }, earned: { initiative: { to: 'circuit', floor: 'wait' } }, declined: { 'initiative:leash': -2 }, ignores: { a: 'b' } });
 initStore();
 A.eq(TrustStore._state().earned.initiative, undefined, 'an out-of-enum earned rung is dropped on hydrate');
 A.eq(TrustStore._state().declined, {}, 'malformed declined bands are dropped');

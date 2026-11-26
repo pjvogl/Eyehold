@@ -1,10 +1,10 @@
 # HARNESS GAP — 2026-07-25
 
 > **Historical baseline only.** Superseded for 0.10 release decisions by
-> [`HARNESS_GAP_2026-08-07.md`](HARNESS_GAP_2026-08-07.md), which compares StarNet 0.9.0 with the
+> [`HARNESS_GAP_2026-08-07.md`](HARNESS_GAP_2026-08-07.md), which compares Eyehold 0.9.0 with the
 > 2026-08-07 Hermes `origin/main`. Keep this document as evidence of which gaps were subsequently closed.
 
-Where StarNet's agent runtime stands against the reference harness, measured against the friction
+Where Eyehold's agent runtime stands against the reference harness, measured against the friction
 users have actually reported. Code-verified at trunk `dc594624`; plan docs were not trusted.
 
 **Staleness caveat.** The reference clone used for this pass is pinned at 2026-07-08 and upstream has
@@ -15,13 +15,13 @@ before building against any specific claim.
 
 ## 1. The finding
 
-The gap is not a feature list. StarNet has nearly every capability the reference harness has. The
+The gap is not a feature list. Eyehold has nearly every capability the reference harness has. The
 difference is **which surfaces get them**.
 
 The reference harness ships one core tool bundle inherited by every CLI, messaging and scheduled
 platform — terminal included, at 100%.
 
-StarNet runs five independent gates before a tool reaches the model:
+Eyehold runs five independent gates before a tool reaches the model:
 
 | # | Gate | Location |
 |---|---|---|
@@ -39,22 +39,22 @@ Only two callers pass `surface:'interactive'`: the browser `/api/run` (`index.js
 has run `/approvals on` (`channels/hub.js:801`). **Cron, night shift, workshop, delegated workers, and
 every chat channel by default are `'autonomous'`.**
 
-Net: an unattended StarNet agent has web, files, memory and studio. No shell. No connectors.
+Net: an unattended Eyehold agent has web, files, memory and studio. No shell. No connectors.
 
 `workbench` is also absent from `fullOffice()` (`sidecar/capability/office.js:21`) and from the
 interactive floor, so terminal reach requires a placed prop *and* a watched session.
 
 ### The architectural distinction
 
-**The reference harness gates unattended danger with consent policy. StarNet gates it with tool absence.**
+**The reference harness gates unattended danger with consent policy. Eyehold gates it with tool absence.**
 
 Their scheduled runs default to deny-on-approval, plus prompt-injection scanning and fail-closed
 provider-drift checks — but the agent still *sees* the tool and reports the blocker honestly.
 
-StarNet removes the tool before the consent broker is ever consulted, so the agent does not know the
+Eyehold removes the tool before the consent broker is ever consulted, so the agent does not know the
 capability exists. It over-promises, fails, and blames the user's credentials.
 
-**StarNet already has the correct pattern.** `web_request`'s per-key unattended grant
+**Eyehold already has the correct pattern.** `web_request`'s per-key unattended grant
 (`sidecar/permissions.js:100-108`) is exactly consent-instead-of-absence: recorded, revocable,
 per-resource. Extending that shape to `workbench` is the highest-leverage change available — and it is
 precedented in this codebase, not imported.
@@ -124,20 +124,20 @@ Honesty lane:
    turn end rewrites the finish reason when the model tries to conclude after editing code with no fresh
    passing evidence. Prose/markdown edits are excluded, it is capped at 2 attempts, it is off on
    conversational surfaces, and the synthetic messages are non-persistent so a resumed transcript never
-   carries a premature "done". StarNet has `verify.run` — nothing forces it, nothing consumes its
+   carries a premature "done". Eyehold has `verify.run` — nothing forces it, nothing consumes its
    result, and it is dead on autonomous surfaces. This targets the project's #1 recurring failure mode.
 3. **Tool descriptions as coaching, not description.** Pure prompt work. Their tool schemas teach: the
    web-extract tool names the exact follow-up call to page its own omitted middle; the clarify tool
    ships a right/wrong example pair; a write failure diagnoses the likely cause and names the
-   alternative. StarNet did this once with the task doctrine — generalize it.
+   alternative. Eyehold did this once with the task doctrine — generalize it.
 4. **Per-task auxiliary model slots.** Still open. `auxgovernor.js` capped the *count* of post-run
    passes, not their *model*, and it reads `process.env.SKYNET_AUX_BUDGET` directly — bypassing `ENV()`,
-   so `STARNET_AUX_BUDGET` silently does nothing.
+   so `EYEHOLD_AUX_BUDGET` silently does nothing.
 
 **Tier 2**
 
 5. **Reshape the skill library toward service runbooks.** Theirs are mostly shell recipes for real
-   platforms, with detection flows, decision trees and declared CLI prerequisites; StarNet's 48 teach
+   platforms, with detection flows, decision trees and declared CLI prerequisites; Eyehold's 48 teach
    thinking genres. This is how they reach platforms with no connector at all. Markdown — cheapest
    reach-per-hour available.
 6. **Three-level tool-output budget** — per-tool truncation, per-result spill to disk with a preview and
@@ -152,7 +152,7 @@ protocol adapters, agent-as-tool-server. And do **not** copy their skill hub —
 remote sources with no cryptographic provenance.
 
 **Do not regress:** the reference harness has **no dollar-denominated spend cap anywhere**, and its
-subagent budgets are not tree-bounded. StarNet's USD governance and consent broker are ahead.
+subagent budgets are not tree-bounded. Eyehold's USD governance and consent broker are ahead.
 
 ---
 

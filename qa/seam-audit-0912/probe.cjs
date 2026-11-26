@@ -52,8 +52,8 @@ async function awayReadFailure() {
 async function liveRoutine() {
   const base='http://127.0.0.1:19427';
   const html=await(await fetch(base)).text();
-  const token=html.match(/window\.__STARNET_API_TOKEN__\s*=\s*"([^"]+)"/)[1];
-  const j=await(await fetch(base+'/api/cron',{headers:{'X-StarNet-Token':token}})).json();
+  const token=html.match(/window\.__EYEHOLD_API_TOKEN__\s*=\s*"([^"]+)"/)[1];
+  const j=await(await fetch(base+'/api/cron',{headers:{'X-Eyehold-Token':token}})).json();
   const job=j.jobs.find(x=>x.name==='Audit follow-up enabled');assert.ok(job);
   const source=read('sidecar/index.js');
   const code=source.slice(source.indexOf('function cronReturnsToSession('),source.indexOf('async function deliverCronResult('));
@@ -80,7 +80,7 @@ function outboxAttribution() {
   results.push({id:'outbox-output-attributed-to-wrong-run',run:'A',ask:ctx.ask.textContent,output:ctx.out.textContent,kind:'unchanged rendering block with two-run transcript fixture; not a live paid run'});
 }
 function saveFailure() {
-  const source=read('frontend/app/stationui.js');
+  const source=read('frontend/app/keepui.js');
   const start=source.indexOf('  function save() {');
   const fn=source.slice(start,source.indexOf('\n',start));
   const ctx=vm.createContext({localStorage:{setItem:()=>{throw Error('QuotaExceededError');}},KEY:'audit',store:{settings:{sound:false}}});
@@ -97,6 +97,6 @@ function routineProvider() {
   const inherited=ctx.cronProviderFor({agentId:'specialist'});
   const fromUi=ctx.cronProviderFor({agentId:'specialist',provider:'openrouter'});
   assert.equal(inherited,'codex');assert.equal(fromUi,'openrouter');
-  results.push({id:'routine-station-provider-overrides-selected-agent',agentProvider:'codex',uiStationProvider:'openrouter',resolvedFromUi:fromUi,resolvedWithoutOverride:inherited,kind:'actual resolver + inspected UI request path; multi-provider live dispatch unverified'});
+  results.push({id:'routine-keep-provider-overrides-selected-agent',agentProvider:'codex',uiKeepProvider:'openrouter',resolvedFromUi:fromUi,resolvedWithoutOverride:inherited,kind:'actual resolver + inspected UI request path; multi-provider live dispatch unverified'});
 }
 (async()=>{await cancellation();await awayReadFailure();await liveRoutine();await stuckQuery();outboxAttribution();saveFailure();routineProvider();fs.writeFileSync(path.join(__dirname,'probe-results.json'),JSON.stringify({source:'091d6e7f3',results},null,2)+'\n');console.log(JSON.stringify(results,null,2));})().catch(e=>{console.error(e);process.exitCode=1;});

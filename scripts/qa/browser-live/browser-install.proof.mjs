@@ -13,7 +13,7 @@ const T = require('../../../sidecar/tools/builtin/browser.js')._internals;
 
 const results = [];
 const ok = (name, cond, detail) => { results.push(!!cond); console.log((cond ? 'PASS ' : 'FAIL ') + name + (detail ? ' — ' + String(detail).slice(0, 300) : '')); };
-const root = mkdtempSync(join(tmpdir(), 'starnet-cft-'));
+const root = mkdtempSync(join(tmpdir(), 'eyehold-cft-'));
 let lastBeat = Date.now(), worst = 0;
 const beat = setInterval(() => { const now = Date.now(); worst = Math.max(worst, now - lastBeat - 50); lastBeat = now; }, 50);
 try {
@@ -22,12 +22,12 @@ try {
   const t0 = Date.now();
   const exe = await inst.ensure();
   ok('Chrome for Testing downloaded and unpacked', existsSync(exe), exe + ' in ' + Math.round((Date.now() - t0) / 1000) + ' s');
-  ok('the station stayed responsive during download + unpack (worst event-loop stall < 1 s)', worst < 1000, worst + ' ms');
+  ok('the keep stayed responsive during download + unpack (worst event-loop stall < 1 s)', worst < 1000, worst + ' ms');
   T.setExtraChrome(() => inst.find());
   const own = resolve(exe);
   ok('with nothing else visible, the driver resolves the downloaded browser', (T.resolveChrome(true, p => resolve(p) === own) || {}).path === exe);
   console.log('   linux sandbox decision: ' + (T.needsNoSandbox({ chromePath: exe }) ? '--no-sandbox (user namespaces restricted)' : 'sandboxed'));
-  const prof = mkdtempSync(join(tmpdir(), 'starnet-cft-prof-'));
+  const prof = mkdtempSync(join(tmpdir(), 'eyehold-cft-prof-'));
   const d = T.makeCdpDriver({ existsSync: p => resolve(p) === own, headed: true, env: {}, profileDir: prof, cdpPort: 0, timeoutMs: 30000 });
   const at = await d.navigate('https://github.com/login');
   const info = await d.pageInfo();

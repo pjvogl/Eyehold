@@ -16,7 +16,7 @@ Owned workspace: `agent/release-0120-prep-0915`, created from `90d6f0111931ec399
 | GitHub read | Issues updated since September 11 inspected, including closed #14 and open #17; #15 separated as a feature request |
 | Public version/preflight read | Latest published version 0.11.2; target 0.12.0 available locally, on origin and in distribution releases; all five pins agree, claims lock and website mirror PASS |
 
-The preflight itself exited 1: dirty integration operational notes and canonical NOT READY. Existing integration edits were preserved. Signing-key presence passed without reading its contents; offline backups remain human attestation. T0/G1, post-bump receipts, target installed smoke and soak remain owed. A concurrent Guardian cycle changed the journeys artifact to BLOCKED during the later preflight; this does not invalidate this lane's separate 34-suite customer campaign or upgrade the earlier canonical result. Re-run the aggregate after the candidate is frozen.
+The preflight itself exited 1: dirty integration operational notes and canonical NOT READY. Existing integration edits were preserved. Signing-key presence passed without reading its contents; offline backups remain human attekeep. T0/G1, post-bump receipts, target installed smoke and soak remain owed. A concurrent Guardian cycle changed the journeys artifact to BLOCKED during the later preflight; this does not invalidate this lane's separate 34-suite customer campaign or upgrade the earlier canonical result. Re-run the aggregate after the candidate is frozen.
 
 ## Canonical readiness snapshot
 

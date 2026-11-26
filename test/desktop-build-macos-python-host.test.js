@@ -11,7 +11,7 @@ function run(platform, outcome, earlierFailure = false) {
     const original = cp.spawnSync;
     cp.spawnSync = (command, args, options) => {
       if (command !== ${JSON.stringify(platform === 'win32' ? 'python' : 'python3')}) throw new Error('unexpected interpreter: ' + command);
-      if (${JSON.stringify(outcome)} === 'missing') return original('starnet-missing-python-issue-40', args, options);
+      if (${JSON.stringify(outcome)} === 'missing') return original('eyehold-missing-python-issue-40', args, options);
       if (${JSON.stringify(outcome)} === 'denied') return { status: null, error: Object.assign(new Error('spawn EACCES'), { code: 'EACCES' }) };
       if (${JSON.stringify(outcome)} === 'store-alias') return { status: 9009, stdout: '', stderr: 'Python was not found; run without arguments to install from the Microsoft Store, or disable this shortcut from Settings > Manage App Execution Aliases.\\r\\n' };
       if (${JSON.stringify(outcome)} === 'passed') return { status: 0, stdout: '', stderr: '' };

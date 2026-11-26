@@ -36,7 +36,7 @@ The production-module regression in test/group-chat-picker.test.js fails against
 
 Live patched app at localhost:9187: clicking Add agents opened ADD AGENTS, the seeded NOVA lead row, the empty-crew explanation, disabled SAVE and working CANCEL. After recruiting a disposable PICKER TEST peer, Add agents listed NOVA, selecting it enabled START GROUP CHAT, and saving showed both names with a 2 AGENTS header. Reloading retained the group; clicking the participant header reopened AGENTS IN THIS CHAT with both members.
 
-A temporary loopback proxy reproduced the original plain-text 404. The patched picker displayed `Group chat is unavailable on this server. Run the current StarNet backend, then try again.` with RETRY and CANCEL. Restoring the route and clicking RETRY populated the real roster. Browser warning/error logs were empty during recovery. The proxy was removed after verification.
+A temporary loopback proxy reproduced the original plain-text 404. The patched picker displayed `Group chat is unavailable on this server. Run the current Eyehold backend, then try again.` with RETRY and CANCEL. Restoring the route and clicking RETRY populated the real roster. Browser warning/error logs were empty during recovery. The proxy was removed after verification.
 
 `node test/group-sessions.http.test.js` passed its real runOnce, file publication, handoff, question/answer and restart scenarios. The first broad customer-journey attempt stopped at sidecar.http with `Fatal process out of memory: Re-embedded builtins: set permissions`; its isolated rerun passed 504 assertions. The first fast gate stopped at eval-campaign-preflight (missing child output); its isolated rerun passed 10 assertions. Broad gate retries are recorded below when complete.
 

@@ -71,7 +71,7 @@ const vm = require('node:vm');
   const handler = src.slice(src.indexOf('  async function continueConnectorTask('), src.indexOf('  function offerTryAgain('));
   let refreshed = 0, dispatched = 0, connectionState = 'cached', rejected = false;
   const context = { Workstreams: W, Channels: { isBusy: () => false }, connectorContinuing: new Set(), focusVersion: 0, isComposerEngaged: () => false,
-    App: { openWorkstream() {}, persist() {} }, StationUI: { notify() {} },
+    App: { openWorkstream() {}, persist() {} }, KeepUI: { notify() {} },
     Harness: { api: { get: async () => ({ connectors: [{ id: 'gmail', enabled: true, state: connectionState, authRequired: rejected, tools: ['list_messages'] }] }),
       post: async (url, body) => { assert.equal(url, '/api/connectors/refresh'); assert.equal(body.id, 'gmail'); refreshed++; connectionState = 'up'; } } },
     send: async (text, opts) => { assert.equal(opts.connectorContinuationOf, 'idle-source'); dispatched++; W.appendRun(cw.id, 'continued'); } };

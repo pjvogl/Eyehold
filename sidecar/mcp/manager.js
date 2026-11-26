@@ -678,7 +678,7 @@
       return { name: t.name, readOnlyHint: !!(t.annotations && t.annotations.readOnlyHint === true), state: c.state };
     }
     // A run that wants this connector's tools while it sits in the GAVE-UP error state (bounded reconnect exhausted —
-    // e.g. the station booted offline, or the laptop slept through all 8 attempts) re-arms ONE more bounded cycle.
+    // e.g. the keep booted offline, or the laptop slept through all 8 attempts) re-arms ONE more bounded cycle.
     // Without this an HTTP connector stayed toolless for the rest of the session even after the network came back.
     // Demand-driven, so an unused dead connector still never retries forever; a dead credential is left alone.
     function rearmOnDemand(c) {

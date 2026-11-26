@@ -6,12 +6,12 @@ Integration status and final merge gates: `qa/STATUS.md`. No installer build or 
 
 ## Behavior
 
-Settings → Live Voice now selects the station default or an individual stable agent ID.
+Settings → Live Voice now selects the keep default or an individual stable agent ID.
 Assignments are saved in this app/browser, independently of agent names and personalities.
 Assigned voices use the built-in TTS route for spoken direct replies and hands-free calls.
 Each live speaker retains its voice/engine for the call; an explicit assignment change applies
 on a new call. Direct conversations with specialists can speak; other sessions cannot borrow
-an active conversation's speaker. Clearing an assignment restores existing station behavior.
+an active conversation's speaker. Clearing an assignment restores existing keep behavior.
 
 The Mac hardened-runtime entitlement now includes `com.apple.security.device.audio-input`.
 The existing microphone purpose string remains. Release CI validates both in the actual signed
@@ -25,7 +25,7 @@ Used the running application's actual Settings controls to summon a test crew me
 
 - NOVA → BELLA, selected button `aria-pressed=true`.
 - VOICE TEST → GEORGE, selected button `aria-pressed=true`.
-- Station default → ONYX, unchanged by either agent assignment.
+- Keep default → ONYX, unchanged by either agent assignment.
 
 Stopped and restarted the sidecar with `--keep`, reloaded the browser, reopened Settings,
 and observed BELLA and GEORGE still selected for their respective agents. Clearing NOVA's

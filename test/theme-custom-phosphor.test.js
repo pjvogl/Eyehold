@@ -4,7 +4,7 @@
    phosphor palette (theme='custom', store.settings.themeHue/Sat/Glow, deriveCustomTheme).
 
    deriveCustomTheme + its helpers (hslToRgb/rgbHex/clampN) are a fully self-contained pure block inside the
-   StationUI IIFE — so we EVAL-EXTRACT it and exercise the real computation (the chat-linkify house pattern),
+   KeepUI IIFE — so we EVAL-EXTRACT it and exercise the real computation (the chat-linkify house pattern),
    then SOURCE-LOCK the persistence + the theme-bezel-var trap (the derived vars MUST be written on document.body,
    not :root/documentElement — the composite --bezel/--well recipes resolve var(--ph) against body-level inline
    vars, so writing them on the root would silently lose the theme). */
@@ -13,10 +13,10 @@ const A = require('./_assert.js');
 const fs = require('fs');
 const path = require('path');
 
-const uiSrc = fs.readFileSync(path.join(__dirname, '../frontend/app/stationui.js'), 'utf8');
+const uiSrc = fs.readFileSync(path.join(__dirname, '../frontend/app/keepui.js'), 'utf8');
 
 /* ---- extract the pure derivation cluster and eval it ---- */
-function slice(re, label) { const m = re.exec(uiSrc); A.ok(m, 'stationui.js still defines ' + label); return m ? m[0] : ''; }
+function slice(re, label) { const m = re.exec(uiSrc); A.ok(m, 'keepui.js still defines ' + label); return m ? m[0] : ''; }
 const hsl = slice(/function hslToRgb\(h, s, l\)\s*\{[\s\S]*?\n  \}/, 'hslToRgb');
 const rgbHex = slice(/const rgbHex = [^\n]+/, 'rgbHex');
 const clampN = slice(/const clampN = [^\n]+/, 'clampN');
@@ -60,6 +60,6 @@ A.ok(/document\.body\.classList\.add\('theme-custom'\)/.test(uiSrc), 'custom mod
 /* ---- the controls exist and are wired ---- */
 A.ok(/id="set-hue"/.test(uiSrc) && /id="set-sat"/.test(uiSrc) && /id="set-glow"/.test(uiSrc), 'the HUE/SATURATION/GLOW sliders render');
 A.ok(/deriveCustomTheme\(s\.themeHue, s\.themeSat, 100\)\['--ph'\]/.test(uiSrc), 'the CUSTOM swatch tints itself from the live derivation (set-theme-custom)');
-A.ok(/function setTheme\(/.test(uiSrc), 'StationUI exposes setTheme (the preset/custom swatch entry point)');
+A.ok(/function setTheme\(/.test(uiSrc), 'KeepUI exposes setTheme (the preset/custom swatch entry point)');
 
 A.report('theme-custom-phosphor');

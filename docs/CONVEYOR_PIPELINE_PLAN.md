@@ -42,7 +42,7 @@ policy. The belt makes that invisible state visible:
 - **Backpressure is real, not faked:** a second DM mid-run stacks a box at the bay; when the hub supersedes
   the prior run (its actual behavior), the superseded box visibly drops off the belt.
 
-### Angle B — *The station floor IS the orchestration DAG* (the factory mid-game)
+### Angle B — *The keep floor IS the orchestration DAG* (the factory mid-game)
 The belt graph you draw becomes the routing topology the backend obeys. Junctions are placeable machines:
 
 - **Splitter** (1→N): round-robin or least-loaded balance one work stream across multiple agents = **real
@@ -61,7 +61,7 @@ The belt graph you draw becomes the routing topology the backend obeys. Junction
   bypass belt or adding a parallel bay.
 - **Belt-graph → DAG compiler:** the quiet keystone — a pure function that compiles `{sources, lanes, junctions,
   bays}` from the floor and validates it (orphan source, dead-end bay, infinite cycle → **red ghosts in REFIT
-  before anything runs**). This is the analogue of `resolveTools(agentId, station)` but for *routing*.
+  before anything runs**). This is the analogue of `resolveTools(agentId, keep)` but for *routing*.
 
 ### Angle C — *Spend → Yield economy* (the honest RPG meta-game)
 Treat OpenRouter spend as the **only** real constrained resource; everything else is a transformation of it.
@@ -83,16 +83,16 @@ invariant).
   same file — give it a cabinet with `fs.list`"* / *"budget: smelter is cold, your prompt is churning."* The
   factory "optimize the line" instinct gets pointed at the genuinely valuable skill: **operating real agents
   cheaply and well.**
-- **Yield Ratio** (product-$ / spent-$) is the station's one headline number — replacing v7's fake-revenue
+- **Yield Ratio** (product-$ / spent-$) is the keep's one headline number — replacing v7's fake-revenue
   scoreboard. You chase usefulness-per-real-dollar.
-- **Tech tree = the capability registry, made buildable:** `CAP_REGISTRY` grants gated by station tier + XP.
+- **Tech tree = the capability registry, made buildable:** `CAP_REGISTRY` grants gated by keep tier + XP.
   Tier-1 cabinet = `fs.read`; tier-2 unlocks `fs.write` (with consent); tier-3 raises the per-run file budget.
   Every unlock is a **real** capability escalation.
 - **Contracts / Quests:** an inbound DM/directive/cron trigger arrives as an **Order** with a deliverable, a
   soft deadline (wall-clock), and a **budget envelope** (the `maxCostUsd` cap the loop already enforces).
   Coming in *under budget* is the big reward multiplier — thrift as the "no-damage run." Standing contracts =
   cron schedules paying an XP annuity for a reliably-running recurring job.
-- **Honest prestige:** "commission a new station" wipes the layout but banks a permanent yield multiplier — you
+- **Honest prestige:** "commission a new keep" wipes the layout but banks a permanent yield multiplier — you
   prestige when you've learned to run agents so efficiently a leaner build out-yields your sprawling old one.
 
 ---
@@ -104,7 +104,7 @@ invariant).
 | **The conveyor system is UNMERGED.** | `conveyor.js` is not tracked on `feat/harness-backend`; it lives on `agent/conveyor` (head `06cec93`). | **Hard prerequisite — Stage 0.** Merge it to trunk first, in its own worktree, resolving any `world.js`/`worldmodel.js` conflicts with the `d9358a8` props merge *there*, not on the shared trunk. |
 | **`shared/events.js` is additive-only & owner-gated** (cortex-memory). | CLAUDE.md rule 4. | New events are **requested**, never self-edited from our worktree. |
 | **`test/lint-emits.js` fails the build** on any `emit('new.event')` literal not yet in the registry. | File confirmed present. | Until the request is granted, drive the browser via a **dynamic** `emit(name, payload)` form (the linter only catches string literals) or a temporary unvalidated `U.bus` name; switch to the validated literal on grant. |
-| **The SSE bridge is the one genuinely new wire — and it's already reserved.** | `sidecar/index.js:139`: *"a future SSE bridge can forward it to the station HUD"*; `chanBus` is console-only at `:141`. | Stage 1 builds exactly that bridge. Purely additive (new endpoint + new `EventSource`, zero change to `/api/run`). |
+| **The SSE bridge is the one genuinely new wire — and it's already reserved.** | `sidecar/index.js:139`: *"a future SSE bridge can forward it to the keep HUD"*; `chanBus` is console-only at `:141`. | Stage 1 builds exactly that bridge. Purely additive (new endpoint + new `EventSource`, zero change to `/api/run`). |
 | **Strict determinism contract.** | `conveyor.js` is RNG-free / wall-clock-free (`clock-rng.test.js`, `lint-determinism.js` gates). | All new sim code derives from injected `nowMs`/`dtMs` + event data. Junction routing must be a pure function of payload + a **tick-start snapshot** of queue depths. |
 
 ---
@@ -122,7 +122,7 @@ invariant).
 | `queue.status` | `obj(['queueId'], { queueId:str, depth:int, maxCapacity:int, nextAdvanceAt:num })` | 1/2 |
 | `workitem.advanced` | `obj(['workitemId','queueId'], { workitemId:str, queueId:str, toQueueId:str, ms:num, ts:num })` | 4 (junctions) |
 | `xp.minted` | `obj(['agentId','runId','xp'], { agentId:str, runId:str, xp:num, source:str, fromUsd:num })` | 6 |
-| `station.tier` | `obj(['tier'], { tier:int, from:int })` | 6 |
+| `keep.tier` | `obj(['tier'], { tier:int, from:int })` | 6 |
 
 ### 3b. Changes owned by THIS workstream (not the shared contract)
 - **`doc.belts[*]` tier** *(Stage 4+, optional)* — make a belt value `"dir"` → `"dir@tier"` so `SPEED` can be
@@ -162,7 +162,7 @@ queue depth is visible. Inbound-only, Telegram-only, no junctions.
 | `frontend/app/build.js` | `renderPalette()` gains a `'logistics'` category branch (mirror the `'prop'` case ~`:177-201`) under the existing PROP tool (key 6). **No new tool key.** |
 | `sidecar/index.js` | Replace console-only `chanBus` (`:141`) with a fan-out to a Set of SSE streams (keep the log). Add `GET /api/channels/events` (`text/event-stream`) registering `res`, removing on `close`/`aborted` (mirror the `/api/run` finally cleanup). Wrap the `onInbound` injection (`:179`) so **before** `hub.onInbound` it computes the agentId with hub's **exact** logic (`sec.agentId \|\| agentIdFor(chatId)`), bumps a per-agent depth counter, derives `workitemId` via `crypto.randomUUID()`, and emits `workitem.placed` + `queue.status`. |
 | `frontend/app/world.js` | `intakeMessage(payload)` resolves the INTAKE tile from `projectGeometry` and calls `convey.enqueueAt(...)`; bind it to `U.bus 'workitem.placed'`. Pass `onDeliver` into the existing `Conveyor.create()` (~`:335`): flip agent to working + `say('received: '+preview)`, match box→run by `workitemId`. Add `drawQueueDepth(now)` after the lightmap (~`:351`). |
-| `frontend/app/stationui.js` *(or world init)* | Open `new EventSource('/api/channels/events')`; re-emit each event onto `U.bus`. Reconnect with backoff; close on teardown. |
+| `frontend/app/keepui.js` *(or world init)* | Open `new EventSource('/api/channels/events')`; re-emit each event onto `U.bus`. Reconnect with backoff; close on teardown. |
 | `test/conveyor.test.js` | `enqueueAt` places exactly one payload box at the source; it reaches the open-end sink and `onDeliver` fires once with the payload; ambient hash throughput on a plain belt is **unchanged** when `backpressure` is off (regression guard). |
 
 **Acceptance:** A DM produces exactly one box at INTAKE that rides to the desk; the agent visibly "receives"
@@ -214,9 +214,9 @@ tag with a visible overflow lane; aggregator fuses K→1. Same-bay second item q
 | File | Change |
 |---|---|
 | `frontend/app/worldmodel.js` | Promote `compileBeltGraph` to the single source of truth for both the tick and sidecar routing; add per-belt tier parsing (`dir@tier`), defaulting tier-1 for legacy keys via `migrate()`. |
-| `frontend/app/conveyor.js` | Per-tile tier drives `SPEED`; least-loaded splitter & priority merger drain-order read snapshotted depth so the station self-balances around a slow/expensive agent. |
+| `frontend/app/conveyor.js` | Per-tile tier drives `SPEED`; least-loaded splitter & priority merger drain-order read snapshotted depth so the keep self-balances around a slow/expensive agent. |
 | `frontend/app/world.js` | `drawThroughputHUD(now)` (boxes/min in-out, avg dwell, deepest-jam lane highlighted) at the after-lightmap seam. |
-| `frontend/app/stationui.js` | `agBrief()` stat grid (~`:199-214`) gains queue-depth (avg/peak) + throughput (items/min) cells from `World.getMetrics()`. |
+| `frontend/app/keepui.js` | `agBrief()` stat grid (~`:199-214`) gains queue-depth (avg/peak) + throughput (items/min) cells from `World.getMetrics()`. |
 | `test/conveyor.test.js` | Higher-tier belt moves a box in fewer ticks; throughput numbers derive only from box lifecycle events (no wall-clock). |
 
 **Acceptance:** The compiled graph governs routing; orphan/cycle/dead-bay layouts light red before running; a
@@ -225,15 +225,15 @@ jam's length tracks real pending-work; HUD names the bottleneck lane. `test:fast
 ### Stage 6 — RPG economy + progression  *(effort: L)*
 | File | Change |
 |---|---|
-| `frontend/app/economy.js` **(NEW)** | Pure, zero-dep, node+browser (mirror `workstreams.js`). Subscribe to `agent.cost` (reconciled), `agent.run.end.reason`, `deliverable`, `memory.write`; fold into per-agent XP/stats, station tier (`doc.meta.tier`, already exists, defaults 0), yield ratio, slag tally. **Every XP entry derives from the same reconciled usd delta as the dollar ledger** (asserted in tests). Emit `xp.minted` + `station.tier`. |
+| `frontend/app/economy.js` **(NEW)** | Pure, zero-dep, node+browser (mirror `workstreams.js`). Subscribe to `agent.cost` (reconciled), `agent.run.end.reason`, `deliverable`, `memory.write`; fold into per-agent XP/stats, keep tier (`doc.meta.tier`, already exists, defaults 0), yield ratio, slag tally. **Every XP entry derives from the same reconciled usd delta as the dollar ledger** (asserted in tests). Emit `xp.minted` + `keep.tier`. |
 | `frontend/app/world.js` | Recolor riding box on reconcile (green/amber/red); route budget/max_iters/error runs as red slag to a WASTE SINK with a hoverable post-mortem (templated from `reason` + which tools were/weren't in the room + cache ratio). |
 | `sidecar/capability registry` | Additive `tier` + `unlockReq` on grants; `resolveTools` unchanged. |
-| `frontend/app/build.js` | Logistics palette gains WASTE SINK; capability/belt-upgrade nodes gate on station tier + XP. |
-| `frontend/data.js` milestones/perks | Repurpose v7 fake-revenue milestones in place with **real** predicates (first successful run, cache-hit >50%, 10 orders under budget, a zero-slag station-day). |
+| `frontend/app/build.js` | Logistics palette gains WASTE SINK; capability/belt-upgrade nodes gate on keep tier + XP. |
+| `frontend/data.js` milestones/perks | Repurpose v7 fake-revenue milestones in place with **real** predicates (first successful run, cache-hit >50%, 10 orders under budget, a zero-slag keep-day). |
 | `test/economy.test.js` **(NEW, add to `test:fast`)** | XP-source == cost-source; yield ratio = `Σ(productUsd)/Σ(spentUsd)` from reconciled deltas; slag classification matches `agent.run.end.reason`; old `meta.tier=0` saves unlock-gate correctly. |
 
 **Acceptance:** A $0.04 run rides as an ore box → green deliverable worth XP; a $2 `max_iters` loop rolls into
-the waste sink with a fixable post-mortem; agent levels + station tier rise only from reconciled spend; tech
+the waste sink with a fixable post-mortem; agent levels + keep tier rise only from reconciled spend; tech
 tree gates by tier. `economy.test.js` + `test:fast` green.
 
 ---
@@ -268,10 +268,10 @@ All new tests are **headless** (no DOM/canvas), matching the `conveyor.test.js` 
 | **Client box-ride vs network-dependent run-start desync.** | Decouple via `workitemId` matching; hold the "received" bubble until the first `agent.token`; if the box arrives first it still completes its ride. |
 | **Determinism** — `enqueueAt` + junctions are event-driven; least-loaded/backpressure read live state. | `workitemId` from server `crypto.randomUUID`; every routing decision a pure fn of payload + a tick-START depth snapshot; order boxes by arrival event; stable iteration order. |
 | **Single-flight vs real concurrency** — splitter→same bay must QUEUE, not supersede. | Stage 4 critical seam: the bay-busy gate distinguishes next-item-in-queue (wait) from newer-message-in-chat (supersede). Dedicated test. |
-| **Cost/abuse blow-up** — every delivered box fires a paid `runOnce`; a cycle = infinite paid work. | `MAX_BOXES` caps cargo but not spend → add a station-level admission + budget gate (`budget.threshold` exists); the compiler's **cycle detection is a safety feature**, not just UX. |
+| **Cost/abuse blow-up** — every delivered box fires a paid `runOnce`; a cycle = infinite paid work. | `MAX_BOXES` caps cargo but not spend → add a keep-level admission + budget gate (`budget.threshold` exists); the compiler's **cycle detection is a safety feature**, not just UX. |
 | **SSE memory leak** — one long-lived response per tab. | Remove from the Set on `close`/`aborted` exactly like the `/api/run` finally block; unit-test removal. |
 | **Per-chat vs shared agentId** — HUD could count the wrong queue. | Compute `queueId`/`agentId` at the intercept with byte-identical logic to `hub.js`. |
-| **Custom-station gaps** — `sitTiles`/`beltInfo` hardcoded from v7 `map.js`. | Stage 4/5 compiler closes the belt→agent binding seam; Stage 1 uses the known desk/seat so it works on the foundation immediately. |
+| **Custom-keep gaps** — `sitTiles`/`beltInfo` hardcoded from v7 `map.js`. | Stage 4/5 compiler closes the belt→agent binding seam; Stage 1 uses the known desk/seat so it works on the foundation immediately. |
 | **Scope honesty** — Stage 4/5 are XL/L and carry most of the load; Stage 1 is only M. | Ship Stage 1 payload plumbing solid before any junction work, or you get pretty belts routing nothing (the cosmetic-parcels trap). |
 | **Economy over-gamification** could nudge burning *more* real dollars for dopamine. | Keep yield-ratio + slag sink front-and-center so the rewarded behavior is spending **less** for more; never mint XP from estimates (reconciled `agent.cost` only). |
 

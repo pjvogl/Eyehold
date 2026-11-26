@@ -114,7 +114,7 @@ const fakeUnzip = key => async (zip, dest) => {
   // LINUX + the downloaded browser + restricted user namespaces (Ubuntu 23.10+): --no-sandbox, and ONLY then
   {
     const T2 = require('../sidecar/tools/builtin/browser.js')._internals;
-    const own = '/home/u/.starnet/.browsers/150/chrome-linux64/chrome';
+    const own = '/home/u/.eyehold/.browsers/150/chrome-linux64/chrome';
     const restricted = () => '1\n', open = () => '0\n', missing = () => { throw new Error('ENOENT'); };
     A.eq(T2.needsNoSandbox({ platform: 'linux', chromePath: own, ownChrome: own, readFile: restricted }), true, 'downloaded browser on restricted Linux: no sandbox (it cannot start otherwise)');
     A.eq(T2.needsNoSandbox({ platform: 'linux', chromePath: own, ownChrome: own, readFile: open }), false, 'unrestricted Linux keeps the sandbox');

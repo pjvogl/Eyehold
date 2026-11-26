@@ -2,7 +2,7 @@
    disabled-state + one-click enable). Spawns the real Node host (sidecar/index.js) against an
    ISOLATED temp workspace on an ephemeral port, with NO key (zero model spend), and proves:
 
-     - INERT-WHEN-OFF (must NOT regress): boot with NEITHER SKYNET_CRON_ENABLED nor a persisted
+     - INERT-WHEN-OFF (must NOT regress): boot with NEITHER EYEHOLD_CRON_ENABLED nor a persisted
        cronArmed flag -> GET /api/cron reports enabled:false, NO cron.armed file is written, and a
        routine that is DUE NOW never fires (no 'cron tick armed' / no cron tick log) — the off-path
        is fully inert (the byte-identical-when-off guarantee).
@@ -12,11 +12,11 @@
        is genuinely live, not a code-read). POST /api/cron/arm {enabled:false} flips it back off,
        clears the timer, and persists armed:false.
      - ARM AT BOOT: a persisted cronArmed:true causes the scheduler to arm at boot even with NO
-       SKYNET_CRON_ENABLED env var ('cron tick armed' appears at boot; a DUE routine is ticked).
-     - TOKEN GUARD: POST /api/cron/arm WITHOUT the X-StarNet-Token header is rejected 403 (same
+       EYEHOLD_CRON_ENABLED env var ('cron tick armed' appears at boot; a DUE routine is ticked).
+     - TOKEN GUARD: POST /api/cron/arm WITHOUT the X-Eyehold-Token header is rejected 403 (same
        privileged-POST gate as the cron CRUD routes), so a browser-driven cross-site call can't arm.
 
-   A SHORT tick (SKYNET_CRON_TICK_MS=300) is used so "fires within one tick" resolves in well under
+   A SHORT tick (EYEHOLD_CRON_TICK_MS=300) is used so "fires within one tick" resolves in well under
    a second deterministically. Mirrors cron.api.test.js. NOT in test:fast (a child-process boot test
    shouldn't gate other agents). Run via `npm run test:http`. */
 'use strict';
@@ -32,12 +32,12 @@ const INDEX = path.resolve(__dirname, '..', 'sidecar', 'index.js');
 function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
 
 // boot the real host; resolves { child, port, out:()=>string } once it prints its listen URL. `extraEnv`
-// lets a case set SKYNET_CRON_ENABLED / a short tick. `out()` returns the accumulated stdout+stderr so a
+// lets a case set EYEHOLD_CRON_ENABLED / a short tick. `out()` returns the accumulated stdout+stderr so a
 // test can assert a non-mockable log signal (e.g. 'cron tick armed', '[cron] cron.tick ...').
 function boot(port, workspaces, attemptsLeft, extraEnv) {
   return new Promise((resolve, reject) => {
     const child = spawn(process.execPath, [INDEX], {
-      env: Object.assign({}, process.env, { SKYNET_PORT: String(port), SKYNET_WORKSPACES: workspaces }, extraEnv || {}),
+      env: Object.assign({}, process.env, { EYEHOLD_PORT: String(port), EYEHOLD_WORKSPACES: workspaces }, extraEnv || {}),
       stdio: ['ignore', 'pipe', 'pipe']
     });
     let out = '', settled = false;
@@ -60,7 +60,7 @@ function boot(port, workspaces, attemptsLeft, extraEnv) {
   const ws = fs.mkdtempSync(path.join(os.tmpdir(), 'sk-cronarm-'));
   const ARMED_FILE = path.join(ws, 'cron.armed.json');
   // short tick so "fires within one tick" resolves fast + deterministically; NO env-arm (default OFF).
-  let booted = await boot(8950 + (process.pid % 40), ws, 20, { SKYNET_CRON_TICK_MS: '300' });
+  let booted = await boot(8950 + (process.pid % 40), ws, 20, { EYEHOLD_CRON_TICK_MS: '300' });
   let child = booted.child, port = booted.port, getOut = booted.out;
   const B = () => 'http://' + HOST + ':' + port;
   let apiToken = '';
@@ -71,7 +71,7 @@ function boot(port, workspaces, attemptsLeft, extraEnv) {
   // j() sends the token (the guarded-POST contract); jNoToken() deliberately omits it (guard test).
   const j = async (m, p, body) => {
     const headers = { 'Content-Type': 'application/json', Origin: B() };
-    if (apiToken) headers['X-StarNet-Token'] = apiToken;   // hardened: GET data routes are token-gated too now
+    if (apiToken) headers['X-Eyehold-Token'] = apiToken;   // hardened: GET data routes are token-gated too now
     const r = await fetch(B() + p, { method: m, headers, body: body ? JSON.stringify(body) : undefined });
     const t = await r.text(); let v; try { v = JSON.parse(t); } catch (_) { v = t; }
     return { status: r.status, body: v };
@@ -102,7 +102,7 @@ function boot(port, workspaces, attemptsLeft, extraEnv) {
 
     // ---- TOKEN GUARD: arm without the token is rejected (same gate as the CRUD POSTs) ----
     const armNoTok = await jNoToken('POST', '/api/cron/arm', { enabled: true });
-    A.eq(armNoTok.status, 403, 'POST /api/cron/arm without X-StarNet-Token -> 403 (privileged-POST guard)');
+    A.eq(armNoTok.status, 403, 'POST /api/cron/arm without X-Eyehold-Token -> 403 (privileged-POST guard)');
     const stillOff = await j('GET', '/api/cron');
     A.eq(stillOff.body.enabled, false, 'a rejected arm did NOT flip enabled');
 
@@ -163,8 +163,8 @@ function boot(port, workspaces, attemptsLeft, extraEnv) {
     A.eq(armForBoot.status, 200, 're-arm before reboot -> 200');
     A.eq(JSON.parse(fs.readFileSync(ARMED_FILE, 'utf8')).armed, true, 'persisted armed:true before reboot');
     try { child.kill(); } catch (_) {} await sleep(250);
-    // reboot WITHOUT SKYNET_CRON_ENABLED — only the persisted cronArmed flag should arm the scheduler.
-    booted = await boot(port + 100, ws, 20, { SKYNET_CRON_TICK_MS: '300' });
+    // reboot WITHOUT EYEHOLD_CRON_ENABLED — only the persisted cronArmed flag should arm the scheduler.
+    booted = await boot(port + 100, ws, 20, { EYEHOLD_CRON_TICK_MS: '300' });
     child = booted.child; port = booted.port; getOut = booted.out;
     await refreshToken();
     const bootList = await j('GET', '/api/cron');

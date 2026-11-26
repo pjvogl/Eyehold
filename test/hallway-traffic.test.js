@@ -51,7 +51,7 @@ for(const width of [1,2,3,4]){
 }
 {
   const f=fixture(),a=f.body(10,15,10,23),b=f.body(10,19,10,7);b.working=true;
-  f.step(1000);A.ok(a.py>b.py+100,'workstation-bound traffic and roaming traffic both finish');
+  f.step(1000);A.ok(a.py>b.py+100,'workkeep-bound traffic and roaming traffic both finish');
   A.eq(b.working,true,'right of way preserves working state');
 }
 {

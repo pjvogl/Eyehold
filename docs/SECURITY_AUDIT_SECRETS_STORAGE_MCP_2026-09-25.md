@@ -5,7 +5,7 @@ The 09-23 trust-boundary audit stopped before its secrets, storage and MCP pass,
 - **Base:** trunk `87a617d70`.
 - **Branch:** `agent/sec-secrets` (worktree `gen-trees/sec-secrets`), not merged.
 - **Method:** three parallel read-only mapping passes (secrets and redaction, storage and import, MCP), then my own review of every item I acted on.
-- **Proof standard:** each fixed item has a focused test. Where a probe was cheap, I also ran it against trunk code to show the bug was real. Probes ran from a scratch directory on scratch workspaces. No real station data, keychain or `HERMES_HOME` was touched.
+- **Proof standard:** each fixed item has a focused test. Where a probe was cheap, I also ran it against trunk code to show the bug was real. Probes ran from a scratch directory on scratch workspaces. No real keep data, keychain or `HERMES_HOME` was touched.
 
 Out of scope, because other lanes own these areas: code.run, channel owner gates, token-in-URL and CSP, and taint propagation. Anything I saw there is listed under "For other lanes".
 
@@ -13,7 +13,7 @@ Out of scope, because other lanes own these areas: code.run, channel owner gates
 
 | # | Severity | Finding | Status |
 |---|---|---|---|
-| 1 | High | Agent ids could name station credential/code directories (`codex/`, `channels/`, `connectors/`, `plugins/` …), so an agent or `/api/file` could read OAuth tokens and bot tokens, and write plugin code | Fixed |
+| 1 | High | Agent ids could name keep credential/code directories (`codex/`, `channels/`, `connectors/`, `plugins/` …), so an agent or `/api/file` could read OAuth tokens and bot tokens, and write plugin code | Fixed |
 | 2 | Medium | Shapeless secrets (service keys, custom connector tokens, prefix-less provider keys) reached the run stream, transcripts, the bus and diagnostics verbatim. JSON-quoted `"refresh_token": "…"` also got past redaction | Fixed |
 | 3 | Medium | Pre-update backups captured quarantined `channels/secrets.json.corrupt-*` and `connectors/servicekeys.json.corrupt-*` raw, and the snapshot files were world-readable (0444) | Fixed |
 | 4 | Medium | Credential stores were written 0644 on Linux/macOS (no file mode set) | Fixed |
@@ -32,7 +32,7 @@ Out of scope, because other lanes own these areas: code.run, channel owner gates
 
 ## Fixed
 
-### 1. HIGH: station-owned directories could become an agent's workspace
+### 1. HIGH: keep-owned directories could become an agent's workspace
 
 Every agent's file jail is `WORKSPACES/<agentId>/` (`tools/builtin/fs.js` `workspaceRoot`, `environment.js` `workspaceRoot`, `pathtrust.js`, and `/api/file` through `fsJail.resolveInside`). The only check was `^[A-Za-z0-9_-]{1,40}$`. That keeps `.secrets/` out, but these directories under the same root all pass it:
 
@@ -82,14 +82,14 @@ The assignment rule also failed on JSON. In `"refresh_token": "…"` there is a 
 
   The collector is `sidecar/secret-values.js`. The per-launch API and IPC tokens are deliberately left out, because a few local surfaces still carry the API token in a URL the frontend must open (that belongs to the token-in-URL lane).
 - **Assignment rule.** It now matches JSON and quoted forms, and adds `id_token`, `private_key`, `secret_key`, `bot_token` and `webhook_secret`.
-- **New shapes.** Discord bot tokens, Slack `xapp-`/`xoxe-`, Matrix `syt_`, Google refresh `1//0`, Groq `gsk_`, Perplexity, Notion `ntn_`, Linear, SendGrid, and StarNet's `whk_`.
+- **New shapes.** Discord bot tokens, Slack `xapp-`/`xoxe-`, Matrix `syt_`, Google refresh `1//0`, Groq `gsk_`, Perplexity, Notion `ntn_`, Linear, SendGrid, and Eyehold's `whk_`.
 - **Object copies.** Redacted copies now use own keys only and never re-create `__proto__`.
 
 **Tests:** `test/redact.known-values.test.js` (56) and `test/secret-redaction.e2e.test.js` (11, live sidecar). The e2e covers the run stream, the transcript surface, diagnostics and the key list.
 
 ### 3. MEDIUM: backups captured quarantined credential stores, and snapshots were world-readable
 
-`quarantineCorrupt` (index.js) renames a torn store to `<file>.corrupt-<pid>-<seq>`. The backup skip rule in `station-recovery.js classifyPolicy` only matched `/\.corrupt-\d+$/`, so a quarantined `channels/secrets.json` or `connectors/servicekeys.json` was classified `include` and copied **raw** into every `update-snapshots/*.starnet-backup.json`. `update-preparation.js` then chmod-ed those files **0444**, which is world-readable on POSIX.
+`quarantineCorrupt` (index.js) renames a torn store to `<file>.corrupt-<pid>-<seq>`. The backup skip rule in `keep-recovery.js classifyPolicy` only matched `/\.corrupt-\d+$/`, so a quarantined `channels/secrets.json` or `connectors/servicekeys.json` was classified `include` and copied **raw** into every `update-snapshots/*.eyehold-backup.json`. `update-preparation.js` then chmod-ed those files **0444**, which is world-readable on POSIX.
 
 The existing test could not have noticed, because it searched the base64 bundle envelope rather than the decoded file bytes.
 
@@ -99,7 +99,7 @@ The existing test could not have noticed, because it searched the base64 bundle 
 - Any other derivative of a credential store (`<store>.json.<anything>`) is skipped.
 - The snapshot and its receipt are chmod 0400.
 
-**Test:** `test/station-recovery.test.js` (79) now checks decoded payloads. The same test run against trunk code fails 6 assertions.
+**Test:** `test/keep-recovery.test.js` (79) now checks decoded payloads. The same test run against trunk code fails 6 assertions.
 
 ### 4. MEDIUM: credential files were created 0644
 
@@ -118,7 +118,7 @@ The existing test could not have noticed, because it searched the base64 bundle 
 **Tests:**
 
 - `test/provider.codex-auth.test.js` (75): the migration-over-tombstone case.
-- `test/codex-status.e2e.test.js` (14, live): checks both copies are credential-free tombstones, and that the station stays signed out across a real restart.
+- `test/codex-status.e2e.test.js` (14, live): checks both copies are credential-free tombstones, and that the keep stays signed out across a real restart.
 
 ### 6. MEDIUM: prototype pollution through the journey store
 
@@ -132,7 +132,7 @@ The existing test could not have noticed, because it searched the base64 bundle 
 
 ### 7. MEDIUM: config import granted project-folder authority
 
-`configexport.parseImport` passed `permissions.allow` through unfiltered, and `/api/config/import` unioned it into the live grants. A file carrying `path:C:\` therefore blessed the whole drive for agent reads through pathtrust, and for checkpoint restores. `station-recovery.js` already strips `path:` grants from backups for exactly this reason.
+`configexport.parseImport` passed `permissions.allow` through unfiltered, and `/api/config/import` unioned it into the live grants. A file carrying `path:C:\` therefore blessed the whole drive for agent reads through pathtrust, and for checkpoint restores. `keep-recovery.js` already strips `path:` grants from backups for exactly this reason.
 
 **Fix:** import drops `path:<root>` grants and names them in `notes`.
 
@@ -169,17 +169,17 @@ The existing test could not have noticed, because it searched the base64 bundle 
 
 Base: trunk `95b4f4fa7`. Worktree `gen-trees/sec-env`, not merged. Each item was re-verified against that trunk before fixing.
 
-### 13. Helper processes no longer inherit the station's secrets
+### 13. Helper processes no longer inherit the keep's secrets
 
-**Re-verified on trunk:** `test/child-env.e2e.test.js` pointed at the trunk sidecar fails 3 of 9. A scratch repo's `core.fsmonitor` (code the user's repo runs whenever the project scan calls `git status`) received `STARNET_WORKSPACES`, the planted station secret and the exported service key.
+**Re-verified on trunk:** `test/child-env.e2e.test.js` pointed at the trunk sidecar fails 3 of 9. A scratch repo's `core.fsmonitor` (code the user's repo runs whenever the project scan calls `git status`) received `EYEHOLD_WORKSPACES`, the planted keep secret and the exported service key.
 
-**The rule** (`sidecar/child-env.js`, the one builder): strip what the station put there, keep what the user put there.
+**The rule** (`sidecar/child-env.js`, the one builder): strip what the keep put there, keep what the user put there.
 
-1. Every `STARNET_*` / `SKYNET_*` name. The desktop shell injects every secret it hands the sidecar under these names (API/IPC tokens, provider keys and pools, channel tokens, credits token, connector vault key), and the sidecar reads its own secrets only through them.
+1. Every `EYEHOLD_*` / `SKYNET_*` name. The desktop shell injects every secret it hands the sidecar under these names (API/IPC tokens, provider keys and pools, channel tokens, credits token, connector vault key), and the sidecar reads its own secrets only through them.
 2. Every name the sidecar itself exported into `process.env` (the KEYS-tab service keys, tracked by `servicekeys.applyEnv`).
-3. Any variable whose value is a secret the station currently holds (the same live collector as `redact()`'s known-value layer). `PATH`, `HOME` and the other runtime basics are never stripped by this rule.
+3. Any variable whose value is a secret the keep currently holds (the same live collector as `redact()`'s known-value layer). `PATH`, `HOME` and the other runtime basics are never stripped by this rule.
 
-A variable the user exported in their own shell (`NPM_TOKEN`, `GITHUB_TOKEN`, a bare `OPENAI_API_KEY`) stays visible to host helpers, unless its value is one the station holds. Agent-driven commands are stricter: `environment.sanitizeChildEnv` (shell.exec, background jobs, terminals) now runs this builder first and then strips every secret-shaped name as before. The service keys come back only through `mergeServiceEnv`, the one surface they were pasted for. MCP stdio, LSP, code.run and the computer-use runtime keep their own allowlist builders, which are stricter still.
+A variable the user exported in their own shell (`NPM_TOKEN`, `GITHUB_TOKEN`, a bare `OPENAI_API_KEY`) stays visible to host helpers, unless its value is one the keep holds. Agent-driven commands are stricter: `environment.sanitizeChildEnv` (shell.exec, background jobs, terminals) now runs this builder first and then strips every secret-shaped name as before. The service keys come back only through `mergeServiceEnv`, the one surface they were pasted for. MCP stdio, LSP, code.run and the computer-use runtime keep their own allowlist builders, which are stricter still.
 
 **Wiring:** `guardChildProcess()` fills a missing `env` on every `spawn`/`execFile`/`exec`/`execSync`/`fork` call. An explicit `env` passes through untouched. `index.js` wraps its `child_process` once, which covers git (checkpoints, patch apply, project scan, build describe), shell hooks, loop checks, the folder picker, native STT, the process table and taskkill. These modules wrap their own: `inputguard`, `procledger`, `desktop`, `win32desktop` (whose PowerShell env is now built per call), `browser` (Chrome), and `mcp/transport.stdio` (its taskkill). The PTY fallback in `terminal-sessions` uses the builder too.
 
@@ -247,7 +247,7 @@ This applies to catalog rows and custom servers alike. `buildAuthorizeUrl` appli
 | 13 | Low-Med | Every process inherits the sidecar's full `process.env` (provider keys, channel tokens, `SKYNET_API_TOKEN`, `SKYNET_IPC_TOKEN`, service keys) when it is spawned with no `env`: `execFile('git')` (index.js ~3287/8357/14284, including the project scan in user repos, where hooks and fsmonitor run), `shellhooks.js:179`, `inputguard.js`, `procledger.js`, `desktop.js`, `native-stt.js`, `folderpick.js` | spawn sites | **Fixed on `agent/sec-env`** (see above) |
 | 14 | Low | Connector vault is plaintext when there is no OS key (bare `npm start` sidecar). This is by design and is now 0600 | `connector-vault.js:40` | Document it; optionally derive a per-user key |
 | 15 | Low | MCP HTTP transport has no private-IP or DNS guard (loopback is allowed on purpose, and the URL is user-set through the token-gated UI or config import) | `mcp/transport.http.js:39` | Warn in the UI for private ranges, or pin the resolution |
-| 16 | Low | The stdio allowlist compares basenames only and includes `node`/`python` (so `-e`/`-c` run arbitrary code). Containment is the Safe Cell container only. `STARNET_MCP_STDIO_ALLOW='*'` disables the check | `mcp/transport.stdio.js:23-38` | Acceptable while stdio stays Safe-Cell-only |
+| 16 | Low | The stdio allowlist compares basenames only and includes `node`/`python` (so `-e`/`-c` run arbitrary code). Containment is the Safe Cell container only. `EYEHOLD_MCP_STDIO_ALLOW='*'` disables the check | `mcp/transport.stdio.js:23-38` | Acceptable while stdio stays Safe-Cell-only |
 | 17 | Low | Plugin approval hashes only `main`. Helper files `require`d by an approved plugin can change without re-approval, and plugin folders and main files are followed through symlinks | `plugins.js:72-77,197` | **Fixed on `agent/sec-env`** (see above) |
 | 18 | Low | `save-conflict-<client>.json` files grow without limit, and notebook restore has no count cap (both token-gated) | `savestore.js:239`; `notebookrestore.js` | **save-conflict fixed on `agent/sec-env`**; notebook-restore cap still open |
 | 19 | Low | `/api/harness/scan` accepts any absolute root, including UNC `\\host\share` (an SMB/NTLM touch on `stat`) | index.js `handleHarnessScan` | **Fixed on `agent/sec-env`** (see above) |
@@ -264,7 +264,7 @@ This applies to catalog rows and custom servers alike. `buildAuthorizeUrl` appli
 - **OAuth flow:** PKCE is S256 with 48 random bytes; state is 128-bit and single-use; `redirect_uri` is fixed to loopback. Tokens never appear in `/api/connectors`.
 - **stdio MCP registration:** there are no catalog stdio entries. Registration is only possible through token-gated `/api/connectors` or config import, and spawning requires a docker Safe Cell. No model tool or channel command can register a connector.
 - **MCP tool results:** fenced (`fenceExternal`) and taint-latched (`capability mcp:*`).
-- **Station-recovery restore:** path jail, lstat, symlinks skipped, and SHA-bound files. `workspace-recovery` stages under a jail.
+- **Keep-recovery restore:** path jail, lstat, symlinks skipped, and SHA-bound files. `workspace-recovery` stages under a jail.
 
 ## For other lanes (seen, not touched)
 
@@ -275,11 +275,11 @@ This applies to catalog rows and custom servers alike. `buildAuthorizeUrl` appli
 
 | Commit | Change |
 |---|---|
-| `17d149c18` | station-owned directories can never be an agent's workspace |
+| `17d149c18` | keep-owned directories can never be an agent's workspace |
 | `957f23122` | journey agent ids can no longer pollute Object.prototype |
 | `e3de2a7d6` | config import no longer grants project-folder authority |
 | `bf6679fa7` | credential stores are written owner-only (0600) |
-| `eae4248a8` | redact() scrubs the exact secrets the station holds |
+| `eae4248a8` | redact() scrubs the exact secrets the keep holds |
 | `ca55c928d` | pre-update backups no longer capture quarantined credential stores |
 | `be543f2b2` | ChatGPT logout can no longer be undone by a restart |
 | `ff00d7ccd` | uncaught-fault text is redacted |
@@ -304,7 +304,7 @@ This applies to catalog rows and custom servers alike. `buildAuthorizeUrl` appli
 - `journey-store` (81)
 - `configexport` (79)
 - `config-permissions-import.e2e` (16)
-- `station-recovery` (79)
+- `keep-recovery` (79)
 - `provider.codex-auth` (75)
 - `codex-status.e2e` (14)
 - `process-fault` (78)

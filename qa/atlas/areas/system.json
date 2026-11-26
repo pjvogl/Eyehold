@@ -7,11 +7,11 @@
       "kind": "state",
       "area": "system",
       "name": "shoot state: sys-logbook",
-      "purpose": "The LOGBOOK window shoot-state — a console of RUNS / INSIGHTS / SLAG tabs recording what the station's agents actually did.",
+      "purpose": "The LOGBOOK window shoot-state — a console of RUNS / INSIGHTS / SLAG tabs recording what the keep's agents actually did.",
       "promise": "Opening LOGBOOK renders a console with RUNS/INSIGHTS/SLAG rail tabs that each activate and paint their own read-only view.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js"
+          "frontend/app/keepui.js"
         ],
         "events": []
       },
@@ -41,7 +41,7 @@
       "promise": "Opening CHANNELS renders Telegram/Discord/Slack/Matrix/Signal cards, each with its masked token/endpoint fields, CONNECT, a shared autonomous-ping opt-in, and a status pill that reflects real connection state (all '○ not connected' under a keyless seed).",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/index.js"
         ],
         "events": []
@@ -80,11 +80,11 @@
       "kind": "state",
       "area": "system",
       "name": "shoot state: sys-notifs",
-      "purpose": "The NOTIFICATIONS window shoot-state — the station-wide feed of pings (run complete / needs approval / cron digest) with a clear/mark-read control.",
+      "purpose": "The NOTIFICATIONS window shoot-state — the keep-wide feed of pings (run complete / needs approval / cron digest) with a clear/mark-read control.",
       "promise": "Opening NOTIFICATIONS lists past notifications newest-first (read ones dimmed) and clears the dock unread chip on read.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "frontend/app/navdock.js"
         ],
         "events": []
@@ -117,7 +117,7 @@
       "promise": "Opening RESTORE POINTS lists real on-disk snapshots for the agent (or an honest empty state) with a REFRESH; a restore requires a two-step armed confirm before it fires.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/index.js",
           "sidecar/checkpoint-store.js"
         ],
@@ -149,11 +149,11 @@
       "kind": "state",
       "area": "system",
       "name": "shoot state: sys-sessiontools",
-      "purpose": "The SESSION TOOLS window shoot-state — the floating rail (440px) listing the station's SESSIONS/PROJECTS with a NEW control, parked (not destroyed) on close.",
+      "purpose": "The SESSION TOOLS window shoot-state — the floating rail (440px) listing the keep's SESSIONS/PROJECTS with a NEW control, parked (not destroyed) on close.",
       "promise": "Opening SESSION TOOLS renders a floating window whose head toggles SESSIONS/PROJECTS and offers NEW; rows open/manage real sessions, and closing parks it rather than tearing it down.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js"
+          "frontend/app/keepui.js"
         ],
         "events": []
       },
@@ -176,7 +176,7 @@
       "firstSeen": "2026-07-18T00:54:02.713Z",
       "lastSeen": "2026-07-18T00:54:02.713Z",
       "missing": false,
-      "notes": "Mapped+proven live @ HEAD 0a009ec2: opening SESSION TOOLS rendered the floating window (Minimize/Close/Resize SESSION TOOLS chrome captured). stationui.js:6957 registers it with a parkSessionTools onClose. session-power-tools.test.js covers the tools. Held audited: window render proven live; the SESSIONS/PROJECTS toggle + NEW flow not exhaustively driven this session. KNOWN. Evidence union.json."
+      "notes": "Mapped+proven live @ HEAD 0a009ec2: opening SESSION TOOLS rendered the floating window (Minimize/Close/Resize SESSION TOOLS chrome captured). keepui.js:6957 registers it with a parkSessionTools onClose. session-power-tools.test.js covers the tools. Held audited: window render proven live; the SESSIONS/PROJECTS toggle + NEW flow not exhaustively driven this session. KNOWN. Evidence union.json."
     },
     {
       "id": "state/sys-settings",
@@ -187,7 +187,7 @@
       "promise": "Opening SETTINGS from the SYSTEM dock renders a console with PROVIDERS/AUTONOMY/NIGHT SHIFT/PERMISSIONS/BUDGET/MODELS/APPEARANCE/NOTIFICATIONS/SYSTEM rail tabs; each tab activates and paints its real controls and reads live server state.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js"
+          "frontend/app/keepui.js"
         ],
         "events": []
       },
@@ -225,7 +225,7 @@
       "promise": "The field is populated from GET /api/runtime/knobs' effective value (env > saved > default) and, when saved, POSTs to the same route; an env-locked knob renders read-only with a note.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/index.js"
         ],
         "events": []
@@ -266,7 +266,7 @@
       "promise": "The field is populated from GET /api/runtime/knobs' effective value (env > saved > default) and, when saved, POSTs to the same route; an env-locked knob renders read-only with a note.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/index.js"
         ],
         "events": []
@@ -307,7 +307,7 @@
       "promise": "The field is populated from GET /api/runtime/knobs' effective value (env > saved > default) and, when saved, POSTs to the same route; an env-locked knob renders read-only with a note.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/index.js"
         ],
         "events": []
@@ -348,7 +348,7 @@
       "promise": "The field is populated from GET /api/runtime/knobs' effective value (env > saved > default) and, when saved, POSTs to the same route; an env-locked knob renders read-only with a note.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/index.js"
         ],
         "events": []
@@ -389,7 +389,7 @@
       "promise": "Clicking RESET TO DEFAULTS POSTs a null-per-field payload to /api/runtime/knobs, re-renders the defaults, and shows \"✓ reset to defaults\".",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/index.js"
         ],
         "events": []
@@ -430,7 +430,7 @@
       "promise": "Clicking SAVE validates each field against its min/max, POSTs the payload to /api/runtime/knobs, re-renders with the server's resolved values, and shows \"✓ saved (some limits apply on next restart)\".",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/index.js"
         ],
         "events": []
@@ -471,7 +471,7 @@
       "promise": "Clicking it expands the ANTHROPIC row to a masked #prov-key-in-anthropic input + SAVE, targeting this row provider (not necessarily the active one); aria-label reads \"Add a ANTHROPIC key\".",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "frontend/app/harness.js"
         ],
         "events": []
@@ -508,7 +508,7 @@
       "promise": "Clicking it expands the CEREBRAS row to a masked #prov-key-in-cerebras input + SAVE, targeting this row provider (not necessarily the active one); aria-label reads \"Add a CEREBRAS key\".",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "frontend/app/harness.js"
         ],
         "events": []
@@ -545,7 +545,7 @@
       "promise": "Clicking it expands the CUSTOM row to a masked #prov-key-in-custom input + SAVE, targeting this row provider (not necessarily the active one); aria-label reads \"Add a CUSTOM key\".",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "frontend/app/harness.js"
         ],
         "events": []
@@ -582,7 +582,7 @@
       "promise": "Clicking it expands the DEEPSEEK row to a masked #prov-key-in-deepseek input + SAVE, targeting this row provider (not necessarily the active one); aria-label reads \"Add a DEEPSEEK key\".",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "frontend/app/harness.js"
         ],
         "events": []
@@ -619,7 +619,7 @@
       "promise": "Clicking it expands the FIREWORKS row to a masked #prov-key-in-fireworks input + SAVE, targeting this row provider (not necessarily the active one); aria-label reads \"Add a FIREWORKS key\".",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "frontend/app/harness.js"
         ],
         "events": []
@@ -656,7 +656,7 @@
       "promise": "Clicking it expands the GEMINI row to a masked #prov-key-in-gemini input + SAVE, targeting this row provider (not necessarily the active one); aria-label reads \"Add a GEMINI key\".",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "frontend/app/harness.js"
         ],
         "events": []
@@ -693,7 +693,7 @@
       "promise": "Clicking it expands the GROQ row to a masked #prov-key-in-groq input + SAVE, targeting this row provider (not necessarily the active one); aria-label reads \"Add a GROQ key\".",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "frontend/app/harness.js"
         ],
         "events": []
@@ -730,7 +730,7 @@
       "promise": "Clicking it expands the MISTRAL row to a masked #prov-key-in-mistral input + SAVE, targeting this row provider (not necessarily the active one); aria-label reads \"Add a MISTRAL key\".",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "frontend/app/harness.js"
         ],
         "events": []
@@ -767,7 +767,7 @@
       "promise": "Clicking it expands the OPENAI row to a masked #prov-key-in-openai input + SAVE, targeting this row provider (not necessarily the active one); aria-label reads \"Add a OPENAI API key\".",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "frontend/app/harness.js"
         ],
         "events": []
@@ -804,7 +804,7 @@
       "promise": "Clicking it expands the PERPLEXITY row to a masked #prov-key-in-perplexity input + SAVE, targeting this row provider (not necessarily the active one); aria-label reads \"Add a PERPLEXITY key\".",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "frontend/app/harness.js"
         ],
         "events": []
@@ -841,7 +841,7 @@
       "promise": "Clicking it expands the TOGETHER row to a masked #prov-key-in-together input + SAVE, targeting this row provider (not necessarily the active one); aria-label reads \"Add a TOGETHER key\".",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "frontend/app/harness.js"
         ],
         "events": []
@@ -878,7 +878,7 @@
       "promise": "Clicking it expands the XAI row to a masked #prov-key-in-xai input + SAVE, targeting this row provider (not necessarily the active one); aria-label reads \"Add a XAI key\".",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "frontend/app/harness.js"
         ],
         "events": []
@@ -915,7 +915,7 @@
       "promise": "Clicking it dismisses the CHANNELS window via requestCloseTerm (unsaved-draft guard on the path); the aria-label reads \"Close CHANNELS\" (label = window-title law).",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js"
+          "frontend/app/keepui.js"
         ],
         "events": []
       },
@@ -947,7 +947,7 @@
       "promise": "Clicking it dismisses the LOGBOOK window via requestCloseTerm (unsaved-draft guard on the path); the aria-label reads \"Close LOGBOOK\" (label = window-title law).",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js"
+          "frontend/app/keepui.js"
         ],
         "events": []
       },
@@ -979,7 +979,7 @@
       "promise": "Clicking it dismisses the NOTIFICATIONS window via requestCloseTerm; the aria-label reads \"Close NOTIFICATIONS\".",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js"
+          "frontend/app/keepui.js"
         ],
         "events": []
       },
@@ -1011,7 +1011,7 @@
       "promise": "Clicking it dismisses the RESTORE POINTS window via requestCloseTerm (unsaved-draft guard on the path); the aria-label reads \"Close RESTORE POINTS\" (label = window-title law).",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js"
+          "frontend/app/keepui.js"
         ],
         "events": []
       },
@@ -1043,7 +1043,7 @@
       "promise": "Clicking it dismisses the SESSION TOOLS window via requestCloseTerm (unsaved-draft guard on the path); the aria-label reads \"Close SESSION TOOLS\" (label = window-title law).",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js"
+          "frontend/app/keepui.js"
         ],
         "events": []
       },
@@ -1075,7 +1075,7 @@
       "promise": "Clicking it dismisses the SETTINGS window via requestCloseTerm (unsaved-draft guard on the path); the aria-label reads \"Close SETTINGS\" (label = window-title law).",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js"
+          "frontend/app/keepui.js"
         ],
         "events": []
       },
@@ -1107,7 +1107,7 @@
       "promise": "Clicking it collapses the CHANNELS window via minimizeTerm; the aria-label reads \"Minimize CHANNELS\".",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js"
+          "frontend/app/keepui.js"
         ],
         "events": []
       },
@@ -1145,7 +1145,7 @@
       "promise": "Clicking it collapses the LOGBOOK window via minimizeTerm; the aria-label reads \"Minimize LOGBOOK\".",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js"
+          "frontend/app/keepui.js"
         ],
         "events": []
       },
@@ -1183,7 +1183,7 @@
       "promise": "Clicking it collapses the NOTIFICATIONS window via minimizeTerm; the aria-label reads \"Minimize NOTIFICATIONS\".",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js"
+          "frontend/app/keepui.js"
         ],
         "events": []
       },
@@ -1221,7 +1221,7 @@
       "promise": "Clicking it collapses the RESTORE POINTS window via minimizeTerm; the aria-label reads \"Minimize RESTORE POINTS\".",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js"
+          "frontend/app/keepui.js"
         ],
         "events": []
       },
@@ -1259,7 +1259,7 @@
       "promise": "Clicking it collapses the SETTINGS window via minimizeTerm; the aria-label reads \"Minimize SETTINGS\".",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js"
+          "frontend/app/keepui.js"
         ],
         "events": []
       },
@@ -1297,7 +1297,7 @@
       "promise": "Dragging (pointer/touch/pen) or arrow-keying it resizes the CHANNELS window within clamped min/max; the aria-label reads \"Resize CHANNELS\".",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js"
+          "frontend/app/keepui.js"
         ],
         "events": []
       },
@@ -1333,7 +1333,7 @@
       "promise": "Dragging (pointer/touch/pen) or arrow-keying it resizes the LOGBOOK window within clamped min/max; the aria-label reads \"Resize LOGBOOK\".",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js"
+          "frontend/app/keepui.js"
         ],
         "events": []
       },
@@ -1369,7 +1369,7 @@
       "promise": "Dragging (pointer/touch/pen) or arrow-keying it resizes the NOTIFICATIONS window within clamped min/max; the aria-label reads \"Resize NOTIFICATIONS\".",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js"
+          "frontend/app/keepui.js"
         ],
         "events": []
       },
@@ -1405,7 +1405,7 @@
       "promise": "Dragging (pointer/touch/pen) or arrow-keying it resizes the RESTORE POINTS window within clamped min/max; the aria-label reads \"Resize RESTORE POINTS\".",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js"
+          "frontend/app/keepui.js"
         ],
         "events": []
       },
@@ -1441,7 +1441,7 @@
       "promise": "Dragging (pointer/touch/pen) or arrow-keying it resizes the SESSION TOOLS window within clamped min/max; the aria-label reads \"Resize SESSION TOOLS\".",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js"
+          "frontend/app/keepui.js"
         ],
         "events": []
       },
@@ -1477,7 +1477,7 @@
       "promise": "Dragging (pointer/touch/pen) or arrow-keying it resizes the SETTINGS window within clamped min/max; the aria-label reads \"Resize SETTINGS\".",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js"
+          "frontend/app/keepui.js"
         ],
         "events": []
       },
@@ -1513,7 +1513,7 @@
       "promise": "Typing narrows the visible SETTINGS sections, hides irrelevant headings, and highlights the first matching section without replacing the persisted section; the aria-label reads \"Search settings\".",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js"
+          "frontend/app/keepui.js"
         ],
         "events": []
       },
@@ -1549,7 +1549,7 @@
       "promise": "The button carries aria-label \"Sign in to GROK (XAI)\" and drives the shared OAuth sign-in for grok; the card gates its label on the real per-provider status (never a premature SIGNED IN).",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "frontend/app/codexsignin.js"
         ],
         "events": []
@@ -1586,7 +1586,7 @@
       "promise": "The button carries aria-label \"Sign in to KIMI FOR CODING\" and drives the shared OAuth sign-in for kimi; the card gates its label on the real per-provider status.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "frontend/app/codexsignin.js"
         ],
         "events": []
@@ -1623,7 +1623,7 @@
       "promise": "The field shows the saved cap or an \"environment default (not yet saved here)\" placeholder; SAVE persists it via the budget route (sibling of bg-save, already perfected).",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/index.js"
         ],
         "events": []
@@ -1660,7 +1660,7 @@
       "promise": "The field shows the saved cap or an \"environment default (not yet saved here)\" placeholder; SAVE persists it via the budget route (sibling of bg-save, already perfected).",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/index.js"
         ],
         "events": []
@@ -1697,7 +1697,7 @@
       "promise": "The field shows the effective cap (saved-or-env) with a truthful \"saved here\"/\"environment default\" badge; blank or 0 means no cap; SAVE persists it server-side and it applies live.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/budgetcaps.js"
         ],
         "events": []
@@ -1734,7 +1734,7 @@
       "promise": "Shows the effective per-run cap with a saved-vs-env badge; blank/0 = no cap; SAVE persists via /api/budget/caps and applies live.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/budgetcaps.js"
         ],
         "events": []
@@ -1771,7 +1771,7 @@
       "promise": "Visible only when at least one cap is saved; clicking it POSTs nulls to /api/budget/caps and repaints with all badges back to \"environment default\".",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js"
+          "frontend/app/keepui.js"
         ],
         "events": []
       },
@@ -1807,7 +1807,7 @@
       "promise": "Clicking it POSTs the caps to /api/budget/caps; a valid save shows \"✓ limits saved & applied\" and re-paints from the response; a negative/NaN cap is rejected inline before the POST.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js"
+          "frontend/app/keepui.js"
         ],
         "events": []
       },
@@ -1838,12 +1838,12 @@
       "id": "ui/system/bk-export",
       "kind": "ui",
       "area": "system",
-      "name": "EXPORT STATION",
-      "purpose": "EXPORT STATION — bundle the whole station config (settings/autonomy/notifyPrefs + server stores) to one JSON file.",
-      "promise": "Clicking it builds a schema-versioned (starnetExport:1) envelope and downloads it; secrets never travel in the bundle.",
+      "name": "EXPORT KEEP",
+      "purpose": "EXPORT KEEP — bundle the whole keep config (settings/autonomy/notifyPrefs + server stores) to one JSON file.",
+      "promise": "Clicking it builds a schema-versioned (eyeholdExport:1) envelope and downloads it; secrets never travel in the bundle.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/configexport.js"
         ],
         "events": []
@@ -1880,11 +1880,11 @@
       "kind": "ui",
       "area": "system",
       "name": "input",
-      "purpose": "Hidden file input that receives the chosen station-backup JSON for IMPORT.",
-      "promise": "Selecting a file feeds its contents to parseImport; it is the file source behind the IMPORT STATION button.",
+      "purpose": "Hidden file input that receives the chosen keep-backup JSON for IMPORT.",
+      "promise": "Selecting a file feeds its contents to parseImport; it is the file source behind the IMPORT KEEP button.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js"
+          "frontend/app/keepui.js"
         ],
         "events": []
       },
@@ -1919,12 +1919,12 @@
       "id": "ui/system/bk-import",
       "kind": "ui",
       "area": "system",
-      "name": "IMPORT STATION…",
-      "purpose": "IMPORT STATION — apply a previously exported station bundle.",
+      "name": "IMPORT KEEP…",
+      "purpose": "IMPORT KEEP — apply a previously exported keep bundle.",
       "promise": "Choosing a file parses it fail-soft (unknown sections dropped, newer schema accepted with a note), applies server sections + restores browser slices, and surfaces \"re-enter your key\" where the server flags it.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/configexport.js"
         ],
         "events": []
@@ -1965,7 +1965,7 @@
       "promise": "Toggling it POSTs the flag to /api/channels/notify (server truth); reflected back from GET /api/channels/status on open.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/index.js"
         ],
         "events": []
@@ -2002,7 +2002,7 @@
       "promise": "Clicking it activates the INSIGHTS rail item and paints that view.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js"
+          "frontend/app/keepui.js"
         ],
         "events": []
       },
@@ -2034,7 +2034,7 @@
       "promise": "Clicking it activates the RUNS rail item and paints that view.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js"
+          "frontend/app/keepui.js"
         ],
         "events": []
       },
@@ -2066,7 +2066,7 @@
       "promise": "Clicking it activates the SLAG rail item and paints that view.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js"
+          "frontend/app/keepui.js"
         ],
         "events": []
       },
@@ -2098,7 +2098,7 @@
       "promise": "Clicking it activates the APPEARANCE rail item and paints that panel's controls.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js"
+          "frontend/app/keepui.js"
         ],
         "events": []
       },
@@ -2138,7 +2138,7 @@
       "promise": "Clicking it activates the AUTONOMY rail item and paints that panel's controls.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js"
+          "frontend/app/keepui.js"
         ],
         "events": []
       },
@@ -2174,7 +2174,7 @@
       "promise": "Clicking it shows the four cap inputs (per run/agent/day/global), a live SPENT-TODAY/LIFETIME readout, and SAVE/RESET — all painted from /api/budget/status.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js"
+          "frontend/app/keepui.js"
         ],
         "events": []
       },
@@ -2214,7 +2214,7 @@
       "promise": "Clicking it shows the three class-tier selects and the fallback-chain editor, each filled from the live OpenRouter catalog (/api/models/openrouter).",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js"
+          "frontend/app/keepui.js"
         ],
         "events": []
       },
@@ -2250,11 +2250,11 @@
       "kind": "ui",
       "area": "system",
       "name": "☾NIGHT SHIFT",
-      "purpose": "Switches the SETTINGS console to the NIGHT SHIFT panel (what the station is doing unattended plus its recent decision trail).",
+      "purpose": "Switches the SETTINGS console to the NIGHT SHIFT panel (what the keep is doing unattended plus its recent decision trail).",
       "promise": "Clicking it activates the NIGHT SHIFT rail item and paints that panel's live controls (steer input, STEER/CLEAR, LAST REPORT), fed from GET /api/nightshift/status + /api/autonomy/ledger.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/index.js"
         ],
         "events": []
@@ -2291,7 +2291,7 @@
       "promise": "Clicking it activates the NOTIFICATIONS rail item and paints that panel's controls.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js"
+          "frontend/app/keepui.js"
         ],
         "events": []
       },
@@ -2331,7 +2331,7 @@
       "promise": "Clicking it activates the PERMISSIONS rail item and paints that panel's controls (#perm-level chooser + #perm-grants standing-grant list).",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js"
+          "frontend/app/keepui.js"
         ],
         "events": []
       },
@@ -2367,7 +2367,7 @@
       "promise": "Clicking it reveals the provider cards + API-key rows; the active provider is marked and each card offers an inline ADD KEY paste field.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js"
+          "frontend/app/keepui.js"
         ],
         "events": []
       },
@@ -2401,11 +2401,11 @@
       "kind": "ui",
       "area": "system",
       "name": "⚙SYSTEM",
-      "purpose": "Switches the SETTINGS console to the SYSTEM panel (advanced runtime knobs + station backup + updates).",
+      "purpose": "Switches the SETTINGS console to the SYSTEM panel (advanced runtime knobs + keep backup + updates).",
       "promise": "Clicking it activates the SYSTEM rail item and paints that panel's controls.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js"
+          "frontend/app/keepui.js"
         ],
         "events": []
       },
@@ -2441,7 +2441,7 @@
       "promise": "Clicking CONNECT POSTs to /api/channels/discord/connect; the status pill reflects the real gateway phase (connecting→up/error) — discord honestly starts at connecting, never a premature \"up\".",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/index.js"
         ],
         "events": [
@@ -2484,7 +2484,7 @@
       "promise": "Clicking DISCONNECT POSTs to /api/channels/discord/disconnect; the gateway closes and status flips to down.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/index.js"
         ],
         "events": [
@@ -2527,7 +2527,7 @@
       "promise": "Clicking FORGET POSTs a purge to /api/channels/discord/disconnect (purge:true), clearing the stored secret; only shown once connected.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/index.js"
         ],
         "events": []
@@ -2557,11 +2557,11 @@
       "kind": "ui",
       "area": "system",
       "name": "input",
-      "purpose": "Per-station opt-in for autonomous Discord pings.",
+      "purpose": "Per-keep opt-in for autonomous Discord pings.",
       "promise": "Toggling it POSTs {on} to /api/channels/notify, persisting notifyAutonomous.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/index.js"
         ],
         "events": []
@@ -2598,7 +2598,7 @@
       "promise": "type=password; Enter triggers CONNECT; token pushed to sidecar, never shown back.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/index.js"
         ],
         "events": []
@@ -2639,7 +2639,7 @@
       "promise": "Clicking it fetches /api/diagnostics (sidecar-assembled + redacted), puts the text on the clipboard, and confirms \"✓ copied\"; the report NEVER contains an API key/token/message content.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "frontend/app/diagnostics.js",
           "sidecar/diagnostics.js",
           "sidecar/context.js"
@@ -2682,7 +2682,7 @@
       "promise": "Picking a catalog model appends it to the chain editor; SAVE CHAIN then POSTs the ordered list to /api/fallback/chain.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/fallbackchain.js"
         ],
         "events": []
@@ -2708,7 +2708,7 @@
       "missing": false,
       "selector": "#fbc-add",
       "state": "sys-settings",
-      "notes": "Re-proven live @ HEAD 0a009ec2 (sidecar :8961 / CDP :9361): <#fbc-add> select present, 345 options, value=\"\" (station default, nothing pinned — truthful). Evidence .uiatlas/system-evidence/union.json + settings-dump.json."
+      "notes": "Re-proven live @ HEAD 0a009ec2 (sidecar :8961 / CDP :9361): <#fbc-add> select present, 345 options, value=\"\" (keep default, nothing pinned — truthful). Evidence .uiatlas/system-evidence/union.json + settings-dump.json."
     },
     {
       "id": "ui/system/fbc-reset",
@@ -2719,7 +2719,7 @@
       "promise": "Clicking it clears the chain editor and (on save) empties the persisted chain; /api/fallback/chain then reports the env default (saved:false).",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/fallbackchain.js"
         ],
         "events": []
@@ -2756,7 +2756,7 @@
       "promise": "Clicking it POSTs the whole ordered list to /api/fallback/chain; a valid save shows \"✓ chain saved & applied\", surfaces any not-in-catalog warnings, and the host actually consumes the persisted chain.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/fallbackchain.js"
         ],
         "events": []
@@ -2793,7 +2793,7 @@
       "promise": "Typing a key and saving routes it through the harness BYOK path (keychain on desktop, scoped LS in dev); type=password, never echoed. Revealed when the OpenRouter add-key row is expanded.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "frontend/app/harness.js"
         ],
         "events": []
@@ -2831,7 +2831,7 @@
       "promise": "Typing a key + SAVE routes through Harness.setKey (keychain on desktop / scoped localStorage in dev); the field is type=password.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "frontend/app/harness.js"
         ],
         "events": []
@@ -2868,7 +2868,7 @@
       "promise": "Clicking CONNECT validates the endpoint config then POSTs to /api/channels/matrix/connect; the status pill reflects real adapter health.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/index.js"
         ],
         "events": [
@@ -2911,7 +2911,7 @@
       "promise": "Clicking DISCONNECT POSTs /api/channels/matrix/disconnect (no purge); token retained; only shown once connected.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/index.js"
         ],
         "events": []
@@ -2945,7 +2945,7 @@
       "promise": "Renders type=text; read into the Matrix connect payload; prefilled from saved status.endpoint on open.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/index.js"
         ],
         "events": []
@@ -2986,7 +2986,7 @@
       "promise": "Clicking FORGET purges the stored Matrix token via /api/channels/matrix/disconnect(purge); only shown once connected.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/index.js"
         ],
         "events": []
@@ -3020,7 +3020,7 @@
       "promise": "Renders type=password; read into the Matrix connect payload with the homeserver endpoint; never shown back.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/index.js"
         ],
         "events": []
@@ -3061,7 +3061,7 @@
       "promise": "Clicking it sets read:true on every store.notifs entry, persists, re-renders the list dimmed, and clears #nf-badge (mirrored to #bb-sys-badge).",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "frontend/app/navdock.js"
         ],
         "events": [
@@ -3095,7 +3095,7 @@
       "promise": "Clicking it fetches + renders the latest night-shift report into #ns-report.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/index.js"
         ],
         "events": []
@@ -3123,7 +3123,7 @@
       "missing": false,
       "selector": "#ns-report-btn",
       "state": "sys-settings",
-      "notes": "Proven live @ HEAD 0a009ec2: #ns-report-btn submit present in NIGHT SHIFT panel. Held audited: no committed test asserts the report fetch+render; only shoot-state presence. KNOWN coverage gap. Evidence settings-dump.json. [wave-3] Machine assertion test/nightshift-steer-ui.test.js now guards the DOM half: a genuine NightReport.compose unit (empty night -> hasReport:false; an act -> a real headline) plus a source-lock of the #ns-steer.value->POST /api/nightshift/focus body wire, the CLEAR DELETE, and LAST REPORT's three-surface fetch+compose. The route contract stays covered by nightshift-focus.e2e. Finding bec0f139 resolved. HELD audited: the live type->POST->readout DOM round-trip was not driven at HEAD this pass (stationui.js moved since 0a009ec2)."
+      "notes": "Proven live @ HEAD 0a009ec2: #ns-report-btn submit present in NIGHT SHIFT panel. Held audited: no committed test asserts the report fetch+render; only shoot-state presence. KNOWN coverage gap. Evidence settings-dump.json. [wave-3] Machine assertion test/nightshift-steer-ui.test.js now guards the DOM half: a genuine NightReport.compose unit (empty night -> hasReport:false; an act -> a real headline) plus a source-lock of the #ns-steer.value->POST /api/nightshift/focus body wire, the CLEAR DELETE, and LAST REPORT's three-surface fetch+compose. The route contract stays covered by nightshift-focus.e2e. Finding bec0f139 resolved. HELD audited: the live type->POST->readout DOM round-trip was not driven at HEAD this pass (keepui.js moved since 0a009ec2)."
     },
     {
       "id": "ui/system/ns-steer",
@@ -3134,7 +3134,7 @@
       "promise": "Its value is the body of the POST /api/nightshift/focus that STEER fires; empty by default.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/index.js"
         ],
         "events": []
@@ -3166,18 +3166,18 @@
       "missing": false,
       "selector": "#ns-steer",
       "state": "sys-settings",
-      "notes": "Proven live @ HEAD 0a009ec2: #ns-steer type=text, value='' present in NIGHT SHIFT panel. Held audited: the input->fetch-body wiring is proven live but not by a committed source-lock (the e2e drives the route directly, not the DOM input). KNOWN coverage gap. Evidence settings-dump.json. [wave-3] Machine assertion test/nightshift-steer-ui.test.js now guards the DOM half: a genuine NightReport.compose unit (empty night -> hasReport:false; an act -> a real headline) plus a source-lock of the #ns-steer.value->POST /api/nightshift/focus body wire, the CLEAR DELETE, and LAST REPORT's three-surface fetch+compose. The route contract stays covered by nightshift-focus.e2e. Finding bec0f139 resolved. HELD audited: the live type->POST->readout DOM round-trip was not driven at HEAD this pass (stationui.js moved since 0a009ec2)."
+      "notes": "Proven live @ HEAD 0a009ec2: #ns-steer type=text, value='' present in NIGHT SHIFT panel. Held audited: the input->fetch-body wiring is proven live but not by a committed source-lock (the e2e drives the route directly, not the DOM input). KNOWN coverage gap. Evidence settings-dump.json. [wave-3] Machine assertion test/nightshift-steer-ui.test.js now guards the DOM half: a genuine NightReport.compose unit (empty night -> hasReport:false; an act -> a real headline) plus a source-lock of the #ns-steer.value->POST /api/nightshift/focus body wire, the CLEAR DELETE, and LAST REPORT's three-surface fetch+compose. The route contract stays covered by nightshift-focus.e2e. Finding bec0f139 resolved. HELD audited: the live type->POST->readout DOM round-trip was not driven at HEAD this pass (keepui.js moved since 0a009ec2)."
     },
     {
       "id": "ui/system/ns-steer-clear",
       "kind": "ui",
       "area": "system",
       "name": "CLEAR",
-      "purpose": "CLEAR — drops the standing night-shift steer so focus falls back to the station's own choice.",
+      "purpose": "CLEAR — drops the standing night-shift steer so focus falls back to the keep's own choice.",
       "promise": "Clicking CLEAR DELETEs /api/nightshift/focus; the readout repaints from the route (focus no longer steer-sourced). Hidden until a steer is set.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/index.js"
         ],
         "events": []
@@ -3210,11 +3210,11 @@
       "kind": "ui",
       "area": "system",
       "name": "STEER",
-      "purpose": "STEER — commits the night-shift focus (a project folder or free text) the station works on unattended.",
+      "purpose": "STEER — commits the night-shift focus (a project folder or free text) the keep works on unattended.",
       "promise": "Clicking STEER POSTs /api/nightshift/focus with the #ns-steer value; the readout then reports focus.source==='steer' (server truth).",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/index.js"
         ],
         "events": []
@@ -3246,7 +3246,7 @@
       "missing": false,
       "selector": "#ns-steer-set",
       "state": "sys-settings",
-      "notes": "Proven live @ HEAD 0a009ec2: #ns-steer-set submit present in NIGHT SHIFT panel. Backend contract asserted by nightshift-focus.e2e.test.js:249 (POST /api/nightshift/focus sets a durable steer reported as steer-sourced). Held audited: the DOM-click-fires-POST link was not driven live this session (only presence + committed route test). KNOWN. Evidence settings-dump.json. [wave-3] Machine assertion test/nightshift-steer-ui.test.js now guards the DOM half: a genuine NightReport.compose unit (empty night -> hasReport:false; an act -> a real headline) plus a source-lock of the #ns-steer.value->POST /api/nightshift/focus body wire, the CLEAR DELETE, and LAST REPORT's three-surface fetch+compose. The route contract stays covered by nightshift-focus.e2e. Finding bec0f139 resolved. HELD audited: the live type->POST->readout DOM round-trip was not driven at HEAD this pass (stationui.js moved since 0a009ec2)."
+      "notes": "Proven live @ HEAD 0a009ec2: #ns-steer-set submit present in NIGHT SHIFT panel. Backend contract asserted by nightshift-focus.e2e.test.js:249 (POST /api/nightshift/focus sets a durable steer reported as steer-sourced). Held audited: the DOM-click-fires-POST link was not driven live this session (only presence + committed route test). KNOWN. Evidence settings-dump.json. [wave-3] Machine assertion test/nightshift-steer-ui.test.js now guards the DOM half: a genuine NightReport.compose unit (empty night -> hasReport:false; an act -> a real headline) plus a source-lock of the #ns-steer.value->POST /api/nightshift/focus body wire, the CLEAR DELETE, and LAST REPORT's three-surface fetch+compose. The route contract stays covered by nightshift-focus.e2e. Finding bec0f139 resolved. HELD audited: the live type->POST->readout DOM round-trip was not driven at HEAD this pass (keepui.js moved since 0a009ec2)."
     },
     {
       "id": "ui/system/ntp-crondigest",
@@ -3257,7 +3257,7 @@
       "promise": "Toggling it flips notifyPrefs.cronDigest; notify() reads it live at emit time so it takes effect on the very next ping with no rerender.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js"
+          "frontend/app/keepui.js"
         ],
         "events": [
           "notify"
@@ -3295,7 +3295,7 @@
       "promise": "Toggling it flips notifyPrefs.needsApproval; notify() reads it live at emit time so it takes effect on the very next ping with no rerender.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js"
+          "frontend/app/keepui.js"
         ],
         "events": [
           "notify"
@@ -3333,7 +3333,7 @@
       "promise": "Toggling it flips notifyPrefs.runComplete; notify() reads it live at emit time so it takes effect on the very next ping with no rerender.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js"
+          "frontend/app/keepui.js"
         ],
         "events": [
           "notify"
@@ -3371,7 +3371,7 @@
       "promise": "Toggling it flips notifyPrefs.sound; notify() reads it live at emit time so it takes effect on the very next ping with no rerender.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js"
+          "frontend/app/keepui.js"
         ],
         "events": [
           "notify"
@@ -3409,7 +3409,7 @@
       "promise": "Clicking TEST NOTIFICATION emits a runComplete-category notify(); the dock unread chip increments.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js"
+          "frontend/app/keepui.js"
         ],
         "events": [
           "notify"
@@ -3447,7 +3447,7 @@
       "promise": "Typing a key and pressing Enter/SAVE routes it through Harness.setKey — desktop stores it in the OS keychain, browser/dev in scoped localStorage; the field is type=password (never shows the key), and the card flips to a connected state.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "frontend/app/harness.js"
         ],
         "events": []
@@ -3490,7 +3490,7 @@
       "promise": "Typing a key + Enter/SAVE routes through Harness.setKey (OS keychain on desktop / scoped localStorage in dev); the field is type=password (never shows the key) and the card flips to a connected state.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "frontend/app/harness.js"
         ],
         "events": []
@@ -3529,7 +3529,7 @@
       "promise": "Typing a key + Enter/SAVE routes through Harness.setKey (OS keychain on desktop / scoped localStorage in dev); the field is type=password (never shows the key) and the card flips to a connected state.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "frontend/app/harness.js"
         ],
         "events": []
@@ -3568,7 +3568,7 @@
       "promise": "Typing a key + Enter/SAVE routes through Harness.setKey (OS keychain on desktop / scoped localStorage in dev); the field is type=password (never shows the key) and the card flips to a connected state.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "frontend/app/harness.js"
         ],
         "events": []
@@ -3607,7 +3607,7 @@
       "promise": "Typing a key + Enter/SAVE routes through Harness.setKey (OS keychain on desktop / scoped localStorage in dev); the field is type=password (never shows the key) and the card flips to a connected state.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "frontend/app/harness.js"
         ],
         "events": []
@@ -3646,7 +3646,7 @@
       "promise": "Typing a key + Enter/SAVE routes through Harness.setKey (OS keychain on desktop / scoped localStorage in dev); the field is type=password (never shows the key) and the card flips to a connected state.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "frontend/app/harness.js"
         ],
         "events": []
@@ -3685,7 +3685,7 @@
       "promise": "Typing a key + Enter/SAVE routes through Harness.setKey (OS keychain on desktop / scoped localStorage in dev); the field is type=password (never shows the key) and the card flips to a connected state.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "frontend/app/harness.js"
         ],
         "events": []
@@ -3724,7 +3724,7 @@
       "promise": "Typing a key + Enter/SAVE routes through Harness.setKey (OS keychain on desktop / scoped localStorage in dev); the field is type=password (never shows the key) and the card flips to a connected state.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "frontend/app/harness.js"
         ],
         "events": []
@@ -3763,7 +3763,7 @@
       "promise": "Typing a key + Enter/SAVE routes through Harness.setKey (OS keychain on desktop / scoped localStorage in dev); the field is type=password (never shows the key) and the card flips to a connected state.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "frontend/app/harness.js"
         ],
         "events": []
@@ -3802,7 +3802,7 @@
       "promise": "Typing a key + Enter/SAVE routes through Harness.setKey (OS keychain on desktop / scoped localStorage in dev); the field is type=password (never shows the key) and the card flips to a connected state.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "frontend/app/harness.js"
         ],
         "events": []
@@ -3841,7 +3841,7 @@
       "promise": "Typing a key + Enter/SAVE routes through Harness.setKey (OS keychain on desktop / scoped localStorage in dev); the field is type=password (never shows the key) and the card flips to a connected state.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "frontend/app/harness.js"
         ],
         "events": []
@@ -3880,7 +3880,7 @@
       "promise": "Typing a key + Enter/SAVE routes through Harness.setKey (OS keychain on desktop / scoped localStorage in dev); the field is type=password (never shows the key) and the card flips to a connected state.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "frontend/app/harness.js"
         ],
         "events": []
@@ -3919,7 +3919,7 @@
       "promise": "Clicking it opens the GROK device-code sign-in; the row then reflects the real /api/auth/grok/status truth (● SIGNED IN only on a live token, ⚠ EXPIRED masks a dead one — never a premature connected label).",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "frontend/app/codexsignin.js",
           "sidecar/index.js"
         ],
@@ -3961,7 +3961,7 @@
       "promise": "Clicking it opens the KIMI device-code sign-in; the row then reflects the real /api/auth/kimi/status truth (● SIGNED IN only on a live token, ⚠ EXPIRED masks a dead one).",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "frontend/app/codexsignin.js",
           "sidecar/index.js"
         ],
@@ -4003,7 +4003,7 @@
       "promise": "Clicking it shows a loading state and re-fetches the agent's checkpoint list, repainting the rows.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/index.js"
         ],
         "events": []
@@ -4029,18 +4029,18 @@
       "missing": false,
       "selector": "#rw-refresh",
       "state": "sys-rewind",
-      "notes": "Proven live @ HEAD 0a009ec2: #rw-refresh submit present in REWIND panel (stationui.js:6040 wires click -> loading -> refresh()). Held audited: the re-read handler has no committed UI assertion; checkpoint-store.test.js covers the data layer. KNOWN coverage gap on the click behavior. Evidence union.json."
+      "notes": "Proven live @ HEAD 0a009ec2: #rw-refresh submit present in REWIND panel (keepui.js:6040 wires click -> loading -> refresh()). Held audited: the re-read handler has no committed UI assertion; checkpoint-store.test.js covers the data layer. KNOWN coverage gap on the click behavior. Evidence union.json."
     },
     {
       "id": "ui/system/set-autostart",
       "kind": "ui",
       "area": "system",
       "name": "input",
-      "purpose": "LAUNCH AT LOGIN — register StarNet to start automatically at sign-in (desktop app only).",
+      "purpose": "LAUNCH AT LOGIN — register Eyehold to start automatically at sign-in (desktop app only).",
       "promise": "On desktop the toggle reflects the real OS autostart state (Lifecycle.autostartStatus) and registers/unregisters on change; in browser/dev it renders disabled with a 'desktop app only' note.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js"
+          "frontend/app/keepui.js"
         ],
         "events": []
       },
@@ -4068,11 +4068,11 @@
       "kind": "ui",
       "area": "system",
       "name": "input",
-      "purpose": "KEEP COMPUTER AWAKE — prevent idle sleep while StarNet is open (desktop app only).",
+      "purpose": "KEEP COMPUTER AWAKE — prevent idle sleep while Eyehold is open (desktop app only).",
       "promise": "On desktop the toggle flips store.settings.keepComputerAwake and requests a wake lock; in browser/dev it renders disabled with a \"desktop app only\" note.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js"
+          "frontend/app/keepui.js"
         ],
         "events": []
       },
@@ -4104,7 +4104,7 @@
       "promise": "Clicking it empties store.notifs, persists, and clears the unread chip.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "frontend/app/navdock.js"
         ],
         "events": []
@@ -4136,10 +4136,10 @@
       "area": "system",
       "name": "input",
       "purpose": "Toggle SCREEN FLICKER — persisted to store.settings.flicker and applied to the live CRT look.",
-      "promise": "Toggling it flips store.settings.flicker, saves, and applySettings() repaints the flicker effect on the rendered station immediately.",
+      "promise": "Toggling it flips store.settings.flicker, saves, and applySettings() repaints the flicker effect on the rendered keep immediately.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js"
+          "frontend/app/keepui.js"
         ],
         "events": []
       },
@@ -4175,7 +4175,7 @@
       "promise": "Dragging it sets store.settings.themeGlow and adjusts the bloom overlay opacity live; percent readout updates.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js"
+          "frontend/app/keepui.js"
         ],
         "events": []
       },
@@ -4202,7 +4202,7 @@
       "missing": false,
       "selector": "#set-glow",
       "state": "sys-settings",
-      "notes": "Proven live @ HEAD 0a009ec2: #set-glow type=range min=0 max=150 value=100 present. Held audited: no committed behavior assertion (only shoot presence). KNOWN coverage gap. Evidence settings-dump.json. [wave-3] Machine assertion test/theme-custom-phosphor.test.js now guards the CUSTOM phosphor seam: the pure deriveCustomTheme computation (extracted+exercised for real — hue/sat determinism, glow scales only the bloom vars, clamping) AND the persistence + theme-bezel-var trap (derived vars written on document.body, NOT :root; theme='custom' + themeHue/Sat/Glow persist to localStorage and re-derive on load). Finding d87c49c9 resolved. HELD audited (not perfected): the live drag->apply DOM round-trip was not re-driven at HEAD this pass and stationui.js moved since 0a009ec2 (derived-stale) — ready to promote on a live re-audit."
+      "notes": "Proven live @ HEAD 0a009ec2: #set-glow type=range min=0 max=150 value=100 present. Held audited: no committed behavior assertion (only shoot presence). KNOWN coverage gap. Evidence settings-dump.json. [wave-3] Machine assertion test/theme-custom-phosphor.test.js now guards the CUSTOM phosphor seam: the pure deriveCustomTheme computation (extracted+exercised for real — hue/sat determinism, glow scales only the bloom vars, clamping) AND the persistence + theme-bezel-var trap (derived vars written on document.body, NOT :root; theme='custom' + themeHue/Sat/Glow persist to localStorage and re-derive on load). Finding d87c49c9 resolved. HELD audited (not perfected): the live drag->apply DOM round-trip was not re-driven at HEAD this pass and keepui.js moved since 0a009ec2 (derived-stale) — ready to promote on a live re-audit."
     },
     {
       "id": "ui/system/set-hue",
@@ -4213,7 +4213,7 @@
       "promise": "Dragging it sets store.settings.themeHue, switches theme to custom, re-derives the palette live and updates the degree readout; value persisted with the settings payload.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js"
+          "frontend/app/keepui.js"
         ],
         "events": []
       },
@@ -4240,7 +4240,7 @@
       "missing": false,
       "selector": "#set-hue",
       "state": "sys-settings",
-      "notes": "Proven live @ HEAD 0a009ec2: #set-hue type=range min=0 max=359 value=35 present. Held audited: dragging->persist behavior has no committed assertion (only shoot presence). KNOWN coverage gap. Evidence settings-dump.json. [wave-3] Machine assertion test/theme-custom-phosphor.test.js now guards the CUSTOM phosphor seam: the pure deriveCustomTheme computation (extracted+exercised for real — hue/sat determinism, glow scales only the bloom vars, clamping) AND the persistence + theme-bezel-var trap (derived vars written on document.body, NOT :root; theme='custom' + themeHue/Sat/Glow persist to localStorage and re-derive on load). Finding d87c49c9 resolved. HELD audited (not perfected): the live drag->apply DOM round-trip was not re-driven at HEAD this pass and stationui.js moved since 0a009ec2 (derived-stale) — ready to promote on a live re-audit."
+      "notes": "Proven live @ HEAD 0a009ec2: #set-hue type=range min=0 max=359 value=35 present. Held audited: dragging->persist behavior has no committed assertion (only shoot presence). KNOWN coverage gap. Evidence settings-dump.json. [wave-3] Machine assertion test/theme-custom-phosphor.test.js now guards the CUSTOM phosphor seam: the pure deriveCustomTheme computation (extracted+exercised for real — hue/sat determinism, glow scales only the bloom vars, clamping) AND the persistence + theme-bezel-var trap (derived vars written on document.body, NOT :root; theme='custom' + themeHue/Sat/Glow persist to localStorage and re-derive on load). Finding d87c49c9 resolved. HELD audited (not perfected): the live drag->apply DOM round-trip was not re-driven at HEAD this pass and keepui.js moved since 0a009ec2 (derived-stale) — ready to promote on a live re-audit."
     },
     {
       "id": "ui/system/set-sat",
@@ -4251,7 +4251,7 @@
       "promise": "Dragging it sets store.settings.themeSat, switches theme to custom, re-derives the palette live and updates the percent readout.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js"
+          "frontend/app/keepui.js"
         ],
         "events": []
       },
@@ -4278,7 +4278,7 @@
       "missing": false,
       "selector": "#set-sat",
       "state": "sys-settings",
-      "notes": "Proven live @ HEAD 0a009ec2: #set-sat type=range value=100 present. Held audited: no committed behavior assertion (only shoot presence). KNOWN coverage gap. Evidence settings-dump.json. [wave-3] Machine assertion test/theme-custom-phosphor.test.js now guards the CUSTOM phosphor seam: the pure deriveCustomTheme computation (extracted+exercised for real — hue/sat determinism, glow scales only the bloom vars, clamping) AND the persistence + theme-bezel-var trap (derived vars written on document.body, NOT :root; theme='custom' + themeHue/Sat/Glow persist to localStorage and re-derive on load). Finding d87c49c9 resolved. HELD audited (not perfected): the live drag->apply DOM round-trip was not re-driven at HEAD this pass and stationui.js moved since 0a009ec2 (derived-stale) — ready to promote on a live re-audit."
+      "notes": "Proven live @ HEAD 0a009ec2: #set-sat type=range value=100 present. Held audited: no committed behavior assertion (only shoot presence). KNOWN coverage gap. Evidence settings-dump.json. [wave-3] Machine assertion test/theme-custom-phosphor.test.js now guards the CUSTOM phosphor seam: the pure deriveCustomTheme computation (extracted+exercised for real — hue/sat determinism, glow scales only the bloom vars, clamping) AND the persistence + theme-bezel-var trap (derived vars written on document.body, NOT :root; theme='custom' + themeHue/Sat/Glow persist to localStorage and re-derive on load). Finding d87c49c9 resolved. HELD audited (not perfected): the live drag->apply DOM round-trip was not re-driven at HEAD this pass and keepui.js moved since 0a009ec2 (derived-stale) — ready to promote on a live re-audit."
     },
     {
       "id": "ui/system/set-sound",
@@ -4289,7 +4289,7 @@
       "promise": "Toggling it flips store.settings.sound and saves; NOTIFICATION SOUND additionally requires this on.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js"
+          "frontend/app/keepui.js"
         ],
         "events": []
       },
@@ -4325,7 +4325,7 @@
       "promise": "Clicking it sets store.settings.theme='custom' and applies the derived phosphor palette; the swatch chip tints to the current derivation.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js"
+          "frontend/app/keepui.js"
         ],
         "events": []
       },
@@ -4352,7 +4352,7 @@
       "missing": false,
       "selector": "#set-theme-custom",
       "state": "sys-settings",
-      "notes": "Proven live @ HEAD 0a009ec2: #set-theme-custom present in APPEARANCE panel with derived --sw swatch. Held audited: no committed test asserts theme='custom' apply/persist; only shoot presence. KNOWN coverage gap. Evidence settings-dump.json. [wave-3] Machine assertion test/theme-custom-phosphor.test.js now guards the CUSTOM phosphor seam: the pure deriveCustomTheme computation (extracted+exercised for real — hue/sat determinism, glow scales only the bloom vars, clamping) AND the persistence + theme-bezel-var trap (derived vars written on document.body, NOT :root; theme='custom' + themeHue/Sat/Glow persist to localStorage and re-derive on load). Finding d87c49c9 resolved. HELD audited (not perfected): the live drag->apply DOM round-trip was not re-driven at HEAD this pass and stationui.js moved since 0a009ec2 (derived-stale) — ready to promote on a live re-audit."
+      "notes": "Proven live @ HEAD 0a009ec2: #set-theme-custom present in APPEARANCE panel with derived --sw swatch. Held audited: no committed test asserts theme='custom' apply/persist; only shoot presence. KNOWN coverage gap. Evidence settings-dump.json. [wave-3] Machine assertion test/theme-custom-phosphor.test.js now guards the CUSTOM phosphor seam: the pure deriveCustomTheme computation (extracted+exercised for real — hue/sat determinism, glow scales only the bloom vars, clamping) AND the persistence + theme-bezel-var trap (derived vars written on document.body, NOT :root; theme='custom' + themeHue/Sat/Glow persist to localStorage and re-derive on load). Finding d87c49c9 resolved. HELD audited (not perfected): the live drag->apply DOM round-trip was not re-driven at HEAD this pass and keepui.js moved since 0a009ec2 (derived-stale) — ready to promote on a live re-audit."
     },
     {
       "id": "ui/system/set-updates-auto",
@@ -4363,7 +4363,7 @@
       "promise": "Toggling it persists the auto-update preference read by the updater.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js"
+          "frontend/app/keepui.js"
         ],
         "events": []
       },
@@ -4395,11 +4395,11 @@
       "kind": "ui",
       "area": "system",
       "name": "UPDATE CENTER",
-      "purpose": "Open the UPDATE CENTER window to check for / apply a new StarNet version.",
+      "purpose": "Open the UPDATE CENTER window to check for / apply a new Eyehold version.",
       "promise": "Clicking UPDATE CENTER opens the updates window (BUILDERS.updates).",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js"
+          "frontend/app/keepui.js"
         ],
         "events": []
       },
@@ -4435,7 +4435,7 @@
       "promise": "Renders type=text; read into the Signal connect payload alongside the endpoint; prefilled from saved status.account.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/index.js"
         ],
         "events": []
@@ -4472,7 +4472,7 @@
       "promise": "Clicking CONNECT validates the endpoint config then POSTs to /api/channels/signal/connect; the status pill reflects real adapter health.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/index.js"
         ],
         "events": [
@@ -4515,7 +4515,7 @@
       "promise": "Clicking DISCONNECT POSTs /api/channels/signal/disconnect (no purge); endpoint/account retained; only shown once connected.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/index.js"
         ],
         "events": []
@@ -4549,7 +4549,7 @@
       "promise": "Renders type=text; read into the Signal connect payload with the registered number; prefilled from saved status.endpoint.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/index.js"
         ],
         "events": []
@@ -4590,7 +4590,7 @@
       "promise": "Clicking FORGET POSTs /api/channels/signal/disconnect with purge:true, clearing the stored config; only shown once connected.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/index.js"
         ],
         "events": []
@@ -4613,7 +4613,7 @@
       "missing": false,
       "selector": "#sg-forget",
       "state": "sys-messaging",
-      "notes": "Mapped @ HEAD 0a009ec2: conditional on a connected Signal channel; not live-proven (stationui.js:5041 wires the purge). WORKS unproven this session."
+      "notes": "Mapped @ HEAD 0a009ec2: conditional on a connected Signal channel; not live-proven (keepui.js:5041 wires the purge). WORKS unproven this session."
     },
     {
       "id": "ui/system/sl-app-token",
@@ -4624,7 +4624,7 @@
       "promise": "Renders type=password; read into the Slack connect payload alongside the bot token; never shown back.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/index.js"
         ],
         "events": []
@@ -4665,7 +4665,7 @@
       "promise": "Renders type=password; its value is read into the Slack connect payload; never shown back.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/index.js"
         ],
         "events": []
@@ -4706,7 +4706,7 @@
       "promise": "Clicking CONNECT validates BOTH tokens then POSTs to /api/channels/slack/connect; the status pill reflects the real socket phase (invalid_auth is fatal, never a premature up).",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/index.js"
         ],
         "events": [
@@ -4749,7 +4749,7 @@
       "promise": "Clicking DISCONNECT POSTs /api/channels/slack/disconnect (no purge); tokens retained; only shown once connected.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/index.js"
         ],
         "events": []
@@ -4783,7 +4783,7 @@
       "promise": "Clicking FORGET purges the stored Slack tokens via /api/channels/slack/disconnect(purge); only shown once connected.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/index.js"
         ],
         "events": []
@@ -4817,7 +4817,7 @@
       "promise": "Clicking CONNECT POSTs the token+agent config to /api/channels/telegram/connect; the status pill reflects the real poll health once the adapter's getUpdates loop reports in.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/index.js"
         ],
         "events": [
@@ -4859,7 +4859,7 @@
       "promise": "Clicking DISCONNECT POSTs to /api/channels/telegram/disconnect; the adapter stops and status flips to down/not-connected.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/index.js"
         ],
         "events": [
@@ -4902,7 +4902,7 @@
       "promise": "Clicking FORGET purges the stored token via /api/channels/telegram/disconnect (purge); only shown once connected.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/index.js"
         ],
         "events": []
@@ -4932,11 +4932,11 @@
       "kind": "ui",
       "area": "system",
       "name": "input",
-      "purpose": "Per-station opt-in for autonomous Telegram pings (cron/run-complete).",
+      "purpose": "Per-keep opt-in for autonomous Telegram pings (cron/run-complete).",
       "promise": "Toggling it POSTs {on} to /api/channels/notify, persisting the global notifyAutonomous flag the autonotifier reads.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/index.js"
         ],
         "events": []
@@ -4973,7 +4973,7 @@
       "promise": "The field is type=password; Enter triggers CONNECT; the token is pushed to the sidecar (keychain on desktop) never shown back.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/index.js"
         ],
         "events": []
@@ -5009,12 +5009,12 @@
       "id": "ui/system/tm-balanced",
       "kind": "ui",
       "area": "system",
-      "name": "(station default)Anthropic: Claude Fable Latest · ~anthropic",
-      "purpose": "Pins which concrete model BALANCED-class agents summon on (overriding the station default).",
-      "promise": "Choosing a model saves it to localStorage starnet.tierModels.v1 (the same key app.resolveTierModel reads at summon), so BALANCED agents actually summon on it; \"(station default)\" clears the pin.",
+      "name": "(keep default)Anthropic: Claude Fable Latest · ~anthropic",
+      "purpose": "Pins which concrete model BALANCED-class agents summon on (overriding the keep default).",
+      "promise": "Choosing a model saves it to localStorage eyehold.tierModels.v1 (the same key app.resolveTierModel reads at summon), so BALANCED agents actually summon on it; \"(keep default)\" clears the pin.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "frontend/app/app.js"
         ],
         "events": []
@@ -5040,18 +5040,18 @@
       "missing": false,
       "selector": "#tm-balanced",
       "state": "sys-settings",
-      "notes": "Re-proven live @ HEAD 0a009ec2 (sidecar :8961 / CDP :9361): <#tm-balanced> select present, 345 options, value=\"\" (station default, nothing pinned — truthful). Evidence .uiatlas/system-evidence/union.json + settings-dump.json."
+      "notes": "Re-proven live @ HEAD 0a009ec2 (sidecar :8961 / CDP :9361): <#tm-balanced> select present, 345 options, value=\"\" (keep default, nothing pinned — truthful). Evidence .uiatlas/system-evidence/union.json + settings-dump.json."
     },
     {
       "id": "ui/system/tm-fast",
       "kind": "ui",
       "area": "system",
-      "name": "(station default)Anthropic: Claude Fable Latest · ~anthropic",
+      "name": "(keep default)Anthropic: Claude Fable Latest · ~anthropic",
       "purpose": "Pins which concrete model FAST-class agents summon on.",
-      "promise": "Choosing a model saves it to starnet.tierModels.v1 so FAST agents summon on it; \"(station default)\" clears the pin.",
+      "promise": "Choosing a model saves it to eyehold.tierModels.v1 so FAST agents summon on it; \"(keep default)\" clears the pin.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "frontend/app/app.js"
         ],
         "events": []
@@ -5077,18 +5077,18 @@
       "missing": false,
       "selector": "#tm-fast",
       "state": "sys-settings",
-      "notes": "Re-proven live @ HEAD 0a009ec2 (sidecar :8961 / CDP :9361): <#tm-fast> select present, 345 options, value=\"\" (station default, nothing pinned — truthful). Evidence .uiatlas/system-evidence/union.json + settings-dump.json."
+      "notes": "Re-proven live @ HEAD 0a009ec2 (sidecar :8961 / CDP :9361): <#tm-fast> select present, 345 options, value=\"\" (keep default, nothing pinned — truthful). Evidence .uiatlas/system-evidence/union.json + settings-dump.json."
     },
     {
       "id": "ui/system/tm-reasoning",
       "kind": "ui",
       "area": "system",
-      "name": "(station default)Anthropic: Claude Fable Latest · ~anthropic",
+      "name": "(keep default)Anthropic: Claude Fable Latest · ~anthropic",
       "purpose": "Pins which concrete model REASONING-class agents summon on.",
-      "promise": "Choosing a model saves it to starnet.tierModels.v1 so REASONING agents summon on it; \"(station default)\" clears the pin.",
+      "promise": "Choosing a model saves it to eyehold.tierModels.v1 so REASONING agents summon on it; \"(keep default)\" clears the pin.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "frontend/app/app.js"
         ],
         "events": []
@@ -5114,7 +5114,7 @@
       "missing": false,
       "selector": "#tm-reasoning",
       "state": "sys-settings",
-      "notes": "Re-proven live @ HEAD 0a009ec2 (sidecar :8961 / CDP :9361): <#tm-reasoning> select present, 345 options, value=\"\" (station default, nothing pinned — truthful). Evidence .uiatlas/system-evidence/union.json + settings-dump.json."
+      "notes": "Re-proven live @ HEAD 0a009ec2 (sidecar :8961 / CDP :9361): <#tm-reasoning> select present, 345 options, value=\"\" (keep default, nothing pinned — truthful). Evidence .uiatlas/system-evidence/union.json + settings-dump.json."
     },
     {
       "id": "ui/system/txt-button-auto-init-build-1",
@@ -5125,7 +5125,7 @@
       "promise": "Clicking it sets the agent's Initiative to \"BUILD\" (persisted to the autonomy store) and the dial marks it selected; the tooltip states the exact behavior.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "frontend/app/autonomystore.js"
         ],
         "events": []
@@ -5162,7 +5162,7 @@
       "promise": "Clicking it sets the agent's Initiative to \"FREE\" (persisted to the autonomy store) and the dial marks it selected; the tooltip states the exact behavior.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "frontend/app/autonomystore.js"
         ],
         "events": []
@@ -5199,7 +5199,7 @@
       "promise": "Clicking it sets the agent's Initiative to \"SUGGEST\" (persisted to the autonomy store) and the dial marks it selected; the tooltip states the exact behavior.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "frontend/app/autonomystore.js"
         ],
         "events": []
@@ -5236,7 +5236,7 @@
       "promise": "Clicking it sets the agent's Initiative to \"WAIT\" (persisted to the autonomy store) and the dial marks it selected; the tooltip states the exact behavior.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "frontend/app/autonomystore.js"
         ],
         "events": []
@@ -5268,12 +5268,12 @@
       "id": "ui/system/txt-button-auto-pace-busy-1",
       "kind": "ui",
       "area": "system",
-      "name": "a busier station — up to 6 jobs a day",
-      "purpose": "Autonomy cadence level \"BUSY\" — a busier station — up to 6 jobs a day.",
+      "name": "a busier keep — up to 6 jobs a day",
+      "purpose": "Autonomy cadence level \"BUSY\" — a busier keep — up to 6 jobs a day.",
       "promise": "Clicking it sets the agent's cadence to \"BUSY\" (persisted to the autonomy store) and the dial marks it selected; the tooltip states the exact behavior.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "frontend/app/autonomystore.js"
         ],
         "events": []
@@ -5310,7 +5310,7 @@
       "promise": "Clicking it sets the agent's cadence to \"LIGHT\" (persisted to the autonomy store) and the dial marks it selected; the tooltip states the exact behavior.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "frontend/app/autonomystore.js"
         ],
         "events": []
@@ -5347,7 +5347,7 @@
       "promise": "Clicking it sets the agent's cadence to \"MAX\" (persisted to the autonomy store) and the dial marks it selected; the tooltip states the exact behavior.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "frontend/app/autonomystore.js"
         ],
         "events": []
@@ -5384,7 +5384,7 @@
       "promise": "Clicking it sets the agent's cadence to \"STANDARD\" (persisted to the autonomy store) and the dial marks it selected; the tooltip states the exact behavior.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "frontend/app/autonomystore.js"
         ],
         "events": []
@@ -5421,7 +5421,7 @@
       "promise": "Clicking it sets the agent's Reach to \"OBSERVE\" (persisted to the autonomy store) and the dial marks it selected; the tooltip states the exact behavior.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "frontend/app/autonomystore.js"
         ],
         "events": []
@@ -5458,7 +5458,7 @@
       "promise": "Clicking it sets the agent's Reach to \"SANDBOX\" (persisted to the autonomy store) and the dial marks it selected; the tooltip states the exact behavior.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "frontend/app/autonomystore.js"
         ],
         "events": []
@@ -5495,7 +5495,7 @@
       "promise": "Selecting it sets the autonomy REACH level to reach-out (data-reach=\"reach\"); the dial persists the choice and the engine gates external actions on it.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "frontend/app/autonomy.js"
         ],
         "events": []
@@ -5532,7 +5532,7 @@
       "promise": "Clicking SAVE calls saveInline(provider) → Harness.setKey; empty input is rejected (sfx bad + refocus); a valid key notifies \"✓ connected …\" and re-renders the card connected.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "frontend/app/harness.js"
         ],
         "events": []
@@ -5560,7 +5560,7 @@
       "missing": false,
       "selector": "button",
       "state": "sys-settings",
-      "notes": "Homogeneous clone: inlineSave handler (stationui.js:2271) → saveInline. Class-proof via provider-connections-ui.test.js. Held at audited on a48393ca. [wave-7 final-a re-stale: re-proven live at CDP :9366/sidecar :8966 after NS-4 night-shift merge (additive AUTONOMY NIGHT SHIFT panel; autonomy dial WAIT/SUGGEST/BUILD/FREE · OBSERVE/SANDBOX/REACH-OUT · NEVER/SUGGEST/DRAFT/FULLY intact). Evidence system-result.json.]"
+      "notes": "Homogeneous clone: inlineSave handler (keepui.js:2271) → saveInline. Class-proof via provider-connections-ui.test.js. Held at audited on a48393ca. [wave-7 final-a re-stale: re-proven live at CDP :9366/sidecar :8966 after NS-4 night-shift merge (additive AUTONOMY NIGHT SHIFT panel; autonomy dial WAIT/SUGGEST/BUILD/FREE · OBSERVE/SANDBOX/REACH-OUT · NEVER/SUGGEST/DRAFT/FULLY intact). Evidence system-result.json.]"
     },
     {
       "id": "ui/system/txt-button-perm-grants-grant-1",
@@ -5571,7 +5571,7 @@
       "promise": "Clicking GRANT commits the dial selection to the autonomy store; the change is logged and reversible.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "frontend/app/autonomystore.js",
           "sidecar/autonomy-ledger.js"
         ],
@@ -5613,7 +5613,7 @@
       "promise": "Clicking it sets the agent's Reach to \"DRAFT FOR ME\" (persisted to the autonomy store) and the dial marks it selected; the tooltip states the exact behavior.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "frontend/app/autonomystore.js"
         ],
         "events": []
@@ -5650,7 +5650,7 @@
       "promise": "Clicking it sets the agent's Reach to \"FULLY AUTONOMOUS\" (persisted to the autonomy store) and the dial marks it selected; the tooltip states the exact behavior.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "frontend/app/autonomystore.js"
         ],
         "events": []
@@ -5687,7 +5687,7 @@
       "promise": "Clicking it sets the agent's Reach to \"SUGGEST\" (persisted to the autonomy store) and the dial marks it selected; the tooltip states the exact behavior.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "frontend/app/autonomystore.js"
         ],
         "events": []
@@ -5724,7 +5724,7 @@
       "promise": "Clicking it sets the agent's cadence to \"NEVER\" (persisted to the autonomy store) and the dial marks it selected; the tooltip states the exact behavior.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "frontend/app/autonomystore.js"
         ],
         "events": []
@@ -5761,7 +5761,7 @@
       "promise": "Clicking SAVE calls saveInline(provider) → Harness.setKey; empty input is rejected (sfx bad + refocus); a valid key notifies \"✓ connected …\" and re-renders the card connected.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "frontend/app/harness.js"
         ],
         "events": []
@@ -5789,7 +5789,7 @@
       "missing": false,
       "selector": "button",
       "state": "sys-settings",
-      "notes": "Homogeneous clone: inlineSave handler (stationui.js:2271) → saveInline. Class-proof via provider-connections-ui.test.js. Held at audited on a48393ca. [wave-7 final-a re-stale: re-proven live at CDP :9366/sidecar :8966 after NS-4 night-shift merge (additive AUTONOMY NIGHT SHIFT panel; autonomy dial WAIT/SUGGEST/BUILD/FREE · OBSERVE/SANDBOX/REACH-OUT · NEVER/SUGGEST/DRAFT/FULLY intact). Evidence system-result.json.]"
+      "notes": "Homogeneous clone: inlineSave handler (keepui.js:2271) → saveInline. Class-proof via provider-connections-ui.test.js. Held at audited on a48393ca. [wave-7 final-a re-stale: re-proven live at CDP :9366/sidecar :8966 after NS-4 night-shift merge (additive AUTONOMY NIGHT SHIFT panel; autonomy dial WAIT/SUGGEST/BUILD/FREE · OBSERVE/SANDBOX/REACH-OUT · NEVER/SUGGEST/DRAFT/FULLY intact). Evidence system-result.json.]"
     },
     {
       "id": "ui/system/txt-button-prov-key-edit-cerebras-save-1",
@@ -5800,7 +5800,7 @@
       "promise": "Clicking SAVE calls saveInline(provider) → Harness.setKey; empty input is rejected (sfx bad + refocus); a valid key notifies \"✓ connected …\" and re-renders the card connected.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "frontend/app/harness.js"
         ],
         "events": []
@@ -5828,7 +5828,7 @@
       "missing": false,
       "selector": "button",
       "state": "sys-settings",
-      "notes": "Homogeneous clone: inlineSave handler (stationui.js:2271) → saveInline. Class-proof via provider-connections-ui.test.js. Held at audited on a48393ca. [wave-7 final-a re-stale: re-proven live at CDP :9366/sidecar :8966 after NS-4 night-shift merge (additive AUTONOMY NIGHT SHIFT panel; autonomy dial WAIT/SUGGEST/BUILD/FREE · OBSERVE/SANDBOX/REACH-OUT · NEVER/SUGGEST/DRAFT/FULLY intact). Evidence system-result.json.]"
+      "notes": "Homogeneous clone: inlineSave handler (keepui.js:2271) → saveInline. Class-proof via provider-connections-ui.test.js. Held at audited on a48393ca. [wave-7 final-a re-stale: re-proven live at CDP :9366/sidecar :8966 after NS-4 night-shift merge (additive AUTONOMY NIGHT SHIFT panel; autonomy dial WAIT/SUGGEST/BUILD/FREE · OBSERVE/SANDBOX/REACH-OUT · NEVER/SUGGEST/DRAFT/FULLY intact). Evidence system-result.json.]"
     },
     {
       "id": "ui/system/txt-button-prov-key-edit-custom-save-1",
@@ -5839,7 +5839,7 @@
       "promise": "Clicking SAVE calls saveInline(provider) → Harness.setKey; empty input is rejected (sfx bad + refocus); a valid key notifies \"✓ connected …\" and re-renders the card connected.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "frontend/app/harness.js"
         ],
         "events": []
@@ -5867,7 +5867,7 @@
       "missing": false,
       "selector": "button",
       "state": "sys-settings",
-      "notes": "Homogeneous clone: inlineSave handler (stationui.js:2271) → saveInline. Class-proof via provider-connections-ui.test.js. Held at audited on a48393ca. [wave-7 final-a re-stale: re-proven live at CDP :9366/sidecar :8966 after NS-4 night-shift merge (additive AUTONOMY NIGHT SHIFT panel; autonomy dial WAIT/SUGGEST/BUILD/FREE · OBSERVE/SANDBOX/REACH-OUT · NEVER/SUGGEST/DRAFT/FULLY intact). Evidence system-result.json.]"
+      "notes": "Homogeneous clone: inlineSave handler (keepui.js:2271) → saveInline. Class-proof via provider-connections-ui.test.js. Held at audited on a48393ca. [wave-7 final-a re-stale: re-proven live at CDP :9366/sidecar :8966 after NS-4 night-shift merge (additive AUTONOMY NIGHT SHIFT panel; autonomy dial WAIT/SUGGEST/BUILD/FREE · OBSERVE/SANDBOX/REACH-OUT · NEVER/SUGGEST/DRAFT/FULLY intact). Evidence system-result.json.]"
     },
     {
       "id": "ui/system/txt-button-prov-key-edit-deepseek-save-1",
@@ -5878,7 +5878,7 @@
       "promise": "Clicking SAVE calls saveInline(provider) → Harness.setKey; empty input is rejected (sfx bad + refocus); a valid key notifies \"✓ connected …\" and re-renders the card connected.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "frontend/app/harness.js"
         ],
         "events": []
@@ -5906,7 +5906,7 @@
       "missing": false,
       "selector": "button",
       "state": "sys-settings",
-      "notes": "Homogeneous clone: inlineSave handler (stationui.js:2271) → saveInline. Class-proof via provider-connections-ui.test.js. Held at audited on a48393ca. [wave-7 final-a re-stale: re-proven live at CDP :9366/sidecar :8966 after NS-4 night-shift merge (additive AUTONOMY NIGHT SHIFT panel; autonomy dial WAIT/SUGGEST/BUILD/FREE · OBSERVE/SANDBOX/REACH-OUT · NEVER/SUGGEST/DRAFT/FULLY intact). Evidence system-result.json.]"
+      "notes": "Homogeneous clone: inlineSave handler (keepui.js:2271) → saveInline. Class-proof via provider-connections-ui.test.js. Held at audited on a48393ca. [wave-7 final-a re-stale: re-proven live at CDP :9366/sidecar :8966 after NS-4 night-shift merge (additive AUTONOMY NIGHT SHIFT panel; autonomy dial WAIT/SUGGEST/BUILD/FREE · OBSERVE/SANDBOX/REACH-OUT · NEVER/SUGGEST/DRAFT/FULLY intact). Evidence system-result.json.]"
     },
     {
       "id": "ui/system/txt-button-prov-key-edit-fireworks-save-1",
@@ -5917,7 +5917,7 @@
       "promise": "Clicking SAVE calls saveInline(provider) → Harness.setKey; empty input is rejected (sfx bad + refocus); a valid key notifies \"✓ connected …\" and re-renders the card connected.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "frontend/app/harness.js"
         ],
         "events": []
@@ -5945,7 +5945,7 @@
       "missing": false,
       "selector": "button",
       "state": "sys-settings",
-      "notes": "Homogeneous clone: inlineSave handler (stationui.js:2271) → saveInline. Class-proof via provider-connections-ui.test.js. Held at audited on a48393ca. [wave-7 final-a re-stale: re-proven live at CDP :9366/sidecar :8966 after NS-4 night-shift merge (additive AUTONOMY NIGHT SHIFT panel; autonomy dial WAIT/SUGGEST/BUILD/FREE · OBSERVE/SANDBOX/REACH-OUT · NEVER/SUGGEST/DRAFT/FULLY intact). Evidence system-result.json.]"
+      "notes": "Homogeneous clone: inlineSave handler (keepui.js:2271) → saveInline. Class-proof via provider-connections-ui.test.js. Held at audited on a48393ca. [wave-7 final-a re-stale: re-proven live at CDP :9366/sidecar :8966 after NS-4 night-shift merge (additive AUTONOMY NIGHT SHIFT panel; autonomy dial WAIT/SUGGEST/BUILD/FREE · OBSERVE/SANDBOX/REACH-OUT · NEVER/SUGGEST/DRAFT/FULLY intact). Evidence system-result.json.]"
     },
     {
       "id": "ui/system/txt-button-prov-key-edit-gemini-save-1",
@@ -5956,7 +5956,7 @@
       "promise": "Clicking SAVE calls saveInline(provider) → Harness.setKey; empty input is rejected (sfx bad + refocus); a valid key notifies \"✓ connected …\" and re-renders the card connected.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "frontend/app/harness.js"
         ],
         "events": []
@@ -5984,7 +5984,7 @@
       "missing": false,
       "selector": "button",
       "state": "sys-settings",
-      "notes": "Homogeneous clone: inlineSave handler (stationui.js:2271) → saveInline. Class-proof via provider-connections-ui.test.js. Held at audited on a48393ca. [wave-7 final-a re-stale: re-proven live at CDP :9366/sidecar :8966 after NS-4 night-shift merge (additive AUTONOMY NIGHT SHIFT panel; autonomy dial WAIT/SUGGEST/BUILD/FREE · OBSERVE/SANDBOX/REACH-OUT · NEVER/SUGGEST/DRAFT/FULLY intact). Evidence system-result.json.]"
+      "notes": "Homogeneous clone: inlineSave handler (keepui.js:2271) → saveInline. Class-proof via provider-connections-ui.test.js. Held at audited on a48393ca. [wave-7 final-a re-stale: re-proven live at CDP :9366/sidecar :8966 after NS-4 night-shift merge (additive AUTONOMY NIGHT SHIFT panel; autonomy dial WAIT/SUGGEST/BUILD/FREE · OBSERVE/SANDBOX/REACH-OUT · NEVER/SUGGEST/DRAFT/FULLY intact). Evidence system-result.json.]"
     },
     {
       "id": "ui/system/txt-button-prov-key-edit-groq-save-1",
@@ -5995,7 +5995,7 @@
       "promise": "Clicking SAVE calls saveInline(provider) → Harness.setKey; empty input is rejected (sfx bad + refocus); a valid key notifies \"✓ connected …\" and re-renders the card connected.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "frontend/app/harness.js"
         ],
         "events": []
@@ -6023,7 +6023,7 @@
       "missing": false,
       "selector": "button",
       "state": "sys-settings",
-      "notes": "Homogeneous clone: inlineSave handler (stationui.js:2271) → saveInline. Class-proof via provider-connections-ui.test.js. Held at audited on a48393ca. [wave-7 final-a re-stale: re-proven live at CDP :9366/sidecar :8966 after NS-4 night-shift merge (additive AUTONOMY NIGHT SHIFT panel; autonomy dial WAIT/SUGGEST/BUILD/FREE · OBSERVE/SANDBOX/REACH-OUT · NEVER/SUGGEST/DRAFT/FULLY intact). Evidence system-result.json.]"
+      "notes": "Homogeneous clone: inlineSave handler (keepui.js:2271) → saveInline. Class-proof via provider-connections-ui.test.js. Held at audited on a48393ca. [wave-7 final-a re-stale: re-proven live at CDP :9366/sidecar :8966 after NS-4 night-shift merge (additive AUTONOMY NIGHT SHIFT panel; autonomy dial WAIT/SUGGEST/BUILD/FREE · OBSERVE/SANDBOX/REACH-OUT · NEVER/SUGGEST/DRAFT/FULLY intact). Evidence system-result.json.]"
     },
     {
       "id": "ui/system/txt-button-prov-key-edit-mistral-save-1",
@@ -6034,7 +6034,7 @@
       "promise": "Clicking SAVE calls saveInline(provider) → Harness.setKey; empty input is rejected (sfx bad + refocus); a valid key notifies \"✓ connected …\" and re-renders the card connected.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "frontend/app/harness.js"
         ],
         "events": []
@@ -6062,7 +6062,7 @@
       "missing": false,
       "selector": "button",
       "state": "sys-settings",
-      "notes": "Homogeneous clone: inlineSave handler (stationui.js:2271) → saveInline. Class-proof via provider-connections-ui.test.js. Held at audited on a48393ca. [wave-7 final-a re-stale: re-proven live at CDP :9366/sidecar :8966 after NS-4 night-shift merge (additive AUTONOMY NIGHT SHIFT panel; autonomy dial WAIT/SUGGEST/BUILD/FREE · OBSERVE/SANDBOX/REACH-OUT · NEVER/SUGGEST/DRAFT/FULLY intact). Evidence system-result.json.]"
+      "notes": "Homogeneous clone: inlineSave handler (keepui.js:2271) → saveInline. Class-proof via provider-connections-ui.test.js. Held at audited on a48393ca. [wave-7 final-a re-stale: re-proven live at CDP :9366/sidecar :8966 after NS-4 night-shift merge (additive AUTONOMY NIGHT SHIFT panel; autonomy dial WAIT/SUGGEST/BUILD/FREE · OBSERVE/SANDBOX/REACH-OUT · NEVER/SUGGEST/DRAFT/FULLY intact). Evidence system-result.json.]"
     },
     {
       "id": "ui/system/txt-button-prov-key-edit-openai-save-1",
@@ -6073,7 +6073,7 @@
       "promise": "Clicking SAVE calls saveInline(provider) → Harness.setKey; empty input is rejected (sfx bad + refocus); a valid key notifies \"✓ connected …\" and re-renders the card connected.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "frontend/app/harness.js"
         ],
         "events": []
@@ -6101,7 +6101,7 @@
       "missing": false,
       "selector": "button",
       "state": "sys-settings",
-      "notes": "Homogeneous clone: inlineSave handler (stationui.js:2271) → saveInline. Class-proof via provider-connections-ui.test.js. Held at audited on a48393ca. [wave-7 final-a re-stale: re-proven live at CDP :9366/sidecar :8966 after NS-4 night-shift merge (additive AUTONOMY NIGHT SHIFT panel; autonomy dial WAIT/SUGGEST/BUILD/FREE · OBSERVE/SANDBOX/REACH-OUT · NEVER/SUGGEST/DRAFT/FULLY intact). Evidence system-result.json.]"
+      "notes": "Homogeneous clone: inlineSave handler (keepui.js:2271) → saveInline. Class-proof via provider-connections-ui.test.js. Held at audited on a48393ca. [wave-7 final-a re-stale: re-proven live at CDP :9366/sidecar :8966 after NS-4 night-shift merge (additive AUTONOMY NIGHT SHIFT panel; autonomy dial WAIT/SUGGEST/BUILD/FREE · OBSERVE/SANDBOX/REACH-OUT · NEVER/SUGGEST/DRAFT/FULLY intact). Evidence system-result.json.]"
     },
     {
       "id": "ui/system/txt-button-prov-key-edit-perplexity-save-1",
@@ -6112,7 +6112,7 @@
       "promise": "Clicking SAVE calls saveInline(provider) → Harness.setKey; empty input is rejected (sfx bad + refocus); a valid key notifies \"✓ connected …\" and re-renders the card connected.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "frontend/app/harness.js"
         ],
         "events": []
@@ -6140,7 +6140,7 @@
       "missing": false,
       "selector": "button",
       "state": "sys-settings",
-      "notes": "Homogeneous clone: inlineSave handler (stationui.js:2271) → saveInline. Class-proof via provider-connections-ui.test.js. Held at audited on a48393ca. [wave-7 final-a re-stale: re-proven live at CDP :9366/sidecar :8966 after NS-4 night-shift merge (additive AUTONOMY NIGHT SHIFT panel; autonomy dial WAIT/SUGGEST/BUILD/FREE · OBSERVE/SANDBOX/REACH-OUT · NEVER/SUGGEST/DRAFT/FULLY intact). Evidence system-result.json.]"
+      "notes": "Homogeneous clone: inlineSave handler (keepui.js:2271) → saveInline. Class-proof via provider-connections-ui.test.js. Held at audited on a48393ca. [wave-7 final-a re-stale: re-proven live at CDP :9366/sidecar :8966 after NS-4 night-shift merge (additive AUTONOMY NIGHT SHIFT panel; autonomy dial WAIT/SUGGEST/BUILD/FREE · OBSERVE/SANDBOX/REACH-OUT · NEVER/SUGGEST/DRAFT/FULLY intact). Evidence system-result.json.]"
     },
     {
       "id": "ui/system/txt-button-prov-key-edit-together-save-1",
@@ -6151,7 +6151,7 @@
       "promise": "Clicking SAVE calls saveInline(provider) → Harness.setKey; empty input is rejected (sfx bad + refocus); a valid key notifies \"✓ connected …\" and re-renders the card connected.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "frontend/app/harness.js"
         ],
         "events": []
@@ -6179,7 +6179,7 @@
       "missing": false,
       "selector": "button",
       "state": "sys-settings",
-      "notes": "Homogeneous clone: inlineSave handler (stationui.js:2271) → saveInline. Class-proof via provider-connections-ui.test.js. Held at audited on a48393ca. [wave-7 final-a re-stale: re-proven live at CDP :9366/sidecar :8966 after NS-4 night-shift merge (additive AUTONOMY NIGHT SHIFT panel; autonomy dial WAIT/SUGGEST/BUILD/FREE · OBSERVE/SANDBOX/REACH-OUT · NEVER/SUGGEST/DRAFT/FULLY intact). Evidence system-result.json.]"
+      "notes": "Homogeneous clone: inlineSave handler (keepui.js:2271) → saveInline. Class-proof via provider-connections-ui.test.js. Held at audited on a48393ca. [wave-7 final-a re-stale: re-proven live at CDP :9366/sidecar :8966 after NS-4 night-shift merge (additive AUTONOMY NIGHT SHIFT panel; autonomy dial WAIT/SUGGEST/BUILD/FREE · OBSERVE/SANDBOX/REACH-OUT · NEVER/SUGGEST/DRAFT/FULLY intact). Evidence system-result.json.]"
     },
     {
       "id": "ui/system/txt-button-prov-key-edit-xai-save-1",
@@ -6190,7 +6190,7 @@
       "promise": "Clicking SAVE on a key-list row persists the edited key via Harness.setKey and re-renders the row.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "frontend/app/harness.js"
         ],
         "events": []
@@ -6218,18 +6218,18 @@
       "missing": false,
       "selector": "button",
       "state": "sys-settings",
-      "notes": "Key-list row save (stationui.js:2249 rerender). Same setKey seam. Held at audited on a48393ca. [wave-7 final-a re-stale: re-proven live at CDP :9366/sidecar :8966 after NS-4 night-shift merge (additive AUTONOMY NIGHT SHIFT panel; autonomy dial WAIT/SUGGEST/BUILD/FREE · OBSERVE/SANDBOX/REACH-OUT · NEVER/SUGGEST/DRAFT/FULLY intact). Evidence system-result.json.]"
+      "notes": "Key-list row save (keepui.js:2249 rerender). Same setKey seam. Held at audited on a48393ca. [wave-7 final-a re-stale: re-proven live at CDP :9366/sidecar :8966 after NS-4 night-shift merge (additive AUTONOMY NIGHT SHIFT panel; autonomy dial WAIT/SUGGEST/BUILD/FREE · OBSERVE/SANDBOX/REACH-OUT · NEVER/SUGGEST/DRAFT/FULLY intact). Evidence system-result.json.]"
     },
     {
       "id": "ui/system/txt-button-terms-amber-1",
       "kind": "ui",
       "area": "system",
       "name": "AMBER",
-      "purpose": "Select the AMBER CRT phosphor theme for the whole station.",
-      "promise": "Clicking AMBER sets store.settings.theme='amber', saves, and applySettings() repaints the station's phosphor palette immediately.",
+      "purpose": "Select the AMBER CRT phosphor theme for the whole keep.",
+      "promise": "Clicking AMBER sets store.settings.theme='amber', saves, and applySettings() repaints the keep's phosphor palette immediately.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js"
+          "frontend/app/keepui.js"
         ],
         "events": []
       },
@@ -6261,11 +6261,11 @@
       "kind": "ui",
       "area": "system",
       "name": "BLUE",
-      "purpose": "Select the BLUE CRT phosphor theme for the whole station.",
-      "promise": "Clicking BLUE sets store.settings.theme='blue', saves, and applySettings() repaints the station's phosphor palette immediately.",
+      "purpose": "Select the BLUE CRT phosphor theme for the whole keep.",
+      "promise": "Clicking BLUE sets store.settings.theme='blue', saves, and applySettings() repaints the keep's phosphor palette immediately.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js"
+          "frontend/app/keepui.js"
         ],
         "events": []
       },
@@ -6297,11 +6297,11 @@
       "kind": "ui",
       "area": "system",
       "name": "GREEN",
-      "purpose": "Select the GREEN CRT phosphor theme for the whole station.",
-      "promise": "Clicking GREEN sets store.settings.theme='green', saves, and applySettings() repaints the station's phosphor palette immediately.",
+      "purpose": "Select the GREEN CRT phosphor theme for the whole keep.",
+      "promise": "Clicking GREEN sets store.settings.theme='green', saves, and applySettings() repaints the keep's phosphor palette immediately.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js"
+          "frontend/app/keepui.js"
         ],
         "events": []
       },
@@ -6333,11 +6333,11 @@
       "kind": "ui",
       "area": "system",
       "name": "PURPLE",
-      "purpose": "Select the PURPLE CRT phosphor theme for the whole station.",
-      "promise": "Clicking PURPLE sets store.settings.theme='purple', saves, and applySettings() repaints the station's phosphor palette immediately.",
+      "purpose": "Select the PURPLE CRT phosphor theme for the whole keep.",
+      "promise": "Clicking PURPLE sets store.settings.theme='purple', saves, and applySettings() repaints the keep's phosphor palette immediately.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js"
+          "frontend/app/keepui.js"
         ],
         "events": []
       },
@@ -6369,11 +6369,11 @@
       "kind": "ui",
       "area": "system",
       "name": "RED",
-      "purpose": "Select the RED CRT phosphor theme for the whole station.",
-      "promise": "Clicking RED sets store.settings.theme='red', saves, and applySettings() repaints the station's phosphor palette immediately.",
+      "purpose": "Select the RED CRT phosphor theme for the whole keep.",
+      "promise": "Clicking RED sets store.settings.theme='red', saves, and applySettings() repaints the keep's phosphor palette immediately.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js"
+          "frontend/app/keepui.js"
         ],
         "events": []
       },
@@ -6409,7 +6409,7 @@
       "promise": "First click arms; the confirmed click calls Harness.setKey('', provider) clearing the key, notifies \"removed …\", and refreshes the model dock / key CTA.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "frontend/app/harness.js"
         ],
         "events": []
@@ -6437,7 +6437,7 @@
       "missing": false,
       "selector": "button",
       "state": "sys-settings",
-      "notes": "Armed-remove handler stationui.js:2213 (dataset.armed). Destructive-key clear guarded by a two-step. Held at audited on a48393ca; not fired in-audit. [wave-7 final-a re-stale: re-proven live at CDP :9366/sidecar :8966 after NS-4 night-shift merge (additive AUTONOMY NIGHT SHIFT panel; autonomy dial WAIT/SUGGEST/BUILD/FREE · OBSERVE/SANDBOX/REACH-OUT · NEVER/SUGGEST/DRAFT/FULLY intact). Evidence system-result.json.]"
+      "notes": "Armed-remove handler keepui.js:2213 (dataset.armed). Destructive-key clear guarded by a two-step. Held at audited on a48393ca; not fired in-audit. [wave-7 final-a re-stale: re-proven live at CDP :9366/sidecar :8966 after NS-4 night-shift merge (additive AUTONOMY NIGHT SHIFT panel; autonomy dial WAIT/SUGGEST/BUILD/FREE · OBSERVE/SANDBOX/REACH-OUT · NEVER/SUGGEST/DRAFT/FULLY intact). Evidence system-result.json.]"
     },
     {
       "id": "ui/system/txt-button-terms-update-1",
@@ -6448,7 +6448,7 @@
       "promise": "Clicking it reveals the row's editable key field so the user can paste a replacement, saved via the row SAVE.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "frontend/app/harness.js"
         ],
         "events": []
@@ -6483,11 +6483,11 @@
       "kind": "ui",
       "area": "system",
       "name": "WHITE",
-      "purpose": "Select the WHITE CRT phosphor theme for the whole station.",
-      "promise": "Clicking WHITE sets store.settings.theme='white', saves, and applySettings() repaints the station's phosphor palette immediately.",
+      "purpose": "Select the WHITE CRT phosphor theme for the whole keep.",
+      "promise": "Clicking WHITE sets store.settings.theme='white', saves, and applySettings() repaints the keep's phosphor palette immediately.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js"
+          "frontend/app/keepui.js"
         ],
         "events": []
       },
@@ -6523,7 +6523,7 @@
       "promise": "The card shows ANTHROPIC’s endpoint (or OAuth) summary and a status pill that TRUTHFULLY reflects the real credential/sign-in state (○ NO KEY / ● KEY SAVED / ○ NOT SIGNED IN), never a fabricated connected label.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "frontend/app/harness.js"
         ],
         "events": []
@@ -6560,7 +6560,7 @@
       "promise": "The card shows CEREBRAS’s endpoint (or OAuth) summary and a status pill that TRUTHFULLY reflects the real credential/sign-in state (○ NO KEY / ● KEY SAVED / ○ NOT SIGNED IN), never a fabricated connected label.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "frontend/app/harness.js"
         ],
         "events": []
@@ -6597,7 +6597,7 @@
       "promise": "Clicking the card (outside its inline key row) calls Harness.setProv('chatgpt (codex)'), notifies \"selected …\", and re-renders with CHATGPT (CODEX) marked active; the card truthfully shows NO KEY / a connected badge / LOCAL per real store state.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "frontend/app/harness.js"
         ],
         "events": []
@@ -6625,7 +6625,7 @@
       "missing": false,
       "selector": "div",
       "state": "sys-settings",
-      "notes": "Homogeneous clone: prov-card click activate() (stationui.js:2251). Card status text (\"○ NO KEY\"/\"LOCAL\") is store-derived — truthful. Held at audited on a48393ca (provider cluster hold). [wave-7 final-a re-stale: re-proven live at CDP :9366/sidecar :8966 after NS-4 night-shift merge (additive AUTONOMY NIGHT SHIFT panel; autonomy dial WAIT/SUGGEST/BUILD/FREE · OBSERVE/SANDBOX/REACH-OUT · NEVER/SUGGEST/DRAFT/FULLY intact). Evidence system-result.json.]"
+      "notes": "Homogeneous clone: prov-card click activate() (keepui.js:2251). Card status text (\"○ NO KEY\"/\"LOCAL\") is store-derived — truthful. Held at audited on a48393ca (provider cluster hold). [wave-7 final-a re-stale: re-proven live at CDP :9366/sidecar :8966 after NS-4 night-shift merge (additive AUTONOMY NIGHT SHIFT panel; autonomy dial WAIT/SUGGEST/BUILD/FREE · OBSERVE/SANDBOX/REACH-OUT · NEVER/SUGGEST/DRAFT/FULLY intact). Evidence system-result.json.]"
     },
     {
       "id": "ui/system/txt-div-terms-customany-v1-base-url-bring-your-endp-1",
@@ -6636,7 +6636,7 @@
       "promise": "The card shows CUSTOM’s endpoint (or OAuth) summary and a status pill that TRUTHFULLY reflects the real credential/sign-in state (○ NO KEY / ● KEY SAVED / ○ NOT SIGNED IN), never a fabricated connected label.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "frontend/app/harness.js"
         ],
         "events": []
@@ -6673,7 +6673,7 @@
       "promise": "The card shows DEEPSEEK’s endpoint (or OAuth) summary and a status pill that TRUTHFULLY reflects the real credential/sign-in state (○ NO KEY / ● KEY SAVED / ○ NOT SIGNED IN), never a fabricated connected label.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "frontend/app/harness.js"
         ],
         "events": []
@@ -6710,7 +6710,7 @@
       "promise": "Clicking the card (outside its inline key row) calls Harness.setProv('fireworks'), notifies \"selected …\", and re-renders with FIREWORKS marked active; the card truthfully shows NO KEY / a connected badge / LOCAL per real store state.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "frontend/app/harness.js"
         ],
         "events": []
@@ -6738,7 +6738,7 @@
       "missing": false,
       "selector": "div",
       "state": "sys-settings",
-      "notes": "Homogeneous clone: prov-card click activate() (stationui.js:2251). Card status text (\"○ NO KEY\"/\"LOCAL\") is store-derived — truthful. Held at audited on a48393ca (provider cluster hold). [wave-7 final-a re-stale: re-proven live at CDP :9366/sidecar :8966 after NS-4 night-shift merge (additive AUTONOMY NIGHT SHIFT panel; autonomy dial WAIT/SUGGEST/BUILD/FREE · OBSERVE/SANDBOX/REACH-OUT · NEVER/SUGGEST/DRAFT/FULLY intact). Evidence system-result.json.]"
+      "notes": "Homogeneous clone: prov-card click activate() (keepui.js:2251). Card status text (\"○ NO KEY\"/\"LOCAL\") is store-derived — truthful. Held at audited on a48393ca (provider cluster hold). [wave-7 final-a re-stale: re-proven live at CDP :9366/sidecar :8966 after NS-4 night-shift merge (additive AUTONOMY NIGHT SHIFT panel; autonomy dial WAIT/SUGGEST/BUILD/FREE · OBSERVE/SANDBOX/REACH-OUT · NEVER/SUGGEST/DRAFT/FULLY intact). Evidence system-result.json.]"
     },
     {
       "id": "ui/system/txt-div-terms-geminigenerativelanguage-googleapis-com-1",
@@ -6749,7 +6749,7 @@
       "promise": "Clicking the card (outside its inline key row) calls Harness.setProv('gemini'), notifies \"selected …\", and re-renders with GEMINI marked active; the card truthfully shows NO KEY / a connected badge / LOCAL per real store state.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "frontend/app/harness.js"
         ],
         "events": []
@@ -6777,7 +6777,7 @@
       "missing": false,
       "selector": "div",
       "state": "sys-settings",
-      "notes": "Homogeneous clone: prov-card click activate() (stationui.js:2251). Card status text (\"○ NO KEY\"/\"LOCAL\") is store-derived — truthful. Held at audited on a48393ca (provider cluster hold). [wave-7 final-a re-stale: re-proven live at CDP :9366/sidecar :8966 after NS-4 night-shift merge (additive AUTONOMY NIGHT SHIFT panel; autonomy dial WAIT/SUGGEST/BUILD/FREE · OBSERVE/SANDBOX/REACH-OUT · NEVER/SUGGEST/DRAFT/FULLY intact). Evidence system-result.json.]"
+      "notes": "Homogeneous clone: prov-card click activate() (keepui.js:2251). Card status text (\"○ NO KEY\"/\"LOCAL\") is store-derived — truthful. Held at audited on a48393ca (provider cluster hold). [wave-7 final-a re-stale: re-proven live at CDP :9366/sidecar :8966 after NS-4 night-shift merge (additive AUTONOMY NIGHT SHIFT panel; autonomy dial WAIT/SUGGEST/BUILD/FREE · OBSERVE/SANDBOX/REACH-OUT · NEVER/SUGGEST/DRAFT/FULLY intact). Evidence system-result.json.]"
     },
     {
       "id": "ui/system/txt-div-terms-grok-xai-oauth-supergrok-x-premium-1",
@@ -6788,7 +6788,7 @@
       "promise": "The card shows GROK (xAI)’s endpoint (or OAuth) summary and a status pill that TRUTHFULLY reflects the real credential/sign-in state (○ NO KEY / ● KEY SAVED / ○ NOT SIGNED IN), never a fabricated connected label.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "frontend/app/harness.js"
         ],
         "events": []
@@ -6825,7 +6825,7 @@
       "promise": "The card shows GROQ’s endpoint (or OAuth) summary and a status pill that TRUTHFULLY reflects the real credential/sign-in state (○ NO KEY / ● KEY SAVED / ○ NOT SIGNED IN), never a fabricated connected label.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "frontend/app/harness.js"
         ],
         "events": []
@@ -6862,7 +6862,7 @@
       "promise": "The card shows KIMI FOR CODING’s endpoint (or OAuth) summary and a status pill that TRUTHFULLY reflects the real credential/sign-in state (○ NO KEY / ● KEY SAVED / ○ NOT SIGNED IN), never a fabricated connected label.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "frontend/app/harness.js"
         ],
         "events": []
@@ -6899,7 +6899,7 @@
       "promise": "The card shows MISTRAL’s endpoint (or OAuth) summary and a status pill that TRUTHFULLY reflects the real credential/sign-in state (○ NO KEY / ● KEY SAVED / ○ NOT SIGNED IN), never a fabricated connected label.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "frontend/app/harness.js"
         ],
         "events": []
@@ -6936,7 +6936,7 @@
       "promise": "The card shows OLLAMA’s endpoint (or OAuth) summary and a status pill that TRUTHFULLY reflects the real credential/sign-in state (○ NO KEY / ● KEY SAVED / ○ NOT SIGNED IN), never a fabricated connected label.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "frontend/app/harness.js"
         ],
         "events": []
@@ -6973,7 +6973,7 @@
       "promise": "The card shows OPENAI API’s endpoint (or OAuth) summary and a status pill that TRUTHFULLY reflects the real credential/sign-in state (○ NO KEY / ● KEY SAVED / ○ NOT SIGNED IN), never a fabricated connected label.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "frontend/app/harness.js"
         ],
         "events": []
@@ -7010,7 +7010,7 @@
       "promise": "The card shows OPENROUTER’s endpoint (or OAuth) summary and a status pill that TRUTHFULLY reflects the real credential/sign-in state (○ NO KEY / ● KEY SAVED / ○ NOT SIGNED IN), never a fabricated connected label.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "frontend/app/harness.js"
         ],
         "events": []
@@ -7047,7 +7047,7 @@
       "promise": "The card shows PERPLEXITY’s endpoint (or OAuth) summary and a status pill that TRUTHFULLY reflects the real credential/sign-in state (○ NO KEY / ● KEY SAVED / ○ NOT SIGNED IN), never a fabricated connected label.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "frontend/app/harness.js"
         ],
         "events": []
@@ -7084,7 +7084,7 @@
       "promise": "The card shows TOGETHER’s endpoint (or OAuth) summary and a status pill that TRUTHFULLY reflects the real credential/sign-in state (○ NO KEY / ● KEY SAVED / ○ NOT SIGNED IN), never a fabricated connected label.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "frontend/app/harness.js"
         ],
         "events": []
@@ -7121,7 +7121,7 @@
       "promise": "The card shows XAI’s endpoint (or OAuth) summary and a status pill that TRUTHFULLY reflects the real credential/sign-in state (○ NO KEY / ● KEY SAVED / ○ NOT SIGNED IN), never a fabricated connected label.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "frontend/app/harness.js"
         ],
         "events": []
@@ -7158,7 +7158,7 @@
       "promise": "Clicking the SETUP GUIDE summary expands the DISCORD setup steps (where to get the token/endpoint); collapsed by default.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js"
+          "frontend/app/keepui.js"
         ],
         "events": []
       },
@@ -7194,7 +7194,7 @@
       "promise": "Clicking the SETUP GUIDE summary expands the MATRIX setup steps (where to get the token/endpoint); collapsed by default.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js"
+          "frontend/app/keepui.js"
         ],
         "events": []
       },
@@ -7230,7 +7230,7 @@
       "promise": "Clicking the SETUP GUIDE summary expands the SIGNAL setup steps (where to get the token/endpoint); collapsed by default.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js"
+          "frontend/app/keepui.js"
         ],
         "events": []
       },
@@ -7266,7 +7266,7 @@
       "promise": "Clicking the SETUP GUIDE summary expands the SLACK setup steps (where to get the token/endpoint); collapsed by default.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js"
+          "frontend/app/keepui.js"
         ],
         "events": []
       },
@@ -7302,7 +7302,7 @@
       "promise": "Clicking the SETUP GUIDE summary expands the TELEGRAM setup steps (where to get the token/endpoint); collapsed by default.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js"
+          "frontend/app/keepui.js"
         ],
         "events": []
       },

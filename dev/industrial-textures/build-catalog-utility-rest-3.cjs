@@ -2,7 +2,7 @@
 // Offline packaging only. Retained source RGBA bytes are never painted or rescaled.
 const fs=require('node:fs'),crypto=require('node:crypto');
 let sharp;try{sharp=require('sharp');}catch(_){sharp=require('C:/Users/andro/gen-trees/industrial-textures-0912/node_modules/sharp');}
-const root='frontend/assets/industrial/catalog-utility-rest-3',docs='docs/station-remaster/catalog-utility-rest-3';
+const root='frontend/assets/industrial/catalog-utility-rest-3',docs='docs/keep-remaster/catalog-utility-rest-3';
 const sha=b=>crypto.createHash('sha256').update(b).digest('hex');
 const items=[
  ['comms_beacon',55,110,300,380],['comms_dish',75,65,695,785,'correction-source'],['research_corelens',825,105,300,390],['research_trendpillar',1200,100,300,395],

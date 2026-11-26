@@ -22,11 +22,11 @@ const URL = `http://127.0.0.1:${PORT}/`;
 
 const PROBE = `(async () => {
   const B = (typeof Build !== 'undefined' ? Build : window.Build);
-  if (!B || !B.__test__) return JSON.stringify({ error: 'Build.__test__ missing — is __STARNET_DEV__ set?' });
+  if (!B || !B.__test__) return JSON.stringify({ error: 'Build.__test__ missing — is __EYEHOLD_DEV__ set?' });
   if (!B.__test__.isOpen()) { B.open ? B.open() : (document.querySelector('#dock-build') || {}).click?.(); await new Promise(r => setTimeout(r, 800)); }
   const T = B.__test__;
   if (!T.isOpen()) return JSON.stringify({ error: 'REFIT never opened' });
-  const st = T.station();
+  const st = T.keep();
   const base = st.rooms()[0];
   if (!base) return JSON.stringify({ error: 'no seed room' });
   const b = base.rects[0];
@@ -45,7 +45,7 @@ const PROBE = `(async () => {
     out.push({ name, ok: true, requested: r.requested, landed: got, gapTiles: gap, flush: gap === 0 });
   };
 
-  /* EACH CASE MUTATES THE STATION IT IS TESTED AGAINST. The first cut ran every east case in the
+  /* EACH CASE MUTATES THE KEEP IT IS TESTED AGAINST. The first cut ran every east case in the
      same y band, so case 2 was rejected for overlapping the room CASE 1 had just placed — which
      reads exactly like a snap failure and is not one. Cases are spaced onto their own bands. */
   // ONE tile short of the seed room's east wall — the exact miss in Andrew's save

@@ -52,23 +52,23 @@ A.ok(!list.some(q => /\bXP\b|points|coins|gold/i.test(q.reward)), 'no quest rewa
 /* ---------- no pending idea → no idea quest ---------- */
 A.eq(Q.build({ milestones: ms, dossierDims: dims, pendingIdea: false }).some(q => q.kind === 'idea'), false, 'no idea quest when none is pending');
 
-/* ---------- the STATION ARC (recruit → belts → portals): the tutorial's hand-off spine ---------- */
-const fresh = Q.build({ station: { crew: 1, belts: 0, connectors: 0 } });
-A.eq(fresh.length, 3, 'a fresh floor has the three station-arc quests');
-A.ok(fresh.every(q => q.kind === 'station' && q.status === 'open'), 'all three arc quests start open');
+/* ---------- the KEEP ARC (recruit → belts → portals): the tutorial's hand-off spine ---------- */
+const fresh = Q.build({ keep: { crew: 1, belts: 0, connectors: 0 } });
+A.eq(fresh.length, 3, 'a fresh floor has the three keep-arc quests');
+A.ok(fresh.every(q => q.kind === 'keep' && q.status === 'open'), 'all three arc quests start open');
 A.eq(fresh[0].id, 'st:crew', 'recruit-a-specialist leads the arc');
 A.ok(fresh.every(q => typeof q.reward === 'string' && q.reward.length > 0 && !/\bXP\b|points|coins/i.test(q.reward)), 'arc quests pay real capabilities, never a fake currency');
-const grown = Q.build({ station: { crew: 2, belts: 4, connectors: 0, liveRoute: 0 } });
+const grown = Q.build({ keep: { crew: 2, belts: 4, connectors: 0, liveRoute: 0 } });
 A.eq(grown.find(q => q.id === 'st:crew').status, 'done', 'a second crew member completes the recruit quest');
 A.eq(grown.find(q => q.id === 'st:belt').status, 'open', 'bare belts with NO live route leave the belt quest open (a dead line is not the reward)');
-const routed = Q.build({ station: { crew: 2, belts: 4, connectors: 0, liveRoute: 4 } });
+const routed = Q.build({ keep: { crew: 2, belts: 4, connectors: 0, liveRoute: 4 } });
 A.eq(routed.find(q => q.id === 'st:belt').status, 'done', 'a LIVE intake→bay route completes the belt quest');
 A.eq(grown.find(q => q.id === 'st:connector').status, 'open', 'the portal quest stays open until one is placed');
-A.eq(Q.build({ milestones: ms, dossierDims: dims, pendingIdea: false }).some(q => q.kind === 'station'), false, 'no station input → no arc (older callers unchanged)');
-const withIdea = Q.build({ station: { crew: 1, belts: 0, connectors: 0 }, pendingIdea: true });
+A.eq(Q.build({ milestones: ms, dossierDims: dims, pendingIdea: false }).some(q => q.kind === 'keep'), false, 'no keep input → no arc (older callers unchanged)');
+const withIdea = Q.build({ keep: { crew: 1, belts: 0, connectors: 0 }, pendingIdea: true });
 A.eq(withIdea[0].kind, 'idea', 'a waiting idea still leads — the arc follows it');
-A.eq(withIdea[1].kind, 'station', 'the arc sits right after the idea');
-const arcStatuses = Q.build({ station: { crew: 2, belts: 0, connectors: 1 }, dossierDims: dims }).map(q => q.status);
+A.eq(withIdea[1].kind, 'keep', 'the arc sits right after the idea');
+const arcStatuses = Q.build({ keep: { crew: 2, belts: 0, connectors: 1 }, dossierDims: dims }).map(q => q.status);
 A.eq(arcStatuses.indexOf('done') > arcStatuses.lastIndexOf('open'), true, 'open-before-done ordering holds with the arc mixed in');
 
 /* ---------- QUEST V2 §C: the HARNESS LEDGER splice (kind:'ledger') ---------- */
@@ -76,7 +76,7 @@ const ledger = [
   { id: 'q:1', kind: 'ledger', ledgerKind: 'generated', title: 'Automate the weekly digest', desc: 'a build the agent proposed', reward: 'a standing digest', status: 'open', contract: { type: 'attest', key: '' } },
   { id: 'q:2', kind: 'ledger', ledgerKind: 'work', title: 'Wire the CRM sync', desc: 'in flight', reward: 'a live sync', status: 'done', contract: { type: 'run', key: 'run-9' } }
 ];
-const withLedger = Q.build({ ledgerQuests: ledger, pendingIdea: true, station: { crew: 1, belts: 0, connectors: 0 } });
+const withLedger = Q.build({ ledgerQuests: ledger, pendingIdea: true, keep: { crew: 1, belts: 0, connectors: 0 } });
 A.eq(withLedger[0].kind, 'idea', 'the waiting idea still leads the whole list');
 A.eq(withLedger[1].id, 'q:1', 'an open ledger quest splices right after the idea (most personal/actionable)');
 A.eq(withLedger[1].kind, 'ledger', '…and keeps its ledger kind so handlers/dismiss route unambiguously');

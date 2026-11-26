@@ -1,8 +1,8 @@
 /* Relay ingress admission — what a signed /api/channels/webhook/<channel> body may claim.
 
-   The HMAC (webhook-auth.js) proves the body came from the holder of STARNET_CHANNEL_WEBHOOK_SECRET and the
+   The HMAC (webhook-auth.js) proves the body came from the holder of EYEHOLD_CHANNEL_WEBHOOK_SECRET and the
    nonce inbox makes it at-most-once. It does NOT prove WHO on the platform wrote the message: the secret is one
-   station-wide operator secret, not scoped to a user. So a signed body's `userId` is a relay CLAIM, and before
+   keep-wide operator secret, not scoped to a user. So a signed body's `userId` is a relay CLAIM, and before
    this module the route handed it straight to hub.onInbound — skipping the adapter's owner gate and group
    allowlist that every polled message crosses, and letting the body set host verdict fields (directReply,
    observeOnly) that only the adapter may mint.

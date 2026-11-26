@@ -11,9 +11,9 @@
         advanced by ~the spend.
 
    Requires a real key in the environment (the secret never touches the repo or a flag):
-     PowerShell:  $env:SKYNET_OPENROUTER_KEY="sk-or-v1-..."; node test/live.smoke.js
-     bash:        SKYNET_OPENROUTER_KEY="sk-or-v1-..." node test/live.smoke.js
-   Optional:  SKYNET_SMOKE_MODEL (default anthropic/claude-sonnet-4.6 — live + caching-capable). */
+     PowerShell:  $env:EYEHOLD_OPENROUTER_KEY="sk-or-v1-..."; node test/live.smoke.js
+     bash:        EYEHOLD_OPENROUTER_KEY="sk-or-v1-..." node test/live.smoke.js
+   Optional:  EYEHOLD_SMOKE_MODEL (default anthropic/claude-sonnet-4.6 — live + caching-capable). */
 'use strict';
 const { spawn } = require('child_process');
 const fs = require('fs');
@@ -21,11 +21,11 @@ const path = require('path');
 const os = require('os');
 const { bootToken } = require('./_httpToken.js');
 
-const KEY = process.env.SKYNET_OPENROUTER_KEY || process.env.OPENROUTER_API_KEY || '';
-const MODEL = process.env.SKYNET_SMOKE_MODEL
-  || process.env.STARNET_SMOKE_MODEL
-  || process.env.SKYNET_DEFAULT_MODEL
-  || process.env.STARNET_DEFAULT_MODEL
+const KEY = process.env.EYEHOLD_OPENROUTER_KEY || process.env.OPENROUTER_API_KEY || '';
+const MODEL = process.env.EYEHOLD_SMOKE_MODEL
+  || process.env.EYEHOLD_SMOKE_MODEL
+  || process.env.EYEHOLD_DEFAULT_MODEL
+  || process.env.EYEHOLD_DEFAULT_MODEL
   || 'anthropic/claude-sonnet-4.6';
 const HOST = '127.0.0.1';
 const INDEX = path.resolve(__dirname, '..', 'sidecar', 'index.js');
@@ -37,13 +37,13 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
 // a deliberately LARGE, byte-stable system prefix so Anthropic actually caches it. The per-model minimum runs up
 // to 4096 tokens (Opus 4.6/4.5, Haiku 4.5), so pad well past that (~6k+ tokens) — below the floor Anthropic runs
 // the request UNCACHED with no error, which would make the cache assertion a false negative.
-const BIG_SYSTEM = ('You are a meticulous operations assistant aboard a space station. ' +
+const BIG_SYSTEM = ('You are a meticulous operations assistant aboard a space keep. ' +
   'Follow instructions exactly and answer with extreme concision. ').repeat(260);
 
 function boot(port, ws, attemptsLeft) {
   return new Promise((resolve, reject) => {
     const child = spawn(process.execPath, [INDEX], {
-      env: Object.assign({}, process.env, { SKYNET_PORT: String(port), SKYNET_WORKSPACES: ws }),
+      env: Object.assign({}, process.env, { EYEHOLD_PORT: String(port), EYEHOLD_WORKSPACES: ws }),
       stdio: ['ignore', 'pipe', 'pipe']
     });
     let out = '', settled = false;
@@ -60,7 +60,7 @@ function boot(port, ws, attemptsLeft) {
 
 // POST /api/run and fold the NDJSON event stream into a compact summary.
 async function run(B, body, apiToken) {
-  const res = await fetch(B + '/api/run', { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-StarNet-Token': apiToken }, body: JSON.stringify(body) });
+  const res = await fetch(B + '/api/run', { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Eyehold-Token': apiToken }, body: JSON.stringify(body) });
   const text = await res.text();
   const evs = text.split('\n').filter(Boolean).map(l => { try { return JSON.parse(l); } catch (_) { return null; } }).filter(Boolean);
   const names = evs.map(e => e.name);
@@ -72,14 +72,14 @@ async function run(B, body, apiToken) {
 }
 
 (async () => {
-  if (!KEY) { console.log('SKIP: set SKYNET_OPENROUTER_KEY to run the live smoke test (a few ¢ of real spend).'); process.exit(2); }
+  if (!KEY) { console.log('SKIP: set EYEHOLD_OPENROUTER_KEY to run the live smoke test (a few ¢ of real spend).'); process.exit(2); }
   console.log('live.smoke — model ' + MODEL + '\n');
 
   const ws = fs.mkdtempSync(path.join(os.tmpdir(), 'sk-live-'));
   const { child, port } = await boot(8890 + (process.pid % 40), ws, 20);
   const B = 'http://' + HOST + ':' + port;
   const apiToken = await bootToken(B, B);
-  const get = async p => { const r = await fetch(B + p, { headers: { 'X-StarNet-Token': apiToken, Origin: B } }); return r.json(); };
+  const get = async p => { const r = await fetch(B + p, { headers: { 'X-Eyehold-Token': apiToken, Origin: B } }); return r.json(); };
   const body = { key: KEY, model: MODEL, system: BIG_SYSTEM, messages: [{ role: 'user', content: 'Reply with exactly one word: ACK' }], isTask: false };
 
   try {

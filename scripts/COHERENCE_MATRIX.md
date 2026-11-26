@@ -19,7 +19,7 @@ whole thing composes instead of colliding. This is the master checklist the Visu
 | # | Layer | Drive | V | F | T |
 |---|-------|-------|---|---|---|
 | 1 | World floor / agents (present, sit, idle-wander, camera, multi-body) | uishoot ingame + uiplay | | | |
-| 2 | Workstations (desk+chair+seat, bound to agent, object=capability) | place a prop, summon | | | |
+| 2 | Workkeeps (desk+chair+seat, bound to agent, object=capability) | place a prop, summon | | | |
 | 3 | Conveyor / pipeline (work items, bays, routing) | refit TEST belts | | | |
 | 4 | BUILD / refit (rooms, hallway, paint, move, reclaim, prop catalog, PLACE a prop) | open BUILD, place prop, exit | | | |
 | 5 | Dock panels ×15 (open/close clean, centered, no leftover) | uishoot sweep | ✓ | | |

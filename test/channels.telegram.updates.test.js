@@ -331,9 +331,9 @@ async function run() {
   {
     const f = recFetch();
     const t = makeTelegramTransport({ fetch: f, token: '1:a' });
-    await t.setShortDescription('online — the station is listening');
+    await t.setShortDescription('online — the keep is listening');
     A.eq(f.calls[0].method, 'setMyShortDescription', 'it writes the profile short description');
-    A.eq(f.calls[0].body.short_description, 'online — the station is listening', 'with the given text');
+    A.eq(f.calls[0].body.short_description, 'online — the keep is listening', 'with the given text');
     const f2 = recFetch();
     await makeTelegramTransport({ fetch: f2, token: '1:a' }).setShortDescription('x'.repeat(300));
     A.eq(f2.calls[0].body.short_description.length, 120, 'capped at Telegram\'s 120 characters rather than 400ing');

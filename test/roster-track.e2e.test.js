@@ -54,7 +54,7 @@ function startMockOpenRouter() {
 function boot(port, env, attemptsLeft) {
   return new Promise((resolve, reject) => {
     const child = spawn(process.execPath, [INDEX], {
-      env: Object.assign({}, process.env, env, { SKYNET_PORT: String(port) }), stdio: ['ignore', 'pipe', 'pipe']
+      env: Object.assign({}, process.env, env, { EYEHOLD_PORT: String(port) }), stdio: ['ignore', 'pipe', 'pipe']
     });
     let out = '', settled = false;
     const onData = d => {
@@ -74,11 +74,11 @@ function boot(port, env, attemptsLeft) {
 (async () => {
   const mock = await startMockOpenRouter();
   const ws = fs.mkdtempSync(path.join(os.tmpdir(), 'sk-roster-track-'));
-  const { child, port } = await boot(8960 + (process.pid % 25), { SKYNET_WORKSPACES: ws, SKYNET_OPENROUTER_BASE: mock.base }, 20);
+  const { child, port } = await boot(8960 + (process.pid % 25), { EYEHOLD_WORKSPACES: ws, EYEHOLD_OPENROUTER_BASE: mock.base }, 20);
   const B = 'http://' + HOST + ':' + port;
   try {
     const token = await bootToken(B, B);
-    const hdr = { 'Content-Type': 'application/json', 'X-StarNet-Token': token, Origin: B };
+    const hdr = { 'Content-Type': 'application/json', 'X-Eyehold-Token': token, Origin: B };
 
     // the browser's own push shape (frontend/app/app.js pushRoster) — a PROVEN specialist and a NEW one
     const push = async agents => {
@@ -125,7 +125,7 @@ function boot(port, env, attemptsLeft) {
     A.ok(/simply new, not worse/.test(brief), '…and that an agent without one is simply new, not worse');
     A.ok(!/only delegate|must delegate|prefer.*over/i.test(brief), 'nothing in the briefing GATES or mandates a choice');
 
-    /* ---- a station with NO proven crew is byte-identical to the pre-S3 briefing ---- */
+    /* ---- a keep with NO proven crew is byte-identical to the pre-S3 briefing ---- */
     await push([
       { agentId: 'agent', system: 'lead', name: 'NOVA', role: 'overseer', track: '' },
       { agentId: 'rookie', system: 'you research', name: 'ROOKIE', role: 'researcher', track: '' },

@@ -13,7 +13,7 @@ completions celebrate unreliably (or silently), and every quest that isn't mecha
 - Quests are a **frontend-only read projection** (frontend/app/quests.js + queststore.js + four generator
   stores). The sidecar has ZERO quest code. No `quest.*` events exist.
 - Completion = polled status diff (queststate.js fold open→done) → celebrate() (SFX + toast + row flash +
-  COMMS line). Three reliability holes: the 1s tick (stationui.js tick()) syncs only 2 of 4 stores
+  COMMS line). Three reliability holes: the 1s tick (keepui.js tick()) syncs only 2 of 4 stores
   (work/maint completions can sit undetected until the log opens, then backfill SILENTLY); the row flash
   is a no-op when the log is closed; the COMMS line shares a 3s coalesce window with level-up/trophy
   broadcasts and gets silently dropped.
@@ -39,7 +39,7 @@ completions celebrate unreliably (or silently), and every quest that isn't mecha
 
 ### A. Backend quest ledger (sidecar/quest-store.js)
 
-Station-wide durable store `_station.quests.json` under WORKSPACES, built on makeDurableJsonStore
+Keep-wide durable store `_keep.quests.json` under WORKSPACES, built on makeDurableJsonStore
 (crash-safe, mutexed — the workshop-store.js idiom, pure + node-testable, caller-injected clock).
 
 Quest record:
@@ -50,7 +50,7 @@ Quest record:
   title, desc, reward,            // prose; reward names the REAL outcome, never points
   kind: 'generated' | 'work' | 'user',
   createdBy: 'agent:<agentId>' | 'system' | 'user',
-  agentId,                        // owning agent (for prompt injection scoping), nullable = station-wide
+  agentId,                        // owning agent (for prompt injection scoping), nullable = keep-wide
   contract: { type: 'prop'|'run'|'fact'|'artifact'|'attest', key: <string> },
   steps: [ { key, label, done, note? } ],   // optional; empty = single implicit step
   status: 'open' | 'done' | 'dismissed',
@@ -64,7 +64,7 @@ Quest record:
 No contract → mint rejected. This permanently eliminates the "sits there forever, uncompletable" class.
 
 Contract types and who flips them:
-- `prop:<capability>` — completed by the harness when the capability goes live (existing station-gap signal).
+- `prop:<capability>` — completed by the harness when the capability goes live (existing keep-gap signal).
 - `run:<binding>` — completed when the bound run ends `done` (existing work-quest signal; non-done → stall).
 - `fact:<dossier-dim|memory-key>` — completed when the dossier/cortex provably learns the key.
 - `artifact:<check>` — completed when the named deliverable exists (workshop manifest truth).
@@ -86,7 +86,7 @@ Routes (index.js, apiauth like siblings):
 ### B. Agent awareness
 
 - **Prompt block:** `sidecar/questinject.js` (pure, the dossierinject.js idiom): folds the agent's open
-  quests into the system prompt as a `STATION QUESTS` block — id, title, next open step, contract type,
+  quests into the system prompt as a `KEEP QUESTS` block — id, title, next open step, contract type,
   any declineNote. Wired everywhere the dossier block rides (browser-composed + server-composed cron runs).
   Empty ledger → byte-identical prompt (the no-op invariant).
 - **Tool:** `sidecar/tools/builtin/quests.js` → `quest.update` (registry idiom of orchestration.js).
@@ -128,7 +128,7 @@ Grounding rule (contextpack law): a minted quest must cite which dossier/memory 
 
 ## Lanes
 
-- **Lane 1 (frontend, independent):** reliability fixes D1–D3. Files: stationui.js, chat.js,
+- **Lane 1 (frontend, independent):** reliability fixes D1–D3. Files: keepui.js, chat.js,
   queststatestore.js.
 - **Lane 2 (backend, independent):** quest-store.js + routes + node tests (A).
 - **Lane 3 (backend, after 2):** questinject.js + quest.update tool + prompt wiring (B).
@@ -137,5 +137,5 @@ Grounding rule (contextpack law): a minted quest must cite which dossier/memory 
 - **Lane 5 (after 3+4):** generative minting cadence + guardrails (E).
 - **At merge:** request `quest.*` additive events from the events owner; wire celebrate() to them later.
 
-Gate: `npm run test:fast` green + live-app proof per starnet-verify (mint→see row→attest→confirm→celebrate,
+Gate: `npm run test:fast` green + live-app proof per eyehold-verify (mint→see row→attest→confirm→celebrate,
 plus a work-quest completing with the log CLOSED and celebrating within 1s).

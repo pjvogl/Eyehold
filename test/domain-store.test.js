@@ -6,7 +6,7 @@ const path = require('node:path');
 const A = require('./_assert.js');
 const { makeDomainStore } = require('../sidecar/domain-store.js');
 
-const root = fs.mkdtempSync(path.join(os.tmpdir(), 'starnet-domain-store-'));
+const root = fs.mkdtempSync(path.join(os.tmpdir(), 'eyehold-domain-store-'));
 try {
   const file = path.join(root, 'settings.json');
   const issues = [];

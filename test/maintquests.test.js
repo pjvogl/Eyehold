@@ -67,7 +67,7 @@ A.eq(closed.length, 0, 'refresh is idempotent — a cleared cause never re-trans
 /* ---------- a cleared cause that bites AGAIN re-opens (maintenance issues can recur) ---------- */
 const reopen = MQ.record(s, { cause: 'slag:max_iters', title: '2 runs looped again', fix: 'Split it.', hits: 2 }, 6000);
 A.eq(reopen, id, 'the same cause re-recording returns the same id');
-A.eq(s.quests[id].completedAt, null, 'a genuine recurrence RE-OPENS the quest (unlike a one-time station gap)');
+A.eq(s.quests[id].completedAt, null, 'a genuine recurrence RE-OPENS the quest (unlike a one-time keep gap)');
 A.eq(s.quests[id].firstSeenAt, 6000, 'the re-open stamps a fresh firstSeenAt so the card reads current');
 
 /* ---------- dismissal: permanent, survives hydrate, blocks re-record ---------- */

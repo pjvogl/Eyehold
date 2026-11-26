@@ -9,7 +9,7 @@ found: 2026-09-16
 lane: agent/response-audit-0915-7c2a
 fix: fc4c9e0f415251870778da1405086c421aff0670
 origin: customer
-report: https://github.com/androoAGI/starnet/issues/17
+report: https://github.com/Eyehold/eyehold/issues/17
 affected: 0.11.2 Windows Ollama; related ceiling repair 5acf4640f
 family: response-latency
 installer: unverified
@@ -32,7 +32,7 @@ Before repair: `FAIL: a capped casual reply stops after one generation — expec
 
 ## Verdict
 
-Source repair verified through the real host and a dev-seeded station. Casual Ollama requests have a smaller configurable cap; task and auxiliary requests keep their existing allowance. A pending brief promotes a terse answer to a task before either policy applies. Generic hosted requests have no new cap. Automatic output continuation stays enabled for tasks. The unrelated transport retry path remains intact. Full gate receipts belong to the audit report. Installer and customer-model timing remain unverified.
+Source repair verified through the real host and a dev-seeded keep. Casual Ollama requests have a smaller configurable cap; task and auxiliary requests keep their existing allowance. A pending brief promotes a terse answer to a task before either policy applies. Generic hosted requests have no new cap. Automatic output continuation stays enabled for tasks. The unrelated transport retry path remains intact. Full gate receipts belong to the audit report. Installer and customer-model timing remain unverified.
 
 ## Regression
 

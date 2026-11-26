@@ -1,20 +1,20 @@
-/* STARNET — stepin.js : STEP-IN, the Commander takes an agent's browser (2026-09-29).
+/* EYEHOLD — stepin.js : STEP-IN, the Commander takes an agent's browser (2026-09-29).
 
    An agent browsing on its own hits a login, a 2FA code or a CAPTCHA and calls browser.need_human. Its run parks
    on the sidecar's handoff host (own id, own 30-minute wait) and a `browser.handoff` event arrives here over the
-   station SSE bridge. This window shows THAT agent's live browser — the same headless Chrome, the same page — as
+   keep SSE bridge. This window shows THAT agent's live browser — the same headless Chrome, the same page — as
    a streamed picture, and forwards the Commander's pointer, keys and paste into it. HAND BACK resumes the agent on
    the page they left it on; CAN'T DO IT tells it to take another route.
 
    TRUTH (the product's core law): every state painted here is a sidecar record (GET /api/browser/handoffs, or the
    browser.handoff event that carries the same record). "Waiting for you" shows only while the handoff is live; a
    settled one says how it ended. The countdown reads the record's own expiresAt. "Remembered" is the record's
-   `remembered` flag (is this run on the durable station profile?) — never a guess.
+   `remembered` flag (is this run on the durable keep profile?) — never a guess.
 
    SECRECY. Keys and pastes go page → sidecar → Chrome and nowhere else: nothing typed here is stored, logged or
    shown to the agent, and the agent is frozen (its browser tools are refused) until the handoff settles.
 
-   SHAPE. A registered station window ('stepin'): it rises from the bottom dock between CREW and COMMS, resizes and
+   SHAPE. A registered keep window ('stepin'): it rises from the bottom dock between CREW and COMMS, resizes and
    minimizes like every other window. The view itself is StepIn.mount(host) → unmount(), so it can later live inside
    another window (the OUTPUT browser lane) without a rewrite. Glass recipes only; matte, no glow. */
 'use strict';
@@ -31,7 +31,7 @@ const StepIn = (() => {
   const seen = new Set(); // handoff ids already announced (one toast per handoff)
   let view = null;        // the mounted view { host, … } or null
 
-  const base = () => (typeof window !== 'undefined' ? String(window.__STARNET_API__ || '') : '');
+  const base = () => (typeof window !== 'undefined' ? String(window.__EYEHOLD_API__ || '') : '');
   const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   function getJson(path, signal) {
     return fetch(base() + path, { cache: 'no-store', signal }).then(async r => { let j = null; try { j = await r.json(); } catch (_) {} return { status: r.status, body: j || {} }; });
@@ -42,7 +42,7 @@ const StepIn = (() => {
   }
   function agentName(aid) {
     try {
-      const list = (typeof StationUI !== 'undefined' && StationUI.h) ? StationUI.h.present : [];
+      const list = (typeof KeepUI !== 'undefined' && KeepUI.h) ? KeepUI.h.present : [];
       const a = (list || []).find(x => x && x.id === aid);
       return String((a && a.name) || aid || 'AGENT').toUpperCase();
     } catch (_) { return String(aid || 'AGENT').toUpperCase(); }
@@ -58,7 +58,7 @@ const StepIn = (() => {
     if (ended) { recent.unshift(p); recent = recent.slice(0, 8); settle(p.id); } else live.push(p);
   }
   // the hand-back (or a cancel) ends the wait: the bell's STEP-IN line leaves NEEDS YOU (it stayed lit for good)
-  function settle(id) { if (typeof StationUI !== 'undefined' && StationUI.settleNotifs) StationUI.settleNotifs('stepin-' + id); }
+  function settle(id) { if (typeof KeepUI !== 'undefined' && KeepUI.settleNotifs) KeepUI.settleNotifs('stepin-' + id); }
   function refresh() {
     if (loading) return loading;
     loading = getJson('/api/browser/handoffs').then(r => {
@@ -66,8 +66,8 @@ const StepIn = (() => {
         live = Array.isArray(r.body.live) ? r.body.live : [];
         recent = Array.isArray(r.body.recent) ? r.body.recent : [];
         for (const h of recent) if (h && h.id) settle(h.id);   // ended while this page was away (or before a restart)
-        // …or gone from the station altogether (a restart drops its handoffs): a line for a handoff that is not live any more waits on nothing
-        if (typeof StationUI !== 'undefined' && StationUI.waitingNotifKeys) for (const k of StationUI.waitingNotifKeys('stepin-')) if (!live.some(h => 'stepin-' + h.id === k)) StationUI.settleNotifs(k);
+        // …or gone from the keep altogether (a restart drops its handoffs): a line for a handoff that is not live any more waits on nothing
+        if (typeof KeepUI !== 'undefined' && KeepUI.waitingNotifKeys) for (const k of KeepUI.waitingNotifKeys('stepin-')) if (!live.some(h => 'stepin-' + h.id === k)) KeepUI.settleNotifs(k);
         signins = r.body.signins || signins;
         for (const h of live) seen.add(h.id);
         loaded = true;
@@ -88,9 +88,9 @@ const StepIn = (() => {
     getJson('/api/browser/signins').then(r => { if (r.status === 200 && r.body) { signins = r.body; paint(); } }).catch(() => {});
   }
   function announce(p) {
-    if (typeof StationUI === 'undefined' || !StationUI.notify) return;
+    if (typeof KeepUI === 'undefined' || !KeepUI.notify) return;
     const why = { login: 'sign in', '2fa': 'enter a sign-in code', captcha: 'get past a human check', payment: 'confirm a payment', other: 'help with a page' }[p.reason] || 'help with a page';
-    StationUI.notify('STEP-IN: ' + agentName(p.agentId) + ' needs you to ' + why + (p.where ? ' at ' + p.where : '') + ' — click to take its browser', 'gold', undefined, {
+    KeepUI.notify('STEP-IN: ' + agentName(p.agentId) + ' needs you to ' + why + (p.where ? ' at ' + p.where : '') + ' — click to take its browser', 'gold', undefined, {
       key: 'stepin-' + p.id, kind: 'needs', go: { term: 'stepin' },   // a destination, so the bell's line is a door too
       onClick: () => open(p.id)
     });
@@ -105,15 +105,15 @@ const StepIn = (() => {
     // the CREW dock carries STEP-IN only while an agent is actually waiting for you (Andrew 10-02: no standing button)
     const item = document.querySelector('#bottombar .bb[data-term="stepin"]');
     if (item && item.hidden === !!n) item.hidden = !n;
-    // STATION SYSTEMS: an agent waiting for you is the moment STEP-IN joins a growing dock
+    // KEEP SYSTEMS: an agent waiting for you is the moment STEP-IN joins a growing dock
     if (n && typeof Systems !== 'undefined' && Systems.growTo) Systems.growTo(['stepin']);
   }
 
   /* ---------------- the view ---------------- */
   function open(id) {
     if (id) focusId = String(id);
-    if (typeof StationUI === 'undefined' || !StationUI.openTerm) return;
-    StationUI.openTerm('stepin');
+    if (typeof KeepUI === 'undefined' || !KeepUI.openTerm) return;
+    KeepUI.openTerm('stepin');
     if (view) paint();
   }
 
@@ -168,7 +168,7 @@ const StepIn = (() => {
     const b = r.body || {};
     if (b.view) upsert(b.view);
     if (kind === 'take') {
-      if (!b.ok) say(b.error || 'The station could not hand you this browser.');
+      if (!b.ok) say(b.error || 'The keep could not hand you this browser.');
       else { say(''); try { v.vp.focus(); } catch (_) {} }
     } else if (r.status === 200) say(kind === 'back' ? 'Handed back. ' + agentName(h.agentId) + ' is carrying on.' : 'Told ' + agentName(h.agentId) + ' to take another route.');
     else say(b.error || 'That handoff had already ended.');
@@ -256,9 +256,9 @@ const StepIn = (() => {
       + (sites.length
         ? '<ul class="si-list">' + sites.map(s => '<li><b>' + esc(s.host) + '</b> <small>signed in for ' + esc(agentName(s.agentId)) + ' · ' + esc(rel(s.at)) + '</small></li>').join('') + '</ul>'
           + '<p class="si-dim">Sites you signed in to through STEP-IN. A site can still sign the browser out on its own.</p>'
-        : '<p class="si-dim">' + (signins.profile ? 'The station browser has a saved profile, but no STEP-IN sign-ins are recorded in it.' : 'No saved sign-ins. The station browser profile is empty.') + '</p>')
+        : '<p class="si-dim">' + (signins.profile ? 'The keep browser has a saved profile, but no STEP-IN sign-ins are recorded in it.' : 'No saved sign-ins. The keep browser profile is empty.') + '</p>')
       + (signins.profile ? '<button type="button" class="bb sm si-forget"' + (signins.inUse ? ' disabled' : '') + '>FORGET ALL SIGN-INS</button>'
-        + (signins.inUse ? '<p class="si-dim">A run is using the station browser right now. Forget works once it finishes.</p>' : '') : '');
+        + (signins.inUse ? '<p class="si-dim">A run is using the keep browser right now. Forget works once it finishes.</p>' : '') : '');
     const f = saved.querySelector('.si-forget');
     if (f && typeof ArmConfirm !== 'undefined' && ArmConfirm.wire) {
       ArmConfirm.wire(f, { armedLabel: 'FORGET EVERY SIGN-IN — SURE?', onConfirm: async () => {
@@ -284,7 +284,7 @@ const StepIn = (() => {
       while (view === v && v.streamId === id) {
         let r;
         try { r = await getJson('/api/browser/handoff/frame?id=' + encodeURIComponent(id) + '&after=' + v.seq, ctl && ctl.signal); }
-        catch (_) { if (view !== v || v.streamId !== id) return; if (++fails > 5) { say('Lost the picture from the station.'); return; } await new Promise(res => setTimeout(res, 400 * fails)); continue; }
+        catch (_) { if (view !== v || v.streamId !== id) return; if (++fails > 5) { say('Lost the picture from the keep.'); return; } await new Promise(res => setTimeout(res, 400 * fails)); continue; }
         fails = 0;
         if (view !== v || v.streamId !== id) return;
         if (r.status !== 200 || !r.body || !r.body.ok) {
@@ -371,7 +371,7 @@ const StepIn = (() => {
       send(v, { type: 'wheel', x: p.x, y: p.y, dx: e.deltaX * k, dy: e.deltaY * k, modifiers: mods(e) });
     }, { passive: false });
     vp.addEventListener('keydown', e => {
-      // Everything typed here belongs to the page, not the station (no station hotkeys, no COMMS).
+      // Everything typed here belongs to the page, not the keep (no keep hotkeys, no COMMS).
       e.stopPropagation();
       // Paste arrives as its own event with the text; the chord itself must not also paste the headless clipboard.
       if ((e.ctrlKey || e.metaKey) && (e.key === 'v' || e.key === 'V')) return;
@@ -399,12 +399,12 @@ const StepIn = (() => {
   }
 
   /* ---------------- boot ---------------- */
-  // Registration + bus wiring happen at parse time (this file loads after stationui.js, like windows/*.js); the
+  // Registration + bus wiring happen at parse time (this file loads after keepui.js, like windows/*.js); the
   // first sidecar read waits for the DOM so the harness's token-bearing fetch is in place.
   function init() {
     if (typeof U !== 'undefined' && U.bus && U.bus.on) U.bus.on('browser.handoff', onEvent);
-    if (typeof StationUI !== 'undefined' && StationUI.registerWindow) {
-      StationUI.registerWindow('stepin', 'STEP-IN — TAKE THE AGENT\'S BROWSER', body => mount(body), { className: 'stepin-win', onClose: () => {
+    if (typeof KeepUI !== 'undefined' && KeepUI.registerWindow) {
+      KeepUI.registerWindow('stepin', 'STEP-IN — TAKE THE AGENT\'S BROWSER', body => mount(body), { className: 'stepin-win', onClose: () => {
         // Closing the window while you hold the wheel is a hand back (the plan's rule): the agent must never sit
         // frozen behind a window nobody can see.
         const h = focused();

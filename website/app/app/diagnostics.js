@@ -1,4 +1,4 @@
-/* STARNET — diagnostics.js : one-click "COPY DIAGNOSTICS" for a paste-ready bug report (T3.9).
+/* EYEHOLD — diagnostics.js : one-click "COPY DIAGNOSTICS" for a paste-ready bug report (T3.9).
 
    A public user who hits a wall needs to email a useful report without leaking anything. The SIDECAR assembles
    the report server-side from real state (GET /api/diagnostics -> { report, text }); this thin browser module
@@ -136,11 +136,11 @@
   }
 
   function notify(msg, kind) {
-    try { if (typeof StationUI !== 'undefined' && StationUI.notify) StationUI.notify(msg, kind || 'good'); } catch (_) {}
+    try { if (typeof KeepUI !== 'undefined' && KeepUI.notify) KeepUI.notify(msg, kind || 'good'); } catch (_) {}
   }
 
   /* P1.5 build provenance: the git commit/tree + taxonomy this desktop binary was compiled from (stamped by
-     src-tauri/build.rs, exposed via the starnet_build_info Tauri command). Returns a formatted one-liner
+     src-tauri/build.rs, exposed via the eyehold_build_info Tauri command). Returns a formatted one-liner
      "build <version> @ <commit> [<kind> tree <prefix>][ DIRTY]" or '' when unavailable — in a plain browser there is NO
      binary provenance to report, so this MUST fail soft to '' and the caller omits the line. Truthful-telemetry:
      never render a fake commit for a browser session that wasn't built from any binary. */
@@ -173,7 +173,7 @@
   function buildLine() {
     const core = tauriCore();
     if (!core) return Promise.resolve('');   // browser session — fail soft, omit the line
-    return Promise.resolve(core.invoke('starnet_build_info')).then(formatBuild).catch(() => '');   // old shell w/o the command → ''
+    return Promise.resolve(core.invoke('eyehold_build_info')).then(formatBuild).catch(() => '');   // old shell w/o the command → ''
   }
 
   /* THE DEAD-ENGINE FALLBACK (2026-07-29). The whole report used to come from GET /api/diagnostics — i.e. from
@@ -184,13 +184,13 @@
      started from a model stream that dropped, the two causes with opposite fixes.
 
      This assembles the small honest report the PAGE can prove by itself, with no sidecar involved:
-       • the build line — Tauri's starnet_build_info command, which is in the shell, not the sidecar, so it
+       • the build line — Tauri's eyehold_build_info command, which is in the shell, not the sidecar, so it
          still answers when the engine is gone (exact commit + dirty/provenance = we know what they're running);
        • the measured /api/health verdict, including "unproven" when the probe timed out (never guessed);
        • the loopback base the page was told to use, so a wrong/absent port is visible at a glance;
        • the failure text that triggered it.
      SECRETS: the sidecar report is redacted server-side; this one never reads a secret in the first place — note
-     it takes only the ORIGIN of __STARNET_API__ and deliberately never touches __STARNET_API_TOKEN__ — and it
+     it takes only the ORIGIN of __EYEHOLD_API__ and deliberately never touches __EYEHOLD_API_TOKEN__ — and it
      still runs the caller-supplied error text through localRedact as defence in depth. */
   function localRedact(s) {
     return String(s == null ? '' : s)
@@ -202,7 +202,7 @@
   // The page-side loopback base, ORIGIN ONLY — never the token that rides alongside it.
   function apiOrigin() {
     try {
-      const raw = (typeof window !== 'undefined' && window.__STARNET_API__) ? String(window.__STARNET_API__) : '';
+      const raw = (typeof window !== 'undefined' && window.__EYEHOLD_API__) ? String(window.__EYEHOLD_API__) : '';
       if (!raw) return 'same-origin (browser build)';
       return raw.replace(/[?#].*$/, '').replace(/\/+$/, '');
     } catch (_) { return 'unknown'; }
@@ -219,7 +219,7 @@
     context = context || {};
     return Promise.all([buildLine(), engineVerdict(context)]).then(([build, alive]) => {
       const lines = [];
-      lines.push('STARNET DIAGNOSTICS (page-side fallback — the local engine did not answer, so this report was');
+      lines.push('EYEHOLD DIAGNOSTICS (page-side fallback — the local engine did not answer, so this report was');
       lines.push('assembled by the app window itself and is SHORTER than a normal report.)');
       lines.push('');
       lines.push('when:          ' + new Date().toISOString());

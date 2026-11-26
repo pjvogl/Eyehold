@@ -8,7 +8,7 @@ const os = require('node:os');
 const { makeSpotifyStore } = require('../sidecar/spotify/store.js');
 
 // Per-process dir — a fixed name lets two concurrent gate runs rm -rf each other's fixtures.
-const DIR = path.join(os.tmpdir(), 'starnet-spotify-store-test-' + process.pid);
+const DIR = path.join(os.tmpdir(), 'eyehold-spotify-store-test-' + process.pid);
 
 function fetchOnce(resp) {
   const calls = [];

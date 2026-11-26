@@ -1,13 +1,13 @@
 // Live Wave 4B journey: keyboard + trusted pointer resize, minimize/restore, persistence, phone clamp.
-// Uses the repository's sanctioned CDP harness against the real seeded station.
+// Uses the repository's sanctioned CDP harness against the real seeded keep.
 import { mkdtempSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { launchChrome, connectCDP, evalJS, sleep } from '../lib/cdp.mjs';
 
-const url = process.env.STARNET_URL || 'http://127.0.0.1:9084';
-const cdpPort = Number(process.env.STARNET_CDP_PORT || 9484);
-const profileDir = mkdtempSync(join(tmpdir(), 'starnet-terminal-resize-'));
+const url = process.env.EYEHOLD_URL || 'http://127.0.0.1:9084';
+const cdpPort = Number(process.env.EYEHOLD_CDP_PORT || 9484);
+const profileDir = mkdtempSync(join(tmpdir(), 'eyehold-terminal-resize-'));
 const { proc } = launchChrome({ cdpPort, win: '1440,900', profileDir });
 let cdp;
 
@@ -29,7 +29,7 @@ async function waitFor(expr, label, attempts = 70) {
 }
 
 async function openTerm(item) {
-  await evalJS(cdp, `StationUI.openTerm(${JSON.stringify(item.key)})`);
+  await evalJS(cdp, `KeepUI.openTerm(${JSON.stringify(item.key)})`);
   const sel = selectorFor(item.title);
   await waitFor(`!!document.querySelector(${JSON.stringify(sel)})`, item.title);
   await sleep(500);
@@ -77,7 +77,7 @@ async function probe(item, label) {
     const box = e => { const r=e.getBoundingClientRect(); return [r.left,r.top,r.right,r.bottom,r.width,r.height]; };
     const wr=box(w), hr=box(head), xr=box(close), gr=box(grip), br=box(body), sr=box(scroller);
     const inView = r => r[0] >= -0.5 && r[1] >= -0.5 && r[2] <= innerWidth + 0.5 && r[3] <= innerHeight + 0.5;
-    const saved = JSON.parse(localStorage.getItem('starnet.station.v1') || '{}');
+    const saved = JSON.parse(localStorage.getItem('eyehold.keep.v1') || '{}');
     const overflow = getComputedStyle(scroller).overflowY;
     const ok = inView(xr) && inView(gr) && hr[3] > 0 && hr[1] < innerHeight &&
       br[5] > 0 && br[3] <= wr[3] + 0.5 && sr[5] > 0 && sr[3] <= wr[3] + 0.5 &&
@@ -104,11 +104,11 @@ try {
   await cdp.send('Page.enable');
   await cdp.send('Runtime.enable');
   await cdp.send('Page.navigate', { url });
-  await waitFor("typeof StationUI === 'object' && typeof StationUI.openTerm === 'function' && !!document.querySelector('#screen-game.active')", 'active station');
-  await evalJS(cdp, "localStorage.removeItem('starnet.station.v1')");
+  await waitFor("typeof KeepUI === 'object' && typeof KeepUI.openTerm === 'function' && !!document.querySelector('#screen-game.active')", 'active keep');
+  await evalJS(cdp, "localStorage.removeItem('eyehold.keep.v1')");
   await cdp.send('Page.reload');
   await sleep(700);
-  await waitFor("typeof StationUI === 'object' && !!document.querySelector('#screen-game.active')", 'clean station');
+  await waitFor("typeof KeepUI === 'object' && !!document.querySelector('#screen-game.active')", 'clean keep');
 
   for (const item of CASES) {
     const sel = await openTerm(item);
@@ -129,7 +129,7 @@ try {
     if (item.key === 'settings') {
       await evalJS(cdp, `document.querySelector(${JSON.stringify(sel + ' .term-min')}).click()`);
       await waitFor(`document.querySelector(${JSON.stringify(sel)})?.classList.contains('term-min-hidden')`, 'Settings minimize');
-      await evalJS(cdp, "StationUI.openTerm('settings')");
+      await evalJS(cdp, "KeepUI.openTerm('settings')");
       await waitFor(`!document.querySelector(${JSON.stringify(sel)})?.classList.contains('term-min-hidden')`, 'Settings restore');
       await sleep(500);
       const restored = await rect(sel);
@@ -143,7 +143,7 @@ try {
   // A real reload must rehydrate both dimensions, not merely leave inline styles on a live node.
   await cdp.send('Page.reload');
   await sleep(700);
-  await waitFor("typeof StationUI === 'object' && !!document.querySelector('#screen-game.active')", 'station after reload');
+  await waitFor("typeof KeepUI === 'object' && !!document.querySelector('#screen-game.active')", 'keep after reload');
   const settings = CASES[0], settingsSel = await openTerm(settings);
   receipts.push(await probe(settings, 'reload persistence'));
   await closeTerm(settings);

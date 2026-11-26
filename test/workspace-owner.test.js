@@ -1,4 +1,4 @@
-/* node test/workspace-owner.test.js — process-wide ownership for StarNet's single-writer stores. */
+/* node test/workspace-owner.test.js — process-wide ownership for Eyehold's single-writer stores. */
 'use strict';
 const fs = require('node:fs');
 const os = require('node:os');
@@ -6,8 +6,8 @@ const path = require('node:path');
 const A = require('./_assert.js');
 const { makeWorkspaceOwner } = require('../sidecar/workspace-owner.js');
 
-const root = fs.mkdtempSync(path.join(os.tmpdir(), 'starnet-owner-'));
-const lockfile = path.join(root, '.starnet-workspace-owner.json');
+const root = fs.mkdtempSync(path.join(os.tmpdir(), 'eyehold-owner-'));
+const lockfile = path.join(root, '.eyehold-workspace-owner.json');
 try {
   const first = makeWorkspaceOwner({ fs, path, pid: 41001, now: () => 100, nonce: () => 'first', pidAlive: p => p === 41001 });
   const a = first.acquire(root);

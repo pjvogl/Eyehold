@@ -60,7 +60,7 @@ A.eq(J(T.lenient(['web_request'])), J({ list: ['web'], dropped: [] }), 'a stored
 A.eq(J(T.lenient(['bogus'])), J({ list: FREE_ONLY, dropped: ['bogus'] }), 'a list of only unknown entries keeps the freebies-only restriction it ran with, and reports them');
 for (const legacy of [['browser'], ['shell'], ['files'], ['WEB_BROWSER'], ['search', 'files']]) {
   const r = T.lenient(legacy);
-  A.ok(Array.isArray(r.list) && r.list.every(f => TOOLSET_FREEBIES.has(f)) && r.dropped.length === legacy.length, '0.13.1 free text ' + J(legacy) + ' is never widened to the full station grant: ' + J(r));
+  A.ok(Array.isArray(r.list) && r.list.every(f => TOOLSET_FREEBIES.has(f)) && r.dropped.length === legacy.length, '0.13.1 free text ' + J(legacy) + ' is never widened to the full keep grant: ' + J(r));
 }
 A.eq(J(T.lenient(['compute'])), J({ list: FREE_ONLY, dropped: [] }), 'a stored ["compute"] reads as freebies-only (never a stored family)');
 A.eq(J(T.lenient(['', '  '])), J({ list: null, dropped: [] }), 'a list of blanks is the [] artifact: no restriction');
@@ -93,7 +93,7 @@ for (const input of [['Web & Browser'], ['web', 'cabinet'], ['todo'], ['mcp:x'],
   A.eq(J(by('label').enabledToolsets), '["web"]', 'label heals to web');
   A.eq(J(by('tool').enabledToolsets), '["web"]', 'tool name heals to web');
   A.eq(J(by('unknown').enabledToolsets), J(FREE_ONLY), 'an all-unknown list keeps its freebies-only restriction (never widened to the full grant)');
-  A.ok(/dropped unknown entry "bogus"/.test(by('unknown').lastError) && /always-on tools/.test(by('unknown').lastError) && !/full station tools/.test(by('unknown').lastError), 'the dropped entry is named on the routine row, with what it still runs with: ' + by('unknown').lastError);
+  A.ok(/dropped unknown entry "bogus"/.test(by('unknown').lastError) && /always-on tools/.test(by('unknown').lastError) && !/full keep tools/.test(by('unknown').lastError), 'the dropped entry is named on the routine row, with what it still runs with: ' + by('unknown').lastError);
   A.ok(/create it again/.test(by('unknown').lastError) && /\bweb\b/.test(by('unknown').lastError), 'and the real way out (no UI edits toolsets): ' + by('unknown').lastError);
   {
     // enforced exactly as the 0.13.1 list was: the freebies, nothing else

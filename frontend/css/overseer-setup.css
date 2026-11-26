@@ -1,11 +1,11 @@
-/* V2 setup: shared station glass, quiet typography and complete controls. */
+/* V2 setup: shared keep glass, quiet typography and complete controls. */
 #screen-connect { --ov-well: linear-gradient(145deg,rgba(var(--ph-bright-rgb),.045),rgba(var(--ph-rgb),.018)),rgba(0,0,0,.18); }
 #screen-connect.active { padding:0; align-items:stretch; }
 #screen-connect .ov-panel { width:100%; max-width:none; height:100%; margin:0; border:0; border-radius:0; background:var(--gd-face); box-shadow:inset 0 1px 0 var(--gd-light); overflow:hidden; }
 #screen-connect .ov-panel>.cc-bracket { display:none; }
 #screen-connect .ov-head { display:grid; grid-template-columns:minmax(0,1fr) auto; gap:20px 32px; padding:22px 32px; border-bottom:1px solid var(--gd-edge); background:linear-gradient(180deg,rgba(var(--ph-rgb),.045),transparent); }
 #screen-connect .cc-titlebar { grid-column:1/-1; display:flex; align-items:center; gap:16px; padding:0; margin:0; border:0; background:none; box-shadow:none; }
-#screen-connect .ov-wordmark { display:inline-block; width:158px; height:27px; background:var(--ph-bright); mask:url('../assets/brand/starnet-wordmark.svg') center/contain no-repeat; }
+#screen-connect .ov-wordmark { display:inline-block; width:158px; height:27px; background:var(--ph-bright); mask:url('../assets/brand/eyehold-wordmark.svg') center/contain no-repeat; }
 #screen-connect .cc-tb-mode { font-size:12px; letter-spacing:1px; color:var(--ph-dim); border-left:1px solid var(--gd-edge); padding-left:16px; }
 #screen-connect .cc-tb-phosphor { margin-left:auto; display:flex; align-items:center; gap:12px; }
 #screen-connect .cc-tb-plabel { font-size:12px; letter-spacing:.6px; color:var(--ph-dim); }
@@ -85,7 +85,7 @@
 #screen-connect .prov-byok-lab { padding:0; margin:20px 0 12px; font-size:14px; letter-spacing:0; text-transform:none; text-align:left; color:var(--text); opacity:.75; }
 @property --ov-border-angle { syntax:'<angle>'; initial-value:0deg; inherits:false; }
 #screen-connect .prov-hero { position:relative; isolation:isolate; display:block; width:100%; overflow:hidden; padding:22px; border:1px solid var(--gd-edge); border-radius:12px; background:var(--gd-face); text-align:left; box-shadow:var(--gd-shadow); }
-#screen-connect .prov-hero::before { content:''; position:absolute; inset:0; padding:2px; border-radius:inherit; pointer-events:none; background:conic-gradient(from var(--ov-border-angle),transparent 0deg 265deg,rgba(var(--ph-rgb),.25) 300deg,var(--ph-bright) 340deg,transparent 360deg); mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0); mask-composite:exclude; animation:ov-orbit calc(var(--t-slow)*18) linear infinite; }
+#screen-connect .prov-hero::before { content:''; position:absolute; inset:0; padding:2px; border-radius:inherit; pointer-events:none; background:conic-gradient(from var(--ov-border-angle),transparent 0deg 265deg,rgba(var(--ph-rgb),.25) 300deg,var(--ph-bright) 340deg,transparent 360deg); mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0); mask-composite:exclude; animation:ov-circuit calc(var(--t-slow)*18) linear infinite; }
 #screen-connect .prov-hero::after { display:none; }
 #screen-connect .prov-hero-row { padding-top:1px; gap:20px; justify-content:space-between; align-items:center; }
 #screen-connect .prov-hero-title { display:flex; flex-direction:column; align-items:flex-start; gap:12px; line-height:1; }
@@ -97,7 +97,7 @@
 #screen-connect .ov-connection { margin:0; padding:0; border:0; background:none; }
 #screen-connect .ov-connection-heading { display:flex; align-items:center; gap:14px; margin:22px 0 24px; padding-bottom:22px; border-bottom:1px solid var(--gd-edge); }
 #screen-connect .ov-connection-heading .ov-provider-logo { width:36px; height:36px; flex-basis:36px; color:var(--ph-bright); }
-#screen-connect .ov-connection-heading .ov-starnet-logo { width:104px; flex-basis:104px; }
+#screen-connect .ov-connection-heading .ov-eyehold-logo { width:104px; flex-basis:104px; }
 #screen-connect .ov-connection-head { color:var(--ph-bright); font-size:25px; line-height:1.2; }
 #screen-connect .ov-connection :is(#key-block,#base-url-block) { margin-bottom:18px; }
 #screen-connect .codex-signin { border:1px solid var(--gd-edge); border-radius:9px; padding:16px; background:var(--ov-well); box-shadow:inset 0 1px 0 var(--gd-light); margin-bottom:20px; }
@@ -160,7 +160,7 @@
 #screen-connect :is(.ov-setup-nav,.ov-col-id,.ov-col-brain,.skin-thumb,#btn-setup-next,#btn-wake,#btn-back,.ov-connection,#ov-reasoning)[hidden] { display:none; }
 #screen-connect.recovery .ov-recovery { grid-column:1/-1; margin:0; }
 #screen-connect.recovery .ov-pickrow { display:none; }
-@keyframes ov-orbit { to { --ov-border-angle:360deg; } }
+@keyframes ov-circuit { to { --ov-border-angle:360deg; } }
 @media(prefers-reduced-motion:reduce) { #screen-connect .prov-hero::before { animation:none; } #screen-connect * { transition:none; } }
 @media(max-width:1100px) { #screen-connect .ov-vchips { grid-template-columns:repeat(3,minmax(0,1fr)); } #screen-connect .ov-head { padding:18px 24px; gap:16px; } #screen-connect .ov-sub { display:none; } #screen-connect .prov-grid { grid-template-columns:repeat(2,minmax(0,1fr)); } #screen-connect .ov-setup-nav button { padding:8px 10px; } }
 @media(max-height:680px) and (min-width:721px) { #screen-connect .ov-head { padding-block:14px; gap:12px; } #screen-connect .ov-cfg { padding-top:22px; } #screen-connect .ov-hero { padding:18px; } #screen-connect .ov-nameplate { margin-bottom:14px; } #screen-connect .ov-section-heading { margin-bottom:20px; } }

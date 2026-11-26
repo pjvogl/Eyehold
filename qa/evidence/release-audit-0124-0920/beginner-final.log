@@ -1,9 +1,9 @@
 
-> starnet-harness@0.12.4 qa:beginner
+> eyehold-harness@0.12.4 qa:beginner
 > node scripts/qa/beginner-run.mjs
 
 [qa:beginner] mode=ui-only port=8958 run=.bugloops\beginner-2026-09-20T05-05-12
-[qa:beginner] temp workspace: C:\Users\andro\AppData\Local\Temp\starnet-beginner-ws-YU3Q8r\workspaces (empty → fresh connect screen; cleaned up after run)
+[qa:beginner] temp workspace: C:\Users\andro\AppData\Local\Temp\eyehold-beginner-ws-YU3Q8r\workspaces (empty → fresh connect screen; cleaned up after run)
 [qa:beginner] booting a FRESH (no dev-seed) sidecar on :8958 …
 [qa:beginner] boot ok — page up
 [qa:beginner] first-boot splash advanced with a real Enter keypress

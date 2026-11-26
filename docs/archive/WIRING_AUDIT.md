@@ -1,4 +1,4 @@
-# StarNet — Feature Wiring Audit & Completion Plan
+# Eyehold — Feature Wiring Audit & Completion Plan
 
 > **Generated 2026-06-20** by a 35-agent multi-domain audit (16 vertical-slice auditors +
 > adversarial verifiers + synthesis). For each feature it traced the full vertical
@@ -42,7 +42,7 @@ Plus three **stranded-on-branch absences**: the First-Command tutorial + coachma
 | 3 | **AIRLOCK "worktree isolation"** only seals the agent's *visual* pathing; there is **no sidecar consumer of door state** — a "SEALED" agent's real run/tools/caps are untouched, yet the prop promises real isolation. | **P6** |
 | 4 | Profile's strongest learning signal (`workitem.delivered`, weight 3 — "shipped work folds heavier") **only fires on Telegram**; for the in-app user the heavy outcome-weighting is silently dead. | **P5** |
 | 5 | Inbound **ORE crate mass is faked** from message-length (`preview.length/280`) and rides the same belt as a genuinely cost-driven PRODUCT crate — presented as peers. | **P4** |
-| 6 | War-room **CREW dots pulse in lockstep** off ONE global `#chat-status` string + global pending-consent, ignoring the real per-agent run state `stationui.crewTick` already tracks. | **P3** (quick win) |
+| 6 | War-room **CREW dots pulse in lockstep** off ONE global `#chat-status` string + global pending-consent, ignoring the real per-agent run state `keepui.crewTick` already tracks. | **P3** (quick win) |
 | 7 | **Concurrency**: UI lets you summon unlimited agents and dispatch advertises `parallel:true`, but the gate admits ≤ `MAX_CONCURRENT_AGENTS` (default 3, minus the lead's slot); excess workers silently "refused" — visible only in the model's tool result, not the summon UI. | **P4** |
 | 8 | **REWIND** promises a snapshot "before every command / once this agent edits a file", but the general fs.write/edit checkpoint net is gated behind `SKYNET_CHECKPOINTS` (**default OFF**) — a default user who only edits files sees "NO RESTORE POINTS YET". | **P2** (quick win) |
 
@@ -69,7 +69,7 @@ hands-free loop, in-world speak/listen) · The Kindling + Awakening onboarding.
 
 - **2026-06-20 — Quick-win batch ✅ MERGED to trunk** (`agent/wire-quick-wins`, merged via no-ff;
   gate green; verified live in preview). Closed: cron war-room pulse, checkpoint-restored toast,
-  memory-recall chip, per-agent crew dots (new `StationUI.runningCount`), budget RESUME button, honest
+  memory-recall chip, per-agent crew dots (new `KeepUI.runningCount`), budget RESUME button, honest
   REWIND empty-state, live `channel.connect` health. Frontend-only; no contract/sidecar change. **Not
   pushed to origin.**
 - **2026-06-20 — P1 keystone ✅ MERGED to trunk** (`agent/wire-inapp-loop`, two commits, no-ff;
@@ -116,7 +116,7 @@ depend on P1 and can ship immediately:
 
 - **Cron war-room pulse** — listen for `cron.fire/skipped/result/tick` in `world.js`
   `connectChannelBridge` (emit+SSE already real). *(independent)*
-- **Per-agent crew dots** — read `#cs-<id>`/`runningAgents` from `stationui.crewTick` instead of the
+- **Per-agent crew dots** — read `#cs-<id>`/`runningAgents` from `keepui.crewTick` instead of the
   one global `#chat-status` string (real per-agent map already exists). *(independent)*
 - **Checkpoint pulse/toast** — listen for `checkpoint.created/restored` (validated, emitted,
   SSE-broadcast, just dropped on arrival). *(independent)*
@@ -171,7 +171,7 @@ Contract changes to `shared/events.js` must be **additive only** and requested f
   persona/model. Branch: **`agent/cron-agent-picker`** (reconcile vs current roster/dossier).
 - **P9 · Land the First-Command tutorial + coachmarks + Field Manual** *(M — reuse).* After the
   Awakening finale, a new user gets the diegetic First Command, just-in-time coachmarks, Field Manual
-  + Station Briefing. `tutorial.js/.css` exist on branch, just not loaded by trunk's `index.html`.
+  + Keep Briefing. `tutorial.js/.css` exist on branch, just not loaded by trunk's `index.html`.
   Branch: **`agent/tutorial`** (needs keyed E2E + anchor reconcile).
 - **P10 · Operational durability + contract cleanup** *(M, additive contract changes only).* Roster
   re-push on bare reconnect (so a sidecar restart doesn't silently break `team.dispatch`); reflection
@@ -182,6 +182,6 @@ Contract changes to `shared/events.js` must be **additive only** and requested f
 
 ## How this was built (regeneration)
 
-3-phase Workflow `starnet-wiring-audit`: 16 domain auditors trace each vertical on trunk → adversarial
+3-phase Workflow `eyehold-wiring-audit`: 16 domain auditors trace each vertical on trunk → adversarial
 verifiers refute high-severity gap claims → synthesis merges into this backlog. Re-run by
 re-invoking the saved workflow script. Full raw findings in the task output for run `wf_5c1c8a94-205`.

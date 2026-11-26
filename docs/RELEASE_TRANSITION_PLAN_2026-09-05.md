@@ -1,4 +1,4 @@
-# StarNet release transition plan — 2026-09-05
+# Eyehold release transition plan — 2026-09-05
 
 This plan begins after `v0.10.13` and remains valid while the remaining UI lanes merge. The
 candidate is not releasable until every exit criterion below is proved against one immutable
@@ -60,7 +60,7 @@ Source simulations are corroboration, not closure. Keep each report independent:
 | --- | --- |
 | Managed Sonnet HTTP 400 | Exact supported model through the deployed relay, correlated local/relay/upstream request IDs, successful recovery on the candidate installer. |
 | Mac paid onboarding/relink | Physical Apple Silicon Mac; link, reload, unlink/relink, quit and cold-start proof using the candidate installer and OS credential read-back. |
-| Funded station zero warning | Service-observed affected-account balance and rendered banner captured together before/after a managed run and restart. |
+| Funded keep zero warning | Service-observed affected-account balance and rendered banner captured together before/after a managed run and restart. |
 | Viewport blank after idle | Candidate installer on the affected GPU/display conditions for at least the reported 10–20 minute window, with renderer recovery diagnostics. |
 | Missing ONCE routine | Affected job/save receipt plus list and restart persistence; current local create/restart success is not historical recovery proof. |
 | Idle/high usage | Customer run/cost ledger, provider/model and enabled background-work cadence; distinguish expected autonomy from unexplained spend. |
@@ -72,7 +72,7 @@ risk decision; do not mark the report fixed.
 
 1. Build the signed/notarized candidate from the immutable SHA. Record source SHA, tree hash,
    artifact hash, architecture and signing identity.
-2. Upgrade an existing v0.10.13 Windows station without resetting its profile. Verify roster,
+2. Upgrade an existing v0.10.13 Windows keep without resetting its profile. Verify roster,
    routines, projects, connectors, settings and conversation continuity before and after restart.
 3. Repeat the paid onboarding/relink path on physical Apple Silicon hardware.
 4. Run the installed smoke and customer-critical journeys against the artifact, not a source server.

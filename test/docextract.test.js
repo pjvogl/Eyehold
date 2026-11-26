@@ -141,7 +141,7 @@ const DOCX = (body) => zip({ '[Content_Types].xml': '<x/>', 'word/document.xml':
 
   // ---- 6. END TO END through fs.read — including the fall-through that keeps a mislabelled file readable ----
   {
-    const ROOT = path.join(os.tmpdir(), 'starnet-docx-test-' + process.pid);
+    const ROOT = path.join(os.tmpdir(), 'eyehold-docx-test-' + process.pid);
     const { readTool } = makeFsTools({ fsp, pathMod: path, root: ROOT, docExtract: doc, limits: { readReturn: 100000 } });
     const CTX = { agentId: 'ag', emit: () => {} };
     await fsp.mkdir(path.join(ROOT, 'ag'), { recursive: true });

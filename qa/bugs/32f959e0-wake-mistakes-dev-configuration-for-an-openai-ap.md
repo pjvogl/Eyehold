@@ -24,7 +24,7 @@ On localhost:8992, Wake reports HTTP 400 missing key/model despite the OpenAI ca
 
 ## Repro
 
-1. Start a DEV-mode first-run station with ChatGPT OAuth connected and no OpenAI API key.
+1. Start a DEV-mode first-run keep with ChatGPT OAuth connected and no OpenAI API key.
 2. Select the OpenAI card and a ChatGPT model, leaving API KEY blank.
 3. Press Wake Overseer. Before the fix, configured(openai) returns true solely because DEV mode is enabled, choosing the API-key route instead of codex.
 

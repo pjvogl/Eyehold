@@ -22,7 +22,7 @@
 
 | File | # branches | Implication |
 | --- | --- | --- |
-| `frontend/app/stationui.js` | 8 | The biggest hotspot — frontend lanes touching it must land sequentially. |
+| `frontend/app/keepui.js` | 8 | The biggest hotspot — frontend lanes touching it must land sequentially. |
 | `frontend/app/app.js` | 8 | Same. |
 | `frontend/app/world.js` | 6 | Shared by recruit/camera/floor/workpipe. |
 | `sidecar/index.js` | 5 | All backend lanes (api-hardening, oauth-telegram, cron-picker, floor-routes) touch it → sequence them. |
@@ -75,7 +75,7 @@ These touch disjoint domains and won't collide with each other or with the front
 
 ## TIER 2 — Frontend queue (sequential, ONE at a time, re-sync between)
 
-All touch `stationui.js` / `app.js` / `index.html` / css. Land in this order:
+All touch `keepui.js` / `app.js` / `index.html` / css. Land in this order:
 1. `agent/ui-polish` (CRT hardware look; graft tokens from `design-system` then retire it).
 2. `agent/beginner-ux` (onboarding + prop→power legibility; already contains `tutorial`).
 3. `agent/recruit-fix` (retire `recruitment-bay`).

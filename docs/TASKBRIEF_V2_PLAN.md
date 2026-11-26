@@ -1,6 +1,6 @@
 # Task Brief v2 — surfacing the recommendation, honest fallback, recipe intake
 
-Plan date: 2026-07-16 · branch `claude/starnet-context-extraction-a06d70`
+Plan date: 2026-07-16 · branch `claude/eyehold-context-extraction-a06d70`
 Baseline: the Task Brief / intent-elicitation layer merged via `agent/briefing-reliability`
 (store + policy + tools + mutation gate + COMMS chips + channel fallback + patterns).
 Grep before building — every claim below was re-proven against trunk on the plan date.
@@ -143,9 +143,9 @@ new reason, update the contract-safety source-guards.
 4. **D** — request filed anytime; code only after the owner ships the contract addition.
 
 Per slice: smallest verifiable change → live verify → commit (pathspecs only) → next.
-`npm run test:fast` green before merge; merge via starnet-merge-ritual.
+`npm run test:fast` green before merge; merge via eyehold-merge-ritual.
 
-## Verify plan (starnet-verify)
+## Verify plan (eyehold-verify)
 
 - Live: dev-seeded app (`npm start`), give a deliberately underspecified task on a fresh
   stream → observe ⌖ question with ★ suggested chip + reason sub-line; tap suggested →

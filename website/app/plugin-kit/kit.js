@@ -1,26 +1,26 @@
-/* starnet-kit.js — the `starnet` bridge for plugin windows (plugin extensions phase 1, 2026-09-29).
+/* eyehold-kit.js — the `eyehold` bridge for plugin windows (plugin extensions phase 1, 2026-09-29).
 
-   Injected first thing in every plugin page's <head> by the sidecar, so `window.starnet` exists before any of the
-   plugin's own scripts run. The page is a sandboxed frame with an OPAQUE origin: it cannot read the station, its
-   token, or its API. Everything it may ask of the station goes through postMessage to the page host
+   Injected first thing in every plugin page's <head> by the sidecar, so `window.eyehold` exists before any of the
+   plugin's own scripts run. The page is a sandboxed frame with an OPAQUE origin: it cannot read the keep, its
+   token, or its API. Everything it may ask of the keep goes through postMessage to the page host
    (frontend/app/pluginhost.js), which knows WHICH plugin this frame belongs to and answers only for that plugin.
 
-     await starnet.ready                    → { plugin: {id, name, version}, screen: {id, title} }
-     starnet.store.get(key) / set(key, v) / delete(key) / keys()      the plugin's own durable data (JSON values)
-     starnet.backend.call(name, args)                                   the plugin's own code: api.handle(name, fn)
-     starnet.ui.toast(text, 'ok'|'warn'|'bad')                          a station notification
-     starnet.ui.setTitle(text)                                          this window's title (plain text)
-     starnet.ui.open(screenId)                                          open another of THIS plugin's screens
-     starnet.ui.close()                                                 close this window
-     starnet.ui.openLink(url)                                           an https:// link in the real browser
-     starnet.ui.setHeight(px) / starnet.ui.autoHeight(true|false)       the window follows content by default
-     starnet.theme.vars / starnet.theme.onChange(fn)                   the station's live look (already applied)
-     starnet.onData(fn)                                                 an APP: the crew just published new data
+     await eyehold.ready                    → { plugin: {id, name, version}, screen: {id, title} }
+     eyehold.store.get(key) / set(key, v) / delete(key) / keys()      the plugin's own durable data (JSON values)
+     eyehold.backend.call(name, args)                                   the plugin's own code: api.handle(name, fn)
+     eyehold.ui.toast(text, 'ok'|'warn'|'bad')                          a keep notification
+     eyehold.ui.setTitle(text)                                          this window's title (plain text)
+     eyehold.ui.open(screenId)                                          open another of THIS plugin's screens
+     eyehold.ui.close()                                                 close this window
+     eyehold.ui.openLink(url)                                           an https:// link in the real browser
+     eyehold.ui.setHeight(px) / eyehold.ui.autoHeight(true|false)       the window follows content by default
+     eyehold.theme.vars / eyehold.theme.onChange(fn)                   the keep's live look (already applied)
+     eyehold.onData(fn)                                                 an APP: the crew just published new data
 
    Every call returns a Promise; a refused call rejects with an Error whose message says why. */
 (function () {
   'use strict';
-  if (window.starnet && window.starnet.__kit) return;
+  if (window.eyehold && window.eyehold.__kit) return;
   const parentWin = window.parent;
   const pending = new Map();
   let seq = 0;
@@ -29,14 +29,14 @@
   const themeListeners = [];
   const dataListeners = [];   // an APP: the crew published new data (app.publish) — re-read and re-render
   const theme = { vars: {} };
-  // The host gave THIS page a nonce (in the URL fragment); every call carries it, so the station only ever answers
+  // The host gave THIS page a nonce (in the URL fragment); every call carries it, so the keep only ever answers
   // the page it loaded — never whatever a link might navigate this frame to.
   const NONCE = (/(?:^#|&)sn=([0-9a-f]{16,64})/.exec(location.hash || '') || [])[1] || '';
-  // A window call runs the plugin's own code (up to 30 s in the station, plus a cold start): wait longer for it.
+  // A window call runs the plugin's own code (up to 30 s in the keep, plus a cold start): wait longer for it.
   const TIMEOUT = { 'backend.call': 45000 };
 
   function call(method, args) {
-    if (!parentWin || parentWin === window) return Promise.reject(new Error('this page is not open in a StarNet window'));
+    if (!parentWin || parentWin === window) return Promise.reject(new Error('this page is not open in a Eyehold window'));
     const id = ++seq;
     return new Promise((resolve, reject) => {
       pending.set(id, { resolve, reject });
@@ -44,7 +44,7 @@
       // instead. '*' is the only target an opaque origin can name; nothing sent here is secret.
       parentWin.postMessage({ __sn: 1, n: NONCE, id, m: String(method), a: args === undefined ? null : args }, '*');
       setTimeout(() => {
-        if (pending.has(id)) { pending.delete(id); reject(new Error('the station did not answer ' + method)); }
+        if (pending.has(id)) { pending.delete(id); reject(new Error('the keep did not answer ' + method)); }
       }, TIMEOUT[method] || 15000);
     });
   }
@@ -73,7 +73,7 @@
     }
   });
 
-  // ---- auto height: the window hugs the page (like every native StarNet window) until the page opts out ----
+  // ---- auto height: the window hugs the page (like every native Eyehold window) until the page opts out ----
   // A page sized FROM the viewport (min-height:100vh plus a margin) would grow every time the frame grows: after a
   // run of back-to-back growth the kit stops following and leaves the height where it is.
   let auto = true, lastH = 0, raf = 0, growRun = 0, growAt = 0;
@@ -110,7 +110,7 @@
     }
     ev.preventDefault();
     ev.stopImmediatePropagation();
-    if (u.protocol === 'http:') u.protocol = 'https:';   // the station opens https only
+    if (u.protocol === 'http:') u.protocol = 'https:';   // the keep opens https only
     if (u.protocol === 'https:') call('ui.link', { url: u.href }).catch(() => {});
   }, true);
   function schedule() { if (!raf) raf = requestAnimationFrame(measure); }
@@ -120,7 +120,7 @@
     schedule();
   }
 
-  const starnet = {
+  const eyehold = {
     __kit: 1,
     ready,
     call,
@@ -129,7 +129,7 @@
       get vars() { return theme.vars; },
       onChange(fn) { if (typeof fn === 'function') themeListeners.push(fn); return () => { const i = themeListeners.indexOf(fn); if (i >= 0) themeListeners.splice(i, 1); }; }
     },
-    // the plugin's own code in the station (api.handle(name, fn) in its main file)
+    // the plugin's own code in the keep (api.handle(name, fn) in its main file)
     backend: {
       call: (fn, args) => call('backend.call', { fn: String(fn || ''), args: args === undefined ? null : args })
     },
@@ -149,7 +149,7 @@
       autoHeight: (on) => { auto = on !== false; lastH = 0; schedule(); }
     }
   };
-  window.starnet = starnet;
+  window.eyehold = eyehold;
 
   call('hello', {}).then((info) => {
     if (info && info.theme) applyTheme(info.theme);

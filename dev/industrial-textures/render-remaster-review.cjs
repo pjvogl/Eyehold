@@ -25,15 +25,15 @@ const pack=env.module.exports;
  wg.save();wg.translate(X,Y+14);wg.scale(5,5);for(let x=0;x<4;x++)pack.wall(wg,x*12,0,12,39,x,walls[i]);wg.restore();}
  fs.writeFileSync(path.join(out,'walls.png'),wcv.toBuffer('image/png'));
  const pcv=createCanvas(1152,770),pg=pcv.getContext('2d');pg.fillStyle='#101213';pg.fillRect(0,0,pcv.width,pcv.height);
- pg.fillStyle='#d4d0c3';pg.font='18px sans-serif';pg.fillText('WORKSTATIONS / ACTUAL TILE FOOTPRINTS / SAME CAMERA',20,28);
+ pg.fillStyle='#d4d0c3';pg.font='18px sans-serif';pg.fillText('WORKKEEPS / ACTUAL TILE FOOTPRINTS / SAME CAMERA',20,28);
  for(let row=0;row<2;row++)for(let i=0;i<4;i++){const face=['s','w','n','e'][i],side=i%2,L=row?24:36,w=side?12:L,h=side?L:12,X=i*280+25,Y=110+row*350;
  pg.fillStyle='#aaa594';pg.font='13px sans-serif';pg.fillText((row?'COMPACT ':'BROAD ')+face.toUpperCase()+' / '+w/12+' × '+h/12,X,Y-40);
  pg.save();pg.translate(X+50,Y);pg.scale(4,4);
  for(let yy=0;yy<5;yy++)for(let xx=0;xx<4;xx++)pack.floor(pg,xx*12,yy*12,12,xx,yy,'plate');
  pg.strokeStyle='#756744';pg.lineWidth=.3;pg.strokeRect(0,0,w,h);
  if(face==='w'){pg.translate(w,0);pg.scale(-1,1);}
- pack.workstation(pg,0,0,w,h,face==='w'?'e':face);
+ pack.workkeep(pg,0,0,w,h,face==='w'?'e':face);
  pg.restore();}
- fs.writeFileSync(path.join(out,'workstations.png'),pcv.toBuffer('image/png'));
+ fs.writeFileSync(path.join(out,'workkeeps.png'),pcv.toBuffer('image/png'));
  console.log(JSON.stringify({assets:pack.status().assets.length,review:out}));
 })().catch(e=>{console.error(e);process.exitCode=1;});

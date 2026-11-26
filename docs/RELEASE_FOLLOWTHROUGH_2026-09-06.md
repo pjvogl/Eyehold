@@ -16,12 +16,12 @@ cloud main branch was deployed at `b83271e5cf2556c3ef301a55e4e2c971f36e8838`.
   live catalog/margin check explicitly skipped because the local host had no upstream key.
   Backup/restore drill passed; Windows used hard-kill recovery because it cannot send SIGTERM.
 - Separate production backup verified at
-  `/data/release-backups/0.11.0-b83271e/starnet-20260907T022021Z.db`.
+  `/data/release-backups/0.11.0-b83271e/eyehold-20260907T022021Z.db`.
 - One existing machine `6835e5ef373068`, one existing `/data` volume, rolling deployment,
   `--ha=false`. Current image:
-  `registry.fly.io/starnet-cloud:deployment-01M1WTP0VJXYH87GYJZESGFY1K`.
+  `registry.fly.io/eyehold-cloud:deployment-01M1WTP0VJXYH87GYJZESGFY1K`.
   Previous image retained for rollback:
-  `registry.fly.io/starnet-cloud:deployment-01M0XVX7VAYEB58FJ8PH6J2VRJ`.
+  `registry.fly.io/eyehold-cloud:deployment-01M0XVX7VAYEB58FJ8PH6J2VRJ`.
 - After deployment: all 18 source files match the clean candidate. All 112,082 ledger rows
   present in the predeployment backup are identical in the live database; integrity check
   passes. Public health returns 200 and an unauthenticated models request returns 401 with
@@ -48,13 +48,13 @@ The website change used a separate owned worktree based on live production sourc
 Only `legal/privacy.html` differs among 3,944 staged files. Existing staging checks passed
 24 assertions; browser review verified the section, links and lack of horizontal overflow.
 Publication source is `1976b0e82` (with content commit `09bf42cfd`), deployment
-`https://66fbffce.starnet-site.pages.dev`. The public canonical page matches the prepared
+`https://66fbffce.eyehold-site.pages.dev`. The public canonical page matches the prepared
 HTML after reversing only the observed Cloudflare email-obfuscation transform.
 
 Google's first branding check identified missing site ownership. Cloudflare Domain Connect
-added one Google verification TXT record for starnetos.com; its authorization explicitly
+added one Google verification TXT record for eyehold.com; its authorization explicitly
 granted no future DNS-change permission. Search Console confirmed ownership. The next
-branding check passed and the verified StarNet branding was published.
+branding check passed and the verified Eyehold branding was published.
 
 Data access is **not verified or submitted**. Google's review page names missing intended
 data usage and a YouTube demo video covering the OAuth clients. Drive productivity and Email
@@ -62,7 +62,7 @@ productivity fit the implemented tasks, but the form cannot save those selection
 the video. Existing scope justifications remain available. A real consent/operation demo,
 real-account refresh/removal/revocation/restart acceptance, and the applicable sensitive/
 restricted-scope review still remain. The Workspace data policy and any required security
-assessment must be addressed for the actual model-provider data flow before attestation.
+assessment must be addressed for the actual model-provider data flow before attekeep.
 
 Official references:
 - https://developers.google.com/identity/protocols/oauth2/production-readiness/restricted-scope-verification
@@ -76,7 +76,7 @@ searched only the exact test subject in drafts, and read the matching message. I
 tool trace contains those three successful operations and no send operation. Gmail's own
 UI independently showed exactly one matching draft with the requested subject and body.
 Drive, Docs, Sheets and Calendar also completed real Google consent. The Clients page
-lists StarNet Desktop and StarNet Account (web); both belong in the verification demo.
+lists Eyehold Desktop and Eyehold Account (web); both belong in the verification demo.
 
 Subsequent installed-candidate runs exercised 20 actual Google API calls: Gmail draft
 creation/search/read (3), Docs creation/update/read plus Sheets creation/write/read/format
@@ -111,7 +111,7 @@ created. This reconciles local packaging; it does not change the installed execu
 
 ## Desktop verification and limits
 
-- Fresh StarNet fast gate: 729/729, exit zero; no desktop runtime code changed in this follow-through.
+- Fresh Eyehold fast gate: 729/729, exit zero; no desktop runtime code changed in this follow-through.
 - ABILITIES opened in the real seeded app and passed eight instrumented capture cycles,
   four at normal CPU and four with only that test browser throttled 4x. Stable geometry and
   zero visible loaders were observed in 120–206 ms after the normal opening wait. The

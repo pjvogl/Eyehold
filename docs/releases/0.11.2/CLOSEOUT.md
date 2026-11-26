@@ -8,7 +8,7 @@ Candidate `69baf91a5b2c22230f87e614da6a72882278bc6c` remains unchanged. The two 
 
 Findings `0b802140-1789136215296` and `4692c89f-1789136215296` asserted that gaze caused chasing because a moving character's next waypoint occupied another character's tile. The original detector is `scripts/audit.mjs:208`. That snapshot does not establish the cause of movement. `frontend/app/world.js` deliberately handles transient occupied waypoints using path-planning blockers, soft separation and a bounded jam-release mechanism.
 
-An isolated seeded sidecar and isolated browser profile recruited 19 specialists through the real RECRUIT interface, producing a 20-body live floor. Browser-only instrumentation preserved the original `glanceAt` implementation and arguments, recording every body's position, target, path, path index, goal and movement state immediately before and after each call. No production source or personal station was modified.
+An isolated seeded sidecar and isolated browser profile recruited 19 specialists through the real RECRUIT interface, producing a 20-body live floor. Browser-only instrumentation preserved the original `glanceAt` implementation and arguments, recording every body's position, target, path, path index, goal and movement state immediately before and after each call. No production source or personal keep was modified.
 
 - Initial run: 180 snapshots, 64 occupied-waypoint snapshots, 32 natural gaze calls plus 380 direct gaze calls, zero movement mutations and zero containment violations.
 - Repeat with a negative control: 180 snapshots, 77 occupied-waypoint snapshots, 26 natural gaze calls plus 380 direct gaze calls, zero movement mutations and zero containment violations.
@@ -26,8 +26,8 @@ The eight case-by-case decisions and precisely missing evidence remain in [RELEA
 
 The owner's instruction to finish and release establishes the intended outcome. The earlier waiver explicitly covers soak durations. It does not establish that these eight reports recovered. The existing publication boundary requires either evidence-backed resolution or an explicit decision to publish with these documented uncertainties. Do not silently convert a request to finish repairs into eight fabricated closures or a green readiness result.
 
-## Installer and personal station
+## Installer and personal keep
 
 The exact candidate has complete Guardian, CI, signed build, hosted clean-install/upgrade/lifecycle and personal preservation receipts in [POINTER_CUT.md](POINTER_CUT.md). The signed Windows installer hash remains `8b39dab2818acac23097056c8796d1f48668b9a711f09c134f7d56b51e58f416`.
 
-A fresh read of the normally running personal installation again returned version 0.11.2, source `69baf91a5b2c22230f87e614da6a72882278bc6c`, 26 crew, 141 props, 73 conversations, zero active runs and one paused routine. The native StarNet window was responding. No reinstall was needed for this evidence-only closeout.
+A fresh read of the normally running personal installation again returned version 0.11.2, source `69baf91a5b2c22230f87e614da6a72882278bc6c`, 26 crew, 141 props, 73 conversations, zero active runs and one paused routine. The native Eyehold window was responding. No reinstall was needed for this evidence-only closeout.

@@ -2,7 +2,7 @@
    and exact draft -> run attribution through the existing recommendation ledger. */
 'use strict';
 const StarterStore = (() => {
-  const KEY = 'starnet.session-ideas.v1', TTL = 6 * 3600000, GAP = 60000;
+  const KEY = 'eyehold.session-ideas.v1', TTL = 6 * 3600000, GAP = 60000;
   let deps = {}, state, pending = null, epoch = 0, resetEpoch = 0, lastAttempt = 0, bound = false, queue = Promise.resolve();
   const now = () => deps.now ? deps.now() : Date.now();
   const engine = () => deps.engine || (typeof Starters !== 'undefined' ? Starters : null);

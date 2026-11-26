@@ -7,7 +7,7 @@ const path = require('node:path');
 const { makeTerminalTools } = require('../sidecar/tools/builtin/terminal.js');
 
 (async () => {
-  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'starnet-terminal-tools-'));
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'eyehold-terminal-tools-'));
   const workspace = path.join(root, 'a1'); fs.mkdirSync(workspace, { recursive: true });
   const calls = [];
   const manager = {

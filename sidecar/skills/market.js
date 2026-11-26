@@ -1,9 +1,9 @@
-/* sidecar/skills/market.js — the Skill Market client: browse the StarNet catalog, install a skill into the station
+/* sidecar/skills/market.js — the Skill Market client: browse the StarNet catalog, install a skill into the keep
    library, keep it honest.
 
    The catalog (skills/market-format.js) is a public index on starnetos.com, fetched when the Commander opens the
    market. TRUST: the index and the pulled-skills list are both signed (skills/market-signing.js); a document whose
-   signature does not verify with a key this app trusts, or whose serial is lower than the highest this station has
+   signature does not verify with a key this app trusts, or whose serial is lower than the highest this keep has
    accepted from that catalog (or, for the official catalog, than the floor this app build ships), is refused whole
    ("not trusted") — so neither a changed website nor a replayed old catalog can change what installs. The market can
    PULL a skill: its signed `revoked` list names it, and any installed copy is switched off (kept on disk, left out
@@ -19,8 +19,8 @@
         digest-pinned catalog skill we reviewed installs in one click; a dangerous finding is still refused);
      4. swaps it into <WORKSPACES>/skill-market/<slug>/ (the old copy is only deleted once the new one is recorded)
         and records the digest of every file.
-   Installed market skills join the station SKILL LIBRARY (D3) through recipes(); a market copy of a bundled original
-   replaces the bundled copy for this station when it is at least as new (D5; bundled recipes carry `version:`).
+   Installed market skills join the keep SKILL LIBRARY (D3) through recipes(); a market copy of a bundled original
+   replaces the bundled copy for this keep when it is at least as new (D5; bundled recipes carry `version:`).
    recipes() re-hashes the files on disk and leaves out any skill whose bytes no longer match what was installed.
 
    Dependencies are injected (fetchDocument, fs, path, loadJson/saveJson, guard, now) so this is testable without a
@@ -34,7 +34,7 @@ const signing = require('./market-signing.js');
 const catalog = require('./catalog.js');
 const { note: failNote } = require('../failopen.js');   // a cleanup step that fails stays visible, never silent
 
-const DEFAULT_CATALOG_URL = 'https://starnetos.com/.well-known/starnet-skills.json';
+const DEFAULT_CATALOG_URL = 'https://eyehold.babelbook.net/.well-known/eyehold-skills.json';
 const CACHE_MS = 5 * 60 * 1000;
 const REFERENCE_CAP = 60000;       // references ride inline in the recipe body, bounded
 const INDEX_MAX_BYTES = 2000000;   // the catalog index (~1 KB per skill); SKILL.md files keep the fetcher's 256 KB cap
@@ -54,7 +54,7 @@ function makeSkillMarket(deps) {
   const onChange = typeof deps.onChange === 'function' ? deps.onChange : () => {};
   const trustedKeys = Array.isArray(deps.trustedKeys) && deps.trustedKeys.length ? deps.trustedKeys : signing.TRUSTED_KEYS;
   // the minimum serial this APP BUILD accepts from the official catalog (market-floor.json, pinned when the catalog is
-  // deployed): a fresh station can't be fed a signed catalog older than the one live when its app was built
+  // deployed): a fresh keep can't be fed a signed catalog older than the one live when its app was built
   const floorSerial = Number.isSafeInteger(deps.floorSerial) && deps.floorSerial > 0 ? deps.floorSerial : 0;
   const STATE = path.join(root, 'installed.json');
   let cached = null;       // { url, doc, fetchedAt }
@@ -74,8 +74,8 @@ function makeSkillMarket(deps) {
     if (JSON.stringify(back && back.installed) !== JSON.stringify(s.installed) || JSON.stringify(back && back.catalogs) !== JSON.stringify(s.catalogs)) throw new Error('the install record did not read back');
   }
 
-  /* What this station has accepted from each catalog (keyed by the index URL): the newest serial and that
-     document's pulled rows. Serials are per catalog, so pointing a station at a self-hosted catalog never collides
+  /* What this keep has accepted from each catalog (keyed by the index URL): the newest serial and that
+     document's pulled rows. Serials are per catalog, so pointing a keep at a self-hosted catalog never collides
      with the official one. (A record from before per-catalog tracking kept one top-level serial for the default.) */
   function trustOf(s, indexUrl) {
     const all = s.catalogs && typeof s.catalogs === 'object' ? s.catalogs : {};
@@ -86,7 +86,7 @@ function makeSkillMarket(deps) {
   function minSerial(s, indexUrl) { return Math.max(trustOf(s, indexUrl).serial, indexUrl === DEFAULT_CATALOG_URL ? floorSerial : 0); }
 
   /* fetchSigned(url, what, indexUrl) -> the parsed document at url, only if its detached signature verifies over the
-     exact bytes received and its serial is not lower than this station (or this app build) has already accepted. */
+     exact bytes received and its serial is not lower than this keep (or this app build) has already accepted. */
   async function fetchSigned(url, what, indexUrl, fetchOpts) {
     if (typeof fetchDocument !== 'function') throw new Error('skill market fetching is unavailable');
     const got = await fetchDocument(url, fetchOpts);
@@ -101,7 +101,7 @@ function makeSkillMarket(deps) {
     let doc; try { doc = JSON.parse(got.text); } catch (_) { throw new Error('the skill market returned invalid JSON'); }
     const serial = marketFormat.serialOf(doc);
     const least = minSerial(state(), indexUrl);
-    if (serial && serial < least) throw new Error('the skill market ' + what + ' was not trusted: it is older than one this station already saw (' + serial + ' < ' + least + ')');
+    if (serial && serial < least) throw new Error('the skill market ' + what + ' was not trusted: it is older than one this keep already saw (' + serial + ' < ' + least + ')');
     return { url: got.url || url, doc };
   }
 
@@ -136,7 +136,7 @@ function makeSkillMarket(deps) {
   async function fetchCatalog(opts) {
     opts = opts || {};
     const url = str(catalogUrl()).trim();
-    if (!url) throw new Error('the skill market is turned off on this station');
+    if (!url) throw new Error('the skill market is turned off on this keep');
     // a cached catalog older than a pulled list accepted since is stale: never serve it
     const fresh = cached && cached.url === url && now() - cached.fetchedAt < CACHE_MS && cached.serial >= trustOf(state(), url).serial;
     if (!opts.force && fresh) return cached;
@@ -157,7 +157,7 @@ function makeSkillMarket(deps) {
   }
 
   // the digest the bundled copy of an original WOULD have at `version` — equal to the entry's digest means the
-  // station's bundled text is exactly what the market publishes, so there is nothing to update
+  // keep's bundled text is exactly what the market publishes, so there is nothing to update
   function bundledDigest(recipe, version) {
     try {
       return packageFormat.canonicalize([{ path: 'SKILL.md', content: marketFormat.libraryToSkillMd(recipe, { version }) }]).digest;
@@ -208,7 +208,7 @@ function makeSkillMarket(deps) {
   }
   function invalidate() { recipeCache = null; maskCache = null; onChange(); }
 
-  // every pulled row this station has accepted from any catalog, plus the cached catalog's
+  // every pulled row this keep has accepted from any catalog, plus the cached catalog's
   function allPulledRows() {
     const s = state();
     const rows = [];
@@ -370,7 +370,7 @@ function makeSkillMarket(deps) {
     return { ok: true, slug };
   }
 
-  /* mergeLibrary(bundled) -> the station library: bundled recipes, with an installed market copy replacing the bundled
+  /* mergeLibrary(bundled) -> the keep library: bundled recipes, with an installed market copy replacing the bundled
      recipe of the same slug when it is at least as new (an app update that ships newer built-in text wins over an
      older market copy), built-in recipes whose own text the market pulled left out, then the market-only skills. */
   function mergeLibrary(bundled) {

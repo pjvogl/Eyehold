@@ -1,6 +1,6 @@
 # RPG Layer Design
 
-_The role-play / gamification / "addictiveness" layer for the StarNet real-agent harness (2026-06-13). Output of a 6-lens parallel design pass + synthesis. Sits on top of the already-locked builder, object→capability, Salvage/XP economy, and truthful-telemetry foundation (see `BUILDER_AND_WORLD_FOUNDATION.md`, `docs/design-proposals.md`). This document plans the agent-as-character, quest, engagement, loot, and core-verb mechanics that those docs deliberately left untouched._
+_The role-play / gamification / "addictiveness" layer for the Eyehold real-agent harness (2026-06-13). Output of a 6-lens parallel design pass + synthesis. Sits on top of the already-locked builder, object→capability, Salvage/XP economy, and truthful-telemetry foundation (see `BUILDER_AND_WORLD_FOUNDATION.md`, `docs/design-proposals.md`). This document plans the agent-as-character, quest, engagement, loot, and core-verb mechanics that those docs deliberately left untouched._
 
 > **Clarification (andro, 2026-06-14): this is a general-purpose agent sandbox (OpenClaw / ref-class), NOT a themed narrative game. There is NO lore.** The RPG is the management UI, gamified — every mechanic is a practical agent-ops feature you'd find in a boring agent harness, turned into a verb the user actually wants to use, and it must work for ANY use case. See the two clarifying laws and the feature→mechanic map below.
 
@@ -24,7 +24,7 @@ The character the player bonds to **is a body of work the agent actually did for
 
 ### Two clarifying laws (andro, 2026-06-14)
 
-1. **No lore.** This is a sandbox, not a themed story. No fixed narrative, no imposed fiction, no "saga," no scripted arcs. RPG *mechanics* — yes; RPG *lore* — no. Any element whose only job is to tell a story is cut (see the cut list: the "StarNet Codex" saga and prescribed-campaign framing are removed). The setting is just the user's own workspace, rendered.
+1. **No lore.** This is a sandbox, not a themed story. No fixed narrative, no imposed fiction, no "saga," no scripted arcs. RPG *mechanics* — yes; RPG *lore* — no. Any element whose only job is to tell a story is cut (see the cut list: the "Eyehold Codex" saga and prescribed-campaign framing are removed). The setting is just the user's own workspace, rendered.
 2. **General-purpose, always.** This is OpenClaw / the reference harness with a game for a face — a general agent sandbox the user drives for *whatever they want* (code, research, ops, content, a real company, anything). **No mechanic may assume a single domain.** The acceptance test for every feature: *is it a 1:1 wrapper around a real agent-ops action, and does it work for any task?* The RPG layer is the practical agent-management surface, gamified — the game IS the control panel.
 
 ---
@@ -44,12 +44,12 @@ The product is OpenClaw/the reference harness — a general agent harness — we
 | See cost & token usage | Live meters + the Efficiency stat | any run |
 | Set budgets & limits | Earned-trust tier + Focus Stances | any agent |
 | Schedule recurring work | A standing order | any task |
-| Delegate / multi-agent handoff | Station org layout + party / fireteam relay | any pipeline |
+| Delegate / multi-agent handoff | Keep org layout + party / fireteam relay | any pipeline |
 | Agent memory / context | The notebook object + the agent's record | any domain |
 | Track what an agent is good at | The character sheet (stats + inferred class) | derived from whatever it actually did |
 | Review & keep outputs | Loot drop → the Vault | any artifact type |
 | Add an MCP server / new tool | A new buildable object in the catalog | any integration |
-| Manage many agents | The station (rooms = teams) | any org shape |
+| Manage many agents | The keep (rooms = teams) | any org shape |
 | See what ran while away | The cold-boot recap | real events only |
 
 If a proposed mechanic isn't in the left column (a real thing a general agent harness does) or can't be made domain-agnostic, it doesn't ship. That single rule keeps the game honest *and* keeps it a sandbox.
@@ -79,7 +79,7 @@ The core attachment object: a deterministic transform from the persisted run-log
 ### 2. Contracts & Campaigns (real work as self-verifying quests)
 - **The Contract Object** — `{ goal, objectives[], reward, expiry }` where each objective is a typed predicate over the frozen vocab (deliverable-of-kind, run-`done`, spend-cap, tool-ok). A pure reducer folds events against open contracts; **there is deliberately no manual "complete" button** — completion is a function of telemetry. Reward rides the existing Salvage/XP mint, just attributed to the contract.
 - **Objective / project board (the "Main Quest")** — whatever goal the user states (any domain, no prescribed storyline) becomes a top-level objective they can optionally decompose into a checklist of Contracts. This is the user's real to-do list, gamified — open-ended and editable, never a scripted narrative. Progress is gated on real deliverables; completing a chunk tiers up the relevant room. Think "project board with a quest skin," not "story campaign."
-- **Contract Board** — rotating daily/weekly bounties **generated from your station's real telemetry** (failed runs to recover, tools that never returned ok, rooms with zero deliverables, lean-spend weeks). A mirror of actual state, framed as opportunities, never invented nags.
+- **Contract Board** — rotating daily/weekly bounties **generated from your keep's real telemetry** (failed runs to recover, tools that never returned ok, rooms with zero deliverables, lean-spend weeks). A mirror of actual state, framed as opportunities, never invented nags.
 - **Turn-In Ritual / Boss Approval** — completion opens the **real artifact** (file/image/doc from the winning `deliverable`) plus the run's reconciled cost; Commander clicks `SHIP` (mint), `REDIRECT` (seed a new real run), or `REJECT`. Existence/quantity machine-verified; the human judges quality. (Same beat also handles `permission.prompt` as an "authorize action" card.)
 - **Agent-Proposed Quests** — at `agent.run.end` an agent may emit a `proposal` deliverable (goal + objectives it commits to); it queues on the board as PENDING; one-click accept converts it to a live Contract and fires a pull-trigger run. Respects autonomy-OFF (propose-but-wait), max-pending cap, spend-cap objective.
 
@@ -95,19 +95,19 @@ Where moment-to-moment dopamine is minted. The lifecycle (`start → token → t
 ### 4. Loot, Gear & Collection (the artifact IS the drop, the model IS the weapon)
 - **The Armory** — the room's compute object = an equippable **weapon** whose rarity is real price/context (Haiku = Common, Sonnet = Rare, Opus 4.8 = Legendary), with **$/1M-tokens shown prominently** so "Legendary" visibly reads "expensive." Tools = artifacts reading real `capId/scope` from `CAP_REGISTRY`.
 - **Loot Drops / The Vault** — on `deliverable` a v7-style loot item drops; the agent walks over and collects it into a Vault/gallery where images render as real thumbnails and every card **opens the real file on disk**. Rarity rides the *same* quality-bonus signal Salvage uses (size capped/normalized so padding earns nothing). The Vault is an auditable portfolio = the trophy case.
-- **Crafting & Tempering** — a Forge spends Salvage (gated by Station Level) to **write a more-permissive grant row** into capability state — the upgrade IS a real capability expansion. **Every mutating/destructive escalation always hits default-deny consent regardless of progression.**
+- **Crafting & Tempering** — a Forge spends Salvage (gated by Keep Level) to **write a more-permissive grant row** into capability state — the upgrade IS a real capability expansion. **Every mutating/destructive escalation always hits default-deny consent regardless of progression.**
 - **Achievements & Sets** — badges minted only on verifiable milestones, each citing source run ids (an honest portfolio). Sets group related loot. Criteria reward efficiency/diversity/shipping — never raw money burned.
-- **Station Legacy / Prestige** — at real lifetime milestones, archive the station as a read-only Legacy snapshot (Vault + achievements + best gear intact) and start fresh with capability/cosmetic **heirlooms** (never fake stat boosts).
+- **Keep Legacy / Prestige** — at real lifetime milestones, archive the keep as a read-only Legacy snapshot (Vault + achievements + best gear intact) and start fresh with capability/cosmetic **heirlooms** (never fake stat boosts).
 
 ### 5. Retention Loops (honest cadence, no fake timers)
 Highest dark-pattern risk → where the moat is won or lost.
 
-- **Cold-Boot Brief ("While You Were Away")** — on return after time away, replay the buffered real event stream as a captain's log of what the crew actually shipped/spent/failed overnight. An empty night honestly reads "Station quiet — no scheduled runs fired." _(Depends on scheduled/autonomous runs producing real overnight work.)_
+- **Cold-Boot Brief ("While You Were Away")** — on return after time away, replay the buffered real event stream as a captain's log of what the crew actually shipped/spent/failed overnight. An empty night honestly reads "Keep quiet — no scheduled runs fired." _(Depends on scheduled/autonomous runs producing real overnight work.)_
 - **Shipping Streak** — a day counts **only** if ≥1 real `deliverable` fired that local day. No login credit. No streak-freeze purchase, ever. Idle days reset honestly. A quiet HUD flame + room lit/unlit cue, never a FOMO popup.
 - **Milestone Ceremonies + Plaques** — rare real firsts/thresholds detonate full CRT juice and hang a **permanent plaque that deep-links to the run that earned it**. Routine wins get a calm tier (over-firing cheapens the high).
 - **Honest Heads-Up Pings** — OS notifications fire **only** on real consequential events the user opted into per-class (`deliverable`, budget wall, `permission.prompt`, error/refusal), with a hard daily cap and a deep-link into the room. Re-engagement / "we miss you" pings are **forbidden by policy.**
 - **One-More-Directive Hook** — on a win, a **single dismissible** suggestion for the obvious next real move (re-run with follow-up, hand to another room, promote to a schedule), each showing its cost estimate first. Never an auto-spend carousel.
-- ~~The StarNet Codex~~ — **CUT (law 1: no lore).** A scripted "saga" is fiction with no real signal behind the prose. Its only honest residue — milestone *ceremonies* keyed to real aggregates — already lives in "Milestone Ceremonies + Plaques" above.
+- ~~The Eyehold Codex~~ — **CUT (law 1: no lore).** A scripted "saga" is fiction with no real signal behind the prose. Its only honest residue — milestone *ceremonies* keyed to real aggregates — already lives in "Milestone Ceremonies + Plaques" above.
 
 ---
 
@@ -124,7 +124,7 @@ This product's whole moat is honesty. These are policy, not preferences:
 | Turn-in / Boss Approval | The artifact MUST be shown (can't accept blind). Log every accept/reject so rubber-stamping is visible. |
 | Gear rarity | $/token shown prominently so "Legendary" reads "expensive." Celebrate cheap-model efficiency to counterbalance upsell pressure. |
 | Rarity/stats from output size or raw count | Cap/normalize; weight by kind; gate on `reason:'done'`. Padding junk earns nothing. |
-| Leveled auto-budget | Capped by Station Level too — **no single agent can outspend the station.** |
+| Leveled auto-budget | Capped by Keep Level too — **no single agent can outspend the keep.** |
 | Scars | Temporary, always-healable, the agent's record (not the Commander's), never block core use. |
 
 ---
@@ -138,7 +138,7 @@ Current built state: title → connect (BYOK) → one starter room → agent wak
 - **RPG-2 — Contracts & the character sheet.** The Contract Object, Agent Level = Earned-Trust Tier, Classes, the Living Dossier, Milestone Ceremonies. Where the loop gets sticky and identity forms. _Depends on: RPG-0 reducer + RPG-1 + Salvage/XP economy + loop.js limit guards._
 - **RPG-3 — Builder-coupled loot & gear.** The Armory, Loot Drops/Vault, Crafting & Tempering, Achievements, Proficiency, Traits & Scars. Rides the builder phase + the expanded `CAP_REGISTRY` (shell/web/files = M5). _Depends on: THE BUILDER + CAP_REGISTRY expansion + RPG-2._
 - **RPG-4 — Retention & meta-layer.** Objective/project board, Contract Board, Cold-Boot Brief, Shipping Streak, Honest Pings, Agent-Proposed Quests, Field Promotions, Focus Stance, Party Combo. _Depends on: scheduled/autonomous runs (D4) + multi-agent handoff (P4) + Tauri notifications + RPG-2/3._
-- **RPG-5 — Social & prestige (experimental, defer).** Run Replay/Highlight Reel, Station Legacy/Prestige, opt-in leaderboards. _Depends on: a proven single-player loop + privacy/redaction layer + backend._
+- **RPG-5 — Social & prestige (experimental, defer).** Run Replay/Highlight Reel, Keep Legacy/Prestige, opt-in leaderboards. _Depends on: a proven single-player loop + privacy/redaction layer + backend._
 
 ---
 
@@ -159,16 +159,16 @@ Current built state: title → connect (BYOK) → one starter room → agent wak
 ## Cut list (tempting, wrong)
 
 - Streak freezes / "spend to save your streak" — the most corrosive dark pattern; idle days must reset.
-- Any re-engagement / "your station misses you" notification.
+- Any re-engagement / "your keep misses you" notification.
 - A progress bar that lerps toward 100% — must pulse on real signal, complete only on `agent.run.end`.
 - Auto-granting destructive capabilities (shell-execute, file-write always-allow) as a mastery/crafting reward.
-- Fake/idle overnight progress to fill an empty Cold-Boot Brief — an empty night reads "Station quiet."
+- Fake/idle overnight progress to fill an empty Cold-Boot Brief — an empty night reads "Keep quiet."
 - Public leaderboards as an early feature (XL; needs backend + privacy-publish; defer to last).
-- Any single agent's auto-budget exceeding a Station-Level cap.
+- Any single agent's auto-budget exceeding a Keep-Level cap.
 - Rarity/stats from raw output size or raw deliverable count — normalize, cap, weight by kind, gate on `done`.
 - Class as a restrictive lock — keep it advisory and additive.
 - Fireteams / Party Combo before the real handoff plumbing (P4) exists.
-- **Imposed lore / a fixed story arc (the "StarNet saga", scripted campaigns)** — this is a general-purpose sandbox, not a themed game; ship RPG mechanics, not fiction.
+- **Imposed lore / a fixed story arc (the "Eyehold saga", scripted campaigns)** — this is a general-purpose sandbox, not a themed game; ship RPG mechanics, not fiction.
 - **Any mechanic that assumes one use case** — every verb must work for code, research, ops, content, a real business, anything. If it only makes sense for "build an app," it's wrong.
 
 ---

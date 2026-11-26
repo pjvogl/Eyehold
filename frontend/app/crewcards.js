@@ -1,6 +1,6 @@
 /* CREW CARDS — the CREW rail rows as agent cards (css/crew-glass.css): a housed lamp in the portrait well,
    a run clock beside the name while the agent works, the live step beside its status, and a gold frame
-   while it waits on your OK. stationui.js still owns the rows and their WORKING / IDLE / IN CONVERSATION
+   while it waits on your OK. keepui.js still owns the rows and their WORKING / IDLE / IN CONVERSATION
    label (crewTick, locked by test/state-truth-overlap.test.js); this module only adds what it can prove:
      · clock  = the oldest run of that agent this page saw START (agent.run.start). A run already under way
                 when the page loaded has no known start, so it shows no clock rather than a guessed one.

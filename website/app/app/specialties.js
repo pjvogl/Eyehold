@@ -1,4 +1,4 @@
-/* STARNET — specialties.js : preset SPECIALTY types for agents — the "what it's FOR" axis.
+/* EYEHOLD — specialties.js : preset SPECIALTY types for agents — the "what it's FOR" axis.
 
    Parallel to personas.js (the "how it TALKS" axis). The two compose: a "Witty Researcher"
    is a Researcher specialty wearing the witty persona. A specialty bundles a ready-made
@@ -28,7 +28,7 @@
 })(typeof globalThis !== 'undefined' ? globalThis : this, function (shared, eyeholdRoles) {
   'use strict';
 
-  const STORE_KEY = 'starnet.specialties.v1';   // localStorage home for custom (save-your-own) specialties
+  const STORE_KEY = 'eyehold.specialties.v1';   // localStorage home for custom (save-your-own) specialties
   const DEFAULT_ID = shared.DEFAULT_ID || 'chief';
 
   // model-tier hints are ADVISORY only (the real model list is the live OpenRouter catalog) — a chip
@@ -90,7 +90,7 @@
       tags: Object.freeze(normTags(s.tags)),          // interest-lane weights the recommender ranks by
       starters: Object.freeze((s.starters || []).slice()),
       // ---- LOADOUT (Class Loadouts S1): applied at summon; the user can override everything after ----
-      kit: normList(s.kit),                           // CAP_REGISTRY objectTypes auto-requisitioned at the workstation
+      kit: normList(s.kit),                           // CAP_REGISTRY objectTypes auto-requisitioned at the workkeep
       skills: normList(s.skills),                     // bundled skill-library slugs enabled for THIS agent (ADD-only)
       reasoningEffort: normEffort(s.reasoningEffort), // applied default effort (roster record); pips stay advisory
       custom: false
@@ -100,7 +100,7 @@
   /* ---------- the curated catalog ---------- *
      Each purpose folds into the prompt under "YOUR PURPOSE", each manual under "STANDING ORDERS …
      always follow these"; both are written in the harness voice (real tools, the Commander, do the
-     work). Several tie into the station's real subsystems (messaging+cron, Cortex memory, PixelLab). */
+     work). Several tie into the keep's real subsystems (messaging+cron, Cortex memory, PixelLab). */
   const BUILTINS = Object.freeze((shared.BUILTINS || []).map(freezeSpec));
   // the ARCHETYPE pool (deep cuts): full specs held OFF the default roster. Never gated — get() resolves
   // them (so an old save / a scout draft / a summon by id keeps working), the bay lists them only in the

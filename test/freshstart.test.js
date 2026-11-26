@@ -16,61 +16,61 @@ function storage(seed) {
 
 (async () => {
   const store = storage({
-    'starnet.save': 'station',
-    'starnet.dev.pullFault': 'unreachable',
+    'eyehold.save': 'keep',
+    'eyehold.dev.pullFault': 'unreachable',
     'skynet.save': 'legacy',
-    'starnet_arcade_hi': '9',
+    'eyehold_arcade_hi': '9',
     'skynet_arcade_scores': '[]',
     'unrelated.host.preference': 'keep'
   });
   let sawCacheBeforeNative = false;
   const result = await FreshStart.resetDesktop({
     async invoke(command) {
-      A.eq(command, 'starnet_start_fresh', 'uses the native path that works without sidecar HTTP');
-      sawCacheBeforeNative = store.getItem('starnet.save') === 'station';
+      A.eq(command, 'eyehold_start_fresh', 'uses the native path that works without sidecar HTTP');
+      sawCacheBeforeNative = store.getItem('eyehold.save') === 'keep';
       return { ok: true, listening: true, quarantine: 'safe-copy' };
     }
   }, store);
   A.eq(sawCacheBeforeNative, true, 'durable quarantine succeeds before browser cache is cleared');
   A.eq(result.listening, true, 'native listening truth is returned to the gate');
   A.eq(result.browserDataCleared, true, 'the renderer proves its fallback browser clear');
-  A.eq(result.browserKeysCleared, 5, 'dot and legacy underscore StarNet namespaces are cleared');
+  A.eq(result.browserKeysCleared, 5, 'dot and legacy underscore Eyehold namespaces are cleared');
   A.eq(store.snapshot(), { 'unrelated.host.preference': 'keep' }, 'unrelated origin state is untouched');
 
-  const refused = storage({ 'starnet.save': 'last-readable-copy' });
+  const refused = storage({ 'eyehold.save': 'last-readable-copy' });
   let error = '';
   try {
     await FreshStart.resetDesktop({ async invoke() { throw new Error('workspace still owned'); } }, refused);
   } catch (e) { error = String(e && e.message || e); }
   A.ok(error.includes('workspace still owned'), 'native refusal reaches the user');
-  A.eq(refused.getItem('starnet.save'), 'last-readable-copy', 'failed preservation never clears the browser fallback');
+  A.eq(refused.getItem('eyehold.save'), 'last-readable-copy', 'failed preservation never clears the browser fallback');
 
   const blocked = {
     get length() { return 1; },
-    key() { return 'starnet.save'; },
+    key() { return 'eyehold.save'; },
     removeItem() { throw new Error('storage locked'); }
   };
   const incomplete = await FreshStart.resetDesktop({
     async invoke() { return { ok: true, listening: true, quarantine: 'safe-copy', browserDataCleared: false }; }
   }, blocked);
-  A.eq(incomplete.browserDataCleared, false, 'native and renderer clear failure is reported instead of claiming a fresh station');
+  A.eq(incomplete.browserDataCleared, false, 'native and renderer clear failure is reported instead of claiming a fresh keep');
   A.ok(incomplete.browserClearError.includes('storage locked'), 'the truthful browser-clear failure reaches the gate');
 
   let unlocked = false, present = true;
   const transient = {
     get length() { return present ? 1 : 0; },
-    key() { return present ? 'starnet.save' : null; },
+    key() { return present ? 'eyehold.save' : null; },
     removeItem() { if (!unlocked) throw new Error('storage locked'); present = false; }
   };
   let nativeResets = 0;
   const firstTry = await FreshStart.resetDesktop({
-    async invoke() { nativeResets++; return { ok: true, listening: true, quarantine: 'original-station', browserDataCleared: false }; }
+    async invoke() { nativeResets++; return { ok: true, listening: true, quarantine: 'original-keep', browserDataCleared: false }; }
   }, transient);
   A.eq(firstTry.browserDataCleared, false, 'precondition: the first browser clear is blocked after preservation');
   unlocked = true;
   const retried = FreshStart.retryBrowserClear(firstTry, transient);
   A.eq(retried.browserDataCleared, true, 'a later browser-only retry can finish the reset');
-  A.eq(retried.quarantine, 'original-station', 'the retry keeps the exact original-station preservation receipt');
+  A.eq(retried.quarantine, 'original-keep', 'the retry keeps the exact original-keep preservation receipt');
   A.eq(nativeResets, 1, 'browser-clear retry never quarantines the clean generation a second time');
 
   const nativeProof = await FreshStart.resetDesktop({

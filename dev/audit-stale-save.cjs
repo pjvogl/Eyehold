@@ -6,7 +6,7 @@ const {auth,api,sleep}=require('./audit-api.cjs');
  await auth();
  const id='audit_save_'+Date.now();
  const baseline=structuredClone((await api('/api/save')).save);
- assert.ok(baseline,'Use an onboarded disposable station');
+ assert.ok(baseline,'Use an onboarded disposable keep');
  baseline._saveRevision=0;baseline.agentId=id;baseline.agent.id=id;baseline.updatedAt=Date.now();
  baseline.workstreams=[{id:'audit-thread',agentId:id,title:'Audit stale save',history:[],runIds:[],kind:'chat',lane:'active'}];
  assert.equal((await api('/api/save',baseline)).ok,true);

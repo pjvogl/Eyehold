@@ -2,7 +2,7 @@
 // Reproducible packaging only: preserve every RGB value and retained alpha.
 const fs=require('node:fs'),crypto=require('node:crypto');
 const sharp=require('C:/Users/andro/Desktop/gen/node_modules/sharp');
-const docs='docs/station-remaster/catalog-storage',out='frontend/assets/industrial/catalog-storage';
+const docs='docs/keep-remaster/catalog-storage',out='frontend/assets/industrial/catalog-storage';
 const hash=b=>crypto.createHash('sha256').update(b).digest('hex');
 const sheet=docs+'/sheet-v2-source.png',sheetHash='ec040667f18096b23ceb1f068ba68b37b7760185bb73ce22bbc067607179dcd8';
 const rows=[['bookshelf',docs+'/bookshelf-source.png','143f9ca94e3c94163c36af142877cce487fe105b5fb114dc5f853aac14ed7764',[0,0,1364,1153],[-1,-9,26,22],[2,1]],['shelf',sheet,sheetHash,[540,0,650,320],[0,-14,53,26],[4,1]],['industrial_drawerbank',sheet,sheetHash,[40,330,575,240],[0,-3,36,15],[3,1]],['arc_indexwall',sheet,sheetHash,[620,325,600,245],[-1,-13,50,23],[4,1]],['industrial_locker',docs+'/sheet-v1-source.png','e74b7fd81b642c5f5e8432b6824fd714371c7760d9bc4a1b46f230c67d21ea63',[180,570,340,310],[0,-12,24,24],[2,1]],['rack',docs+'/sheet-v1-source.png','e74b7fd81b642c5f5e8432b6824fd714371c7760d9bc4a1b46f230c67d21ea63',[690,565,390,312],[0,-14,29,26],[2,1]],['war_intelcab',docs+'/war_intelcab-v2-source.png','05eee954df3d34344b6aca38ee6e4bd910df09d4bfc7aa8c7bbb001b01476390',[0,0,928,1695],[0,-7,17,31],[1,2]],['safe',sheet,sheetHash,[765,870,250,367],[-1,-8,18,32],[1,2]]];

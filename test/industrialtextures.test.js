@@ -79,8 +79,8 @@ function canvas(w = 1, h = 1) {
   cv.getContext=()=>ctx; cv.addEventListener=()=>{}; return cv;
 }
 function fixtureAsset(url, darkScreens) {
-  const side=url.endsWith('/workstation-e.png'), compact=url.includes('workstation-compact');
-  const isDesk=url.includes('workstation');
+  const side=url.endsWith('/workkeep-e.png'), compact=url.includes('workkeep-compact');
+  const isDesk=url.includes('workkeep');
   const w=isDesk ? side ? 24 : compact ? 32 : 48 : 64;
   const h=isDesk ? side ? 48 : compact ? 24 : 30 : url.includes('/walls/') ? 48 : 64;
   const pixels=new Uint8ClampedArray(w*h*4);
@@ -138,13 +138,13 @@ async function main() {
   equal(floorPaths.size,Surface.MATERIALS.length,'no floor selection silently shares a fallback image');
   equal(wallPaths.size,Surface.WALLS.length,'no wall selection silently shares a fallback image');
   const failure=load({fail:'/remaster/floors/hex.png'}); await failure.finish();
-  equal(failure.api.enabled(),false,'one failed asset prevents a mixed old/new station');
+  equal(failure.api.enabled(),false,'one failed asset prevents a mixed old/new keep');
   equal(failure.dataset.textureRevision,'native','failed pack reports native fallback');
   const noPaint=canvas(100,100), c=noPaint.getContext('2d');
-  for(const [method,args] of [['floor',[0,0,12,0,0]],['wall',[0,0,12,39,0]],['shell',[12,12,0,0]],['shellPlate',[0,0,12,12]],['workstation',[0,0,36,12]],['chair',[0,0,12,12]],['furniture',['console-bank',0,0,36,12]]])
+  for(const [method,args] of [['floor',[0,0,12,0,0]],['wall',[0,0,12,39,0]],['shell',[12,12,0,0]],['shellPlate',[0,0,12,12]],['workkeep',[0,0,36,12]],['chair',[0,0,12,12]],['furniture',['console-bank',0,0,36,12]]])
     equal(failure.api[method](c,...args),false,method+' declines after any asset failure');
   equal(failure.api.wallStrip(39),null,'failed pack supplies no partial corner strip');
-  equal(failure.api.workstationEmitter(0,0,36,12),null,'failed art invents no workstation source');
+  equal(failure.api.workkeepEmitter(0,0,36,12),null,'failed art invents no workkeep source');
   equal(noPaint.draws.length,0,'failed pack leaves every native surface untouched');
   for (const url of pending.requests) {
     const broken=load({fail:url}); await broken.finish();
@@ -184,30 +184,30 @@ async function main() {
   const black=draw(api,'floor',0,0,12,0,0,'plate','#111111'), gray=draw(api,'floor',0,0,12,0,0,'plate','#888888');
   ok(black.image!==gray.image,'neutral paint selections have distinct cached materials');
   const neutralPaintResponds=Buffer.compare(Buffer.from(black.image.pixels),Buffer.from(gray.image.pixels))!==0;
-  for(const [w,h,facing,asset] of [[36,12,'s','/workstation.png'],[24,12,'s','/workstation-compact.png'],[36,12,'n','/remaster/workstation-n.png'],[24,12,'n','/remaster/workstation-compact-n.png'],[12,24,'e','/remaster/workstation-e.png'],[12,36,'e','/remaster/workstation-e.png']]) {
-    const d=draw(api,'workstation',20,30,w,h,facing);
+  for(const [w,h,facing,asset] of [[36,12,'s','/workkeep.png'],[24,12,'s','/workkeep-compact.png'],[36,12,'n','/remaster/workkeep-n.png'],[24,12,'n','/remaster/workkeep-compact-n.png'],[12,24,'e','/remaster/workkeep-e.png'],[12,36,'e','/remaster/workkeep-e.png']]) {
+    const d=draw(api,'workkeep',20,30,w,h,facing);
     ok([...d.image.paths].some(p=>p.endsWith(asset)),w+'x'+h+' '+facing+' picks the correct authored desk view');
     near(d.dw/d.dh,d.image.width/d.image.height,'desk image retains its source aspect ratio');
     near(d.dy+d.dh,30+h,'desk sits on the exact footprint floor line');
     near(d.dx+d.dw/2,20+w/2,'desk is centered on its actual footprint');
     ok(d.dh<=h+12&&d.dw>0&&d.dh>0,'monitor height remains bounded above the real footprint');
-    const emitter=api.workstationEmitter(20,30,w,h,facing);
+    const emitter=api.workkeepEmitter(20,30,w,h,facing);
     if(facing==='n') equal(emitter,null,'north cabinet has no invented front screen emitter');
     else {
       const raw=pending.assets.get([...d.image.paths][0]), [a,b]=raw.points;
       const cx=((a.x+.5)+2*(b.x+.5))/3, cy=((a.y+.5)+2*(b.y+.5))/3;
       near(emitter.x,d.dx+cx/raw.width*d.dw,'source x follows the cyan-weighted screen centroid');
       near(emitter.y,d.dy+cy/raw.height*d.dh,'source y follows the cyan-weighted screen centroid');
-      const reads=d.image.reads, moved=api.workstationEmitter(33,23,w,h,facing);
+      const reads=d.image.reads, moved=api.workkeepEmitter(33,23,w,h,facing);
       near(moved.x,emitter.x+13,'moving the footprint translates the same screen source x');
       near(moved.y,emitter.y-7,'moving the footprint translates the same screen source y');
       equal(d.image.reads,reads,'screen centroid is cached instead of rereading all sprite pixels every frame');
     }
   }
   const unlit=load({darkScreens:true}); await unlit.finish();
-  equal(unlit.api.workstationEmitter(0,0,36,12),null,'noncyan and dark artwork invents no screen emitter');
+  equal(unlit.api.workkeepEmitter(0,0,36,12),null,'noncyan and dark artwork invents no screen emitter');
   ok(neutralPaintResponds,'neutral paint changes the authored material luminance');
-  equal(api.crate(canvas().getContext('2d'),0,0,24,12),true,'normal station uses the user-approved crate');
+  equal(api.crate(canvas().getContext('2d'),0,0,24,12),true,'normal keep uses the user-approved crate');
   const review=load({review:true});
   equal(review.api.crate(canvas().getContext('2d'),0,0,24,12),false,'pending review art retains native fallback');
   await review.finish();

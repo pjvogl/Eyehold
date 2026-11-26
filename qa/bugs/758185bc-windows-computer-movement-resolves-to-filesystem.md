@@ -31,7 +31,7 @@ On Windows run `node test/win32desktop.test.js` with the regression test and the
 
 ## Evidence
 
-Before the rename, the new regression exits 1 with `Cannot find path '...\\starnet-mouse-dispatch-...\\306' because it does not exist.` PowerShell's default `move` alias resolves to `Move-Item` ahead of the driver's `function Move`. After the helper and its call sites are renamed to `Set-StarNetCursorPosition`, the same real-PowerShell regression passes: `win32desktop.test: OK (19 assertions)`. Existing computer and desktop suites pass 46 and 38 assertions respectively.
+Before the rename, the new regression exits 1 with `Cannot find path '...\\eyehold-mouse-dispatch-...\\306' because it does not exist.` PowerShell's default `move` alias resolves to `Move-Item` ahead of the driver's `function Move`. After the helper and its call sites are renamed to `Set-EyeholdCursorPosition`, the same real-PowerShell regression passes: `win32desktop.test: OK (19 assertions)`. Existing computer and desktop suites pass 46 and 38 assertions respectively.
 
 ## Verdict
 
@@ -41,7 +41,7 @@ Source-fixed by dd85573b9 and installer-verified on signed 0.11.2 candidate 69ba
 
 Windows regression verifies move, click, double-click, drag start/end coordinates, mouse down/up ordering and negative screen coordinates. Physical calls are stubbed to avoid affecting the running desktop; PowerShell command resolution and the production JSON/process bridge are real. Non-Windows retains existing inert-driver coverage.
 
-Live source proof on 2026-09-11: isolated `node dev/seed.js --keep` station, separate Chrome profile, real Windows driver and `computer.use` Full Power dispatch. The test verified the button's screen point belonged to its own browser process. Original driver at BUILD coordinates (352, 779) rejected with `Cannot find path '...\\352'`, leaving `aria-expanded=false`. Repaired driver at the identical point returned `computer.click ok`, with `aria-expanded=true` and the REFIT STATION menu item visible. Native before/after screenshots confirmed the menu. Private local receipts: `.tmp/live-receipt.json`, `.tmp/live-before.png`, `.tmp/live-after.png`; full desktop screenshots are not committed. Customer journeys passed 34/34. Full fast gate passed 771/771; HTTP gate passed 113/113, both exit 0.
+Live source proof on 2026-09-11: isolated `node dev/seed.js --keep` keep, separate Chrome profile, real Windows driver and `computer.use` Full Power dispatch. The test verified the button's screen point belonged to its own browser process. Original driver at BUILD coordinates (352, 779) rejected with `Cannot find path '...\\352'`, leaving `aria-expanded=false`. Repaired driver at the identical point returned `computer.click ok`, with `aria-expanded=true` and the REFIT KEEP menu item visible. Native before/after screenshots confirmed the menu. Private local receipts: `.tmp/live-receipt.json`, `.tmp/live-before.png`, `.tmp/live-after.png`; full desktop screenshots are not committed. Customer journeys passed 34/34. Full fast gate passed 771/771; HTTP gate passed 113/113, both exit 0.
 
 ## Sibling coverage
 

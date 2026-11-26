@@ -3,7 +3,7 @@
    Until now quota was learned only by hitting it: errorClass.js reads `retry-after` / `x-ratelimit-*reset*`
    off a 429 and nothing else was kept. Every provider's SUCCESS path did `if (res.ok && res.body) return res`
    and dropped the headers on the floor — including the `*-remaining` counters that say how close the next call
-   is to failing. So the station could only ever report a wall it had already walked into.
+   is to failing. So the keep could only ever report a wall it had already walked into.
 
    That is the wrong shape for a product whose core promise is truthful telemetry, and it is the root of the
    [[codex-429-quota-copy-lies]] complaint: with no remaining-count, every 429 renders as "wait a few seconds"

@@ -70,7 +70,7 @@ async function main() {
   materializeSeedWorkspace(join(scratch, 'ws'), MODEL);
   const side = bootSeededSidecar({
     port: PORT, model: MODEL, key: 'sk-or-v1-line-identity-mock', scratchDir: join(scratch, 'ws'),
-    env: { SKYNET_OPENROUTER_BASE: mock.base, STARNET_OPENROUTER_BASE: mock.base }
+    env: { SKYNET_OPENROUTER_BASE: mock.base, EYEHOLD_OPENROUTER_BASE: mock.base }
   });
   let chrome = null, cdp = null;
   const report = {};
@@ -91,7 +91,7 @@ async function main() {
       if (!Build.isOpen()) Build.open();
       const card = document.querySelector('.refit-firstrun');
       if (card) { const go = card.querySelector('#refit-guide-go'); if (go) go.click(); }
-      const st = Build.__test__.station();
+      const st = Build.__test__.keep();
       for (const b of st.belts()) st.removeBelt(b.x, b.y);
       const WF = { intake:1, bay:1, outbox:1, filter:1, splitter:1, merger:1 };
       for (const p of st.props().slice()) if (WF[p.t]) st.removeProp(p.id);
@@ -113,7 +113,7 @@ async function main() {
     // the ENTRY dock is crewed by the HERO (so a plain COMMS turn IS a direct order to that dock);
     // the second dock gets a real summoned specialist through the same seam the STEP card uses.
     const crew = await evalJS(cdp, `(() => {
-      const st = Build.__test__.station();
+      const st = Build.__test__.keep();
       const bays = st.props().filter(p => p.t === 'bay').sort((a, b) => a.x - b.x);
       const r1 = st.assignPropAgent(bays[0].id, 'agent');
       let second = (App.agents() || []).map(a => a.id).filter(id => id !== 'agent')[0] || null;
@@ -144,7 +144,7 @@ async function main() {
     const inboxCopy = await evalJS(cdp, `(() => {
       document.querySelectorAll('.refit-step-card').forEach(n => n.remove());
       document.querySelectorAll('.refit-flow-card').forEach(n => n.remove());
-      const st = Build.__test__.station();
+      const st = Build.__test__.keep();
       const inbox = st.props().find(p => p.t === 'intake');
       Build.openAssign(inbox.id);
       const g = document.querySelector('.refit-flow-card');
@@ -157,7 +157,7 @@ async function main() {
     report.shotInbox = (await capture(cdp, OUT, 'legibility-inbox-triggers')).path;
 
     report.lineIdentity = JSON.parse(await evalJS(cdp, `JSON.stringify((() => {
-      const plan = Pipeline.compileRoutingPlan(Build.__test__.station().projectGeometry());
+      const plan = Pipeline.compileRoutingPlan(Build.__test__.keep().projectGeometry());
       return { lines: (plan.lines || []).map(l => ({ lineId: l.lineId, agents: l.agents })), lineOfAgent: plan.lineOfAgent };
     })())`));
     console.log('LINE IDENTITY (compiled):', JSON.stringify(report.lineIdentity));

@@ -63,7 +63,8 @@ const add = (st, o) => { const s = Sp.spec(o.t); const r = st.addProp(Object.ass
 // 3. a room resize keeps every wall-hung piece on its wall (growing the room north over it left it hanging in mid-floor)
 {
   const st = WM.create(WM.starterDoc()), rm = st.rooms()[0], R = rm.rects[0];
-  const W = add(st, { t: 'industrial_wallpanel', x: 6, y: R.y1 });
+  // The keep hearth occupies (5,0)–(6,1). Hang the panel on the clear north-wall span.
+  const W = add(st, { t: 'industrial_wallpanel', x: 9, y: R.y1 });
   const before = JSON.stringify(st.serialize());
   const grow = st.resizeRoom(rm.id, { x1: R.x1, y1: R.y1 - 3, x2: R.x2, y2: R.y2 });
   A.ok(grow && !grow.ok && grow.error === 'LOSES_WALL', 'growing the room over a wall-hung piece\'s wall is refused: ' + JSON.stringify(grow));

@@ -87,7 +87,7 @@ function startMockOpenRouter() {
             } else if (toolResults === 1) {
               const manifest = { v: 1, runId: runId, agentId: 'builder', backlogId: doomed ? 'item-doomed' : 'item-plan',
                 title: doomed ? 'Doomed plan' : 'Recent-work automation backlog', kind: 'doc', planOnly: true,
-                summary: 'A backlog turning repeated workstation questions into automation candidates.',
+                summary: 'A backlog turning repeated workkeep questions into automation candidates.',
                 files: [{ path: 'automation-backlog.md', bytes: 60 }], howToUse: 'Open automation-backlog.md.', notVerified: ['pick which to build first'] };
               tool('w2', 'fs_write', { path: dir + '/deliverable.json', content: JSON.stringify(manifest) });
             } else { text('Wrote the backlog.'); }
@@ -105,7 +105,7 @@ function startMockOpenRouter() {
 
 function boot(port, env, attemptsLeft) {
   return new Promise((resolve, reject) => {
-    const child = spawn(process.execPath, [INDEX], { env: Object.assign({}, process.env, env, { SKYNET_PORT: String(port) }), stdio: ['ignore', 'pipe', 'pipe'] });
+    const child = spawn(process.execPath, [INDEX], { env: Object.assign({}, process.env, env, { EYEHOLD_PORT: String(port) }), stdio: ['ignore', 'pipe', 'pipe'] });
     let out = '', settled = false;
     const onData = d => {
       out += d.toString();
@@ -145,22 +145,22 @@ function jsonAt(p){ try { return JSON.parse(fs.readFileSync(p,'utf8')); } catch 
 function backlogOf(v){ if(!v||typeof v!=='object') return null; if(Array.isArray(v.backlog)) return v.backlog; for(const x of Object.values(v)){ const b=backlogOf(x); if(b) return b; } return null; }
 fs.renameSync = function(src,dst){
   const target=String(dst), data=(()=>{try{return fs.readFileSync(src,'utf8')}catch(_){return ''}})(); let fail=false;
-  if(!fired && process.env.STARNET_IMPL_FAULT==='stamp' && target.endsWith('deliverable.json') && data.includes('\\"implementOf\\"')) fail=true;
+  if(!fired && process.env.EYEHOLD_IMPL_FAULT==='stamp' && target.endsWith('deliverable.json') && data.includes('\\"implementOf\\"')) fail=true;
   if(!fired && /builder\\.workshop\\.json$/.test(target)) { const b=backlogOf(jsonAt(src))||[]; const built=b.filter(x=>x&&x.builtRunId); const impl=b.filter(x=>x&&String(x.id||'').startsWith('impl-'));
-    if(process.env.STARNET_IMPL_FAULT==='registration' && built.length>=2 && impl.some(x=>x.builtRunId)) fail=true;
-    if(process.env.STARNET_IMPL_FAULT==='retirement' && b.length===1 && impl.length===1 && impl[0].builtRunId) fail=true;
+    if(process.env.EYEHOLD_IMPL_FAULT==='registration' && built.length>=2 && impl.some(x=>x.builtRunId)) fail=true;
+    if(process.env.EYEHOLD_IMPL_FAULT==='retirement' && b.length===1 && impl.length===1 && impl[0].builtRunId) fail=true;
   }
-  if(fail){ fired=true; const e=new Error('INJECT_IMPLEMENT_'+process.env.STARNET_IMPL_FAULT.toUpperCase()); e.code='ENOSPC'; throw e; }
+  if(fail){ fired=true; const e=new Error('INJECT_IMPLEMENT_'+process.env.EYEHOLD_IMPL_FAULT.toUpperCase()); e.code='ENOSPC'; throw e; }
   return original(src,dst);
 };`;
-  const env = { SKYNET_WORKSPACES: ws, SKYNET_DEV: '1', SKYNET_OPENROUTER_BASE: mock.base,
-    SKYNET_OPENROUTER_KEY: 'sk-or-v1-workshop-fake', SKYNET_DEFAULT_MODEL: 'test/model', STARNET_IMPL_FAULT: mode,
+  const env = { EYEHOLD_WORKSPACES: ws, EYEHOLD_DEV: '1', EYEHOLD_OPENROUTER_BASE: mock.base,
+    EYEHOLD_OPENROUTER_KEY: 'sk-or-v1-workshop-fake', EYEHOLD_DEFAULT_MODEL: 'test/model', EYEHOLD_IMPL_FAULT: mode,
     NODE_OPTIONS: '--import=data:text/javascript,' + encodeURIComponent(hook) };
   const live = await boot(9050 + (process.pid % 25) + seq * 30, env, 20);
   const B = 'http://' + HOST + ':' + live.port;
   try {
     const token = await bootToken(B, B);
-    const headers = { 'Content-Type': 'application/json', 'X-StarNet-Token': token, Origin: B };
+    const headers = { 'Content-Type': 'application/json', 'X-Eyehold-Token': token, Origin: B };
     const post = (p, b) => fetch(B + p, { method: 'POST', headers, body: JSON.stringify(b) });
     await post('/api/workshop/grant', { agentId: 'builder', on: true });
     await post('/api/workshop/queue', { agentId: 'builder', id: 'item-plan-' + mode, title: 'Durability plan ' + mode });
@@ -191,13 +191,13 @@ fs.renameSync = function(src,dst){
 (async () => {
   const mock = await startMockOpenRouter();
   const ws = fs.mkdtempSync(path.join(os.tmpdir(), 'sk-workshop-impl-e2e-'));
-  const env = { SKYNET_WORKSPACES: ws, SKYNET_DEV: '1', SKYNET_OPENROUTER_BASE: mock.base, SKYNET_OPENROUTER_KEY: 'sk-or-v1-workshop-fake', SKYNET_DEFAULT_MODEL: 'test/model' };
+  const env = { EYEHOLD_WORKSPACES: ws, EYEHOLD_DEV: '1', EYEHOLD_OPENROUTER_BASE: mock.base, EYEHOLD_OPENROUTER_KEY: 'sk-or-v1-workshop-fake', EYEHOLD_DEFAULT_MODEL: 'test/model' };
   const firstBoot = await boot(8970 + (process.pid % 25), env, 20);
   const child = firstBoot.child;
   const B = 'http://' + HOST + ':' + firstBoot.port;
   try {
     const token = await bootToken(B, B);
-    const headers = { 'Content-Type': 'application/json', 'X-StarNet-Token': token, Origin: B };
+    const headers = { 'Content-Type': 'application/json', 'X-Eyehold-Token': token, Origin: B };
     const post = (p, b) => fetch(B + p, { method: 'POST', headers, body: JSON.stringify(b) });
 
     // 1. build the PLAN — the deliverable shape that used to make Implement a pure file copy.
@@ -297,7 +297,7 @@ fs.renameSync = function(src,dst){
     await post('/api/autonomy/posture', { posture: { initiative: 'free', reach: 'sandbox' } });
     // prove the rung actually took — otherwise every assertion below silently tests the DEFAULT rung.
     const rung = await (await fetch(B + '/api/autonomy/posture', { headers })).json();
-    A.eq(((rung.summary) || {}).initiative, 'free', 'the station really is at FREE for this leg');
+    A.eq(((rung.summary) || {}).initiative, 'free', 'the keep really is at FREE for this leg');
     await post('/api/workshop/queue', { agentId: 'builder', id: 'item-freeplan', title: 'Free-rung plan' });
     const freeShift = await readNdjson(await post('/api/workshop/shift', { agentId: 'builder' }));
     const freeRes = ((freeShift.find(e => e.name === 'workshop.shift.result') || {}).payload || {});

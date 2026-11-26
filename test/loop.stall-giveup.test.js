@@ -1,7 +1,7 @@
 /* node test/loop.stall-giveup.test.js — Step 2 F4 of the 2026-09-22 Hermes audit: a hung provider no longer keeps a
    run silent for ~37 minutes.
 
-   The idle watchdog (providers/provider.js, SKYNET_PROVIDER_IDLE_MS, default 300s) turns a byte-silent stream into a
+   The idle watchdog (providers/provider.js, EYEHOLD_PROVIDER_IDLE_MS, default 300s) turns a byte-silent stream into a
    retryable `timeout`, and the loop's ladder used to spend every rung on it: 7 attempts x 300s with no event in
    between. Now two CONSECUTIVE idle stalls on one provider/model end the ladder through recovery-policy: a configured
    fallback is taken (provider.fallback reason 'provider_stalled'); with none, the run ends error with
@@ -11,7 +11,7 @@
    Deterministic: the REAL openai-compatible adapter + the REAL idle watchdog over a stubbed fetch whose body sends
    headers and then nothing (idle window shortened to 40ms via the adapter's own env knob); sleep/random injected. */
 'use strict';
-process.env.SKYNET_PROVIDER_IDLE_MS = '40';
+process.env.EYEHOLD_PROVIDER_IDLE_MS = '40';
 const A = require('./_assert.js');
 const events = require('../shared/events.js');
 const { makeEmitter } = require('../shared/emitter.js');

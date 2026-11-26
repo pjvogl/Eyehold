@@ -18,7 +18,7 @@ const { parseScreens } = require('../sidecar/plugins.js');
 const { relPathOk } = require('../sidecar/plugin-surface.js');
 const { CAP_REGISTRY } = require('../sidecar/capability/registry.js');
 
-const DIR = path.join(os.tmpdir(), 'starnet-plugin-author-' + process.pid);
+const DIR = path.join(os.tmpdir(), 'eyehold-plugin-author-' + process.pid);
 const DRAFTS = path.join(DIR, 'plugin-drafts'), PLUGINS = path.join(DIR, 'plugins');
 const previews = [], installs = [];
 const author = makePluginAuthorTools({
@@ -91,7 +91,7 @@ async function throwsMsg(fn) { try { await fn(); return ''; } catch (e) { return
     A.eq(previews[1].screen, 'settings', 'preview can open a named screen');
     const sub = await run('plugin.submit', { id: 'pr-radar' });
     A.ok(/Installed the "pr-radar" plugin — it is OFF until the Commander approves it/.test(sub.content), 'submit installs it OFF and says so');
-    A.eq(installs, ['pr-radar'], 'the station re-lists after install (so EXTENSIONS shows it pending)');
+    A.eq(installs, ['pr-radar'], 'the keep re-lists after install (so EXTENSIONS shows it pending)');
     A.ok(await fsp.stat(path.join(PLUGINS, 'pr-radar', 'ui', 'extra.css')).then(() => true, () => false), 'the whole draft is installed');
     A.ok(!(await fsp.readdir(DRAFTS)).some(n => /^\.staging-/.test(n)), 'no staging folder is left behind');
 

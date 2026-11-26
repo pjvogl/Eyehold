@@ -30,7 +30,7 @@ async function until(fn, ms) { const end = Date.now() + (ms || 8000); while (Dat
   const server = makeServer();
   await new Promise(r => server.listen(0, '127.0.0.1', r));
   const base = 'http://127.0.0.1:' + server.address().port;
-  const profileDir = fs.mkdtempSync(path.join(os.tmpdir(), 'starnet-stepin-e2e-'));
+  const profileDir = fs.mkdtempSync(path.join(os.tmpdir(), 'eyehold-stepin-e2e-'));
   const driver = T.makeCdpDriver({ chrome, forceHeadless: true, syntheticInputOnly: true, cdpPort: 0, profileDir, timeoutMs: 20000, cleanupProfile: true });
   const host = makeHandoffHost({ now: () => Date.now() });
   const B = makeBrowserTools({ driver, handoff: { request: f => host.request(Object.assign({ agentId: 'nova', runId: 'e2e-run' }, f)) } });

@@ -5,7 +5,7 @@ const path = require('path');
 const A = require('./_assert.js');
 const { SidecarFixture } = require('./helpers/sidecar-fixture.js');
 (async () => {
-  const fixture = SidecarFixture.create({ prefix: 'starnet-effective-toolsets-', timeoutMs: 15000, env: { SKYNET_FULL_ACCESS: '0' } });
+  const fixture = SidecarFixture.create({ prefix: 'eyehold-effective-toolsets-', timeoutMs: 15000, env: { EYEHOLD_FULL_ACCESS: '0' } });
   try {
     fs.writeFileSync(path.join(fixture.workspace, 'agent.roster.json'), JSON.stringify({ version: 1, agents: [
       { agentId: 'ask', name: 'Ask agent', approvalMode: 'ask', executionProfile: 'trusted-project' },
@@ -24,13 +24,13 @@ const { SidecarFixture } = require('./helpers/sidecar-fixture.js');
     A.eq(cabinet(full).available, true, 'Full Access overrides saved off switch');
     A.eq(cabinet(full).consentGated, false, 'Full Access does not promise confirmation');
     await fixture.json('POST', '/api/permissions/bypass', { on: true });
-    A.eq((await get('ask')).authority.source, 'station', 'master bypass updates effective disclosure live');
+    A.eq((await get('ask')).authority.source, 'keep', 'master bypass updates effective disclosure live');
     await fixture.restart();
-    A.eq((await get('ask')).authority.source, 'station', 'master bypass disclosure survives restart');
+    A.eq((await get('ask')).authority.source, 'keep', 'master bypass disclosure survives restart');
     await fixture.json('POST', '/api/permissions/bypass', { on: false });
     A.eq(cabinet(await get('ask')).available, false, 'revoking bypass restores persisted disabled switch');
     A.eq((await fixture.json('GET', '/api/toolsets?agent=missing')).status, 404, 'unknown selected agent fails honestly');
-    A.eq((await fixture.request('/api/toolsets?agent=ask', { headers: { 'x-starnet-token': '' } })).status, 403, 'effective disclosure remains token protected');
+    A.eq((await fixture.request('/api/toolsets?agent=ask', { headers: { 'x-eyehold-token': '' } })).status, 403, 'effective disclosure remains token protected');
   } finally { await fixture.dispose(); }
   A.report('effective-toolsets.e2e');
 })().catch(e => { console.error(e.stack || e); process.exit(1); });

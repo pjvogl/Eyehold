@@ -9,7 +9,7 @@ const path = require('path');
 const os = require('os');
 const { makeFsTools } = require('../sidecar/tools/builtin/fs.js');
 
-const ROOT = path.join(os.tmpdir(), 'starnet-fs-test-' + process.pid);
+const ROOT = path.join(os.tmpdir(), 'eyehold-fs-test-' + process.pid);
 const { writeTool, readTool, listTool, appendTool, editTool, searchTool, _internals } = makeFsTools({ fsp, pathMod: path, root: ROOT, limits: { writeBytes: 32, readReturn: 1000 } });
 
 async function rejects(promise, msg) { try { await promise; A.ok(false, msg + ' — did NOT reject'); } catch (e) { A.ok(true, msg); } }
@@ -28,7 +28,7 @@ async function rejects(promise, msg) { try { await promise; A.ok(false, msg + ' 
   await rejects(_internals.resolveInside('../evil', 'x.txt'), 'rejects path-traversal agentId');
   // symlink/junction-style escapes: the string path stays under the jail, but the real target does not.
   {
-    const outside = path.join(os.tmpdir(), 'starnet-fs-outside-' + process.pid);
+    const outside = path.join(os.tmpdir(), 'eyehold-fs-outside-' + process.pid);
     try {
       await fsp.mkdir(path.join(ROOT, 'ag'), { recursive: true });
       await fsp.mkdir(outside, { recursive: true });
@@ -44,7 +44,7 @@ async function rejects(promise, msg) { try { await promise; A.ok(false, msg + ' 
   // A dangling final symlink must not be treated as a missing ordinary file. The
   // former realpath fallback allowed fs.write to create its outside target.
   {
-    const outside = path.join(os.tmpdir(), 'starnet-fs-dangling-' + process.pid + '.json');
+    const outside = path.join(os.tmpdir(), 'eyehold-fs-dangling-' + process.pid + '.json');
     const link = path.join(ROOT, 'ag', 'dangling.json');
     let linked = false;
     try { await fsp.symlink(outside, link, 'file'); linked = true; }
@@ -134,7 +134,7 @@ async function rejects(promise, msg) { try { await promise; A.ok(false, msg + ' 
 
   // ---- a blessed project session makes relative paths project-native without weakening the jail ----
   {
-    const project = path.join(os.tmpdir(), 'starnet-fs-project-' + process.pid);
+    const project = path.join(os.tmpdir(), 'eyehold-fs-project-' + process.pid);
     await fsp.mkdir(project, { recursive: true });
     await fsp.writeFile(path.join(project, 'incident.log'), 'PROJECT_LOG', 'utf8');
     const guarded = [];
@@ -414,9 +414,9 @@ async function rejects(promise, msg) { try { await promise; A.ok(false, msg + ' 
     A.eq(bare.summary.indexOf('2 matches'), 0, 'a bare name glob still matches by basename everywhere');
   }
 
-  /* ---- a model-supplied regex must never be able to freeze the station ----
+  /* ---- a model-supplied regex must never be able to freeze the keep ----
      fs.search { regex:true } compiles the MODEL's string and runs it synchronously over every line of every
-     candidate file. StarNet is ONE process — UI, API, SSE bus, every agent run — so a backtracking blow-up
+     candidate file. Eyehold is ONE process — UI, API, SSE bus, every agent run — so a backtracking blow-up
      pegged the event loop indefinitely: measured, `(a|a)+$` against a 41-character line never returned and
      the tool's own timeoutMs could not help (withTimeout rejects the promise; it cannot stop synchronous
      work). Only killing the process recovered. ---- */

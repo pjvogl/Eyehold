@@ -15,7 +15,7 @@
 const A = require('./_assert.js');
 const WM = require('../frontend/app/worldmodel.js');
 
-/* ---- a station with rooms, corridors and scattered blockers (corners + pinch points) ---- */
+/* ---- a keep with rooms, corridors and scattered blockers (corners + pinch points) ---- */
 const s = WM.create();
 s.addRoom({ kind: 'lab', rect: { x1: 20, y1: 0, x2: 30, y2: 12 } });
 s.placeHallway({ rect: { x1: 18, y1: 3, x2: 19, y2: 4 } });
@@ -30,7 +30,7 @@ const { COLS, ROWS, walkable, path } = geo;
 
 const cells = [];
 for (let y = 0; y < ROWS; y++) for (let x = 0; x < COLS; x++) if (walkable(x, y, null)) cells.push({ x, y });
-A.ok(cells.length > 100, 'fixture station has a substantial walkable area');
+A.ok(cells.length > 100, 'fixture keep has a substantial walkable area');
 
 /* deterministic pair sampling — the gate must not depend on Math.random */
 let seed = 12345;
@@ -190,8 +190,8 @@ A.eq(geo.clearFootSegment(edge.x*12+11,edge.y*12+11,edge.x*12+11,edge.y*12+11),f
 // A raised north doorway has splayed jambs above the logical room boundary.
 // Sample the full sprite-width passage independently of clearFootSegment.
 for(const width of [2,3,4]) {
-  const station=WM.create();station.placeHallway({rect:{x1:7,y1:-6,x2:6+width,y2:-1}});
-  const g=station.projectGeometry(),ox=g.origin.tx,oy=g.origin.ty;
+  const keep=WM.create();keep.placeHallway({rect:{x1:7,y1:-6,x2:6+width,y2:-1}});
+  const g=keep.projectGeometry(),ox=g.origin.tx,oy=g.origin.ty;
   const left=(7-ox)*12,right=(7+width-ox)*12,top=-oy*12-34,bottom=-oy*12+10;
   const reach=Math.min(6,Math.max(1,Math.floor((right-left-8)/2)));
   let bad=0,completed=0;
@@ -213,7 +213,7 @@ for(const width of [2,3,4]) {
   A.eq(bad,0,'the whole sprite clears both raised jambs at width '+width);
   A.eq(g.clearFootSegment(left+6,top+2,left+6,bottom-2),false,'old left-wall shortcut is rejected');
   A.eq(g.clearFootSegment(right-6,top+2,right-6,bottom-2),false,'old right-wall shortcut is rejected');
-  const restored=WM.deserialize(station.serialize()).projectGeometry();
+  const restored=WM.deserialize(keep.serialize()).projectGeometry();
   A.eq(restored.footPoint(7-ox,-2-oy),g.footPoint(7-ox,-2-oy),'saved layouts recover the same safe anchor');
 }
 A.report('path-smoothing');

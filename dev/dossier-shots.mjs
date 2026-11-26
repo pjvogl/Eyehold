@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /* dev/dossier-shots.mjs — shoot every pane of the AGENT DOSSIER so a UX pass judges PIXELS.
 
-   Seeds a station with a realistic CREW (4 agents, varied levels/specialties), opens the
+   Seeds a keep with a realistic CREW (4 agents, varied levels/specialties), opens the
    dossier, and captures each section: BRIEF · GROWTH · MEMORY · SKILLS · CONFIG · LOGBOOK ·
    RESTORE, plus a scrolled-down CONFIG (the long tail nobody sees) and the search state.
 
@@ -27,7 +27,7 @@ function seedCrew(wsDir) {
   const mk = (id, name, color, purpose, skin, stats) => ({
     id, name, color, skin, model: '', personaId: 'professional',
     purpose, specialtyId: null, createdAt: Date.now() - 86400000 * 9, docs: {
-      identity: name + ' is a specialist aboard the station.',
+      identity: name + ' is a specialist aboard the keep.',
       purpose, manual: '', context: ''
     }, stats
   });
@@ -43,8 +43,8 @@ function seedCrew(wsDir) {
 }
 
 const OPEN_DOSSIER = `(() => {
-  if (typeof StationUI === 'undefined') return 'no-stationui';
-  if (StationUI.openAgent) { StationUI.openAgent(0); return 'opened'; }
+  if (typeof KeepUI === 'undefined') return 'no-keepui';
+  if (KeepUI.openAgent) { KeepUI.openAgent(0); return 'opened'; }
   const b = document.querySelector('[data-term="agents"]'); if (b) { b.click(); return 'clicked'; }
   return 'no-door';
 })()`;
@@ -78,7 +78,7 @@ async function main() {
     mkdirSync(OUT, { recursive: true });
 
     await evalJS(cdp, `(() => {
-      const KEY = 'starnet.station.v1';
+      const KEY = 'eyehold.keep.v1';
       const r = JSON.parse(localStorage.getItem(KEY) || '{"v":1}');
       r.settings = Object.assign({}, r.settings, { textScale: 100 });
       localStorage.setItem(KEY, JSON.stringify(r));

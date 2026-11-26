@@ -48,7 +48,7 @@ for(const p of Object.values(service.props))equal(p.views.s.mode,'service','Serv
 
 // Exercise the mutating path only in a newly created disposable fixture; never
 // apply a recipe to this helper's or the parent's actual runtime manifest.
-const scratch=fs.mkdtempSync(path.join(os.tmpdir(),'starnet-prop-recipe-'));
+const scratch=fs.mkdtempSync(path.join(os.tmpdir(),'eyehold-prop-recipe-'));
 try {
   const partial={version:1,props:{stool:plan.props.stool}}, selected=manifestPatch(partial);
   const copy=selected.copies[0],dest=path.join(scratch,'frontend/assets/industrial/props-v3');
@@ -75,6 +75,6 @@ try {
   const once=fs.readFileSync(filename,'utf8');applyPlan(scratch,partial);
   equal(fs.readFileSync(filename,'utf8'),once,'Repeated application is idempotent.');
 } finally {
-  if(path.resolve(scratch).startsWith(path.resolve(os.tmpdir())+path.sep+'starnet-prop-recipe-'))fs.rmSync(scratch,{recursive:true,force:true});
+  if(path.resolve(scratch).startsWith(path.resolve(os.tmpdir())+path.sep+'eyehold-prop-recipe-'))fs.rmSync(scratch,{recursive:true,force:true});
 }
 console.log(`coordinated-prop-recipes.test: OK (${assertions} assertions; ${plan.counts.authoredViews} actual PNG views mapped)`);

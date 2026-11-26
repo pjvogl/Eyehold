@@ -3,9 +3,9 @@
 
      • runs     — run rows stamped with this line (runstore `lineId`, set by the host that dispatched the run: hub
                   entry/hop, routine entry/hop, step test) that FINISHED since the caller's `since` (its local
-                  midnight — the same window the station's SHIPPED TODAY counter polls /api/runs with).
+                  midnight — the same window the keep's SHIPPED TODAY counter polls /api/runs with).
      • shipped  — JOBS that left through the line's OUTBOX (2026-09-24): of those runs, reason 'done' with PROVEN
-                  work (≥1 successful tool result or ≥1 artifact — the station SHIPPED predicate) AND run at a dock
+                  work (≥1 successful tool result or ≥1 artifact — the keep SHIPPED predicate) AND run at a dock
                   whose outbound lane reaches the OUTBOX (the injected shipsToOutbox(agentId, dockId) — the router's
                   chainShipsToOutbox). A mid-line stage finishing is a RUN, not a shipment: counting every done
                   stage made a 3-stage line claim 3 shipped for one job. No reader = nothing is claimed shipped.

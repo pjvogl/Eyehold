@@ -1,4 +1,4 @@
-/* STARNET — profile.js : the PURE user-affinity engine (the "knows how you work" substrate).
+/* EYEHOLD — profile.js : the PURE user-affinity engine (the "knows how you work" substrate).
 
    The recommender's fuel: a tiny per-interest histogram (the same {code|research|general} tags
    classify.js already derives from every message) with EWMA recency decay + a sample count, so it
@@ -22,7 +22,7 @@
   const TAGS = ['code', 'research', 'general'];   // the interest vocabulary (mirrors classify.js getTag)
   const HALF_LIFE_MS = 14 * 24 * 60 * 60 * 1000;  // a tag's weight halves every ~2 weeks of silence (recency)
   const CALIBRATING_N = 5;                         // observations before the read is "known" (else: calibrating)
-  const FAMILIAR_N = 24;                           // observations at which "STATION FAMILIARITY" reads 100% (honest meter ceiling)
+  const FAMILIAR_N = 24;                           // observations at which "KEEP FAMILIARITY" reads 100% (honest meter ceiling)
   const SEED_WEIGHT = 2;                           // a cold-start seed's pull, ~2 observations' worth, fades as real data accrues
 
   function fresh() { return { v: 1, tags: {}, seed: null, enabled: true, total: 0 }; }

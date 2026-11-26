@@ -1,7 +1,7 @@
-/* STARNET — systems.js : STATION SYSTEMS ONLINE — the dock grows with the station.
+/* EYEHOLD — systems.js : KEEP SYSTEMS ONLINE — the dock grows with the keep.
 
-   A fresh station opens with the dock buttons a newcomer needs on day one. Every other dock button is a
-   station SYSTEM that comes online the first time it matters (a finished job, a second crew member, an agent
+   A fresh keep opens with the dock buttons a newcomer needs on day one. Every other dock button is a
+   keep SYSTEM that comes online the first time it matters (a finished job, a second crew member, an agent
    asking you to take its browser, you asking for something on a schedule...). Nothing is ever LOCKED:
      - every window still opens from a slash command, a deep link, a quest, an error door or the agent;
      - THE DOOR LAW: the moment anything routes the Commander to a system (a window opens, a bay opens, an
@@ -9,8 +9,8 @@
      - QUESTS › Progress lists every system, offline ones included, and any of them can be brought online
        with one click; SHOW EVERYTHING (here, in SETTINGS › LOOK & SOUND, on the first dock hint) brings all of
        them online at once.
-   A station that already existed when this shipped opens with EVERYTHING online — taking buttons away from
-   someone who already uses them would be its own confusion. Only a station whose awakening starts after this
+   A keep that already existed when this shipped opens with EVERYTHING online — taking buttons away from
+   someone who already uses them would be its own confusion. Only a keep whose awakening starts after this
    ships grows its dock.
 
    STATE is per Commander (keyed by the hero's createdAt epoch, so a fresh start on the same machine grows again)
@@ -20,18 +20,18 @@
    This file never emits a bus event; it only listens (agent.run.end, agent.token). */
 'use strict';
 const Systems = (() => {
-  const KEY = 'starnet.systems.v1';
+  const KEY = 'eyehold.systems.v1';
 
   /* The dock, in dock order. sel = the dock button; terms = window keys whose opening brings it online (door
-     law); words = capitalised names an agent may use for it in a reply; start = online on a fresh station;
+     law); words = capitalised names an agent may use for it in a reply; start = online on a fresh keep;
      jobs = finished jobs after which it comes online on its own; how = the one short line QUESTS shows while it
      is offline; tip = what it is (the hover tip, never a sentence under a tile). */
   const LIST = [
     { id: 'agents', label: 'AGENTS', group: 'crew', sel: '.bb[data-term="agents"]', terms: ['agents', 'logbook', 'rewind'], start: true, tip: 'Each crew member’s dossier — config, memory, record' },
     { id: 'recruit', label: 'RECRUIT', group: 'crew', sel: '#bb-recruit', words: ['RECRUIT', 'RECRUITMENT BAY'], jobs: 2, how: 'after your second finished job', tip: 'Grow the crew — summon a specialist class' },
-    { id: 'commander', label: 'YOU', group: 'crew', sel: '.bb[data-term="commander"]', terms: ['commander'], start: true, tip: 'What the station has learned about you' },
+    { id: 'commander', label: 'YOU', group: 'crew', sel: '.bb[data-term="commander"]', terms: ['commander'], start: true, tip: 'What the keep has learned about you' },
     { id: 'stepin', label: 'STEP-IN', group: 'crew', sel: '.bb[data-term="stepin"]', terms: ['stepin'], words: ['STEP-IN'], how: 'when an agent needs you to take its browser', tip: 'Take an agent’s browser when it needs you to sign in' },
-    // ONE MENU (2026-10-01): MY WORK / AUTOMATE / CONNECT are each one dock button over several windows (stationui
+    // ONE MENU (2026-10-01): MY WORK / AUTOMATE / CONNECT are each one dock button over several windows (keepui
     // FAMILIES) — every member window's key is listed in terms, so opening any of them by any door counts.
     { id: 'mywork', label: 'MY WORK', group: 'work', sel: '#bb-mywork', terms: ['tasks', 'work', 'deliverables', 'outbox'], start: true, tip: 'Tasks, finished work, work to rate, and ready-made jobs' },
     { id: 'automate', label: 'AUTOMATE', group: 'work', sel: '#bb-automate', terms: ['workflows', 'automation', 'routines', 'loops'], words: ['AUTOMATE', 'AUTOMATION', 'WORKFLOWS', 'WORKFLOW', 'ROUTINE', 'ROUTINES', 'CONVEYOR'], jobs: 3, crew: 2, how: 'when you ask for something on a schedule', tip: 'Workflows, schedules, goal loops and away work' },
@@ -39,7 +39,7 @@ const Systems = (() => {
     { id: 'refit', label: 'BUILD MODE', group: 'build', sel: '#bb-build', start: true, tip: 'Rooms, gear and workflow lines' },
     { id: 'connect', label: 'CONNECT', group: 'build', sel: '#bb-connect', terms: ['connectors', 'skills', 'messaging'], words: ['ABILITIES', 'CHANNELS'], jobs: 2, how: 'when an agent needs a tool or you mention a chat app', tip: 'Tools and apps your agents use, and where you message them' },
     { id: 'newapp', label: 'NEW APP', group: 'build', sel: '#bb-newapp-build', start: true, tip: 'Describe anything and your crew builds it in its own window' },
-    { id: 'manual', label: 'FIELD MANUAL', group: 'system', sel: '.bb[data-term="manual"]', terms: ['manual'], start: true, tip: 'First mission, controls and the station handbook' },
+    { id: 'manual', label: 'FIELD MANUAL', group: 'system', sel: '.bb[data-term="manual"]', terms: ['manual'], start: true, tip: 'First mission, controls and the keep handbook' },
     { id: 'settings', label: 'SETTINGS', group: 'system', sel: '.bb[data-term="settings"]', terms: ['settings'], start: true, tip: 'Keys, models, voice, data' },
     { id: 'updates', label: 'UPDATES', group: 'system', sel: '.bb[data-term="updates"]', terms: ['updates'], start: true, tip: 'Version and release notes' },
     { id: 'notifs', label: 'NOTIFICATIONS', group: 'system', sel: '.bb[data-term="notifs"]', terms: ['notifs'], start: true, tip: 'Alerts and unread events' }
@@ -62,8 +62,8 @@ const Systems = (() => {
   function save() { try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (_) {} }
 
   /* init({ epoch, fresh, crewCount }) — called once the game screen is entered. `fresh` = this Commander's
-     awakening has not happened yet (a brand-new station). An unknown epoch on an already-awake station = an
-     existing station meeting this feature for the first time → everything online. */
+     awakening has not happened yet (a brand-new keep). An unknown epoch on an already-awake keep = an
+     existing keep meeting this feature for the first time → everything online. */
   function init(opts) {
     const o = opts || {};
     if (typeof o.crewCount === 'function') crewCount = o.crewCount;
@@ -113,7 +113,7 @@ const Systems = (() => {
     });
     const coachAll = document.getElementById('nav-coach-all');
     if (coachAll) coachAll.hidden = !staged();
-    if (typeof StationUI !== 'undefined' && StationUI.refreshSystems) { try { StationUI.refreshSystems(); } catch (_) {} }
+    if (typeof KeepUI !== 'undefined' && KeepUI.refreshSystems) { try { KeepUI.refreshSystems(); } catch (_) {} }
   }
 
   /* bring one system online. why = 'door' (something routed the Commander there — quiet, no fanfare beyond the
@@ -129,11 +129,11 @@ const Systems = (() => {
     return true;
   }
   function announce(list) {
-    if (!list.length || typeof StationUI === 'undefined' || !StationUI.notify) return;
+    if (!list.length || typeof KeepUI === 'undefined' || !KeepUI.notify) return;
     const names = list.map(s => s.label);
     const msg = (list.length === 1 ? 'NEW SYSTEM ONLINE — ' : 'NEW SYSTEMS ONLINE — ') + names.join(' · ')
       + ' · find ' + (list.length === 1 ? 'it' : 'them') + ' in the ' + Array.from(new Set(list.map(s => s.group.toUpperCase()))).join(' / ') + ' dock';
-    try { StationUI.notify(msg, 'gold', undefined, { key: 'systems-online', transient: true, onClick: () => { if (StationUI.openTerm) StationUI.openTerm('quests', 'progress'); } }); } catch (_) {}   // a toast, not inbox history
+    try { KeepUI.notify(msg, 'gold', undefined, { key: 'systems-online', transient: true, onClick: () => { if (KeepUI.openTerm) KeepUI.openTerm('quests', 'progress'); } }); } catch (_) {}   // a toast, not inbox history
     try { if (typeof SFX !== 'undefined' && SFX.level) SFX.level(); } catch (_) {}
   }
   function growTo(ids) {
@@ -154,7 +154,7 @@ const Systems = (() => {
     const i = state.fresh.indexOf(id);
     if (i >= 0) { state.fresh.splice(i, 1); save(); apply(); }
   }
-  // door law for windows: StationUI calls this whenever a window opens, whoever opened it
+  // door law for windows: KeepUI calls this whenever a window opens, whoever opened it
   function openedTerm(key) {
     // the bay window is RECIPES (a MY WORK tab) or the recruit bay, depending on which library it opened on
     if (key === 'marketplace') { opened(typeof Marketplace !== 'undefined' && Marketplace.currentTab && Marketplace.currentTab() === 'recipes' ? 'mywork' : 'recruit'); return; }
@@ -169,7 +169,7 @@ const Systems = (() => {
     save(); apply();
   }
   // the Commander ASKED for the small dock: back to the day-one buttons plus every system whose milestone this
-  // station has already reached (the job counter runs in both modes, so a long-running station keeps those)
+  // keep has already reached (the job counter runs in both modes, so a long-running keep keeps those)
   function growWithMe() {
     if (!state) return;
     state.mode = 'staged';
@@ -216,7 +216,7 @@ const Systems = (() => {
       if (p.runId) replyBuf.delete(p.runId);
       if (reply) noticeReply(reply);   // no-op unless the dock is growing
       // a finished job = a clean run that actually took a turn, counted once per run id (in both modes, so a
-      // later GROW WITH ME knows which milestones this station already reached)
+      // later GROW WITH ME knows which milestones this keep already reached)
       if (p.reason !== 'done' || p.turns === 0) return;
       const id = String(p.runId || '');
       if (id && state.seenRuns.includes(id)) return;

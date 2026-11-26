@@ -8,7 +8,7 @@ Source commits: 1d43b8304 (journal) and 55a30d5d7 (draft preservation).
 
 - Replace the open-card wall with a category-filtered mission index and one briefing.
 - Use 30px briefing titles, 20px mission titles and 18px descriptions/actions; elevate
-  objective and reward blocks with the station's existing phosphor/gold palette.
+  objective and reward blocks with the keep's existing phosphor/gold palette.
 - Display the backend's Commander level; keep goal configuration and completed history
   in expandable sections. Preserve category, selection, index scroll and open disclosures.
 - Keep evidence drafts attached to their quest, including the unsaved-close guard after
@@ -22,7 +22,7 @@ No real provider key or paid run used. Work dock opened the new journal.
 
 - DOM: briefing title 30px, description 18px, Commander level 1, zero default OS-painted
   buttons in the quest window. Browser error log empty.
-- Station category showed three quests; selecting a different quest updated its briefing.
+- Keep category showed three quests; selecting a different quest updated its briefing.
   Empty Missions category showed an explicit empty state. Keyboard Enter selected a mission.
 - Recruitment and Answer It opened the real Recruitment Bay and Commander Dossier.
 - Goal settings stayed expanded across category updates.
@@ -40,7 +40,7 @@ No real provider key or paid run used. Work dock opened the new journal.
 callbacks, escaping, completion fallback, level authority and hidden-draft close guard.
 Touched JS passed syntax checks; diff whitespace check passed.
 The focused manifest slice passed all 10 suites: journey wiring, quest store/state,
-quest-state store, station/work/maintenance quest stores, ledger store, journal UI and
+quest-state store, keep/work/maintenance quest stores, ledger store, journal UI and
 website mirror parity.
 
 The complete `npm run test:fast` gate did not pass. First invocation lacked the worktree's
@@ -57,17 +57,17 @@ generated deliverable listed README.md but no index.html. This is outside the ch
 No merge, installer rebuild, installation, push or publication. The source redesign is
 available on its isolated branch; the installed app and owner recovery remain unverified.
 
-## Visual refinement — premium station menu
+## Visual refinement — premium keep menu
 
 Kept the journal interaction model and replaced the stacked gold outlines with the same
 `--ui-face`, `--ui-edge`, `--ui-highlight`, and `--ui-well` materials used by the other
-station windows. Categories share a tab strip, the quest index is a recessed navigation
+keep windows. Categories share a tab strip, the quest index is a recessed navigation
 rail, and the briefing is one continuous panel. Gold identifies the real reward and
 Commander level. Goal settings now follow the briefing so they do not displace its action.
 
 Live proof at `http://127.0.0.1:8916` after reload: initial recruitment action fully inside
 the window body; title 27px; description/objective/reward 18px; zero native-painted
-controls. At desktop width, body clientWidth/scrollWidth were both 1050px. The Station
+controls. At desktop width, body clientWidth/scrollWidth were both 1050px. The Keep
 filter showed three real quests, selecting Wire work changed its briefing, and at 600×820
 the journal became one 520px column with body clientWidth/scrollWidth both 554px. Selection
 survived restoring the viewport. Browser error log was empty. Preview left open.
@@ -76,7 +76,7 @@ Scoped verification: quest-log-window 74 assertions and website-app-sync 8 asser
 passed. JavaScript syntax and diff whitespace checks passed.
 
 The first full-gate invocation reached 281/723 and failed the claims audit because the
-release inventory still hashed the pre-journal stationui.js, app.css and motion.css.
+release inventory still hashed the pre-journal keepui.js, app.css and motion.css.
 Reviewed the candidate diff against that inventory: those are the only changed release
 surface files, the path set is unchanged, and the journal still projects real store state.
 Refreshed the inventory to source commit 8ba29be8d, with no changes to claim verdicts,
@@ -97,8 +97,8 @@ after synchronization with trunk 824bdfcea. Pre-merge and post-merge fast gates 
 The owner then flagged lower-section clutter and misaligned disclosure rows and explicitly
 requested merging the correction once done. The follow-up replaces the exposed status wall
 with three aligned disclosures: goal settings, completed quests, and Commander journey.
-Commander progress and station evolution are paired cards; metrics, mastery, adaptations,
-recent evidence, and station milestones have separate disclosures. The metric creation form
+Commander progress and keep evolution are paired cards; metrics, mastery, adaptations,
+recent evidence, and keep milestones have separate disclosures. The metric creation form
 is folded by default and has persistent labels for name, starting value, target, and unit.
 Existing handlers and progression authorities remain in place.
 

@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// golden.mjs — golden-frame CHANGE DETECTION for StarNet's UI.  (`npm run golden`)
+// golden.mjs — golden-frame CHANGE DETECTION for Eyehold's UI.  (`npm run golden`)
 //
 // The point (mission DoD #3/#4): a no-code-change re-run is all-PASS with zero human input; a real
 // visual change is FLAGGED with the offending frame; and the vision model then judges ONLY the
@@ -54,8 +54,8 @@ export function dismissedFingerprints(options = {}) {
     // findings live in the integration checkout. Accept explicit paths from that composition root;
     // a standalone golden run keeps using its own checkout. Missing/unreadable paths still fail
     // open to no suppression, so a detector can never become green because evidence vanished.
-    const findingsDir = options.findingsDir || process.env.STARNET_QA_FINDINGS_DIR || join(root, 'qa', 'findings');
-    const knownFile = options.knownFile || process.env.STARNET_QA_KNOWN_FILE || join(root, 'qa', 'KNOWN_ISSUES.md');
+    const findingsDir = options.findingsDir || process.env.EYEHOLD_QA_FINDINGS_DIR || join(root, 'qa', 'findings');
+    const knownFile = options.knownFile || process.env.EYEHOLD_QA_KNOWN_FILE || join(root, 'qa', 'KNOWN_ISSUES.md');
     const io = {
       listFindings() {
         let names;

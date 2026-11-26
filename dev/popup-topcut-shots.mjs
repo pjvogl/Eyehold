@@ -28,13 +28,13 @@ const WIN = process.env.SKYNET_SHOT_WIN || '1920,1080';
 const URL = `http://127.0.0.1:${PORT}/`;
 const OUT = process.env.SKYNET_SHOT_OUT || join(process.cwd(), 'dev', '.shots-popup-topcut');
 
-// 150 is the ceiling the SETTINGS dial clamps to (stationui clampN(v, 90, 150)).
+// 150 is the ceiling the SETTINGS dial clamps to (keepui clampN(v, 90, 150)).
 const SCALES = [['t100', 100], ['t150', 150]];
 // one plain window (tasks), one CONSOLE window (settings), one console+feature (agents)
 const KEYS = ['tasks', 'settings', 'agents'];
 
 const setScale = (v) => `(() => {
-  const KEY = 'starnet.station.v1';
+  const KEY = 'eyehold.keep.v1';
   const r = JSON.parse(localStorage.getItem(KEY) || '{"v":1}');
   r.settings = Object.assign({}, r.settings, { textScale: ${v} });
   // a remembered drag position / size would mask the DEFAULT placement this report is about
@@ -57,8 +57,8 @@ const MOUNT_CHROME = `(() => {
 })()`;
 
 const openKey = (k) => `(() => {
-  if (typeof StationUI === 'undefined') return 'no-stationui';
-  StationUI.openTerm(${JSON.stringify(k)});
+  if (typeof KeepUI === 'undefined') return 'no-keepui';
+  KeepUI.openTerm(${JSON.stringify(k)});
   return document.querySelectorAll('.term').length + ' open';
 })()`;
 
@@ -70,7 +70,7 @@ const dragTo = (toY) => `(() => {
   const head = w.querySelector('.term-head'); const r = head.getBoundingClientRect();
   const cx = Math.round(r.left + r.width / 2), cy = Math.round(r.top + r.height / 2);
   const M = (t, y) => new MouseEvent(t, { clientX: cx, clientY: y, bubbles: true, cancelable: true });
-  head.dispatchEvent(M('mousedown', cy));                 // stationui drags on mouse*, not pointer*
+  head.dispatchEvent(M('mousedown', cy));                 // keepui drags on mouse*, not pointer*
   window.dispatchEvent(M('mousemove', ${toY}));
   window.dispatchEvent(M('mouseup', ${toY}));
   return w.classList.contains('term-moved') ? 'moved:' + w.style.top : 'drag-not-registered';

@@ -1,4 +1,4 @@
-/* dev/gatherprobe.mjs — watch THE GATHERING actually happen, in a ticking station.
+/* dev/gatherprobe.mjs — watch THE GATHERING actually happen, in a ticking keep.
 
    A beat gated on 30 minutes of unattended quiet plus an hourly roll cannot be proven by waiting —
    that is a vigil, and this repo has shipped broken rare beats exactly that way. So this forces the
@@ -66,19 +66,19 @@ try {
   const placed = await evalJS(cdp, `World.bodies().filter(b => b && !b.unplaced).map(b => b.id)`);
   console.log('[gatherprobe] placed bodies: ' + JSON.stringify(placed));
 
-  /* ---- Make the station genuinely UNATTENDED before arming.
+  /* ---- Make the keep genuinely UNATTENDED before arming.
      The app sets a COMMS chat focus at boot and it stays WARM for a while, which makes chatHot()
      true — and a live chat stare is the Commander being present, so gatheringBroken tears the
      assembly down on its first tick. That is the predicate behaving correctly, not a bug: in real
      use the trigger needs 30 minutes of quiet, by which time the focus has long gone cold. Clearing
-     it here is how a probe reproduces "nobody has touched this station in half an hour" in seconds.
+     it here is how a probe reproduces "nobody has touched this keep in half an hour" in seconds.
      (Diagnosed the slow way: the first run scattered within one tick and _dbgGatherGates was the
      only thing that could say WHICH of six OR'd conditions fired.) */
   await evalJS(cdp, `(() => { World.setChatFocus(null); return true; })()`);
   const gates = await evalJS(cdp, `(() => World._dbgGatherGates())()`);
   console.log('[gatherprobe] gates before arm: ' + JSON.stringify(gates));
   if (gates.chatHot || gates.cursorPresent || !gates.pageVisible) {
-    console.log('GATHERPROBE INCONCLUSIVE — could not make the station unattended: ' + JSON.stringify(gates));
+    console.log('GATHERPROBE INCONCLUSIVE — could not make the keep unattended: ' + JSON.stringify(gates));
     process.exit(4);
   }
 
@@ -157,5 +157,5 @@ try {
 
 console.log('');
 if (fail.length) { console.log('GATHERPROBE FAILED — ' + fail.length + ' problem(s):'); for (const f of fail) console.log('  - ' + f); }
-else console.log('GATHERPROBE PASS — the station assembled, the overseer spoke alone, and they scattered when the Commander came back.');
+else console.log('GATHERPROBE PASS — the keep assembled, the overseer spoke alone, and they scattered when the Commander came back.');
 process.exit(fail.length ? 3 : 0);

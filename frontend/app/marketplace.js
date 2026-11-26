@@ -1,4 +1,4 @@
-/* STARNET — marketplace.js : THE RECRUITMENT BAY — a premium "personnel registry" of agent classes.
+/* EYEHOLD — marketplace.js : THE RECRUITMENT BAY — a premium "personnel registry" of agent classes.
 
    Renders the Specialties catalog (built-ins + the Commander's saved customs) as a roster of engraved
    class SEALS (a challenge-coin per class, drawn by classicons.js — NEVER a character skin; the skin is
@@ -24,7 +24,7 @@ const Marketplace = (() => {
   // context-derived launch values from the READY shelf, keyed by recipe id (see readyShelfHTML/launchFormHTML)
   let readySeeds = {};
   let pendingMintKey = null, pendingMintTemplate = null;
-  // SCOUT handoff: the station-drafted recipe being reviewed in the editor. pendingScoutRecipeId is consumed on a
+  // SCOUT handoff: the keep-drafted recipe being reviewed in the editor. pendingScoutRecipeId is consumed on a
   // successful save (accept — retires the staged draft server-side, never denylists); scoutSeedDraft prefills the
   // whole form (name/emoji/tagline/task — richer than a mint's bare template). Reset wherever the mint keys reset.
   let pendingScoutRecipeId = null, scoutSeedDraft = null;
@@ -56,7 +56,7 @@ const Marketplace = (() => {
   let query = '';
   let buildAccent = '#ffaa33', buildModel = 'balanced';   // the custom-class builder's picked accent + tier
   let buildKit = [], buildSkills = [], buildEffort = null;   // the custom-class builder's picked loadout (Class Loadouts S3)
-  let buildDraft = null;            // Slice 4: a station-drafted prospect pre-filling the builder (name/tagline/purpose/manual/emoji)
+  let buildDraft = null;            // Slice 4: a keep-drafted prospect pre-filling the builder (name/tagline/purpose/manual/emoji)
   let acceptingProspectId = null;   // Slice 4: the prospect id being reviewed → removed from staging on a successful CREATE
   // ---- IMPORT AGENT (Hermes / OpenClaw migration) — the view='harnessImport' flow's working state ----
   // importStep: 'detect' (list found installs / PICK FOLDER) → 'preview' (the dossier-style scan card).
@@ -111,14 +111,14 @@ const Marketplace = (() => {
   // EVERY reason string must read as natural English after the shared “because …” framing (Recommend.whyLine).
   // “because matches your focus on code” was not a sentence — the leading “it” is what makes it one.
   const BECAUSE = { code: 'it matches your focus on code', research: 'it matches your focus on research', general: 'it fits your day-to-day ops' };
-  const ACK_KEY = 'starnet.profile.ack.v1';
+  const ACK_KEY = 'eyehold.profile.ack.v1';
   /* The cold-start row's rotation seed: a REAL count of how many times this Commander has opened the recipes
      tab, persisted so it survives a reload. With 12 browse buckets and a 3-card shelf, a fixed spread would
      show the same three corners of the library forever and the other nine would only ever be found by
      browsing. This ONLY selects which bucket the varied lineup starts from — it is not a ranking signal, it
      asserts nothing about the recipes it picks, and the shelf is labelled as a varied lineup rather than as
      popular or recommended, so rotating it stays inside the truthful-telemetry law. */
-  const VISITS_KEY = 'starnet.recipes.visits.v1';
+  const VISITS_KEY = 'eyehold.recipes.visits.v1';
   function recipeVisits() { try { return parseInt(localStorage.getItem(VISITS_KEY), 10) || 0; } catch (_) { return 0; } }
   function bumpRecipeVisits() {
     try { const n = recipeVisits() + 1; localStorage.setItem(VISITS_KEY, String(n)); return n; } catch (_) { return 0; }
@@ -173,7 +173,7 @@ const Marketplace = (() => {
   const CAP_GRANTS = {
     dish: 'the WEB — live search & fetch', cabinet: 'FILES — read, write & search the workspace',
     notebook: 'MEMORY — a durable notebook it can save to & recall', workbench: 'a TERMINAL — run & test real code (approval-gated)',
-    studio: 'IMAGES — generate & analyse visuals', computer: 'COMPUTE — its own workstation', connector: 'LIVE TOOLS — a bound MCP server'
+    studio: 'IMAGES — generate & analyse visuals', computer: 'COMPUTE — its own workkeep', connector: 'LIVE TOOLS — a bound MCP server'
   };
   function capGrant(objType) {
     const t = String(objType || '').trim();
@@ -274,7 +274,7 @@ const Marketplace = (() => {
     // The normal window manager owns the frame, focus, drag, resize, minimize and saved geometry.
     // Keep this mounted host intact when it is minimized so recipe/summon drafts survive restore.
     const mounted = root;
-    StationUI.toggleTerm('marketplace', plainTitle(), body => {
+    KeepUI.toggleTerm('marketplace', plainTitle(), body => {
       body.classList.add('mkt-window-body');
       if (!body.contains(mounted)) body.appendChild(mounted);
     }, { wide: true, console: true, className: 'mkt-window', onClose: () => release(mounted) });
@@ -350,7 +350,7 @@ const Marketplace = (() => {
     renderBar(); renderStage();
   }
   function close() {
-    if (root) StationUI.closeTerm('marketplace');
+    if (root) KeepUI.closeTerm('marketplace');
   }
   function release(mounted) {
     if (root !== mounted) return;
@@ -549,13 +549,13 @@ const Marketplace = (() => {
           if (launched && options.findingId) {
             Harness.api.post('/api/discovery/decide', {id:options.findingId,decision:'accept'}).then(r => {
               if (!r.ok || r.j?.ok === false) throw Error('Suggestion history was not updated.');
-            }).catch(() => { if (typeof StationUI !== 'undefined') StationUI.notify('Task launched. Suggestion history could not be updated.', 'warn'); });
+            }).catch(() => { if (typeof KeepUI !== 'undefined') KeepUI.notify('Task launched. Suggestion history could not be updated.', 'warn'); });
           }
           return launched;
         },
         onClear: () => { delete options.findingId; },
         onProjects: () => { close(); document.getElementById('ws-tab-projects')?.click(); },
-        onModelSetup: () => { close(); StationUI.openTerm('settings','providers'); },
+        onModelSetup: () => { close(); KeepUI.openTerm('settings','providers'); },
         onOpenWork: () => close()
       }));
       return;
@@ -696,7 +696,7 @@ const Marketplace = (() => {
         'build one from scratch below' + (deploy && !query ? ', or save the live agent as a specialty above' : '') + '.</p>';
       html += '<div class="mkt-grid mkt-rows">' + customs.map(cardHTML).join('') + buildTile + '</div>';
     }
-    if (!filtering) html += '<details class="mkt-library-more"><summary>Suggestions for your station</summary>' +
+    if (!filtering) html += '<details class="mkt-library-more"><summary>Suggestions for your keep</summary>' +
       glassHTML() + recShelfHTML() + interestGapShelfHTML() + prospectShelfHTML() + scoutLogHTML() + '</details>';
     return html;
   }
@@ -705,7 +705,7 @@ const Marketplace = (() => {
      summonable as-is. Collapsed by default in the clean view; a search or lane filter that matches an
      archetype auto-expands it (search must FIND a class, never hide it — the no-gating law). These same
      archetypes are what the scout drafts onto the DRAFTED-FOR-YOU shelf when the learned interests point
-     at one, so this section is the manual door to the pool the station recommends from. */
+     at one, so this section is the manual door to the pool the keep recommends from. */
   function archiveSectionHTML(filtering) {
     const all = (Specialties.archetypes ? Specialties.archetypes() : []);
     if (!all.length) return '';
@@ -719,7 +719,7 @@ const Marketplace = (() => {
       '<span aria-hidden="true">' + (archiveOpen ? '▾' : '▸') + '</span> SPECIALIST ARCHIVE (' + all.length + ')</button>';
     if (!archiveOpen) return head;
     return head +
-      '<p class="mkt-hint">niche classes held off the main roster — fully specified, summon any time. When your real work points at one, the station drafts it onto the shelf above for you.</p>' +
+      '<p class="mkt-hint">niche classes held off the main roster — fully specified, summon any time. When your real work points at one, the keep drafts it onto the shelf above for you.</p>' +
       '<div class="mkt-grid mkt-rows">' + archs.map(cardHTML).join('') + '</div>';
   }
   /* Name and the live character preview lead. Skin choices stay visible; model controls expand
@@ -737,7 +737,7 @@ const Marketplace = (() => {
       '<section class="mkt-appearance" aria-label="Choose a skin"><div class="mkt-appearance-heading">APPEARANCE <span class="mkt-appearance-choice">' +
         esc((typeof DATA !== 'undefined' && DATA.SKINS && DATA.SKINS[pickedSummonSkin || DATA.DEFAULT_SKIN] || {}).name || 'Choose a character') +
         '</span></div>' + summonSkinBarHTML() + '</section>',
-      '<p class="mkt-detail-note">Use the station default, or choose a model for this agent.</p>' + summonModelBarHTML(s),
+      '<p class="mkt-detail-note">Use the keep default, or choose a model for this agent.</p>' + summonModelBarHTML(s),
       agentReferenceHTML(s)
     ];
     return '<section class="mkt-config" aria-label="configure this agent">' +
@@ -750,7 +750,7 @@ const Marketplace = (() => {
         '" aria-labelledby="recruit-tab-' + i + '"' + (i ? ' hidden' : '') + '>' + html + '</div>').join('') + '</section>';
   }
   /* The MODEL field's helper line is where CLEARANCE and EFFORT became honest. They used to be two rows of a spec
-     grid at the top of the dossier that read "model: station default / class default — applied at summon" — true,
+     grid at the top of the dossier that read "model: keep default / class default — applied at summon" — true,
      but stated where nothing could be done about it, which is exactly what made them read as filler. The same
      facts belong on the control that resolves them: what this class is TUNED for, and what your pick OVERRIDES. */
   function modelHelpHTML(s) {
@@ -764,7 +764,7 @@ const Marketplace = (() => {
 
   function summonModelSummary() {
     const pin = pickedSummonModel;
-    return (pin && pin.model ? shortModel(pin.model) : 'Station default') +
+    return (pin && pin.model ? shortModel(pin.model) : 'Keep default') +
       (pin && pin.effort ? ' · ' + pin.effort : '');
   }
   function shortModel(m) { return String(m || '').split('/').pop().replace(/[-_]+/g, ' ').trim() || String(m || ''); }
@@ -808,8 +808,8 @@ const Marketplace = (() => {
   // second copy of the console. Hidden the moment it's acked; the panel below remains the place to pause or wipe.
   function consentStripHTML() {
     const ps = profileApi(); if (!ps || !ps.summary || !ps.summary()) return '';
-    return '<div class="mkt-consent-strip">◉ STARNET keeps a local preference profile. When Scout drafts a new option, a bounded summary is sent only to your configured model. ' +
-      'Pause or wipe it anytime in STATION FAMILIARITY below. <button class="bb sm mkt-fam-ack">GOT IT</button></div>';
+    return '<div class="mkt-consent-strip">◉ EYEHOLD keeps a local preference profile. When Scout drafts a new option, a bounded summary is sent only to your configured model. ' +
+      'Pause or wipe it anytime in KEEP FAMILIARITY below. <button class="bb sm mkt-fam-ack">GOT IT</button></div>';
   }
 
   // Keep the raw value visible so a 19-character paste can be explained, never silently clipped.
@@ -876,8 +876,8 @@ const Marketplace = (() => {
     // — the right cluster is its own column so it right-aligns like the provider rows' status column.
     /* NO `--accent` (2026-08-13). Every row used to inject its spec's raw accent hex here, so the class
        roster rendered its seals in cold blue / steel / green / pink INSIDE an amber phosphor tube —
-       thirty-five rows, no two the same, and none of them the station's colour. A CRT emits ONE
-       phosphor: the SEAL is engraved station hardware seen through that tube, so it rides `--ph` and
+       thirty-five rows, no two the same, and none of them the keep's colour. A CRT emits ONE
+       phosphor: the SEAL is engraved keep hardware seen through that tube, so it rides `--ph` and
        recolours with the theme. The accent is not lost and not decoration — it is the SUIT the summoned
        agent wears on the floor, which is a painted object and may be any colour. Dropping the inline
        var is the whole fix: every rule in marketplace.css already reads `var(--accent, var(--ph))`.
@@ -921,13 +921,13 @@ const Marketplace = (() => {
     const missing = Recipes.requiredMissing(r, recipeDefaults(r)).length;
     const setup = missing ? ('▤ ' + missing + ' detail' + (missing === 1 ? '' : 's') + ' needed') : (r.intake || []).length ? '▤ choose options' : '▸ ready to start';
     // SOP: a recipe with host-checked acceptance says so on the card — the one glance that separates "a prompt"
-    // from "a procedure the station holds itself to".
+    // from "a procedure the keep holds itself to".
     const na = (r.acceptance || []).length;
     const sop = na ? '<span class="mkt-chip" title="host-checked acceptance">◇ ' + na + ' check' + (na === 1 ? '' : 's') + '</span>' : '';
     const dr = recipeDrift && recipeDrift[r.id];
     const drift = (dr && dr.status === 'drift') ? '<span class="mkt-chip bad" title="the latest run differs from its good history">⚠ DRIFT</span>' : '';
     // no `--accent` — same one-phosphor rule as the class rows above (see the note on mkt-card there).
-    // The recipe library was the worse offender: not ONE of its seals was the station's colour.
+    // The recipe library was the worse offender: not ONE of its seals was the keep's colour.
     return '<button class="mkt-card' + (sel ? ' sel' : '') + '" type="button" data-id="' + esc(r.id) + '" style="--ci:' + (i || 0) + '">' +
       sealHTML(r, false) +
       '<div class="mkt-card-id">' +
@@ -949,7 +949,7 @@ const Marketplace = (() => {
   }
   /* The dossier used to re-theme to the focused class's raw accent, so clicking down the roster
      strobed the whole right-hand panel — coin, focus bars, and the SUMMON call-to-action — through
-     blue / green / pink. One phosphor (see the note on mkt-card): the dossier stays the station's
+     blue / green / pink. One phosphor (see the note on mkt-card): the dossier stays the keep's
      colour and the class is named by its emblem, code stamp, and lane chip. Kept as a no-op rather
      than deleted so the render path's call site, and the reason, stay visible. */
   function paintDossierAccent() {
@@ -957,7 +957,7 @@ const Marketplace = (() => {
     if (d) d.style.removeProperty('--accent');
   }
   // the DECODE beat: focusing a NEW class resolves its hero (emblem + name) out of glyph static — the
-  // station's own AsciiFX register (eerie signal-lock, never confetti). Once per focused id, instant
+  // keep's own AsciiFX register (eerie signal-lock, never confetti). Once per focused id, instant
   // under reduced-motion (the kit handles it), and null-safe when the kit isn't loaded.
   let lastDecodedHero = null;
   function decodeHero() {
@@ -976,20 +976,20 @@ const Marketplace = (() => {
   function dossierHTML() {
     return dossierBackHTML() + ((tab === 'recipes' && hasRecipes()) ? recipeDossierHTML() : agentDossierHTML());
   }
-  // the capability objectTypes the STATION currently has placed anywhere (station-wide shared gear). Under the
+  // the capability objectTypes the KEEP currently has placed anywhere (keep-wide shared gear). Under the
   // shared-gear model a specialist owns only its desk and draws on these caps UNDER THE OVERSEER — so a class's
-  // gear is checked against the whole station, never a per-agent room. Reads World.stationCaps (the same live
-  // source the run's skill availability uses); [] on any hiccup (renders every row as "not on station", honest).
-  function stationGearSet() {
+  // gear is checked against the whole keep, never a per-agent room. Reads World.keepCaps (the same live
+  // source the run's skill availability uses); [] on any hiccup (renders every row as "not on keep", honest).
+  function keepGearSet() {
     try {
-      const caps = (typeof World !== 'undefined' && World.stationCaps) ? World.stationCaps() : [];
+      const caps = (typeof World !== 'undefined' && World.keepCaps) ? World.keepCaps() : [];
       return new Set(caps.map(c => (typeof c === 'string' ? c : c && c.objectType)).filter(Boolean));
     } catch (_) { return new Set(); }
   }
-  /* The class dossier's DRAWS ON STATION GEAR + SKILL PACKAGE inventories were removed 2026-08-15 (Andrew).
+  /* The class dossier's DRAWS ON KEEP GEAR + SKILL PACKAGE inventories were removed 2026-08-15 (Andrew).
      Nothing about the LOADOUT changed — `s.kit` and `s.skills` still ride applyLoadout at summon exactly as
      before; the bay simply stopped printing the manifest. The live-source resolvers those blocks introduced are
-     still in use and still owned here: kitPropLabel/capGrant/stationGearSet by the RECIPE dossier's gear block
+     still in use and still owned here: kitPropLabel/capGrant/keepGearSet by the RECIPE dossier's gear block
      (recipeGearHTML), and loadSkillCatalog/hydrateSkillRows by its skills chips. */
   // async: fill real skill names/descriptions into a rendered dossier once the catalog loads. Re-queries the DOM
   // after the await so a dossier swapped mid-fetch is a safe no-op.
@@ -1105,13 +1105,13 @@ const Marketplace = (() => {
          budget: an agent at "70% research / 30% ops" is not throttled to those ratios by anything, so the bars
          implied a mechanic the harness cannot back. The lane the class actually leads with is one chip.
        • the CLEARANCE / EFFORT / VOICE / FOCUS spec grid — four rows of label-value whose values were mostly
-         "station default", stated where nothing could act on them. Clearance + effort moved onto the MODEL
+         "keep default", stated where nothing could act on them. Clearance + effort moved onto the MODEL
          control's helper (modelHelpHTML); lane + voice are chips under the hero.
        • the commit summary — it restated NAME / SKIN / MODEL / CLASS because the controls were a pane away.
          With CONFIGURE sitting directly above the button, it was echoing the three fields you just filled in.
      What was ADDED: the description. s.blurb — a written-for-humans paragraph that already shipped on every
      class — was being used only for SEARCH, never displayed here, so the dossier's whole account of a class was
-     a 4-word tagline plus a system prompt that opened "You are the station's…". */
+     a 4-word tagline plus a system prompt that opened "You are the keep's…". */
   function agentDossierHTML() {
     const s = (focusAgent && Specialties.get(focusAgent)) || Specialties.builtins()[0];
     if (!s) return '<div class="mkt-dos-empty">no class selected.</div>';
@@ -1156,11 +1156,11 @@ const Marketplace = (() => {
       '</div>';
   }
   // GEAR the recipe draws on — one advisory row per objectType: prop label + what it grants + a present/WANT
-  // check against the live station gear (skills-panel WANT pattern). Missing gear is a WANT badge, NEVER a lock.
+  // check against the live keep gear (skills-panel WANT pattern). Missing gear is a WANT badge, NEVER a lock.
   function recipeGearHTML(r) {
     const gear = (r && Array.isArray(r.gear)) ? r.gear : [];
     if (!gear.length) return '';
-    const have = stationGearSet();
+    const have = keepGearSet();
     const rows = gear.map(t => {
       const present = have.has(t);
       return '<div class="mkt-kit-row' + (present ? '' : ' mkt-kit-missing') + '">' +
@@ -1268,7 +1268,7 @@ const Marketplace = (() => {
 
   }
 
-  /* ---------- glass box: "STATION FAMILIARITY" ---------- */
+  /* ---------- glass box: "KEEP FAMILIARITY" ---------- */
   function glassHTML() {
     if (ctx && ctx.mode === 'pick') return '';
     const ps = profileApi(); if (!ps) return '';
@@ -1283,7 +1283,7 @@ const Marketplace = (() => {
     const head =
       '<button class="mkt-fam-head" aria-expanded="' + (glassOpen ? 'true' : 'false') + '">' +
         '<span class="mkt-fam-ico" aria-hidden="true">◉</span>' +
-        '<span class="mkt-fam-ttl">STATION FAMILIARITY</span>' +
+        '<span class="mkt-fam-ttl">KEEP FAMILIARITY</span>' +
         '<span class="mkt-fam-meter ' + (on && !summ.calibrating ? 'known' : 'cal') + '">' + meter + '</span>' +
         '<span class="mkt-fam-note">' + esc(noteTxt) + '</span>' +
         '<span class="mkt-fam-caret" aria-hidden="true">' + (glassOpen ? '▾' : '▸') + '</span>' +
@@ -1296,7 +1296,7 @@ const Marketplace = (() => {
         '<span class="mkt-fam-v">' + v + '%</span></div>';
     }).join('');
     const consent = !acked()
-      ? '<div class="mkt-fam-consent">STARNET learns what you work on to tailor these picks. The profile is stored locally; bounded summaries are sent to your configured model only when it drafts a recommendation. ' +
+      ? '<div class="mkt-fam-consent">EYEHOLD learns what you work on to tailor these picks. The profile is stored locally; bounded summaries are sent to your configured model only when it drafts a recommendation. ' +
         'Pause or wipe it anytime, right here. <button class="bb sm mkt-fam-ack">GOT IT</button></div>' : '';
     const acts = '<div class="mkt-fam-acts">' +
         '<span class="mkt-fam-priv">◇ local-first · pause stops browser and sidecar personalization</span>' +
@@ -1307,7 +1307,7 @@ const Marketplace = (() => {
   }
 
   /* ---------- recommender shelves ---------- */
-  /* ONE grammar for every recommendation the station makes — the shelves speak the exact line the COMMS offer
+  /* ONE grammar for every recommendation the keep makes — the shelves speak the exact line the COMMS offer
      cards do (recommend.js whyLine). Fail-open: the raw reason if the pure spine isn't loaded. */
   function whyGrammar(raw) {
     const t = String(raw == null ? '' : raw).trim();
@@ -1317,7 +1317,7 @@ const Marketplace = (() => {
   /* ONE HEADER GRAMMAR TOO (2026-08-05). The bay's five recommender shelves had grown five headers under FOUR
      different glyphs — ★ RECOMMENDED, ◆ CURATED, ◆ UNCOVERED, ✦ DRAFTED, ◈ FOR YOU — and not one of them named
      the agent doing the noticing, while the COMMS offer card next door leads with '◈ <NAME> NOTICED'. Same
-     station, same act of noticing, five costumes. These are the SAME family now: one glyph, and the noticer is
+     keep, same act of noticing, five costumes. These are the SAME family now: one glyph, and the noticer is
      named wherever the shelf genuinely noticed something.
 
      ⛔ THE NOTICER CLAIM IS NOT DECORATION. A cold-start shelf noticed NOTHING — it is a lineup drawn in catalog
@@ -1330,7 +1330,7 @@ const Marketplace = (() => {
      one now. The tails are literals today, but they ride esc() too so a future caller cannot re-open the hole. */
   function noticedHead(tail) {
     const n = String((ctx && ctx.agentName) || '').trim();
-    // mirrors chat.js recCard: the name when the station has one, a bare NOTICED when it does not.
+    // mirrors chat.js recCard: the name when the keep has one, a bare NOTICED when it does not.
     return '◈ ' + (n ? esc(n.toUpperCase()) + ' NOTICED' : 'NOTICED') + (tail ? ' — ' + esc(tail) : '');
   }
   const coldHead = (tail) => '◈ ' + esc(tail);   // same glyph, no noticer claim
@@ -1350,7 +1350,7 @@ const Marketplace = (() => {
      When BOTH signals are silent (cold start) we fall back to an HONEST lane spread — the first class of each
      distinct interest lane in catalog order — under a header that says so (never a fake "recommended"). This
      shelf now renders in the summon/pick flow too: recruiting a NEW agent is exactly when guidance matters. */
-  /* ONE GOAL MATCHER FOR THE WHOLE STATION (2026-08-05). This file used to carry its own: a plain substring
+  /* ONE GOAL MATCHER FOR THE WHOLE KEEP (2026-08-05). This file used to carry its own: a plain substring
      scan over a haystack that INCLUDED `Object.keys(s.tags)`. Two artifacts followed, and both were visible on
      the card. (a) the tag lanes are internal vocabulary — 'code'/'research'/'general' — so a goal containing the
      word "general" scored a point against every general-lane class in the catalog and the WHY chip then quoted
@@ -1385,7 +1385,7 @@ const Marketplace = (() => {
       ((s && s.purpose) || '') + ' ' + Object.keys((s && s.tags) || {}).join(' ');
   }
   // the class's LEARNED-TOPIC match, or null. Same engine, thresholds and cap as the FOR YOU row (TopicMatch),
-  // so "the station knows you keep doing X" means one identical thing across every shelf in the bay.
+  // so "the keep knows you keep doing X" means one identical thing across every shelf in the bay.
   const SPEC_TOPIC_SCALE = 1.5, SPEC_TOPIC_CAP = 3;
   function specTopicMatch(s, topics) {
     if (typeof TopicMatch === 'undefined' || !TopicMatch || !TopicMatch.match || !s) return null;
@@ -1407,7 +1407,7 @@ const Marketplace = (() => {
       const goalHits = specGoalHits(s, gt);
       const goal = goalHits.length;
       // the LEARNED-TOPIC term: strictly additive and capped, and exactly 0 until a WARM topic covers the class —
-      // so a cold station ranks byte-identically to before, and this can only ever PROMOTE a class the Commander's
+      // so a cold keep ranks byte-identically to before, and this can only ever PROMOTE a class the Commander's
       // real observed work points at. It can never shrink the shelf.
       const tm = specTopicMatch(s, topics);
       const topic = tm ? TopicMatch.term(tm, SPEC_TOPIC_SCALE, SPEC_TOPIC_CAP) : 0;
@@ -1478,7 +1478,7 @@ const Marketplace = (() => {
   }
   function recShelfHTML() {
     if (typeof Specialties === 'undefined' || !Specialties.builtins().length) return '';
-    // ADAPTIVE RECRUITMENT: when the station has a WARM read of the Commander's real workflow (the capability
+    // ADAPTIVE RECRUITMENT: when the keep has a WARM read of the Commander's real workflow (the capability
     // histogram past its floor), the shelf becomes a CURATED next-hire pick — the class whose kit covers the work
     // the Commander actually does, with a why derived from a real persisted counter. The curated list already
     // excludes rostered classes and only surfaces classes the work TOUCHES, so it never fabricates a pick. When the
@@ -1518,7 +1518,7 @@ const Marketplace = (() => {
   }
   /* ---------- UNCOVERED: a warm learned topic NOBODY on the crew handles (2026-07-28) ----------
      The curated shelf above can only ever rank classes whose kit the Commander's work ALREADY touches, so it can
-     never surface the recommendation that actually grows the station: "you keep asking about X and no one here
+     never surface the recommendation that actually grows the keep: "you keep asking about X and no one here
      can do it." This shelf answers that from two real persisted counters — the topic's own observation count and
      the crew's actual coverage — and renders ONLY when both say so. Empty (cold topics, or a crew that already
      covers everything warm) → '' , so nothing that renders today can be displaced by it. */
@@ -1541,9 +1541,9 @@ const Marketplace = (() => {
       noticedHead('work you keep doing that nobody on the crew handles') + '</div>' +
       '<div class="mkt-rec-rail">' + cards.map(x => recCardHTML(x.s, x.why)).join('') + '</div>';
   }
-  /* ---------- PROSPECTS: bespoke DRAFTS the station authored from the Commander's real work (Slice 4) ----------
+  /* ---------- PROSPECTS: bespoke DRAFTS the keep authored from the Commander's real work (Slice 4) ----------
      Distinct from the curated shelf (which ranks EXISTING classes): a prospect is a brand-new spec the catalog
-     doesn't contain, DRAFTED by the station and awaiting the Commander's confirm (never auto-saved/summoned).
+     doesn't contain, DRAFTED by the keep and awaiting the Commander's confirm (never auto-saved/summoned).
      Honest labelling: "DRAFTED FOR YOU" + a provenance note. Clicking opens the EXISTING custom-class builder
      pre-filled with the draft (mirrors the R5 recipeMint seed path); dismiss denylists it. */
   function prospectShelfHTML() {
@@ -1551,9 +1551,9 @@ const Marketplace = (() => {
     let items = []; try { items = ProspectStore.list() || []; } catch (_) { return ''; }
     if (!items.length) return '';
     // one glyph with the rest of the family; the VERB stays "drafted" because that is what actually happened —
-    // these are specs the station wrote, not catalog classes it ranked.
+    // these are specs the keep wrote, not catalog classes it ranked.
     return '<div class="mkt-sect-h mkt-rec-sect mkt-prospect-sect">' +
-      noticedHead('new roles the station drafted from your work') + '</div>' +
+      noticedHead('new roles the keep drafted from your work') + '</div>' +
       '<div class="mkt-rec-rail">' + items.map(prospectCardHTML).join('') + '</div>';
   }
   function prospectCardHTML(p) {
@@ -1564,9 +1564,9 @@ const Marketplace = (() => {
         '<div class="mkt-rec-id"><div class="mkt-rec-name">' + esc(d.name || 'New specialist') + '</div>' +
           '<div class="mkt-rec-tag">' + esc(d.tagline || '') + '</div></div></div>' +
       (p.why ? '<div class="mkt-rec-why"><span class="mkt-rec-why-k">WHY</span> ' + esc(p.why) + '</div>' : '') +
-      '<div class="mkt-prospect-prov">◇ drafted by the station from your work — review &amp; save to add it</div>' +
+      '<div class="mkt-prospect-prov">◇ drafted by the keep from your work — review &amp; save to add it</div>' +
       '<div class="mkt-prospect-acts"><button class="bb sm mkt-prospect-open" data-prospect="' + esc(p.id) + '">▸ REVIEW &amp; SAVE</button>' +
-        '<button class="bb sm mkt-prospect-dismiss" data-prospect="' + esc(p.id) + '" aria-label="dismiss this drafted role forever" title="dismiss forever — the station won\'t draft this role again">✕</button></div>' +
+        '<button class="bb sm mkt-prospect-dismiss" data-prospect="' + esc(p.id) + '" aria-label="dismiss this drafted role forever" title="dismiss forever — the keep won\'t draft this role again">✕</button></div>' +
     '</div>';
   }
   /* ---------- R6: the "FOR YOU" row (ranked by dossier interest lanes + goal-text keyword match) ----------
@@ -1616,7 +1616,7 @@ const Marketplace = (() => {
     // makes each visit a disjoint set and surfaces all twelve buckets in four. This shelf exists for someone
     // who cannot yet name a use case, so three NEW domains beats one new and two they already skipped.
     const rankOpts = { score: scoreFn, goalText: gt, painText: pt, launches: launches, topics: topics, preferenceModel: preferenceModel, limit: 3, spreadOffset: recipeVisits() * 3 };
-    // ASK THE RANKER WHAT IT ACTUALLY DID. `ready` only says the station has learned enough to be asked; it does
+    // ASK THE RANKER WHAT IT ACTUALLY DID. `ready` only says the keep has learned enough to be asked; it does
     // NOT say this row used any of it. A ready Commander whose profile, goals, launches and topics all come up
     // silent gets a catalog-order category spread — and used to get "◈ FOR YOU" printed over it.
     // the shared declined read gates the INPUT (see readyShelfHTML): a declined recipe never enters the rank,
@@ -1635,7 +1635,7 @@ const Marketplace = (() => {
       let why = '';
       try { why = Recipes.forYouReason ? (Recipes.forYouReason(r, { topics: topics, goalText: gt, painText: pt, launches: launches }) || '') : ''; } catch (_) { why = ''; }
       const raw = why || (scoreFn ? becauseText(r) : '');   // affinity copy lives in ONE place (BECAUSE) — fall back to it
-      // ONE grammar for every recommendation the station makes: the shelf speaks the same "because …" line
+      // ONE grammar for every recommendation the keep makes: the shelf speaks the same "because …" line
       // the COMMS offer cards do (recommend.js whyLine). Fail-open — the raw reason if the spine isn't loaded.
       return whyGrammar(raw);
     };
@@ -1645,11 +1645,11 @@ const Marketplace = (() => {
        ⛔ AND THE CLAIM IS SIZED TO THE ROW, NOT TO THE BOOLEAN (2026-08-05). `personalized` goes true on ONE real
        hit, and rankRecipesExplained then TOPS THE ROW UP from the same cold-start category spread — filler cards
        that carry no why at all, because nothing about them is about this Commander. The plural whole-row claim
-       "picked from your real work" therefore sat over two catalog cards the station had never seen touched: the
+       "picked from your real work" therefore sat over two catalog cards the keep had never seen touched: the
        honest-header fix, still overclaiming one path down. Three states, one per thing that actually happened. */
     const scored = Number.isFinite(ranked.scored) ? ranked.scored : (ranked.personalized ? items.length : 0);
     const head = !(ready && ranked.personalized)
-      ? coldHead('STARTING POINTS — a varied lineup while the station gets to know you')
+      ? coldHead('STARTING POINTS — a varied lineup while the keep gets to know you')
       : (scored >= items.length)
         ? noticedHead('picked from your real work')
         : noticedHead(scored === 1
@@ -1660,13 +1660,13 @@ const Marketplace = (() => {
       items.map(r => forYouCardHTML(r, reasonFor(r))).join('') + '</div>';
   }
 
-  /* ---------- READY ON THIS STATION — the context-bound shelf ----------
+  /* ---------- READY ON THIS KEEP — the context-bound shelf ----------
      The library below is the same 98 cards for everybody. THIS shelf is not: it binds catalog recipes to
-     what this station actually has — granted project roots, connected channels, learned topics, and what
+     what this keep actually has — granted project roots, connected channels, learned topics, and what
      is already running as a routine — and states the evidence on every card. RecipeFit does the deciding
      (pure, node-tested); everything here is gathering and painting.
 
-     ⛔ IT RENDERS NOTHING WHEN THERE IS NO CONTEXT. A station with no project granted and no channel
+     ⛔ IT RENDERS NOTHING WHEN THERE IS NO CONTEXT. A keep with no project granted and no channel
      connected knows nothing about its Commander, and a "ready for you" shelf on top of that is theatre.
      RecipeFit.offers returns [] and the Commander sees the honest library instead.
 
@@ -1675,7 +1675,7 @@ const Marketplace = (() => {
   /* ⛔ AND A FAILURE MUST STAY RETRYABLE (2026-08-05). Both caches used to `.catch(() => { fitX = fitX || []; })`,
      and `[]` is TRUTHY — so the `if (fitX) return` guard above short-circuited every later call. ONE transient
      /api/projects hiccup (a sidecar restart, a slow first paint) therefore killed the READY shelf for the rest of
-     the session: RecipeFit was handed zero projects forever, decided the station knows nothing about its
+     the session: RecipeFit was handed zero projects forever, decided the keep knows nothing about its
      Commander, and correctly rendered nothing. The shelf did not look broken — it looked EMPTY, which is its own
      honest state, so the bug is invisible. This file already documents the exact fix twenty lines into the module
      (loadSkillCatalog: leave the cache null, clear the in-flight marker, return an empty value for THIS call so
@@ -1725,7 +1725,7 @@ const Marketplace = (() => {
     const p = readCollection('/api/connectors', 'connectors', 'items')
       .then(d => {
         const raw = Array.isArray(d && d.connectors) ? d.connectors : (Array.isArray(d && d.items) ? d.items : []);
-        // CONNECTED only — a configured-but-broken connector cannot be cited as a reason the station is ready.
+        // CONNECTED only — a configured-but-broken connector cannot be cited as a reason the keep is ready.
         const rows = raw.filter(c => c && c.enabled !== false && !c.authRequired &&
           ['up', 'cached'].includes(c.state) && c.connected !== false && c.status !== 'error')
           .map(c => ({ id: String((c && c.id) || ''), label: String((c && (c.label || c.name || c.kind || c.id)) || '') }))
@@ -1740,7 +1740,7 @@ const Marketplace = (() => {
   }
   function basenameOf(p) { const s = String(p || '').replace(/[\\/]+$/, ''); const i = Math.max(s.lastIndexOf('/'), s.lastIndexOf('\\')); return i >= 0 ? s.slice(i + 1) : s; }
 
-  // the context RecipeFit reasons over — every field is real, already-fetched station truth or [].
+  // the context RecipeFit reasons over — every field is real, already-fetched keep truth or [].
   function fitContext() {
     let launches = null;
     try { launches = (typeof ProspectStore !== 'undefined' && ProspectStore.launches) ? ProspectStore.launches() : null; } catch (_) {}
@@ -1775,7 +1775,7 @@ const Marketplace = (() => {
     const basis = RecipeFit.basis(ctx);
     offers.forEach((o, i) => trackRecommendation('recipe', o.recipe, o.why, i + 1));
     // the basis strip is the audit trail: it names exactly what was looked at to produce the cards below it.
-    const head = '<div class="mkt-sect-h mkt-ready-sect">▲ READY ON THIS STATION' +
+    const head = '<div class="mkt-sect-h mkt-ready-sect">▲ READY ON THIS KEEP' +
       (basis ? '<span class="mkt-ready-basis">read: ' + esc(basis) + '</span>' : '') + '</div>';
     const deep = offers.length > 3 ? ' mkt-rail-deep' : '';
     return head + '<div class="mkt-rec-rail' + deep + '">' + offers.map(readyCardHTML).join('') + '</div>';
@@ -1784,7 +1784,7 @@ const Marketplace = (() => {
   /* One context-bound card. Deliberately the SAME `.mkt-rec[data-id]` markup the other shelves use, so it
      inherits their styling, focus behaviour and the one click handler at the bottom of renderStage —
      a bespoke card here would need its own binding and would drift from the rest of the bay's look.
-     What it adds: the evidence line, the cadence chip, and — when the station pre-filled something — the
+     What it adds: the evidence line, the cadence chip, and — when the keep pre-filled something — the
      line saying what it filled. A form that silently arrives filled is one that gets launched unread. */
   function readyCardHTML(o) {
     const r = o.recipe;
@@ -1815,7 +1815,7 @@ const Marketplace = (() => {
       renderStage();
     }).catch(() => {});
   }
-  // the station's LEARNED interest topics (server truth: GET /api/scout, cached in ProspectStore). Empty until a
+  // the keep's LEARNED interest topics (server truth: GET /api/scout, cached in ProspectStore). Empty until a
   // read lands or the histogram warms — and an empty list makes every topic term exactly 0, so the shelves rank
   // precisely as they did before topics existed. The frontend never asserts topic state it hasn't been served.
   function learnedTopics() {
@@ -1836,7 +1836,7 @@ const Marketplace = (() => {
   }
   function recCardHTML(s, why, compact) {
     // `why` comes from rankSpecs: the profile-affinity reason, a goal-match note, or the cold-start lane label
-    // no `--accent` — the shelf cards ride the station phosphor like every other seal in the bay
+    // no `--accent` — the shelf cards ride the keep phosphor like every other seal in the bay
     // (see the note on mkt-card). STARTING LINEUP sat three different colours side by side.
     return '<button class="mkt-rec" type="button" data-id="' + esc(s.id) + '"' + (compact && why ? ' title="' + esc(why) + '"' : '') + '>' +
       declineGlyphHTML('recruit', s.id, s.name) +
@@ -1882,17 +1882,17 @@ const Marketplace = (() => {
     if (!gate) return '';   // no /api/scout read yet — assert nothing rather than guess
     let line = '';
     if (gate.fire) {
-      line = 'signal locked — the station attempts a new draft after your next run.';
+      line = 'signal locked — the keep attempts a new draft after your next run.';
     } else if (gate.binding === 'cold') {
       line = !warm && nInterests > 0
-        ? 'CALIBRATING — ' + nInterests + ' early signal' + (nInterests === 1 ? '' : 's') + ' held, none strong enough to draft from yet. Keep working; the station is watching what you work on.'
-        : 'CALIBRATING — watching what you work on. Run real tasks and the station learns what to suggest.';
+        ? 'CALIBRATING — ' + nInterests + ' early signal' + (nInterests === 1 ? '' : 's') + ' held, none strong enough to draft from yet. Keep working; the keep is watching what you work on.'
+        : 'CALIBRATING — watching what you work on. Run real tasks and the keep learns what to suggest.';
     } else if (gate.binding === 'cooldown') {
       const n = Number(gate.runsSinceMint), N = Number(gate.mintEveryRuns);
       line = 'no draft staged yet — the next attempt earns itself with more runs' +
         (Number.isFinite(n) && Number.isFinite(N) && N > 0 ? ' (' + Math.min(n, N) + '/' + N + ')' : '') + '.';
     } else if (gate.binding === 'gap') {
-      line = 'the station attempted a draft recently — cooling down before the next try.';
+      line = 'the keep attempted a draft recently — cooling down before the next try.';
     } else {
       return '';   // 'full' (or an unknown binding) can't co-occur with an empty shelf — stay silent, stay honest
     }
@@ -1908,7 +1908,7 @@ const Marketplace = (() => {
      (a draft landed), rejected, none (the model judged the library already covers it), expired (a stale draft
      aged out), accepted/dismissed (your own verdict), or error. GET /api/scout returns the tail; the bay reads
      it via ProspectStore.ledger(). Rendering it here makes the engine VISIBLE: a dismissed draft is no longer
-     the whole story — the Commander can see what the station tried and the honest reason each time. Collapsed by
+     the whole story — the Commander can see what the keep tried and the honest reason each time. Collapsed by
      default; EVERY line comes straight from the payload — nothing invented (no fabricated "trying…" filler). */
   const SCOUT_OUT = {
     staged:    { label: 'MINTED',    cls: 'ok' },
@@ -1938,7 +1938,7 @@ const Marketplace = (() => {
       '<button type="button" class="mkt-scoutlog-head" aria-expanded="' + (scoutLogOpen ? 'true' : 'false') + '">' +
         '<span class="mkt-scoutlog-caret" aria-hidden="true">' + (scoutLogOpen ? '▾' : '▸') + '</span>' +
         '<span class="mkt-scoutlog-ttl">SCOUT LOG</span>' +
-        '<span class="mkt-scoutlog-sum">' + n + ' attempt' + (n === 1 ? '' : 's') + ' the station recorded</span>' +
+        '<span class="mkt-scoutlog-sum">' + n + ' attempt' + (n === 1 ? '' : 's') + ' the keep recorded</span>' +
       '</button>';
     if (!scoutLogOpen) return '<div class="mkt-scoutlog">' + head + '</div>';
     return '<div class="mkt-scoutlog open">' + head +
@@ -1964,7 +1964,7 @@ const Marketplace = (() => {
       '</div></div>';
   }
   /* ---------- FOUND ON YOUR PROJECTS: the environment-discovery shelf ----------
-     The first surface where the station proposes work the Commander never typed. Every card's FOUND line is the
+     The first surface where the keep proposes work the Commander never typed. Every card's FOUND line is the
      repo's own text (a TODO marker, the porcelain status), read from a BLESSED root by the sidecar's bounded
      scan — nothing is model-authored, so nothing can be invented. Renders '' until a real server read lands
      (the scoutColdState law: the frontend may not assert discovery state it can't prove) and '' when the shelf
@@ -1993,7 +1993,7 @@ const Marketplace = (() => {
     '</div>';
   }
 
-  // a station-drafted recipe card — same card family as the prospect shelf (glyph + WHY + provenance + arm-confirmed
+  // a keep-drafted recipe card — same card family as the prospect shelf (glyph + WHY + provenance + arm-confirmed
   // dismiss), because it makes the same promise: drafted from YOUR observed work, never saved without your review.
   function scoutRecipeCardHTML(p) {
     const d = (p && p.draft) || {};
@@ -2002,9 +2002,9 @@ const Marketplace = (() => {
         '<div class="mkt-rec-id"><div class="mkt-rec-name">' + esc(d.name || 'New recipe') + '</div>' +
           '<div class="mkt-rec-tag">' + esc(d.tagline || '') + '</div></div></div>' +
       (p.why ? '<div class="mkt-rec-why"><span class="mkt-rec-why-k">WHY</span> ' + esc(p.why) + '</div>' : '') +
-      '<div class="mkt-prospect-prov">◇ drafted by the station from your work — review &amp; save to add it</div>' +
+      '<div class="mkt-prospect-prov">◇ drafted by the keep from your work — review &amp; save to add it</div>' +
       '<div class="mkt-prospect-acts"><button class="bb sm mkt-scout-recipe-open" data-scout="' + esc(p.id) + '">▸ REVIEW &amp; SAVE</button>' +
-        '<button class="bb sm mkt-scout-recipe-dismiss" data-scout="' + esc(p.id) + '" aria-label="dismiss this drafted recipe forever" title="dismiss forever — the station won\'t draft this recipe again">✕</button></div>' +
+        '<button class="bb sm mkt-scout-recipe-dismiss" data-scout="' + esc(p.id) + '" aria-label="dismiss this drafted recipe forever" title="dismiss forever — the keep won\'t draft this recipe again">✕</button></div>' +
     '</div>';
   }
   function suggestCardHTML(c) {
@@ -2094,7 +2094,7 @@ const Marketplace = (() => {
     scope.addEventListener('keydown', scope._mktGridNav);
   }
 
-  /* ---------- wiring: prospects (station-drafted new classes) ----------
+  /* ---------- wiring: prospects (keep-drafted new classes) ----------
      REVIEW & SAVE seeds the EXISTING custom-class builder with the draft (kit/skills/text pre-filled) — the
      Commander reviews, edits, and confirms → a normal custom specialty is saved (summon path unchanged). Accepting
      removes the prospect from staging (accept, not denylist). Dismiss denylists the fingerprint + re-renders. */
@@ -2107,7 +2107,7 @@ const Marketplace = (() => {
       sfx('click');
       prefillBuilderFromProspect(p);
     }));
-    // dismiss permanently denylists the fingerprint (the station won't re-draft this role), so it takes a
+    // dismiss permanently denylists the fingerprint (the keep won't re-draft this role), so it takes a
     // two-step arm/confirm — the armed label admits the permanence. Reuse the shared ArmConfirm helper (the ONE
     // tested arm/confirm primitive, index.html loads it before this) rather than a fourth hand-rolled copy;
     // fall back to the bay's local armDelete only if ArmConfirm isn't loaded in this build, so it never regresses.
@@ -2509,7 +2509,7 @@ const Marketplace = (() => {
      note, no crash. This is the seed of the open-core marketplace unit — a clean portable format, no network. */
   function safeFilename(name) {
     const base = String(name || 'recipe').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
-    return (base || 'recipe') + '.starnet-recipe.json';
+    return (base || 'recipe') + '.eyehold-recipe.json';
   }
   function downloadRecipeFile(obj) {
     try {
@@ -2553,17 +2553,17 @@ const Marketplace = (() => {
 
   /* ---------- IMPORT AGENT — the Hermes / OpenClaw migration flow ----------
      A one-click path for a Commander arriving from OpenClaw or hermes-agent: detect installs (or pick a folder),
-     preview exactly what the scan found, then RECRUIT mints a StarNet agent with the persona/orders/memory
+     preview exactly what the scan found, then RECRUIT mints a Eyehold agent with the persona/orders/memory
      pre-filled. Every field shown comes straight from /api/harness/scan — nothing is invented (truthful telemetry).
      Keys are NEVER read or transferred; the preview says so and ABILITIES › SAVED API CONNECTIONS is where the Commander re-enters them.
      Backend routes (built in parallel this session): POST /api/harness/detect, POST /api/harness/scan. The folder
      fallback reuses the existing POST /api/projects/pickfolder. If a route is missing the flow degrades to an honest
      empty/error state — it never fakes a detection or a scan. */
   const up = s => String(s == null ? '' : s).toUpperCase();
-  // Is this scan's provider a StarNet provider id we can actually pin to? ModelDock.labels.normProvider maps every
+  // Is this scan's provider a Eyehold provider id we can actually pin to? ModelDock.labels.normProvider maps every
   // known alias to its canonical id and buckets anything unknown into 'openrouter' — so 'openrouter' only counts
   // when the raw string literally names it, otherwise an unknown provider would be silently mis-pinned. Returns the
-  // canonical id or null (→ no pin; the station's default model runs instead). No ModelDock → null (honest: can't verify).
+  // canonical id or null (→ no pin; the keep's default model runs instead). No ModelDock → null (honest: can't verify).
   function recognizeProvider(raw) {
     const r = String(raw || '').trim().toLowerCase();
     const norm0 = (typeof ModelDock !== 'undefined' && ModelDock.labels && ModelDock.labels.normProvider) ? ModelDock.labels.normProvider : null;
@@ -2714,7 +2714,7 @@ const Marketplace = (() => {
       transfers += t('MODEL', esc(lbl) + ' · ' + esc(mp.pin.model));
     } else {
       const known = String(mp.raw || mp.provider || '').trim();
-      transfers += t('MODEL', (known ? esc(known) + ' ' : '') + '<span class="mkt-imp-dim">— ' + (known ? 'not pinnable here' : 'none found') + '; station default model will be used</span>');
+      transfers += t('MODEL', (known ? esc(known) + ' ' : '') + '<span class="mkt-imp-dim">— ' + (known ? 'not pinnable here' : 'none found') + '; keep default model will be used</span>');
     }
     const dailyNote = dailyCount
       ? '<div class="mkt-imp-dim">' + dailyCount + ' daily note' + (dailyCount === 1 ? ' stays' : 's stay') + ' behind — not imported</div>'
@@ -2772,7 +2772,7 @@ const Marketplace = (() => {
   // recompose + persist + pushRoster). Construction-time fields (name/skin/model pin) ride the summon spec because
   // summonAgent bakes them in at creation; the markdown docs go through applyConfig on the freshly-focused new
   // agent (summon with activate:true focuses it), so we reuse the one docs write-path instead of inventing another.
-  // The persona is APPENDED under a labeled header beneath the station's own baseIdentity — replacing identity
+  // The persona is APPENDED under a labeled header beneath the keep's own baseIdentity — replacing identity
   // wholesale would strip the locked real-tools/honesty grounding, so we preserve it and add the imported voice.
   function confirmImport() {
     if (!importScan || !(ctx && ctx.onPick)) { close(); return; }
@@ -2830,10 +2830,10 @@ const Marketplace = (() => {
   }
   // RUN AS — which crew member a scheduled recipe fires as. Before this, MAKE ROUTINE always posted the active
   // workstream's agent (usually the Overseer) and the only way to move it was asking the lead in COMMS (user
-  // feedback 10-03). The roster is the live crew (StationUI.h.present); the host's ctx.agentId stays the default
+  // feedback 10-03). The roster is the live crew (KeepUI.h.present); the host's ctx.agentId stays the default
   // and is kept as an option even when it isn't on the roster, so the pick never silently changes the target.
   function runAsRoster() {
-    const live = (typeof StationUI !== 'undefined' && StationUI.h && Array.isArray(StationUI.h.present)) ? StationUI.h.present : [];
+    const live = (typeof KeepUI !== 'undefined' && KeepUI.h && Array.isArray(KeepUI.h.present)) ? KeepUI.h.present : [];
     const list = live.filter(a => a && a.id).map(a => ({ id: String(a.id), name: String(a.name || a.id) }));
     const def = (ctx && ctx.agentId) || 'agent';
     if (!list.some(a => a.id === def)) list.unshift({ id: def, name: (ctx && ctx.agentName) || def });
@@ -2898,17 +2898,17 @@ const Marketplace = (() => {
       });
       done();
     };
-    if (typeof fetch === 'undefined') return paint([], 'no station — type the service name in the directive instead');
+    if (typeof fetch === 'undefined') return paint([], 'no keep — type the service name in the directive instead');
     fetch('/api/connectors', { cache: 'no-store' }).then(r => r.ok ? r.json() : null).then(j => {
       const list = (j && j.connectors) || [];
       if (!list.length) return paint([], 'no connected services yet — add one in ⇄ ABILITIES');
       paint(list.map(c => ({ id: c.id, label: c.label || c.id })), '');
-    }).catch(() => paint([], 'could not reach the station'));
+    }).catch(() => paint([], 'could not reach the keep'));
   }
   // the native chooser behind ⌸ BROWSE. Cancel is silent; a real failure explains itself and leaves the typed
   // path alone (the honest fallback everywhere in this app is "type it yourself").
   function browseForPath(mode, onPicked) {
-    if (typeof fetch === 'undefined') { note('no station — type the path instead', 'bad'); return; }
+    if (typeof fetch === 'undefined') { note('no keep — type the path instead', 'bad'); return; }
     fetch('/api/pickpath', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ mode: mode }) })
       .then(res => res.json().then(j => ({ ok: res.ok, j })).catch(() => ({ ok: false, j: null })))
       .then(({ ok, j }) => {
@@ -2916,7 +2916,7 @@ const Marketplace = (() => {
         if (ok && j && j.ok && j.cancelled) return;                       // a cancel is not an error
         note((j && j.reason) || 'no picker available — type the path instead', 'bad');
       })
-      .catch(() => note('could not reach the station', 'bad'));
+      .catch(() => note('could not reach the keep', 'bad'));
   }
 
   function launchFormHTML() {
@@ -2926,7 +2926,7 @@ const Marketplace = (() => {
     // lane C: prefill each field with the value this recipe launched with LAST time (LaunchMemory, own local key).
     // Confirm-by-sight safety: the values sit visibly in the form and nothing runs until the button — plus the
     // hint below names the mechanism. esc() covers the content (U.esc escapes & < > " ', so </textarea> can't break out).
-    // CONTEXT BEATS MEMORY: a value the station just derived from a granted project root is fresher and more
+    // CONTEXT BEATS MEMORY: a value the keep just derived from a granted project root is fresher and more
     // specific than whatever this recipe was launched with last time, so the READY shelf's binding wins. Both
     // are visible in the form and nothing runs until the button — the confirm-by-sight safety is unchanged.
     const seedVals = (readySeeds && readySeeds[r.id]) ? readySeeds[r.id] : {};
@@ -3319,7 +3319,7 @@ const Marketplace = (() => {
     const rows = editParams.map(paramRowHTML).join('');
     return '<div class="mkt-r-params" id="mkt-r-params">' + rows + '</div>' +
       '<button type="button" class="bb xs mkt-r-padd">＋ ADD FILL-IN</button>' +
-      '<span class="mkt-hint mkt-r-phint"> — or leave empty and STARNET derives them from the {tokens} in your directive.</span>';
+      '<span class="mkt-hint mkt-r-phint"> — or leave empty and EYEHOLD derives them from the {tokens} in your directive.</span>';
   }
   // SOP acceptance rows: one typed check per row. The TYPE picks which second box applies (path / command) and
   // whether a third (text / sha256) exists — the same swap-a-box discipline the fill-in grid uses for 'pick one'.
@@ -3374,13 +3374,13 @@ const Marketplace = (() => {
     const forking = !editing && !!editForkedFrom;
     const parent = forking && hasRecipes() ? Recipes.get(editForkedFrom) : null;
     const d = editing || (scouting ? scoutSeedDraft : null) || { emoji: '✦', name: '', tagline: '', task: '' };
-    const title = editing ? 'EDIT RECIPE' : forking ? 'TWEAK RECIPE' : minting ? 'SAVE THIS AS A RECIPE' : scouting ? 'REVIEW THE STATION’S DRAFT' : 'SAVE A RECIPE';
+    const title = editing ? 'EDIT RECIPE' : forking ? 'TWEAK RECIPE' : minting ? 'SAVE THIS AS A RECIPE' : scouting ? 'REVIEW THE KEEP’S DRAFT' : 'SAVE A RECIPE';
     const intro = forking
       ? 'a copy of <b>' + esc((parent && parent.name) || 'the recipe') + '</b> — yours to change. adjust the wording, the fill-ins, the gear or cadence, then save it as your own. the original stays put.'
       : minting
       ? 'you’ve done this a few times — saving it makes it a one-tap recipe you own. Tweak the wording, wrap any blanks in <b>{braces}</b>, then save.'
       : scouting
-      ? 'the station drafted this from your observed work — review it, change anything, and save to make it yours. Nothing is added without this save.'
+      ? 'the keep drafted this from your observed work — review it, change anything, and save to make it yours. Nothing is added without this save.'
       : 'write the directive your agent should run. Wrap each blank in <b>{braces}</b> — “Brief me on <b>{topic}</b>” — and it becomes a fill-in at launch.';
     // when the form is (re)rendered we read the CURRENT working state (editGear/editCadence/... survive across
     // re-renders); name/emoji/tagline/task come from the DOM on save, but seed from `d` here on first paint.
@@ -3408,7 +3408,7 @@ const Marketplace = (() => {
       acceptGridHTML() +
       '<label class="mkt-lbl">LIVE PREVIEW <span class="mkt-lbl-hint">— what your agent receives</span></label>' +
       '<pre class="mkt-r-preview" id="mkt-r-preview"></pre>' +
-      '<label class="mkt-lbl">GEAR IT DRAWS ON <span class="mkt-lbl-hint">— advisory; a WANT badge if the station lacks it, never a lock</span></label>' +
+      '<label class="mkt-lbl">GEAR IT DRAWS ON <span class="mkt-lbl-hint">— advisory; a WANT badge if the keep lacks it, never a lock</span></label>' +
       '<div class="mkt-chips" id="mkt-r-gear">' + gearPickHTML() + '</div>' +
       '<div class="mkt-save-row">' +
         '<label class="mkt-lbl mkt-grow">CATEGORY<select class="mkt-in" id="mkt-r-cat">' + catSelectHTML() + '</select></label>' +
@@ -3634,10 +3634,10 @@ const Marketplace = (() => {
      into it"): an icon, a name, the job, optional standing orders, a suit colour. Saved straight to YOUR
      SPECIALISTS via Specialties.saveCustom (tags auto-derive from the text, so it ranks + recruits like a built-in).
      NO tool / skill / model / effort pickers. They were never what decided an agent's reach: tools resolve per turn
-     from the station + the agent's power settings (sidecar resolveTools), skills are ADD-only over the ones enabled
+     from the keep + the agent's power settings (sidecar resolveTools), skills are ADD-only over the ones enabled
      in SKILLS, and model + effort are picked on the recruit card (applied at summon). The old "choose at least one
      tool" gate asked the Commander to configure something that changed nothing — so the page now says what is
-     true: tools and skills come built in. A loadout carried in from a station draft or an edited class still rides
+     true: tools and skills come built in. A loadout carried in from a keep draft or an edited class still rides
      along untouched (buildKit/buildSkills/buildEffort/buildModel) — it only ever ADDS focus, never restricts. */
   const BUILD_ACCENTS = ['#ffaa33', '#7bc88a', '#6fa8bf', '#b790c0', '#cf8a7d', '#88b6c4', '#ffd34a', '#6fbcc0', '#9fc0c4'];
   const BUILD_ACCENT_NAMES = ['Amber', 'Green', 'Blue', 'Purple', 'Coral', 'Ice', 'Gold', 'Teal', 'Silver'];
@@ -3673,7 +3673,7 @@ const Marketplace = (() => {
   function wireBuildForm(stage) {
     const iconChoices = stage.querySelectorAll('[data-class-icon]');
     const emojiIn = stage.querySelector('#mkt-b-emoji'), coinEmoji = stage.querySelector('#mkt-build-emoji');
-    // live seal preview: the ICON only. The suit swatch never repaints the coin — the seal is station phosphor
+    // live seal preview: the ICON only. The suit swatch never repaints the coin — the seal is keep phosphor
     // in the roster, so previewing it in the picked colour would preview a lie.
     const paintIcon = value => {
       if (coinEmoji) coinEmoji.textContent = value || '✦';
@@ -3705,7 +3705,7 @@ const Marketplace = (() => {
         tagline: (stage.querySelector('#mkt-b-tag').value || '').trim(),
         purpose,
         manual: (stage.querySelector('#mkt-b-manual').value || '').trim(),
-        // the carried loadout (a station draft's or the edited class's) round-trips untouched — empty for a fresh
+        // the carried loadout (a keep draft's or the edited class's) round-trips untouched — empty for a fresh
         // class, which simply works with the crew's tools + enabled skills (Specialties.normCustom normalizes them).
         kit: buildKit.slice(), skills: buildSkills.slice(), reasoningEffort: buildEffort
       });
@@ -3729,6 +3729,6 @@ const Marketplace = (() => {
   // Slice 4: let ProspectStore refresh the open bay when a fresh prospect mints (no-op when the bay is closed or
   // not on the grid view — never yanks the user out of the editor).
   function refreshIfOpen() { if (root && view === 'grid') { try { renderStage(); } catch (_) {} } }
-  // currentTab: which library the open bay shows ('recipes' | 'agents') — StationUI files the RECIPES library under MY WORK
+  // currentTab: which library the open bay shows ('recipes' | 'agents') — KeepUI files the RECIPES library under MY WORK
   return { open, close, refreshIfOpen, currentTab: () => (root ? tab : null) };
 })();

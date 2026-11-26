@@ -11,7 +11,7 @@
     "work-recipes",
     "work-automation",
     "work-quests",
-    "build-station",
+    "build-keep",
     "build-connectors",
     "sys-messaging",
     "build-manual",
@@ -21,7 +21,7 @@
   ],
   "captureResult": "all states opened",
   "detectorResult": "CHANGED: 16; excused: 0; exit 3",
-  "review": "All 16 current screenshots inspected directly. Expected panels and controls are present, with the docked-panel geometry seen in the preceding integration capture. No blank station or wrong-panel capture observed. Commander overview text received an additional live DOM check: copy and familiarity columns occupy disjoint horizontal bounds. This does not certify scrolling, all control interactions, every viewport, installed desktop, or customer hardware.",
+  "review": "All 16 current screenshots inspected directly. Expected panels and controls are present, with the docked-panel geometry seen in the preceding integration capture. No blank keep or wrong-panel capture observed. Commander overview text received an additional live DOM check: copy and familiarity columns occupy disjoint horizontal bounds. This does not certify scrolling, all control interactions, every viewport, installed desktop, or customer hardware.",
   "baselineChanged": false,
   "releaseApproval": false
 }

@@ -1,13 +1,13 @@
-/* STARNET — windows/logbook.js : the LOGBOOK lane of the AGENT DOSSIER (extracted from stationui.js).
+/* EYEHOLD — windows/logbook.js : the LOGBOOK lane of the AGENT DOSSIER (extracted from keepui.js).
    NAV CONDENSE 2 (2026-08-04): the LOGBOOK is agent-scoped, so it lives where the agent lives — a
    section of the dossier instead of a SYSTEM-dock window. This file registers a DossierLane
-   ((body)=>({sections,wire})); stationui's buildAgents mounts the section and runs wire() after its
+   ((body)=>({sections,wire})); keepui's buildAgents mounts the section and runs wire() after its
    own console mount. The dossier's roster rail drives agent switching (this lane reads the live
    H.present/H.sel views on every rebuild), so the old rail-top roster switcher is gone. */
 'use strict';
 (() => {
-  if (typeof StationUI === 'undefined' || !StationUI.h) return;
-  const H = StationUI.h;
+  if (typeof KeepUI === 'undefined' || !KeepUI.h) return;
+  const H = KeepUI.h;
   const esc = H.esc, fmtRel = H.fmtRel;
 
   /* ============== LOGBOOK — the reviewable run-history + SLAG post-mortems (the durable record) ==============
@@ -18,7 +18,7 @@
   function logbookLane(body) {
     const a = H.present[H.sel] || {};   // live core state via the h getters
     const agentId = a.id || 'agent';
-    const nm = a.name || agentId;   // the LOGBOOK is agent-scoped — name it, don't imply a station-wide record
+    const nm = a.name || agentId;   // the LOGBOOK is agent-scoped — name it, don't imply a keep-wide record
     // ONE dossier section, three stacked blocks (RUNS · SLAG · INSIGHTS) under the sub-header
     // vocabulary the SKILL LIBRARY uses. Each block keeps its OWN host (#lb-list / #lb-slag /
     // #lb-insights) so a mid-fetch agent switch can't write into a sibling's list.
@@ -88,7 +88,7 @@
         const j = await Harness.api.get('/api/runs?agent=' + encodeURIComponent(agentId) + '&limit=100');
         const h = body.querySelector('#lb-list'); if (!h) return;
         const runs = (j && j.runs) || [];
-        // PRACTICAL FOLD: every chat message is a run, so an interactive station's history is mostly talk-only
+        // PRACTICAL FOLD: every chat message is a run, so an interactive keep's history is mostly talk-only
         // rows that bury the record that matters (away/cron runs, failures, real work). A row is CHATTER when the
         // run ended fine with ZERO successful tool calls and ZERO artifacts — provable from the row's own recorded
         // fields (toolsOk / artifacts), never a guess. Chatter folds behind an honest count; work renders up front.

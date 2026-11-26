@@ -31,8 +31,8 @@ A.eq(duplicate.duplicate, true, 'a later/conflicting verdict is idempotently rej
 A.eq(duplicate.rating.verdict, 'great', 'the first acknowledged verdict remains canonical');
 A.eq(disk.length, 1, 'a duplicate never appends a second row');
 const nextGeneration = store.record({ epoch: 2, runId: 'r1', verdict: 'ok', entries: [{ agentId: 'agent', id: 'work:r1', delta: 1 }] });
-A.eq(nextGeneration.duplicate, false, 'a newly created station generation does not inherit old verdict locks');
-A.eq(store.list({ epoch: 2 }).length, 1, 'rating history is isolated to the current station generation');
+A.eq(nextGeneration.duplicate, false, 'a newly created keep generation does not inherit old verdict locks');
+A.eq(store.list({ epoch: 2 }).length, 1, 'rating history is isolated to the current keep generation');
 
 A.ok(store.record({ runId: '', verdict: 'great', entries: [] }).error, 'invalid ratings fail closed');
 now = 300;

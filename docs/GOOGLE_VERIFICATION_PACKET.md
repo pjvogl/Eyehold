@@ -9,25 +9,25 @@ deferred-release conditions still apply to the five original connectors.
 
 ## Console state and prepared fields
 
-Project `starnet-505202`; branding verified and published. Data access unverified.
+Project `eyehold-505202`; branding verified and published. Data access unverified.
 The preparation page explicitly reports missing intended data usage and demo video.
 The Data Access form now has **Drive productivity** and **Email productivity** selected
 and revised scope justifications entered. These are **unsaved form changes**: Google's
 Save button remains disabled without the YouTube URL. No dummy URL was supplied.
 
-The form is at https://console.cloud.google.com/auth/scopes;verificationMode=true?project=starnet-505202
+The form is at https://console.cloud.google.com/auth/scopes;verificationMode=true?project=eyehold-505202
 
 ### Sensitive-scope justification
 
-StarNet is a desktop productivity assistant. Each Google service is connected separately after an in-app data-use disclosure. Calendar event read access supports user-requested scheduling summaries; calendar list and free/busy permissions alone cannot read event details. Docs and Sheets scopes support reading and editing existing documents/spreadsheets identified by the user, plus creating new ones. Read-only scopes cannot perform those edits. The review candidate requests drive.file for its minimal account probe; Docs and Sheets no longer request drive.readonly. Tool content may enter local conversations and requests to the selected model provider; StarNet Credits also relays those requests through its gateway. Public Workspace activation remains deferred pending verification.
+Eyehold is a desktop productivity assistant. Each Google service is connected separately after an in-app data-use disclosure. Calendar event read access supports user-requested scheduling summaries; calendar list and free/busy permissions alone cannot read event details. Docs and Sheets scopes support reading and editing existing documents/spreadsheets identified by the user, plus creating new ones. Read-only scopes cannot perform those edits. The review candidate requests drive.file for its minimal account probe; Docs and Sheets no longer request drive.readonly. Tool content may enter local conversations and requests to the selected model provider; Eyehold Credits also relays those requests through its gateway. Public Workspace activation remains deferred pending verification.
 
 ### Drive justification
 
-The separate Drive connector supports user-requested file search, metadata reading and text export of existing Drive files. drive.readonly is needed because drive.file alone cannot search/read existing files that have not previously been opened with StarNet. drive.file limits file creation and metadata updates to permitted files; StarNet does not request broad Drive write access. Docs and Sheets no longer request drive.readonly in the review candidate. Returned content may enter local agent conversations and requests to the selected model provider, including the StarNet Credits gateway when selected. Users see this disclosure before sign-in. Public Workspace activation remains deferred pending verification.
+The separate Drive connector supports user-requested file search, metadata reading and text export of existing Drive files. drive.readonly is needed because drive.file alone cannot search/read existing files that have not previously been opened with Eyehold. drive.file limits file creation and metadata updates to permitted files; Eyehold does not request broad Drive write access. Docs and Sheets no longer request drive.readonly in the review candidate. Returned content may enter local agent conversations and requests to the selected model provider, including the Eyehold Credits gateway when selected. Users see this disclosure before sign-in. Public Workspace activation remains deferred pending verification.
 
 ### Gmail justification
 
-StarNet provides user-requested email productivity assistance: searching and reading Gmail messages, threads and attachments, composing drafts and sending drafts when authorized by the user. gmail.readonly enables search and content reading; gmail.compose enables draft creation and sending. gmail.send alone cannot create drafts and read-only access cannot compose or send. StarNet does not request mailbox deletion, label modification or settings-management scopes. Returned message content may enter local agent conversations and requests to the selected model provider, including the StarNet Credits gateway when selected. Users see this disclosure before sign-in. Public Workspace activation remains deferred pending verification.
+Eyehold provides user-requested email productivity assistance: searching and reading Gmail messages, threads and attachments, composing drafts and sending drafts when authorized by the user. gmail.readonly enables search and content reading; gmail.compose enables draft creation and sending. gmail.send alone cannot create drafts and read-only access cannot compose or send. Eyehold does not request mailbox deletion, label modification or settings-management scopes. Returned message content may enter local agent conversations and requests to the selected model provider, including the Eyehold Credits gateway when selected. Users see this disclosure before sign-in. Public Workspace activation remains deferred pending verification.
 
 ## Candidate scope map
 
@@ -55,15 +55,15 @@ An older grant is not automatically revoked by narrowing a new authorization req
 Use a private review build and dedicated test data. Never enable unverified scopes in
 the public release merely to record the demo. Show the actual account consent screen,
 browser address bar/client ID, app name and unverified-app screen as required by Google.
-The supplied `Downloads/starnetdemo.mp4` was sampled at 80-second intervals: it shows
-onboarding and general station work, not evidence establishing the required Google flows.
+The supplied `Downloads/eyeholddemo.mp4` was sampled at 80-second intervals: it shows
+onboarding and general keep work, not evidence establishing the required Google flows.
 It has not been uploaded or represented as a verification demo.
 
-1. Show StarNet's public home/privacy pages, then the in-app Google disclosure. Explain
+1. Show Eyehold's public home/privacy pages, then the in-app Google disclosure. Explain
    the selected model provider and, if used, the credits gateway; identify retained data.
 2. Connect each of Gmail, Drive, Calendar, Docs and Sheets. Show account identity,
    distinct consent requests and the granted permissions. Include every applicable OAuth
-   client in the project, including the separate StarNet Account web-login client.
+   client in the project, including the separate Eyehold Account web-login client.
 3. Gmail: create a draft with a unique test subject; search that exact subject and read
    the returned message. For draft-send proof use a separately authorized test recipient.
 4. Drive: search a dedicated pre-existing fixture, read metadata, export text; create
@@ -92,7 +92,7 @@ It has not been uploaded or represented as a verification demo.
 - The private native review launcher reached real Google account selection with the
   installed client and reduced Docs scopes. Account selection and the fresh grant
   remain unfinished; no new real Google API acceptance is claimed.
-- The HTTP suite passed 119 steps. Focused Google lifecycle, vault, station recovery,
+- The HTTP suite passed 119 steps. Focused Google lifecycle, vault, keep recovery,
   update preparation and an encrypted-state update HTTP run also passed after the
   follow-up fixes. The full fast run passed steps 1–750, then stopped because the
   silent-catch baseline needed lowering from 371 to 368. After that metadata fix,
@@ -101,7 +101,7 @@ It has not been uploaded or represented as a verification demo.
   uninterrupted final-commit fast gate has not been claimed and remains required
   before merge.
 - No Mac installer acceptance, signed release, verification submission, external
-  assessment or station-wide `qa:ready` verdict is claimed. Work remains isolated
+  assessment or keep-wide `qa:ready` verdict is claimed. Work remains isolated
   on `agent/google-oauth-audit-0919`; trunk and public activation are unchanged.
 
 | Condition | Evidence/status |

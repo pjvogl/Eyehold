@@ -1,7 +1,7 @@
 # Build Mode flow polish — 2026-09-15
 
 This pass removes interruptions and makes tool ownership predictable. It preserves
-the approved station geometry, textures and existing editor controls.
+the approved keep geometry, textures and existing editor controls.
 
 - Opening Build Mode starts in the library. Help remains available on request.
 - Categories start in browse mode. Conveyor layouts arm only when a layout card
@@ -37,7 +37,7 @@ Live preview at `http://127.0.0.1:18845`:
 
 Focused checks pass: `refit-flow-polish`, `refit-card-stack` (68), `kitout` (33),
 `tutorial-connect-beat` (22), `refit-footprint`, `refit-junction-cards` (117),
-`refit-run-gate` (23), `refit-testride-intake` (29), and `station-templates`.
+`refit-run-gate` (23), `refit-testride-intake` (29), and `keep-templates`.
 The new behavioral test exercises the actual keyboard/tool functions and verifies
 that suppressing generic coaching still records placement progress.
 

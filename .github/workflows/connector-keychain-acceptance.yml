@@ -14,7 +14,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     timeout-minutes: 20
     env:
-      STARNET_DISPOSABLE_KEYCHAIN: '1'
+      EYEHOLD_DISPOSABLE_KEYCHAIN: '1'
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -26,7 +26,7 @@ jobs:
       - name: Configure disposable keychain
         shell: bash
         run: |
-          keychain="$RUNNER_TEMP/starnet-acceptance.keychain-db"
+          keychain="$RUNNER_TEMP/eyehold-acceptance.keychain-db"
           security create-keychain -p synthetic-ci-only "$keychain"
           security set-keychain-settings -lut 21600 "$keychain"
           security list-keychains -d user -s "$keychain"
@@ -35,7 +35,7 @@ jobs:
       - name: Native migration and process restart recovery
         shell: bash
         run: |
-          binary=test/native-connector-keychain/target/debug/starnet-connector-keychain-acceptance
+          binary=test/native-connector-keychain/target/debug/eyehold-connector-keychain-acceptance
           "$binary" migrate
           "$binary" recover
           "$binary" malformed
@@ -43,8 +43,8 @@ jobs:
       - name: Locked keychain and recovery
         shell: bash
         run: |
-          binary=test/native-connector-keychain/target/debug/starnet-connector-keychain-acceptance
-          keychain="$RUNNER_TEMP/starnet-acceptance.keychain-db"
+          binary=test/native-connector-keychain/target/debug/eyehold-connector-keychain-acceptance
+          keychain="$RUNNER_TEMP/eyehold-acceptance.keychain-db"
           security lock-keychain "$keychain"
           "$binary" unavailable
           security unlock-keychain -p synthetic-ci-only "$keychain"

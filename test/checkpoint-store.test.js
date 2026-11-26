@@ -102,7 +102,7 @@ function runGit(args, opts) {
       allowWorkTree: (candidate) => projectAllowed && path.resolve(candidate) === path.resolve(project)
     });
     execFileSync('git', ['init', '-q'], { cwd: project, windowsHide: true });
-    fs.writeFileSync(path.join(project, '.git', 'STARNET_TEST_MARKER'), 'user repo metadata\n');
+    fs.writeFileSync(path.join(project, '.git', 'EYEHOLD_TEST_MARKER'), 'user repo metadata\n');
     fs.writeFileSync(path.join(project, 'project.txt'), 'project baseline\n');
     const ps1 = await scoped.snapshot('pr', { runId: 'external', turn: 0, label: 'shell.exec', workTree: project, authorizedWorkTree: true });
     A.ok(ps1 && ps1.created, 'external project baseline snapshot created');
@@ -118,7 +118,7 @@ function runGit(args, opts) {
     A.ok(await scoped.restore('pr', ps1.id), 're-authorized external project restore succeeds');
     A.eq(fs.readFileSync(path.join(project, 'project.txt'), 'utf8'), 'project baseline\n', 'external project bytes restore exactly');
     A.ok(!fs.existsSync(path.join(project, 'new.txt')), 'external project restore removes files created after the snapshot');
-    A.eq(fs.readFileSync(path.join(project, '.git', 'STARNET_TEST_MARKER'), 'utf8'), 'user repo metadata\n', 'shadow restore never reads, resets, or cleans the project\'s own .git metadata');
+    A.eq(fs.readFileSync(path.join(project, '.git', 'EYEHOLD_TEST_MARKER'), 'utf8'), 'user repo metadata\n', 'shadow restore never reads, resets, or cleans the project\'s own .git metadata');
     const projectIndex = path.join(root, '.checkpoints', 'pr', 'index.json');
     fs.rmSync(projectIndex, { force: true }); fs.rmSync(projectIndex + '.bak', { force: true });
     projectAllowed = false;

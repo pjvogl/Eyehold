@@ -8,8 +8,8 @@ const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
 (async () => {
   const provider = await require('./helpers/overseer-provider.js').startOverseerProvider({ reviewDelay: 1500 });
   const mock = provider.server;
-  const fixture = SidecarFixture.create({ env: { SKYNET_OPENROUTER_BASE: 'http://127.0.0.1:' + mock.address().port + '/api/v1',
-    SKYNET_OPENROUTER_KEY: 'sk-or-v1-local-proof', SKYNET_DEFAULT_MODEL: 'test/model', SKYNET_FULL_ACCESS: '1' } });
+  const fixture = SidecarFixture.create({ env: { EYEHOLD_OPENROUTER_BASE: 'http://127.0.0.1:' + mock.address().port + '/api/v1',
+    EYEHOLD_OPENROUTER_KEY: 'sk-or-v1-local-proof', EYEHOLD_DEFAULT_MODEL: 'test/model', EYEHOLD_FULL_ACCESS: '1' } });
   try {
     const seed = JSON.parse(fs.readFileSync(path.join(__dirname, '../dev/fixtures/seed-workspace/agent.save.json'), 'utf8'));
     seed.doc.generalId = 'general'; seed.doc.activeId = 'home';
@@ -129,7 +129,7 @@ const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
     await fixture.json('POST', '/api/update/cancel', {});
     await fixture.stop();
     // A schema-invalid envelope cannot recover from a JSON backup: preserve it,
-    // keep coordination disabled, and let the rest of the station start normally.
+    // keep coordination disabled, and let the rest of the keep start normally.
     fs.writeFileSync(statePath, JSON.stringify({ version: 1, value: { threads: 'invalid', reviews: [] } }));
     await fixture.start();
     const damaged = (await fixture.json('GET', '/api/overseer')).body;

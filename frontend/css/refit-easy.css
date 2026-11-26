@@ -64,7 +64,7 @@
 .refit-overlay .refit-selection .refit-position { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 10px; font-size: 14px; color: var(--ph-dim); }
 .refit-overlay .refit-selection .refit-position label { margin: 0; }
 .refit-overlay .refit-selection .refit-sel-pos[aria-expanded="true"] { color: var(--ph-bright); border-color: rgba(var(--ph-rgb),.45); }
-/* WHO SITS HERE (build.js sitsRow): a workstation's agent, picked in its own card — one chip per crew member */
+/* WHO SITS HERE (build.js sitsRow): a workkeep's agent, picked in its own card — one chip per crew member */
 .refit-overlay .refit-sel-sits { display: grid; gap: 5px; }
 .refit-overlay .refit-sel-sits-k { font-size: 13px; letter-spacing: .8px; color: var(--ph-dim); }
 .refit-overlay .refit-sel-sits-row { display: flex; flex-wrap: wrap; gap: 5px; }

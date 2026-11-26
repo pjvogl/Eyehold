@@ -17,8 +17,8 @@ await evalJS(c, `(()=>{
  })()`);
 await sleep(1000);
 for (const id of ['nursery', 'city', 'ocean', 'belt', 'moon', 'forest']) {
-  await evalJS(c, `StationUI.openTerm('settings','appearance')`); await sleep(500);
-  const start = await evalJS(c, `(()=>{const b=document.querySelector('#set-backdrop [data-bd="${id}"]');if(!b)throw Error('Missing backdrop control');const t=performance.now();b.click();StationUI.closeTerm('settings');return t})()`);
+  await evalJS(c, `KeepUI.openTerm('settings','appearance')`); await sleep(500);
+  const start = await evalJS(c, `(()=>{const b=document.querySelector('#set-backdrop [data-bd="${id}"]');if(!b)throw Error('Missing backdrop control');const t=performance.now();b.click();KeepUI.closeTerm('settings');return t})()`);
   let ready = false;
   for (let i = 0; i < 240; i++) {
     ready = await evalJS(c, `(()=>{const s=${['moon','forest'].includes(id)?'Terrain':'SpaceBG'}._dbgBakeState();return s.ready&&s.id==='${id}'})()`);

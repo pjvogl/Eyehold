@@ -15,7 +15,7 @@ test('a long shell.exec approval carries the whole command; deny runs nothing, a
     res.write('data: ' + JSON.stringify({ choices: [{ delta }] }) + '\n\n'); res.write('data: ' + JSON.stringify({ choices: [{ delta: {}, finish_reason: step ? 'tool_calls' : 'stop' }], usage: { prompt_tokens: 5, completion_tokens: 2, total_tokens: 7 } }) + '\n\n'); res.end('data: [DONE]\n\n');
   });
   await new Promise(r => server.listen(0, '127.0.0.1', r)); const base = 'http://127.0.0.1:' + server.address().port;
-  const fixture = SidecarFixture.create({ prefix: 'starnet-consent-full-', timeoutMs: 20000, env: { SKYNET_FULL_ACCESS: '0', STARNET_FULL_ACCESS: '0', SKYNET_OPENROUTER_BASE: base, STARNET_OPENROUTER_BASE: base, SKYNET_OPENROUTER_KEY: 'fixture-key', STARNET_OPENROUTER_KEY: 'fixture-key' } });
+  const fixture = SidecarFixture.create({ prefix: 'eyehold-consent-full-', timeoutMs: 20000, env: { EYEHOLD_FULL_ACCESS: '0', EYEHOLD_FULL_ACCESS: '0', EYEHOLD_OPENROUTER_BASE: base, EYEHOLD_OPENROUTER_BASE: base, EYEHOLD_OPENROUTER_KEY: 'fixture-key', EYEHOLD_OPENROUTER_KEY: 'fixture-key' } });
   // the tail past character 77 is what the old card hid: here it is the redirect that decides where the bytes land
   const words = 'the-whole-command-is-visible-' + 'x'.repeat(220);
   const cmd = 'echo ' + words + '> consent-full-marker.txt';

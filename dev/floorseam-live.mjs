@@ -2,7 +2,7 @@
 // dev/floorseam-live.mjs — the seam fix, proved on the REAL game canvas.
 //
 // dev/floorseam.mjs bakes offscreen; this drives the LIVE app: it lays two abutting HAB rooms
-// through the same validated mutation API REFIT uses (Build.__test__.station()), lets the world
+// through the same validated mutation API REFIT uses (Build.__test__.keep()), lets the world
 // rebake and re-render on its own rAF loop, then reads pixels back out of #stage — the canvas the
 // Commander is actually looking at — and reports the luma profile straight across the join.
 //
@@ -18,8 +18,8 @@ const CDP_PORT = Number(process.env.SKYNET_CDP_PORT || 9358);
 const URL = `http://127.0.0.1:${PORT}/`;
 
 const PLACE = `(() => {
-  const st = (typeof Build !== 'undefined' && Build.__test__) ? Build.__test__.station() : null;
-  if (!st) return JSON.stringify({ error: 'no live station (Build.__test__ unavailable)' });
+  const st = (typeof Build !== 'undefined' && Build.__test__) ? Build.__test__.keep() : null;
+  if (!st) return JSON.stringify({ error: 'no live keep (Build.__test__ unavailable)' });
   const b = st.bounds();
   const y1 = b.minTy, y2 = b.minTy + 7;
   const x0 = b.maxTx + 3;
@@ -33,7 +33,7 @@ const PLACE = `(() => {
 // so a bake-local pixel maps to px*scale + pan. Tiles here are LOCAL (the zoneGrid frame), which is
 // the frame projectGeometry().allRects already speaks.
 const SAMPLE = (seamX, rowY) => `((seamWorldX, rowsWorldY) => {
-  const st = Build.__test__.station();
+  const st = Build.__test__.keep();
   const geo = st.projectGeometry(), T = geo.TILE, cam = World.cameraDbg();
   const lx = seamWorldX - geo.origin.tx, ly = rowsWorldY - geo.origin.ty;
   const cv = document.getElementById('stage');

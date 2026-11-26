@@ -30,7 +30,7 @@ Build two rooms connected by an east/west hallway and a third room connected by 
 
 2026-09-16 recurrence: the rendered doorway returns extend 30px above the logical room seam and up to 7px inside each corridor edge. The earlier floor-face guard only reserved 2.5px at corridor sides. In the seeded browser app on source 67eb99bdf, 500 deterministic routes yielded 243 samples with feet inside opaque door-occluder pixels. Screenshot supplied by the owner circles both affected shoulders.
 
-Owner reported a south-entry recurrence during remaster merge preparation. The earlier fix checked logical floor but allowed early turns inside the nine-pixel north wall face. d50f3f603 adds continuous visible-face clearance, including side walls, to the actual-foot path and corner guard. Live receipt: docs/station-remaster/merge-polish/doorway-live.json (12/12 arrivals, zero north-face crossings). test/path-smoothing.test.js now passes 27 assertions including premature south-entry turns and reverse traversal.
+Owner reported a south-entry recurrence during remaster merge preparation. The earlier fix checked logical floor but allowed early turns inside the nine-pixel north wall face. d50f3f603 adds continuous visible-face clearance, including side walls, to the actual-foot path and corner guard. Live receipt: docs/keep-remaster/merge-polish/doorway-live.json (12/12 arrivals, zero north-face crossings). test/path-smoothing.test.js now passes 27 assertions including premature south-entry turns and reverse traversal.
 
 Live seeded app at localhost:9294, source 83c896e7d: 1,600 deterministic route pairs produced 588 invalid rendered-foot segments. The same live model probe after the source repair produced zero. The prior route smoother checked tile centres while world.js footOf anchors feet at y*T+T-1. Early waypoint handoffs also cut unvalidated corners. Updated test/path-smoothing.test.js passes 22 assertions including real world helper execution.
 
@@ -46,14 +46,14 @@ Original logical-seam repair: a22f780e3. Visible wall-face recurrence source-fix
 
 Before: the same live seeded browser test against 83c896e7d recorded wall violations in four of eight hero/crew routes (53, 10, 54 and 10 invalid movement samples). Route-only sampling found 588 invalid segments across 1,600 deterministic pairs.
 
-After: the repaired seeded app completed all twelve routes across east/west and north/south openings in both directions for hero, idle crew and workstation crew. Every route reached its destination with zero illegal foot tiles or wall crossings. This drove the shipped movement functions through temporary browser-only test hooks; no production test hook was added. Canvas readback was opaque [53,49,47,255], with rendered foot/head positions and sprite poses present; browser warnings and exceptions were empty. The 1,600-pair live model probe fell to zero invalid segments. Regression test: test/path-smoothing.test.js (22 assertions), with independently sampled feet plus production corner/start/nudge helpers. test/crew-containment.test.js: 23 assertions. Customer-journey gate: 34/34 green, exit 0. Full fast gate on committed candidate 57df448af: 752/752 green, exit 0. Exact merged commit 9e5b6d88e also passed all 752 steps in the isolated checkout; receipt: qa/digests/2026-09-10-doorway-movement.md.
+After: the repaired seeded app completed all twelve routes across east/west and north/south openings in both directions for hero, idle crew and workkeep crew. Every route reached its destination with zero illegal foot tiles or wall crossings. This drove the shipped movement functions through temporary browser-only test hooks; no production test hook was added. Canvas readback was opaque [53,49,47,255], with rendered foot/head positions and sprite poses present; browser warnings and exceptions were empty. The 1,600-pair live model probe fell to zero invalid segments. Regression test: test/path-smoothing.test.js (22 assertions), with independently sampled feet plus production corner/start/nudge helpers. test/crew-containment.test.js: 23 assertions. Customer-journey gate: 34/34 green, exit 0. Full fast gate on committed candidate 57df448af: 752/752 green, exit 0. Exact merged commit 9e5b6d88e also passed all 752 steps in the isolated checkout; receipt: qa/digests/2026-09-10-doorway-movement.md.
 
 ## Sibling coverage
 
 {
   "adapters": [
     {
-      "target": "hero, idle crew and workstation crew movement",
+      "target": "hero, idle crew and workkeep crew movement",
       "state": "covered",
       "test": "test/path-smoothing.test.js",
       "scenario": "early waypoint handoffs stay on floor and cross only real openings; all three movement branches call the corner guard",
@@ -99,14 +99,14 @@ After: the repaired seeded app completed all twelve routes across east/west and 
   ],
   "lifecycle": [
     {
-      "target": "station geometry re-projection",
+      "target": "keep geometry re-projection",
       "state": "covered",
       "test": "test/path-smoothing.test.js",
       "scenario": "fresh room and hallway geometry, sealed room projection, off-anchor path starts, and serialized doorway-anchor restoration",
       "gate": "fast"
     },
     {
-      "target": "saved station restart on reporter layout",
+      "target": "saved keep restart on reporter layout",
       "state": "blocked",
       "reason": "The affected saved layout and a rebuilt installer were not supplied; reporter recovery requires a retest."
     }

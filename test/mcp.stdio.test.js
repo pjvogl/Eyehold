@@ -40,7 +40,7 @@ function writeServer(dir) {
 }
 
 (async () => {
-  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'starnet-mcp-stdio-'));
+  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'eyehold-mcp-stdio-'));
   const server = writeServer(tmp);
   const nodeBase = path.basename(process.execPath);
   try {
@@ -50,10 +50,10 @@ function writeServer(dir) {
     const childEnv = T.buildChildEnv({ SECRET_TOKEN: 'explicit-secret' }, { PATH: 'safe-path', OPENROUTER_KEY: 'ambient-secret' });
     A.eq(childEnv.SECRET_TOKEN, 'explicit-secret', 'explicit stdio env is passed through');
     A.eq(childEnv.OPENROUTER_KEY, undefined, 'ambient secret env is not inherited by default');
-    A.eq(childEnv.STARNET_COMPUTER_DRIVER, '0', 'connector env cannot enable the physical-input driver');
-    A.eq(childEnv.STARNET_BROWSER_HEADLESS, '1', 'connector env is pinned headless');
+    A.eq(childEnv.EYEHOLD_COMPUTER_DRIVER, '0', 'connector env cannot enable the physical-input driver');
+    A.eq(childEnv.EYEHOLD_BROWSER_HEADLESS, '1', 'connector env is pinned headless');
     A.throws(() => makeStdioTransport({ command: process.execPath, allowedCommands: [nodeBase], processEnv: {} }), 'stdio defaults to denied without an isolated process broker');
-    A.throws(() => makeStdioTransport({ command: process.execPath, allowedCommands: [nodeBase], processEnv: { STARNET_USER_CONTROL_MODE: 'preserve', STARNET_MCP_STDIO: '0' } }), 'installed preserve mode refuses stdio before spawn');
+    A.throws(() => makeStdioTransport({ command: process.execPath, allowedCommands: [nodeBase], processEnv: { EYEHOLD_USER_CONTROL_MODE: 'preserve', EYEHOLD_MCP_STDIO: '0' } }), 'installed preserve mode refuses stdio before spawn');
     const redacted = T.redactEnv({ SECRET_TOKEN: 'explicit-secret', MODE: 'test' });
     A.eq(redacted.SECRET_TOKEN, '<redacted>', 'secret-like env keys redact their value');
     A.eq(redacted.MODE, '<set>', 'non-secret env keys still avoid exposing values');

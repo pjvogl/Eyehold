@@ -1,4 +1,4 @@
-/* STARNET — style.css : RAW Fallout / New Vegas pip-boy terminal aesthetic.
+/* EYEHOLD — style.css : RAW Fallout / New Vegas pip-boy terminal aesthetic.
    Design language: monochrome phosphor on black glass. 2px hard lines.
    Inverted blocks for headers & selection. Segmented bars. Heavy bloom.
    No rounded corners, no gradients-as-decoration, no "web app" softness. */
@@ -15,7 +15,7 @@
    NOTICE.md) and covers U+0-10FFFF. index.html carries NO remote font
    link — the Google Fonts one was removed because it registered three
    MORE 'VT323' faces whose unicode-ranges covered Latin, so the browser
-   preferred a network face over this local one for ordinary station text.
+   preferred a network face over this local one for ordinary keep text.
 
    font-display is `block`, NOT `swap`, and that is the whole point.
    `swap` means "paint the fallback NOW, swap the real face in later" —
@@ -55,7 +55,7 @@
   --text: #eec88f;
   /* RGB TRIPLETS for the translucent fills (rgba(var(--x-rgb), a)). Every rgba() that used to bake
      the amber/gold literals routes through these, so beat cards / chips / insets re-tint with the
-     theme instead of leaking amber onto a green/blue/purple station. Plain value tokens (no var()
+     theme instead of leaking amber onto a green/blue/purple keep. Plain value tokens (no var()
      inside), so :root is safe — the body.theme-* blocks override them alongside their hex twins. */
   --ph-rgb: 255, 170, 51;
   --ph-bright-rgb: 255, 228, 180;
@@ -67,7 +67,7 @@
                                  alarm colour, like --bad). MUST stay visually matched to the canvas LINK DOWN
                                  marker, which hardcodes this same red in world.js by design (canvas can't read
                                  CSS vars) — change both together. */
-  /* color grade applied to the station feed so the world sits inside the terminal.
+  /* color grade applied to the keep feed so the world sits inside the terminal.
      brightness kept at 1.0 — the darkness now comes from the in-world lightmap (localized,
      realistic pools) rather than a flat global dim, so lit areas stay bright ("not too dark").
      2026-09-02: saturate 0.82 -> 1 and sepia 0.12 -> 0.06. The 08-17 chroma measurement found only
@@ -106,6 +106,14 @@
      body level (or below) — otherwise their var(--ph) bakes to the :root amber
      and the bezel "borders" stay amber no matter which theme is picked. */
 }
+body.theme-realm {
+  --ph: #e6ac65; --ph-bright: #f6e6c8; --ph-dim: #a67845; --ph-faint: #2a1c14;
+  --ink: #140e0a; --ph-glow: rgba(230, 172, 101, 0.45); --ph-glow2: rgba(230, 172, 101, 0.16);
+  --bg: #120e14; --panel: rgba(24, 16, 20, 0.94); --panel2: #1c1418; --warn: #f0c36a; --text: #f3dcc0;
+  --gold: #f2c14e; --ph-rgb: 230, 172, 101; --ph-bright-rgb: 246, 230, 200; --gold-rgb: 242, 193, 78;
+  --cam-grade: saturate(0.9) contrast(1.06) brightness(0.96);
+}
+.eyehold-sigil { display: inline-block; vertical-align: middle; margin-left: 8px; }
 body.theme-amber {
   --ph: #ffaa33; --ph-bright: #ffd9a3; --ph-dim: #b9791c; --ph-faint: #1e1404;
   --ink: #190f02; --ph-glow: rgba(255, 170, 51, 0.5); --ph-glow2: rgba(255,170,51,0.14);
@@ -150,7 +158,7 @@ body.theme-white {
 }
 /* body.theme-custom carries NO palette here on purpose: its full token set is derived from the
    user's hue/sat/glow sliders and written as INLINE custom properties on <body> by
-   stationui.js applySettings() (deriveCustomTheme). Inline-on-body keeps the composite
+   keepui.js applySettings() (deriveCustomTheme). Inline-on-body keeps the composite
    --bezel/--well recipes below resolving against the derived phosphor (the theming trap).
    If JS ever misses, the :root amber fallback still renders. Semantic status colours
    (--ok/--bad/--link-down/--warn) are never derived — they stay constant across every theme. */
@@ -193,7 +201,7 @@ html, body { height: 100%; overflow: hidden; }
    frame — paint it tube-black so resizes never flash a white sliver */
 html { background: #030201; }
 body {
-  /* THE CABINET MULTIPLIER. TEXT SIZE is a `zoom` on this element (stationui.js applySettings), so
+  /* THE CABINET MULTIPLIER. TEXT SIZE is a `zoom` on this element (keepui.js applySettings), so
      every length below it is multiplied by that zoom. --cz turns a DESIGNED px back into a local px
      for anything that is hardware rather than content — write `calc(<designed>px * var(--cz))` and
      it renders at the size it was drawn at, at any text size. Inside a block that has already been
@@ -214,10 +222,10 @@ body {
 body::after { /* scanlines + aperture-grille over EVERYTHING */
   content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 950;
   /* THE GLASS IS SCREEN-SPACE — it is the tube in front of the picture, not part of the picture.
-     TEXT SIZE zooms <body> (stationui.js applySettings) and that zoom multiplies into this overlay,
+     TEXT SIZE zooms <body> (keepui.js applySettings) and that zoom multiplies into this overlay,
      so every hard-px length below used to scale with the text: the 3px beam pitch rendered at
      4.35px on HUGE, which stops reading as a beam and reads as venetian blinds. --cz is the exact
-     reciprocal stationui publishes beside the zoom (--sn-unzoom), applied to EVERY stop so the
+     reciprocal keepui publishes beside the zoom (--sn-unzoom), applied to EVERY stop so the
      pitch lands back at its authored device size at any text size. Kept as calc'd stops on the
      repeating gradient rather than a tiled background-size: one continuous rasterisation across the
      box has no tile seams, which is what keeps fractional-DPI displays free of moiré. Unset (the
@@ -267,13 +275,13 @@ body.no-scan::after { display: none; }
    (scripts/verify-stars2.mjs sets it directly to flatten the feed for star-pixel checks) and must
    never be driven by, or clobbered by, a user setting.
 
-   There is no level that removes the CRT — the station is a tube, and that is not a preference.
+   There is no level that removes the CRT — the keep is a tube, and that is not a preference.
    What this does is thin the SCREEN-SPACE glass so the text underneath stops fighting it: the
    trough depth drops to roughly 45% of shipped and the page vignette lightens. The pitch, the stop
    positions and the graded shoulder are untouched, so it still reads as an electron beam at a
    glance — it just stops carving ~2.6 troughs of 0.30 alpha through the body of every 14px VT323
    glyph. (Contrast was never the problem: COMMS copy measures 5.7:1, past AA. The complaint is
-   interference at the glyph's own scale.) The station feed is not touched by any of this at all —
+   interference at the glyph's own scale.) The keep feed is not touched by any of this at all —
    its scanlines, curve and aberration are painted IN-CANVAS by world.js drawCRT/drawCurve. */
 body.crt-dull {
   --scan-shoulder: 0.06;   /* was 0.13 */
@@ -376,9 +384,9 @@ b { font-weight: normal; color: var(--ph-bright); }
 body:has(#screen-game.active):not(.refit-on) #logo { display: flex; }
 #logo-anchor { flex-shrink: 0; }
 .logo-mark { font-size: 27px; color: var(--bad); text-shadow: 0 0 12px rgba(255,92,77,0.7); animation: pulse 2.8s infinite; }
-/* the STARNET wordmark image sits in the chrome top-left; the big version
+/* the EYEHOLD wordmark image sits in the chrome top-left; the big version
    lives on the title screen where it has room to read */
-/* MASKED, not placed. The mark paints as var(--ph) through starnet-wordmark.svg, so it re-tints
+/* MASKED, not placed. The mark paints as var(--ph) through eyehold-wordmark.svg, so it re-tints
    with the theme (the PNG was gold in every one) and re-rasterizes at whatever the device asks
    for — the baked 60px PNG was exact only at DPR 2 and soft either side of it. aspect-ratio
    supplies the width at FIRST layout, so #logo-anchor reserves the right seat before any asset
@@ -393,8 +401,8 @@ body:has(#screen-game.active):not(.refit-on) #logo { display: flex; }
 .logo-img {
   height: 30px; aspect-ratio: 946 / 160; display: block;
   background-color: var(--ph);
-  -webkit-mask: url(../assets/brand/starnet-wordmark.svg) center / contain no-repeat;
-          mask: url(../assets/brand/starnet-wordmark.svg) center / contain no-repeat;
+  -webkit-mask: url(../assets/brand/eyehold-wordmark.svg) center / contain no-repeat;
+          mask: url(../assets/brand/eyehold-wordmark.svg) center / contain no-repeat;
 }
 /* one confident wordmark in the chrome — the big ASCII logo lives on the
    title screen where it has room to read (salvaged from agent/design-system) */
@@ -437,7 +445,7 @@ body:has(#screen-game.active):not(.refit-on) #logo { display: flex; }
 /* ================= CREW ================= */
 #left { display: flex; flex-direction: column; overflow: hidden; }
 /* RAIL SPACE SPLIT (2026-07-27): #crew used to take flex:1 and hold ALL the column's slack, so a
-   2-agent station left ~350px of dead black under the roster while #workstreams — the list that
+   2-agent keep left ~350px of dead black under the roster while #workstreams — the list that
    actually grows without bound — sat capped and scrolling beneath it. The roster is content-sized
    now (it scrolls itself only past the cap), and #ws-wrap takes the slack instead. */
 /* ROSTER WINDOW (2026-08-07): the cap is --crew-cap, MEASURED by leftrail.js as a whole number of
@@ -480,8 +488,8 @@ body:has(#screen-game.active):not(.refit-on) #logo { display: flex; }
 
 /* ================= CENTER / CRT ================= */
 #center { padding: 4px; background: #000; min-width: 0; min-height: 0; overflow: hidden; }
-#station-frame { position: relative; width: 100%; height: 100%; overflow: hidden; background: #030201; border-radius: calc(7px * var(--cz)); }
-#station {
+#keep-frame { position: relative; width: 100%; height: 100%; overflow: hidden; background: #030201; border-radius: calc(7px * var(--cz)); }
+#keep {
   width: 100%; height: 100%; object-fit: contain;
   filter: var(--cam-grade);
   image-rendering: pixelated; image-rendering: crisp-edges;
@@ -498,7 +506,7 @@ body.crt-dull .crt-scan { opacity: 0.45; }
 
 /* DULLED — the phosphor halo TIGHTENED on the prose you actually read, and nowhere else.
    Not removed: the glow is the phosphor, and killing it makes the copy read as flat web text in a
-   pixel-art station. Halving the blur is what buys the stems back — a 4px halo around a glyph whose
+   pixel-art keep. Halving the blur is what buys the stems back — a 4px halo around a glyph whose
    strokes are ~2px is a soft edge on every one of them; at 2px the same colour sits tight to the
    letterform. `text-shadow` is an INHERITED property and the halo comes from the `body` rule above,
    so naming the four prose containers is enough: descendants inherit the tighter value, while every
@@ -517,7 +525,7 @@ body.crt-dull #chat-log, body.crt-dull .term-body, body.crt-dull #left, body.crt
 }
 @keyframes band { 0% { top: -110px; } 100% { top: 110%; } }
 
-/* ====== STATION VIEW HUD: security-cam dressing over the main screen ====== */
+/* ====== KEEP VIEW HUD: security-cam dressing over the main screen ====== */
 .cam-hud { position: absolute; inset: 0; pointer-events: none; z-index: 5; }
 .cam-hud span { position: absolute; color: var(--ph); }
 .cam-c { font-size: 24px; line-height: 1; opacity: 0.85; text-shadow: 0 0 8px var(--ph-glow); }
@@ -639,8 +647,8 @@ body.crt-dull #chat-log, body.crt-dull .term-body, body.crt-dull #left, body.crt
    (same --warn token the ctx-gauge + refit notes use), with a slow pulse so it reads as "attention" not
    "error". Truthful telemetry: this only lights when CloudSave can't PROVE a recent backup. */
 #save-dot.stale { color: var(--warn); text-shadow: 0 0 8px rgba(255,233,122,0.55); animation: save-dot-stale 2.4s ease-in-out infinite; }
-/* EL-11 FIX 1: workspace written by a NEWER StarNet — the sidecar is REFUSING backup writes. Persistent red
-   (--bad), distinct from the amber transient states; the title (stationui refreshSaveDurability) advises. */
+/* EL-11 FIX 1: workspace written by a NEWER Eyehold — the sidecar is REFUSING backup writes. Persistent red
+   (--bad), distinct from the amber transient states; the title (keepui refreshSaveDurability) advises. */
 #save-dot.degraded { color: var(--bad); text-shadow: 0 0 8px rgba(255,92,77,0.55); animation: save-dot-stale 2.4s ease-in-out infinite; }
 @keyframes save-dot-stale { 0%,100% { opacity: 0.55; } 50% { opacity: 1; } }
 
@@ -697,7 +705,7 @@ body.crt-dull #chat-log, body.crt-dull .term-body, body.crt-dull #left, body.crt
    an inverted-chip header. Prop consoles (.pw) keep their own power-on
    and amber-on-dark title; everything else inherits this verbatim. */
 #terms { position: fixed; inset: 0; pointer-events: none; z-index: 50; }
-/* focus scrim — dims & desaturates the station so the open window owns the eye.
+/* focus scrim — dims & desaturates the keep so the open window owns the eye.
    Mounted under the lowest window (z 480 < the 501+ that zTop() hands out). */
 .term-scrim {
   position: fixed; inset: 0; pointer-events: none; z-index: 480;
@@ -706,7 +714,7 @@ body.crt-dull #chat-log, body.crt-dull .term-body, body.crt-dull #left, body.crt
   animation: scrim-in 0.22s ease-out;
 }
 @keyframes scrim-in { from { opacity: 0; } to { opacity: 1; } }
-/* WHERE A WINDOW RESTS — the BAND, not the raw glass. StationUI.syncTermBand() measures the
+/* WHERE A WINDOW RESTS — the BAND, not the raw glass. KeepUI.syncTermBand() measures the
    chrome that owns the top and bottom of the frame (#topbar, #bottombar, and on the Windows
    desktop shell #sn-titlebar, which paints OVER every window at z930) and publishes the strip
    between them on #terms as --term-top / --term-band, in the same zoomed-space px a window's
@@ -816,7 +824,7 @@ body.crt-dull #chat-log, body.crt-dull .term-body, body.crt-dull #left, body.crt
 .term-body::-webkit-scrollbar { width: 6px; }
 .term-body::-webkit-scrollbar-thumb { background: var(--ph); }
 
-/* Shared resize affordance: pointer/touch/pen drag plus arrow-key resizing (wired in stationui.js).
+/* Shared resize affordance: pointer/touch/pen drag plus arrow-key resizing (wired in keepui.js).
    It sits above both ordinary footer chrome and the molded feature casing, and remains reachable on phones. */
 .term-resize {
   position: absolute; right: 3px; bottom: 3px; z-index: 10;
@@ -1003,7 +1011,7 @@ body.crt-dull #chat-log, body.crt-dull .term-body, body.crt-dull #left, body.crt
 .cf-card .msg:empty { display: none; }
 .cf-card .set-row { margin: 6px 0; }
 /* GROUP RULES (dossier UX pass): CONFIG's nine cards now sit under three named rules instead of running as one
-   1565px column. First rule sheds its top margin — it lands directly under the station:// path line. */
+   1565px column. First rule sheds its top margin — it lands directly under the keep:// path line. */
 .cf-grp { margin: 20px 0 0; scroll-margin-top: 8px; }
 .cf-nav + .cf-grp { margin-top: 8px; }
 /* the group jump row — three flat chips, matte, no lift. It is a table of contents, not a control panel. */
@@ -1192,7 +1200,7 @@ body.crt-dull #chat-log, body.crt-dull .term-body, body.crt-dull #left, body.crt
 .auto-earned { color: var(--gold); opacity: .92; font-size: 12px; letter-spacing: 1px; }
 /* BACKDROP picker — the same chip vocabulary as .set-theme, sized to hold a live-painted swatch.
    The canvas is the REAL backdrop renderer's output, so it is never scaled or filtered: pixel art
-   that got smoothed here would be promising a softer sky than the station draws. */
+   that got smoothed here would be promising a softer sky than the keep draws. */
 .set-backdrops { display: flex; gap: 8px; flex-wrap: wrap; }
 .set-bd {
   display: flex; flex-direction: column; align-items: stretch; gap: 5px;
@@ -1242,7 +1250,7 @@ body.crt-dull #chat-log, body.crt-dull .term-body, body.crt-dull #left, body.crt
    telemetry (EL-11 FIX 1). Same error palette as .up-error; the why line gets the bordered card. */
 #ns-state.ns-halt { color: #ffb0a8; opacity: 1; }
 #ns-why.ns-halt { color: #ffb0a8; opacity: 1; border: 1px solid rgba(255, 120, 100, 0.45); background: rgba(80, 10, 5, 0.18); padding: 7px; }
-/* CHANNELS panel — one card per messaging platform, generated from the channel catalog (stationui buildMessaging).
+/* CHANNELS panel — one card per messaging platform, generated from the channel catalog (keepui buildMessaging).
    Speaks the marketplace-era card grammar: a per-platform --accent strip + coin plate for the glyph, hover lift and
    the shared cardIn entrance, keeping the .on green glow for a truly-connected channel. */
 .ch-headless { font-size: 13px; margin: 6px 0 10px; color: var(--ph-bright); letter-spacing: .2px; }
@@ -1297,7 +1305,7 @@ body.crt-dull #chat-log, body.crt-dull .term-body, body.crt-dull #left, body.crt
 .ch-head { display: flex; align-items: center; gap: 9px; }
 .ch-id { min-width: 0; display: flex; flex-direction: column; gap: 1px; }
 .ch-title { margin: 0; letter-spacing: 2px; color: var(--ph); font-weight: normal; font-size: 15px; text-shadow: 0 1px 0 #000, 0 0 8px var(--ph-glow2); }
-/* ADVANCED is the STATION's word about a platform, so it wears the station's phosphor — not that
+/* ADVANCED is the KEEP's word about a platform, so it wears the keep's phosphor — not that
    platform's brand hue. Reading `--accent` here painted the badge in Signal's blue, which is the same
    off-palette seal problem the recruitment bay had. The row's own left rail still carries the brand
    accent, which is the honest place for it: that rail identifies Telegram/Discord/Signal, this chip
@@ -1378,7 +1386,7 @@ body.crt-dull #chat-log, body.crt-dull .term-body, body.crt-dull #left, body.crt
 .up-manual-link { color: var(--ph); text-decoration: underline; cursor: pointer; }
 .up-manual-link:hover { color: var(--ph-bright); }
 /* GB-4 install guard: live agents would be killed by the restart — amber, not error-red,
-   because nothing is broken; the station is asking for an explicit call. */
+   because nothing is broken; the keep is asking for an explicit call. */
 .up-guard { color: var(--warn); border: 1px solid rgba(255, 182, 65, 0.45); background: rgba(70, 45, 5, 0.18); padding: 7px; margin-top: 9px; font-size: 12px; letter-spacing: 0.6px; }
 /* GB-4 quit guard: same amber vocabulary, but modal — window close is an app-level act. */
 .quit-guard-backdrop { position: fixed; inset: 0; z-index: 3000; background: rgba(3, 2, 1, 0.72); display: flex; align-items: center; justify-content: center; }
@@ -1537,7 +1545,7 @@ body.crt-dull #chat-log, body.crt-dull .term-body, body.crt-dull #left, body.crt
 .rt-pipe-node.done .rt-pipe-lbl { color: var(--ph-dim); }
 .rt-pipe-node.cur .rt-pipe-lbl { color: var(--ph-bright); }
 
-/* --- LIVE WORKSTATION feed: render canvas + streaming agent terminal --- */
+/* --- LIVE WORKKEEP feed: render canvas + streaming agent terminal --- */
 .rt-feed {
   border: 1px solid var(--ph); background: rgba(0,0,0,0.42); margin-bottom: 8px;
   box-shadow: inset 0 0 24px rgba(0,0,0,0.6), 0 0 10px var(--ph-glow2);

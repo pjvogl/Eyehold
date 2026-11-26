@@ -24,19 +24,19 @@ try {
   const out = path.join(tmp, 'out');
   const latest = path.join(tmp, 'latest');
   const res = runNode([script, '--loop=2'], {
-    STARNET_T2_STATE_SAFETY_DIR: out,
-    STARNET_T2_STATE_SAFETY_LATEST_DIR: latest
+    EYEHOLD_T2_STATE_SAFETY_DIR: out,
+    EYEHOLD_T2_STATE_SAFETY_LATEST_DIR: latest
   });
   assert.equal(res.status, 0, res.stderr || res.stdout);
 
   const status = JSON.parse(fs.readFileSync(path.join(out, 't2-state-safety-status.json'), 'utf8'));
-  assert.equal(status.schema, 'starnet.t2-state-safety-status.v1');
+  assert.equal(status.schema, 'eyehold.t2-state-safety-status.v1');
   assert.equal(status.verdict, 'green');
   assert.equal(status.stateSafetyReady, true);
   assert.equal(status.steps.length, 4);
   assert.ok(status.steps.every(s => s.status === 'pass'), 'all T2 state-safety steps should pass');
   assert.equal(status.nextAction, null);
-  assert.equal(status.steps.find(s => s.id === 't2.2-pre-migration-backup').evidence.backupKey, 'starnet.save.pre-migrate.backup');
+  assert.equal(status.steps.find(s => s.id === 't2.2-pre-migration-backup').evidence.backupKey, 'eyehold.save.pre-migrate.backup');
   assert.equal(status.steps.find(s => s.id === 't2.4-reinstall-workspace-survival').evidence.staleWriteRejected, true);
   assert.ok(fs.existsSync(path.join(latest, 't2-state-safety-status.json')), 'latest status should be copied');
   assert.ok(fs.existsSync(path.join(latest, 'artifact-hashes.json')), 'latest hashes should be copied');

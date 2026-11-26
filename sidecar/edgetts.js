@@ -1,5 +1,5 @@
 /* sidecar/edgetts.js — zero-dependency client for Microsoft's Edge "Read Aloud" TTS endpoint.
-   This is the FREE, KEYLESS neural voice floor: any station (zero-key / Anthropic-only / Codex-only)
+   This is the FREE, KEYLESS neural voice floor: any keep (zero-key / Anthropic-only / Codex-only)
    gets a decent neural voice with no credential and no Edge install. It speaks the same private
    websocket protocol the Edge browser's read-aloud feature uses.
 
@@ -20,15 +20,15 @@ const { createHash, randomBytes, randomUUID } = require('node:crypto');
 // The public trusted-client token + Chromium version string the Edge read-aloud client presents.
 const TRUSTED_TOKEN = '6A5AA1D4EAFF4E9FB37E23D68491D6F4';
 const CHROMIUM_VER = '143.0.3650.96';
-// Nearest Edge neural voice to the station's locked Algenib identity (low gravelly male bass).
+// Nearest Edge neural voice to the keep's locked Algenib identity (low gravelly male bass).
 const DEFAULT_VOICE = 'en-US-ChristopherNeural';
 // Edge outputs mp3 for this format (matches what the browser <audio> plays natively).
 const OUTPUT_FORMAT = 'audio-24khz-48kbitrate-mono-mp3';
 // WebSocket GUID (RFC 6455) — only needed by a peer that VALIDATES the handshake accept; the raw
 // node:http upgrade path here doesn't, but the loopback test server uses it, so export nothing extra.
 
-// STARNET_/SKYNET_-prefixed env, mirroring sidecar/index.js's ENV() so overrides work under either brand.
-function env(suffix) { const k = 'STARNET_' + suffix; return (k in process.env) ? process.env[k] : process.env['SKYNET_' + suffix]; }
+// EYEHOLD_/SKYNET_-prefixed env, mirroring sidecar/index.js's ENV() so overrides work under either brand.
+function env(suffix) { const k = 'EYEHOLD_' + suffix; return (k in process.env) ? process.env[k] : process.env['SKYNET_' + suffix]; }
 function truthyOff(v) { return /^(0|false|no|off)$/i.test(String(v == null ? '' : v).trim()); }
 function truthyOn(v) { return /^(1|true|yes|on)$/i.test(String(v == null ? '' : v).trim()); }
 

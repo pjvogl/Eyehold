@@ -2,7 +2,7 @@
    and every load of cron.jobs.json).
 
    A routine's enabledToolsets is a restriction-only list of toolset FAMILY ids (inputpolicy enforceEnabledToolsets):
-   null = the station grant unchanged; a list = only those families plus the computer freebies. Before 0.13.2 the
+   null = the keep grant unchanged; a list = only those families plus the computer freebies. Before 0.13.2 the
    list was only pattern-filtered, so the TOOLSETS console label a user copied ('WEB & BROWSER') was dropped to []
    and a tool name ('web_request') or 'Web' was kept as an unknown family — each stored as "restrict to (almost)
    nothing", and the routine fired with no web tools (#58). Create/update now normalize, but a routine saved before
@@ -109,7 +109,7 @@ function makeRoutineToolsets(deps) {
         out.lastError = 'toolset list repaired: dropped unknown ' + (r.dropped.length === 1 ? 'entry' : 'entries') + ' ' +
           r.dropped.map(s => '"' + s + '"').join(', ') + ' — ' + (onlyFree
             ? 'this routine still runs with only its always-on tools, as before; to give it a toolset, create it again with valid ids (' + ix().valid.join(', ') + ')'
-            : 'this routine now runs with ' + (r.list ? 'only ' + r.list.join(', ') : 'its agent\'s full station tools'));
+            : 'this routine now runs with ' + (r.list ? 'only ' + r.list.join(', ') : 'its agent\'s full keep tools'));
       }
       healed.push({ id: job.id, from: job.enabledToolsets, to: r.list, dropped: r.dropped });
       return out;

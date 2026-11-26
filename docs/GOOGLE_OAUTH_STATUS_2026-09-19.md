@@ -4,7 +4,7 @@ Audited source: `acbf3c225`, isolated branch `agent/google-oauth-audit-0919`.
 
 ## Current finding
 
-Google Workspace activation is still blocked on data-access verification. The live Google Cloud Verification Center for `starnet-505202` states:
+Google Workspace activation is still blocked on data-access verification. The live Google Cloud Verification Center for `eyehold-505202` states:
 
 > Your branding has been verified and is being shown to users.
 
@@ -12,12 +12,12 @@ Google Workspace activation is still blocked on data-access verification. The li
 
 The page offers **Prepare for verification**. This is a current console observation, not an inference from the old deferral document. No Google configuration or submission was changed.
 
-Console: https://console.cloud.google.com/auth/verification?project=starnet-505202
+Console: https://console.cloud.google.com/auth/verification?project=eyehold-505202
 
 ## Completed prerequisites and existing evidence
 
-- GitHub Actions secret metadata confirms `STARNET_GOOGLE_DESKTOP_CLIENT_JSON` exists in `androoAGI/starnet`, last updated 2026-09-06T20:02:13Z. Secret contents were not retrieved or printed; existence alone does not revalidate its contents.
-- The public privacy page now describes Workspace service access, model-provider/credits-gateway transfers, local retention, plaintext connector credentials and disconnect versus revocation. The earlier missing-disclosure note is stale. https://starnetos.com/legal/privacy
+- GitHub Actions secret metadata confirms `EYEHOLD_GOOGLE_DESKTOP_CLIENT_JSON` exists in `Eyehold/eyehold`, last updated 2026-09-06T20:02:13Z. Secret contents were not retrieved or printed; existence alone does not revalidate its contents.
+- The public privacy page now describes Workspace service access, model-provider/credits-gateway transfers, local retention, plaintext connector credentials and disconnect versus revocation. The earlier missing-disclosure note is stale. https://eyehold.com/legal/privacy
 - `docs/RELEASE_FOLLOWTHROUGH_2026-09-06.md` records prior signed-Windows consent for all five services and 20 successful Google API calls. This is historical acceptance on an older candidate, not a fresh installed-build result.
 - That same record identifies the unfinished intended-use/demo-video submission and outstanding lifecycle/assessment work. This audit did not reopen the form or independently verify each unfinished form field.
 
@@ -31,7 +31,7 @@ Focused checks passed on Node v22.23.0 using existing dependency modules through
 - `node test/google-release-deferred.e2e.test.js`: PASS — real isolated sidecar, five services and legacy/custom endpoints, no Google network, preserved grants, restart and removal.
 - `node test/google-signin.e2e.test.js`: PASS — real isolated sidecar with mocked Google endpoints and test-only future-release injection; PKCE callback, denied/partial consent, replay, cancellation, persistence failure, restart, refresh, revocation, removal and redaction.
 
-These checks establish local implementation behavior, not Google's approval or current public-account access. No production source was changed. Full fast/HTTP gates, qa:ready and fresh signed-installer acceptance were not run; no station-wide release verdict is claimed.
+These checks establish local implementation behavior, not Google's approval or current public-account access. No production source was changed. Full fast/HTTP gates, qa:ready and fresh signed-installer acceptance were not run; no keep-wide release verdict is claimed.
 
 ## Remaining path to activation
 
@@ -41,4 +41,4 @@ These checks establish local implementation behavior, not Google's approval or c
 4. Build signed candidates and establish current real-account consent, each service's operations, refresh/restart, denied access, removal and revocation recovery. Preserve platform-specific evidence limits.
 5. Run the release readiness checks and normal release train before public activation.
 
-StarNet billing/account Google login is a separate flow; this finding concerns Gmail, Drive, Calendar, Docs and Sheets connectors.
+Eyehold billing/account Google login is a separate flow; this finding concerns Gmail, Drive, Calendar, Docs and Sheets connectors.

@@ -3,7 +3,7 @@ import { replayTurn, startReplayProvider, validateResume, SAMPLE, DRAFT, MODEL }
 import { mkdtempSync, mkdirSync, writeFileSync, readFileSync, statSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-const resumeRoot = mkdtempSync(join(tmpdir(), 'starnet-resume-validation-'));
+const resumeRoot = mkdtempSync(join(tmpdir(), 'eyehold-resume-validation-'));
 mkdirSync(join(resumeRoot, 'workspace')); mkdirSync(join(resumeRoot, 'client-notes'));
 const savedPath = join(resumeRoot, 'workspace', 'agent.save.json'), rosterPath = join(resumeRoot, 'workspace', 'agent.roster.json'), notesPath = join(resumeRoot, 'client-notes', 'weekly-notes.md');
 writeFileSync(savedPath, JSON.stringify({ doc: { retained: 'exact prior state' } }));

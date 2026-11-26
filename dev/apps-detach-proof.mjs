@@ -1,5 +1,5 @@
 // APPS — an app's REFRESH survives the window closing (2026-09-30).
-//   node dev/apps-detach-proof.mjs [port] [appId]     against a RUNNING station with a real model
+//   node dev/apps-detach-proof.mjs [port] [appId]     against a RUNNING keep with a real model
 // Run Now cancels its run when the watching page goes away (the AUTOMATION panel's law). An app's REFRESH asks with
 // detach:true, because the update is the app's job, not the window's. Proof: give the app an update task, press
 // its refresh (the same request the bar sends), KILL the whole browser 3 s later, then — from a fresh browser —
@@ -14,7 +14,7 @@ const PORT = Number(process.argv[2] || 8871), APP = process.argv[3] || 'focus-ti
 let failed = 0;
 const check = (name, ok) => { console.log((ok ? 'PASS ' : 'FAIL ') + name); if (!ok) failed++; };
 async function browser(port) {
-  const dir = mkdtempSync(join(tmpdir(), 'starnet-apps-detach-'));
+  const dir = mkdtempSync(join(tmpdir(), 'eyehold-apps-detach-'));
   const chrome = spawn(findChrome(), ['--headless=new', '--no-first-run', '--remote-debugging-port=' + port, '--user-data-dir=' + join(dir, 'c'), 'about:blank'], { stdio: 'ignore', windowsHide: true });
   const cdp = await connectCDP(port);
   await cdp.send('Runtime.enable'); await cdp.send('Page.enable');

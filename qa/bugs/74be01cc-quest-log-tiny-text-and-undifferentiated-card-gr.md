@@ -24,7 +24,7 @@ Owner reports tiny, hard-to-read text and a quest log that feels like a dense gr
 
 ## Repro
 
-Open WORK → QUESTS on a seeded station. At the default window size, compare the open quest descriptions, titles, objectives and reward hierarchy.
+Open WORK → QUESTS on a seeded keep. At the default window size, compare the open quest descriptions, titles, objectives and reward hierarchy.
 
 ## Evidence
 

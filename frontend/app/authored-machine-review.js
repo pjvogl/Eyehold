@@ -2,7 +2,7 @@
 (async()=>{
   const cv=document.querySelector('#machines'),ctx=cv.getContext('2d'),evidence=document.querySelector('#evidence');
   const image=src=>new Promise((resolve,reject)=>{const im=new Image();im.onload=()=>resolve(im);im.onerror=()=>reject(Error('Failed '+src));im.src=src;});
-  await IndustrialTextures.ready;await SPRITES.init();await SPRITES.ensureSkin('station_minion');
+  await IndustrialTextures.ready;await SPRITES.init();await SPRITES.ensureSkin('keep_minion');
   const rows=[];
   for(const id of AuthoredMachineConfig.ids){
     const spec=AuthoredMachineConfig.get(id),body=await image(AuthoredMachineConfig.sourceRoot+spec.image),layers={};
@@ -30,7 +30,7 @@
       ctx.drawImage(body,world.x,world.y,world.width,world.height);
       const state={now:time,work,still:reduced};AuthoredPropMotion.draw(ctx,id,world,state);
       PropSprites.setCtx(ctx);PropSprites.draw({t:'crate',x:5,y:3,w:2,h:1},false,{still:true});
-      SPRITES.drawBody(ctx,{id:'machine-scale-cadet',skin:'station_minion',px:91,py:48,state:'idle',dir:'south'},0,{reducedMotion:true});
+      SPRITES.drawBody(ctx,{id:'machine-scale-cadet',skin:'keep_minion',px:91,py:48,state:'idle',dir:'south'},0,{reducedMotion:true});
       ctx.restore();ctx.fillStyle='#c5bfa9';ctx.font='15px VT323,monospace';ctx.fillText(id+' · '+spec.footprint.w+' × '+spec.footprint.h+' tiles',left+16,318);
       poses.push({id,...AuthoredPropMotion.sample(id,world,state)});
     });

@@ -54,7 +54,7 @@
       if (!checked.response.ok) throw new Error('Pause state unavailable');
       accept(checked.data);
       if (state.stopped.length && !failure) failure = 'Some automation remains paused — retry Resume';
-      if (typeof StationUI !== 'undefined' && StationUI.notify) StationUI.notify(failure ||
+      if (typeof KeepUI !== 'undefined' && KeepUI.notify) KeepUI.notify(failure ||
         'Automation resumed — existing permissions and job settings preserved', failure ? 'bad' : 'good');
     } catch (_) {
       state = null; failure = 'Could not verify the result — check the connection and retry';

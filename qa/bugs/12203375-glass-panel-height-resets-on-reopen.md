@@ -19,11 +19,11 @@ The new glass height control resizes the visible window but loses that choice wh
 
 ## Repro
 
-Run node scripts/qa/audit-0112/live-probes.cjs against the seeded station. Open Settings at 1280x900, use ArrowUp twice on Resize panel height, close, reopen. The measured height changes 420 to 512 then returns to 420.
+Run node scripts/qa/audit-0112/live-probes.cjs against the seeded keep. Open Settings at 1280x900, use ArrowUp twice on Resize panel height, close, reopen. The measured height changes 420 to 512 then returns to 420.
 
 ## Evidence
 
-qa/evidence/0.11.2-audit/audit-live-probes.json records the real DOM-control round trip with zero page errors. frontend/app/glass-demo.js:118 creates per-node state with height:null; the pull-control handlers only write s.height. frontend/app/stationui.js:516 already owns durable termSize, but the new control bypasses it. test/glass-interactions.test.js and the live sweep cover resizing and reopen independently rather than preservation of the chosen height.
+qa/evidence/0.11.2-audit/audit-live-probes.json records the real DOM-control round trip with zero page errors. frontend/app/glass-demo.js:118 creates per-node state with height:null; the pull-control handlers only write s.height. frontend/app/keepui.js:516 already owns durable termSize, but the new control bypasses it. test/glass-interactions.test.js and the live sweep cover resizing and reopen independently rather than preservation of the chosen height.
 
 ## Verdict
 

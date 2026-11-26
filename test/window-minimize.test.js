@@ -1,11 +1,11 @@
 /* node test/window-minimize.test.js — the machine assertion the shared window MINIMIZE control
-   (ui/system/aria-minimize-*, finding e9e4fab6) was missing. Every station window's –/MINIMIZE button
+   (ui/system/aria-minimize-*, finding e9e4fab6) was missing. Every keep window's –/MINIMIZE button
    (class term-min → minimizeTerm) promises a collapse-to-dock-chip that KEEPS the window alive and
    RESTORES it to the exact same geometry. The Atlas sweep's CLOSE helper only clicks term-x, so the
    collapse/restore round-trip had no committed guard.
 
    minimizeTerm/restoreTerm are DOM+layout driven (document.activeElement, offsetLeft, animation events,
-   CSS.escape) inside the StationUI IIFE, and offsets read 0 under jsdom (no layout engine) — so the
+   CSS.escape) inside the KeepUI IIFE, and offsets read 0 under jsdom (no layout engine) — so the
    collapse/restore GEOMETRY round-trip is not honestly reproducible headlessly. We do two things:
 
      1. GENUINE unit — the exported clampTerminalSize (the geometry primitive the restore path runs a
@@ -19,7 +19,7 @@
 const A = require('./_assert.js');
 const fs = require('fs');
 const path = require('path');
-const { clampTerminalSize } = require('../frontend/app/stationui.js');
+const { clampTerminalSize } = require('../frontend/app/keepui.js');
 
 /* ---- 1. GENUINE: the geometry primitive restore leans on preserves a valid rect, clamps a bad one ---- */
 const desktop = { width: 1440, height: 900 };
@@ -28,8 +28,8 @@ A.eq(clampTerminalSize({ width: 900, height: 640 }, limits, desktop), { width: 9
 A.eq(clampTerminalSize({ width: 'bad', height: null }, limits, desktop), { width: 560, height: 360 }, 'a malformed persisted size fails closed to the usable minimum (no NaN rect on restore)');
 
 /* ---- 2. SOURCE-LOCK the collapse/restore round-trip invariants ---- */
-const src = fs.readFileSync(path.join(__dirname, '../frontend/app/stationui.js'), 'utf8');
-function body(re, label) { const m = re.exec(src); A.ok(m, 'stationui.js still defines ' + label); return m ? m[0] : ''; }
+const src = fs.readFileSync(path.join(__dirname, '../frontend/app/keepui.js'), 'utf8');
+function body(re, label) { const m = re.exec(src); A.ok(m, 'keepui.js still defines ' + label); return m ? m[0] : ''; }
 
 // the entry point: no dedicated button (it read as a duplicate ✕, removed 2026-07-22) —
 // header double-click is the minimize gesture, and it must never re-grow the button.

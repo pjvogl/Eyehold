@@ -76,8 +76,12 @@
       return (isFinite(n) && n > 0) ? n : dflt;
     } catch (_) { return dflt; }
   }
-  function connectMs() { return envInt('SKYNET_PROVIDER_CONNECT_MS', 30000); }
-  function idleMs() { return envInt('SKYNET_PROVIDER_IDLE_MS', 300000); }
+  function brandedInt(suffix, dflt) {
+    const eye = envInt('EYEHOLD_' + suffix, 0);
+    return eye || envInt('SKYNET_' + suffix, dflt);
+  }
+  function connectMs() { return brandedInt('PROVIDER_CONNECT_MS', 30000); }
+  function idleMs() { return brandedInt('PROVIDER_IDLE_MS', 300000); }
 
   // DEPRECATED for streaming fetches — new code MUST use connectGuard() instead. This merges the caller's
   // signal with a NON-disarmable AbortSignal.timeout: because a fetch signal governs the whole response, the
@@ -496,7 +500,7 @@
   }
 
   /* CHAT WIRE KEYS (2026-10-07, user report: Mistral 422 "extra_forbidden" on messages[1].user.streamId).
-     The transcript a run replays is COMMS's own rows — they carry StarNet bookkeeping (ts, streamId, agentId,
+     The transcript a run replays is COMMS's own rows — they carry Eyehold bookkeeping (ts, streamId, agentId,
      sourceRunId, error, stopped, attachments, the loop's `reasoning` parking field). Lenient endpoints (OpenAI)
      ignore unknown message keys; strict ones (Mistral's pydantic schema) reject the WHOLE request, so every run
      failed — even the first message of a new chat. Project each message onto the Chat Completions message keys

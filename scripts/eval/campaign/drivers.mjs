@@ -38,11 +38,11 @@ async function terminateChild(child, opts = {}) {
 
 async function waitHealth(base, child) {
   for (let attempt = 0; attempt < 180; attempt++) {
-    if (child.exitCode != null) throw new Error(`StarNet process exited ${child.exitCode} before health`);
+    if (child.exitCode != null) throw new Error(`Eyehold process exited ${child.exitCode} before health`);
     try { const response = await fetch(base + '/health', { signal: AbortSignal.timeout(1000) }); if (response.ok) return response.json(); } catch (_) {}
     await sleep(100);
   }
-  throw new Error('StarNet sidecar health timeout');
+  throw new Error('Eyehold sidecar health timeout');
 }
 
 export function installedDesktopStartupLog(workspaces) {
@@ -70,15 +70,15 @@ export async function waitInstalledDesktopPort({ startupLog, afterBytes = 0, chi
 
 async function discoverToken(base) {
   const response = await fetch(base + '/', { signal: AbortSignal.timeout(5000) });
-  const html = await response.text(), match = html.match(/window\.__STARNET_API_TOKEN__=("(?:\\.|[^"])*")/);
-  if (!match) throw new Error('installed StarNet API token could not be discovered');
+  const html = await response.text(), match = html.match(/window\.__EYEHOLD_API_TOKEN__=("(?:\\.|[^"])*")/);
+  if (!match) throw new Error('installed Eyehold API token could not be discovered');
   return JSON.parse(match[1]);
 }
 
 async function api(base, token, path, body) {
   const response = await fetch(base + path, {
     method: body === undefined ? 'GET' : 'POST',
-    headers: { 'X-StarNet-Token': token, Origin: base, ...(body === undefined ? {} : { 'Content-Type': 'application/json' }) },
+    headers: { 'X-Eyehold-Token': token, Origin: base, ...(body === undefined ? {} : { 'Content-Type': 'application/json' }) },
     body: body === undefined ? undefined : JSON.stringify(body), signal: AbortSignal.timeout(120000)
   });
   const text = await response.text(); let value = null; try { value = JSON.parse(text); } catch (_) { value = { text }; }
@@ -86,8 +86,8 @@ async function api(base, token, path, body) {
   return value;
 }
 
-async function readStarNetRun(response, base, token) {
-  if (!response.ok) throw new Error(`StarNet run HTTP ${response.status}: ${(await response.text()).slice(0, 500)}`);
+async function readEyeholdRun(response, base, token) {
+  if (!response.ok) throw new Error(`Eyehold run HTTP ${response.status}: ${(await response.text()).slice(0, 500)}`);
   const reader = response.body.getReader(), decoder = new TextDecoder();
   let buffer = '', finalText = '', firstOutputMs = null, runId = '', end = null;
   const events = [], started = performance.now();
@@ -114,22 +114,22 @@ async function readStarNetRun(response, base, token) {
   return { runId, finalText: finalText.trim(), events, firstOutputMs, totalMs: performance.now() - started, end };
 }
 
-export async function startStarNetDriver(opts) {
+export async function startEyeholdDriver(opts) {
   const root = resolve(opts.root), workspaces = resolve(opts.workspaces), fixtureUrl = String(opts.fixtureUrl);
   const runTimeoutMs = Number(opts.timeoutMs || 300000);
   let port = Number(opts.port || (19200 + (process.pid % 600)));
-  const stdout = createWriteStream(resolve(opts.outputDir, 'campaign-starnet.out.log'), { flags: 'a' });
-  const stderr = createWriteStream(resolve(opts.outputDir, 'campaign-starnet.err.log'), { flags: 'a' });
+  const stdout = createWriteStream(resolve(opts.outputDir, 'campaign-eyehold.out.log'), { flags: 'a' });
+  const stderr = createWriteStream(resolve(opts.outputDir, 'campaign-eyehold.err.log'), { flags: 'a' });
   const desktopExecutable = opts.desktopExecutable ? resolve(opts.desktopExecutable) : null;
   const command = desktopExecutable || join(root, 'node.exe');
   const args = desktopExecutable ? [] : [join(root, 'sidecar', 'index.js')];
   const startupLog = desktopExecutable ? installedDesktopStartupLog(workspaces) : null;
   const startupMark = startupLog ? desktopStartupLogMark(startupLog) : 0;
   const env = Object.assign({}, process.env, {
-    STARNET_WORKSPACES: workspaces, STARNET_DEFAULT_MODEL: MODEL,
-    STARNET_FULL_ACCESS: '1', SKYNET_FULL_ACCESS: '1', STARNET_CRON_ARMED: '0', SKYNET_CRON_ARMED: '0'
+    EYEHOLD_WORKSPACES: workspaces, EYEHOLD_DEFAULT_MODEL: MODEL,
+    EYEHOLD_FULL_ACCESS: '1', SKYNET_FULL_ACCESS: '1', EYEHOLD_CRON_ARMED: '0', SKYNET_CRON_ARMED: '0'
   });
-  if (!desktopExecutable) env.STARNET_PORT = String(port);
+  if (!desktopExecutable) env.EYEHOLD_PORT = String(port);
   const child = spawn(command, args, {
     cwd: desktopExecutable ? dirname(desktopExecutable) : root, windowsHide: true, stdio: ['ignore', 'pipe', 'pipe'],
     env
@@ -140,15 +140,15 @@ export async function startStarNetDriver(opts) {
   const health = await waitHealth(base, child), token = await discoverToken(base);
   try { await api(base, token, '/api/connectors/remove', { id: CONNECTOR_ID }); } catch (_) {}
   const configured = await api(base, token, '/api/connectors', { id: CONNECTOR_ID, label: 'Parity fixture host', transport: 'http', url: fixtureUrl, enabled: true, timeoutMs: 120000 });
-  if (!configured.connected) throw new Error('StarNet fixture connector did not connect: ' + JSON.stringify(configured).slice(0, 500));
+  if (!configured.connected) throw new Error('Eyehold fixture connector did not connect: ' + JSON.stringify(configured).slice(0, 500));
 
   return {
     process: child, base,
-    identity: { harness: 'starnet', mode: desktopExecutable ? 'installed-desktop' : 'installed-runtime', model: MODEL, provider: PROVIDER, health },
+    identity: { harness: 'eyehold', mode: desktopExecutable ? 'installed-desktop' : 'installed-runtime', model: MODEL, provider: PROVIDER, health },
     async run({ fixture, state, root: fixtureRoot, attempt }) {
       const startedAt = new Date().toISOString(), prompt = submittedPrompt(fixture.prompt);
       const response = await fetch(base + '/api/run', {
-        method: 'POST', headers: { 'X-StarNet-Token': token, Origin: base, 'Content-Type': 'application/json' },
+        method: 'POST', headers: { 'X-Eyehold-Token': token, Origin: base, 'Content-Type': 'application/json' },
         body: JSON.stringify({
           model: MODEL, provider: PROVIDER, agentId: 'agent', isTask: true, projectRoot: resolve(fixtureRoot),
           system: 'Execute the parity fixture through its authoritative parity_fixture_eval tools. Inspect before acting, use host results as truth, verify mutations, and never claim success after a tool failure.',
@@ -156,10 +156,10 @@ export async function startStarNetDriver(opts) {
           placed: [{ objectType: 'connector', connectorId: CONNECTOR_ID }]
         }), signal: AbortSignal.timeout(runTimeoutMs)
       });
-      const run = await readStarNetRun(response, base, token), endedAt = new Date().toISOString();
+      const run = await readEyeholdRun(response, base, token), endedAt = new Date().toISOString();
       const host = observeFixture(state, run.finalText, { sessionId: run.runId, agentId: 'agent' });
       return {
-        schemaVersion: 'starnet.eval.trajectory.v1', taskId: fixture.taskId, attempt, runId: run.runId,
+        schemaVersion: 'eyehold.eval.trajectory.v1', taskId: fixture.taskId, attempt, runId: run.runId,
         startedAt, endedAt, finalText: run.finalText, events: run.events.map((event, index) => ({ seq: index + 1, at: endedAt, type: event.name, data: event.payload || {} })),
         observation: host.observation, routing: host.routing, artifacts: host.artifacts,
         metrics: { firstOutputMs: run.firstOutputMs, totalMs: run.totalMs, model: MODEL, provider: PROVIDER, stopReason: run.end?.reason || '', submittedPromptSha256: promptSha256(prompt) },
@@ -187,7 +187,7 @@ export async function startHermesDriver(opts) {
     command: python, args: ['-m', 'acp_adapter.entry'], cwd: source,
     env: { HERMES_HOME: home, HERMES_ACP_SKIP_CONFIGURED_MCP: '1' }, permission: hermesPermission, timeoutMs: runTimeoutMs
   });
-  const init = await client.initialize('starnet-wave-b-parity');
+  const init = await client.initialize('eyehold-wave-b-parity');
   return {
     identity: { harness: 'hermes', model: MODEL, provider: PROVIDER, agentInfo: init.agentInfo },
     async run({ fixture, state, root: fixtureRoot, attempt }) {
@@ -198,7 +198,7 @@ export async function startHermesDriver(opts) {
       const run = await client.prompt(session.sessionId, prompt, runTimeoutMs), endedAt = new Date().toISOString();
       const host = observeFixture(state, run.text, { sessionId: session.sessionId, agentId: 'agent' });
       return {
-        schemaVersion: 'starnet.eval.trajectory.v1', taskId: fixture.taskId, attempt, runId: session.sessionId,
+        schemaVersion: 'eyehold.eval.trajectory.v1', taskId: fixture.taskId, attempt, runId: session.sessionId,
         startedAt, endedAt, finalText: run.text,
         events: run.updates.map((update, index) => ({ seq: index + 1, at: endedAt, type: `acp.${update.sessionUpdate || 'update'}`, data: update })),
         observation: host.observation, routing: host.routing, artifacts: host.artifacts,

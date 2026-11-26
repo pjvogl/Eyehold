@@ -19,7 +19,7 @@ After restarting the installed app, a completed multi-turn reply appears twice: 
 
 ## Repro
 
-Complete a real task that triggers verify-on-stop and emits more than one final assistant turn. Persist the station, restart, and reopen that conversation. Installed run `159301af-e754-4df9-89f7-11781f77ad43` on `f111be488`, then reopened on `fbaab109f`, reproduces the duplicate in `ws_mtw1x111kmaw`.
+Complete a real task that triggers verify-on-stop and emits more than one final assistant turn. Persist the keep, restart, and reopen that conversation. Installed run `159301af-e754-4df9-89f7-11781f77ad43` on `f111be488`, then reopened on `fbaab109f`, reproduces the duplicate in `ws_mtw1x111kmaw`.
 
 ## Evidence
 

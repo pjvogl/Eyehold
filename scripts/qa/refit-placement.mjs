@@ -21,7 +21,7 @@ try {
   await evalJS(c,'Promise.all([IndustrialTextures.ready,PropRemaster.ready]).then(()=>true)');
   // Keep the original seeded save separate; exercise a copy using the real model.
   await evalJS(c,`(()=>{
-    const st=WorldModel.deserialize(Build.__test__.station().doc());
+    const st=WorldModel.deserialize(Build.__test__.keep().doc());
     if (${populated}) {
       for(const [x,y] of [[24,0],[0,24]]) {
         if(!st.addRoom({kind:'hab',rect:{x1:x,y1:y,x2:x+23,y2:y+19}}).ok)throw Error('populate room');
@@ -29,19 +29,19 @@ try {
           if(!st.addProp({t:'plant',x:px,y:py,w:1,h:1,block:false}).ok)throw Error('populate prop');
       }
     }
-    World.stop();World.loadStation(st);World.rebake();
-    Build.init({getStation:()=>st,persist:()=>{},world:World,agents:()=>App.agents()});
+    World.stop();World.loadKeep(st);World.rebake();
+    Build.init({getKeep:()=>st,persist:()=>{},world:World,agents:()=>App.agents()});
     Build.open();return true;
   })()`);
   await sleep(1000);
   const result=await evalJS(c,`(async()=>{
-    const st=Build.__test__.station(), paint=()=>new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));
+    const st=Build.__test__.keep(), paint=()=>new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));
     const assert=(ok,msg)=>{if(!ok)throw Error(msg)};
     const prime=Build.__test__.placeCapProp('plant');assert(prime.ok,'prime plant tool');st.undo();await paint();
     const cv=document.querySelector('.refit-overlay canvas.refit-canvas')||document.querySelector('#refit-canvas');
     assert(cv,'refit canvas exists');
-    const bake=StationBake.bakeIncremental,bakes=[];
-    StationBake.bakeIncremental=function(...args){const t=performance.now(),r=bake(...args);bakes.push(performance.now()-t);return r};
+    const bake=KeepBake.bakeIncremental,bakes=[];
+    KeepBake.bakeIncremental=function(...args){const t=performance.now(),r=bake(...args);bakes.push(performance.now()-t);return r};
     const spot=(t='plant',ignore)=>{
       const spec=PropSprites.spec(t);
       for(const rm of st.rooms())for(const rect of rm.rects)for(let y=rect.y1;y<=rect.y2;y++)for(let x=rect.x1;x<=rect.x2;x++){

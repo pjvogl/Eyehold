@@ -1,8 +1,8 @@
-/* STARNET — intake.js : THE INTAKE INTERVIEW flow (Commander Dossier, Phase B slice 1).
+/* EYEHOLD — intake.js : THE INTAKE INTERVIEW flow (Commander Dossier, Phase B slice 1).
 
    The COMMS half of the active "get to know the Commander" move — a thin controller that mirrors
    onboarding.js's answer loop, but lighter and mid-game: it runs the questions interview.js planned, in
-   the agent's own COMMS voice, and folds each answer into the station-wide dossier (DossierStore.upsert)
+   the agent's own COMMS voice, and folds each answer into the keep-wide dossier (DossierStore.upsert)
    through the same Keep/forget glass box the panel uses. Optional + skippable: every question can be
    skipped, partial completion still banks what was answered, and it never calls the model (Chat interview
    mode intercepts input). ALL decision logic lives in the pure interview.js; this is just the COMMS glue. */
@@ -33,7 +33,7 @@ const Intake = (() => {
     onDone = opts.onDone || null;
     onLeave = opts.onLeave || null;
     idx = 0; accepting = false; running = true;
-    Chat.beginInterview(text => answer(text, text, false), { placeholder: 'tell the station about yourself… (or “skip”)', status: 'getting to know you…' });
+    Chat.beginInterview(text => answer(text, text, false), { placeholder: 'tell the keep about yourself… (or “skip”)', status: 'getting to know you…' });
     // ESCAPE HATCH (Andrew ask): the interview hijacks COMMS, so the Commander must be able to walk away from the
     // WHOLE thing — not just skip one question at a time. Esc leaves; a "✕ leave interview" chip sits on every
     // question (see ask()). Capture-phase so it wins over any other Esc listener while the interview owns the moment.
@@ -86,7 +86,7 @@ const Intake = (() => {
     if (Chat.echoUser) Chat.echoUser(isSkip ? '(skip)' : (display != null ? String(display) : text));
     if (!isSkip && onCommit && typeof Interview !== 'undefined') {
       const belief = Interview.beliefFromAnswer(q, text);
-      if (belief) { try { onCommit(belief); } catch (_) {} sfx('truth'); }   // a soft bell as the station learns one thing about you
+      if (belief) { try { onCommit(belief); } catch (_) {} sfx('truth'); }   // a soft bell as the keep learns one thing about you
     }
     idx++;
     setTimeout(ask, 520);
@@ -115,7 +115,7 @@ const Intake = (() => {
     if (Chat.endInterview) Chat.endInterview();
     // CLOSING SIGNAL: name the end explicitly and hand the COMMS input back — the interview hijacked it, so
     // "talk to me normally now" tells the Commander the field is theirs again (the exit signal the audit flagged).
-    type([{ text: 'that’s everything — talk to me normally now. i know you a little better, and so does every agent on the station. refine any of it in the COMMANDER dossier whenever.', cps: 48 }], () => {});
+    type([{ text: 'that’s everything — talk to me normally now. i know you a little better, and so does every agent on the keep. refine any of it in the COMMANDER dossier whenever.', cps: 48 }], () => {});
     if (onDone) { try { onDone(); } catch (_) {} }
   }
 

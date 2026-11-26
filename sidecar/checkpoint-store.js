@@ -114,7 +114,7 @@
     function base(aid, scope) {
       return ['--git-dir', gitDirFor(aid, scope), '--work-tree', workTreeFor(aid, scope),
         '-c', 'core.autocrlf=false', '-c', 'core.safecrlf=false',
-        '-c', 'user.email=starnet@local', '-c', 'user.name=starnet'];
+        '-c', 'user.email=eyehold@local', '-c', 'user.name=eyehold'];
     }
     const git = (aid, scope, args) => runGit(base(aid, scope).concat(args), { cwd: workTreeFor(aid, scope) });
 
@@ -171,7 +171,7 @@
       let names = [];
       try { names = fs.readdirSync(pathMod.join(root, '.checkpoints', aid, 'roots')); } catch (_) {}
       for (const name of names) {
-        // Rebuilding the index reads only the station-owned shadow git + scope metadata. Keep revoked roots in
+        // Rebuilding the index reads only the keep-owned shadow git + scope metadata. Keep revoked roots in
         // the list as unavailable restore points; do not erase their recoverable history just because authority
         // is currently absent. Actual restore still re-checks readScope() and fails closed.
         const scope = readScopeSaved(aid, String(name));
@@ -315,7 +315,7 @@
         fs.mkdirSync(fresh, { recursive: true });
         const gitAt = (dir, args) => runGit(['--git-dir', dir, '--work-tree', workTreeFor(aid, scope),
           '-c', 'core.autocrlf=false', '-c', 'core.safecrlf=false',
-          '-c', 'user.email=starnet@local', '-c', 'user.name=starnet'].concat(args), { cwd: workTreeFor(aid, scope) });
+          '-c', 'user.email=eyehold@local', '-c', 'user.name=eyehold'].concat(args), { cwd: workTreeFor(aid, scope) });
         if ((await gitAt(fresh, ['init', '-q'])).code !== 0) { cleanup(); return false; }
         if ((await gitAt(fresh, ['add', '-A'])).code !== 0) { cleanup(); return false; }
         const com = await gitAt(fresh, ['commit', '-q', '--allow-empty', '-m', 'baseline (repo re-init: size ceiling)']);

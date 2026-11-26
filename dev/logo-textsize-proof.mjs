@@ -59,7 +59,7 @@ async function main() {
     await cdp.send('Emulation.setDeviceMetricsOverride', { width: 1600, height: 1000, deviceScaleFactor: 2, mobile: false });
     await sleep(600);
 
-    await evalJS(cdp, `StationUI.openTerm('settings')`);
+    await evalJS(cdp, `KeepUI.openTerm('settings')`);
     let chips = 0;
     for (let i = 0; i < 40; i++) {
       chips = await evalJS(cdp, `document.querySelectorAll('#set-textsize [data-ts]').length`);

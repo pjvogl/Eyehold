@@ -24,13 +24,13 @@ function freePort() {
 function start(workspaces, port, extraEnv) {
   const child = spawn(process.execPath, [INDEX], {
     env: Object.assign({}, process.env, {
-      SKYNET_WORKSPACES: workspaces,
-      SKYNET_PORT: String(port),
-      SKYNET_LIVE_PRICES: '0',
-      SKYNET_QUEST_REFRESH: '0',
-      SKYNET_CRON: '0',
-      SKYNET_OPENROUTER_KEY: '',
-      STARNET_OPENROUTER_KEY: ''
+      EYEHOLD_WORKSPACES: workspaces,
+      EYEHOLD_PORT: String(port),
+      EYEHOLD_LIVE_PRICES: '0',
+      EYEHOLD_QUEST_REFRESH: '0',
+      EYEHOLD_CRON: '0',
+      EYEHOLD_OPENROUTER_KEY: '',
+      EYEHOLD_OPENROUTER_KEY: ''
     }, extraEnv || {}),
     stdio: ['ignore', 'pipe', 'pipe']
   });
@@ -62,7 +62,7 @@ function waitExit(child, timeoutMs) {
 }
 
 (async () => {
-  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'starnet-owner-e2e-'));
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'eyehold-owner-e2e-'));
   const sentinel = path.join(root, 'canonical-user-state.json');
   const sentinelBytes = JSON.stringify({ agents: 4, workstreams: 33, marker: 'must-survive-collision' });
   fs.writeFileSync(sentinel, sentinelBytes);
@@ -75,7 +75,7 @@ function waitExit(child, timeoutMs) {
     fs.writeFileSync(protectedSentinel, sentinelBytes);
     const protectedPort = await freePort();
     const dev = start(protectedRoot, protectedPort, {
-      LOCALAPPDATA: fakeAppData, APPDATA: fakeAppData, SKYNET_DEV: '1', STARNET_DEV: '1'
+      LOCALAPPDATA: fakeAppData, APPDATA: fakeAppData, EYEHOLD_DEV: '1', EYEHOLD_DEV: '1'
     });
     processes.push(dev.child);
     const devRefused = await waitExit(dev.child, 5000);
@@ -89,7 +89,7 @@ function waitExit(child, timeoutMs) {
     await waitFor(() => a.output().includes('http://127.0.0.1:' + portA), 12000,
       'first sidecar did not boot:\n' + a.output());
 
-    const lockfile = path.join(root, '.starnet-workspace-owner.json');
+    const lockfile = path.join(root, '.eyehold-workspace-owner.json');
     A.eq(JSON.parse(fs.readFileSync(lockfile, 'utf8')).pid, a.child.pid, 'real host claims WORKSPACES before serving');
 
     const b = start(root, portB); processes.push(b.child);

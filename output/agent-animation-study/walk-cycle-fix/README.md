@@ -46,4 +46,4 @@ with their legs together (62 of 288 tracks had a leg spread of 6px or less).
 - plaguedoctor, voidwizard: robes read as trousers in some frames.
 - grimreaper: scythe blade missing on E/W; NW, W, SE are mirrors of the opposite-hand track.
 - morpheus, vaultboy: second half of the south cycle is a mirror of the first.
-- xenomorph NW, station_minion E, ghostface NE: mirrored from the opposite-hand track.
+- xenomorph NW, keep_minion E, ghostface NE: mirrored from the opposite-hand track.

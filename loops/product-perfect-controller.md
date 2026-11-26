@@ -6,7 +6,7 @@ competing feature loops.
 
 ## Every wake
 
-1. Read `AGENTS.md`, the required StarNet doctrine/orientation docs, this file, and the active goal.
+1. Read `AGENTS.md`, the required Eyehold doctrine/orientation docs, this file, and the active goal.
    Run `git worktree list` and inspect live agents before making changes. Work only in an assigned
    isolated worktree; never feature-edit the integration tree.
 2. Run `node scripts/qa/product-perfect.mjs --status`. The first non-pass is the only active wave.

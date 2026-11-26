@@ -1,11 +1,11 @@
-/* STARNET — questledgerstore.js : the QUEST V2 backend ledger's frontend citizen (plan §C).
+/* EYEHOLD — questledgerstore.js : the QUEST V2 backend ledger's frontend citizen (plan §C).
 
    The sidecar now OWNS a durable, agent-aware quest ledger (sidecar/quest-store.js, routes /api/quests*).
-   This thin live store is its browser-side read+write surface. It POLLS GET /api/quests on the station's
+   This thin live store is its browser-side read+write surface. It POLLS GET /api/quests on the keep's
    existing 1s tick cadence — but THROTTLED (a real network fetch at most every POLL_MS, and immediately
    after a confirm/dismiss write) so the tick never floods the sidecar. It caches the last-good ledger, so a
    fetch failure keeps the previous list (never a crash, never a blanked log) — the truthful-degradation idiom
-   every sibling store uses (workshopstore/stationqueststore).
+   every sibling store uses (workshopstore/keepqueststore).
 
    It hands the ledger to the pure Quests engine as a NEW splice input (kind:'ledger'), shaped into the shared
    quest shape so the rows, the QuestState open→done celebration, and the dismiss path all work with ZERO new
@@ -89,7 +89,7 @@ const QuestLedgerStore = (() => {
     }
   }
   // ONE glance per new quest: a terse ambient COMMS line (Chat.broadcast — Lane 1's queue means it is never
-  // dropped by the celebration coalesce). NO StationUI.notify (notification diet, 2026-08-18): the quest log
+  // dropped by the celebration coalesce). NO KeepUI.notify (notification diet, 2026-08-18): the quest log
   // is the quest surface — the bell is reserved for things that need the Commander. Guarded: in a headless/test
   // context (no Chat) this is a silent no-op, never a throw.
   function announceNewQuest(q) {
@@ -191,8 +191,8 @@ const QuestLedgerStore = (() => {
       if (typeof SFX !== 'undefined' && SFX.idea) { try { SFX.idea(); } catch (_) {} }
       const line = '⚑ your agent reports a quest complete — “' + (evShort || q.title) + '”. confirm it?';
       shown = Chat.nudge(line, [{ label: 'Confirm ✓', value: 'yes' }, { label: 'Review in QUEST LOG', value: 'log', skip: true }], choice => {
-        if (choice && choice.value === 'yes') { confirm(q.id, true).then(() => { if (typeof StationUI !== 'undefined' && StationUI.rerender) StationUI.rerender('quests', false); }); }   // the click was in COMMS — the open log repaints as a data poke, no blink
-        else if (typeof StationUI !== 'undefined' && StationUI.openTerm) StationUI.openTerm('quests');   // Review → open the log where the row's confirm lives
+        if (choice && choice.value === 'yes') { confirm(q.id, true).then(() => { if (typeof KeepUI !== 'undefined' && KeepUI.rerender) KeepUI.rerender('quests', false); }); }   // the click was in COMMS — the open log repaints as a data poke, no blink
+        else if (typeof KeepUI !== 'undefined' && KeepUI.openTerm) KeepUI.openTerm('quests');   // Review → open the log where the row's confirm lives
       });
     }
     if (!shown && typeof Chat.broadcast === 'function') {   // nudge refused (a question/beat won the race) → same ambient fallback as busy

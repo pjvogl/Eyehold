@@ -65,7 +65,7 @@ A.eq(log.recent().length, 0, 'reset clears the ring');
   A.ok(/out of credit/.test(billing.fix) && !/report/i.test(billing.fix) && !/diagnostics/.test(billing.fix), 'an empty wallet names the top-up, not a bug report: ' + billing.fix);
   const unknown = SlagLog.diagnose('error', { error: { kind: 'unknown', msg: 'Something went wrong on that turn — try again.' } });
   A.ok(/diagnostics/.test(unknown.fix) && /report/.test(unknown.fix), 'an UNKNOWN error keeps the resend + report fix (it may be our bug)');
-  const local = SlagLog.diagnose('error', { error: { kind: 'server_error', msg: 'The local StarNet service hit an error' } });
+  const local = SlagLog.diagnose('error', { error: { kind: 'server_error', msg: 'The local Eyehold service hit an error' } });
   A.ok(/report/.test(local.fix), 'a local server_error keeps the report fix');
   const rec = SlagLog.create(); rec.record('error', { agentId: 'hero' }); rec.record('budget', {});
   A.eq(rec.recent()[0].agentId, 'hero', 'a recorded post-mortem remembers which agent failed');

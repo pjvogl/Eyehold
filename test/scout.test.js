@@ -32,7 +32,7 @@ const GOOD = [
 
 /* ---------- decide: named bindings + kind alternation ---------- */
 let s = S.fresh(T0);
-A.eq(S.decide(s, { now: T0, warm: false }).binding, 'cold', 'a cold station never mints');
+A.eq(S.decide(s, { now: T0, warm: false }).binding, 'cold', 'a cold keep never mints');
 A.eq(S.decide(s, { now: T0, warm: true }).binding, 'cooldown', 'no earned runs -> cooldown binds');
 for (let i = 0; i < S.MINT_EVERY_RUNS; i++) s = S.noteRun(s, T0);
 A.ok(S.decide(s, { now: T0, warm: true }).fire, 'earned runs + warm + never-minted fires');
@@ -111,7 +111,7 @@ A.ok(dirWithDirection.indexOf('automate my weekly stock brief') >= 0, 'the direc
 A.ok(dirWithDirection.indexOf('ship the earnings-day digest') >= 0, 'the directive embeds the open quest slate');
 A.ok(/never .*duplicates an open quest/i.test(dirWithDirection), 'the directive forbids duplicating an open quest');
 A.ok(/advance an open quest or the north star/i.test(dirWithDirection), 'the directive invites advancing a quest/star in WHY');
-// a directive with no direction (empty block) stays byte-clean — no dangling header (back-compat / cold station).
+// a directive with no direction (empty block) stays byte-clean — no dangling header (back-compat / cold keep).
 A.ok(S.buildRecipeDirective({ interestsBlock: 'x', existingRecipes: [], gearKeys: GEAR }).indexOf('CURRENT DIRECTION') < 0, 'no direction block -> no direction header');
 
 /* ---------- parseRecipe: round-trip ---------- */

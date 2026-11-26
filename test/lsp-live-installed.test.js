@@ -9,7 +9,7 @@ const { spawn } = require('node:child_process');
 const { makeLspManager, DEFAULT_SERVERS } = require('../sidecar/lsp-manager.js');
 
 (async () => {
-  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'starnet-lsp-live-'));
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'eyehold-lsp-live-'));
   const manager = makeLspManager({ spawn, fs, fsp, pathMod: path, env: process.env,
     limits: { requestTimeoutMs: 15000, diagnosticTimeoutMs: 15000, idleMs: 30000 } });
   try {

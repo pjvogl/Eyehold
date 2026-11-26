@@ -19,7 +19,7 @@ Autonomy displays BUILD after a refused save while the server remains WAIT. Relo
 
 ## Repro
 
-Open Settings > Autonomy in a seeded station; fail POST /api/autonomy/posture with 503 and select BUILD. Compare the highlighted dial and description with GET /api/autonomy/posture. For durability, run test/autonomy-confirmation.http.test.js: replace the isolated posture file with a directory and attempt a new posture while halted.
+Open Settings > Autonomy in a seeded keep; fail POST /api/autonomy/posture with 503 and select BUILD. Compare the highlighted dial and description with GET /api/autonomy/posture. For durability, run test/autonomy-confirmation.http.test.js: replace the isolated posture file with a directory and attempt a new posture while halted.
 
 ## Evidence
 

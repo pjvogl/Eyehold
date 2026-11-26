@@ -12,5 +12,7 @@ Examples of *possible* goal-aligned deliverables: a published, authorized sales 
 
 Unapproved busywork, speculative income claims, spam, fabricated customers, unsafe work, and submissions with no credible proof receive **zero Crowns**.
 
+Treasury Watch scores Crowns from verified net profit only: one Crown per whole dollar after costs and compute, including a share for Raven Court when that research fed the venture. A missing Stripe receipt stays unavailable and pays zero Crowns. Paper results are practice points.
+
 ## Current limitations
 The scoring engine and trusted bridge now enforce the goal fields, but the live sidecar has **not yet been wired** to an authoritative goal/acceptance store for end-to-end automatic awards. An accepted `goalAdvanced` flag establishes a reviewed milestone, not an independently verified increase in bank balance. The existing release audit and live role-specific delegation proofs remain pending.

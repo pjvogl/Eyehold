@@ -1,4 +1,4 @@
-/* sidecar/shellhooks.js — THE SHELL-HOOK BRIDGE: the Commander's own scripts, on the station's hook spine.
+/* sidecar/shellhooks.js — THE SHELL-HOOK BRIDGE: the Commander's own scripts, on the keep's hook spine.
 
    This is the ambient half of sidecar/hooks.js. It turns a line of config —
 
@@ -14,7 +14,7 @@
                     anything else / empty                  ← silent no-op
 
    THE PRIVILEGE BOUNDARY, stated loudly because it is the whole risk of this feature: a shell hook runs
-   OUTSIDE the agent's workspace jail, at the STATION's privilege. It has to — its job is often to run the
+   OUTSIDE the agent's workspace jail, at the KEEP's privilege. It has to — its job is often to run the
    Commander's own toolchain on the Commander's own files. That is safe only because a hook is CONFIGURED by
    the Commander rather than authored by the agent, and it is why every (event, command) pair must be
    explicitly allowed before it ever runs. A hooks file can arrive by repo checkout, by config sync, by a
@@ -102,7 +102,7 @@
       return { hooks, errors };
     }
 
-    /* AUTHORING. A hook the Commander TYPES INTO THE STATION is already consented — they wrote it, here, on
+    /* AUTHORING. A hook the Commander TYPES INTO THE KEEP is already consented — they wrote it, here, on
        purpose. The allowlist exists for hooks that arrive by other means (a repo checkout, a config sync, a
        restored backup), which is a different act entirely. So create() approves what it writes; asking the
        author to then approve their own keystrokes would be theatre, and theatre is what teaches people to
@@ -117,7 +117,7 @@
 
       const raw = await readJson(hooksFile, null);
       const list = Array.isArray(raw) ? raw : (raw && Array.isArray(raw.hooks) ? raw.hooks : []);
-      if (list.length >= MAX_HOOKS) return { ok: false, error: 'this station already has the maximum of ' + MAX_HOOKS + ' hooks' };
+      if (list.length >= MAX_HOOKS) return { ok: false, error: 'this keep already has the maximum of ' + MAX_HOOKS + ' hooks' };
       if (list.some(h => h && String(h.event) === event && String(h.command).trim() === command)) {
         return { ok: false, error: 'that exact hook already exists' };
       }
@@ -201,7 +201,7 @@
     /* install(hooks, { accept }) — register every ALLOWED hook on the spine.
        Returns what happened, so the host can tell the Commander which hooks are live and which are waiting on
        them, instead of failing silently in either direction. `accept: true` is the non-interactive escape
-       hatch (a headless/CI station); it approves and persists, and it is the caller's decision to make. */
+       hatch (a headless/CI keep); it approves and persists, and it is the caller's decision to make. */
     async function install(hookSpine, opts) {
       opts = opts || {};
       const { hooks, errors } = await load();

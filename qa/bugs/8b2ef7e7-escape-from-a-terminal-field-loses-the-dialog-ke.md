@@ -19,13 +19,13 @@ After Escape leaves a settings text field, keyboard focus drops to the page and 
 
 ## Repro
 
-1. Open Settings in the seeded station.
+1. Open Settings in the seeded keep.
 2. Focus its empty search field and press Escape.
 3. Press Escape again. Before the repair, the window remains open and focus is on BODY.
 
 ## Evidence
 
-Live :9199 before: focusedTag=BODY, insideWindow=false, windows=1 after the second Escape. After: focus remains on the .gd-sheet dialog, then the second Escape reaches guarded close. test/glass-interactions.test.js exercises the actual stationui.js key handler and confirms the field value survives the first Escape.
+Live :9199 before: focusedTag=BODY, insideWindow=false, windows=1 after the second Escape. After: focus remains on the .gd-sheet dialog, then the second Escape reaches guarded close. test/glass-interactions.test.js exercises the actual keepui.js key handler and confirms the field value survives the first Escape.
 
 ## Verdict
 

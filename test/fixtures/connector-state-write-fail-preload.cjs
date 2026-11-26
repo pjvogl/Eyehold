@@ -6,7 +6,7 @@ const path = require('node:path');
 const renameSync = fs.renameSync;
 fs.renameSync = function (source, destination) {
   const normalized = path.normalize(String(destination));
-  if (process.env.STARNET_TEST_FAIL_CONNECTOR_STATE === '1' && /[\\/]connectors[\\/]state\.json$/.test(normalized)) {
+  if (process.env.EYEHOLD_TEST_FAIL_CONNECTOR_STATE === '1' && /[\\/]connectors[\\/]state\.json$/.test(normalized)) {
     const error = new Error('synthetic connector state write failure');
     error.code = 'EACCES';
     throw error;

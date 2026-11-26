@@ -29,7 +29,7 @@ public sealed class UpgradeCleanupLease : IDisposable {
 '@
 
 $systemTemp = [IO.Path]::GetFullPath([IO.Path]::GetTempPath()).TrimEnd('\')
-$tempRoot = [IO.Path]::GetFullPath((Join-Path $systemTemp ('starnet-cleanup-test-' + [guid]::NewGuid().ToString('N'))))
+$tempRoot = [IO.Path]::GetFullPath((Join-Path $systemTemp ('eyehold-cleanup-test-' + [guid]::NewGuid().ToString('N'))))
 if (-not $tempRoot.StartsWith($systemTemp + '\', [StringComparison]::OrdinalIgnoreCase)) { throw 'Fixture escaped temporary directory' }
 New-Item -ItemType Directory -Path $tempRoot | Out-Null
 try {

@@ -8,7 +8,7 @@ const { join, resolve } = require('node:path');
 const { tmpdir } = require('node:os');
 
 const root = resolve(__dirname, '..');
-const temp = mkdtempSync(join(tmpdir(), 'starnet-soak-receipt-'));
+const temp = mkdtempSync(join(tmpdir(), 'eyehold-soak-receipt-'));
 try {
   const privateKey = join(temp, 'private.pem'), publicKey = join(temp, 'public.pem');
   const soakFile = join(temp, 'soak.json'), manifestFile = join(temp, 'manifest.json'), receiptFile = join(temp, 'receipt.json');
@@ -17,7 +17,7 @@ try {
   const keygen = spawnSync(process.execPath, ['scripts/eval/runner.mjs', 'keygen', '--private', privateKey, '--public', publicKey], { cwd: root, encoding: 'utf8' });
   A.eq(keygen.status, 0, 'test receipt key is generated');
   writeFileSync(manifestFile, JSON.stringify({ subject: {
-    name: 'StarNet', version: '0.8.5', commit: 'a'.repeat(40), dirty: false,
+    name: 'Eyehold', version: '0.8.5', commit: 'a'.repeat(40), dirty: false,
     sourceTree: { value: 'b'.repeat(40) }, executable: { path: process.execPath, sha256: executableSha },
     platform: { platform: 'win32', arch: 'x64' },
     provenance: { verified: true, describe }
@@ -27,7 +27,7 @@ try {
     ok: true, status: 200, version: describe, rssBytes: 100 + index, cpuSeconds: index, exited: false, error: ''
   }));
   const soak = {
-    schemaVersion: 'starnet.eval.soak.v1', mode: 'provider-free-control-plane', qualifiesRelease: false,
+    schemaVersion: 'eyehold.eval.soak.v1', mode: 'provider-free-control-plane', qualifiesRelease: false,
     startedAt: '2026-08-03T00:00:00.000Z', plannedEndAt: '2026-08-03T00:00:03.600Z', endedAt: '2026-08-03T00:00:03.700Z',
     durationHours: 0.001, intervalSeconds: 1, interrupted: false, runtime: { describe }, samples,
     summary: { pass: true, completed: true, healthChecks: 4, healthFailures: 0, unexpectedExits: 0, rssBytes: { first: 100, last: 103, min: 100, max: 103 } },

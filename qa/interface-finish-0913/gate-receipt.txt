@@ -1,4 +1,4 @@
-StarNet interface finish audit — final source gate
+Eyehold interface finish audit — final source gate
 Date: 2026-09-13
 Worktree: C:\Users\andro\gen-trees\interface-finish-0913
 Branch: agent/interface-finish-0913

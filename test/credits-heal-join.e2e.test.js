@@ -1,7 +1,7 @@
 'use strict';
 // E29 review (2026-10-08): a credits read that arrived while a link self-heal was already running did not wait for
 // it — healRetryDue() is false while a heal is in flight, so the read answered "not linked" at once (GET
-// /api/credits 404 → the STORE drew LINK STATION, WAKE said "link your StarNet account first") over a station the
+// /api/credits 404 → the STORE drew LINK KEEP, WAKE said "link your Eyehold account first") over a keep the
 // heal was seconds from linking. SETTINGS sends the provider-card read and the STORE read back to back, so the
 // second one always met the first one's heal. Every read now joins the running heal (whoami AND its rebuild's
 // balance read) and answers from its result.
@@ -37,9 +37,9 @@ async function cloudFixture(firstMode) {
 
 function makeFixture(cloud, prefix) {
   const fixture = SidecarFixture.create({ prefix, timeoutMs: 15000, env: {
-    STARNET_CLOUD_URL: cloud.url, STARNET_CREDITS_URL: '', SKYNET_CREDITS_URL: '',
-    STARNET_CREDITS_TOKEN: 'fixture-keychain-token', STARNET_CREDITS_HEAL_RETRY_MS: '200',
-    SKYNET_PROVIDER: 'replay', STARNET_PROVIDER: 'replay'
+    EYEHOLD_CLOUD_URL: cloud.url, EYEHOLD_CREDITS_URL: '', EYEHOLD_CREDITS_URL: '',
+    EYEHOLD_CREDITS_TOKEN: 'fixture-keychain-token', EYEHOLD_CREDITS_HEAL_RETRY_MS: '200',
+    EYEHOLD_PROVIDER: 'replay', EYEHOLD_PROVIDER: 'replay'
   } });
   fs.mkdirSync(path.join(fixture.workspace, '.secrets'), { recursive: true });
   return fixture;
@@ -71,7 +71,7 @@ test('a credits read during the BOOT self-heal waits for it and answers linked, 
     assert.equal(r.body.configured, true, 'the read reports the link the heal just restored');
     assert.equal(r.body.balanceUsd, 22, 'with the real balance');
     const l = await linkable;
-    assert.equal(l.body.available, false, 'no LINK STATION card over a linked station');
+    assert.equal(l.body.available, false, 'no LINK KEEP card over a linked keep');
     assert.equal(cloud.state.whoamiCalls, 1, 'joining readers never start a second whoami');
     assert.equal(cloud.state.balanceCalls, 1, "joining readers reuse the heal's own balance read");
   } finally {
@@ -89,7 +89,7 @@ test('two back-to-back reads during a RETRY heal both answer linked (SETTINGS pr
     while (!/credits link self-heal declined: whoami http 502/.test(fixture.output()) && Date.now() < until) await new Promise(r => setTimeout(r, 20));
     assert.match(fixture.output(), /self-heal declined: whoami http 502 \(will retry/, 'the boot heal met the outage and armed a retry');
     cloud.state.mode = 'hold';
-    await new Promise(r => setTimeout(r, 250));   // past STARNET_CREDITS_HEAL_RETRY_MS
+    await new Promise(r => setTimeout(r, 250));   // past EYEHOLD_CREDITS_HEAL_RETRY_MS
     cloud.state.balanceCalls = 0;
     const first = open(fixture.json('GET', '/api/credits?history=0'));   // takes the armed retry
     await cloud.waiting;

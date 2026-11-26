@@ -1,4 +1,4 @@
-/* test/userprops-side.test.js — side views for made props, station side: the accepted front PNG is what gets sent,
+/* test/userprops-side.test.js — side views for made props, keep side: the accepted front PNG is what gets sent,
    the side view lands as <id>-w.png with its own footprint on the index entry, landing is idempotent, a second
    side view is refused, a bad cloud result touches nothing, and the paid side job survives a restart. */
 'use strict';

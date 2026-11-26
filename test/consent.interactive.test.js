@@ -26,7 +26,7 @@ const { resolveTools } = require('../sidecar/capability/resolve.js');
 const { makeCapCtx } = require('../sidecar/capability/capGate.js');
 const { makeConsentBroker } = require('../sidecar/permissions.js');
 
-const ROOT = path.join(os.tmpdir(), 'starnet-consent-itest-' + process.pid);
+const ROOT = path.join(os.tmpdir(), 'eyehold-consent-itest-' + process.pid);
 
 function writeTurn(wirePath) {
   return [
@@ -63,10 +63,10 @@ async function runMission(turns, decision) {
   makeFsTools({ fsp, pathMod: path, root: ROOT, limits: { writeBytes: 1 << 20, readReturn: 24000 } }).register(registry);
   makeNotebookTools({ store: new Map(), clock: { now: () => 0 } }).register(registry);
 
-  const station = { agents: { agent: { id: 'agent', room: 'office' } }, rooms: { office: { id: 'office', objects: [
+  const keep = { agents: { agent: { id: 'agent', room: 'office' } }, rooms: { office: { id: 'office', objects: [
     { instanceId: 'pc1', objectType: 'computer' }, { instanceId: 'cab1', objectType: 'cabinet' }, { instanceId: 'nb1', objectType: 'notebook' }
   ] } } };
-  const resolved = resolveTools('agent', station);
+  const resolved = resolveTools('agent', keep);
 
   const asked = [];
   const prompt = (call, tool) => { asked.push({ name: call.name, scope: tool && tool.scope }); return Promise.resolve(decision); };

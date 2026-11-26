@@ -14,7 +14,7 @@ const path = require('path');
 const os = require('os');
 const { makeFsTools } = require('../sidecar/tools/builtin/fs.js');
 
-const ROOT = path.join(os.tmpdir(), 'starnet-fs-stale-' + process.pid);
+const ROOT = path.join(os.tmpdir(), 'eyehold-fs-stale-' + process.pid);
 const { writeTool, readTool, editTool, appendTool } = makeFsTools({ fsp, pathMod: path, root: ROOT, limits: { writeBytes: 1 << 20, readReturn: 100000 } });
 const CTX = { agentId: 'ag', emit: () => {} };
 const absOf = (rel) => path.join(ROOT, 'ag', rel);

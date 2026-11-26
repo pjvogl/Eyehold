@@ -10,12 +10,12 @@ const path = require('path');
 const A = require('./_assert.js');
 const { questBlock, withQuests, _internals } = require('../sidecar/questinject.js');
 
-const SYS = 'You are an autonomous STARNET station agent.';
+const SYS = 'You are an autonomous EYEHOLD keep agent.';
 
 /* ---------- empty list → the MINIMAL minting-doctrine block (NOT '' — a no-quest agent should still mint, §E) ---------- */
 {
   const mb = questBlock([]);
-  A.ok(mb.indexOf('STATION QUESTS') === 0, 'empty ledger → a minimal block still headed STATION QUESTS (never the empty string)');
+  A.ok(mb.indexOf('KEEP QUESTS') === 0, 'empty ledger → a minimal block still headed KEEP QUESTS (never the empty string)');
   A.ok(/no open quests/.test(mb), 'the minimal block says there are no open quests right now');
   A.ok(mb.indexOf('op:"mint"') >= 0, 'the minimal block carries the minting doctrine (quest.update op:"mint")');
   A.ok(mb.indexOf('groundedIn') >= 0, 'the minting doctrine demands grounding (groundedIn a concrete fact)');
@@ -38,7 +38,7 @@ A.eq(withQuests(SYS, questBlock([])), SYS + '\n\n' + questBlock([]), 'an empty l
     steps: [{ key: 'a', label: 'gather the columns', done: true }, { key: 'b', label: 'write the script', done: false }],
     groundedIn: 'dossier: exports CSVs by hand every morning' };
   const b = questBlock([q]);
-  A.ok(b.indexOf('STATION QUESTS') === 0, 'block starts with the STATION QUESTS header');
+  A.ok(b.indexOf('KEEP QUESTS') === 0, 'block starts with the KEEP QUESTS header');
   A.ok(b.indexOf('quest.update') >= 0, 'header tells the agent to use the quest.update tool');
   A.ok(b.indexOf('op:"mint"') >= 0 && b.indexOf('At most ONE mint per run') >= 0, 'the full block carries the minting doctrine too (rides every task run)');
   A.ok(b.indexOf('[q:1] Automate the CSV export') >= 0, 'stanza carries id + title');
@@ -97,7 +97,7 @@ A.eq(_internals.nextStep({}), null, 'missing steps → null');
   A.ok(b.indexOf('[q:1] ') < 0, 'the OLDEST quest (q:1) is dropped under the cap');
 }
 
-/* ---------- Fix 2 (truthful telemetry): the injection seam in index.js composes the STATION QUESTS block ONLY when
+/* ---------- Fix 2 (truthful telemetry): the injection seam in index.js composes the KEEP QUESTS block ONLY when
    quest.update is actually in the run's RESOLVED tool set — the block never advertises a tool the model can't see.
    Source-guarded (the mirror of settings-p1-backend.test.js's gate check) because the composition lives inline in the
    runOnce path where a full-loop harness isn't cheap to stand up. ---------- */

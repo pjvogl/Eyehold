@@ -1,7 +1,7 @@
 /* dev/rugbed-proof.mjs — LIVE proof for the floor-decal + sleep-in-bed lane.
  *
  * Boots a seeded sidecar + headless Chrome (the CDP path, because rAF never runs in the preview tab),
- * lays a RUG and a BED through the real station.addProp API, then:
+ * lays a RUG and a BED through the real keep.addProp API, then:
  *   1. places a prop ON the rug          -> proves the placement exemption end to end
  *   2. stands the hero ON the rug        -> proves the floor pass (the body is drawn, not buried)
  *   3. drives the sleep plan + arrival   -> proves the lying pose, and shoots the bed
@@ -48,7 +48,7 @@ try {
   if (!ready) throw new Error('never reached the floor');
 
   const say = async (label, expr) => { const v = await evalJS(cdp, expr); console.log(label, JSON.stringify(v)); return v; };
-  // a CLOSE-UP of one prop: the station renders at 12px tiles, so a full-viewport shot of a 2-tile bed
+  // a CLOSE-UP of one prop: the keep renders at 12px tiles, so a full-viewport shot of a 2-tile bed
   // is 24 unreadable pixels. Clip to the prop's own screen rect and blow it up.
   const closeUp = async (type, name, pad = 70) => {
     const p = await evalJS(cdp, `(() => { const q = World._dbgPropClientPoint(${JSON.stringify(type)}); return q ? { x: q.clientX, y: q.clientY } : null; })()`);
@@ -63,8 +63,8 @@ try {
 
   // ---- 1. lay the floor: a rug, a prop ON it, and a bed, all through the validated mutation API
   const laid = await say('laid:', `(() => {
-    const st = Build.__test__.station();
-    if (!st) return { error: 'no station' };
+    const st = Build.__test__.keep();
+    if (!st) return { error: 'no keep' };
     const b = st.bounds();
     const fit = (t, w, h) => {
       for (let ty = b.minTy; ty <= b.maxTy; ty++) for (let tx = b.minTx; tx <= b.maxTx; tx++)

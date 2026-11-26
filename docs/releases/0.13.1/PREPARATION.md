@@ -41,15 +41,15 @@ found about 20 overstatements, all corrected before the claims re-lock.
 
 ## Publish
 
-- Published 2026-10-04 19:37:30Z as Latest on androoAGI/starnet-releases (owner's go).
+- Published 2026-10-04 19:37:30Z as Latest on Eyehold/eyehold-releases (owner's go).
 - `release:verify-host --expect-version 0.13.1`: ALL CHECKS PASSED (windows-x86_64, darwin-aarch64, darwin-x86_64).
 - Source mirror sync (37229023095) green.
-- Website restamped (`FALLBACK_VERSION` 0.13.1) and deployed to starnetos.com from `website-deploy`; live site serves
+- Website restamped (`FALLBACK_VERSION` 0.13.1) and deployed to eyehold.com from `website-deploy`; live site serves
   v0.13.1, Skill Market catalog still 200.
 - Public updater canary (G1 public_canary=true, baseline v0.13.0): first run 37229000890 FAILED "Save drain not
   confirmed" after a correct update (0.13.0 → 0.13.1, automatic restart healthy, build e0a36dcd3). The automatic-restart
   window saved revision 6 to the sidecar at 19:44:39Z and was closed; the inspection relaunch's WebView2 local copy
   still held revision 5, so its next save was correctly refused as a conflict (recovery file kept, nothing lost). No
   save-path code changed since v0.13.0. Re-run 37229609433 GREEN (lifecycle + public-updater-canary). The close-timing
-  race is pre-existing and filed as a follow-up; a user who hits it sees the "Another window saved newer station
+  race is pre-existing and filed as a follow-up; a user who hits it sees the "Another window saved newer keep
   changes" notice with download / reload keys.

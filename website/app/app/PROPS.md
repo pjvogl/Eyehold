@@ -1,6 +1,6 @@
 # Props (furniture) — contract
 
-Placeable, animated furniture ported from the v7 StarNet sim. Companion to `BUILDER.md`.
+Placeable, animated furniture ported from the v7 Eyehold sim. Companion to `BUILDER.md`.
 
 ## Data model (worldmodel.js — additive, no `shared/` change)
 
@@ -37,7 +37,7 @@ over legacy/partial blobs (backfills id + default 1×1 footprint, drops junk).
 
 ## Rendering
 
-Props ANIMATE, so they are **drawn per-frame OVER the static StationBake base and UNDER the
+Props ANIMATE, so they are **drawn per-frame OVER the static KeepBake base and UNDER the
 lightmap** (so they're lit) — never baked.
 - `build.js` (REFIT): `drawProps()` between `baseCv` and `lightCv`, in WORLD coords
   (`p.x*TILE`; the bake is origin-shifted to match), `work=true` so the editor previews
@@ -58,7 +58,7 @@ Three states, declared per catalog row and enforced by `checkProp`:
 
 A mounted prop's footprint must lie **wholly** on ONE host, and that host alone is exempt from the
 overlap check. Mount is **resolved per frame, never stored on the prop doc** — reclaim the table and
-the prop drops back to the deck, which is why no saved station needs migrating.
+the prop drops back to the deck, which is why no saved keep needs migrating.
 
 `stack` was added 2026-07-29: without it the only two props that could ever be placed on a table were
 the two that were *forced* to, so a mug, a plant or a stack of printouts hit `OVERLAP` the moment a
@@ -69,12 +69,12 @@ never the name: an object whose contact is its own base (mug, pot, papers, tote,
 anything drawing legs, a stand or a `deckPlate` is floor furniture (`arc_microfiche` is a reader DESK,
 `comms_inbox` is bolted down, `tank`/`monstera` are explicitly floor pieces).
 
-**Renderers must ask `station.mountOf(prop)` and nothing else** — it folds both halves of the question
+**Renderers must ask `keep.mountOf(prop)` and nothing else** — it folds both halves of the question
 (may this type mount, AND is a host under it right now) and re-resolves the prop from the doc by id, so
 it is frame-proof. Both halves had already gone wrong independently: `build.js` resolved neither, so in
 REFIT — the view you place props in — a table-top prop drew `SURFACE_RISE` px low and with a sort key
 tied to its table's; and `world.js` passed the LOCAL props `projectGeometry()` emits into a lookup that
-compared them against WORLD-tile tables, so on any station whose origin wasn't (0,0) the live world
+compared them against WORLD-tile tables, so on any keep whose origin wasn't (0,0) the live world
 never lifted anything at all. A mounted prop also sorts **+0.5** after its host (same tiles = equal sort
 keys, so array order would otherwise decide). Locked by `test/prop-mount.test.js`.
 
@@ -113,7 +113,7 @@ offers through a recording context and fails if one is not a different picture f
 A catalog row may carry `use: {kind, sit, approach}`. That is what makes an idle agent walk to a prop
 and dwell there (`world.js planProp` → `PropAnchor.deriveAnchor` → `goal:'use'`). Without it a prop is
 scenery an agent will never touch, which is what 102 of the 108 props were until 2026-07-29 — the
-station was full of pool tables and vending machines nobody used.
+keep was full of pool tables and vending machines nobody used.
 
 - `kind` is a free string. Only four values are special-cased anywhere: `couch`/`tv` (paired by
   `tryLounge` into the watch-the-screen beat), `seat` (`planSeat`, below) and `arcade` (the clickable
@@ -121,7 +121,7 @@ station was full of pool tables and vending machines nobody used.
   them generically, so adding a leisure prop is a catalog edit. `world.js USE_LINE` optionally maps a
   kind to a flavour thought; a kind with no entry simply says nothing.
 - **SEAT LAW (2026-08-04): `sit: true` belongs to `kind: 'seat'` and nothing else.** The sit sprite is a
-  chair pose, so it may only fire where a seat is actually under the body: the agent's own workstation
+  chair pose, so it may only fire where a seat is actually under the body: the agent's own workkeep
   chair (goal `work`) and the single-tile seat props, STOOL and CHAIR. `planSeat` claims one
   (`occupiedSeats`), walks the body to an adjacent tile, then renders it ON the seat's tile and sorts the
   seat art just *behind* it. Couch, bed and beanbag carried `sit: true` until 2026-08-04 and read as a
@@ -157,7 +157,7 @@ when filling `blockedTiles`.
 The 2×2 workflow docks (`intake`/INBOX, `bay`, `outbox`) are **solid** (`blocks:true`): belts hook
 to their ring tiles (the auto-router never paths under a prop footprint), so nothing needs to stand
 on them and agents route around. They shipped as `blocks:false` for a while — `migrate()` strips
-that stale flag from saved docs so old stations heal on load. The 1×1 junctions (`filter`,
+that stale flag from saved docs so old keeps heal on load. The 1×1 junctions (`filter`,
 `splitter`, `merger`) stay `blocks:false`: they sit ON a belt line (a belt tile underneath), and
 belts are walkable floor machinery by contract. `airlock` (a door) and `missionboard`
 (wall-mounted) are also intentionally non-blocking.
@@ -174,4 +174,4 @@ belts are walkable floor machinery by contract. `airlock` (a door) and `missionb
 - **Orientation (done 2026-08-17):** `r`/`m` on the doc, R/shift+R/M in REFIT, authored turned views
   for the chair (all four facings) and the two rectangular tables (see the ORIENTATION section).
 - **Possible polish:** turned views for more of the lounge, prop-aware footprint hints, an
-  auto-desk-as-real-prop unification with the live-world workstation FSM.
+  auto-desk-as-real-prop unification with the live-world workkeep FSM.

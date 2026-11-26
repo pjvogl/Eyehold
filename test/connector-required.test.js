@@ -211,7 +211,7 @@ function ctxFor(runId) {
     const input = { value: '', dispatchEvent: e => inputEvents.push(e.type) };
     const list = { closest: () => ({ querySelector: sel => sel === '.con-search-in' ? input : null }), querySelector: sel => sel === '.cc-card' ? {} : null };
     const timers = [];
-    global.StationUI = { openTerm: (k, s) => opened.push([k, s]) };
+    global.KeepUI = { openTerm: (k, s) => opened.push([k, s]) };
     global.document = { querySelector: sel => sel === '#cc-list' ? list : null, defaultView: { Event: function (type) { this.type = type; } } };
     try {
       A.eq(door.run(), true, 'run() reports it opened the door');
@@ -226,9 +226,9 @@ function ctxFor(runId) {
       A.eq(timers[0].ms, 250, 'poll cadence');
       for (let i = 0; i < 20 && timers.length; i++) { const t = timers.shift(); t.fn(); }
       A.ok(timers.length === 0, 'the re-assert loop is bounded (stops without a card)');
-    } finally { delete global.StationUI; delete global.document; }
-    // no StationUI at all (a test/headless context) -> false, never a throw
-    A.eq(door.run(), false, 'run() without StationUI is a clean false');
+    } finally { delete global.KeepUI; delete global.document; }
+    // no KeepUI at all (a test/headless context) -> false, never a throw
+    A.eq(door.run(), false, 'run() without KeepUI is a clean false');
   }
 
   // ---------- 3. chat.js seam (source lock) ----------

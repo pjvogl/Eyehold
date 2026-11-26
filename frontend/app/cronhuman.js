@@ -1,4 +1,4 @@
-/* STARNET — cronhuman.js : the pure schedule TRANSLATOR every routine surface speaks through.
+/* EYEHOLD — cronhuman.js : the pure schedule TRANSLATOR every routine surface speaks through.
 
    WHY THIS EXISTS. sidecar/cron.js is the authority on WHEN a routine fires, and it is deliberately
    terse about SAYING it: a cron schedule's own display string is literally `cron 0 9 * * 2`. That is
@@ -19,7 +19,7 @@
    HONESTY RULE (this is the load-bearing one). describe* returns null for ANY expression shape it
    cannot state exactly — multi-time schedules, month restrictions, the cron day-of-month/day-of-week
    OR case — and every caller falls back to printing the raw expression. A label that GUESSES when a
-   routine runs is strictly worse than a cryptic one: the panel's whole promise is that the station
+   routine runs is strictly worse than a cryptic one: the panel's whole promise is that the keep
    never claims a fire time it cannot prove.
 
    PURE + node-testable (no Date.now, no DOM, no clock reads): the browser gets a `CronHuman` global,

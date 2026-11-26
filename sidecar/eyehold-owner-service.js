@@ -8,7 +8,7 @@ const {authenticate}=require('./eyehold-owner-auth.js');
 const {createOwnerReviewRuntime}=require('./eyehold-owner-review-runtime.js');
 const digest=text=>'sha256:'+crypto.createHash('sha256').update(text).digest('hex');
 const ID=/^[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}$/;
-function createOwnerService({workspaceDir,events,getRun,getRawRun,getGoal,getAgentIds}){
+function createOwnerService({workspaceDir,events,getRun,getRawRun,getGoal,getAgentIds,now}){
  const tickets=new WeakSet();let active=null;
  function packet(runId){
   const run=getRun(runId),raw=getRawRun(runId),goal=getGoal();
@@ -18,7 +18,8 @@ function createOwnerService({workspaceDir,events,getRun,getRawRun,getGoal,getAge
   return {runId,agentId:run.agentId,output:raw.deliveryText,outputDigest:digest(raw.deliveryText),goal:goalSnapshot,goalDigest:digest(JSON.stringify(goalSnapshot)),
    accepted:!!runtime.readAcceptance(runId,'delivery:'+runId),verificationMethod:'user',testBonus:false,complexity:1};
  }
- const runtime=createOwnerReviewRuntime({workspaceDir,events,getRun,getAgentIds,getHistory:()=>[],
+ if(typeof now!=='function')throw new TypeError('injected clock required');
+ const runtime=createOwnerReviewRuntime({workspaceDir,events,getRun,getAgentIds,now,getHistory:()=>[],
   authenticateOperator:ctx=>tickets.has(ctx),
   inspectEvidence:(d,r,ctx)=>{
    const p=packet(r.id);
@@ -44,7 +45,7 @@ function createOwnerService({workspaceDir,events,getRun,getRawRun,getGoal,getAge
    if(input.outputDigest!==p.outputDigest||input.goalDigest!==p.goalDigest)return send(res,409,{error:'evidence-changed-reload-review'});
    if(input.goalAdvanced!==true||!Number.isInteger(input.quality)||input.quality<1||input.quality>5)return send(res,422,{error:'confirm-goal-progress-and-quality-required'});
    const decision={taskId:p.runId,runId:p.runId,deliverableId:'delivery:'+p.runId,goalId:p.goal.id,goalAdvanced:true,goalEvidenceRef:p.outputDigest,
-    evidenceRefs:[p.outputDigest,p.goalDigest],verificationMethod:'user',contributors:[p.agentId],quality:input.quality,testPassed:false,predeclaredComplexity:1,reviewedBy:owner.id,reviewedAt:Date.now(),goalText:p.goal.text,goalDigest:p.goalDigest};
+    evidenceRefs:[p.outputDigest,p.goalDigest],verificationMethod:'user',contributors:[p.agentId],quality:input.quality,testPassed:false,predeclaredComplexity:1,reviewedBy:owner.id,reviewedAt:now(),goalText:p.goal.text,goalDigest:p.goalDigest};
    const context={actorType:'operator',authenticated:true,operatorId:owner.id,reviewedRunId:p.runId,reviewedGoalId:p.goal.id,reviewedEvidenceRef:p.outputDigest};
    tickets.add(context);active={decision,context,goalDigest:p.goalDigest};
    let result;try{result=runtime.approve(decision,context)}finally{active=null;tickets.delete(context)}

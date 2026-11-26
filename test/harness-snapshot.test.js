@@ -1,4 +1,4 @@
-/* node test/harness-snapshot.test.js — planted live-state contract for station.inspect. */
+/* node test/harness-snapshot.test.js — planted live-state contract for keep.inspect. */
 'use strict';
 const A = require('./_assert.js');
 const { makeHarnessSnapshot } = require('../sidecar/harness-snapshot.js');

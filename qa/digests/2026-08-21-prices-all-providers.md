@@ -70,4 +70,4 @@ that exists is `SKYNET_BUDGET_PER_RUN` (there is no `SKYNET_MAX_COST_USD`).
   (new suite D/E), not by a sidecar-process run.
 - Rates will drift; the live models.dev layer (now covering all nine families) supersedes the snapshot at runtime.
 - `cerebras` (api_key, openai-compatible) is deliberately on the ratchet's `UNPRICED_BY_DESIGN` allowlist — the
-  unpriced-token ceiling is its seatbelt. `starnet` (managed) likewise: the proxy bills the ledger itself.
+  unpriced-token ceiling is its seatbelt. `eyehold` (managed) likewise: the proxy bills the ledger itself.

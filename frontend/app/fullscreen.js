@@ -1,4 +1,4 @@
-/* STARNET fullscreen.js
+/* EYEHOLD fullscreen.js
    F11 toggles the real desktop window in Tauri, with a browser Fullscreen API
    fallback for the local preview. */
 'use strict';
@@ -125,7 +125,7 @@
         }
         const core = tauriCore(win);
         if (!core) return toggleBrowser(doc);
-        return Promise.resolve(core.invoke('starnet_toggle_fullscreen')).catch(commandErr => {
+        return Promise.resolve(core.invoke('eyehold_toggle_fullscreen')).catch(commandErr => {
           if (win && win.console && typeof win.console.warn === 'function') {
             win.console.warn('[fullscreen] native toggle failed, falling back to browser fullscreen', commandErr);
           }
@@ -135,7 +135,7 @@
     }
     const core = tauriCore(win);
     if (core) {
-      return Promise.resolve(core.invoke('starnet_toggle_fullscreen')).catch(err => {
+      return Promise.resolve(core.invoke('eyehold_toggle_fullscreen')).catch(err => {
         if (win && win.console && typeof win.console.warn === 'function') {
           win.console.warn('[fullscreen] native toggle failed, falling back to browser fullscreen', err);
         }
@@ -162,8 +162,8 @@
     win = win || root;
     doc = doc || (win && win.document);
     if (!win || typeof win.addEventListener !== 'function') return false;
-    if (win.__STARNET_FULLSCREEN_WIRED__) return false;
-    win.__STARNET_FULLSCREEN_WIRED__ = true;
+    if (win.__EYEHOLD_FULLSCREEN_WIRED__) return false;
+    win.__EYEHOLD_FULLSCREEN_WIRED__ = true;
     win.addEventListener('keydown', ev => handleKeydown(ev, win, doc), true);
     // Esc leaves browser fullscreen without going through toggle() — keep the class honest
     if (doc && typeof doc.addEventListener === 'function') {

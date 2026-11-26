@@ -30,7 +30,7 @@ const appSrc = read('frontend/app/app.js');
 const harnessSrc = read('frontend/app/harness.js');
 const dockSrc = read('frontend/app/modeldock.js');
 const keyctaSrc = read('frontend/app/keycta.js');
-const stationSrc = read('frontend/app/stationui.js');
+const keepSrc = read('frontend/app/keepui.js');
 const htmlSrc = read('frontend/index.html');
 
 // extract a flat string-array literal (e.g. "const NAME = ['a', 'b']") as a Set
@@ -134,8 +134,8 @@ A.ok(/applyOAuthBlockCopy\('codex'\)/.test(appSrc), "the OPENAI card's sign-in h
 }
 
 /* ---------- Settings PROVIDERS shared path ---------- */
-setEquals(arrayLiteral(stationSrc, 'const OAUTH_EXTRA', 'frontend/app/stationui.js'), new Set(EXTRA_IDS),
-  'stationui OAUTH_EXTRA covers exactly the registry\'s non-codex device-OAuth providers');
+setEquals(arrayLiteral(keepSrc, 'const OAUTH_EXTRA', 'frontend/app/keepui.js'), new Set(EXTRA_IDS),
+  'keepui OAUTH_EXTRA covers exactly the registry\'s non-codex device-OAuth providers');
 
 /* ---------- registry aliases must not leak into API-key providers frontend-side ---------- */
 for (const p of OAUTH) {

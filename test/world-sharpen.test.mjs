@@ -1,6 +1,6 @@
-/* Real headless-WebGL parity for the shipped CRT detail pass. Requires Chromium (SKYNET_CHROME
+/* Real headless-WebGL parity for the shipped CRT detail pass. Requires Chromium (EYEHOLD_CHROME
    overrides discovery). Compiles the ACTUAL world.js shader and compares its readPixels output
-   with the ACTUAL CPU sampler. No sidecar, saved station, network service or renderer edits.
+   with the ACTUAL CPU sampler. No sidecar, saved keep, network service or renderer edits.
    Opaque input matches the composited camera feed; vignette/aberration are disabled to isolate
    detail parity, including the real inverse warp and the off-curve identity path. */
 import assert from 'node:assert/strict';
@@ -8,7 +8,7 @@ import { spawn } from 'node:child_process';
 import { readFileSync, mkdtempSync, rmSync } from 'node:fs';
 import { createRequire } from 'node:module';
 import { createServer } from 'node:net';
-import { tmpdir } from 'node:os';
+import { tmpdir, userInfo } from 'node:os';
 import { join, relative, resolve, isAbsolute } from 'node:path';
 import { findChrome, connectCDP, evalJS, sleep } from '../scripts/lib/cdp.mjs';
 
@@ -120,10 +120,10 @@ let chrome, cdp, profile;
 let failed = false;
 try {
   const executable = findChrome(), port = await freePort();
-  profile = mkdtempSync(join(tmpdir(), 'starnet-sharpen-parity-'));
-  chrome = spawn(executable, ['--headless=new', '--no-first-run', '--no-default-browser-check', '--mute-audio',
+  profile = mkdtempSync(join(tmpdir(), 'eyehold-sharpen-parity-'));
+  chrome = spawn(executable, ['--headless=new', '--no-sandbox', '--disable-dev-shm-usage', '--no-first-run', '--no-default-browser-check', '--mute-audio',
     '--use-angle=swiftshader', '--enable-unsafe-swiftshader', `--remote-debugging-port=${port}`,
-    `--user-data-dir=${profile}`, 'about:blank'], { stdio: 'ignore', windowsHide: true });
+    `--user-data-dir=${profile}`, 'about:blank'], { stdio: 'ignore', windowsHide: true, env: { ...process.env, HOME: userInfo().homedir } });
   cdp = await connectCDP(port);
   const result = await evalJS(cdp, '(' + gpuProbe.toString() + ')(' + JSON.stringify({ shaders, cases }) + ')');
   assert.equal(result.outputs.length, cases.length);
@@ -160,10 +160,10 @@ try {
   await stopChild(chrome);
   if (profile) {
     const rel = relative(resolve(tmpdir()), resolve(profile));
-    assert.ok(rel && !rel.startsWith('..') && !isAbsolute(rel) && rel.startsWith('starnet-sharpen-parity-'), 'cleanup stays inside its unique test temp directory');
+    assert.ok(rel && !rel.startsWith('..') && !isAbsolute(rel) && rel.startsWith('eyehold-sharpen-parity-'), 'cleanup stays inside its unique test temp directory');
     // Chrome's children can hold chrome_debug.log for seconds after the parent exits on a loaded
     // Windows box (2s was not enough under a full gate) — the same transient-lock window
-    // stationbake.connections.test.mjs allows, and it still fails if the lock never lifts.
+    // keepbake.connections.test.mjs allows, and it still fails if the lock never lifts.
     for (let attempt = 0; attempt < 50; attempt++) {
       try { rmSync(profile, { recursive: true, force: true }); break; }
       catch (error) { if (!['EBUSY', 'EPERM', 'ENOTEMPTY'].includes(error.code) || attempt === 49) throw error; await sleep(200); }

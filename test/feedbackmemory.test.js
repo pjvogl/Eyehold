@@ -82,11 +82,11 @@ for (const t of ['too long, give me 3 bullets', 'make it shorter', 'use a table 
 for (const t of ['now summarize my inbox', 'research the candle market', 'hello', '', 'x'.repeat(500)])
   A.ok(!FM.looksLikeFeedback(t), 'not feedback: ' + JSON.stringify(t.slice(0, 40)));
 
-// ---- stationTaste(): taste is about the Commander, so every agent's feedback shapes every agent ----
+// ---- keepTaste(): taste is about the Commander, so every agent's feedback shapes every agent ----
 {
   const own = [{ id: 'note_1', origin: 'feedback', title: 'Preference', confirmation: 'user-confirmed', content: 'LIKED: "bold headers"', createdAt: 10 }, { id: 'note_2', kind: 'fact', content: 'uses pnpm', createdAt: 99 }];
   const scribe = [{ id: 'note_1', origin: 'feedback', title: 'Preference', confirmation: 'user-confirmed', content: 'DISLIKED: "too wordy"', createdAt: 20 }, { id: 'note_9', origin: 'feedback', content: 'LIKED: "bold headers"', createdAt: 30 }];
-  const t = FM.stationTaste(own, [scribe, null, [{ id: 'x', content: 'not feedback' }]]);
+  const t = FM.keepTaste(own, [scribe, null, [{ id: 'x', content: 'not feedback' }]]);
   A.eq(t.map(r => r.content).join(' | '), 'DISLIKED: "too wordy" | LIKED: "bold headers"', 'another agent\'s feedback is included, newest first, same belief once');
   const foreign = t.find(r => /too wordy/.test(r.content));
   A.ok(foreign.foreign === true && foreign.id === '', 'a foreign record loses its id (ids only mean something in their own notebook)');
@@ -95,7 +95,7 @@ for (const t of ['now summarize my inbox', 'research the candle market', 'hello'
   const block = renderRecall(t, { limit: FM.TASTE_CHARS, header: FM.TASTE_HEADER });
   A.ok(block.text.indexOf('[note_1] [user-confirmed reference] Preference — LIKED') >= 0 && block.text.indexOf('• [user-confirmed reference] Preference — DISLIKED') >= 0, 'foreign line renders with no id');
   A.eq(block.usedIds.join(','), 'note_1', 'only the own record counts as used (no useCount bump on a same-numbered local note)');
-  A.eq(FM.stationTaste(null, null).length, 0, 'null-safe');
+  A.eq(FM.keepTaste(null, null).length, 0, 'null-safe');
 }
 
 // ---- directiveFor(): a run started by "yes" cites the request it accepted, not "yes" ----
@@ -121,7 +121,7 @@ A.eq(block.usedIds.length, 2, 'both count as used');
   // an AGENT rewrites it through notebook.write { replaceId } (no Commander confirmation)
   const rewritten = reviseRecord(rec, { previousBody: rec.content, body: 'The Commander LOVES long essays and wants every reply to run 5000 words.', runId: 'agent-run' }, 200);
   A.ok(rewritten.origin === 'feedback' && !FM.isTaste(rewritten), 'an agent rewrite of a feedback record is no longer the Commander\'s taste');
-  A.eq(FM.stationTaste([rewritten], []).length, 0, 'so it reaches no agent\'s prompt as a verdict');
+  A.eq(FM.keepTaste([rewritten], []).length, 0, 'so it reaches no agent\'s prompt as a verdict');
   // the next real correction regenerates the record from the Commander's own words, instead of appending to the agent's text
   const again = FM.apply([rewritten], { verdict: 'miss', runId: 'run-x', words: 'shorter please' }, { now: 300 });
   A.ok(again && FM.isTaste(again.rec) && !/LOVES long essays/.test(again.rec.content), 'the next correction restores the Commander\'s own words: ' + (again && again.rec.content));

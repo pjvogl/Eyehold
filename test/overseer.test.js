@@ -13,7 +13,7 @@ const { makeSubagentManager } = require('../sidecar/subagents.js');
   assert.equal(isCoordinatorRun({ agentId: 'agent', surface: 'interactive', lead: true, floorless: true }), false, 'channel approvals do not opt external conversations in');
   assert.equal(isCoordinatorRun({ agentId: 'agent', surface: 'autonomous', lead: true, syntheticTrigger: true }), true, 'already-admitted orchestration can follow through');
   assert.equal(isCoordinatorRun({ agentId: 'agent', surface: 'interactive', lead: true, internal: true }), false, 'internal helper requests do not coordinate the crew');
-  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'starnet-overseer-'));
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'eyehold-overseer-'));
   let serial = 0;
   const saved = { generalId: 'home', workstreams: [{ id: 'home', title: null, agentId: 'agent' }], deletedIds: [] };
   const deps = { fs, path, file: path.join(root, 'overseer.json'), now: () => ++serial,

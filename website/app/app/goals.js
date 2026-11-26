@@ -1,4 +1,4 @@
-/* STARNET — goals.js : the PURE GOAL-TREE engine (GROWTH Tier 2: understanding → direction).
+/* EYEHOLD — goals.js : the PURE GOAL-TREE engine (GROWTH Tier 2: understanding → direction).
 
    Today a Commander "goal" is a flat dossier belief string ("shipping a local-first agent harness"); a quest is
    an isolated one-off; a completed quest fires SFX+toast and feeds back NOTHING. This engine upgrades a goal
@@ -25,7 +25,7 @@
    fold + the quest projection.
 
    Fail-open by construction: an absent goal, an empty decomposition, a malformed reply — all yield an inert tree
-   and never throw. A station with no goals.js loaded is byte-identical to before (additive-only). */
+   and never throw. A keep with no goals.js loaded is byte-identical to before (additive-only). */
 'use strict';
 (function (root, factory) {
   const api = factory();
@@ -323,7 +323,7 @@
         id: 'arc:step:' + m.id, kind: 'arc-step', title: (isDone ? 'done — ' : (isNext ? '▸ ' : '· ')) + clip(m.text, 120),
         desc: isDone ? ('done.' + (m.evidence ? ' ' + m.evidence : ''))
           : inFlight ? 'in progress — the build is running; finishing it completes this step.'
-          : (isNext ? 'the next step — do it yourself or ask StarNet for help.' : 'another planned step — you can choose it next in Goals.'),
+          : (isNext ? 'the next step — do it yourself or ask Eyehold for help.' : 'another planned step — you can choose it next in Goals.'),
         reward: 'progress on “' + clip(goal.text, 60) + '”', status,
         arcGoalId: goal.id, milestoneId: m.id, isNext: !!isNext, inFlight: inFlight
       });

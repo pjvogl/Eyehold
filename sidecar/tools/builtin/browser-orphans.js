@@ -1,11 +1,11 @@
-/* sidecar/tools/builtin/browser-orphans.js — find and end ONLY the station's own orphaned Chromium (#61).
+/* sidecar/tools/builtin/browser-orphans.js — find and end ONLY the keep's own orphaned Chromium (#61).
 
-   THE FAILURE (v0.12.5, Windows, during an Etsy research run): the station-owned Chrome on
+   THE FAILURE (v0.12.5, Windows, during an Etsy research run): the keep-owned Chrome on
    workspaces/.browser-profile outlived the sidecar that started it (a crash, a guardian respawn, START FRESH and
    RESTART all end the sidecar with TerminateProcess, which no handler can see). The orphan kept its DevTools port
    and kept pointing at a network proxy that had died with its parent — so every page it loaded failed — and it
    still held the profile, so every new launch handed off to it and "exited before CDP ownership". The agent had
-   no supported way out: a shell kill was (rightly) refused, and nothing in StarNet would end it.
+   no supported way out: a shell kill was (rightly) refused, and nothing in Eyehold would end it.
 
    THE RULES THIS MODULE KEEPS:
      · Identity is the --user-data-dir on the command line, compared EXACTLY (normalized), never a prefix and never
@@ -220,7 +220,7 @@ function describeSweep(r) {
   if (!r) return 'no sweep ran';
   if (r.error) return 'nothing was ended: ' + r.error;
   const bits = [];
-  bits.push(r.found ? ('ended ' + r.killed.length + ' of ' + r.found + ' orphaned station-browser process' + (r.found === 1 ? '' : 'es')) : 'no orphaned station browser was running');
+  bits.push(r.found ? ('ended ' + r.killed.length + ' of ' + r.found + ' orphaned keep-browser process' + (r.found === 1 ? '' : 'es')) : 'no orphaned keep browser was running');
   if (r.survivors.length) bits.push(r.survivors.length + ' still running (pid ' + r.survivors.join(', ') + ')');
   if (r.locks && r.locks.removed.length) bits.push('cleared stale profile lock' + (r.locks.removed.length === 1 ? '' : 's') + ' (' + r.locks.removed.join(', ') + ')');
   if (r.locks && r.locks.failed.length) bits.push('could not clear ' + r.locks.failed.map(f => f.name).join(', '));

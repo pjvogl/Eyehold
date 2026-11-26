@@ -1,5 +1,5 @@
 {
-  "schema": "starnet.soak-receipt.v1",
+  "schema": "eyehold.soak-receipt.v1",
   "verdict": "PASS",
   "failedRules": [],
   "sidecarHead": "e8541fcbd724cdff80c1a1f156840487c042f56e",
@@ -32,7 +32,7 @@
     "mockCalls": 236,
     "mockSlowCalls": 0,
     "cronEvents": 57,
-    "workspace": "C:\\Users\\andro\\AppData\\Local\\Temp\\starnet-soak-yR00Xh",
+    "workspace": "C:\\Users\\andro\\AppData\\Local\\Temp\\eyehold-soak-yR00Xh",
     "auxPasses": "disabled (SKYNET_AUX_BUDGET=0)",
     "forensics": {
       "workspace": "C:\\Users\\andro\\gen-trees\\cleanup-0112-0910\\.dogfood\\cleanup-final-soak\\forensics\\workspace",
@@ -72,7 +72,7 @@
       "expected": {
         "fires": ">= 1"
       },
-      "why": "the cron driver is the seam a long-running station depends on most; zero fires across the whole soak means the scheduler never ran"
+      "why": "the cron driver is the seam a long-running keep depends on most; zero fires across the whole soak means the scheduler never ran"
     },
     "swallowed": {
       "pass": true,
@@ -324,7 +324,7 @@
       "expected": {
         "p95Ms": "<= 300"
       },
-      "why": "the cron tick runs SYNCHRONOUSLY under the process lock: planTick over every job, then saveCronJobs — a full-envelope fsync write + read-back verification of ALL routines — for each advance, and again in markRun for each result. That cost is O(routines) per tick and blocks the event loop while it runs. p95 of (lastSuccessAt − lastTickAt) sampled from GET /api/cron over the LAST HALF must stay under 300 ms at the scale the product claims (50 routines); above that the tick is visibly stalling every run and chat in the station. The first tick after a boot (the post-outage catch-up burst: every missed routine fires at once) is reported as catchUpMs and excluded from p95 — it is a one-time cost, not the steady one. A breach here is a finding against the store write model (index.js saveCronJobs), not a tuning knob"
+      "why": "the cron tick runs SYNCHRONOUSLY under the process lock: planTick over every job, then saveCronJobs — a full-envelope fsync write + read-back verification of ALL routines — for each advance, and again in markRun for each result. That cost is O(routines) per tick and blocks the event loop while it runs. p95 of (lastSuccessAt − lastTickAt) sampled from GET /api/cron over the LAST HALF must stay under 300 ms at the scale the product claims (50 routines); above that the tick is visibly stalling every run and chat in the keep. The first tick after a boot (the post-outage catch-up burst: every missed routine fires at once) is reported as catchUpMs and excluded from p95 — it is a one-time cost, not the steady one. A breach here is a finding against the store write model (index.js saveCronJobs), not a tuning knob"
     }
   },
   "measurements": {

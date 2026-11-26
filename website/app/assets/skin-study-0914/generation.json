@@ -5,12 +5,12 @@
     [
       "android",
       "Default android",
-      "An eerie faceless station android, ivory ceramic shell over graphite articulated joints, subtle seams, compact oval head with a narrow dark optical slit, believable pelvis shoulders knees and hands, lightly worn edges. Preserve the simple white android identity."
+      "An eerie faceless keep android, ivory ceramic shell over graphite articulated joints, subtle seams, compact oval head with a narrow dark optical slit, believable pelvis shoulders knees and hands, lightly worn edges. Preserve the simple white android identity."
     ],
     [
-      "astronaut",
-      "Astronaut",
-      "A station astronaut wearing a muted burnt orange pressure suit, compact round helmet with smoked black glass visor and a subtle reflected highlight, ivory collar ring, realistic fabric folds, integrated life support pack, dark gloves and practical boots. Preserve orange astronaut identity."
+      "warden",
+      "Warden",
+      "A keep warden wearing a muted burnt orange pressure suit, compact round helmet with smoked black glass visor and a subtle reflected highlight, ivory collar ring, realistic fabric folds, integrated life support pack, dark gloves and practical boots. Preserve orange warden identity."
     ],
     [
       "robot",
@@ -20,12 +20,12 @@
     [
       "crthead",
       "CRT-head",
-      "A humanoid station technician with a compact vintage CRT monitor for a head, olive grey metal casing and curved dark green phosphor screen with faint scanline glow, navy work coveralls, utility belt, realistic fabric folds, slim gloves and work boots. Preserve CRT head identity without oversized cartoon television."
+      "A humanoid keep technician with a compact vintage CRT monitor for a head, olive grey metal casing and curved dark green phosphor screen with faint scanline glow, navy work coveralls, utility belt, realistic fabric folds, slim gloves and work boots. Preserve CRT head identity without oversized cartoon television."
     ],
     [
       "alien",
       "Alien",
-      "A slender eerie extraterrestrial station crew member, muted sage green skin, elongated modestly enlarged smooth head, small glossy dark almond eyes, narrow shoulders and long natural limbs, graphite fitted station utility suit with olive panels and practical boots. Preserve green alien identity without cute oversized head."
+      "A slender eerie extraterrestrial keep crew member, muted sage green skin, elongated modestly enlarged smooth head, small glossy dark almond eyes, narrow shoulders and long natural limbs, graphite fitted keep utility suit with olive panels and practical boots. Preserve green alien identity without cute oversized head."
     ]
   ],
   "characters": [
@@ -40,7 +40,7 @@
       }
     },
     {
-      "id": "astronaut",
+      "id": "warden",
       "characterId": "7fb34e84-7614-4cb3-932d-9a17509f14d5",
       "rotations": {
         "south": "https://backblaze.pixellab.ai/file/pixellab-characters/1ff7d2cf-cfe6-44f9-9533-9eea41eb05cb/7fb34e84-7614-4cb3-932d-9a17509f14d5/rotations/south.png?t=1789360396",

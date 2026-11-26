@@ -63,7 +63,7 @@ function startMock() {
   const mock = await startMock();
   const fixture = SidecarFixture.create({
     prefix: 'sk-trust-origin-',
-    env: { SKYNET_OPENROUTER_BASE: mock.base, SKYNET_SKILL_REVIEW: '0', SKYNET_SKILL_CURATOR: '0', SKYNET_QUEST_REFRESH: '0' },
+    env: { EYEHOLD_OPENROUTER_BASE: mock.base, EYEHOLD_SKILL_REVIEW: '0', EYEHOLD_SKILL_CURATOR: '0', EYEHOLD_QUEST_REFRESH: '0' },
     timeoutMs: 20000
   });
   // seed the withheld community skill through the REAL store (same guard + digest stamper as the sidecar)

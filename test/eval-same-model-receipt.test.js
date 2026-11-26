@@ -8,7 +8,7 @@ const { join, resolve } = require('node:path');
 const { tmpdir } = require('node:os');
 
 const root = resolve(__dirname, '..');
-const temp = mkdtempSync(join(tmpdir(), 'starnet-same-model-receipt-'));
+const temp = mkdtempSync(join(tmpdir(), 'eyehold-same-model-receipt-'));
 try {
   const contract = JSON.parse(readFileSync(join(root, 'scripts/eval/contracts/eyehold-development-v1.json'), 'utf8'));
   const executableSha = createHash('sha256').update(readFileSync(process.execPath)).digest('hex');
@@ -18,12 +18,12 @@ try {
     platform: { platform: process.platform, arch: process.arch }, provenance: { verified: true }
   } });
   const subjectFile = join(temp, 'subject.json'), referenceFile = join(temp, 'reference.json');
-  writeFileSync(subjectFile, JSON.stringify(manifest('StarNet', '0.8.5', 'a'.repeat(40), 'b'.repeat(40))));
+  writeFileSync(subjectFile, JSON.stringify(manifest('Eyehold', '0.8.5', 'a'.repeat(40), 'b'.repeat(40))));
   writeFileSync(referenceFile, JSON.stringify(manifest('Hermes Agent', contract.reference.version, contract.reference.commit, contract.reference.sourceTree)));
   const probe = index => ({
-    schemaVersion: 'starnet.eval.same-model-probe.v1', generatedAt: new Date().toISOString(),
+    schemaVersion: 'eyehold.eval.same-model-probe.v1', generatedAt: new Date().toISOString(),
     prompt: 'Return exactly PARITY-PROBE-731 and no other text.', comparisonModel: 'gpt-5.6-luna', sameModel: true, pass: true,
-    starnet: { ok: true, status: 200, model: 'gpt-5.6-luna', provider: 'openai-codex', text: 'PARITY-PROBE-731', bootMs: 100 + index, firstTokenMs: 200 + index, totalMs: 300 + index, usage: { total_tokens: 400 + index } },
+    eyehold: { ok: true, status: 200, model: 'gpt-5.6-luna', provider: 'openai-codex', text: 'PARITY-PROBE-731', bootMs: 100 + index, firstTokenMs: 200 + index, totalMs: 300 + index, usage: { total_tokens: 400 + index } },
     hermes: { ok: true, exitCode: 0, model: 'gpt-5.6-luna', provider: 'openai-codex', text: 'PARITY-PROBE-731', firstOutputMs: 500 + index, totalMs: 600 + index, usage: { total_tokens: 700 + index } }
   });
   const probeFiles = [1, 2, 3].map(index => { const file = join(temp, `probe-${index}.json`); writeFileSync(file, JSON.stringify(probe(index))); return file; });
@@ -36,7 +36,7 @@ try {
   A.eq(green.status, 0, 'three exact same-model attempts produce a green receipt' + (green.stderr ? `: ${green.stderr.trim()}` : ''));
   const receipt = JSON.parse(readFileSync(receiptFile, 'utf8'));
   A.ok(receipt.result.pass && receipt.candidateBound && receipt.referenceBound, 'receipt is green and binds both executable identities');
-  A.eq(receipt.result.measurements.starnet.firstOutputMs.median, 202, 'receipt reports the StarNet median');
+  A.eq(receipt.result.measurements.eyehold.firstOutputMs.median, 202, 'receipt reports the Eyehold median');
   A.eq(receipt.result.measurements.reference.totalMs.median, 602, 'receipt reports the reference median');
   A.eq(receipt.evidence.probes.length, 3, 'receipt hashes every raw probe');
   const verify = spawnSync(process.execPath, ['scripts/eval/runner.mjs', 'verify-receipt', '--receipt', receiptFile], { cwd: root, encoding: 'utf8' });

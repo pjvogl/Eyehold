@@ -78,11 +78,11 @@ function toolResultFor(requests, callId) {
 (async () => {
   const provider = await startProvider();
   const fixture = SidecarFixture.create({ prefix: 'transparent-image-', timeoutMs: 20000, env: {
-    STARNET_OPENROUTER_KEY: '', SKYNET_OPENROUTER_KEY: '', OPENROUTER_KEY: '', OPENROUTER_API_KEY: '',
-    STARNET_CREDITS_URL: '', SKYNET_CREDITS_URL: '', STARNET_CREDITS_TOKEN: '', SKYNET_CREDITS_TOKEN: '', STARNET_CLOUD_URL: '',
-    STARNET_IMAGE_MODEL: '', SKYNET_IMAGE_MODEL: '',
-    SKYNET_FULL_ACCESS: '1', SKYNET_AUX_BUDGET: '0',
-    STARNET_OPENROUTER_BASE: provider.baseUrl
+    EYEHOLD_OPENROUTER_KEY: '', EYEHOLD_OPENROUTER_KEY: '', OPENROUTER_KEY: '', OPENROUTER_API_KEY: '',
+    EYEHOLD_CREDITS_URL: '', EYEHOLD_CREDITS_URL: '', EYEHOLD_CREDITS_TOKEN: '', EYEHOLD_CREDITS_TOKEN: '', EYEHOLD_CLOUD_URL: '',
+    EYEHOLD_IMAGE_MODEL: '', EYEHOLD_IMAGE_MODEL: '',
+    EYEHOLD_FULL_ACCESS: '1', EYEHOLD_AUX_BUDGET: '0',
+    EYEHOLD_OPENROUTER_BASE: provider.baseUrl
   } });
   try {
     await fixture.start();

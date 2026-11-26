@@ -96,7 +96,7 @@ function connect(proxyPort, authority) {
       const why = _internals.explainRefusal(got[0]);
       A.eq(why.code, 'NETWORK_REFUSED', 'a private DNS answer is a refusal, not a dead proxy and not worth a retry');
       A.ok(/this computer's DNS answered 0\.0\.0\.0 for www\.etsy\.com/.test(why.text), 'the agent is told what answered: ' + why.text);
-      A.ok(/no outside proxy, VPN or gateway/.test(why.text), 'and that StarNet routes through no remote proxy');
+      A.ok(/no outside proxy, VPN or gateway/.test(why.text), 'and that Eyehold routes through no remote proxy');
     } finally { await filtered.close(); }
 
     const closed = http.createServer();

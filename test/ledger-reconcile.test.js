@@ -259,7 +259,7 @@ const rowOf = (res, fp) => res.records.find(r => r.fingerprint === fp);
   const git = (cwd, args) => execFileSync('git', args, { cwd, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] }).trim();
   let root = null;
   try {
-    root = fs.mkdtempSync(path.join(os.tmpdir(), 'starnet-reconcile-'));
+    root = fs.mkdtempSync(path.join(os.tmpdir(), 'eyehold-reconcile-'));
     git(root, ['init', '-q', '-b', 'trunk']);
     git(root, ['config', 'user.email', 't@example.com']);
     git(root, ['config', 'user.name', 'T']);
@@ -270,7 +270,7 @@ const rowOf = (res, fp) => res.records.find(r => r.fingerprint === fp);
     fs.writeFileSync(path.join(root, 'test', 'green.test.js'), 'process.exit(0);\n');
     fs.writeFileSync(path.join(root, 'test', 'red.test.js'), 'process.exit(1);\n');
     fs.writeFileSync(path.join(root, 'test', 'http.list'), '# gate\ntest/red.test.js\n');
-    fs.writeFileSync(path.join(root, 'test', 'env.test.js'), "process.exit(process.env.LOCALAPPDATA && process.env.LOCALAPPDATA.includes('starnet-reconcile-profile-') ? 0 : 1);\n");
+    fs.writeFileSync(path.join(root, 'test', 'env.test.js'), "process.exit(process.env.LOCALAPPDATA && process.env.LOCALAPPDATA.includes('eyehold-reconcile-profile-') ? 0 : 1);\n");
     git(root, ['add', '-A']);
     git(root, ['commit', '-q', '-m', 'base']);
     const base = git(root, ['rev-parse', 'HEAD']);

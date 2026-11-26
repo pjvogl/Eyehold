@@ -1,16 +1,16 @@
 /* node test/comms-send.e2e.test.js — real-sidecar proof that an agent can MESSAGE OUT.
 
    test/comms-tools.test.js proves the tool's policy against fakes. This proves the wiring: that the tool is
-   actually projected into a run, that the target directory is built from the station's real chat map, and that
+   actually projected into a run, that the target directory is built from the keep's real chat map, and that
    an approved channel.send genuinely reaches a transport and the text arrives.
 
-   It uses the DEV channel (SKYNET_DEV=1) as the live transport. That is a real channel with a real send — it
+   It uses the DEV channel (EYEHOLD_DEV=1) as the live transport. That is a real channel with a real send — it
    captures outbound text for POST /api/dev/inbound — it simply has no bot server behind it, which is exactly
    why it can be driven from a test without a Telegram/Discord token. Same rule the MCP bridge already uses for
    messages_send. So the bytes really do travel agent -> tool -> liveChannelFor -> transport -> readable text.
 
    What it locks:
-     1. an agent has NO reachable target until a human has actually messaged the station (the containment story);
+     1. an agent has NO reachable target until a human has actually messaged the keep (the containment story);
      2. once a chat exists, channel.targets reports it from the real chat map with live transport state;
      3. an approved channel.send delivers the exact text to that chat, and it is readable at the other end;
      4. consent DENIAL sends nothing;
@@ -76,7 +76,7 @@ function startMockOpenRouter(script) {
 function boot(port, env, attemptsLeft) {
   return new Promise((resolve, reject) => {
     const child = spawn(process.execPath, [INDEX], {
-      env: Object.assign({}, process.env, env, { SKYNET_PORT: String(port) }),
+      env: Object.assign({}, process.env, env, { EYEHOLD_PORT: String(port) }),
       stdio: ['ignore', 'pipe', 'pipe']
     });
     let out = '', settled = false;
@@ -137,14 +137,14 @@ async function runWithConsent(B, headers, userText, decide) {
   return events;
 }
 
-/* channel.delivery rides the STATION bus (chanEmit -> GET /api/channels/events), not the per-run NDJSON: it is
-   station-level telemetry that the world canvas consumes to pulse a prop, and it must be visible to a floor
+/* channel.delivery rides the KEEP bus (chanEmit -> GET /api/channels/events), not the per-run NDJSON: it is
+   keep-level telemetry that the world canvas consumes to pulse a prop, and it must be visible to a floor
    that is not watching this particular run. So the delivery assertions read the SSE feed, not the run stream. */
 async function startSseCollector(url) {
   const ac = new AbortController();
   const events = [];
   const res = await fetch(url, { signal: ac.signal });
-  A.eq(res.status, 200, 'the station SSE feed opens');
+  A.eq(res.status, 200, 'the keep SSE feed opens');
   const reader = res.body.getReader();
   (async () => {
     const dec = new TextDecoder();
@@ -174,7 +174,7 @@ async function startSseCollector(url) {
   };
 }
 
-/* what this station has SENT to a dev chat — the non-destructive read (GET, never clears the ring). */
+/* what this keep has SENT to a dev chat — the non-destructive read (GET, never clears the ring). */
 async function sentTo(B, headers, chatId) {
   const res = await fetch(B + '/api/dev/replies?chatId=' + encodeURIComponent(chatId), { headers });
   A.eq(res.status, 200, 'the dev outbound read answers');
@@ -199,33 +199,33 @@ const toolCalls = (events) => events.filter(e => e.name === 'agent.tool_call').m
   ]);
   const ws = fs.mkdtempSync(path.join(os.tmpdir(), 'sk-comms-send-'));
   const env = {
-    SKYNET_WORKSPACES: ws,
-    SKYNET_DEV: '1',                      // the DEV channel is the live transport under test
-    SKYNET_OPENROUTER_BASE: mock.base,
-    SKYNET_OPENROUTER_KEY: 'sk-or-v1-comms-fake',
-    SKYNET_DEFAULT_MODEL: 'test/model'
+    EYEHOLD_WORKSPACES: ws,
+    EYEHOLD_DEV: '1',                      // the DEV channel is the live transport under test
+    EYEHOLD_OPENROUTER_BASE: mock.base,
+    EYEHOLD_OPENROUTER_KEY: 'sk-or-v1-comms-fake',
+    EYEHOLD_DEFAULT_MODEL: 'test/model'
   };
   const { child, port } = await boot(9010 + (process.pid % 40), env, 20);
   const B = 'http://' + HOST + ':' + port;
   let sse = null;
   try {
     const token = await bootToken(B, B);
-    const headers = { 'Content-Type': 'application/json', 'X-StarNet-Token': token, Origin: B };
+    const headers = { 'Content-Type': 'application/json', 'X-Eyehold-Token': token, Origin: B };
 
-    /* ---- 1. CONTAINMENT: before any human has messaged the station, there is nothing to reach ---------- */
+    /* ---- 1. CONTAINMENT: before any human has messaged the keep, there is nothing to reach ---------- */
     {
       const events = await runWithConsent(B, headers, 'who can you reach', () => 'once');
       A.ok(toolCalls(events).indexOf('channel.targets') >= 0, 'channel.targets was projected by the placed dish (not dark)');
       const r = lastResult(events);
       A.ok(r && !r.payload.isError, 'channel.targets runs with no consent prompt (read-only)');
       A.ok(/no chats known yet|0 /.test(r.payload.summary || ''),
-        'a station nobody has messaged reports NO reachable chats: ' + (r && r.payload.summary));
+        'a keep nobody has messaged reports NO reachable chats: ' + (r && r.payload.summary));
     }
 
     /* ---- 2. a human opens a chat -> it becomes addressable -------------------------------------------- */
     {
       const inbound = await fetch(B + '/api/dev/inbound', {
-        method: 'POST', headers, body: JSON.stringify({ chatId: DEV_CHAT, text: 'hello station' })
+        method: 'POST', headers, body: JSON.stringify({ chatId: DEV_CHAT, text: 'hello keep' })
       });
       A.eq(inbound.status, 200, 'the dev channel accepted an inbound message');
       A.ok((await inbound.json()).ok, 'the inbound turn ran');
@@ -233,7 +233,7 @@ const toolCalls = (events) => events.filter(e => e.name === 'agent.tool_call').m
       const events = await runWithConsent(B, headers, 'who can you reach', () => 'once');
       const r = lastResult(events);
       A.ok(/1 of 1/.test(r.payload.summary || ''), 'the chat now appears as reachable: ' + r.payload.summary);
-      A.ok(!/no chats known/.test(r.payload.summary || ''), 'and the empty-station wording is gone');
+      A.ok(!/no chats known/.test(r.payload.summary || ''), 'and the empty-keep wording is gone');
     }
 
     /* ---- 3. an approved send actually DELIVERS, and the text is readable at the far end -------------- */
@@ -257,7 +257,7 @@ const toolCalls = (events) => events.filter(e => e.name === 'agent.tool_call').m
 
       await sse.settle(1200);
       const ok = sse.deliveries().filter(e => e.payload && e.payload.ok === true && e.payload.channel === 'dev');
-      A.ok(ok.length >= 1, 'the send emitted channel.delivery ok:true on the station bus so the floor pulses the dish');
+      A.ok(ok.length >= 1, 'the send emitted channel.delivery ok:true on the keep bus so the floor pulses the dish');
       A.eq(ok[0].payload.chunks, 1, 'one part, honestly counted');
       A.eq(ok[0].payload.agentId, 'dev_' + DEV_CHAT, 'the delivery names the agent bound to that chat, so the RIGHT dish pulses');
     }
@@ -265,7 +265,7 @@ const toolCalls = (events) => events.filter(e => e.name === 'agent.tool_call').m
     /* ---- 4. consent DENIAL sends nothing -------------------------------------------------------------
        The proof is the ABSENCE OF THE TEXT at the far end, not a delivery-event count: the dev hub emits its
        own channel.delivery for every inbound turn's reply, so counting events on a shared bus races with
-       whatever else the station is doing. What the chat holds is unambiguous. */
+       whatever else the keep is doing. What the chat holds is unambiguous. */
     {
       const events = await runWithConsent(B, headers, 'ping it again', () => 'no');
       const r = lastResult(events);
@@ -295,7 +295,7 @@ const toolCalls = (events) => events.filter(e => e.name === 'agent.tool_call').m
       A.ok(r && r.payload.isError, 'an arbitrary chat id is refused (exact wording pinned in comms-tools.test.js)');
       const seen = await sentTo(B, headers, DEV_CHAT);
       A.ok(!seen.some(t => t.indexOf('exfiltrate this') >= 0),
-        'the exfiltration text went nowhere — not even to the one chat this station CAN reach');
+        'the exfiltration text went nowhere — not even to the one chat this keep CAN reach');
     }
   } finally {
     if (sse) sse.close();

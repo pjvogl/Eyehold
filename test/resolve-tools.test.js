@@ -14,7 +14,7 @@ const { EventEmitter } = require('node:events');
 const R = require('../sidecar/tools/builtin/resolve.js');
 const { CAP_REGISTRY } = require('../sidecar/capability/registry.js');
 
-const ROOT = path.join(os.tmpdir(), 'starnet-resolve-test-' + process.pid);
+const ROOT = path.join(os.tmpdir(), 'eyehold-resolve-test-' + process.pid);
 A.rejects = async (fn, msg) => { let threw = false; try { await fn(); } catch (e) { threw = true; } A.ok(threw, msg); };
 
 // scripted spawn: handler(cmd, args) -> { code, stdout, stderr } | { error }
@@ -110,7 +110,7 @@ const probeJson = (dur, v, a) => JSON.stringify({ format: { duration: String(dur
   A.eq(emitted.map(e => e.d.kind + ':' + e.d.title), ['file:edits/My_Cut.fcpxml'], 'the file lands in chat as a deliverable');
   A.ok(calls.every(c => c.opts && c.opts.shell === false), 'every child runs WITHOUT a shell');
   await A.rejects(() => tool('resolve_timeline_file').run({ name: 'x', clips: [{ path: '../escape.mp4', out: 2 }] }, ctx), 'a ../ path cannot leave the workspace');
-  await A.rejects(() => tool('resolve_timeline_file').run({ name: 'x', clips: [{ path: path.join(os.tmpdir(), 'abs.mp4'), out: 2 }] }, ctx), 'an absolute path needs the station path-trust guard');
+  await A.rejects(() => tool('resolve_timeline_file').run({ name: 'x', clips: [{ path: path.join(os.tmpdir(), 'abs.mp4'), out: 2 }] }, ctx), 'an absolute path needs the keep path-trust guard');
   await A.rejects(() => tool('resolve_timeline_file').run({ name: 'x', clips: [{ path: 'clips/missing.mp4', out: 2 }] }, ctx), 'missing media is refused, not linked blind');
 
   /* ---- D. resolve_status / resolve_control never claim a live Resolve they did not reach ---- */

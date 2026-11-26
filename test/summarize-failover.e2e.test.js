@@ -64,7 +64,7 @@ function startMockOpenRouter() {
       if (!messages.some(m => m && m.role === 'tool')) {
         writeSse(res, [{ tool_calls: [{
           index: 0, id: 'inspect_once', type: 'function',
-          function: { name: 'station_inspect', arguments: '{}' }
+          function: { name: 'keep_inspect', arguments: '{}' }
         }] }], { prompt_tokens: 8, completion_tokens: 2, total_tokens: 10 }, 'tool_calls');
         return;
       }
@@ -83,7 +83,7 @@ function startMockOpenRouter() {
 function boot(port, env, attemptsLeft) {
   return new Promise((resolve, reject) => {
     const child = spawn(process.execPath, [INDEX], {
-      env: Object.assign({}, process.env, env, { SKYNET_PORT: String(port) }),
+      env: Object.assign({}, process.env, env, { EYEHOLD_PORT: String(port) }),
       stdio: ['ignore', 'pipe', 'pipe']
     });
     let output = '', settled = false;
@@ -122,16 +122,16 @@ function stopChild(child) {
 
 (async () => {
   const mock = await startMockOpenRouter();
-  const workspace = fs.mkdtempSync(path.join(os.tmpdir(), 'starnet-summarize-failover-'));
+  const workspace = fs.mkdtempSync(path.join(os.tmpdir(), 'eyehold-summarize-failover-'));
   let child = null;
   try {
     const env = {
-      SKYNET_WORKSPACES: workspace,
-      SKYNET_OPENROUTER_BASE: mock.base,
-      STARNET_OPENROUTER_BASE: mock.base,
-      SKYNET_AUX_BUDGET: '0',
-      SKYNET_FULL_ACCESS: '1',
-      OPENROUTER_KEY: '', SKYNET_OPENROUTER_KEY: '',
+      EYEHOLD_WORKSPACES: workspace,
+      EYEHOLD_OPENROUTER_BASE: mock.base,
+      EYEHOLD_OPENROUTER_BASE: mock.base,
+      EYEHOLD_AUX_BUDGET: '0',
+      EYEHOLD_FULL_ACCESS: '1',
+      OPENROUTER_KEY: '', EYEHOLD_OPENROUTER_KEY: '',
       ANTHROPIC_API_KEY: '', OPENAI_API_KEY: '', GEMINI_API_KEY: '', XAI_API_KEY: ''
     };
     const booted = await boot(8840 + (process.pid % 50), env, 20);
@@ -153,7 +153,7 @@ function stopChild(child) {
     messages.push({ role: 'user', content: 'Fail over, inspect once, compact, then finish.' });
     const response = await fetch(base + '/api/run', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'X-StarNet-Token': token, Origin: base },
+      headers: { 'Content-Type': 'application/json', 'X-Eyehold-Token': token, Origin: base },
       body: JSON.stringify({
         key: 'KEYA', keyPool: ['KEYB'], model: 'compact/model',
         agentId: 'summarize-failover', isTask: true, messages

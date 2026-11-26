@@ -7,8 +7,8 @@ Merged lane: `agent/platform-handoff-0905`; joint verified production trunk: `c2
 - A clean task run that requests a connector stores a bounded handoff on its originating workstream. Saving/reopening preserves it; a newer run, changed agent, or archived task invalidates it.
 - ABILITIES shows pending tasks and offers Continue task only after connector read-back is healthy and any specifically requested tool appears in the inventory. Click rechecks health. No OAuth callback runs work automatically.
 - Continuation uses the existing conversation and original connector-write idempotency scope. The backend checks the source run's agent, stream, terminal state and uncertain mutations. This covers identical successful MCP writes; changed arguments, browser actions and expired ledger entries are not an exactly-once guarantee.
-- Ordinary browser tools wait up to eight seconds for the durable station profile, respecting cancellation. Contention never substitutes an unsigned temporary profile. Direct session calls fail explicitly when the profile is busy. Login waits after its existing human-consent step.
-- COMMS displays a measured browser-session wait while its tool is pending. StarNet-owned persistent browsers receive a graceful shutdown before the bounded forced-stop fallback, so recent cookies can flush to disk. Attached user browsers are never closed.
+- Ordinary browser tools wait up to eight seconds for the durable keep profile, respecting cancellation. Contention never substitutes an unsigned temporary profile. Direct session calls fail explicitly when the profile is busy. Login waits after its existing human-consent step.
+- COMMS displays a measured browser-session wait while its tool is pending. Eyehold-owned persistent browsers receive a graceful shutdown before the bounded forced-stop fallback, so recent cookies can flush to disk. Attached user browsers are never closed.
 - Google setup explains preview enrollment, API enablement, consent configuration and test users. Connection offers no longer promise an unverified number of clicks. New Google sign-ins ask the user to choose an account and request identity/email scopes; a bounded request to Google's fixed UserInfo endpoint records a verified email and stable subject alongside the grant. The UI and connector reader show the account at last sign-in. Failed identity reads and providers without an adapter remain unknown; pressing Done in browser login does not prove authentication.
 
 ## Remaining production onboarding dependencies
@@ -16,14 +16,14 @@ Merged lane: `agent/platform-handoff-0905`; joint verified production trunk: `c2
 Google's official Gmail MCP remains developer-preview infrastructure requiring Google Cloud configuration:
 https://developers.google.com/workspace/gmail/api/guides/configure-mcp-server
 
-A default sign-in flow without each user's Cloud Console setup requires a production OAuth application/service owned by StarNet, a supported redirect and credential architecture, and Google's applicable approval. Do not embed a confidential web-client secret in the public desktop application. No production OAuth project, consent application, hosted callback service or paid aggregator account was configured in this work.
+A default sign-in flow without each user's Cloud Console setup requires a production OAuth application/service owned by Eyehold, a supported redirect and credential architecture, and Google's applicable approval. Do not embed a confidential web-client secret in the public desktop application. No production OAuth project, consent application, hosted callback service or paid aggregator account was configured in this work.
 
 The existing Composio catalog entry is an API-key bridge, not proof of a managed end-user Google onboarding flow. Evaluate and verify that integration before promoting it as a one-click default.
 
 Chrome 136+ does not expose the default profile through remote-debugging flags:
 https://developer.chrome.com/blog/remote-debugging-port
 
-The supported existing guided route is browser.login on StarNet's persistent profile. Attaching to an explicitly prepared separate debugging profile remains advanced. A first-class personal-browser extension/bridge is separate work requiring an explicit pairing, tab-selection and revocation design; no extension was built here.
+The supported existing guided route is browser.login on Eyehold's persistent profile. Attaching to an explicitly prepared separate debugging profile remains advanced. A first-class personal-browser extension/bridge is separate work requiring an explicit pairing, tab-selection and revocation design; no extension was built here.
 
 Generic MCP inventories do not establish account identity or operation-level authorization. Google's identity adapter has deterministic tests, but real Google consent/account acceptance still needs the production app. Other provider identity adapters, simultaneous multiple-account slots and operation-level permission disclosure remain follow-up work. Unknown identity must remain unknown. Google identity reference: https://developers.google.com/identity/openid-connect/reference
 

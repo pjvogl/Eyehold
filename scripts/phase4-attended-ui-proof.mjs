@@ -11,18 +11,18 @@ import { providerKeyFromEnv } from './lib/provider-env.mjs';
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const key = providerKeyFromEnv();
 if (!key) {
-  console.error('[phase4-ui-proof] missing live key: set SKYNET_OPENROUTER_KEY, STARNET_OPENROUTER_KEY, or OPENROUTER_API_KEY');
+  console.error('[phase4-ui-proof] missing live key: set SKYNET_OPENROUTER_KEY, EYEHOLD_OPENROUTER_KEY, or OPENROUTER_API_KEY');
   process.exit(2);
 }
 
 const STAMP = new Date().toISOString().replace(/[-:]/g, '').replace(/\..+$/, '').replace('T', '-');
-const OUT = resolve(process.env.STARNET_PHASE4_UI_PROOF_DIR || join(ROOT, '.dogfood', 'phase4-ui-proof-' + STAMP));
+const OUT = resolve(process.env.EYEHOLD_PHASE4_UI_PROOF_DIR || join(ROOT, '.dogfood', 'phase4-ui-proof-' + STAMP));
 const SCRATCH = join(OUT, 'workspace');
 const PROFILE = join(OUT, 'profile');
-const PORT = String(process.env.STARNET_PHASE4_UI_PROOF_PORT || 8944);
-const CDP_PORT = Number(process.env.STARNET_PHASE4_UI_PROOF_CDP || 9444);
+const PORT = String(process.env.EYEHOLD_PHASE4_UI_PROOF_PORT || 8944);
+const CDP_PORT = Number(process.env.EYEHOLD_PHASE4_UI_PROOF_CDP || 9444);
 const APP_URL = 'http://127.0.0.1:' + PORT + '/';
-const MODEL = process.env.SKYNET_SMOKE_MODEL || process.env.STARNET_SMOKE_MODEL || process.env.SKYNET_DEFAULT_MODEL || process.env.STARNET_DEFAULT_MODEL || DEFAULT_MODEL;
+const MODEL = process.env.SKYNET_SMOKE_MODEL || process.env.EYEHOLD_SMOKE_MODEL || process.env.SKYNET_DEFAULT_MODEL || process.env.EYEHOLD_DEFAULT_MODEL || DEFAULT_MODEL;
 const attendedFile = join(ROOT, '.dogfood', 'phase4-attended-evidence.json');
 const PROOF_PROPS = ['war_intelcab', 'gigs_servercart', 'workbench'];
 const REQUIRED_CAPS = ['cabinet', 'notebook', 'workbench'];
@@ -48,7 +48,7 @@ async function waitExpr(cdp, expr, tries = 40, delay = 250) {
   return false;
 }
 async function api(cdp, path, init = {}) {
-  const expr = `(() => fetch(${J(path)}, Object.assign({ headers: Object.assign({ 'X-StarNet-Token': window.__STARNET_API_TOKEN__ || '' }, ${(J(init.headers || {}))}) }, ${J(init)})).then(async r => {
+  const expr = `(() => fetch(${J(path)}, Object.assign({ headers: Object.assign({ 'X-Eyehold-Token': window.__EYEHOLD_API_TOKEN__ || '' }, ${(J(init.headers || {}))}) }, ${J(init)})).then(async r => {
     const text = await r.text();
     let json = null; try { json = JSON.parse(text); } catch (_) {}
     return { status: r.status, ok: r.ok, json, text };
@@ -164,12 +164,12 @@ async function main() {
 
     const prompt = [
       'Phase 4 replacement proof task.',
-      'The room already contains FILES, MEMORY, and TERMINAL stations.',
+      'The room already contains FILES, MEMORY, and TERMINAL keeps.',
       'Use the file tool to write a Markdown file named phase4-proof.md.',
       'The file must contain these exact lines:',
       '# Phase 4 Proof',
       'verdict: live UI file-write proof',
-      'evidence: StarNet created this through the gamified UI with a live model.',
+      'evidence: Eyehold created this through the gamified UI with a live model.',
       'Then use notebook.write to remember this exact durable note: phase4-ui-proof-memory.',
       'Finish with one short sentence naming the saved file.'
     ].join('\n');
@@ -216,7 +216,7 @@ async function main() {
       generatedAt: new Date().toISOString(),
       operator: process.env.USERNAME || process.env.USER || 'andro',
       sameWorkTrial: { passed: false, screenshots: [], runIds: [], transcriptIds: [], artifactPaths: [], ledgerRows: [], notes: '' },
-      soak: { freshPass: false, restartPass: false, transcriptPreserved: false, ledgerPreserved: false, artifactsPreserved: false, memoryPreserved: false, stationStatePreserved: false, notes: '' },
+      soak: { freshPass: false, restartPass: false, transcriptPreserved: false, ledgerPreserved: false, artifactsPreserved: false, memoryPreserved: false, keepStatePreserved: false, notes: '' },
       failureRecovery: { cancelPassed: false, budgetPassed: false, deniedConsentPassed: false, toolErrorPassed: false, checkpointRestorePassed: false, notes: '' }
     };
     existing.generatedAt = new Date().toISOString();
@@ -236,8 +236,8 @@ async function main() {
       ledgerPreserved: restartRuns.length > 0,
       artifactsPreserved: artifactDiskPaths.some(p => existsSync(p)),
       memoryPreserved: !!report.checks.memoryPreserved,
-      stationStatePreserved: REQUIRED_CAPS.every(c => Array.isArray(caps) && caps.includes(c)),
-      notes: 'Fresh UI proof was restarted on the same workspace/profile; run, transcript, artifacts, memory signal, and station caps were checked after restart.'
+      keepStatePreserved: REQUIRED_CAPS.every(c => Array.isArray(caps) && caps.includes(c)),
+      notes: 'Fresh UI proof was restarted on the same workspace/profile; run, transcript, artifacts, memory signal, and keep caps were checked after restart.'
     });
     writeJson(attendedFile, existing);
     writeJson(join(OUT, 'phase4-ui-proof-report.json'), report);

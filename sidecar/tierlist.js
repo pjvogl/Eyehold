@@ -1,8 +1,8 @@
-/* sidecar/tierlist.js — StarNet's editorial model tier list, fetched from the linked cloud for the model picker.
+/* sidecar/tierlist.js — Eyehold's editorial model tier list, fetched from the linked cloud for the model picker.
 
    SOURCE: GET {cloudBase}/v1/tierlist (public, no auth) →
      { updated, boards: [ { key, title, tiers: [ { tier: 'S'|'A'|'B'|'C', models: [ { id, note } ] } ] } ] }
-   Model ids are OpenRouter ids (the same ids the starnet provider's catalog uses).
+   Model ids are OpenRouter ids (the same ids the eyehold provider's catalog uses).
 
    TRUTHFUL-TELEMETRY POSTURE: the placements are the cloud's opinion, never ours to invent. The payload is
    validated (unknown tiers/boards dropped, strings bounded); a fetch that fails or returns junk yields an EMPTY
@@ -10,7 +10,7 @@
    stale, with the refresh failure named) until it is older than MAX_STALE_MS.
 
    CACHE: a good list is fresh for TTL_MS (10 min, matching the cloud's max-age=600); a failure is remembered
-   for FAIL_TTL_MS so an offline station does not re-dial the cloud on every picker open. Concurrent callers
+   for FAIL_TTL_MS so an offline keep does not re-dial the cloud on every picker open. Concurrent callers
    share one in-flight fetch; the fetch is bounded by TIMEOUT_MS so the picker never waits on a slow cloud. */
 'use strict';
 
@@ -94,7 +94,7 @@ function makeTierList(deps) {
   async function get(opts) {
     const force = !!(opts && opts.force);
     const base = String(baseUrl() || '').trim().replace(/\/+$/, '');
-    if (!/^https?:\/\//i.test(base)) return view('', { reason: 'no StarNet cloud is configured on this station' });
+    if (!/^https?:\/\//i.test(base)) return view('', { reason: 'no Eyehold cloud is configured on this keep' });
     const t = now();
     if (!force && good && good.base === base && t - good.fetchedAt < ttlMs) return view(base);
     if (!force && failure && failure.base === base && t - failure.at < failTtlMs) return view(base, { reason: failure.reason });

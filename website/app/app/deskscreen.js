@@ -1,6 +1,6 @@
-/* STARNET — deskscreen.js : the DESK SCREEN (2026-09-29, Andrew: "click the computer, see the work from your agent").
+/* EYEHOLD — deskscreen.js : the DESK SCREEN (2026-09-29, Andrew: "click the computer, see the work from your agent").
 
-   Click an agent's workstation on the live floor (world.js deskAt → onDesk) and the DESK SCREEN window opens on
+   Click an agent's workkeep on the live floor (world.js deskAt → onDesk) and the DESK SCREEN window opens on
    THAT agent's computer: the app its current step is working in, rendered from the run transcript — the file it is
    writing (editor), the diff of an edit, the command and what it printed (terminal), the search results or page it
    is reading (web / browser), its reply as it writes it. ‹ › flips back through this job's earlier screens. At rest
@@ -13,9 +13,9 @@
    tool_call / tool_result / token / cost / run.end / permission.* / deliverable) or a server row. Liveness is
    cross-checked against GET /api/state/snapshot while the window is open. Where this page cannot know something it
    says so instead of guessing: a run joined mid-way says its earlier steps are not on this screen; a routine or
-   channel run's tool arguments are not carried by the station's event bridge, so only the tool name shows.
+   channel run's tool arguments are not carried by the keep's event bridge, so only the tool name shows.
 
-   The fold (every agent, from boot) is always on and bounded. The view is a registered station WINDOW ('desk'): it
+   The fold (every agent, from boot) is always on and bounded. The view is a registered keep WINDOW ('desk'): it
    rises from the bottom dock between CREW and COMMS, resizes and minimizes like every other window, and switches
    agents by clicking another agent's desk (no roster selector — Andrew 2026-09-30). Never a popover beside the desk. */
 'use strict';
@@ -170,7 +170,7 @@ const DeskScreen = (() => {
      assistant tool-call turn is checkpointed BEFORE the tool runs) and its full result (checkpointed after), so the
      screen shows the real thing: the file as it is being written, the diff of an edit, the command and what it
      printed, the search results or page text the agent is reading. Nothing is synthesised: a step whose content the
-     station has not written yet shows the bus-level name + argument digest and says it is working. */
+     keep has not written yet shows the bus-level name + argument digest and says it is working. */
   const APPS = [
     [/^fs[._](write|append)$/, 'EDITOR'], [/^fs[._](edit|patch)$/, 'EDITOR'], [/^fs[._]read$/, 'EDITOR'],
     [/^fs[._](list|search)$/, 'FILES'], [/^(shell[._]|code[._]run)/, 'TERMINAL'],
@@ -222,7 +222,7 @@ const DeskScreen = (() => {
   }
 
   /* ---------------- the window ----------------
-     A registered station window ('desk'): it rises from the bottom dock between CREW and COMMS, resizes and
+     A registered keep window ('desk'): it rises from the bottom dock between CREW and COMMS, resizes and
      minimizes like every other window; another agent's desk re-targets it (no roster selector). The activity feed is
      COMMS; this window is only the agent's screen. Built once per agent, repainted in place each second (the note
      field is never rebuilt under the Commander's cursor). */
@@ -313,7 +313,7 @@ const DeskScreen = (() => {
         ? '<pre class="ds-diff">' + sc.body.split('\n').map(l => '<span class="' + (/^\+/.test(l) ? 'ds-add' : /^-/.test(l) ? 'ds-del' : /^@@/.test(l) ? 'ds-hunk' : '') + '">' + (esc(l) || ' ') + '</span>').join('\n') + '</pre>'
         : '<pre class="ds-' + (sc.kind === 'term' ? 'term' : 'page') + '">' + (esc(sc.body) || '<span class="ds-dim">' + (s.done ? '(nothing came back)' : '…') + '</span>') + '</pre>';
     const partial = s.partial && !(s.args && Object.keys(s.args).length)
-      ? '<p class="ds-dim ds-partial">' + (v.src && v.src.stream ? 'Loading this step…' : 'This run was started outside this window, so its full screen is available once it ends. For now the station reports only the tool name.') + '</p>' : '';
+      ? '<p class="ds-dim ds-partial">' + (v.src && v.src.stream ? 'Loading this step…' : 'This run was started outside this window, so its full screen is available once it ends. For now the keep reports only the tool name.') + '</p>' : '';
     return '<div class="ds-app" data-app="' + sc.app.toLowerCase() + '" data-s="' + (!s.done ? 'run' : s.isError ? 'bad' : 'ok') + '">'
       + '<div class="ds-bar"><span class="ds-appname">' + esc(sc.app) + '</span><span class="ds-target">' + esc(clip(sc.target, 120)) + '</span>'
       + (canOpenPage(s, sc) ? '<button type="button" class="bb xs ds-openpage" data-a="page" data-path="' + esc(sc.target) + '">OPEN PAGE</button>' : '')
@@ -364,7 +364,7 @@ const DeskScreen = (() => {
       if (ho) { state = 'ask'; label = (ho.state === 'taken' ? 'YOU HAVE ITS BROWSER' : 'NEEDS YOU') + ' · ' + dur(v.now - v.live.startedAt); html = handoffHtml(ho, v.name) + html; }
       if (v.ask) html = '<p class="ds-ask">Waiting for your approval' + (v.ask.tool ? ' to use ' + esc(toolName(v.ask.tool)) : '') + '. Answer it in COMMS.</p>' + html;
       if (v.live.partial) html = '<p class="ds-dim">Joined mid-run: screens from before this page was watching aren\'t shown.</p>' + html;
-      if (stopNote && v.now - stopAt > 12000) stopNote = 'The station hasn\'t confirmed the stop yet. It is still running.';
+      if (stopNote && v.now - stopAt > 12000) stopNote = 'The keep hasn\'t confirmed the stop yet. It is still running.';
     } else if (v.unseen) {
       state = 'running';
       label = 'WORKING' + (v.unseen.startedAt ? ' · ' + dur(v.now - v.unseen.startedAt) : '');
@@ -428,10 +428,10 @@ const DeskScreen = (() => {
     if (chip) { const ct = chip.querySelector('.term-chip-t'); if (ct) ct.textContent = title; chip.setAttribute('aria-label', 'Restore ' + title); }
   }
 
-  // the window builder (StationUI calls it on open, and again when another desk re-targets it)
+  // the window builder (KeepUI calls it on open, and again when another desk re-targets it)
   function build(body) {
     // the desk's own target (openDesk), never the dossier's selection; a dock-opened desk falls back to it
-    const H = StationUI.h, a = (H.deskAgentId && H.present.find(x => x && x.id === H.deskAgentId)) || H.present[H.sel] || null;
+    const H = KeepUI.h, a = (H.deskAgentId && H.present.find(x => x && x.id === H.deskAgentId)) || H.present[H.sel] || null;
     if (!a) { body.innerHTML = '<p class="ds-dim">No agent selected.</p>'; return; }
     const same = cur && cur.agentId === a.id;
     cur = { agentId: a.id, name: a.name || a.id, body };
@@ -465,8 +465,8 @@ const DeskScreen = (() => {
     const stop = body.querySelector('.ds-stop');
     const doStop = () => {
       const v = view(); const rid = v.live && v.live.runId; if (!rid) return;
-      stopAt = clock(); stopNote = 'Stop sent. Waiting for the station to confirm…'; paint();
-      postJson('/api/cancel', { runId: rid }).then(r => { if (!r.ok) { stopNote = 'The station refused the stop (http ' + r.status + ').'; paint(); } });
+      stopAt = clock(); stopNote = 'Stop sent. Waiting for the keep to confirm…'; paint();
+      postJson('/api/cancel', { runId: rid }).then(r => { if (!r.ok) { stopNote = 'The keep refused the stop (http ' + r.status + ').'; paint(); } });
     };
     if (typeof ArmConfirm !== 'undefined' && ArmConfirm.wire) ArmConfirm.wire(stop, { armedLabel: 'CONFIRM STOP', onConfirm: doStop });
     else stop.addEventListener('click', doStop);
@@ -486,17 +486,17 @@ const DeskScreen = (() => {
     paint(); pollSnap(true); pollHist(true); tick();
   }
 
-  // open THIS agent's desk window (the StationUI core selects the agent, then opens or re-targets the window)
+  // open THIS agent's desk window (the KeepUI core selects the agent, then opens or re-targets the window)
   function open(agentId) {
-    if (!agentId || typeof StationUI === 'undefined' || !StationUI.openDesk) return false;
-    return StationUI.openDesk(agentId);
+    if (!agentId || typeof KeepUI === 'undefined' || !KeepUI.openDesk) return false;
+    return KeepUI.openDesk(agentId);
   }
 
   // the fold listens from boot, so a desk opened mid-run already holds every step this page has seen
   let wired = false;
   function init(o) {
     if (o) doors = o;
-    if (typeof StationUI !== 'undefined' && StationUI.registerWindow) StationUI.registerWindow('desk', 'DESK', build, { className: 'desk-win' });   // retitled "<NAME>'S DESK" by build()
+    if (typeof KeepUI !== 'undefined' && KeepUI.registerWindow) KeepUI.registerWindow('desk', 'DESK', build, { className: 'desk-win' });   // retitled "<NAME>'S DESK" by build()
     if (wired || typeof U === 'undefined' || !U.bus) return;
     wired = true;
     for (const n of ['agent.run.start', 'agent.tool_call', 'agent.tool_result', 'agent.token', 'agent.cost', 'agent.run.error', 'agent.run.end', 'permission.prompt', 'permission.response', 'deliverable', 'browser.handoff']) {

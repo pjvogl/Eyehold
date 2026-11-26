@@ -27,6 +27,6 @@ const approved=new Set(['crate','desk','desk2','chair','bridge_consolebank','bri
  }
  fs.mkdirSync(dir,{recursive:true});fs.writeFileSync(path.join(dir,'manifest.json'),JSON.stringify(manifest,null,2)+'\n');
  const report={status:'retired-casing-drafts',catalog:ledger.length,approvedExisting:approved.size,newIds:Object.keys(manifest.props).length,newViews:Object.values(manifest.props).reduce((n,p)=>n+Object.keys(p.views).length,0),completeIds:approved.size,note:'Historical casing drafts are not completed remasters. Full designs are tracked in props-v3/coverage.json.',props:ledger};
- fs.writeFileSync(path.join(root,'docs/station-remaster/props-v2/coverage.json'),JSON.stringify(report,null,2)+'\n');
+ fs.writeFileSync(path.join(root,'docs/keep-remaster/props-v2/coverage.json'),JSON.stringify(report,null,2)+'\n');
  console.log(JSON.stringify({catalog:report.catalog,approvedExisting:report.approvedExisting,newIds:report.newIds,newViews:report.newViews,completeIds:report.completeIds}));
 })().catch(e=>{console.error(e);process.exitCode=1;});

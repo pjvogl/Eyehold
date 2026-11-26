@@ -1,7 +1,7 @@
 'use strict';
 // Generated restoration export: preserve source RGBA; crop transparent margins only.
 const fs=require('node:fs'),sharp=require('sharp'),crypto=require('node:crypto');
-const root='frontend/assets/industrial/sharpness-restoration',docs='docs/station-remaster/sharpness-restoration';
+const root='frontend/assets/industrial/sharpness-restoration',docs='docs/keep-remaster/sharpness-restoration';
 const generated='C:/Users/andro/.codex/generated_images/01a09e45-c8db-79c2-b990-4349e09fba9c';
 const hash=b=>crypto.createHash('sha256').update(b).digest('hex');
 const jobs=[
@@ -36,7 +36,7 @@ const jobs=[
   console.log(id,crop.width+'x'+crop.height);
  }
  fs.writeFileSync(docs+'/integration.json',JSON.stringify({records},null,2)+'\n');
- const gp='docs/station-remaster/projection-correction/catalog-groups.json',groups=JSON.parse(fs.readFileSync(gp));
+ const gp='docs/keep-remaster/projection-correction/catalog-groups.json',groups=JSON.parse(fs.readFileSync(gp));
  if(!groups.groups.some(g=>g.name==='sharpness-restoration'))groups.groups.push({name:'sharpness-restoration',file:docs+'/integration.json'});
  fs.writeFileSync(gp,JSON.stringify(groups,null,2)+'\n');
 })();

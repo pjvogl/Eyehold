@@ -1,12 +1,12 @@
-/* STARNET — recipe-catalog/ops.js : OPS / LIFE-ADMIN persona recipes (R4 catalog content).
+/* EYEHOLD — recipe-catalog/ops.js : OPS / LIFE-ADMIN persona recipes (R4 catalog content).
 
    Registered in index.js by the aggregator — this file only EXPORTS the array. Same UMD-light
    module pattern as recipes.js: a `RecipeCatalogOps` global in the browser, module.exports under
    node. NO logic here — pure data.
 
    Content contract: every record must clear THE RECIPE BAR documented in core.js (earns its tap /
-   drives the station / lands somewhere / compounds when recurring). Ops recipes reach for the
-   station's own reach first — connected channels for the inbox, memory for the recurring reviews
+   drives the keep / lands somewhere / compounds when recurring). Ops recipes reach for the
+   keep's own reach first — connected channels for the inbox, memory for the recurring reviews
    and watches — and fall back to paste only for material that genuinely lives outside (private
    statements, personal notes). Voice matches the core builtins. Schema v2:
    { id, name, emoji, tagline, blurb, accent, tags, params, task, category, gear, skills, cadence, source, forkedFrom } */

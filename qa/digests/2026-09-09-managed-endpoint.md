@@ -2,12 +2,12 @@
 
 agent/managed-endpoint-0909 -> integration 1cd4e378f. Source fix 177a9384e; regression/ledger 739a004fd. The merge commit tree exactly matches the verified branch tree. The existing qa/STATUS.md and Rooms handoff edits were hash-checked unchanged; this separate digest avoids overwriting their owner.
 
-A valid saved StarNet link succeeds, but a per-request closed-localhost baseUrl on the original code reproduces the customer's exact fetch failed (ECONNREFUSED 127.0.0.1). Managed requests now resolve their linked endpoint and credential before any request overrides. Custom routing is preserved. The original resolver ordering was also checked in v0.10.13; no released-installer reproduction was performed.
+A valid saved Eyehold link succeeds, but a per-request closed-localhost baseUrl on the original code reproduces the customer's exact fetch failed (ECONNREFUSED 127.0.0.1). Managed requests now resolve their linked endpoint and credential before any request overrides. Custom routing is preserved. The original resolver ordering was also checked in v0.10.13; no released-installer reproduction was performed.
 
 Evidence:
 - Baseline real-sidecar reproduction passed with ENDPOINT_BASELINE=1 before the fix.
 - Patched real-sidecar test passes stale baseUrl/base_url, wrong request key, custom -> managed switching, desktop-token restart, and rejection of unlinked managed access before any provider call.
-- Real Harness storage logic confirms normal switching does not copy custom endpoints to Gemini/StarNet; an already-saved managed override survives reload. Its origin on the customer's device remains unknown.
+- Real Harness storage logic confirms normal switching does not copy custom endpoints to Gemini/Eyehold; an already-saved managed override survives reload. Its origin on the customer's device remains unknown.
 - The same routing journey passed via node dev/seed.js --keep using a temporary wrapper and disposable profile. Wrapper removed afterward.
 - Syntax and diff checks passed; bug ledger validates (85 records).
 - Complete fast manifest: 733/733 green via the unchanged test:fast:raw runner with a 30-minute outer budget. The standard npm run test:fast wrapper first hit its 15-minute limit, without an assertion failure.

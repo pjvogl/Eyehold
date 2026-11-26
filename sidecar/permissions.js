@@ -182,7 +182,7 @@
 
     function consent(call, tool) {
       const scope = scopeOf(tool);
-      // FULL POWER: the Commander's explicit host-wide authority outranks StarNet policy floors.
+      // FULL POWER: the Commander's explicit host-wide authority outranks Eyehold policy floors.
       // Input/schema validity, OS permissions and downstream service prerequisites still report normally.
       if (unrestrictedNow()) return { allow: true, scope: scope, reason: 'full-power' };
       // 1. HARDLINE — unreachable past any flag.
@@ -210,7 +210,7 @@
       if (workshopWritable(call, tool)) return { allow: true, scope: scope, reason: 'workshop grant — build things while away' };
       if (credentialedAutonomy(call, tool)) return { allow: true, scope: scope, reason: 'unattended grant on this platform key' };
       // 3. CACHE — a prior session/permanent grant for this danger class. Never for a FRESH-CONSENT tool (sweep 2026-10-03):
-      // widening the station's own leash (station.power: Full Power, FULL agents, caps, trusted folders, hook code) is a
+      // widening the keep's own leash (keep.power: Full Power, FULL agents, caps, trusted folders, hook code) is a
       // card the Commander answers per call when they are in ASK — one "always" used to approve every later escalation.
       // Full Access (tier 2) is the Commander's zero-prompt posture and still covers it; taint.js keeps the lock on it.
       if (!(tool && tool.freshConsent === true) && granted(dangerKey(tool))) return { allow: true, scope: scope, reason: 'previously granted' };

@@ -33,8 +33,8 @@ export const CLOSE = `(() => {
 // Open a dock panel by a STABLE selector (id or [data-term]); reports NOTFOUND if absent.
 // 0.13 FRONT DOORS: TASKS, DELIVERABLES, AUTOMATION, ABILITIES and CHANNELS are no longer dock keys — each is a TAB of
 // one menu (MY WORK / AUTOMATE / CONNECT). A [data-term="x"] key that is gone opens window x the way its tab does
-// (StationUI.openTerm), so every state and journey still reaches the same window (sweep 2026-10-02).
-export const openTermFallback = (sel) => `(() => { const m = /^\\[data-term="([a-z-]+)"\\]$/.exec(${JSON.stringify(sel)}); if (!m || typeof StationUI === 'undefined' || !StationUI.openTerm) return false; StationUI.openTerm(m[1]); return true; })()`;
+// (KeepUI.openTerm), so every state and journey still reaches the same window (sweep 2026-10-02).
+export const openTermFallback = (sel) => `(() => { const m = /^\\[data-term="([a-z-]+)"\\]$/.exec(${JSON.stringify(sel)}); if (!m || typeof KeepUI === 'undefined' || !KeepUI.openTerm) return false; KeepUI.openTerm(m[1]); return true; })()`;
 export const openSel = (sel, label) => `(() => {
   ${CLOSE};
   const el = document.querySelector(${JSON.stringify(sel)});
@@ -51,20 +51,20 @@ export const openSel = (sel, label) => `(() => {
 // made identical builds alternate between the empty and populated layouts. This runs only
 // in the screenshotter's disposable browser profile.
 export const openStableNotifs = `(() => {
-  if (typeof StationUI === 'undefined' || typeof StationUI.notify !== 'function') return 'DRIVE_ERR:notification-api-missing';
-  StationUI.notify('Screenshot fixture notification', 'good');
+  if (typeof KeepUI === 'undefined' || typeof KeepUI.notify !== 'function') return 'DRIVE_ERR:notification-api-missing';
+  KeepUI.notify('Screenshot fixture notification', 'good');
   ${openSel('[data-term="notifs"]', 'NOTIFS')};
   const list = document.querySelector('.nf-list');
   if (!list) return 'DRIVE_ERR:notification-list-missing';
   if (list) {
     const rows = [
-      ['07:00', 'Station layout saved', 'good'],
+      ['07:00', 'Keep layout saved', 'good'],
       ['07:01', 'NOVA is online - anthropic/claude-3.5-sonnet', 'good'],
       ['07:02', 'Connector "local" connected', 'good'],
       ['07:03', 'saved briefing.md - your agent runs on it now', 'gold'],
       ['07:04', 'routine ran', 'good'],
       ['07:05', 'budget resumed - global cap raised; agents can run again', 'good'],
-      ['07:06', 'StarNet is up to date', 'good'],
+      ['07:06', 'Eyehold is up to date', 'good'],
       ['07:07', 'routine "morning check" scheduled for NOVA', 'good'],
       ['07:08', 'copied the last reply', 'good'],
       ['07:09', 'rewound agent to an earlier restore point', 'warn'],
@@ -160,7 +160,7 @@ export const openStableQuests = `(async () => {
 export const closeOnly = `(() => { ${CLOSE}; return 'reset'; })()`;
 
 // REFIT first-use guide: on a fresh browser profile, build.js showGuide() paints a full-canvas
-// "▮ BUILD YOUR STATION" modal (.refit-guide) OVER the canvas. It intercepts every pointer event, so
+// "▮ BUILD YOUR KEEP" modal (.refit-guide) OVER the canvas. It intercepts every pointer event, so
 // synthetic canvas input (CDP Input.dispatchMouseEvent) hits the guide, not the grid. The Truth-Auditor
 // prop-place scenario must clear it before any real-mouse placement. Clicking #refit-guide-go marks it
 // seen (localStorage) so it never re-shows; remove() is the backstop. Returns the count dismissed.
@@ -201,7 +201,7 @@ export function buildStates() {
     { name: 'work-automation', drive: openSel('[data-term="automation"]', 'AUTOMATION') },
     { name: 'work-quests',     drive: openStableQuests },
     // BUILD group
-    { name: 'build-station',   drive: openSel('#bb-build', 'REFIT STATION'),       wait: 2000 },
+    { name: 'build-keep',   drive: openSel('#bb-build', 'REFIT KEEP'),       wait: 2000 },
     // ABILITIES kept the stable connectors term when SKILLS folded into it (nav-condense2),
     // so the state name stays build-connectors for atlas/golden continuity.
     { name: 'build-connectors',drive: openSel('[data-term="connectors"]', 'ABILITIES') },

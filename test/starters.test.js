@@ -16,7 +16,7 @@ A.ok(S.defaults()[2].prompt.includes('Separate evidence from uncertainty'), 'Dec
 A.eq(S.launchPrompt(S.defaults()[0]), S.defaults()[0].prompt, 'General starter does not invent supporting history');
 A.ok(ctx.ready && ctx.sources.length === 2, 'Meaningful user work enables personalization immediately');
 A.eq(parse().length, 1, 'Concrete unfinished continuation accepted');
-A.eq(S.context({}).ready, false, 'Empty station has no fabricated understanding');
+A.eq(S.context({}).ready, false, 'Empty keep has no fabricated understanding');
 A.eq(S.context({ ...signals, enabled: false }).ready, false, 'Pause disables personalization');
 A.eq(S.context({ ...signals, sessions: [session('short', { history: [{ role: 'user', content: 'hi' }] })] }).ready, false, 'Greeting is insufficient evidence');
 A.eq(S.context({ ...signals, sessions: [session('other', { agentId: 'other' }), session('elsewhere', { projectRoot: '/other' }), session('old', { lastActiveAt: now - 31 * day }), session('future', { lastActiveAt: now + day }), session('archived', { archived: true }), session('group', { conversationMode: 'group' })] }).sources.length, 0, 'No other-agent, other-project, stale, future, archived or group history');

@@ -331,7 +331,7 @@ async function run() {
     // (a) the LINE'S OWN TRIGGER: a channel message the belts walk from the INBOX to the entry dock
     await hub.onInbound(dm('research the competitors', 'open'));
     A.eq(ranAgents, ['researcher', 'writer', 'editor'], 'work that rode in through the door runs the WHOLE line');
-    A.ok(/editor output/.test(sends[sends.length - 1].t), "and the LAST stage's answer is what leaves the station");
+    A.ok(/editor output/.test(sends[sends.length - 1].t), "and the LAST stage's answer is what leaves the keep");
 
     // (a2) the SAME chat again, now carrying the binding the hub auto-saved: still the line's own work
     ranAgents.length = 0;
@@ -475,7 +475,7 @@ async function run() {
     const runOnce = async (o) => {
       call++;
       o.emit('agent.run.start', { agentId: o.agentId, runId: o.runId, trigger: 'event', model: o.model });
-      o.emit('agent.run.error', { agentId: o.agentId, runId: o.runId, transient: true, message: 'Too many agents are working at once (limit 6). Wait for one to finish, or raise STARNET_MAX_CONCURRENT_AGENTS.' });
+      o.emit('agent.run.error', { agentId: o.agentId, runId: o.runId, transient: true, message: 'Too many agents are working at once (limit 6). Wait for one to finish, or raise EYEHOLD_MAX_CONCURRENT_AGENTS.' });
       o.emit('agent.run.end', { agentId: o.agentId, runId: o.runId, reason: 'error', turns: 0, usd: 0 });
     };
     const hub = makeChannelHub({
@@ -714,7 +714,7 @@ async function run() {
     A.eq(aborted, 1, 'E-STOP aborted the one in-flight channel run');
     await parked;
     A.ok(!sends.some(s => /half an answ/.test(s)), 'the stale partial is still abandoned');
-    A.ok(sends.some(s => /E-STOP/.test(s)), 'the chat is TOLD the run was stopped from the station');
+    A.ok(sends.some(s => /E-STOP/.test(s)), 'the chat is TOLD the run was stopped from the keep');
     A.eq(sends.filter(s => /E-STOP/.test(s)).length, 1, 'the stop notice is delivered exactly once');
   }
 

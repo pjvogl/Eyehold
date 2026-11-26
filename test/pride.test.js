@@ -1,4 +1,4 @@
-/* node test/pride.test.js — the LIFETIME STATION RECORD engine (G3a / Layer 6): durable pride counters.
+/* node test/pride.test.js — the LIFETIME KEEP RECORD engine (G3a / Layer 6): durable pride counters.
    HONEST by construction: a counter with no real sample reports known:false (surface shows "—"), the
    founding instant is stamped ONCE and never moves (monotonic), and total agent-work minutes are the SUM of
    REAL run durations (start→end paired by runId, injected clock) — an unmatched end is never guessed. */
@@ -9,7 +9,7 @@ const P = require('../frontend/app/pride.js');
 // ---- hydrate: sane defaults from null / corrupt blobs ----
 let s = P.hydrate(null);
 let snap = P.snapshot(s);
-A.eq(snap.founded, false, 'a fresh station is not yet founded');
+A.eq(snap.founded, false, 'a fresh keep is not yet founded');
 A.eq(snap.foundedAt, null, 'unfounded → foundedAt is null (surface formats its own date)');
 A.eq(snap.tasksKnown, false, 'no task sample yet → tasks unknown ("—")');
 A.eq(snap.deliverablesKnown, false, 'no deliverable sample yet → unknown');
@@ -25,7 +25,7 @@ A.eq(snap.founded, false, 'corrupt foundedAt → unfounded');
 // ---- founding: stamped once, monotonic, only by a REAL event ----
 s = P.hydrate(null);
 s = P.fold(s, 'some.unknown.heartbeat', {}, 1000);
-A.eq(P.snapshot(s).founded, false, 'an unknown/ambient event NEVER founds the station (no fake birthday)');
+A.eq(P.snapshot(s).founded, false, 'an unknown/ambient event NEVER founds the keep (no fake birthday)');
 s = P.fold(s, 'agent.run.end', { reason: 'done', runId: 'r1' }, 5000);
 A.eq(P.snapshot(s).foundedAt, 5000, 'the first REAL event stamps the founding instant');
 s = P.fold(s, 'workitem.delivered', { workitemId: 'w1' }, 9000);

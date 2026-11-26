@@ -1,4 +1,4 @@
-/* STARNET — friendlyerror.js : turn a raw failure into something a beginner can act on.
+/* EYEHOLD — friendlyerror.js : turn a raw failure into something a beginner can act on.
    Pure + testable (UMD: a `Friendly` global in the browser, module.exports under node).
 
    The COMMS panel used to surface raw plumbing on a failed turn — "sidecar HTTP 500", an OpenRouter
@@ -13,22 +13,22 @@
    • retryable   — whether a plain "↻ Try again" makes sense.
    • action      — null | 'settings' | 'skills' | 'store' | 'refit' | 'reload': a context-aware DESTINATION
                    instead of a blind retry. capdenied's true unlock is BUILD MODE (place the gear) —
-                   NOT the SKILLS list — because a station quest, minted on the denial, completes
-                   by PLACEMENT (stationqueststore.js). auth/no-key opens the PROVIDERS key field.
+                   NOT the SKILLS list — because a keep quest, minted on the denial, completes
+                   by PLACEMENT (keepqueststore.js). auth/no-key opens the PROVIDERS key field.
    • cap         — (capdenied only) the resolved capability id ('web'|'cabinet'|…) parsed from the
                    raw 'no <need> — …' message, so copy can name WHICH power was missing + its gear.
    • raw         — the original technical text, kept for a de-emphasized sub-line / title tooltip.
 
    RENDERING THE ACTION (the door): `actionButton(verdict)` maps a verdict to { label, run } — a
    ready-to-wire button that OPENS the exact surface (Build.open() for BUILD MODE, the settings PROVIDERS
-   section for keys, StationUI SKILLS for a skill toggle). The consumer (chat.js offerRetry) calls
+   section for keys, KeepUI SKILLS for a skill toggle). The consumer (chat.js offerRetry) calls
    it instead of re-deriving the label/route per action, so a new action door is added in ONE place.
 
    INTEGRATION (not duplication): when the sidecar classifier module is reachable (node/tests), we delegate
    to classifyApiError() to derive the reason, then translate that reason into a beginner-facing message —
    so the truth table stays single-sourced. In the browser the sidecar module isn't loaded, so we fall back
    to a lightweight pattern-match over the SAME kind vocabulary on the UI-level error strings Harness throws
-   ('sidecar HTTP <status>', 'cannot reach the STARNET sidecar…', a forwarded 'no <cap> — …'). */
+   ('sidecar HTTP <status>', 'cannot reach the EYEHOLD sidecar…', a forwarded 'no <cap> — …'). */
 'use strict';
 (function (root, factory) {
   const api = factory();
@@ -43,10 +43,10 @@
 
   // The capability a `no <need> — …` denial names → the plain power word + the placeable GEAR that grants it.
   // Single-sourced from the sidecar's capsummary CAPS table (id/object) + worldmodel's CAP_LABEL power words, so
-  // a beginner reads "needs FILE ACCESS — the CABINET isn't on station" instead of a raw cap token. `compute` is
-  // the loop's turn-precondition (the DESK/workstation); the rest are placeable floor gear closed in BUILD MODE.
+  // a beginner reads "needs FILE ACCESS — the CABINET isn't on keep" instead of a raw cap token. `compute` is
+  // the loop's turn-precondition (the DESK/workkeep); the rest are placeable floor gear closed in BUILD MODE.
   const CAP_INFO = {
-    compute:      { power: 'a WORKSTATION', gear: 'a DESK',       does: 'run at all' },
+    compute:      { power: 'a WORKKEEP', gear: 'a DESK',       does: 'run at all' },
     web:          { power: 'WEB ACCESS',    gear: 'a DISH',       does: 'search or fetch the web' },
     cabinet:      { power: 'FILE ACCESS',   gear: 'an INTEL CAB', does: 'read or write files' },
     workbench:    { power: 'a TERMINAL',    gear: 'a WORKBENCH',  does: 'run commands or control the computer' },
@@ -57,7 +57,7 @@
   };
   // aliases the raw message may carry for the same capability (prop objectType ↔ cap id, or a tool family word).
   const CAP_ALIAS = {
-    computer: 'compute', desk: 'compute', workstation: 'compute',
+    computer: 'compute', desk: 'compute', workkeep: 'compute',
     dish: 'web', search: 'web', browser: 'web', fetch: 'web',
     files: 'cabinet', file: 'cabinet', fs: 'cabinet',
     terminal: 'workbench', shell: 'workbench', exec: 'workbench', desktop: 'workbench',
@@ -72,19 +72,19 @@
   const KINDS = {
     // ONLY for a fault PROVEN local: the raw carries "sidecar http 5xx" (our own service answered 500). A
     // provider's 5xx/overloaded must never land here — a message naming a component owes proof it is at fault,
-    // and blaming the local service for an Anthropic/OpenRouter overload had users reporting "StarNet's servers
+    // and blaming the local service for an Anthropic/OpenRouter overload had users reporting "Eyehold's servers
     // are down" during every industry load spike (2026-07-30, the report wave behind this split).
-    server_error:  { retryable: true,  action: null,       msg: 'The local StarNet service hit an error — give it a moment and try again.' },
+    server_error:  { retryable: true,  action: null,       msg: 'The local Eyehold service hit an error — give it a moment and try again.' },
     // The PROVIDER's servers answered with an error/overload (5xx, "overloaded", "temporarily unavailable").
-    // StarNet is healthy and says so; retry is the primary door because provider load spikes pass.
-    provider_server_error: { retryable: true, action: null, msg: "The AI provider's servers are having trouble right now (overloaded or erroring) — StarNet itself is fine. Wait a moment and try again; if it keeps failing, switch model or provider in COMMS." },
-    network:       { retryable: true,  action: null,       msg: "Can't reach StarNet's local service — if the app closed, restart it; if it restarted, reload this window, then try again." },
+    // Eyehold is healthy and says so; retry is the primary door because provider load spikes pass.
+    provider_server_error: { retryable: true, action: null, msg: "The AI provider's servers are having trouble right now (overloaded or erroring) — Eyehold itself is fine. Wait a moment and try again; if it keeps failing, switch model or provider in COMMS." },
+    network:       { retryable: true,  action: null,       msg: "Can't reach Eyehold's local service — if the app closed, restart it; if it restarted, reload this window, then try again." },
     rate_limit:    { retryable: true,  action: null,       msg: 'The model provider is busy (too many requests) — wait a few seconds and try again.' },
     // The sidecar is fine; its call OUT to the model provider failed (see isUpstreamFetchFailure). Say that, and
-    // say StarNet is healthy — the failure mode this replaces had users restarting and reinstalling for days over
+    // say Eyehold is healthy — the failure mode this replaces had users restarting and reinstalling for days over
     // a message that named the wrong component. `action: null` on purpose: a provider blip is usually transient,
     // so RETRY must stay the primary chip rather than a SETTINGS door that fixes nothing.
-    provider_unreachable: { retryable: true, action: null, msg: "StarNet is running fine, but it couldn't reach the AI provider — that's usually your internet connection, a VPN or proxy, or the provider having a moment. Try again; if it keeps failing, switch provider or model in SETTINGS." },
+    provider_unreachable: { retryable: true, action: null, msg: "Eyehold is running fine, but it couldn't reach the AI provider — that's usually your internet connection, a VPN or proxy, or the provider having a moment. Try again; if it keeps failing, switch provider or model in SETTINGS." },
     /* A SPENT ALLOWANCE is not a busy moment. A ChatGPT-subscription weekly quota resets in DAYS, so offering
        "wait a few seconds and try again" made every retry doomed and told the user nothing they could act on.
        The copy names the meter that was actually spent — the ChatGPT subscription, NOT API billing — and the
@@ -101,24 +101,24 @@
     // point the user at the xAI (API KEY) provider instead of a doomed reconnect. Door is the PROVIDERS key field.
     grok_oauth_unavailable: { retryable: false, action: 'settings', msg: "Grok sign-in isn't available on this account yet — xAI hasn't opened the Grok sign-in for it. Add an xAI provider key instead (paste it under SETTINGS → AI & MODELS and pick the XAI provider)." },
     billing:       { retryable: false, action: 'settings', msg: "Your provider account is out of credit — top it up, then try again." },
-    // managed StarNet credits ran out (only reachable when a managed-credit backend is wired). Point at the STORE
-    // to top up; a BYOK station never hits this kind (it gets `billing`/`auth` instead).
+    // managed Eyehold credits ran out (only reachable when a managed-credit backend is wired). Point at the STORE
+    // to top up; a BYOK keep never hits this kind (it gets `billing`/`auth` instead).
     // copy names the SAME door the button opens (PROVIDERS) — "the STORE" was a surface that doesn't exist as a button.
-    managed_credit:{ retryable: false, action: 'store',    msg: "You're out of StarNet credits — top up under SETTINGS → AI & MODELS, or connect your own provider key." },
+    managed_credit:{ retryable: false, action: 'store',    msg: "You're out of Eyehold credits — top up under SETTINGS → AI & MODELS, or connect your own provider key." },
     // The balance check FAILED (the account service was slow, erroring or unreachable) — the balance is unknown, NOT
     // $0. Reading this as managed_credit told a customer holding $79.24 to top up (2026-10-06). Retry is the door.
-    managed_credit_unavailable: { retryable: true, action: null, msg: "StarNet couldn't check your credit balance just now — your credits are safe and nothing was charged. Try again in a moment." },
-    // The service reported $0 because THIS station's running StarNet runs hold the balance (each reserves up to its PER
+    managed_credit_unavailable: { retryable: true, action: null, msg: "Eyehold couldn't check your credit balance just now — your credits are safe and nothing was charged. Try again in a moment." },
+    // The service reported $0 because THIS keep's running Eyehold runs hold the balance (each reserves up to its PER
     // RUN limit and refunds what it doesn't spend; budgetcaps.managedRefusalMessage). Waiting is the first fix (retry),
     // then lowering PER RUN so runs can share the balance (the SPENDING LIMITS door); topping up stays the last
     // door — a small wallet's hold may come back as cents. Audit B11.
-    managed_credit_held: { retryable: true, action: 'budget', msg: "Your StarNet balance is held by StarNet runs that are still working — nothing is lost: each run reserves up to its PER RUN limit and refunds what it doesn't spend. Wait for them to finish, lower PER RUN in SETTINGS › SPENDING LIMITS, or top up under SETTINGS → AI & MODELS." },
-    // The account service ANSWERED and refused this station's token (unlinked on the account page, or linked to a
-    // different account). Topping up fixes nothing; relinking does — same PROVIDERS door as the STARNET card.
-    managed_credit_link: { retryable: false, action: 'store', msg: "Your StarNet account didn't accept this station's link (it was unlinked, or it belongs to another account) — your credits are safe. Relink it under SETTINGS → AI & MODELS → STARNET MANAGED." },
+    managed_credit_held: { retryable: true, action: 'budget', msg: "Your Eyehold balance is held by Eyehold runs that are still working — nothing is lost: each run reserves up to its PER RUN limit and refunds what it doesn't spend. Wait for them to finish, lower PER RUN in SETTINGS › SPENDING LIMITS, or top up under SETTINGS → AI & MODELS." },
+    // The account service ANSWERED and refused this keep's token (unlinked on the account page, or linked to a
+    // different account). Topping up fixes nothing; relinking does — same PROVIDERS door as the EYEHOLD card.
+    managed_credit_link: { retryable: false, action: 'store', msg: "Your Eyehold account didn't accept this keep's link (it was unlinked, or it belongs to another account) — your credits are safe. Relink it under SETTINGS → AI & MODELS → EYEHOLD MANAGED." },
     // capdenied copy is REBUILT per-error in friendlyError() to name the exact power + gear; this is the fallback
     // when the capability can't be parsed. The door is BUILD MODE (place the gear), NOT the SKILLS list.
-    capdenied:     { retryable: false, action: 'refit',    msg: "This task needed a tool this agent doesn't have on station yet — open BUILD MODE to place the gear it's missing." },
+    capdenied:     { retryable: false, action: 'refit',    msg: "This task needed a tool this agent doesn't have on keep yet — open BUILD MODE to place the gear it's missing." },
     timeout:       { retryable: true,  action: null,       msg: 'That took too long and timed out — try again.' },
     user_abort:    { retryable: false, action: null,       msg: 'Stopped.' },
     context_overflow: { retryable: false, action: null,    msg: 'This conversation got too long for the model — start a fresh chat or shorten it.' },
@@ -127,22 +127,22 @@
     // JUKEBOX is placed (the Spotify tools ARE granted) but Spotify's OAuth session isn't connected yet — the
     // real second half of the unlock chain. The door is TOOLSETS (its JUKEBOX row carries ▶ CONNECT SPOTIFY —
     // Settings has NO spotify surface; the old 'settings' door landed on PROVIDERS with no connect control),
-    // NOT BUILD MODE (the gear is already on station) — distinct from `capdenied` which fires when no JUKEBOX exists.
-    spotify_not_connected: { retryable: false, action: 'toolsets', msg: 'The JUKEBOX is on station, but Spotify isn’t connected yet — connect it in ABILITIES, then try again.' },
+    // NOT BUILD MODE (the gear is already on keep) — distinct from `capdenied` which fires when no JUKEBOX exists.
+    spotify_not_connected: { retryable: false, action: 'toolsets', msg: 'The JUKEBOX is on keep, but Spotify isn’t connected yet — connect it in ABILITIES, then try again.' },
     // the one-run-at-a-time mutex: the SIDECAR message names the holder (age/source) + recovery steps.
     // Keep those details instead of flattening to `unknown` (2026-07-07 escape:
     // the user got "Something went wrong" in a loop while the real answer was one sentence away).
     agent_busy:    { retryable: true,  action: null,       msg: 'That agent is still busy with a previous run — wait for it to finish, or open its conversation and stop the active run.' },
     // the SIDECAR's own token gate said no (a 403 with "forbidden token/origin/host"): after a sidecar
-    // crash+respawn the page still holds the OLD X-StarNet-Token, so EVERY action 403s. Retrying is doomed and
+    // crash+respawn the page still holds the OLD X-Eyehold-Token, so EVERY action 403s. Retrying is doomed and
     // "add a key" is the wrong door — the page needs the fresh boot token, which only a reload fetches.
-    stale_session: { retryable: false, action: 'reload',   msg: 'The station restarted — reload this page to reconnect.' },
-    /* StarNet's OWN spend ledger can't say what was spent (sidecar/loop.js stopForSpend, failureCode
+    stale_session: { retryable: false, action: 'reload',   msg: 'The keep restarted — reload this page to reconnect.' },
+    /* Eyehold's OWN spend ledger can't say what was spent (sidecar/loop.js stopForSpend, failureCode
        spend_history_unavailable): a limit the Commander chose can't be checked, so the run was stopped. NOT a provider
        out of credit (never `billing`), and never the generic "Something went wrong — try again": a retry hits the same
        refusal until the cause is fixed. The copy is REBUILT per cause in friendlyError() (spendUnknownMessage); this is
        the fallback. The door is SETTINGS › SPENDING LIMITS, where the cause and its fix are listed. */
-    spend_unknown: { retryable: false, action: 'budget',   msg: "Your spending limits can't be checked because StarNet's spend history is unknown, so this run was stopped — open SETTINGS › SPENDING LIMITS to fix it." },
+    spend_unknown: { retryable: false, action: 'budget',   msg: "Your spending limits can't be checked because Eyehold's spend history is unknown, so this run was stopped — open SETTINGS › SPENDING LIMITS to fix it." },
     unknown:      { retryable: true,  action: null,       msg: 'Something went wrong on that turn — try again.' }
   };
 
@@ -166,7 +166,7 @@
   // or ECONNRESET. They all mean ONE thing: the response stream died before it finished.
   //
   // ⚠ WHAT THEY DO **NOT** TELL YOU IS *WHERE* IT DIED (2026-07-29). This predicate used to be documented as
-  // "COMMS lost its local sidecar transport" and the copy asserted "Can't reach StarNet's local service —
+  // "COMMS lost its local sidecar transport" and the copy asserted "Can't reach Eyehold's local service —
   // restart the app". That is an UNPROVEN claim, and it is wrong in at least two common cases:
   //   • the MODEL PROVIDER's stream drops mid-answer (undici surfaces exactly `terminated` /
   //     `other side closed` / `premature close` / ECONNRESET) — the sidecar is perfectly healthy;
@@ -187,7 +187,7 @@
 
      This existed as a real user report: diagnostics showed a healthy local engine (uptime, workspace present, the
      report itself was served by it) with five `fetch failed` entries — the sidecar could not reach chatgpt.com /
-     api.openai.com — and the app told them "Can't reach StarNet's local service, restart it". They lost a day.
+     api.openai.com — and the app told them "Can't reach Eyehold's local service, restart it". They lost a day.
 
      WHY THE BUG SURVIVED: sidecar/providers/errorClass.js:168 ALREADY classifies undici transport codes
      correctly, but friendlyerror only `require`s it in node/tests — in the browser classifyApiError is null, so
@@ -203,12 +203,12 @@
   // up. `engineAlive` comes from a token-free GET /api/health probe (Harness.pingEngine) — true/false are
   // measured; null/undefined means nobody probed, so we must not name a culprit at all.
   //   false → the engine really is unreachable: today's copy, now EARNED.
-  //   true  → the engine answered, so "restart StarNet" is actively bad advice; name the stream instead.
+  //   true  → the engine answered, so "restart Eyehold" is actively bad advice; name the stream instead.
   //   null  → unproven. Say only what happened, prescribe the cheap step, and do NOT blame a component.
   function transportMessage(engineAlive) {
     if (engineAlive === false) return KINDS.network.msg;
     if (engineAlive === true) {
-      return "The reply stream stopped before it finished — StarNet's local service answered a health check, so "
+      return "The reply stream stopped before it finished — Eyehold's local service answered a health check, so "
         + 'the app itself is running; this was the connection carrying the reply. Try again.';
     }
     return 'The connection dropped before the reply finished — try again. If it keeps happening, use "copy '
@@ -242,12 +242,12 @@
   }
 
   // Build the beginner capdenied sentence naming the exact power + its gear, e.g.
-  //   "This task needs FILE ACCESS — an INTEL CAB isn't on station. Open BUILD MODE to place it."
+  //   "This task needs FILE ACCESS — an INTEL CAB isn't on keep. Open BUILD MODE to place it."
   // Falls back to the generic KINDS.capdenied copy when the capability can't be parsed.
   function capdeniedMessage(cap) {
     const info = cap && CAP_INFO[cap];
     if (!info) return KINDS.capdenied.msg;
-    return 'This task needs ' + info.power + ' — ' + info.gear + " isn't on station. Open BUILD MODE to place it and try again.";
+    return 'This task needs ' + info.power + ' — ' + info.gear + " isn't on keep. Open BUILD MODE to place it and try again.";
   }
 
   // browser fallback: classify the UI-level error string + optional HTTP status into a kind, using the SAME
@@ -272,7 +272,7 @@
      names grok MODELS too, and sending that user to "add an xAI key" is a door onto the room they are already in. */
   const GROK_OAUTH_VOICE_RE = /grok \(xai\) http|grok[ _-]?oauth|grok sign-?in|xai[ _]oauth/;
   const GROK_ALLOWLIST_RE = /allowlist|not allowed|not enabled|not available|unavailable|access forbidden|\bforbidden\b|\b403\b/;
-  /* StarNet's OWN spend-ledger refusal (sidecar/loop.js stopForSpend → failureCode spend_history_unavailable; every
+  /* Eyehold's OWN spend-ledger refusal (sidecar/loop.js stopForSpend → failureCode spend_history_unavailable; every
      cause's sentence says "the spending limits you set can't be checked"), the failure code itself, and the older
      "spend history is unavailable" wording. Local by construction — never a provider's billing. */
   const SPEND_UNKNOWN_RE = /spending limits you set can['’]t be checked|spend[_ ]history[_ ](?:is[_ ])?unavailable/;
@@ -280,10 +280,10 @@
   function spendUnknownMessage(raw) {
     const low = String(raw || '').toLowerCase();
     if (/interrupted before its spend was recorded/.test(low)) {
-      return "Your spending limits can't be checked — an earlier run stopped before StarNet recorded what it spent, so this run was stopped. Settle that run in SETTINGS › SPENDING LIMITS.";
+      return "Your spending limits can't be checked — an earlier run stopped before Eyehold recorded what it spent, so this run was stopped. Settle that run in SETTINGS › SPENDING LIMITS.";
     }
     if (/could not be saved to disk/.test(low)) {
-      return "Your spending limits can't be checked — StarNet couldn't save its spend history to disk, so this run was stopped. Restart StarNet to recover it; SETTINGS › SPENDING LIMITS shows the details.";
+      return "Your spending limits can't be checked — Eyehold couldn't save its spend history to disk, so this run was stopped. Restart Eyehold to recover it; SETTINGS › SPENDING LIMITS shows the details.";
     }
     return KINDS.spend_unknown.msg;
   }
@@ -300,14 +300,14 @@
     // MUST precede isTransportLoss: that predicate also matches `fetch failed`, and whichever runs first owns the
     // verdict. Upstream is the more specific (and provable) reading, so it wins.
     if (isUpstreamFetchFailure(low)) return 'provider_unreachable';
-    // the sidecar is unreachable (fetch threw — Harness throws "cannot reach the STARNET sidecar…")
+    // the sidecar is unreachable (fetch threw — Harness throws "cannot reach the EYEHOLD sidecar…")
     if (isTransportLoss(low)) return 'network';
     // content / policy beats a status
     if (/content[ _]?policy|moderation|flagged|safety|content_filter/.test(low)) return 'content_policy_blocked';
     // HTTP status from "sidecar HTTP <status>" or an explicit status arg
     const s = status || (low.match(/\b(?:http|status)\s+(\d{3})\b/) ? Number(RegExp.$1) : null);
     if (s) {
-      // OUR OWN sidecar's token gate (crash+respawn → stale X-StarNet-Token): a "sidecar HTTP 403" throw or a
+      // OUR OWN sidecar's token gate (crash+respawn → stale X-Eyehold-Token): a "sidecar HTTP 403" throw or a
       // "forbidden token/origin/host" body means reload for the fresh boot token — never the provider-key door.
       if (s === 403 && (/sidecar http/.test(low) || /\bforbidden\b/.test(low))) return 'stale_session';
       if (s === 401 || s === 403) return NO_CREDIT_RE.test(low) ? 'billing' : 'auth';
@@ -371,9 +371,9 @@
     // ONLY "out of managed credit" means an empty wallet: "Managed credits are unavailable" also says "managed credit",
     // and matching that as managed_credit told funded customers to top up whenever a balance check failed.
     if (/managed credits? (?:are |is )?unavailable/.test(raw.toLowerCase())) {
-      kind = /refused this station'?s link|relink/.test(raw.toLowerCase()) ? 'managed_credit_link' : 'managed_credit_unavailable';
-    } else if (/managed credits? (?:are |is )?held|balance is held by \d+ running starnet run/.test(raw.toLowerCase())) {
-      kind = 'managed_credit_held';   // the balance sits in this station's own running runs' holds — never "out of credit"
+      kind = /refused this keep'?s link|relink/.test(raw.toLowerCase()) ? 'managed_credit_link' : 'managed_credit_unavailable';
+    } else if (/managed credits? (?:are |is )?held|balance is held by \d+ running eyehold run/.test(raw.toLowerCase())) {
+      kind = 'managed_credit_held';   // the balance sits in this keep's own running runs' holds — never "out of credit"
     } else if (/managed credit|add credits in the store|out of managed credit/.test(raw.toLowerCase())) {
       kind = 'managed_credit';
     } else
@@ -416,12 +416,12 @@
       // the per-agent run mutex — UI-level, and the sidecar message already names the holder + doors.
       kind = 'agent_busy';
     } else if (/sidecar http 403\b/.test(raw.toLowerCase()) || (status === 403 && /\bforbidden\b/.test(raw.toLowerCase()))) {
-      // OUR OWN sidecar's token gate said no (stale X-StarNet-Token after a crash+respawn) — UI-level, caught
+      // OUR OWN sidecar's token gate said no (stale X-Eyehold-Token after a crash+respawn) — UI-level, caught
       // BEFORE delegating: the sidecar API classifier would read a bare 403 as provider `auth` and the error row
       // would offer "🔑 Add a key", the wrong door (EL-11 FIX 2). The only fix is the fresh boot token → reload.
       kind = 'stale_session';
     } else if (SPEND_UNKNOWN_RE.test(raw.toLowerCase())) {
-      // StarNet's own spend ledger refused the run (UI-level: the provider classifier would call it `unknown` and
+      // Eyehold's own spend ledger refused the run (UI-level: the provider classifier would call it `unknown` and
       // offer a doomed RETRY) — caught before delegating so both paths open SPENDING LIMITS.
       kind = 'spend_unknown';
     } else if (classifyApiError) {
@@ -453,7 +453,7 @@
     }
     const k = KINDS[kind] || KINDS.unknown;
     // capdenied: name the exact power + gear parsed from the raw message, and route to BUILD MODE (the true unlock —
-    // a station quest minted on this denial completes by PLACEMENT, not a SKILLS toggle).
+    // a keep quest minted on this denial completes by PLACEMENT, not a SKILLS toggle).
     if (kind === 'capdenied') {
       const cap = capFromRaw(raw);
       return { userMessage: capdeniedMessage(cap), kind: kind, retryable: k.retryable, action: k.action, cap: cap, raw: raw };
@@ -488,8 +488,8 @@
       const low = raw.toLowerCase();
       const named = raw.match(/connect an? (.+?) api key\b/i);   // the sidecar guard: providerCredentialError()
       let userMessage = k.msg;
-      if (/link this station to a starnet account/.test(low)) {
-        userMessage = "This station isn't linked to StarNet credits yet — link it under SETTINGS → AI & MODELS → STARNET MANAGED, or connect your own provider key.";
+      if (/link this keep to a eyehold account/.test(low)) {
+        userMessage = "This keep isn't linked to Eyehold credits yet — link it under SETTINGS → AI & MODELS → EYEHOLD MANAGED, or connect your own provider key.";
       } else if (named) {
         userMessage = 'No ' + named[1].trim().replace(/\s+api$/i, '') + ' API key is connected yet — add it under SETTINGS → AI & MODELS, or pick a model from a provider you have already connected.';
       } else if (/configure the (.+?) base url/i.test(raw)) {
@@ -510,29 +510,29 @@
     return { userMessage: k.msg, kind: kind, retryable: k.retryable, action: k.action, raw: raw };
   }
 
-  /* ---- Why a STARNET account-link start failed, from facts only (link-down 2026-10-07). Every failure used to read
+  /* ---- Why a EYEHOLD account-link start failed, from facts only (link-down 2026-10-07). Every failure used to read
      "could not reach the link service", which blamed the cloud for a dead LOCAL engine and gave support nothing.
-     `info` is what the caller saw: { local:true } when the station's own POST never answered (refused, non-JSON, or
+     `info` is what the caller saw: { local:true } when the keep's own POST never answered (refused, non-JSON, or
      Harness.api's deadline), else { status, j } from the sidecar — j.reason is its stable classification of the
      cloud failure (sidecar/index.js linkStartFailure). Lower-case lead, no trailing period (callers add their own). */
   function linkStartFailure(info) {
     const i = info || {}, j = i.j || {};
-    if (i.local) return 'StarNet\'s engine on this computer isn\'t answering, so the link could not start — restart StarNet, then try again';
-    if (i.status === 503 && j.degraded) return 'StarNet\'s engine on this computer stopped after an error, so the link could not start — restart StarNet, then try again';
-    if (i.status === 404 && j.error === 'linking_unavailable') return 'account linking isn\'t available in this build of StarNet';
+    if (i.local) return 'Eyehold\'s engine on this computer isn\'t answering, so the link could not start — restart Eyehold, then try again';
+    if (i.status === 503 && j.degraded) return 'Eyehold\'s engine on this computer stopped after an error, so the link could not start — restart Eyehold, then try again';
+    if (i.status === 404 && j.error === 'linking_unavailable') return 'account linking isn\'t available in this build of Eyehold';
     const detail = j.detail ? ' (' + String(j.detail) + ')' : '';
-    if (j.reason === 'tls') return 'security software on this computer (an antivirus HTTPS scan or a proxy) is blocking StarNet\'s secure connection to the StarNet account service' + detail + ' — allow StarNet, then try again';
-    if (j.reason === 'timeout') return 'the StarNet account service did not answer in time — check a VPN or firewall, then try again';
-    if (j.reason === 'dns' || j.reason === 'unreachable') return 'StarNet could not reach the StarNet account service from this computer' + detail + ' — check a VPN or firewall, then try again';
-    if (j.reason === 'cloud_5xx') return 'the StarNet account service is having trouble right now — try again in a minute';
-    if (/^cloud_\d+$/.test(String(j.reason || ''))) return 'the StarNet account service turned the link request down (http ' + String(j.reason).slice(6) + ') — try again';
+    if (j.reason === 'tls') return 'security software on this computer (an antivirus HTTPS scan or a proxy) is blocking Eyehold\'s secure connection to the Eyehold account service' + detail + ' — allow Eyehold, then try again';
+    if (j.reason === 'timeout') return 'the Eyehold account service did not answer in time — check a VPN or firewall, then try again';
+    if (j.reason === 'dns' || j.reason === 'unreachable') return 'Eyehold could not reach the Eyehold account service from this computer' + detail + ' — check a VPN or firewall, then try again';
+    if (j.reason === 'cloud_5xx') return 'the Eyehold account service is having trouble right now — try again in a minute';
+    if (/^cloud_\d+$/.test(String(j.reason || ''))) return 'the Eyehold account service turned the link request down (http ' + String(j.reason).slice(6) + ') — try again';
     return 'could not reach the link service — try again';
   }
 
   /* ---- The DOOR: map a verdict to a ready-to-wire action button { label, run }. ONE place owns every
      error→surface route, so the consumer (chat.js offerRetry) never re-derives per-action labels/wiring, and a
      new door is added here alone. Returns null when the verdict has no actionable door (a plain retry / nothing).
-     run() is a no-op-safe opener: it feature-detects each global (Build / StationUI / Harness) so it degrades
+     run() is a no-op-safe opener: it feature-detects each global (Build / KeepUI / Harness) so it degrades
      quietly if a surface isn't loaded, never throwing. Routing is context-aware where it matters:
        • auth/oauth → if ChatGPT (Codex) is already connected, offer "sign in with ChatGPT"; else the key field.
        • capdenied  → BUILD MODE (Build.open) — place the missing gear the message just named.
@@ -549,11 +549,11 @@
   // open Settings, landing on a specific section when the host supports it (Lane C's openTerm(key, section)); the
   // bare openTerm('settings') is the graceful fallback so this works today.
   function openSettings(section) {
-    if (typeof StationUI === 'undefined') return;
+    if (typeof KeepUI === 'undefined') return;
     try {
-      if (section && StationUI.openTerm && StationUI.openTerm.length >= 2) { StationUI.openTerm('settings', section); return; }
-      if (StationUI.openTerm) StationUI.openTerm('settings');
-    } catch (_) { try { if (StationUI.openTerm) StationUI.openTerm('settings'); } catch (_) {} }
+      if (section && KeepUI.openTerm && KeepUI.openTerm.length >= 2) { KeepUI.openTerm('settings', section); return; }
+      if (KeepUI.openTerm) KeepUI.openTerm('settings');
+    } catch (_) { try { if (KeepUI.openTerm) KeepUI.openTerm('settings'); } catch (_) {} }
   }
   /* connector_required (beginner seam Lane 1, 2026-08-22): the bus event the MCP manager emits alongside its
      "connector X is not connected" throw becomes ONE post-run chip that opens the ABILITIES window ALREADY
@@ -594,8 +594,8 @@
       label: label, connectorId: id, kind: ev.kind || 'mcp',
       run: () => {
         try {
-          if (typeof StationUI === 'undefined' || !StationUI.openTerm) return false;
-          StationUI.openTerm('connectors', 'catalog');
+          if (typeof KeepUI === 'undefined' || !KeepUI.openTerm) return false;
+          KeepUI.openTerm('connectors', 'catalog');
           if (typeof document !== 'undefined') routeConsoleSearch(document, id);
           return true;
         } catch (_) { return false; }
@@ -626,7 +626,7 @@
         // spotify_not_connected: the connect flow lives on the ABILITIES window's JUKEBOX row (setupSpotify) —
         // the only surface with a ▶ CONNECT SPOTIFY control. The action KEY stays 'toolsets' (internal, and the
         // shelf inside is still called TOOLSETS); only the LABEL follows the dock button, which reads ABILITIES.
-        return { label: '⇄ OPEN ABILITIES', run: () => { try { if (typeof StationUI !== 'undefined' && StationUI.openTerm) StationUI.openTerm('connectors'); } catch (_) {} } };
+        return { label: '⇄ OPEN ABILITIES', run: () => { try { if (typeof KeepUI !== 'undefined' && KeepUI.openTerm) KeepUI.openTerm('connectors'); } catch (_) {} } };
       case 'settings':
         // Grok's OAuth sign-in is 403-allowlisted off for this account — the honest door is the xAI (API KEY)
         // provider, not a doomed reconnect. Lands on the PROVIDERS section where the xAI key row lives.
@@ -670,7 +670,7 @@
         // only surface that clears the refusal. No retry chip rides with it: a retry hits the same refusal.
         return { label: '$ OPEN SPENDING LIMITS', run: () => openSettings('budget') };
       case 'skills':
-        return { label: '✦ OPEN SKILL LIBRARY', run: () => { try { if (typeof StationUI !== 'undefined' && StationUI.openTerm) StationUI.openTerm('skills'); } catch (_) {} } };   // 'skills' aliases into ABILITIES ▸ SKILL LIBRARY (NAV CONDENSE 2)
+        return { label: '✦ OPEN SKILL LIBRARY', run: () => { try { if (typeof KeepUI !== 'undefined' && KeepUI.openTerm) KeepUI.openTerm('skills'); } catch (_) {} } };   // 'skills' aliases into ABILITIES ▸ SKILL LIBRARY (NAV CONDENSE 2)
       default:
         return null;
     }

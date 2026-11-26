@@ -36,8 +36,8 @@ const PROBE = `(() => {
   const flat = (bk) => {   // composite whatever bake() / bakeIncremental() returned into one canvas
     const o = mk(bk.W, bk.H);
     o.g.fillStyle = '#000'; o.g.fillRect(0, 0, bk.W, bk.H);
-    StationBake.drawBase(o.g, bk, 0, 0);
-    StationBake.drawLight(o.g, bk, 0, 0);
+    KeepBake.drawBase(o.g, bk, 0, 0);
+    KeepBake.drawLight(o.g, bk, 0, 0);
     return o;
   };
   const diff = (A, B) => {
@@ -63,26 +63,26 @@ const PROBE = `(() => {
     st.setHull(ids[6], { mat: 'stone', style: 'sterile' });
     st.setHull(ids[8], { mat: 'clapboard', style: 'bone' });
     const geo = st.projectGeometry();
-    const mono = flat(StationBake.bake(geo));
-    const chunked = flat(StationBake.bakeIncremental(geo, null, null, {}));
+    const mono = flat(KeepBake.bake(geo));
+    const chunked = flat(KeepBake.bakeIncremental(geo, null, null, {}));
     out.A_multiSkinChunkParity = diff(mono, chunked);
   }
 
   // ---- B / C: incremental re-clad ----
   {
     const { st, ids } = build();
-    let prev = StationBake.bakeIncremental(st.projectGeometry(), null, null, {});
+    let prev = KeepBake.bakeIncremental(st.projectGeometry(), null, null, {});
     // B — clad ONE room, invalidate only its rects (what setHull's emit gives the renderer)
     st.setHull(ids[1], { mat: 'timber', style: 'walnut' });
     let geo = st.projectGeometry();
-    prev = StationBake.bakeIncremental(geo, prev, st.doc().rooms[ids[1]].rects, {});
-    out.B_afterFirstReclad = diff(flat(StationBake.bake(geo)), flat(prev));
+    prev = KeepBake.bakeIncremental(geo, prev, st.doc().rooms[ids[1]].rects, {});
+    out.B_afterFirstReclad = diff(flat(KeepBake.bake(geo)), flat(prev));
     // C — clad a SECOND room the same way
     st.setHull(ids[2], { mat: 'brick', style: 'rust' });
     geo = st.projectGeometry();
-    prev = StationBake.bakeIncremental(geo, prev, st.doc().rooms[ids[2]].rects, {});
-    out.C_afterSecondReclad = diff(flat(StationBake.bake(geo)), flat(prev));
-    const shot = flat(prev), ref = flat(StationBake.bake(geo));
+    prev = KeepBake.bakeIncremental(geo, prev, st.doc().rooms[ids[2]].rects, {});
+    out.C_afterSecondReclad = diff(flat(KeepBake.bake(geo)), flat(prev));
+    const shot = flat(prev), ref = flat(KeepBake.bake(geo));
     out.crops = { c_incremental: shot.c.toDataURL('image/png').split(',')[1],
                   c_correct: ref.c.toDataURL('image/png').split(',')[1] };
   }

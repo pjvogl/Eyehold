@@ -21,11 +21,11 @@ recoveryEvidence: September 18 owner-supplied diagnostics show all five catalog 
 
 ## Symptom
 
-Opening StarNet produces a page-side boot-guard failure naming `shared/specialties.js` as the single failed script. The reported page path is `/`; the user agent identifies Mac WebKit. The report does not include the application version, full origin, requested resource URL, or native startup log.
+Opening Eyehold produces a page-side boot-guard failure naming `shared/specialties.js` as the single failed script. The reported page path is `/`; the user agent identifies Mac WebKit. The report does not include the application version, full origin, requested resource URL, or native startup log.
 
 ## Repro
 
-Customer operation: open the reported installation and observe the boot guard. Exact local reproduction is not established. Capture the affected build, full page/resource origins, native startup log and HTTP status for the failed resource before changing or resetting the station.
+Customer operation: open the reported installation and observe the boot guard. Exact local reproduction is not established. Capture the affected build, full page/resource origins, native startup log and HTTP status for the failed resource before changing or resetting the keep.
 
 ## Evidence
 
@@ -43,7 +43,7 @@ September 18: REOPENED. New diagnostics explicitly show all five retries exhaust
 
 2026-09-16 source hardening for 0.12.0 (788578969): shared/specialties.js is the one boot script the desktop page fetches from the sidecar port, so an engine that answers late paints exactly this banner and RELOAD clears it. BootGuard now retries a failed shared/ catalog load with backoff (~27 s, the shell port-wait window) and, after a proven successful retry, reloads the page once (bounded to two auto-reloads per tab) so the parser-ordered modules bind the real catalog; only spent retries render the fatal banner, which now records the retry ledger for support. Covered by test/bootguard.test.js (retry success, exhaustion, reload budget, no retry for bundled app/ scripts) and proven live over CDP with a first request to /shared/specialties.js forced to fail. The original Mac origin and build remain uncorrelated; this closes the symptom class under the owner engineering-acceptance rule of 2026-09-11.
 
-Source hardening is included; affected-machine recovery remains pending. A fresh September 16 private reply identifies the installed Mac app and confirms that the public version still fails. It does not retest unpublished 0.12.0. The separate credit-usage concern is tracked independently and is not explained by this source fix. Do not merge this symptom into eaaa3ec8 (native station data unreachable after relink) without evidence. A September 13 Windows Edge report also names the shared catalog, but its full origin/build is unknown; it does not prove the same deployment or cause.
+Source hardening is included; affected-machine recovery remains pending. A fresh September 16 private reply identifies the installed Mac app and confirms that the public version still fails. It does not retest unpublished 0.12.0. The separate credit-usage concern is tracked independently and is not explained by this source fix. Do not merge this symptom into eaaa3ec8 (native keep data unreachable after relink) without evidence. A September 13 Windows Edge report also names the shared catalog, but its full origin/build is unknown; it does not prove the same deployment or cause.
 
 ## Regression
 
@@ -51,4 +51,4 @@ No exact before/after customer reproduction yet. Current Windows module loading 
 
 ## Sibling coverage
 
-{"adapters":[{"target":"affected Mac WebKit script request","state":"blocked","reason":"The report omits the actual origin, build and failed resource response."}],"entrypoints":[{"target":"native app or website entry","state":"blocked","reason":"A pathname of / does not identify the full page origin; obtain the original entry point."}],"displays":[{"target":"boot-guard diagnostic","state":"covered","test":"test/bootguard.test.js","scenario":"station-owned shared script failures remain fatal","gate":"fast"}],"lifecycle":[{"target":"affected Mac restart and resource loading","state":"blocked","reason":"No affected installer, startup log or successful restart was supplied."}]}
+{"adapters":[{"target":"affected Mac WebKit script request","state":"blocked","reason":"The report omits the actual origin, build and failed resource response."}],"entrypoints":[{"target":"native app or website entry","state":"blocked","reason":"A pathname of / does not identify the full page origin; obtain the original entry point."}],"displays":[{"target":"boot-guard diagnostic","state":"covered","test":"test/bootguard.test.js","scenario":"keep-owned shared script failures remain fatal","gate":"fast"}],"lifecycle":[{"target":"affected Mac restart and resource loading","state":"blocked","reason":"No affected installer, startup log or successful restart was supplied."}]}

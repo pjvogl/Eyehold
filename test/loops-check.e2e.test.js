@@ -68,7 +68,7 @@ function startMock(defaultReply) {
 
 function boot(port, env, attemptsLeft) {
   return new Promise((resolve, reject) => {
-    const child = spawn(process.execPath, [INDEX], { env: Object.assign({}, process.env, env, { SKYNET_PORT: String(port) }), stdio: ['ignore', 'pipe', 'pipe'] });
+    const child = spawn(process.execPath, [INDEX], { env: Object.assign({}, process.env, env, { EYEHOLD_PORT: String(port) }), stdio: ['ignore', 'pipe', 'pipe'] });
     let out = '', settled = false;
     const onData = d => {
       out += d.toString();
@@ -121,16 +121,16 @@ function makeRepo() {
   const ws = fs.mkdtempSync(path.join(os.tmpdir(), 'sk-loopchk-'));
   const repo = makeRepo();
   const env = {
-    SKYNET_WORKSPACES: ws, SKYNET_OPENROUTER_BASE: mock.base,
-    SKYNET_OPENROUTER_KEY: 'sk-or-v1-check-fake', SKYNET_DEFAULT_MODEL: 'test/model',
-    SKYNET_LOOP_TICK_MS: '1000', SKYNET_FULL_ACCESS: '1'
+    EYEHOLD_WORKSPACES: ws, EYEHOLD_OPENROUTER_BASE: mock.base,
+    EYEHOLD_OPENROUTER_KEY: 'sk-or-v1-check-fake', EYEHOLD_DEFAULT_MODEL: 'test/model',
+    EYEHOLD_LOOP_TICK_MS: '1000', EYEHOLD_FULL_ACCESS: '1'
   };
   let child, port;
   try {
     ({ child, port } = await boot(8940 + (process.pid % 20), env, 20));
     const B = 'http://' + HOST + ':' + port;
     const token = await bootToken(B, B);
-    const headers = { 'Content-Type': 'application/json', 'X-StarNet-Token': token, Origin: B };
+    const headers = { 'Content-Type': 'application/json', 'X-Eyehold-Token': token, Origin: B };
     const mk = (body) => fetch(B + '/api/loops', { method: 'POST', headers, body: JSON.stringify(body) });
 
     /* ---- an UNBLESSED root: the loop must stand down BEFORE it spends -----------------------------------
@@ -144,7 +144,7 @@ function makeRepo() {
       const st = await until(B, headers, s => (s.loops.find(l => l.id === id) || {}).binding === 'precheck',
         'the loop to stand down on an unblessed root');
       const l = st.loops.find(x => x.id === id);
-      A.eq(l.iterationCount, 0, 'NOT ONE pass was spent on a folder the station has not approved');
+      A.eq(l.iterationCount, 0, 'NOT ONE pass was spent on a folder the keep has not approved');
       A.eq(l.binding, 'precheck', 'and the gate names the reason');
       A.ok(/not approved/i.test(l.bindingDetail || ''), 'in words that say what is wrong: ' + l.bindingDetail);
       A.ok((l.bindingDetail || '').indexOf('dogfood') >= 0 || /re-approve/.test(l.bindingDetail || ''),

@@ -18,7 +18,7 @@ for (const root of ['frontend', 'website/app']) {
   const document = new Node(), window = new Node(), panel = new Node(document), child = new Node(panel), sibling = new Node(panel), outside = new Node(document);
   document.createElement = () => new Node(); document.documentElement = new Node(document);
   const uploads = [], notices = [], input = { value: 'keep draft', focus() { this.focused = true; } };
-  const ctx = { document, window, input, activeWs: { id: 'direct' }, el: () => panel, handleFiles: files => uploads.push(files), StationUI: { notify: text => notices.push(text) } };
+  const ctx = { document, window, input, activeWs: { id: 'direct' }, el: () => panel, handleFiles: files => uploads.push(files), KeepUI: { notify: text => notices.push(text) } };
   vm.runInNewContext(fn + ';this.wire = wireChatDropTarget;', ctx);
   ctx.wire(); const hint = panel.child;
   const drag = () => ({ dataTransfer: { types: ['Files'], files: [] } });

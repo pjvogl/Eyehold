@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-/* dev/starter-shelf-shot.mjs — live proof for the STARTER GEAR card (replaces STATION ORDERS):
+/* dev/starter-shelf-shot.mjs — live proof for the STARTER GEAR card (replaces KEEP ORDERS):
  * fresh floor shows the 5 powers, rows tick BY GRANT as props land, the card retires at 5/5
  * without burning the dismiss key, and reclaiming a power re-summons it. Runs in real Chrome
  * over CDP because the card's refresh rides the draw-loop poll — rAF never fires in the
@@ -84,7 +84,7 @@ async function main() {
     if (done.card !== null || Number(key) !== 0) throw new Error('card did not self-retire cleanly: ' + JSON.stringify({ done, key }));
 
     // 5. reclaim the only dish → the card re-summons at 4/5
-    await evalJS(cdp, `(() => { const st = Build.__test__.station();
+    await evalJS(cdp, `(() => { const st = Build.__test__.keep();
       const dish = st.props().find(p => p.t === 'comms_dish'); return JSON.stringify(st.removeProp(dish.id)); })()`);
     await sleep(2600);
     const back = JSON.parse(await evalJS(cdp, CARD));

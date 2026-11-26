@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// dev/walljoin-live.mjs — render Andrew's LIVE station (agent.save.json) through the current
+// dev/walljoin-live.mjs — render Andrew's LIVE keep (agent.save.json) through the current
 // bake and dump the full composited PNG, to locate the wall-junction overlap defects he circled
 // on 2026-08-11. Pattern per dev/seamjoin-proof.mjs.
 //   node dev/walljoin-live.mjs
@@ -15,14 +15,14 @@ const URL = `http://127.0.0.1:${PORT}/`;
 
 const savePath = join(process.env.APPDATA, 'ai.skynet.harness', 'workspaces', 'agent.save.json');
 const save = JSON.parse(readFileSync(savePath, 'utf8'));
-const stationDoc = save.doc && save.doc.station;
-if (!stationDoc) { console.error('no .doc.station in save'); process.exit(2); }
+const keepDoc = save.doc && save.doc.keep;
+if (!keepDoc) { console.error('no .doc.keep in save'); process.exit(2); }
 
 const PROBE = `(() => {
-  const doc = ${JSON.stringify(JSON.stringify(stationDoc))};
+  const doc = ${JSON.stringify(JSON.stringify(keepDoc))};
   const st = WorldModel.deserialize(JSON.parse(doc));
   const geo = st.projectGeometry();
-  const bk = StationBake.bake(geo);
+  const bk = KeepBake.bake(geo);
   const mk = (w, h) => { const c = document.createElement('canvas'); c.width = w; c.height = h; const g = c.getContext('2d'); g.imageSmoothingEnabled = false; return { c, g }; };
   const lit = mk(bk.W, bk.H);
   lit.g.drawImage(bk.baseCv, 0, 0); lit.g.drawImage(bk.lightCv, 0, 0);
@@ -52,9 +52,9 @@ if (!(await waitDevReady(cdp, evalJS, { url: URL }))) {
 const data = JSON.parse(await evalJS(cdp, PROBE));
 const dir = process.env.SKYNET_WALLJOIN_DIR || join(process.cwd(), 'dev', '.shots-walljoin');
 mkdirSync(dir, { recursive: true });
-writeFileSync(join(dir, 'station.png'), Buffer.from(data.png, 'base64'));
+writeFileSync(join(dir, 'keep.png'), Buffer.from(data.png, 'base64'));
 delete data.png;
 console.log(JSON.stringify(data, null, 1));
-console.error('station → ' + dir);
+console.error('keep → ' + dir);
 try { proc.kill(); } catch {} try { side.kill(); } catch {}
 process.exit(0);

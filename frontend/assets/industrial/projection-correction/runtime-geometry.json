@@ -173,7 +173,7 @@
       "image": "desk.png",
       "width": 1207,
       "height": 804,
-      "sha256": "ab17bcf9ff336e27e299c2dda54b9c63e916a761328ceaa00b083c15c719d657",
+      "sha256": "6ab27f01cb5ff96091fafac4325d4ead7d70df7de7609a26e11e224cc3d33864",
       "crop": {
         "x": 0,
         "y": 0,
@@ -185,7 +185,7 @@
       "image": "desk-w.png",
       "width": 128,
       "height": 190,
-      "sha256": "8302a63ef00bc673e46c074dae162a48de9260ea323ee89fec943959053a8de1",
+      "sha256": "d027cb4027b8f649e7c0c968688e8ea9178649a9b72287f7437b8a7ace409a45",
       "crop": {
         "x": 0,
         "y": 0,
@@ -197,7 +197,7 @@
       "image": "desk-n.png",
       "width": 597,
       "height": 469,
-      "sha256": "aba5a15e71fff142c85a8350b1247593b1f0ce26a754d96ff5f15a071988de54",
+      "sha256": "7bf9ff6a2dcf44a59ca959b0eab22e638ef2115ec7b3005063f06576688d546a",
       "crop": {
         "x": 0,
         "y": 0,
@@ -209,7 +209,7 @@
       "image": "desk-e.png",
       "width": 138,
       "height": 190,
-      "sha256": "6560272282713dd12238be0eb9924906a3f5f314c86802f8c7d2e0c528fad99f",
+      "sha256": "207b545cd9376760a7c374947021d69e39a41d4d01ab0e7c7edf6568f0b60255",
       "crop": {
         "x": 0,
         "y": 0,
@@ -317,7 +317,7 @@
       "image": "workbench.png",
       "width": 1515,
       "height": 909,
-      "sha256": "52c33e1e5697ae01fac5a868993c7efb0f3b45e5de96b4075922ab628065104d",
+      "sha256": "78c53650c11876be8c37eb473dbd0423dc2cc7c1127dd8977ab64b1b9d1ffdfc",
       "crop": {
         "x": 0,
         "y": 0,
@@ -437,7 +437,7 @@
       "image": "comms_dish.png",
       "width": 777,
       "height": 1039,
-      "sha256": "4c16b96d5f74172865523b0653082d41fca8dc1187d33dea1f130a575ad8de47",
+      "sha256": "02b08f1df2aefe1f9dd13de76424f76269d06cfdf7bf02bcba935b72ea5a23e8",
       "crop": {
         "x": 0,
         "y": 0,
@@ -473,7 +473,7 @@
       "image": "war_intelcab.png",
       "width": 950,
       "height": 930,
-      "sha256": "4f388de58644cf145e098098baaf81956c1a731ae13a2dbf7039378620064266",
+      "sha256": "5bf12cfec361329e237cd0dc3a3016b5ac402a7286591137943719a201178c4d",
       "crop": {
         "x": 0,
         "y": 0,
@@ -545,7 +545,7 @@
       "image": "gigs_servercart.png",
       "width": 1071,
       "height": 1004,
-      "sha256": "c5f4fd180edb503b05ba8ece2d6907ac6473e565ec4227104873a1286d69e23f",
+      "sha256": "f7ff637dbc074d533c0a1deb62db9b0817b702e0dc02f5d4cb9afa8160ab79e0",
       "crop": {
         "x": 0,
         "y": 0,
@@ -569,7 +569,7 @@
       "image": "studio.png",
       "width": 1422,
       "height": 856,
-      "sha256": "8dc7919e209f47a7cd73f476b8529131d1f2b9d1d5cd02639bbb9b3c310f86cf",
+      "sha256": "bef447dddcad6becdfc47fba05d906db0b6e4d8b3659a2438c489cfb1ef978c5",
       "crop": {
         "x": 0,
         "y": 0,
@@ -1337,7 +1337,7 @@
       "image": "plant.png",
       "width": 640,
       "height": 1412,
-      "sha256": "cd139153fd94f1b9ecf64aabd7d90b492798d3e4d7df92ee78caa2f2398a8bdf",
+      "sha256": "dd84673b4318cd0dba40c5570d316d667df2820958c9fb32a5cb9ccf5eb1a417",
       "crop": {
         "x": 0,
         "y": 0,

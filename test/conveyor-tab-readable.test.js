@@ -7,7 +7,7 @@
      · MACHINES: three across, each the prop tile — the machine's own art, its name, its wiring drawn small; no sentence;
      · LINES: BUILD YOUR OWN LINE on top, then two across — the line's miniature, its plain name, one small line (steps · size,
        or its fit); no sentence, no catalog tag, no footnote;
-     · every sentence a tile used to print is its hover tip (data-tip, the station tooltip) and its accessible description;
+     · every sentence a tile used to print is its hover tip (data-tip, the keep tooltip) and its accessible description;
      · section names are names only (no blurb line), and no intro paragraph opens the tab or the BELT tool;
      · the tiles wear the prop tile's glass (one edge, the glass fill, 8px) and its type roles (names compact, small lines meta),
        so nothing on the tab is under 14px. */

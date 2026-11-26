@@ -20,11 +20,11 @@ recovery: unconfirmed
 
 ## Symptom
 
-The rebuilt station has new props but agents and portraits still show the old artwork.
+The rebuilt keep has new props but agents and portraits still show the old artwork.
 
 ## Repro
 
-1. Install candidate 725664380 and open an existing station normally, without a skinSet query.
+1. Install candidate 725664380 and open an existing keep normally, without a skinSet query.
 2. Inspect the crew floor and portraits.
 3. Observe that saved skin IDs still resolve to legacy DATA.SKINS sets. The selected art is visible only in the localhost study preview.
 
@@ -34,7 +34,7 @@ The rebuilt station has new props but agents and portraits still show the old ar
 
 ## Verdict
 
-Source fix df4d1ba25 promotes the approved roster and complete motion tracks, maps existing IDs without rewriting saves, and aligns leader loading, scaling, portraits, and preload. The retired duplicate minionchar resolves to approved Station Minion. Source proof passes; final installed acceptance remains required.
+Source fix df4d1ba25 promotes the approved roster and complete motion tracks, maps existing IDs without rewriting saves, and aligns leader loading, scaling, portraits, and preload. The retired duplicate minionchar resolves to approved Keep Minion. Source proof passes; final installed acceptance remains required.
 
 ## Regression
 
@@ -46,5 +46,5 @@ Source fix df4d1ba25 promotes the approved roster and complete motion tracks, ma
   "adapters": [{"target":"normal sprite loader","state":"covered","test":"test/world-immersion-characters.test.js","scenario":"full selected tracks load and draw without preview hooks","gate":"fast"}],
   "entrypoints": [{"target":"persisted and default skin IDs","state":"covered","test":"test/world-immersion-characters.test.js","scenario":"saved IDs resolve to approved sets and fallback is approved Android","gate":"fast"}],
   "displays": [{"target":"floor and animation scale","state":"covered","test":"test/world-immersion-characters.test.js","scenario":"selected native scale and per-frame floor contact","gate":"fast"},{"target":"installed portraits and picker","state":"blocked","reason":"Requires final installed candidate verification."}],
-  "lifecycle": [{"target":"installed restart with saved station","state":"blocked","reason":"Requires rebuilt candidate and persisted identity comparison."}]
+  "lifecycle": [{"target":"installed restart with saved keep","state":"blocked","reason":"Requires rebuilt candidate and persisted identity comparison."}]
 }

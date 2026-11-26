@@ -2,9 +2,9 @@
    2026-07-17).
 
    THE BUG: /api/run stamped the away clock ONCE at run start. A long "watch the model work" session (the
-   Commander commissioning real work and watching it stream) had no pointer/keyboard input in the StarNet window,
+   Commander commissioning real work and watching it stream) had no pointer/keyboard input in the Eyehold window,
    so 15 minutes into their OWN run the sidecar flipped away:true and night-shift beats started firing WHILE the
-   Commander sat there working — "starnet constantly thinks I'm idle when clearly I'm working".
+   Commander sat there working — "eyehold constantly thinks I'm idle when clearly I'm working".
 
    THE FIX (this test pins it over HTTP against the real sidecar + a mocked provider):
      · while an interactive /api/run is streaming, GET /api/nightshift/status reports away:false no matter how
@@ -63,7 +63,7 @@ function startMockOpenRouter() {
 
 function boot(port, env, attemptsLeft) {
   return new Promise((resolve, reject) => {
-    const child = spawn(process.execPath, [INDEX], { env: Object.assign({}, process.env, env, { SKYNET_PORT: String(port) }), stdio: ['ignore', 'pipe', 'pipe'] });
+    const child = spawn(process.execPath, [INDEX], { env: Object.assign({}, process.env, env, { EYEHOLD_PORT: String(port) }), stdio: ['ignore', 'pipe', 'pipe'] });
     let out = '', settled = false;
     const onData = d => {
       out += d.toString();
@@ -80,15 +80,15 @@ function kill(child) { return new Promise(r => { try { child.on('exit', () => r(
 (async () => {
   const mock = await startMockOpenRouter();
   const ws = fs.mkdtempSync(path.join(os.tmpdir(), 'sk-nspresence-ws-'));
-  const env = { SKYNET_WORKSPACES: ws, SKYNET_OPENROUTER_BASE: mock.base, SKYNET_NIGHTSHIFT_AWAY_MS: String(AWAY_MS) };
+  const env = { EYEHOLD_WORKSPACES: ws, EYEHOLD_OPENROUTER_BASE: mock.base, EYEHOLD_NIGHTSHIFT_AWAY_MS: String(AWAY_MS) };
   const { child, port } = await boot(8960 + (process.pid % 25), env, 20);
   const B = 'http://' + HOST + ':' + port;
   try {
     const token = await bootToken(B, B);
-    const headers = { 'Content-Type': 'application/json', 'X-StarNet-Token': token, Origin: B };
+    const headers = { 'Content-Type': 'application/json', 'X-Eyehold-Token': token, Origin: B };
     const status = async () => (await fetch(B + '/api/nightshift/status', { headers })).json();
 
-    // arm the shift by raising the dial (the same call a live station makes).
+    // arm the shift by raising the dial (the same call a live keep makes).
     const arm = await (await fetch(B + '/api/autonomy/posture', { method: 'POST', headers, body: JSON.stringify({ posture: { initiative: 'leash', reach: 'sandbox', leashPerDay: 3 } }) })).json();
     A.ok(arm.ok === true, 'raising the dial armed the night shift');
 

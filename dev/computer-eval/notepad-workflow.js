@@ -11,9 +11,9 @@ const { makeWin32DesktopDriver } = require('../../sidecar/tools/builtin/win32des
 
 async function run(binary, directory) {
   const root = path.resolve(directory); fs.mkdirSync(root, { recursive: true });
-  const name = 'starnet-cua-' + randomUUID().slice(0, 8) + '.txt';
+  const name = 'eyehold-cua-' + randomUUID().slice(0, 8) + '.txt';
   const file = path.join(root, name);
-  const initial = 'StarNet evaluation fixture.\r\n';
+  const initial = 'Eyehold evaluation fixture.\r\n';
   const added = 'Background editing verified.';
   fs.writeFileSync(file, initial, { flag: 'wx' });
   const measurements = [];

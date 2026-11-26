@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-/* scripts/qa/guardian.mjs — the Self-Testing Station's GREEN GUARDIAN (lane Q1).
+/* scripts/qa/guardian.mjs — the Self-Testing Keep's GREEN GUARDIAN (lane Q1).
  *
  * WHY THIS EXISTS: five-plus sessions merge into trunk in parallel and breakage is
  * currently discovered by Andrew using the app. The Guardian answers ONE question on a
@@ -445,7 +445,7 @@ if (INVOKED_DIRECTLY) {
    * holder refreshes on a timer; a crashed holder's lock goes stale and is reclaimed. Default
    * behavior on a live lock is SKIP (a redundant trigger exits 0 without touching STATUS/findings —
    * the running cycle already covers this or a newer trunk); pass --wait to queue instead. */
-  const LOCK_FILE = process.env.SKYNET_GUARDIAN_LOCK || path.join(os.tmpdir(), 'starnet-qa-guardian.lock');
+  const LOCK_FILE = process.env.SKYNET_GUARDIAN_LOCK || path.join(os.tmpdir(), 'eyehold-qa-guardian.lock');
   const LOCK_HEARTBEAT_MS = coerceTimeoutMs(process.env.SKYNET_GUARDIAN_LOCK_HEARTBEAT_MS || 30000, 30000);
   // Stale window: comfortably larger than the heartbeat cadence so a live-but-busy holder (a gate
   // can run up to its step deadline) is never mistaken for dead — its heartbeat timer keeps firing.
@@ -615,8 +615,8 @@ if (INVOKED_DIRECTLY) {
     // Route the Guardian repo's operational ledger explicitly so already-triaged frame noise is
     // review-clean there too. Novel fingerprints remain absent and therefore still fail closed.
     if (step.id === 'golden') {
-      env.STARNET_QA_FINDINGS_DIR = path.join(QA_DIR, 'findings');
-      env.STARNET_QA_KNOWN_FILE = path.join(QA_DIR, 'KNOWN_ISSUES.md');
+      env.EYEHOLD_QA_FINDINGS_DIR = path.join(QA_DIR, 'findings');
+      env.EYEHOLD_QA_KNOWN_FILE = path.join(QA_DIR, 'KNOWN_ISSUES.md');
     }
     const logFile = path.join(cycleDir, step.id + '.log');
     log(step.id + ' — ' + step.title);

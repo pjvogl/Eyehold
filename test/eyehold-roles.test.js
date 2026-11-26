@@ -10,4 +10,6 @@ for(const id of Object.keys(roles.ROLES)){
 assert.equal(roles.compose('unassigned'),null);
 assert.equal(roles.compose('__proto__'),null);
 assert.match(roles.compose('keep').manual,/never silently retry indefinitely/i);
+assert.match(roles.compose('moonleaf').manual,/Market outbox/);
+assert.match(roles.compose('moonleaf').manual,/Do not create a Stripe product/);
 console.log('Eyehold seven opt-in specialist instructions OK');

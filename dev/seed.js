@@ -1,4 +1,4 @@
-/* dev/seed.js — the one-command dev launcher: boot a StarNet sidecar that is ALREADY onboarded.
+/* dev/seed.js — the one-command dev launcher: boot a Eyehold sidecar that is ALREADY onboarded.
 
    Why this exists: every fresh sidecar launch (a new SKYNET_WORKSPACES dir + a new browser origin/port)
    used to drop you at the title screen → connect screen (paste key, pick model) → the WAKE ceremony,
@@ -13,7 +13,7 @@
      3. Launches `node sidecar/index.js` in DEV mode: SKYNET_DEV=1 (the frontend auto-boot hook) +
         SKYNET_FULL_ACCESS=1 (no consent prompts mid-test) + the seeded workspace + your key/model.
 
-   Result: open the printed URL and you land straight in the live station, agent awake, ready to chat.
+   Result: open the printed URL and you land straight in the live keep, agent awake, ready to chat.
    No BEGIN, no key paste, no ceremony — on any port.
 
    Dev-only. The SKYNET_DEV flag is never set in a packaged build, so none of this can leak to shipping. */
@@ -63,7 +63,7 @@ function materializeWorkspace(model) {
   fs.mkdirSync(SCRATCH, { recursive: true });
   // --keep must actually KEEP the previous session's state. The old unconditional cpSync overwrote
   // agent.save.json/agent.roster.json from the fixture on EVERY relaunch — and the boot reconcile is
-  // "freshest updatedAt wins", so the re-stamped fixture (crew none, default station) silently clobbered
+  // "freshest updatedAt wins", so the re-stamped fixture (crew none, default keep) silently clobbered
   // the real save: summoned crew + built floor vanished on every --keep restart. With --keep we only
   // fill in MISSING files (a fixture file added since the scratch was made) and never touch existing ones.
   const kept = KEEP && fs.existsSync(path.join(SCRATCH, 'agent.save.json'));
@@ -138,9 +138,9 @@ async function main() {
   if (!fs.existsSync(SIDECAR)) die('cannot find sidecar at ' + SIDECAR);
   if (!fs.existsSync(FIXTURE)) die('cannot find the seed fixture at ' + FIXTURE);
 
-  const key = String(process.env.SKYNET_OPENROUTER_KEY || '').trim();
-  const model = String(process.env.SKYNET_DEFAULT_MODEL || '').trim();
-  const port = String(process.env.SKYNET_PORT || process.env.PORT || '8787').trim();
+  const key = String(process.env.EYEHOLD_OPENROUTER_KEY || process.env.SKYNET_OPENROUTER_KEY || '').trim();
+  const model = String(process.env.EYEHOLD_DEFAULT_MODEL || process.env.SKYNET_DEFAULT_MODEL || '').trim();
+  const port = String(process.env.EYEHOLD_PORT || process.env.SKYNET_PORT || process.env.PORT || '8787').trim();
 
   if (!model) {
     die('no SKYNET_DEFAULT_MODEL set.\n' +
@@ -161,17 +161,24 @@ async function main() {
   materializeWorkspace(model);
 
   const childEnv = Object.assign({}, process.env, {
-    SKYNET_DEV: '1',
+    EYEHOLD_DEV: '1',
     // SEED_FULL_ACCESS=0 boots WITHOUT the env-forced override, so the PERMISSIONS pane can be exercised live.
-    SKYNET_FULL_ACCESS: process.env.SEED_FULL_ACCESS === '0' ? '' : '1',
-    SKYNET_WORKSPACES: SCRATCH,
-    SKYNET_PORT: port
+    EYEHOLD_FULL_ACCESS: process.env.SEED_FULL_ACCESS === '0' ? '' : '1',
+    EYEHOLD_WORKSPACES: SCRATCH,
+    EYEHOLD_PORT: port,
+    EYEHOLD_DEFAULT_MODEL: model,
+    EYEHOLD_OPENROUTER_KEY: key
   });
+  for (const [name, value] of Object.entries(childEnv)) {
+    if (name.startsWith('SKYNET_') && (childEnv['EYEHOLD_' + name.slice('SKYNET_'.length)] == null || childEnv['EYEHOLD_' + name.slice('SKYNET_'.length)] === '')) {
+      childEnv['EYEHOLD_' + name.slice('SKYNET_'.length)] = value;
+    }
+  }
 
   const url = 'http://127.0.0.1:' + port;
   console.log('');
   console.log('  ╔══════════════════════════════════════════════════════════╗');
-  console.log('  ║  StarNet DEV SEED — booting a pre-onboarded station        ║');
+  console.log('  ║  Eyehold DEV SEED — booting a pre-onboarded keep        ║');
   console.log('  ╚══════════════════════════════════════════════════════════╝');
   console.log('   agent     : NOVA (seeded, no setup needed)');
   console.log('   model     : ' + model);

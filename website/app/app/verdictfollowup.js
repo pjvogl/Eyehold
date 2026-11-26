@@ -1,8 +1,8 @@
-/* STARNET — verdictfollowup.js : the PURE engine for the VERDICT FOLLOW-UP (momentum loop, 2026-08-21).
+/* EYEHOLD — verdictfollowup.js : the PURE engine for the VERDICT FOLLOW-UP (momentum loop, 2026-08-21).
 
    The rate-the-work beat used to end `◆ close` and `▼ missed` with the word "noted" — a dead question: the
-   Commander told the station its work fell short and nothing changed. A miss is the highest-information
-   moment the station ever gets about HOW this Commander wants work done, and it was thrown away.
+   Commander told the keep its work fell short and nothing changed. A miss is the highest-information
+   moment the keep ever gets about HOW this Commander wants work done, and it was thrown away.
 
    POPUP LAW (docs/NEXT.md 2026-08-21): a popup earns its pixels only when the answer CHANGES something
    observable. This follow-up asks ONE thing — "what missed?" — and every chip maps to a Commander Dossier
@@ -24,7 +24,7 @@
 
   // the chips. Each names a CAUSE in the Commander's own frame and the dossier dimension that cause informs.
   // `text` is the belief written on tap — phrased as an OBSERVED fact about how this Commander wants work
-  // done (never the station's guess: the Commander chose the chip), and must read well inside a briefing.
+  // done (never the keep's guess: the Commander chose the chip), and must read well inside a briefing.
   const CHIPS = [
     { value: 'shorter',  label: 'too long — tighter next time',    dim: 'style',    text: 'Prefers tighter, shorter deliverables — a run was rated short of the mark for running long.' },
     { value: 'deeper',   label: 'too thin — go deeper',            dim: 'style',    text: 'Wants more depth and thoroughness — a run was rated short of the mark for being too thin.' },

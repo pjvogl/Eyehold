@@ -1,6 +1,6 @@
 /* sidecar/providers/toolschema.js — make a tool's JSON Schema safe for a strict provider wire.
 
-   WHY THIS EXISTS: built-in StarNet tools hand-write small, tame schemas, but an MCP connector's
+   WHY THIS EXISTS: built-in Eyehold tools hand-write small, tame schemas, but an MCP connector's
    `inputSchema` is authored by a third-party server. The official MCP TypeScript SDK builds schemas
    with zod-to-json-schema, so a real connector routinely ships `$schema`, `additionalProperties`,
    `$ref`/`$defs`, `anyOf` null-unions and `default` — all of which flow through mcp/translate.js and
@@ -212,7 +212,7 @@
   }
 
   /* AN ARRAY ALWAYS SAYS WHAT IT HOLDS (2026-10-08). Gemini refuses the WHOLE request when any declared array has no
-     `items` ("…properties[shape].items: missing field", INVALID_ARGUMENT) — station.plan's `shape: {type:'array'}` killed
+     `items` ("…properties[shape].items: missing field", INVALID_ARGUMENT) — keep.plan's `shape: {type:'array'}` killed
      every Gemini run whose tool.search revealed it (real-model run: clear notifications, pin, E-STOP all "Something went
      wrong"). `items: {}` (anything) is accepted everywhere and changes no meaning. Returns the SAME object when nothing
      was missing, so callers can keep their identity checks. */

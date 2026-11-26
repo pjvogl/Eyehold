@@ -18,7 +18,7 @@ recovery: unconfirmed
 
 ## Symptom
 
-Deleting a room leaves its furniture drawn over empty space and saved in the station.
+Deleting a room leaves its furniture drawn over empty space and saved in the keep.
 
 ## Repro
 

@@ -1,19 +1,18 @@
-/* STARNET updates.js
+/* EYEHOLD updates.js
    Desktop Update Center: autonomous check loop + native Tauri updater bridge. */
 'use strict';
 
 const Updates = (() => {
-  const KEY = 'starnet.updates.v1';
+  const KEY = 'eyehold.updates.v1';
   // Human-browsable releases page — the GUARANTEED manual-update fallback when the in-app
   // updater can't complete (Gatekeeper on an unsigned mac build, a network/permission/disk
   // failure, an unsupported install layout). Reinstalling the latest build over the top keeps
   // ALL user data (workspaces live in Application Support; localStorage/IndexedDB in the WebView
   // store keyed by the unchanged bundle id — both OUTSIDE the app bundle the installer replaces).
-  // Kept in sync with tauri.conf.json plugins.updater.endpoints[0] (same repo, /releases/latest).
-  // Eyehold distribution has not configured an independently signed updater.
-  // Keep all update operations fail-closed instead of following upstream releases.
+  // Kept in sync with eyehold.host.json and tauri.conf.json plugins.updater.endpoints[0].
+  // Checks stay off until the owner replaces the baked signing key. See docs/EYEHOLD_PUBLISHER.md.
   const EYEHOLD_UPDATES_ENABLED = false;
-  const RELEASES_PAGE = null;
+  const RELEASES_PAGE = 'https://eyehold.babelbook.net/download';
   const CORE = (typeof UpdateCore !== 'undefined') ? UpdateCore : null;
   const TAURI = (typeof window !== 'undefined' && window.__TAURI__ && window.__TAURI__.core) ? window.__TAURI__.core : null;
   const invoke = (cmd, args) => TAURI.invoke(cmd, args || {});
@@ -92,7 +91,7 @@ const Updates = (() => {
       return snapshot();
     }
     try {
-      const r = await invoke('starnet_update_status');
+      const r = await invoke('eyehold_update_status');
       state.desktop = !!r.desktop;
       state.currentVersion = r.currentVersion || '';
       state.target = r.target || '';
@@ -153,7 +152,7 @@ const Updates = (() => {
     state.confirmRuns = 0;
     emit();
     try {
-      const r = await invoke('starnet_update_check');
+      const r = await invoke('eyehold_update_check');
       prefs = CORE.recordCheckResult(prefs, r, Date.now());
       state.lastCheckedAt = r.checkedAt || Date.now();
       if (r.available && r.update) {
@@ -210,7 +209,7 @@ const Updates = (() => {
     try {
       for (let i = 0; i < localStorage.length; i++) {
         const key = localStorage.key(i);
-        if (!/^(?:starnet|skynet)\./i.test(String(key || ''))) continue;
+        if (!/^(?:eyehold|skynet)\./i.test(String(key || ''))) continue;
         const value = localStorage.getItem(key);
         if (value != null) out[key] = String(value);
       }
@@ -325,7 +324,7 @@ const Updates = (() => {
     emit();
     installing = true;   // from here a close-requested is the update restart — quit guard must allow it
     try {
-      await invoke('starnet_update_install', { onEvent });
+      await invoke('eyehold_update_install', { onEvent });
       state.phase = 'restarting';
       notify('Eyehold update installed - restarting', 'good');
     } catch (e) {
@@ -414,10 +413,10 @@ const Updates = (() => {
     const auto = body.querySelector('#set-updates-auto');
     if (auto) auto.addEventListener('change', ev => setAutoCheck(ev.target.checked));
     const open = body.querySelector('#set-updates-open');
-    if (open && typeof StationUI !== 'undefined' && StationUI.toggleTerm) {
+    if (open && typeof KeepUI !== 'undefined' && KeepUI.toggleTerm) {
       // no per-window width: UPDATE CENTER is the default PANEL shell, same as its BUILDERS entry
       // (two window sizes only — see the note in frontend/css/style.css).
-      open.addEventListener('click', () => StationUI.toggleTerm('updates', 'UPDATE CENTER', render, {}));
+      open.addEventListener('click', () => KeepUI.toggleTerm('updates', 'UPDATE CENTER', render, {}));
     }
   }
 
@@ -472,7 +471,7 @@ const Updates = (() => {
       // reinstalling the latest build keeps all data (see RELEASES_PAGE note).
       out += '<div class="up-error">' + esc(state.error) +
         '<br><button class="bb sm up-manual" id="up-manual-err">DOWNLOAD LATEST MANUALLY</button>' +
-        '<span class="up-meta up-manual-note">Reinstalling over the top keeps your station and settings.</span></div>';
+        '<span class="up-meta up-manual-note">Reinstalling over the top keeps your keep and settings.</span></div>';
     }
     out += '<div class="up-foot">Last checked: ' + esc(fmtTime(state.lastCheckedAt)) +
       ' · <a href="#" id="up-manual-foot" class="up-manual-link">download manually</a></div></div>';

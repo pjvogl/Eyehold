@@ -1,7 +1,7 @@
 /* node test/loop.failure-breaker.test.js — Step 2 F1 (a)+(b) of the 2026-09-22 Hermes audit: loop DETECTION for
    the stuck shapes the identical-failure loop guard cannot see (sidecar/loop-breaker.js, wired in loop.js step 9).
 
-   (a) UNKNOWN-TOOL STRIKES. Audit probe: 15 turns of a hallucinated `launch_rocket`, each answered a bare
+   (a) UNKNOWN-TOOL STRIKES. Audit probe: 15 turns of a hallucinated `launch_beacon`, each answered a bare
        "unknown tool", nothing stopped. Now the registry's answer names the closest REAL tools the run can call,
        and three consecutive turns whose every call named a tool that does not exist end the run 'error' with
        failureCode 'unknown_tools' — on every surface (a watched run too).
@@ -67,7 +67,7 @@ function realRegistry() {
     A.eq(closestToolNames('fs_raed', ['fs_read', 'fs_list', 'web_fetch', 'shell_exec']), ['fs_read'], 'a typo names the intended tool (edit distance) and nothing that is not close');
     A.eq(closestToolNames('fs_lst', ['fs_read', 'fs_list', 'fs_last']), ['fs_last', 'fs_list'], 'equally close names sort deterministically (distance, then name)');
     A.eq(closestToolNames('fs.read', ['fs_read', 'shell_exec']), ['fs_read'], 'a dotted/underscored slip resolves to the real wire name');
-    A.eq(closestToolNames('launch_rocket', ['fs_read', 'fs_list', 'web_fetch']), [], 'a pure hallucination gets no fake suggestion');
+    A.eq(closestToolNames('launch_beacon', ['fs_read', 'fs_list', 'web_fetch']), [], 'a pure hallucination gets no fake suggestion');
     A.eq(closestToolNames('read_file', ['fs_read', 'fs_list', 'web_fetch']), ['fs_read'], 'a shared real word (read) is a suggestion even at a large edit distance');
     const { reg } = realRegistry();
     const typo = await reg.dispatch({ id: 'c', name: 'fs_raed', args: {}, argsRaw: '{}' }, { toolNames: ['fs_read', 'fs_list', 'web_fetch'] });
@@ -75,7 +75,7 @@ function realRegistry() {
     A.eq(typo.summary, 'unknown-tool', 'its summary is the stable unknown-tool marker the breaker counts');
     A.ok(/^unknown tool: fs_raed — /.test(typo.content), 'the answer still starts "unknown tool: <name>" (existing contract)');
     A.ok(/Closest real tools: fs_read\./.test(typo.content), 'the answer names the closest real tool: ' + typo.content);
-    const ghost = await reg.dispatch({ id: 'c', name: 'launch_rocket', args: {}, argsRaw: '{}' }, { toolNames: ['fs_read'] });
+    const ghost = await reg.dispatch({ id: 'c', name: 'launch_beacon', args: {}, argsRaw: '{}' }, { toolNames: ['fs_read'] });
     A.ok(/No available tool has a similar name/.test(ghost.content), 'a hallucination is told nothing is similar, not handed a random tool');
     const blank = await reg.dispatch({ id: 'c', name: '', args: {}, argsRaw: '{}' }, {});
     A.ok(/\(empty name\)/.test(blank.content) && !/Closest/.test(blank.content), 'an empty name gets the terse anti-priming answer, never the catalog');
@@ -85,7 +85,7 @@ function realRegistry() {
 
   // ---- (a) THE AUDIT PROBE: a hallucinated tool every turn -> stopped after 3 strikes, even on a WATCHED run ----
   for (const unattended of [false, true]) {
-    const provider = scripted(repeat(15, () => [{ name: 'launch_rocket', args: { target: 'moon' } }]));
+    const provider = scripted(repeat(15, () => [{ name: 'launch_beacon', args: { target: 'moon' } }]));
     const { dispatch, tools } = realRegistry();
     const { res, seq, messages } = await run(provider, { dispatch, tools, unattended });
     const label = unattended ? ' (unattended)' : ' (interactive)';
@@ -95,19 +95,19 @@ function realRegistry() {
     A.eq(res.failureCode, 'unknown_tools', 'failureCode unknown_tools' + label);
     const errs = errors(seq);
     A.eq(errs.length, 1, 'exactly one agent.run.error' + label);
-    A.ok(/do not exist \(launch_rocket\) on 3 turns in a row/.test(errs[0].payload.message), 'the error names the fake tool and the strike count: ' + errs[0].payload.message);
+    A.ok(/do not exist \(launch_beacon\) on 3 turns in a row/.test(errs[0].payload.message), 'the error names the fake tool and the strike count: ' + errs[0].payload.message);
     A.eq(errs[0].payload.transient, false, 'a strike-out is not transient' + label);
     const results = messages.filter(m => m.role === 'tool');
     A.eq(results.length, 3, 'every one of the 3 calls got its paired result (provider-valid transcript)' + label);
-    A.ok(results.every(m => /unknown tool: launch_rocket/.test(m.content)), 'each result told the model the tool does not exist' + label);
+    A.ok(results.every(m => /unknown tool: launch_beacon/.test(m.content)), 'each result told the model the tool does not exist' + label);
   }
 
   // ---- (a) a turn with ANY real call resets the strikes (Hermes mixed-batch rule) ----
   {
     const provider = scripted([
-      [{ name: 'launch_rocket' }], [{ name: 'launch_rocket' }],
-      [{ name: 'launch_rocket' }, { name: 'fs_read', args: { path: 'a' } }],   // mixed: the real call runs, strikes reset
-      [{ name: 'launch_rocket' }], [{ name: 'launch_rocket' }]
+      [{ name: 'launch_beacon' }], [{ name: 'launch_beacon' }],
+      [{ name: 'launch_beacon' }, { name: 'fs_read', args: { path: 'a' } }],   // mixed: the real call runs, strikes reset
+      [{ name: 'launch_beacon' }], [{ name: 'launch_beacon' }]
     ]);
     const { dispatch, tools } = realRegistry();
     const { res } = await run(provider, { dispatch, tools, unattended: true });
@@ -168,7 +168,7 @@ function realRegistry() {
   // ---- disabled: limits.failureBreaker === false leaves every tier off (unattended included) ----
   {
     // varying args so the (separate, still-on) identical-failure loop guard stays out of it
-    const provider = scripted(repeat(15, i => [{ name: 'launch_rocket', args: { attempt: i } }]));
+    const provider = scripted(repeat(15, i => [{ name: 'launch_beacon', args: { attempt: i } }]));
     const { dispatch, tools } = realRegistry();
     const { res, messages } = await run(provider, { dispatch, tools, unattended: true, limits: { failureBreaker: false, maxIters: 9, grace: false } });
     A.eq(res.reason, 'max_iters', 'failureBreaker:false -> no strike-out');

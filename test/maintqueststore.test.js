@@ -37,7 +37,7 @@ global.U = {
   }
 };
 const rerenders = [];
-global.StationUI = { rerender: k => rerenders.push(k) };
+global.KeepUI = { rerender: k => rerenders.push(k) };
 
 const { MaintQuestStore } = require('../frontend/app/maintqueststore.js');
 const diag = (reason, title, fix) => ({ reason, title: title || (reason + ' happened'), fix: fix || 'do the fix', cause: 'because' });
@@ -107,16 +107,16 @@ MaintQuestStore.sync();
 A.eq(MaintQuestStore.quests().some(q => q.id === 'mq:slag:budget'), false, 'the same cause after reload NEVER re-mints (stop forever)');
 
 /* ---------- an UNCHANGED recurring cause never saves + pokes (the 2026-10-07 QUEST LOG lag) ----------
-   buildQuests calls sync(), and StationUI.rerender is synchronous: a sync that poked on every call re-entered the
+   buildQuests calls sync(), and KeepUI.rerender is synchronous: a sync that poked on every call re-entered the
    builder ~1,600 frames deep per poke, and the 1s tick re-armed it every second while the log was open. */
 ring = [diag('error', 'errored out', 'top it up'), diag('error', 'errored out', 'top it up'), diag('error', 'errored out', 'top it up')];
 MaintQuestStore.sync();
 A.ok(MaintQuestStore.quests().some(q => q.id === 'mq:slag:error' && q.status === 'open'), 'three errored runs mint the fix-it quest');
 rerenders.length = 0;
-const savesBefore = global.localStorage.getItem('starnet.maintquests.v1');
+const savesBefore = global.localStorage.getItem('eyehold.maintquests.v1');
 MaintQuestStore.sync(); MaintQuestStore.sync(); MaintQuestStore.sync();
 A.eq(rerenders.length, 0, 'an idle sync with the same recurring cause pokes NO rerender (was: one per sync, forever)');
-A.eq(global.localStorage.getItem('starnet.maintquests.v1'), savesBefore, 'an idle sync writes nothing new');
+A.eq(global.localStorage.getItem('eyehold.maintquests.v1'), savesBefore, 'an idle sync writes nothing new');
 ring.push(diag('error', 'errored out', 'top it up'));
 MaintQuestStore.sync();
 A.ok(rerenders.length === 1 && /4 runs/.test(MaintQuestStore.quests().find(q => q.id === 'mq:slag:error').title), 'a REAL change (a 4th failure) still pokes once');
@@ -141,14 +141,14 @@ A.eq(MaintQuestStore.quests().find(q => q.id === 'mq:slag:max_iters').status, 'o
 
 /* ---------- reset: the new-hero clean slate ---------- */
 MaintQuestStore.reset();
-A.eq(global.localStorage.getItem('starnet.maintquests.v1'), null, 'reset removes the self-persisted key');
+A.eq(global.localStorage.getItem('eyehold.maintquests.v1'), null, 'reset removes the self-persisted key');
 A.eq(MaintQuestStore.jammedJobs().length, 0, 'reset drops the in-memory jam tally');
 
 /* ---------- source-level locks: the browser wiring ---------- */
 const qsSrc = fs.readFileSync(path.join(__dirname, '../frontend/app/queststore.js'), 'utf8');
 A.ok(/MaintQuestStore/.test(qsSrc) && /maintQuests/.test(qsSrc), 'queststore.view joins the maintenance quests into the one projection');
-const stSrc = fs.readFileSync(path.join(__dirname, '../frontend/app/stationui.js'), 'utf8');
-A.ok(/MaintQuestStore/.test(stSrc) && /maintenance/.test(stSrc), 'stationui syncs + routes maintenance dismissals');
+const stSrc = fs.readFileSync(path.join(__dirname, '../frontend/app/keepui.js'), 'utf8');
+A.ok(/MaintQuestStore/.test(stSrc) && /maintenance/.test(stSrc), 'keepui syncs + routes maintenance dismissals');
 const appSrc = fs.readFileSync(path.join(__dirname, '../frontend/app/app.js'), 'utf8');
 A.ok(/MaintQuestStore\.init\(\)/.test(appSrc) && /MaintQuestStore\.reset\(\)/.test(appSrc), 'app.js inits + resets the generator');
 const worldSrc = fs.readFileSync(path.join(__dirname, '../frontend/app/world.js'), 'utf8');

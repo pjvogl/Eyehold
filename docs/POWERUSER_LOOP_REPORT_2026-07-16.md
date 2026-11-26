@@ -1,4 +1,4 @@
-# StarNet power-user break/fix loop — 2026-07-16
+# Eyehold power-user break/fix loop — 2026-07-16
 
 Candidate under audit: `d3dcd61435f5af2d5d4d9a7ed43a03609a793b3d`  
 Merge state: **isolated; not merged to `feat/harness-backend`**
@@ -13,20 +13,20 @@ depends on that surface. No audit lane changed product code.
 | ID | Sev | Concern | Evidence / owner |
 | --- | --- | --- | --- |
 | PL-01 | P1 | Short/small windows can place the COMMS composer and entire bottom dock below an unscrollable viewport. | Physical 175% zoom at an effective ~558×539 CSS viewport. `frontend/css/app.css` responsive grid/root overflow. |
-| PL-02 | P1 | Every ordinary reload creates another unread “NOVA is online” notification. | Three reloads produced three persistent identical rows and badge count 3. `frontend/app/stationui.js` presence notification path. |
-| PL-03 | P1 | Reload transient simultaneously claims “station unreachable”, `STANDBY`, `ONLINE`, and “COMMS online”. | Physical screenshot at ~2.2 seconds; settles by ~5.7 seconds. `frontend/app/app.js` bridge boot state and initial COMMS copy. |
-| PL-04 | P1 | Skill Library switches and recipe disclosures have non-unique accessible names across ~40 skills. | Windows AX exposes only `ON`/`OFF` and `Read the recipe`. Skills renderer in `frontend/app/stationui.js`. |
+| PL-02 | P1 | Every ordinary reload creates another unread “NOVA is online” notification. | Three reloads produced three persistent identical rows and badge count 3. `frontend/app/keepui.js` presence notification path. |
+| PL-03 | P1 | Reload transient simultaneously claims “keep unreachable”, `STANDBY`, `ONLINE`, and “COMMS online”. | Physical screenshot at ~2.2 seconds; settles by ~5.7 seconds. `frontend/app/app.js` bridge boot state and initial COMMS copy. |
+| PL-04 | P1 | Skill Library switches and recipe disclosures have non-unique accessible names across ~40 skills. | Windows AX exposes only `ON`/`OFF` and `Read the recipe`. Skills renderer in `frontend/app/keepui.js`. |
 | PL-05 | P1 | Full `qa:journeys` false-fails J2b because J2a E-STOP teardown can terminate the next held run. | 5/9 full-suite failures; isolated J2b 5/5 green. `scripts/qa/journeys.mjs` must await sidecar inflight drain/specific prior run end. |
 | PL-06 | P2 | An invalid `file://` MCP URL returns 502 but is durably saved enabled with its token and retried eight times. | Live POST/read/restart proof; secret not echoed. `sidecar/index.js` connector validation/persistence order and MCP retry classification. |
-| PL-07 | P2 | Settings search keeps Notifications highlighted while showing cross-section backup matches and leaves irrelevant headings ahead of the result. | Physical screenshot and DOM `activeTab=...notifs`. `mountConsole()` search in `stationui.js`. |
+| PL-07 | P2 | Settings search keeps Notifications highlighted while showing cross-section backup matches and leaves irrelevant headings ahead of the result. | Physical screenshot and DOM `activeTab=...notifs`. `mountConsole()` search in `keepui.js`. |
 | PL-08 | P2 | Rapid CUSTOM selection + WAKE reports stale Codex model `gpt-5.5` instead of requiring the Custom `/v1` endpoint. | Fresh onboarding rapid-click DOM receipt. Async provider switch/validation order in `frontend/app/app.js`. |
-| PL-09 | P2 | Notification dismiss actions are all named `Dismiss notification`. | Windows AX with three rows. Notification renderer in `stationui.js`. |
-| PL-10 | P2 | Theme buttons expose no selected/pressed state. | Windows AX before/after Amber→Blue. Appearance renderer in `stationui.js`. |
-| PL-11 | P2 | Two large console windows can clamp to identical bounds and perfectly occlude one another. | Physical Skills then Settings proof at 976px. `placeTerm`/`fitTermInViewport` in `stationui.js`. |
+| PL-09 | P2 | Notification dismiss actions are all named `Dismiss notification`. | Windows AX with three rows. Notification renderer in `keepui.js`. |
+| PL-10 | P2 | Theme buttons expose no selected/pressed state. | Windows AX before/after Amber→Blue. Appearance renderer in `keepui.js`. |
+| PL-11 | P2 | Two large console windows can clamp to identical bounds and perfectly occlude one another. | Physical Skills then Settings proof at 976px. `placeTerm`/`fitTermInViewport` in `keepui.js`. |
 | PL-12 | P2 | Deliverables search/status/refresh/cleanup controls render as raw browser controls, unlike the CRT UI. | Same-run screenshot comparison. `frontend/app/deliverables.js`, `frontend/css/style.css`. |
 | PL-13 | P2 | Deliverables intro copy exposes implementation jargon such as “opaque-origin sandbox” and “escaped and bounded”. | Physical copy review. `frontend/app/deliverables.js`. |
 | PL-14 | P2 | Installed Windows AX exposes duplicate minimize/maximize/close controls from custom and top-level titlebars. | Installed candidate Windows AX tree. `frontend/app/titlebar.js` / Tauri window semantics. |
-| PL-15 | P3 | `IN PROGRESS 3` can contain three cards all marked `DONE — REVIEW & SHIP`. | Live task-board DOM; state chips are truthful, aggregate label is not. Task board renderer in `stationui.js`. |
+| PL-15 | P3 | `IN PROGRESS 3` can contain three cards all marked `DONE — REVIEW & SHIP`. | Live task-board DOM; state chips are truthful, aggregate label is not. Task board renderer in `keepui.js`. |
 | PL-16 | P3 | Cinema mode ignores Escape even though Escape is the standard exit convention. | Physical keyboard proof; C and EXIT work. Cinema key handler. |
 
 Cleared concerns: minimized windows do not leak hidden descendants into a fresh Windows AX snapshot;

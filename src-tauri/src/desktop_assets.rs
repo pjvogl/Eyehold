@@ -107,7 +107,7 @@ mod tests {
 
     #[test]
     fn media_reads_are_confined_to_the_resource_directory() {
-        let temp = std::env::temp_dir().join(format!("starnet-media-{}", uuid::Uuid::new_v4()));
+        let temp = std::env::temp_dir().join(format!("eyehold-media-{}", uuid::Uuid::new_v4()));
         let root = temp.join("assets");
         std::fs::create_dir_all(root.join("nested")).unwrap();
         std::fs::write(root.join("nested/texture.png"), b"texture").unwrap();

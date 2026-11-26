@@ -24,7 +24,7 @@ const { makeClock } = require('../shared/clock-rng.js');
   A.ok(P.isHandoff(mid.replace(/\s+/g, ' ').slice(0, 80)), 'a run row\'s title (whitespace folded, cut at 80) still reads as a hand-off');
   A.ok(P.isHandoff('\n  ' + mid), 'leading whitespace does not hide the frame');
   A.ok(!P.isHandoff('3 AI stories, keep it short') && !P.isHandoff('') && !P.isHandoff(null), 'a job the Commander typed is not a hand-off');
-  A.ok(!P.isHandoff('please explain: PIPELINE HANDOFF — you are stage 2 of a work line on this station.'), 'the frame quoted INSIDE a message is not a hand-off (only a turn that opens with it)');
+  A.ok(!P.isHandoff('please explain: PIPELINE HANDOFF — you are stage 2 of a work line on this keep.'), 'the frame quoted INSIDE a message is not a hand-off (only a turn that opens with it)');
 
   /* ---------- 2. the run-end gate and the stash (sidecar/index.js, source-locked: runOnceCore is not unit-loadable) ---------- */
   const src = fs.readFileSync(path.join(__dirname, '..', 'sidecar', 'index.js'), 'utf8');

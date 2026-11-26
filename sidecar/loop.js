@@ -423,7 +423,7 @@
     new RegExp('\\b(' + CG_GERUNDS + ')\\b[^.!?\\n]{0,80}\\bnow\\b', 'i'),                                  // "Reading the full main.js now"
     new RegExp('\\bnow\\b[^.!?\\n]{0,40}\\b(' + CG_GERUNDS + ')\\b', 'i')                                   // "now fixing the death path"
   ];
-  /* VERIFY-ON-STOP (2026-07-27). The station's whole promise is that nothing is claimed unless it is proven,
+  /* VERIFY-ON-STOP (2026-07-27). The keep's whole promise is that nothing is claimed unless it is proven,
      and "fake done" — an edit shipped as finished without a single check run against it — is the failure this
      project pays for most. The system prompt already INSTRUCTS the model to verify after editing; nothing
      ENFORCED it, so an instruction was all it was. This turns the passive instruction into a bounded
@@ -761,7 +761,7 @@
       ? Object.create(o.context, { estimateMessages: { value: (msgs) => o.context.estimateMessages(evictStaleScreenshots(msgs, TOOL_IMAGE_KEEP, m => (screenshotMeta ? screenshotMeta.get(m) : null))) } })
       : o.context;
     const summarize = o.summarize;
-    const microCompaction = o.microCompaction !== false;   // the free elision tier (STARNET_COMPACT_MICRO=0 turns it off at the host)
+    const microCompaction = o.microCompaction !== false;   // the free elision tier (EYEHOLD_COMPACT_MICRO=0 turns it off at the host)
     // OPTIONAL provider FALLBACK chain — the consumer for errorClass's shouldFallback/shouldRotateCredential hints
     // (previously computed then discarded). On a classified failover (overloaded/5xx/auth/billing/rate-limit/
     // model-not-found) the loop advances to the next entry and RETRIES the same turn instead of dying — the
@@ -1084,7 +1084,7 @@
       try { onRecovery(Object.assign({ sequence: ++recoveryAttemptSequence }, row || {})); } catch (e) { failNote('loop.onRecovery', e); }
     }
     // mid-stream retry backoff schedule (same shape as the adapters' pre-stream RETRY_DELAYS).
-    // Widened 2026-08-11 after the installed Hermes parity run: ~16.6s still lost all three StarNet
+    // Widened 2026-08-11 after the installed Hermes parity run: ~16.6s still lost all three Eyehold
     // attempts inside one real Codex overload window while valid Hermes turns took up to ~102s. The
     // final 30s/60s rungs give the same model turn ~106s of bounded patience. This never re-dispatches
     // completed tools: the retry loop sits wholly inside the current model call, after prior tool
@@ -1492,7 +1492,7 @@
           const message = b.cause === 'unsettled'
             ? 'An earlier run was interrupted before its spend was recorded, so the spending limits you set can’t be checked. Settle it in SETTINGS › SPENDING LIMITS.'
             : b.cause === 'write'
-              ? 'Spend history could not be saved to disk, so the spending limits you set can’t be checked. Restart StarNet to recover it.'
+              ? 'Spend history could not be saved to disk, so the spending limits you set can’t be checked. Restart Eyehold to recover it.'
               : 'Spend history could not be read, so the spending limits you set can’t be checked. See SETTINGS › SPENDING LIMITS.';
           emit('agent.run.error', { agentId, runId, message, transient: false });
           return end('error', { failureStage: 'budget', failureCode: 'spend_history_unavailable' });
@@ -1612,7 +1612,7 @@
         try {
           const req = { model, messages: wireMessages(), tools, signal, stream: true };   // stale screen captures -> placeholders
           if (typeof o.isTask === 'boolean') req.isTask = o.isTask;
-          if (o.runId) req.runId = o.runId;   // run attribution: only a profile that names a runIdHeader sends it (starnet)
+          if (o.runId) req.runId = o.runId;   // run attribution: only a profile that names a runIdHeader sends it (eyehold)
           if (o.cacheSystemPrefix) req.cacheSystemPrefix = o.cacheSystemPrefix;
           if (outputCapTokens > 0) req.maxTokens = outputCapTokens;   // the ceiling a provider named (output_cap)
           if (retriesUsed > 0) req.preStreamRetries = 0;              // the ladder owns pacing: one request per rung
@@ -1798,7 +1798,7 @@
         // MAX_STREAM_RETRIES so a persistently-failing backend still terminates. Honors the server-stated wait.
         // ⛔ the guard was `!cls.shouldFallback` alone, which contradicted the sentence above: a retryable
         // fallback class (overloaded/server_error) with an EMPTY or exhausted chain — every single-provider
-        // station, e.g. ChatGPT-login codex — fell straight to fatal on the first blip. The chain-exhausted
+        // keep, e.g. ChatGPT-login codex — fell straight to fatal on the first blip. The chain-exhausted
         // case the comment always promised is now real.
         // Adapters mark a fully exhausted pre-stream ladder. Re-running that ladder here once multiplied one outage
         // into 15 requests; refusing it outright killed runs on a 2s blip. Now the adapter's spend is counted
@@ -2068,7 +2068,7 @@
           // something — telling it "you ran nothing" would be a false statement from the host.
           const premise = vosFailedCheck
             ? 'and are ending although the last check you ran against it (' + vosFailedCheck + ') did NOT pass, and no passing check has run since. A failing check is evidence the change is not done. Fix the cause and rerun the check until it passes, then report what it actually returned. If it cannot be made to pass here, say so plainly: report the failure and state that the change is NOT verified.'
-            : 'and are ending without running anything against it. Code that compiles is not code that works, and an unverified claim of "done" is the one thing this station never ships. Run the narrowest real check that proves the change — the project\'s own test/build command via verify_run, or shell_exec if that fits better — then report what it actually returned. If you genuinely cannot run a check here, say so plainly and state what you did NOT verify.';
+            : 'and are ending without running anything against it. Code that compiles is not code that works, and an unverified claim of "done" is the one thing this keep never ships. Run the narrowest real check that proves the change — the project\'s own test/build command via verify_run, or shell_exec if that fits better — then report what it actually returned. If you genuinely cannot run a check here, say so plainly and state what you did NOT verify.';
           messages.push({ role: 'system', content: '<verify_before_done>You changed code in this run (' + touched + ') ' + premise + '</verify_before_done>' });
           continue;
         }

@@ -1,4 +1,4 @@
-/* STARNET — journeystore.js: QuerySpine projection for /api/journey.
+/* EYEHOLD — journeystore.js: QuerySpine projection for /api/journey.
    The sidecar owns every claim. QuerySpine owns GET dedupe/polling/freshness/error truth; this citizen
    performs explicit Commander writes and projects proven evolution into the world. */
 'use strict';
@@ -40,10 +40,10 @@ const JourneyStore = (() => {
     try { document.body.dataset.journeyStage = String(lastStage); } catch (_) {}
     if (seeded && lastStage > prior) {
       try { if (typeof SFX === 'object' && SFX.milestone) SFX.milestone(); } catch (_) {}
-      // NO StationUI.notify (notification diet): the sting + the quest-log rerender below carry the evolution.
+      // NO KeepUI.notify (notification diet): the sting + the quest-log rerender below carry the evolution.
     }
     seeded = true;
-    try { if (typeof StationUI !== 'undefined' && StationUI.rerender) StationUI.rerender('quests', false); } catch (_) {}
+    try { if (typeof KeepUI !== 'undefined' && KeepUI.rerender) KeepUI.rerender('quests', false); } catch (_) {}
     return true;
   }
 

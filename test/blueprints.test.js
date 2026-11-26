@@ -50,7 +50,7 @@ for (const bp of WM.BLUEPRINTS) {
   }
 }
 
-// a fresh station with one big empty deck to stamp on (beside the seed room)
+// a fresh keep with one big empty deck to stamp on (beside the seed room)
 function freshFloor() {
   const s = WM.create();
   const r = s.addRoom({ kind: 'hab', rect: { x1: 30, y1: 0, x2: 69, y2: 14 } });   // 40 wide - THE DEEP DIVE is 31
@@ -319,7 +319,7 @@ for (const bp of WM.BLUEPRINTS) {
   const plan = crewed(bp.id);
   const live = P.liveTiles(plan);
   // compare inside the plan's OWN frame (plan.belts is the compiled key->dir map, projectGeometry's
-  // local frame — never world tiles); the station holds ONLY the stamped line, so every key is ours
+  // local frame — never world tiles); the keep holds ONLY the stamped line, so every key is ours
   const cold = Object.keys(plan.belts).filter(k => !live[k]);
   A.eq(cold.length, 0, bp.id + ': every belt tile energizes when crewed (cold: ' + cold.join(' ') + ')');
 }

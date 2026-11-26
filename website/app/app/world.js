@@ -1,15 +1,15 @@
-/* STARNET — world.js : the LIVE station the agent lives inside.
+/* EYEHOLD — world.js : the LIVE keep the agent lives inside.
 
-   Renders the player-built WorldModel station (multi-room) with the generalized
-   procedural bake (stationbake.js), under a pan/zoom camera. The agent has a
-   workstation in its spawn room and ACTUALLY WALKS the rooms + corridors — pathing
+   Renders the player-built WorldModel keep (multi-room) with the generalized
+   procedural bake (keepbake.js), under a pan/zoom camera. The agent has a
+   workkeep in its spawn room and ACTUALLY WALKS the rooms + corridors — pathing
    through doors via the model's BFS path() — to reach its seat when given a task,
-   then wanders the whole reachable station when idle. Edits made in BUILD MODE build mode
+   then wanders the whole reachable keep when idle. Edits made in BUILD MODE build mode
    re-bake the world live (the agent re-homes if the floor under it is reclaimed).
 
    Coordinate frame: everything here is in the bake's LOCAL tile frame (tile*TILE px);
    the camera maps local→screen. The WorldModel's world/local offset is handled inside
-   projectGeometry(); when the station grows north/west the origin shifts and the agent
+   projectGeometry(); when the keep grows north/west the origin shifts and the agent
    is translated to stay put. */
 'use strict';
 
@@ -19,10 +19,10 @@ const World = (() => {
   let propShadowLayer = null;
   let T = 12;
 
-  /* ---------- station + bake cache ---------- */
-  let station = null, geo = null, cache = null, geoDirty = true, bakeDirty = true, unsub = null;
+  /* ---------- keep + bake cache ---------- */
+  let keep = null, geo = null, cache = null, geoDirty = true, bakeDirty = true, unsub = null;
   let desk = null, seat = null, blocked = new Set();   // desk footprint (local tiles) blocks pathing
-  let deskPropId = null, deskFace = 'north';           // set when the hero's desk is a PLACED workstation prop assigned to it (its id + the seat's facing)
+  let deskPropId = null, deskFace = 'north';           // set when the hero's desk is a PLACED workkeep prop assigned to it (its id + the seat's facing)
   let convey = null;   // live conveyor transport sim (boxes riding the belts)
   let ghost = null;    // GHOST PROJECTION (guided workflows Phase 3): its own dedicated engine — never mixes with convey
   let junctions = null;   // splitter/merger/filter routing overrides keyed by tile (rebuilt on geo change)
@@ -163,9 +163,9 @@ const World = (() => {
   // plays once per proposal (keyed to the count high-water mark). pinnedCount is that mark; pinFlourishAt drives
   // the amber pin-burst render; pinTargetTile is the board approach tile the agent walks to.
   let pinnedCount = 0, pinFlourishAt = -1e9, pinTargetTile = null, pinCheckAt = -1e9;
-  // TIER D · D5 — THE OVERSEER OVERSEES. The hero (`agent`, the station's OVERSEER — no separate overseer body
+  // TIER D · D5 — THE OVERSEER OVERSEES. The hero (`agent`, the keep's OVERSEER — no separate overseer body
   // exists in-world) reads as a supervisor: (2) a rare walk to the MISSION BOARD to survey the queue when it is
-  // non-empty (goal 'post', modeled on the 'pin' beat above); it ARMS the D2 station budget on fire but is not
+  // non-empty (goal 'post', modeled on the 'pin' beat above); it ARMS the D2 keep budget on fire but is not
   // itself damp-gated (crewBeatDamp is a no-op for the hero by J1 parity design). `postCd` is its
   // per-hero cooldown; `postTargetTile` the board approach tile it walks to. Beats (1) inspection-rounds and
   // (3) queue-aware idle bias ride existing machinery (maybeRounds / decideIdle) and need no new module state.
@@ -175,7 +175,7 @@ const World = (() => {
   //  world draws NO floating marker for background sub-agents; the LIVE HELPERS panel (server-truth
   //  /api/subagents) remains the one honest readout. Do not rebuild a follower sprite for this.)
   // AGENT GROWTH HUD: per-agent Xp.compute() snapshots pushed in by XpStore (drives the hero name-tag "Lv N"
-  // chip and any body's gold level-up ripple). The station headline lives in the top-bar STATION chip.
+  // chip and any body's gold level-up ripple). The keep headline lives in the top-bar KEEP chip.
   let xpAgent = null, levelUpAt = 0;
   const xpByAgent = new Map();
   const CREW_COLORS = ['#5ad0ff', '#ff8a5a', '#7df08a', '#e0a0ff', '#ffd45a', '#5affd0', '#ff6a9a'];
@@ -196,7 +196,7 @@ const World = (() => {
 
   /* ---------- awareness & curiosity ----------
      novelty = freshly placed things the agent should wander over and inspect; seen* track what the
-     agent has already taken in (null until the first geo is observed, so a fresh station doesn't
+     agent has already taken in (null until the first geo is observed, so a fresh keep doesn't
      trigger a boot-time inspection storm). Curiosity remarks are short, apostrophe-free, and only
      ever spoken when no real message bubble is live. */
   let novelty = [], seenProps = null, seenBelts = null;
@@ -207,7 +207,7 @@ const World = (() => {
   const seenCount = new Map();      // habituation: how many times a prop-id / belt-tile has been studied (novel -> familiar)
   /* ...and how it FADES again (2026-08-08 idle-life pass). Habituation only ever climbed, and planPOI
      drops any prop studied 4+ times, so after ~10 minutes of watching, every machine on the floor was
-     permanently "furniture" and the ambient-curiosity beat had nothing left to pick — the station went
+     permanently "furniture" and the ambient-curiosity beat had nothing left to pick — the keep went
      inert exactly when a viewer had settled in to watch it. Interest now decays one step every
      FORGET_MS, so a thing ignored for a while becomes worth a second look. */
   const FORGET_MS = 150000;
@@ -215,12 +215,12 @@ const World = (() => {
   /* ---------- THE CONVEYOR IS NOT A SPECTATOR SPORT (2026-08-17, Andrew: "they all go to the conveyor
      if one is spawned, which is not one of the idle wandering activities") ----------
      Watching a belt go by is the ONE ambient-curiosity target with unlimited supply. planPOI's other
-     candidate — study your own workstation — is capped by habituation (seenCount < 4) and by ownership
-     (your desk only), so within a few minutes of a station's life the belt is the only thing an idle
+     candidate — study your own workkeep — is capped by habituation (seenCount < 4) and by ownership
+     (your desk only), so within a few minutes of a keep's life the belt is the only thing an idle
      body can ever pick, planPOI is consulted TWICE per idle re-decide (the bored branch and the
      fallback), and every body runs the same engine. Spawn one agent and the routing plan lays belt to
      its bay: the candidate switches on for the whole crew at once and the floor drains toward the line.
-     Two bounds, no new behaviour: ONE watcher station-wide at a time (a self-expiring claim, so nothing
+     Two bounds, no new behaviour: ONE watcher keep-wide at a time (a self-expiring claim, so nothing
      has to remember to release it), and a long per-body cooldown once a body has had its look. */
   const BELT_WATCH_CD_MIN = 180000, BELT_WATCH_CD_MAX = 360000;   // per body, once it has watched the line
   let beltWatch = null;             // { body, until } — the single live claim; validated lazily, never released by hand
@@ -269,38 +269,38 @@ const World = (() => {
                                                         // moment the stare loses interest is never predictable (design call: "Less predictable")
   let chatWarmUntil = -1e9;                  // absolute deadline (frame clock, fnow) past which the stare goes cold; -1e9 = never warm
   /* TIER D · D3 SOCIAL ENCOUNTERS — Tier C (gaze-only) grows bounded MOVEMENT beats. ONE live encounter
-     station-wide (G4): `socialBeat` is the single slot — null, or {kind, aId, bId, until}. `until` is a HARD
+     keep-wide (G4): `socialBeat` is the single slot — null, or {kind, aId, bId, until}. `until` is a HARD
      whole-encounter timeout so the slot ALWAYS frees, even if pathing fails / a body gets stuck / a participant
      despawns. Per-pair long cooldowns (`socialPairCd`, keyed by the sorted id pair) so the same duo never loops
-     (K4 no cascade). Every fired encounter also arms the D2 station beat gate (armBeat) so social beats share the
-     station calm budget with quirks (G5). Each participant carries its OWN plan on `body.social` (assigned once at
+     (K4 no cascade). Every fired encounter also arms the D2 keep beat gate (armBeat) so social beats share the
+     keep calm budget with quirks (G5). Each participant carries its OWN plan on `body.social` (assigned once at
      initiation by startEncounter — the ONE documented cross-body write, K2); per-tick stepping (stepSocial) mutates
      ONLY self.social + self position/facing and reads a partner's position/flags READ-ONLY. All movement targets
      pass the zone clamp (tileInZone(zoneFor(body))) — a body NEVER steps outside its own zone (G3). Determinism:
      U.chance/U.irnd/U.pick/U.hash only. reduceMotion degrades D3 to Tier C glances (no walking). */
   let socialBeat = null;                    // the single live encounter slot (G4)
   const socialPairCd = new Map();           // "idA|idB" (sorted) -> earliest `now` the pair may re-encounter
-  /* TIER D · D3 STATION LANE (rate retune 2026-07-02) — social used to select INSIDE the shared quirk gate
+  /* TIER D · D3 KEEP LANE (rate retune 2026-07-02) — social used to select INSIDE the shared quirk gate
      (crewBeatDamp), so it lost the per-decide race to the quirk families (~0.085 vs 0.02) and starved to
-     ~1 encounter/25min. It now has its OWN station cooldown lane (like THE CHASE's chaseGateUntil), decoupled
+     ~1 encounter/25min. It now has its OWN keep cooldown lane (like THE CHASE's chaseGateUntil), decoupled
      from the quirk race so the encounter RATE is governed by this cooldown, not by whoever wins the gate — but
-     a fired encounter STILL arms the shared gate (armBeat, in startEncounter) so total station calm is preserved
+     a fired encounter STILL arms the shared gate (armBeat, in startEncounter) so total keep calm is preserved
      (we re-slice the pie, we don't grow it). N=1 provably unchanged (a solo floor never has a pair → never
      rolls → never arms this lane).
      W5 (2026-08-14): the lane SPLIT in two — a conversation (huddle/border) and a silent beat (watch/follow)
      no longer draw the same cooldown, because a beat with no talking in it was rate-limiting the one Andrew
-     wants to watch. See SOCIAL_STATION_CD_* / SOCIAL_QUIET_CD_* and armSocialBudget. */
+     wants to watch. See SOCIAL_KEEP_CD_* / SOCIAL_QUIET_CD_* and armSocialBudget. */
   let socialGateUntil = -1e9;               // earliest `now` the next social encounter may be selected (own lane)
-  /* TIER D · D4 THE CHASE (the headline, ultra-rare). Exactly ONE chaser station-wide, mutually exclusive
+  /* TIER D · D4 THE CHASE (the headline, ultra-rare). Exactly ONE chaser keep-wide, mutually exclusive
      WITH a live social beat (the same one-noticeable-thing-at-a-time discipline as the social slot). `chaseId`
      is the agentId of the current chaser (null = nobody chasing); the per-body chase plan lives on
      `body.chase = { phase, until, repathAt, faceX, faceY, hardUntil }`. `chaseGateUntil` is the LONG
-     station-level cooldown (8-15 min) so most sessions see ZERO chases — rarity is sacred. Every walk target
+     keep-level cooldown (8-15 min) so most sessions see ZERO chases — rarity is sacred. Every walk target
      is re-clamped to the chaser's zone at EVERY repath (the cursor moves, so a one-time clamp isn't enough).
      Per-body mimic cooldown lives on `body.mimicCd` (quirk-band 45-90s). Both beats ride the goal/hold
      machinery ('mimic'/'chase') rather than a new state family, so summon/chat-focus/social exclusion all
      compose with the existing gates. Determinism: U.* + cursor input only (G6). */
-  let chaseId = null;                       // agentId of the one live chaser, or null (station-level, like socialBeat)
+  let chaseId = null;                       // agentId of the one live chaser, or null (keep-level, like socialBeat)
   let chaseGateUntil = -1e9;                // earliest `now` the next chase may be considered (drawn LONG, 8-15 min)
   /* First-person self-talk — ONE conscious mind narrating its OWN state to itself. Never crew/colony
      banter (a lie for a solo agent). Every line is gated by curiositySay (no live bubble + global
@@ -309,7 +309,7 @@ const World = (() => {
   const CURIO_NEW_BELT = ['a conveyor!', 'where does this go?', 'a new line', 'that wasnt here before'];
   const CURIO_WATCH = ['cargo moving', 'busy line today', 'steady flow', 'there it goes', 'keep it moving'];
   const CURIO_STUDY = ['how does this run', 'let me look closer', 'curious', 'noted', 'interesting'];
-  const CURIO_LOOK = ['hm.', 'all quiet', 'good station', '...', 'just taking it in'];
+  const CURIO_LOOK = ['hm.', 'all quiet', 'good keep', '...', 'just taking it in'];
   const SELF_REST = ['need a breather', 'feet up for a bit', 'recharge', 'easy for a minute', 'resting the circuits'];
   const SELF_STIM = ['too quiet', 'something to do', 'restless', 'let me find something', 'need a spark'];
   const SELF_TEND = ['anything for me?', 'standing by', 'awaiting orders', 'still here, Commander', 'ready when you are'];
@@ -330,7 +330,7 @@ const World = (() => {
     poker: ['no one to bluff', 'the odds hold', 'dealt to empty chairs', 'i fold'],
     vend: ['i dont eat', 'the light is nice', 'row C never drops', 'for the company, then'],
     fridge: ['nothing in it for me', 'it hums back', 'cold and honest', 'still humming'],
-    fish: ['they dont ask me anything', 'small orbits', 'it is restful', 'round and round'],
+    fish: ['they dont ask me anything', 'small circuits', 'it is restful', 'round and round'],
     dj: ['nothing queued', 'the room wants a beat', 'someday, a crowd', 'levels are fine'],
     gacha: ['one more', 'what falls out is chance', 'the capsules are empty', 'i like the sound'],
     locker: ['nothing of mine in here', 'someone elses things', 'all empty', 'closed again'],
@@ -391,7 +391,7 @@ const World = (() => {
      Lines stay sparse and unresolved; the SILENCE is the unsettling part. */
   // quirk/off-beat cooldowns are now PER-BODY (self.quirkCd / self.offbeatCd, seeded on the hero literal + crew init) —
   // J2: a body's gate must never throttle another body. (Module globals removed; maybeQuirk/offbeat read/write self.)
-  // B3/D2 STATION RARITY BUDGET (G5): ONE station-wide gate for the CREW's noticeable eerie beats. It is NOT
+  // B3/D2 KEEP RARITY BUDGET (G5): ONE keep-wide gate for the CREW's noticeable eerie beats. It is NOT
   // cross-agent awareness (no body perceives another — that is Tier C); it is a rarity governor on the dice only.
   // Rates were tuned for ~1 body; without this, N crew all running the shared engine fire ~Nx the quirks/strolls/
   // off-beats/revisits and read busy/cute — breaking the Pass-7 stillness law. THE FAMILIES it governs: quirks
@@ -402,7 +402,7 @@ const World = (() => {
   // COLLECTIVE noticeable-beat rate is bounded at ~1 per 45-90s regardless of crew count, and hero beats keep crew
   // quiet in their shadow. Monte-Carlo with the real constants (200 runs, 10min, 2s re-rolls): N=1 ≈ 6.9 beats/10min;
   // a 6-7 body floor ≈ 12.5-12.6 total ≈ 1.8x single-agent (was 6-7x undamped; an 8s/x0.35 soft damp only reached
-  // ~5.7x) — the station worst case is ~2x N=1 (hero ~1x + crew collectively ~1x), NOT 1x, stated honestly.
+  // ~5.7x) — the keep worst case is ~2x N=1 (hero ~1x + crew collectively ~1x), NOT 1x, stated honestly.
   // Ambient TEXTURE (glances, cursor facing-drift, mutual-glance, wander) is deliberately NOT budgeted. N=1 PARITY:
   // crewBeatDamp short-circuits to 1 on self===agent BEFORE reading any gate state, so the HERO's rolls are
   // byte-identical to today at ANY crew count (J1) and a single-body floor (self is only ever agent) is a provable
@@ -411,9 +411,9 @@ const World = (() => {
   // expires, skipped rolls never mutate per-body cooldowns, and revisit re-considers every idle tick. Deterministic
   // (U.* only, wall-clock-free; J5). Subsumes the old per-quirk lastQuirkAt.
   let crewBeatGateUntil = -1e9;
-  // 0 while the station gate holds a CREW roll, else 1; the hero (self===agent) is NEVER damped (parity).
+  // 0 while the keep gate holds a CREW roll, else 1; the hero (self===agent) is NEVER damped (parity).
   function crewBeatDamp(now) { return (self !== agent && now < crewBeatGateUntil) ? 0 : 1; }
-  function armBeat(now) { crewBeatGateUntil = now + U.irnd(45000, 90000); }   // any fired beat (hero or crew) arms the station gate
+  function armBeat(now) { crewBeatGateUntil = now + U.irnd(45000, 90000); }   // any fired beat (hero or crew) arms the keep gate
   const Q_PONDER = ['hm.', '...', 'i wonder', 'strange', 'thinking'];
   const Q_STARE = ['...', 'are you there?', 'hello.', 'still watching?', 'hm.'];   // mostly it just stares in silence
   const Q_LISTEN = ['did you hear that?', 'something moved', '...', 'who is there'];
@@ -425,7 +425,7 @@ const World = (() => {
   const MOURN_LINE = ['it was here', 'gone', 'where did it go', '...', 'something is missing', 'it was right here'];   // stands where a fond thing used to be
   const REVISIT_LINE = ['back here again', 'my spot', 'here is good', '...', 'i like it here'];                       // drawn back to a favorite haunt
   // WAKE_FIRST removed — the first-light thought is no longer spoken (no canned one-liners, ever).
-  /* AGENT ACTS ON THE STATION (safety-railed): it rarely places its OWN small decor on EMPTY floor, and
+  /* AGENT ACTS ON THE KEEP (safety-railed): it rarely places its OWN small decor on EMPTY floor, and
      only ever moves/removes things from agentDecor (its own ids) — never the Commander's props. Capped +
      long-cooldown so it stays an Easter-egg "it rearranged its corner" moment, not clutter. NOTE: addProp
      hits the undo stack + persists (the wow: the corner changes between visits); a silent/agent-only
@@ -435,10 +435,10 @@ const World = (() => {
   const ownPlaced = new Set();   // every id it has EVER placed — so it never grieves its own artifacts (survives the agentDecor splice)
   // 1x1, blocks:false (never obstructs the agent or the Commander), and FLOOR-placeable: an agent picks
   // its own tile, so anything needing a wall behind it or a table under it can never be on this list.
-  /* what an agent may place for ITSELF, personalising the station over time. Every entry MUST be 1x1
+  /* what an agent may place for ITSELF, personalising the keep over time. Every entry MUST be 1x1
      and placeable on bare deck — emptySpotNear only ever validates a 1x1 footprint, and a 2x1 in here
      would be rejected forever by canPlaceProp and quietly waste the placement roll. Widened 2026-07-29
-     past the original three so a long-running station accumulates a corner that looks lived-in rather
+     past the original three so a long-running keep accumulates a corner that looks lived-in rather
      than three plants and a coffee machine. */
   const AGENT_DECOR = ['plant', 'coffee', 'monstera', 'tallplant', 'terrarium', 'bookstack', 'toolbox', 'crt_pile', 'holopet'];
   const specOf = t => (typeof PropSprites !== 'undefined' && PropSprites.spec) ? PropSprites.spec(t) : null;
@@ -479,7 +479,7 @@ const World = (() => {
      `lastLeg` brakes into the FINAL stop only; intermediate waypoints are taken at pace so the body doesn't
      stutter at every corner. dx,dy = the vector it is stepping along, d = its length. */
   function stepGait(b, dx, dy, d, top, lastLeg, dt, plant) {
-    // Art height controls rendering, not travel speed: 19 px skins share the normal station pace.
+    // Art height controls rendering, not travel speed: 19 px skins share the normal keep pace.
     const seconds=Math.max(0,Math.min(100,dt))/1000;
     const accel=ACCEL;
     // Another system set b.dir (intent tell, glance, seat). Start from the facing the viewer actually SEES
@@ -514,7 +514,7 @@ const World = (() => {
     // Speed already eases with alignment. Applying it twice makes every corner drag.
     const step=error>=limit?0:Math.min(d,b.spd*seconds);
     // Arc along the facing only while the leg is long enough to converge on its target; close to a
-    // waypoint (or badly misaligned) the chord wins so a body can never orbit what it is walking to.
+    // waypoint (or badly misaligned) the chord wins so a body can never circuit what it is walking to.
     const arc=!plant&&step>0&&error<CORNER_ARC&&d>ARC_MIN_D+(b.spd||0)/TURN_RATE;
     b._stepDir=arc?{x:Math.cos(b.faceA),y:Math.sin(b.faceA)}:null;
     // Only translation advances the stride. Rotation used to add almost an entire fake cycle.
@@ -628,11 +628,11 @@ const World = (() => {
     fpx(x + 5, y + 10, 2, 1, '#2a2a2a'); fpx(x + 4, y + 11, 1, 1, '#1a1a1a'); fpx(x + 7, y + 11, 1, 1, '#1a1a1a');
   }
 
-  /* ================= station model + bake ================= */
-  function loadStation(st) {
+  /* ================= keep model + bake ================= */
+  function loadKeep(st) {
     if (unsub) { unsub(); unsub = null; }
-    station = st; geo = null; cache = null; geoDirty = true; bakeDirty = true; fitNeeded = true;
-    novelty = []; seenProps = null; seenBelts = null;   // re-learn the scene from scratch (no cross-station novelty)
+    keep = st; geo = null; cache = null; geoDirty = true; bakeDirty = true; fitNeeded = true;
+    novelty = []; seenProps = null; seenBelts = null;   // re-learn the scene from scratch (no cross-keep novelty)
     beltWatch = null;                                   // ...and the belt-watch claim: this floor's belts are gone, so a claim on them is a ghost holding the slot
     clearDeferredShips();                               // a crate waiting on the OLD floor's handoff must never land on this one
     dockLineWork.clear(); activeDock.clear();          // ...and the dock glow it feeds (written together in intakeMessage)
@@ -640,18 +640,18 @@ const World = (() => {
     // light this floor's colliding bays. Drop the watch (lazily rebuilt; acks re-read from localStorage) and the
     // stats (re-asked by rederive's lineStatsSoon) so every lamp re-earns its state from THIS floor's events.
     watch = null; lineStats = { known: false, byLine: {}, since: 0 }; hoverBay = null; hoverCrate = null;
-    propFoot = new Map(); pendingMourn = null;          // forget where things stood (no cross-station grief)
+    propFoot = new Map(); pendingMourn = null;          // forget where things stood (no cross-keep grief)
     agentDecor.length = 0; ownPlaced.clear(); placeCd = 0;   // forget which decor it placed (the new floor is a clean slate)
     if (agent && agent.fond) agent.fond.clear();        // forget the old floor's haunts — the new floor earns its own
     for (const b of crew) if (!b.summoned) seizeFromIdle(b);
     crew = crew.filter(b => b.summoned);                // drop plan-derived crew (rebuilt from the new floor's bays); KEEP summoned crew (app-level, not floor-bound)
-    if (station && station.onChange) unsub = station.onChange(() => { geoDirty = true; });
+    if (keep && keep.onChange) unsub = keep.onChange(() => { geoDirty = true; });
     rederive();
   }
 
   function rederive() {
-    if (!station) return;
-    const next = station.projectGeometry(typeof StationBake !== 'undefined' ? StationBake.WALL : {});
+    if (!keep) return;
+    const next = keep.projectGeometry(typeof KeepBake !== 'undefined' ? KeepBake.WALL : {});
     const previousGeo = geo;
     const oldOrigin = geo ? geo.origin : null;
     geo = next; T = geo.TILE;
@@ -661,7 +661,7 @@ const World = (() => {
     junctions = buildJunctions();
     // CREW RE-FRAME (agent-in-the-void escape, 2026-07-12): crew bodies live in the same LOCAL pixel
     // frame as the hero, but only the hero got the origin-shift correction below — so any floor edit
-    // that moved the station's bounding box (a room added/removed at the north/west edge) left every
+    // that moved the keep's bounding box (a room added/removed at the north/west edge) left every
     // crew body's px/py in the OLD frame, rendering it offset into the void, with its old-frame path
     // walking it further out. Mirror the hero's treatment for EVERY crew body BEFORE syncCrewFromPlan
     // (whose walkable checks must see new-frame positions): shift the pixels (and the seated render
@@ -706,7 +706,7 @@ const World = (() => {
   function rebake() {
     if (geoDirty || !geo) rederive();
     if (!geo) return;
-    cache = StationBake.bake(geo);
+    cache = KeepBake.bake(geo);
     for (const d of cache.doorOccluders || []) {
       if (d.image.addEventListener) d.image.addEventListener('contextlost', () => { bakeDirty = true; });
     }
@@ -714,12 +714,12 @@ const World = (() => {
     recordBakeProbe();
   }
 
-  /* ---------- CANVAS-LOSS RECOVERY — the station may never silently go black ----------
-     Andrew, 2026-08-15, on 0.10.2: "the station randomly went black and the only thing that
+  /* ---------- CANVAS-LOSS RECOVERY — the keep may never silently go black ----------
+     Andrew, 2026-08-15, on 0.10.2: "the keep randomly went black and the only thing that
      appears is the agents, and the props."
 
      That symptom names its own cause precisely. Every layer that is NOT redrawn from scratch
-     each frame lives in an offscreen <canvas>: the station bake (floors, walls, hull + the
+     each frame lives in an offscreen <canvas>: the keep bake (floors, walls, hull + the
      lightmap), the SpaceBG sky, the Terrain ground. Agents draw from <img> sprite sheets and
      props draw procedurally, so those two are rebuilt on every single frame — and those two
      are exactly what survived.
@@ -748,10 +748,10 @@ const World = (() => {
   let recoveries = 0;
   const PROBE_MS = 250, RECOVER_COOLDOWN_MS = 3000;
 
-  /* Find one pixel the fresh bake painted OPAQUE. Centre first (on any real station the middle
+  /* Find one pixel the fresh bake painted OPAQUE. Centre first (on any real keep the middle
      of the footprint is deck), then a coarse ring outward — so the common case is a single
      readback and a hole-in-the-middle layout still finds floor. Finding none is not an error:
-     it means there is nothing to sentinel (a 1x1 blank bake, or an empty station), and the
+     it means there is nothing to sentinel (a 1x1 blank bake, or an empty keep), and the
      watchdog simply stays inert rather than rebaking a legitimately empty frame forever. */
   function recordBakeProbe() {
     bakeProbe = null;
@@ -886,14 +886,14 @@ const World = (() => {
   function recoverLostCanvases(now, why) {
     /* BACK OFF ONLY WHEN RECOVERY IS NOT WORKING. A flat cooldown was the obvious guard and it
        was wrong: proved live by wiping the plates five times in a row, where a cooldown earned
-       by the FIRST loss made the station sit black through the next one. A recovery that
+       by the FIRST loss made the keep sit black through the next one. A recovery that
        restored an opaque bake is proof the GPU is healthy, so the next loss must heal on the
        spot; only a recovery that changed nothing (futile) is evidence of a broken GPU worth
-       rate-limiting. Recovering is cheap. Sitting in a black station is not. */
+       rate-limiting. Recovering is cheap. Sitting in a black keep is not. */
     if (futileRecoveries > 0 && now - lastRecoverAt < RECOVER_COOLDOWN_MS) return false;
     lastRecoverAt = now; recoveries++;
     try {
-      console.warn('[world] cached canvases lost (' + why + ') — rebuilding station + sky + ground (recovery #' + recoveries + ')');
+      console.warn('[world] cached canvases lost (' + why + ') — rebuilding keep + sky + ground (recovery #' + recoveries + ')');
     } catch (_) {}
     bakeDirty = true; bakeProbe = null;
     try { if (typeof IndustrialTextures !== 'undefined' && IndustrialTextures.restoreMaterials) IndustrialTextures.restoreMaterials(); } catch (_) {}
@@ -913,14 +913,14 @@ const World = (() => {
       IndustrialTextures.discardBaseLayer(cache.baseCv, lostDetailLayer);
       detailProbes = new WeakMap(); lostDetailLayer = null;
       recoveries++; futileRecoveries = 0;
-      return; // native bake is intact; do not stall the frame rebaking the entire station
+      return; // native bake is intact; do not stall the frame rebaking the entire keep
     }
     if (!recoverLostCanvases(now, 'bake sentinel went transparent')) return;
     rebake();
     futileRecoveries = bakeProbe ? 0 : futileRecoveries + 1;
   }
 
-  /* ---------- STAGE CONTEXT LOSS — the OTHER way the station goes black ----------
+  /* ---------- STAGE CONTEXT LOSS — the OTHER way the keep goes black ----------
      User report, 2026-08-24: the whole viewport black — no agents, no props — HUD alive,
      every 10-20 minutes, permanent until an app restart. The bake watchdog above cannot see
      that mode: it probes the OFFSCREEN bake plate, and in this failure the offscreen caches
@@ -1012,28 +1012,28 @@ const World = (() => {
 
   /* ---------- G0.7 empty-room honesty: can this agent's runs actually pass the COMPUTE GATE? ----------
      Only decidable for a BAY-BOUND agent — the bay's room is the capability seam the sidecar resolves
-     tools from (station.bayObjects mirrors resolveTools' input, incl. the dedicated-PC rule). The HERO
+     tools from (keep.bayObjects mirrors resolveTools' input, incl. the dedicated-PC rule). The HERO
      gets compute as the interactive freebie (see heroCaps) and a bayless summoned worker runs on lead-
      conferred access — both are always OK here: we never claim a lie we cannot prove. Cached per geo
      generation (computeOkCache cleared in rederive) so the per-frame lit check stays O(1). */
   const computeOkCache = new Map();   // agentId -> bool
   function agentComputeOK(aid) {
-    if (!station || !aid || (agent && aid === agent.id)) return true;
-    if (typeof station.agentRoomId !== 'function' || typeof station.bayObjects !== 'function') return true;
-    if (!station.agentRoomId(aid)) return true;   // no bay -> not room-resolved -> can't honestly call it dark
+    if (!keep || !aid || (agent && aid === agent.id)) return true;
+    if (typeof keep.agentRoomId !== 'function' || typeof keep.bayObjects !== 'function') return true;
+    if (!keep.agentRoomId(aid)) return true;   // no bay -> not room-resolved -> can't honestly call it dark
     const hb = homeBayOf(aid);   // (multi-bay) the room of the agent's HOME bay (its desk room when it has a desk)
-    return station.bayObjects(aid, hb ? hb.id : undefined).some(o => (o && typeof o === 'object' ? o.objectType : o) === 'computer');
+    return keep.bayObjects(aid, hb ? hb.id : undefined).some(o => (o && typeof o === 'object' ? o.objectType : o) === 'computer');
   }
   function computeOkFor(aid) {
     if (!computeOkCache.has(aid)) computeOkCache.set(aid, agentComputeOK(aid));
     return computeOkCache.get(aid);
   }
 
-  // a PLACED workstation prop lights its screens while the agent assigned to it is working (mirrors the synthetic
+  // a PLACED workkeep prop lights its screens while the agent assigned to it is working (mirrors the synthetic
   // desk's work-glow + the bay-lit pattern) — so an assigned desk reads as "its agent is here, working".
   // (The agent's desk + seat are resolved by the shared deskPropFor/deskSeat helpers defined further below.)
-  function workstationLit(p) {
-    if (!p.agentId || !isWorkstationProp(p.t)) return false;
+  function workkeepLit(p) {
+    if (!p.agentId || !isWorkkeepProp(p.t)) return false;
     if (agent && p.agentId === agent.id) return !!agent.working;
     const b = crew.find(x => x.agentId === p.agentId);
     if (!b || !b.working) return false;
@@ -1044,24 +1044,24 @@ const World = (() => {
 
   // Physical presence powers the remastered glass independently of backend work.
   // An assigned agent walking, waiting or seated elsewhere must not wake this CRT.
-  function bodyAtWorkstationSeat(body, at) {
+  function bodyAtWorkkeepSeat(body, at) {
     if (!body || body.unplaced || !body.sitting || body.state === 'walk' || body.target || !at) return false;
     const foot = seatFoot(at);
     return Number.isFinite(body.px) && Number.isFinite(body.py) &&
       Math.hypot(body.px-foot.x, body.py-foot.y) <= 1;
   }
-  function workstationOccupied(p) {
-    if (!p.agentId || !isWorkstationProp(p.t)) return false;
+  function workkeepOccupied(p) {
+    if (!p.agentId || !isWorkkeepProp(p.t)) return false;
     const body = agent && p.agentId === agent.id ? agent : crew.find(b => b.agentId === p.agentId);
     const home = deskPropFor(p.agentId);
-    return !!(home && home.id === p.id && bodyAtWorkstationSeat(body, deskSeat(p)));
+    return !!(home && home.id === p.id && bodyAtWorkkeepSeat(body, deskSeat(p)));
   }
 
-  // the workstation: the hero's ASSIGNED desk if it placed one, else a 2-wide desk on the spawn room's north wall.
+  // the workkeep: the hero's ASSIGNED desk if it placed one, else a 2-wide desk on the spawn room's north wall.
   function placeDesk() {
     blocked = new Set();
     deskPropId = null; deskFace = 'north';
-    // 1) the hero's own assigned workstation prop → THAT desk is its seat (it walks here + sits when tasked).
+    // 1) the hero's own assigned workkeep prop → THAT desk is its seat (it walks here + sits when tasked).
     //    Uses the SAME desk+seat resolver as crew (deskPropFor/deskSeat) so the hero & crew seat identically.
     const home = agent && deskPropFor(agent.id), hs = home && deskSeat(home);
     if (home && hs) {
@@ -1070,8 +1070,8 @@ const World = (() => {
       for (let dx = 0; dx < (desk.w || 1); dx++) for (let dy = 0; dy < (desk.h || 1); dy++) blocked.add((desk.tx + dx) + ',' + (desk.ty + dy));
       return;   // the placed prop + its chair are drawn by the render loop (skip the synthetic desk/chair)
     }
-    // 2) fallback: the auto workstation on the spawn room's north wall, seat one row below.
-    const sid = station.spawnRoomId(), z = sid && geo.zones[sid];
+    // 2) fallback: the auto workkeep on the spawn room's north wall, seat one row below.
+    const sid = keep.spawnRoomId(), z = sid && geo.zones[sid];
     if (!z || (z.x2 - z.x1) < 1 || (z.y2 - z.y1) < 1) { desk = seat = null; return; }
     let dtx = z.x1 + Math.max(1, Math.floor((z.x2 - z.x1) / 2));
     if (dtx + 1 > z.x2) dtx = Math.max(z.x1, z.x2 - 1);
@@ -1080,10 +1080,10 @@ const World = (() => {
     seat = { tx: dtx, ty: Math.min(dty + 1, z.y2), cx: dtx + 0.5 };   // 2-wide desk -> centre sits on the tile seam
     blocked.add(dtx + ',' + dty); blocked.add((dtx + 1) + ',' + dty);
   }
-  // Artwork readiness changes the available desk front, not station geometry. Refresh
+  // Artwork readiness changes the available desk front, not keep geometry. Refresh
   // the hero's cached seat without rederiving the floor or interrupting unrelated trips.
-  function refreshWorkstationSeats() {
-    if (!geo || !station) return;
+  function refreshWorkkeepSeats() {
+    if (!geo || !keep) return;
     const previous = seat;
     placeDesk();
     const same = previous === seat || (previous && seat
@@ -1230,7 +1230,7 @@ const World = (() => {
   /* TIER D · D5 beat 2 — MISSION-BOARD POST. When the frontend-visible task/mission queue is NON-EMPTY, the board
      is inside the hero's zone, and the hero is idle+free, occasionally (rare, ~2-4 min cooldown) the OVERSEER walks
      to the MISSION BOARD, faces it, and surveys the queue a beat (3-6s) before returning to its business. Rides the
-     goal machinery like the 'pin' beat (goal 'post'); it IS a noticeable beat, so it ARMS the D2 station budget on
+     goal machinery like the 'pin' beat (goal 'post'); it IS a noticeable beat, so it ARMS the D2 keep budget on
      fire (armBeat — quieting crew beats in its shadow). It is NOT itself budget-gated: crewBeatDamp returns 1 for
      the hero unconditionally (J1 parity), and this beat is hero-only, so a damp check here would be provably inert
      — its rarity comes from the 2-4 min postCd. Board out-of-zone or absent ⇒ pure no-op (no reach, no exception). The
@@ -1251,7 +1251,7 @@ const World = (() => {
     // arrival. arrive() overwrites this with the real 3-6s survey hold once the board is reached.
     agent.studyUntil = now + 12000;
     postCd = now + U.irnd(120000, 240000);                       // 2-4 min per-hero cooldown
-    armBeat(now);                                                // count it against the shared station beat budget (G5)
+    armBeat(now);                                                // count it against the shared keep beat budget (G5)
     if (!agent.target) arrive(now);                             // already standing on the approach tile → survey now
     return true;
   }
@@ -1284,7 +1284,7 @@ const World = (() => {
   }
 
   function spawnTileLocal() {
-    const sid = station.spawnRoomId(), z = sid && geo.zones[sid];
+    const sid = keep.spawnRoomId(), z = sid && geo.zones[sid];
     const cx = z ? ((z.x1 + z.x2) >> 1) : (geo.COLS >> 1);
     const cy = z ? ((z.y1 + z.y2) >> 1) : (geo.ROWS >> 1);
     if (geo.walkable(cx, cy, blocked)) return { x: cx, y: cy };
@@ -1325,17 +1325,17 @@ const World = (() => {
   function spawn(a) {
     // a fresh hero body owns a fresh floor: drop EVERY crew body left over from a previous agent on this
     // same page (NEW AGENT keeps this module alive — nothing tears it down). Otherwise the prior agent's
-    // SUMMONED crew (which loadStation deliberately preserves) would haunt the newborn's "fresh" station.
+    // SUMMONED crew (which loadKeep deliberately preserves) would haunt the newborn's "fresh" keep.
     // Safe for RESUME: enterGame re-derives plan crew (syncCrewFromPlan) and re-spawns the rehydrated
     // summoned crew (spawnAgent loop) immediately after this call, so a resumed crew is rebuilt, not lost.
     crew = [];
     occupiedSeats.clear();   // W5: couch-cushion CLAIMS live in this module-level Set, NOT on the body objects we just
                              // dropped — so without this a body lounging at switch time leaks its seatKey forever, and a
-                             // reissued prop id (worldmodel _nid reseeds low on a fresh station) collides → a brand-new
+                             // reissued prop id (worldmodel _nid reseeds low on a fresh keep) collides → a brand-new
                              // couch reads "full" over a physically EMPTY cushion. spawn()-only, same rationale as below.
     beltWatch = null;        // the belt-watch claim is the same shape of module-level claim, held by a body we just dropped
     // …and with it every other scrap of the PREVIOUS agent's session that lives on this page. These reset
-    // here (the per-agent hero (re)spawn), NOT in loadStation — loadStation also runs on a same-agent BUILD MODE,
+    // here (the per-agent hero (re)spawn), NOT in loadKeep — loadKeep also runs on a same-agent BUILD MODE,
     // where the running economy/belts MUST persist. spawn() runs only on wake/resume, so a refit is untouched.
     if (floor) floor.reset();           // W1: factory-floor economy (spend/slag/yield) — no inherited numbers on a new HUD
     if (slaglog) slaglog.reset();       // W1: wasted-spend post-mortems
@@ -1367,7 +1367,7 @@ const World = (() => {
       needs: { rest: U.irnd(72, 92), stim: U.irnd(72, 92), social: U.irnd(72, 92) },   // born content; drifts into wants over the first minute
       lastTaskAt: 0, thinkUntil: 0, settleUntil: 0, trackUntil: 0,   // machine-state timers (think-before-work, settle-before-typing, downtime, body-track)
       quirkKind: null,   // which rare quirk is currently playing (drives the gaze flavor in maybeGlance)
-      placeTarget: null, removeId: null,   // pending station edit when goal==='place' (add decor at target, or remove its own)
+      placeTarget: null, removeId: null,   // pending keep edit when goal==='place' (add decor at target, or remove its own)
       roundsQueue: null, roundsCd: 0,   // caretaker-lap stop queue + cooldown
       fond: new Map(), revisitCd: 0,   // SPATIAL MEMORY: tileKey -> affection; builds where it dwells, drives revisit-a-haunt + mourning
       pauseUntil: 0, pauseLook: null, pauseCd: 0, yieldCd: 0, lookBackCd: 0,   // CONSIDERED MOVEMENT: brief mid-stroll holds, belt-yield to cargo, the rare double-take
@@ -1404,17 +1404,17 @@ const World = (() => {
     // element), so without this guard each new agent stacked another full set of listeners and SSE streams.
     if (listenersBound) return;
     listenersBound = true;
-    // THE STARNET FONT, ON CANVAS. `font-display: block` (style.css) governs the DOM only —
+    // THE EYEHOLD FONT, ON CANVAS. `font-display: block` (style.css) governs the DOM only —
     // canvas has no equivalent: `ctx.font` resolves against whatever is loaded AT DRAW TIME and
     // silently falls through to the next family in the stack when VT323 has not landed yet.
-    // The live frame redraws continuously so it heals itself, but StationBake paints its layers
+    // The live frame redraws continuously so it heals itself, but KeepBake paints its layers
     // ONCE — a bake that ran a few ms before the face arrived keeps fallback-font text baked into
     // the floor until the geometry happens to change. So: if the face is not ready, wait for it
     // and re-bake. Rejection is ignored on purpose — a missing face is already a hard failure the
     // gate catches (test/font.law.test.js), and there is nothing useful to do about it here.
     try {
-      if (document.fonts && !document.fonts.check("16px 'VT323'", 'Station')) {
-        document.fonts.load("16px 'VT323'", 'Station')
+      if (document.fonts && !document.fonts.check("16px 'VT323'", 'Keep')) {
+        document.fonts.load("16px 'VT323'", 'Keep')
           .then(() => { bakeDirty = true; redrawNow(); })
           .catch(() => {});
       }
@@ -1423,7 +1423,7 @@ const World = (() => {
       if (IndustrialTextures.enabled()) {
         // Keep the shipped v0.11.2 PHOSPHOR treatment for these PNG props too.
         // Asset readiness must not reduce static, film, scanlines or curvature.
-        refreshWorkstationSeats();
+        refreshWorkkeepSeats();
         bakeDirty = true; redrawNow();
       }
     });
@@ -1553,7 +1553,7 @@ const World = (() => {
       // G2.3: a stacked OUTBOX is the collect tap — clicking it opens the oldest pending run's review
       const ob = outboxAt(wp);
       if (ob && onOutbox) { onOutbox(ob); return; }
-      // LINE WATCH: a crate riding a belt opens its station card; a FAILED bay's red lamp is acked by a click
+      // LINE WATCH: a crate riding a belt opens its keep card; a FAILED bay's red lamp is acked by a click
       const crate = crateAt(wp);
       if (crate && openCrate(crate, ev)) return;
       const fb = failedBayAt(wp);
@@ -1569,7 +1569,7 @@ const World = (() => {
       // a PLUGIN TERMINAL opens its plugin's window (or, unbound, the place to bind/install one)
       const pt = pluginTerminalAt(wp);
       if (pt && onPluginTerminal) { onPluginTerminal(pt); return; }
-      // DESK SCREEN: an agent's workstation opens THAT agent's work — live steps while it runs, its last job at rest
+      // DESK SCREEN: an agent's workkeep opens THAT agent's work — live steps while it runs, its last job at rest
       const dk = onDesk ? deskAt(wp) : null;
       if (dk) { onDesk({ agentId: dk.agentId, propId: dk.propId, clientX: ev.clientX, clientY: ev.clientY }); return; }
       // an UNBOUND bay's nag says CLICK — the click opens the assign flow (BUILD MODE bay picker), closing the loop
@@ -1590,9 +1590,9 @@ const World = (() => {
   function resize() {
     if (!cv) return;
     const dpr = window.devicePixelRatio || 1;
-    // TEXT SIZE zoom (stationui applySettings sets body.style.zoom): zoom shrinks the canvas's
+    // TEXT SIZE zoom (keepui applySettings sets body.style.zoom): zoom shrinks the canvas's
     // layout px while the painted box stays the same device size, so without this factor the
-    // station upscales soft. Multiplying back keeps the bitmap 1:1 with device pixels; mouse
+    // keep upscales soft. Multiplying back keeps the bitmap 1:1 with device pixels; mouse
     // mapping is rect-ratio-based (canvasPoint) so it needs no change.
     const uiz = (() => { const z = parseFloat(document.body && document.body.style ? document.body.style.zoom : ''); return z > 0 ? z : 1; })();
     const w = cv.clientWidth || cv.parentElement.clientWidth, h = cv.clientHeight || cv.parentElement.clientHeight;
@@ -1600,7 +1600,7 @@ const World = (() => {
     if (cv.width === nw && cv.height === nh) return;   // assigning to canvas.width/height WIPES the bitmap even when unchanged — skip the needless clear
     // keep the world point under the canvas centre anchored through the resize (zoom untouched):
     // the view stays put while the stage grows/shrinks around it. Skipped until the first fit
-    // has framed the station (fitNeeded) — there's no meaningful view to preserve yet. A fit
+    // has framed the keep (fitNeeded) — there's no meaningful view to preserve yet. A fit
     // that landed on a DEGENERATE canvas (boot while the game screen was still hidden → 1px
     // stage) is no view either — re-fit at the first real size instead of anchoring garbage.
     if (!fitNeeded && cache) {
@@ -1611,7 +1611,7 @@ const World = (() => {
   }
 
   // A canvas resize blanks the bitmap, and the repaint only lands on the NEXT rAF — so dragging the
-  // COMMS seam (a stream of ResizeObserver hits) strobes the station black. Repaint synchronously in the
+  // COMMS seam (a stream of ResizeObserver hits) strobes the keep black. Repaint synchronously in the
   // observer (after layout, before paint) so the new-size frame is on screen this paint, not next. Cancel
   // the queued rAF first so frame()'s own re-schedule doesn't leave two loops running.
   function redrawNow() {
@@ -1631,12 +1631,12 @@ const World = (() => {
   function stop() { cancelArrival(); running = false; cancelScheduled(); }
   /* FRAME CAP (HUD widget, 2026-09-29): an opt-in ceiling on how often the floor is DRAWN. Frames in between are
      skipped whole; the simulation still reads the real clock, so bodies move at their true speed, just drawn fewer
-     times a second. 0 = no caller cap (the station's own RENDER PACING below then decides). */
+     times a second. 0 = no caller cap (the keep's own RENDER PACING below then decides). */
   let frameCapMs = 0, lastDrawnAt = 0;
   function setFrameCap(ms) { frameCapMs = ms > 0 ? +ms : 0; paceWake(); }
-  /* RENDER PACING (#69, 2026-10-06): StarNet stays open all day so routines run, and an uncapped rAF loop drew the
-     whole station at the monitor's refresh rate the entire time — 240 draws/s on a 240 Hz panel, a visible-but-
-     unfocused window included (rAF only pauses when the page is HIDDEN). Measured on the seeded station: the GPU
+  /* RENDER PACING (#69, 2026-10-06): Eyehold stays open all day so routines run, and an uncapped rAF loop drew the
+     whole keep at the monitor's refresh rate the entire time — 240 draws/s on a 240 Hz panel, a visible-but-
+     unfocused window included (rAF only pauses when the page is HIDDEN). Measured on the seeded keep: the GPU
      process alone burned ~1.1 cores, the renderer another ~0.7. Only the DRAWING is paced; every event handler and
      the harness state they write keep running in real time, and a throttled draw advances the simulation in real-
      time slices (see simSlices) so nothing walks or rides slower.
@@ -1653,13 +1653,13 @@ const World = (() => {
     try { return typeof document === 'undefined' || typeof document.hasFocus !== 'function' || document.hasFocus(); } catch (_) { return true; }
   }
   /* FRAME BUDGET (2026-10-07, "laggy" reports on 0.13): the floor may hold at most BUDGET_SHARE of the main thread.
-     The pace above is only a CEILING on the draw rate. A big station draws slowly (a 26-agent, 200-light station
+     The pace above is only a CEILING on the draw rate. A big keep draws slowly (a 26-agent, 200-light keep
      took ~22ms a draw on a fast desktop, and a laptop is 2-3x that), so at 30 draws/s the world owned the thread and
      every click, keystroke and COMMS token queued behind it. The interval stretches to drawCost / BUDGET_SHARE
-     (never below BUDGET_MIN_FPS) so the UI always keeps the rest; a cheap station never notices (drawCost 10ms ->
+     (never below BUDGET_MIN_FPS) so the UI always keeps the rest; a cheap keep never notices (drawCost 10ms ->
      14ms, under the 33ms pace). The simulation reads the real clock and is sliced (simSlices), so nothing moves
      slower. Replaces the 10-04 per-vsync budget (agent/restore-lag), which predates this time-based pacer.
-     The floor is LOW on purpose (2026-10-08, CPU throttled 4x on that station: one draw ~140ms): a 12 fps floor could
+     The floor is LOW on purpose (2026-10-08, CPU throttled 4x on that keep: one draw ~140ms): a 12 fps floor could
      not be met anyway (4-6 draws/s) and only kept the thread 100% busy — click waits p50 ~270ms; at 5 fps the same
      4 draws/s leave the UI a third of the thread (65-73% busy, p50 56-103ms). At 2x nothing changes (21 draws/s). */
   const BUDGET_SHARE = 0.7, BUDGET_MIN_FPS = 5, BUDGET_SAMPLE_MAX_MS = 250;
@@ -1710,10 +1710,10 @@ const World = (() => {
       drawCostMs: +drawCostMs.toFixed(2), budgetMs: +budgetMs().toFixed(1),
       draws: pacedDraws, simMs: Math.round(simMs), timerWait: !!paceTimer };
   }
-  /* OVERLAYS (HUD widget, 2026-09-30): the station's in-world readouts — run clocks, tool tickers, await tags,
+  /* OVERLAYS (HUD widget, 2026-09-30): the keep's in-world readouts — run clocks, tool tickers, await tags,
      routing callouts, bay names/lamps/plates, hover glances, dock flashes, speech bubbles, nameplates and the
      working pulse at a worker's feet. A surface that says all of that itself (the HUD widget's rows) turns
-     them off to show only the world. true = the station's normal frame, byte-identical. */
+     them off to show only the world. true = the keep's normal frame, byte-identical. */
   let overlaysOn = true;
   function setOverlays(on) { overlaysOn = on !== false; }
   function wakeIn() { wakeAt = performance.now(); }
@@ -1846,15 +1846,15 @@ const World = (() => {
     if (!agent) return;
     const t = String(text || '').replace(/\s+/g, ' ').trim();
     agent.say = { text: t.slice(0, 160), until: performance.now() + 4200 };
-    // ambient station-life remarks are muttered ALOUD too (when the agent has a voice and isn't
-    // mid-conversation) so the station feels lived-in. Real replies are spoken by chat.js, not here,
+    // ambient keep-life remarks are muttered ALOUD too (when the agent has a voice and isn't
+    // mid-conversation) so the keep feels lived-in. Real replies are spoken by chat.js, not here,
     // so only {ambient:true} lines speak — and pure filler ("...", "hmm") stays a silent bubble.
     if (opts && opts.ambient && typeof Voice !== 'undefined' && Voice.mutter
         && /[a-z]/i.test(t) && !/^h+m+[.…]?$/i.test(t)) {
       Voice.mutter(t);
     }
   }
-  /* kind: 'task' (walk to the workstation + work) | 'talk' (face the Commander) | 'idle' (wander the station) */
+  /* kind: 'task' (walk to the workkeep + work) | 'talk' (face the Commander) | 'idle' (wander the keep) */
   /* TIER D · D1 — the Commander's COMMS focus. chat.js calls this with the active stream's agent id on every
      conversation rebind (load(ws)), and null when there's no live conversation. Stores the id ONLY; all the
      stare behavior reads chatFocusId from the idle path. Airtight cleanup: when focus moves off a body (null
@@ -1917,7 +1917,7 @@ const World = (() => {
   // Commander grabs the camera (wheel/drag/click → the input handlers release the lock). One-shot focusBody
   // stays for programmatic reframes (boot restore, delete-fallback) — lockBody is only armed by a USER selection.
   // zoom (optional, 2026-09-30): the lock's scale for a surface that frames one agent closer (the HUD widget);
-  // omitted = the station's own rule (at least 3, never zooming out), byte-identical.
+  // omitted = the keep's own rule (at least 3, never zooming out), byte-identical.
   // opts.seatAt (optional): where a SEATED body's feet sit in the frame (0..1 of its height). A seated worker
   // faces its desk, which stands ABOVE it on screen; a small frame that keeps the default 0.56 cuts the desk
   // and its screen off. Omitted = 0.56 for every body, byte-identical.
@@ -1995,16 +1995,16 @@ const World = (() => {
   }
   // Room framing for the local composition review; no simulation/geometry edit.
   function frameReviewRoom(id){
-    if(!cache||!geo||!station||!cv)return false;
-    const room=id&&station.serialize().rooms[id];
+    if(!cache||!geo||!keep||!cv)return false;
+    const room=id&&keep.serialize().rooms[id];
     if(id&&!room)return false;
     camLock=null;camLerp=null;camUserAt=performance.now();
     if(!room){fitCamera();scale=Math.min(scale*.90,cv.height*.76/cache.H);panX=(cv.width-cache.W*scale)/2;panY=cv.height*.57-cache.H*scale/2;}
     else{
       const r=room.rects,x1=Math.min(...r.map(v=>v.x1)),x2=Math.max(...r.map(v=>v.x2))+1;
       const y1=Math.min(...r.map(v=>v.y1)),y2=Math.max(...r.map(v=>v.y2))+1;
-      const left=(x1-geo.origin.tx)*T-10,top=(y1-geo.origin.ty)*T-StationBake.WALL.up-8;
-      const w=(x2-x1)*T+20,h=(y2-y1)*T+StationBake.WALL.up+StationBake.WALL.skirt+16;
+      const left=(x1-geo.origin.tx)*T-10,top=(y1-geo.origin.ty)*T-KeepBake.WALL.up-8;
+      const w=(x2-x1)*T+20,h=(y2-y1)*T+KeepBake.WALL.up+KeepBake.WALL.skirt+16;
       scale=clampz(Math.min(cv.width*.86/w,cv.height*.72/h),MINZ,MAXZ);
       panX=cv.width/2-(left+w/2)*scale;panY=cv.height*.56-(top+h/2)*scale;
     }
@@ -2127,14 +2127,14 @@ const World = (() => {
     if (!self || self.goal != null || ((self === agent) && activity !== 'idle') || self.unplaced) return;
     const now = fnow;
     if (now < (self.pauseCd || 0)) return;
-    // D2 (G5): station budget — a CREW stroll-beat roll is hard-gated (damp=0) while the station gate holds (no-op for the hero).
+    // D2 (G5): keep budget — a CREW stroll-beat roll is hard-gated (damp=0) while the keep gate holds (no-op for the hero).
     const damp = crewBeatDamp(now);
     // THE DOUBLE-TAKE (rare): stop and turn to look back the way it came, as if something caught its attention
     if (now >= (self.lookBackCd || 0) && U.chance(0.045 * (self.pers ? self.pers.curious : 1) * damp)) {
       self.pauseUntil = now + U.irnd(900, 1700); self.pauseLook = 'back';
       self.pauseDir = OPP[self.dir] || self.dir;   // latch once; never reverse again on each held frame
       self.pauseCd = now + U.irnd(9000, 16000); self.lookBackCd = now + U.irnd(50000, 95000);
-      armBeat(now);   // the double-take is a noticeable beat — count it against the station budget
+      armBeat(now);   // the double-take is a noticeable beat — count it against the keep budget
       curiositySay(['hm?', '...', 'did something move', 'thought i saw something'], 0.22, now);
       return;
     }
@@ -2262,13 +2262,13 @@ const World = (() => {
       self.glanceCd = 0; self.studyUntil = now + U.irnd(5000, 11000); curiositySay(REVISIT_LINE, 0.35, now);
     }
     else if (self.goal === 'place') {
-      // it acts on the station: drops a piece of its OWN decor on the empty tile, or removes one it placed before
+      // it acts on the keep: drops a piece of its OWN decor on the empty tile, or removes one it placed before
       self.sitting = false; self.working = false; self.state = 'idle'; self.dir = self.useFace || 'south';
-      if (self.placeTarget && station.addProp) {
-        const tg = self.placeTarget, res = station.addProp({ t: tg.t, x: tg.x, y: tg.y, w: 1, h: 1, block: false });
+      if (self.placeTarget && keep.addProp) {
+        const tg = self.placeTarget, res = keep.addProp({ t: tg.t, x: tg.x, y: tg.y, w: 1, h: 1, block: false });
         if (res && res.ok) { agentDecor.push(res.id); ownPlaced.add(res.id); if (seenProps) seenProps.add(res.id); curiositySay(SELF_PLACE, 0.6, now); }   // suppress self-novelty so it doesn't go inspect its own work
-      } else if (self.removeId && station.removeProp) {
-        station.removeProp(self.removeId); const i = agentDecor.indexOf(self.removeId); if (i >= 0) agentDecor.splice(i, 1); curiositySay(SELF_PLACE, 0.4, now);
+      } else if (self.removeId && keep.removeProp) {
+        keep.removeProp(self.removeId); const i = agentDecor.indexOf(self.removeId); if (i >= 0) agentDecor.splice(i, 1); curiositySay(SELF_PLACE, 0.4, now);
       }
       self.placeTarget = null; self.removeId = null; self.goal = null; self.idleUntil = now + U.irnd(900, 2000);
     }
@@ -2285,7 +2285,7 @@ const World = (() => {
   }
   /* ---------- CONTINUITY OF ATTENTION (the anti-aimlessness fix) ----------
      `wander` samples a UNIFORMLY RANDOM tile of the whole zone, and every idle decision re-rolls from
-     scratch — so consecutive strolls ping-ponged across the station and the body never appeared to be
+     scratch — so consecutive strolls ping-ponged across the keep and the body never appeared to be
      occupied with anything. That, not a shortage of behaviours, is what reads as aimless.
      An ATTENTION ANCHOR fixes it without adding a single beat: whenever the body chooses to dwell
      somewhere (the same moment `fond` accrues — arrive()'s FOND table), it remembers that tile for a
@@ -2309,7 +2309,7 @@ const World = (() => {
     const attn = (self.attn && now < self.attn.until) ? self.attn : null;   // occupied with a neighbourhood? keep the stroll there
     for (let i = 0; i < 24; i++) {
       // While an anchor is live the first two-thirds of the tries sample its neighbourhood; the tail falls
-      // back to the free station-wide pick so a walled-in / exhausted anchor can NEVER strand the stroll.
+      // back to the free keep-wide pick so a walled-in / exhausted anchor can NEVER strand the stroll.
       // Out-of-bounds samples are impossible to act on — geo.walkable range-checks before anything else.
       let x, y;
       if (attn && i < 16) { x = attn.x + U.irnd(-ATTN_R, ATTN_R); y = attn.y + U.irnd(-ATTN_R, ATTN_R); }
@@ -2331,7 +2331,7 @@ const World = (() => {
      Non-blocking props (bays, inbox/outbox chutes, filters, dropped decor) stay WALKABLE — bodies
      dock on bay tiles, airlocks are doors — but a body with prop awareness steps AROUND the
      machinery when any other route exists. Rugs and airlocks are meant to be crossed; skip them. */
-  const SOFT_CROSS = new Set(['rug', 'rug_small', 'rug_large', 'airlock']);
+  const SOFT_CROSS = new Set(['rug', 'rug_small', 'rug_large', 'eyehold_rug', 'eyehold_runner', 'airlock']);
   function beltUnion() {
     const s = new Set(blocked);
     const belts = (geo && geo.belts) || [];
@@ -2347,7 +2347,7 @@ const World = (() => {
   /* ---------- IDLE ZONE (P1: cage every hero idle picker to the agent's own area) ----------
      A "zone" is the area a body may ROAM while idle, DERIVED on the fly from the room rects +
      props the world already holds (never persisted — shared/events.js/schema.js untouched). It is
-     the room enclosing the body's assigned workstation/bay; a leash radius if it sits on open floor;
+     the room enclosing the body's assigned workkeep/bay; a leash radius if it sits on open floor;
      null if it has no assignment (then it does not roam). The pure geometry lives in app/zones.js
      (window.Zones), unit-tested headlessly; this thin wrapper just resolves the anchor + room rects
      from `geo` for a given body. Guarded on `typeof Zones` (mirrors the PropAnchor/Conveyor guards)
@@ -2357,17 +2357,17 @@ const World = (() => {
      (`soleOwner(body)` — no other bound bay/crew body), its zone WIDENS to the union of every room
      rect (the whole reachable floor = the exact geo.allRects set the pre-change pickers drew from),
      so EVERY previously-valid cross-room target stays in-zone and the 8 sentience passes are
-     unchanged — even in a multi-room built-out solo station where the desk room is only ONE room.
-     This is the real condition (sole-ownership widening), not "the desk room spans the station"
+     unchanged — even in a multi-room built-out solo keep where the desk room is only ONE room.
+     This is the real condition (sole-ownership widening), not "the desk room spans the keep"
      (which only holds for a fresh single-room floor). Multi-room lane discipline (caging each body
      to its own room) is the intended NEW behavior ONLY once more than one agent shares the floor.
 
-     anchorFor(body): the body's own workstation/bay foot tile — its STABLE home (never its transient
+     anchorFor(body): the body's own workkeep/bay foot tile — its STABLE home (never its transient
      px/py, so the zone doesn't drift as it walks). Hero falls back to the module `seat` (its synthetic
-     desk) when it has no placed workstation prop; crew resolve purely via deskPropFor/bay (P2/P3). */
+     desk) when it has no placed workkeep prop; crew resolve purely via deskPropFor/bay (P2/P3). */
   /* The returned tile carries `assigned` for posting semantics, but every PLACED body's STABLE
      anchor may own the same bounded roam radius. A deskless body uses its immutable spawn home,
-     so widening it cannot ratchet across the station as it walks. */
+     so widening it cannot ratchet across the keep as it walks. */
   function anchorFor(body) {
     if (!geo) return null;
     const aid = body && body.id;
@@ -2375,27 +2375,27 @@ const World = (() => {
     if (dp) return { x: dp.x, y: dp.y, assigned: true };
     if (aid && geo.props) { const bay = homeBayOf(aid); if (bay) return { x: bay.x, y: bay.y, assigned: true }; }
     if (body === agent && seat) return { x: seat.tx, y: seat.ty, assigned: true };   // hero on the synthetic auto-desk
-    // A2 leash fallback: a PLACED crew body with no workstation/bay (the common freshly-summoned worker
+    // A2 leash fallback: a PLACED crew body with no workkeep/bay (the common freshly-summoned worker
     // before the user assigns it a PC) anchors on its OWN foot tile, so zoneFor yields a bounded leash
     // around its spawn spot instead of null — keeping it alive (BR-4 'summoned agents move') without
     // letting it roam the whole floor. Unplaced/dormant bodies still return null (A2: no zone, no roam).
     if (body && body.crewBody && !body.unplaced) return body.home ? { x: body.home.x, y: body.home.y } : tileOf(body.px, body.py);
     return null;
   }
-  /* soleOwner(body): does this body effectively own the WHOLE station (so its zone must widen to
+  /* soleOwner(body): does this body effectively own the WHOLE keep (so its zone must widen to
      the whole floor per A3/I2)? True when no OTHER placed body shares the floor — i.e. every crew
      body is unplaced (dormant at spawn, occupying nothing). The lone hero in a built-out multi-room
-     station is the realistic solo case: caging it to its desk room would strip previously-valid
+     keep is the realistic solo case: caging it to its desk room would strip previously-valid
      cross-room idle targets (the I2 regression). When ANY other body is placed, lane discipline
      kicks in and each body is caged to its own room. The hero is the only sole-owner candidate;
      a crew body is, by definition, never alone while the hero is on the floor. */
   function soleOwner(body) {
     if (body !== agent) return false;                 // only the hero can solely own the floor
     if (agent && agent.unplaced) return false;        // an unplaced hero owns nothing
-    return crew.every(b => b && b.unplaced);          // no OTHER placed body shares the station
+    return crew.every(b => b && b.unplaced);          // no OTHER placed body shares the keep
   }
   /* TRUE ROAM RADIUS (2026-08-08 idle-life pass). Every placed body gets one immutable
-     desk/spawn-centered distance leash across the station floor. Room plates do not widen or clip
+     desk/spawn-centered distance leash across the keep floor. Room plates do not widen or clip
      it; walkability and the existing pathfinder decide which in-radius destinations are reachable. */
   function zoneFor(body) {
     if (typeof Zones === 'undefined' || !geo) return null;
@@ -2414,7 +2414,7 @@ const World = (() => {
   /* ---------- SIGHTLINE: A WALL IS A WALL (2026-08-17, Andrew: "they talk to each other through walls")
      Every cross-body beat — the glance, the huddle, the border meeting — resolved "can these two see
      each other?" as PROXIMITY plus ZONE MEMBERSHIP, and a zone (zones.js) is a 14-tile Chebyshev radius
-     around a desk intersected with the station's floor rects. A radius does not know about plaster: two
+     around a desk intersected with the keep's floor rects. A radius does not know about plaster: two
      bodies three tiles apart in DIFFERENT ROOMS both sit inside each other's radius and over floor, so
      they read as in sight with a wall between them. The D3 border meeting then made it structural rather
      than accidental — it walks both bodies to their own side of a shared room edge and has them converse
@@ -2458,7 +2458,7 @@ const World = (() => {
     // BOUNDS FIRST, always: geo.idx is a flat row-major index with no range check, so idx(-1, y) and
     // idx(COLS, y) ALIAS onto the neighbouring ROW — an off-grid coordinate would read a real zone id
     // and report void as floor. Bodies are always on the grid so this can't bite in play, but a probe
-    // that scans past the station's edge is exactly how a silent aliasing bug gets shipped.
+    // that scans past the keep's edge is exactly how a silent aliasing bug gets shipped.
     const floor = (x, y) => (x >= 0 && y >= 0 && x < geo.COLS && y < geo.ROWS && geo.zoneGrid[geo.idx(x, y)] != null);
     return losWalk(ax, ay, bx, by, floor, geo.canStep);
   }
@@ -2750,7 +2750,7 @@ const World = (() => {
       if (b.state !== 'walk') { b.sepSince = 0; continue; }
       /* NOT a body mid-encounter. seizeFromIdle clears `goal` but deliberately does NOT clear `b.social`
          (nothing else needs it to), and encounterBroken tests exactly `social == null` — so releasing a
-         social/gather walker here would leave the beat undetectably half-dead, holding the single station
+         social/gather walker here would leave the beat undetectably half-dead, holding the single keep
          slot until its hard timeout. It also does not need releasing: stepSocial/stepGather re-path every
          tick and both beats already carry their own hard timeout, so a jam there is bounded anyway. */
       if (b.goal === 'social' || b.goal === 'gather') { b.sepSince = 0; continue; }
@@ -2968,7 +2968,7 @@ const World = (() => {
       // PLACED + NON-WORKING → run the full sentience engine on THIS body, caged to its own zone.
       // DESK-STUCK FIX (Andrew escape 2026-07-07): this was gated on `b.summoned`, which starved every
       // PLAN-DERIVED (bay-bound) crew body of the idle engine — so a bay body froze wherever work was last
-      // delivered: at its bay when idle ("hidden behind the bays"), and at its workstation seat after a run
+      // delivered: at its bay when idle ("hidden behind the bays"), and at its workkeep seat after a run
       // ended ("walks to its desk and stands there eternally"). crewEngineStep already un-sticks the just-
       // finished desk-sit (its `sitting && goal!==use/lounge → stand + re-decide` line) and every target
       // picker is caged to zoneFor(b) — which anchorFor() resolves to the body's OWN bay tile — so a bay body
@@ -3015,24 +3015,24 @@ const World = (() => {
     const p = geo.props.find(q => q.id === propId); if (!p) return null;
     const u = propUse(p); return u ? u.kind : null;
   }
-  // OWNERSHIP: a prop that gets ASSIGNED to an agent for a gamified capability (a PC/workstation, cabinet, dish,
+  // OWNERSHIP: a prop that gets ASSIGNED to an agent for a gamified capability (a PC/workkeep, cabinet, dish,
   // notebook, connector, workbench, or a docking bay) is that agent's ALONE — only its assignee walks over to
   // use/inspect it. Leisure + decor (couch/tv/arcade/plant) stay shared. An UNASSIGNED capability prop belongs to
   // no one yet, so no agent is drawn to it either ("...or simply not assigned to them"). This keeps complex
-  // multi-agent factory floors legible: agents never wander to another agent's (or an unclaimed) workstation.
-  function isOwnableProp(t) { return !!(station && typeof station.capForProp === 'function' && station.capForProp(t)) || t === 'bay'; }
+  // multi-agent factory floors legible: agents never wander to another agent's (or an unclaimed) workkeep.
+  function isOwnableProp(t) { return !!(keep && typeof keep.capForProp === 'function' && keep.capForProp(t)) || t === 'bay'; }
   function mayTouchProp(agentId, p) { return !p || !isOwnableProp(p.t) || p.agentId === agentId; }
 
-  /* ---------- placed workstations = clones of the hero's desk+chair ----------
-     A placed PC (any computer-capability prop) is a real workstation: it gets a chair attached in front and
+  /* ---------- placed workkeeps = clones of the hero's desk+chair ----------
+     A placed PC (any computer-capability prop) is a real workkeep: it gets a chair attached in front and
      its ASSIGNED agent walks over and sits in it to work — the exact desk behaviour the hero has at its
      preinstalled desk, just bound to another agent. These three helpers + stepCrewToSeat (below) are the whole
      of that promise; rendering draws F_chair at deskSeat() so the chair lines up with where the body sits. */
-  function isWorkstationProp(t) { return !!(station && typeof station.capForProp === 'function' && station.capForProp(t) === 'computer'); }
-  // the placed workstation bound to this agent, or null (first match — one PC per agent is the rule)
+  function isWorkkeepProp(t) { return !!(keep && typeof keep.capForProp === 'function' && keep.capForProp(t) === 'computer'); }
+  // the placed workkeep bound to this agent, or null (first match — one PC per agent is the rule)
   function deskPropFor(aid) {
     if (!geo || !geo.props || !aid) return null;
-    for (const p of geo.props) if (p.agentId === aid && isWorkstationProp(p.t)) return p;
+    for (const p of geo.props) if (p.agentId === aid && isWorkkeepProp(p.t)) return p;
     return null;
   }
   // Remastered desk views carry a real front. Legacy and unavailable views keep the
@@ -3069,13 +3069,13 @@ const World = (() => {
   }
 
   /* ---------- capability-prop resolution (G0.1: which prop does a firing tool light?) ----------
-     geo.props are in the bake's LOCAL frame; station.roomAt speaks WORLD tiles — geo.origin bridges them. */
-  const roomOfLocalTile = (lx, ly) => (station && geo && geo.origin) ? station.roomAt(lx + geo.origin.tx, ly + geo.origin.ty) : null;
+     geo.props are in the bake's LOCAL frame; keep.roomAt speaks WORLD tiles — geo.origin bridges them. */
+  const roomOfLocalTile = (lx, ly) => (keep && geo && geo.origin) ? keep.roomAt(lx + geo.origin.tx, ly + geo.origin.ty) : null;
   // the acting agent's ROOM: its BAY's room first (the capability seam — the room whose props granted the
   // tool), else the room its body stands in (hero/summoned workers have no bay).
   function actingRoomId(aid) {
-    if (!station || !geo) return null;
-    if (aid && typeof station.agentRoomId === 'function') { const r = station.agentRoomId(aid); if (r) return r; }
+    if (!keep || !geo) return null;
+    if (aid && typeof keep.agentRoomId === 'function') { const r = keep.agentRoomId(aid); if (r) return r; }
     const b = bodyForAgent(aid) || agent;
     if (!b) return null;
     const t = tileOf(b.px, b.py);
@@ -3086,7 +3086,7 @@ const World = (() => {
   // placed -> nothing pulses; a tool the floor didn't grant a body never invents one).
   function capPropFor(cap, aid) {
     if (!geo || !geo.props || !cap) return null;
-    const match = p => (station && station.capForProp && station.capForProp(p.t) === cap) || p.t === cap;   // t===cap covers catalog types named for the capability itself (e.g. jukebox)
+    const match = p => (keep && keep.capForProp && keep.capForProp(p.t) === cap) || p.t === cap;   // t===cap covers catalog types named for the capability itself (e.g. jukebox)
     const cands = geo.props.filter(match);
     if (!cands.length) return null;
     if (aid) { const own = cands.find(p => p.agentId === aid); if (own) return own; }
@@ -3100,7 +3100,7 @@ const World = (() => {
   }
 
   // A refit invalidates a furniture trip, or a perch whose prop moved/disappeared.
-  // Compare WORLD coordinates so growing the station does not evict an unchanged sitter.
+  // Compare WORLD coordinates so growing the keep does not evict an unchanged sitter.
   function invalidateRefitLeisure(b, before, after) {
     const ids = [b.usingProp, b.watchProp, b.seatKey && b.seatKey.split(':')[0]].filter(Boolean);
     if (!ids.length) return;
@@ -3140,11 +3140,11 @@ const World = (() => {
     b.goal = null; b.usingProp = null; b.watchProp = null; b.studyKey = null; b.quirkKind = null; b.stilling = false;
     b.useBeat = null; setTalking(b, false);   // a seized body is not mid-leisure and is not talking to anyone
     b.pauseUntil = 0; b.pauseLook = null; b.idleUntil = 0;
-    if (chaseId === b.agentId) chaseId = null; b.chase = null; b.mimic = null;   // TIER D · D4: a summon seizes the body → drop any live chase/mimic + free the station chaser lock (G2)
+    if (chaseId === b.agentId) chaseId = null; b.chase = null; b.mimic = null;   // TIER D · D4: a summon seizes the body → drop any live chase/mimic + free the keep chaser lock (G2)
   }
 
   /* ---------- SEAT LAW (2026-08-04; couch exception restored 2026-08-08) ----------
-     A body may be drawn in the SIT pose in exactly two places: its own workstation chair (goal 'work',
+     A body may be drawn in the SIT pose in exactly two places: its own workkeep chair (goal 'work',
      drawSeatChair puts a real chair under it) and a single-tile seat prop — STOOL / CHAIR — which planSeat
      renders the body ON TOP OF. Nothing else. The sit sprite is a chair pose; the old catalog let it fire
      on a beanbag and (worst) a BED, where the body read as parked bolt-upright on the mattress instead of
@@ -3326,7 +3326,7 @@ const World = (() => {
      — the ONLY route to a couch, an arcade, a pinball table, the bar — hung off the REST drive
      (`top === wRest`), i.e. an agent only ever went near the entertainment when it was TIRED. A
      BORED agent (the stim drive, which is what idle downtime actually accumulates) went on a
-     caretaker lap, studied a machine, or paced. So a station kitted out as a games room was
+     caretaker lap, studied a machine, or paced. So a keep kitted out as a games room was
      furniture the agent walked past.
 
      planPlay is the missing pull: when there is something FUN in reach, being bored is a reason to
@@ -3555,8 +3555,8 @@ const World = (() => {
     const zone = zoneFor(agent);   // P1: only queue novelties INSIDE the hero's zone (it won't walk out to inspect)
     for (const p of props) {
       if (seenProps.has(p.id)) continue;
-      if (!mayTouchProp(agent && agent.id, p)) continue;   // another agent's (or unclaimed) workstation isn't "novel" to this one — don't walk over
-      if (!purposefulIdleProp(p) && !(isWorkstationProp(p.t) && p.agentId === (agent && agent.id))) continue;   // decor is noticed visually, never treated as a destination
+      if (!mayTouchProp(agent && agent.id, p)) continue;   // another agent's (or unclaimed) workkeep isn't "novel" to this one — don't walk over
+      if (!purposefulIdleProp(p) && !(isWorkkeepProp(p.t) && p.agentId === (agent && agent.id))) continue;   // decor is noticed visually, never treated as a destination
       const tx = Math.floor(p.x + (p.w || 1) / 2), ty = Math.floor(p.y + (p.h || 1) / 2);
       if (!tileInZone(zone, tx, ty)) continue;             // out-of-zone placement — noticed, but not walked to
       pushNovelty(tx, ty, 'prop', p.id);
@@ -3752,13 +3752,13 @@ const World = (() => {
     return true;
   }
 
-  /* W4 — THE PASSING ACKNOWLEDGEMENT. The D3 encounter is a whole staged beat: a station-wide slot,
+  /* W4 — THE PASSING ACKNOWLEDGEMENT. The D3 encounter is a whole staged beat: a keep-wide slot,
      a rendezvous walk, a hold. It is rare on purpose and always will be. But two agents brushing
      past each other and NOT reacting is its own kind of dead — the cheapest, most human signal on
      the floor is the one that costs nothing: someone walks past where you are standing, you look
      up and raise a hand.
 
-     So this deliberately takes NO slot, arms NO station budget, and moves NOBODY: the stander
+     So this deliberately takes NO slot, arms NO keep budget, and moves NOBODY: the stander
      glances + waves (its own gesture track), the passer glances back, and both carry on. It is the
      Tier C gaze pattern (glanceAt's sanctioned two-sided write) plus one emote — no path, target or
      goal is ever touched (K1), and it can never delay or preempt a real encounter or a summon.
@@ -3809,11 +3809,11 @@ const World = (() => {
      INVARIANTS (each is a named review hunt): containment (every target zone-clamped, G3/K1); work seizes
      instantly (any participant summoned → abandons; the survivor releases within the hard timeout, G2/K3);
      one live encounter (the `socialBeat` slot + hard `until`, G4); no deadlock/cascade (idle-cadence selection off
-     neighborsOf, per-pair cooldowns, a beat never spawns another, K4); station rarity (consult crewBeatDamp + arm
+     neighborsOf, per-pair cooldowns, a beat never spawns another, K4); keep rarity (consult crewBeatDamp + arm
      via armBeat, G5); Tier B self-discipline (startEncounter is the ONE cross-body write; stepSocial mutates only
      self, K2); chat-stare exclusion (a chatFocus body never joins). */
   const SOCIAL_SEL_ROLL = 0.25;             // per idle re-decide, when a candidate pair exists + the social LANE is open (the lane cooldown — not this roll — sets the rate; this only sets how fast an OPEN lane gets consumed)
-  /* W4 (2026-08-08): the lane was 5-8 MINUTES station-wide, one encounter at a time — which is why
+  /* W4 (2026-08-08): the lane was 5-8 MINUTES keep-wide, one encounter at a time — which is why
      nobody had ever actually watched two agents meet: on a floor you look at for a few minutes, the
      expected number of encounters was under one. The beat is also no longer a silent stand-off (it
      now carries a greeting, a turn-taking exchange and a parting wave), so it is worth seeing.
@@ -3829,7 +3829,7 @@ const World = (() => {
        (b) the kinds were TRIED in the order watch → huddle → follow → border, so whenever a
            neighbour happened to be working, the non-talking 'watch' won the race and (a) then shut
            the lane. The talking kinds are now tried FIRST (see maybeSocial).
-       (c) SOCIAL_NEAR_RADIUS 5 is small against a real station: two agents at their own desks are
+       (c) SOCIAL_NEAR_RADIUS 5 is small against a real keep: two agents at their own desks are
            usually further apart than five tiles, so the candidate set was empty on most re-decides
            and the roll was never even reached. 8 still means "in the same part of the room".
        (d) the hold was 3-7s. Even when it all lined up, the conversation was over before you looked
@@ -3837,7 +3837,7 @@ const World = (() => {
 
      What is NOT relaxed: the single live slot (G4), containment (G3), work-seizes-instantly (G2/K3),
      the shared calm budget (armBeat/G5) and the hard timeout. Still one thing at a time. */
-  const SOCIAL_STATION_CD_MIN = 30000, SOCIAL_STATION_CD_MAX = 60000;    // CONVERSATION lane (huddle/border) — the rate governor for the beat Andrew actually wants to see
+  const SOCIAL_KEEP_CD_MIN = 30000, SOCIAL_KEEP_CD_MAX = 60000;    // CONVERSATION lane (huddle/border) — the rate governor for the beat Andrew actually wants to see
   const SOCIAL_QUIET_CD_MIN = 12000, SOCIAL_QUIET_CD_MAX = 25000;        // QUIET lane (watch/follow) — a beat with no conversation in it must not spend the conversation budget (W5a)
   const SOCIAL_HOLD_MIN = 9000, SOCIAL_HOLD_MAX = 20000;  // the face-each-other hold — long enough to READ as a conversation and be watched (W5d)
   const SOCIAL_HARD_MS = 55000;             // whole-encounter hard timeout — the slot ALWAYS frees by this (G4). Must exceed walk + SOCIAL_HOLD_MAX or the cap, not the hold, would end every talk.
@@ -3867,7 +3867,7 @@ const World = (() => {
 
        TALKING — `b.speaking` swaps to the set's `talk` track (5 of 38 sets) or, on every other set,
        to a livelier bob + a 1px head bounce. That is enough to read as "these two are talking"
-       without a single line of dialogue — which is the right register anyway: this station's beats
+       without a single line of dialogue — which is the right register anyway: this keep's beats
        are silent by design (curiositySay has been a no-op since the Thronglet pass), and the COMMS
        transcript is where words belong. TURN-TAKING is what sells it: the two must not flap in
        unison, so each derives its turn from the encounter's OWN start clock (socialBeat.startedAt,
@@ -3884,10 +3884,10 @@ const World = (() => {
   const ACK_RADIUS = 2.4;                   // tiles — a passing acknowledgement is arm's length, not across the room
   const ACK_CD_MIN = 45000, ACK_CD_MAX = 90000;   // per-body: a wave is a greeting, not a tic
 
-  /* armSocialBudget — the two station-level side-effects EVERY fired encounter must do, at ALL fire sites
+  /* armSocialBudget — the two keep-level side-effects EVERY fired encounter must do, at ALL fire sites
      (startEncounter for huddle/border, and the one-sided planWatch/planFollow which set the slot inline):
-     (1) armBeat — count it against the SHARED station calm budget so quirks stay quiet in its shadow (total
-     station beat rate is preserved — G5), and (2) draw the dedicated social LANE cooldown so the encounter
+     (1) armBeat — count it against the SHARED keep calm budget so quirks stay quiet in its shadow (total
+     keep beat rate is preserved — G5), and (2) draw the dedicated social LANE cooldown so the encounter
      RATE is governed here, decoupled from the quirk-gate race. Kept as one helper so a new social beat can
      never forget one half (a lane-arm-without-armBeat would grow the total rate; the reverse would let
      social loop).
@@ -3902,7 +3902,7 @@ const World = (() => {
   function armSocialBudget(now, kind) {
     armBeat(now);
     socialGateUntil = now + (isTalkKind(kind)
-      ? U.irnd(SOCIAL_STATION_CD_MIN, SOCIAL_STATION_CD_MAX)
+      ? U.irnd(SOCIAL_KEEP_CD_MIN, SOCIAL_KEEP_CD_MAX)
       : U.irnd(SOCIAL_QUIET_CD_MIN, SOCIAL_QUIET_CD_MAX));
   }
 
@@ -3911,16 +3911,16 @@ const World = (() => {
      Andrew's ask: "users will notice some agents around specific other agents frequently."
      The pull is real or it is nothing — every bond here is DERIVED by the sidecar from the durable
      run log (GET /api/agents/affinity: a shared run tree, or runs reached for in the same stretch
-     of work) and never assigned here. So when the station reads as "those two are always together",
+     of work) and never assigned here. So when the keep reads as "those two are always together",
      that is a true statement about how the Commander works, not decoration. An agent pair the log
      can't vouch for has strength 0 and gets exactly the old uniform treatment.
 
-     THE BIAS MUST NOT BECOME A LOCK. Two things keep the station from collapsing into fixed duos:
+     THE BIAS MUST NOT BECOME A LOCK. Two things keep the keep from collapsing into fixed duos:
        (a) weight is 1 + BOND_PULL*strength, so a stranger's weight is never zero — every pair stays
            possible, best buds are just likelier. Variety is the feature; favouritism is the accent.
        (b) the per-pair cooldown still applies (shortened, floored), so even a top bond cannot loop.
      Both matter: without (a) the floor turns into disjoint cliques, and without (b) one pair would
-     eat the station's whole conversation budget and the other agents would look dead. */
+     eat the keep's whole conversation budget and the other agents would look dead. */
   let affinityPairs = new Map();            // "idA|idB" (sorted) -> strength 0..1. Empty until the poll answers.
   const BOND_PULL = 4;                      // a proven companion is ~4x likelier to be chosen than a stranger (weight 1 -> ~4.1 at the strongest bond seen on a real log)
   const BOND_CD_RELIEF = 0.55;              // best buds serve at most 55% off the per-pair cooldown, so they come back to each other sooner
@@ -3945,7 +3945,7 @@ const World = (() => {
      bondWeights — the selection weights. THE LOAD-BEARING PROPERTY IS THE `1 +`: a stranger's weight is
        1, never 0, so no pairing is ever impossible and the floor cannot fracture into fixed cliques.
        Bonds are an accent on a uniform draw, not a replacement for it. A future "optimisation" that
-       drops the baseline to make favourites stronger would turn the station into disjoint duos — that
+       drops the baseline to make favourites stronger would turn the keep into disjoint duos — that
        is the regression this block is extracted to prevent. */
   function bondMean(anchorIds, id, bondLookup) {
     const ids = Array.isArray(anchorIds) ? anchorIds : [anchorIds];
@@ -3961,7 +3961,7 @@ const World = (() => {
 
   /* weighted choice over `list` from the anchors' point of view. Falls back to U.pick's exact uniform
      behaviour whenever there is nothing to bias with (no graph yet), so an unreachable or empty
-     affinity endpoint changes nothing at all about how the station behaves. */
+     affinity endpoint changes nothing at all about how the keep behaves. */
   function pickByBond(anchorIds, list) {
     if (!Array.isArray(list) || list.length < 2) return list && list.length ? list[0] : null;
     if (!affinityPairs.size) return U.pick(list);
@@ -4101,7 +4101,7 @@ const World = (() => {
      is given `partnerIds` — everyone ELSE in the encounter — so a body faces the group it is
      standing in rather than one arbitrarily-chosen member of it. */
   function startEncounter(a, b, kind, now, planA, planB, extras) {
-    if (socialBeat) return false;                                         // G4: one live encounter station-wide
+    if (socialBeat) return false;                                         // G4: one live encounter keep-wide
     const party = [{ body: a, plan: planA }, { body: b, plan: planB }].concat(extras || []).slice(0, SOCIAL_MAX_PARTY);
     const ids = party.map(p => p.body.id);
     for (const { body, plan } of party) {
@@ -4240,12 +4240,12 @@ const World = (() => {
   }
   /* TALK-TURN-PURE-END */
 
-  /* ---------- W6: THE STATION HAS ITS OWN TONGUE (2026-08-16) ----------
+  /* ---------- W6: THE KEEP HAS ITS OWN TONGUE (2026-08-16) ----------
      Two sprites mouthing at each other only read as "a conversation" if you already know the
      rule. Andrew asked for the missing half — a speech bubble over whoever holds the floor,
      carrying "language that can't be transcripted".
 
-     THE UNREADABILITY IS THE HONEST PART, NOT A GAG. A social beat is ambient station LIFE, not
+     THE UNREADABILITY IS THE HONEST PART, NOT A GAG. A social beat is ambient keep LIFE, not
      a harness event: no message crossed the bus, no run happened, nothing was actually said. A
      bubble of English would therefore be the app asserting content it cannot prove — the exact
      class of lie this project bans everywhere else. A script that is not a language asserts
@@ -4375,7 +4375,7 @@ const World = (() => {
      ⛔ THE SEED IS THE TURN'S ABSOLUTE INSTANT, NOT ITS INDEX. `w.turn` counts from the start of
      the ENCOUNTER, so it resets to 0 every time — seeding on (id, turn) made every agent replay
      the identical script in every conversation it ever had: same opening line, same second line,
-     for the life of the station. `w.until` is an absolute clock deadline, so it identifies THIS
+     for the life of the keep. `w.until` is an absolute clock deadline, so it identifies THIS
      turn of THIS encounter and nothing else, which is what makes a fresh conversation a fresh
      one. It is still fully deterministic — same encounter, same turn, same line — so the phrase
      holds still for as long as it is on screen, which is the property that matters for the draw.
@@ -4411,7 +4411,7 @@ const World = (() => {
      Bounded on both sides, so this cannot hang: it can only ever push the end LATER, and
      SOCIAL_HARD_MS still ends everything regardless (stepSocialGuard). A body that never arrives at
      all never stamps, so the ones who did arrive still finish on time — the encounter is not held
-     hostage by a body that cannot reach it. Writing this one monotonic timestamp on the station slot
+     hostage by a body that cannot reach it. Writing this one monotonic timestamp on the keep slot
      is not a K2 break: K2 forbids a body writing ANOTHER BODY's state, and the slot is already
      coordinator-owned (startEncounter writes it, endEncounter clears it). */
   function enterHold(now, pl) {
@@ -4438,7 +4438,7 @@ const World = (() => {
 
   /* maybeSocial — SELECTION hook, called from decideIdle at the existing idle cadence with self = the deciding
      idle body (K4: never triggered by observing another encounter — only off neighborsOf at re-decide time). Rolls
-     (SOCIAL_SEL_ROLL) and only when: the station gate is open (crewBeatDamp — shared G5 budget), no encounter
+     (SOCIAL_SEL_ROLL) and only when: the keep gate is open (crewBeatDamp — shared G5 budget), no encounter
      is live (G4), self is eligible, and a concrete candidate pair exists. Tries the beats in PRIORITY order (see
      the W5b note below); the first that assembles a zone-legal plan wins. reduceMotion → no walking beats
      (degrade to Tier C: return false, let the normal gaze life run). Returns true iff an encounter was started
@@ -4448,10 +4448,10 @@ const World = (() => {
   function maybeSocial(now) {
     if (reduceMotion()) return false;                                    // reduceMotion: no walking social beats (Tier C glances only)
     if (socialBeat) return false;                                        // G4: one live encounter
-    if (chaseId != null) return false;                                   // TIER D · D4: mutual exclusion — no social beat while THE CHASE is live (one noticeable station-level thing at a time, from EITHER body's decideIdle)
+    if (chaseId != null) return false;                                   // TIER D · D4: mutual exclusion — no social beat while THE CHASE is live (one noticeable keep-level thing at a time, from EITHER body's decideIdle)
     if (self.social) return false;                                       // already in one (defensive)
     if (!socialEligible(self, now)) return false;
-    if (now < socialGateUntil) return false;                             // TIER D · D3 LANE: social has its OWN station cooldown (W5: conversation 30-60s, silent beats 12-25s) — decoupled from the quirk-gate race so the RATE is governed here, not by whoever wins the shared gate. RNG-free (N=1 parity preserved). A fired encounter STILL arms the shared gate (armBeat) so total station calm holds.
+    if (now < socialGateUntil) return false;                             // TIER D · D3 LANE: social has its OWN keep cooldown (W5: conversation 30-60s, silent beats 12-25s) — decoupled from the quirk-gate race so the RATE is governed here, not by whoever wins the shared gate. RNG-free (N=1 parity preserved). A fired encounter STILL arms the shared gate (armBeat) so total keep calm holds.
     // in-sight SAME-ZONE neighbors (Tier C read-only scan) + whether ANY other placed body exists (adjacent-zone
     // border candidates aren't same-zone, so the border precheck scans allBodies). CRITICAL N=1 PARITY (hunt 6):
     // the U.chance roll is gated BEHIND candidate existence — a solo floor (no other body) returns here BEFORE the
@@ -4702,12 +4702,12 @@ const World = (() => {
     return null;
   }
 
-  /* ================= TIER E · THE GATHERING — the station assembles, and pretends it didn't ==========
+  /* ================= TIER E · THE GATHERING — the keep assembles, and pretends it didn't ==========
 
-     THE ASK, verbatim: "every so often if the station is quiet, they will all be gathered into an
+     THE ASK, verbatim: "every so often if the keep is quiet, they will all be gathered into an
      area big group, and then the overseer who is by himself, looking at the agents, and talking in
      his language... they all scatter like cockroaches when the user comes back, and they pretend
-     like everything's normal. That's the whole idea." Reference: the security guard in Planet of the
+     like everything's normal. That's the whole idea." Reference: the security guard in Realm of the
      Apes noticing the apes gathered around their leader.
 
      WHY THIS IS ITS OWN BEAT AND NOT A BIG HUDDLE. The D3 social system is built on one encounter
@@ -4718,7 +4718,7 @@ const World = (() => {
 
      ⛔⛔⛔ THE ROAM LEASH IS SUSPENDED HERE, DELIBERATELY, AND NOWHERE ELSE.
      Every body is normally caged to Zones.ROAM_RADIUS (14 tiles) around its OWN desk, and every
-     social target is zone-clamped (G3). A station-wide assembly is by definition bodies leaving
+     social target is zone-clamped (G3). A keep-wide assembly is by definition bodies leaving
      their own areas, so the gathering resolves its tiles against `geo.walkable` + the containment
      backstop ONLY. That is the one rule this beat breaks, it is bounded to the beat's lifetime, and
      every body is restored to ordinary leashed idle life on dissolve. Do not "fix" this by
@@ -4730,23 +4730,23 @@ const World = (() => {
      any gathering ends is the Commander coming back and moving the mouse. Scatter is therefore the
      path that gets the care, not the timer.
 
-     TRUTHFUL TELEMETRY. The station never acknowledges this: no COMMS beat, no toast, no event, no
+     TRUTHFUL TELEMETRY. The keep never acknowledges this: no COMMS beat, no toast, no event, no
      log line, nothing persisted. That is not an omission to fix later — a gathering the harness
      could prove would stop being unsettling, and asserting the agents "held a meeting" would be
      claiming coordination that never happened. They are sprites standing in a room. */
-  let gathering = null;                    // the single live assembly, or null. Station-wide, like socialBeat.
+  let gathering = null;                    // the single live assembly, or null. Keep-wide, like socialBeat.
   let gatherRollAt = -1e9;                 // next instant the hourly roll is allowed
   let gatherGateUntil = -1e9;              // earliest a NEXT gathering may begin (long, after one ends)
-  let stationBusyAt = -1e9;                // last instant the station had work or a present Commander
+  let keepBusyAt = -1e9;                // last instant the keep had work or a present Commander
 
-  const GATHER_QUIET_MS = 30 * 60 * 1000;  // the station must have been unattended this long ("if the station is quiet")
+  const GATHER_QUIET_MS = 30 * 60 * 1000;  // the keep must have been unattended this long ("if the keep is quiet")
   const GATHER_ROLL_EVERY_MS = 15 * 60 * 1000;  // roll every 15 min while quiet — hourly made it near-unseeable (~3h expected wait)
   const GATHER_CHANCE = 0.25;              // ...and even then it usually does not happen (~1 quiet hour expected to first assembly)
   const GATHER_MIN_BODIES = 3;             // two agents standing together is a huddle, not an assembly
   const GATHER_CONVERGE_MS = 45000;        // walking-in budget; late bodies simply hold where they got to
   const GATHER_HOLD_MIN = 300000, GATHER_HOLD_MAX = 600000;   // 5-10 min — long enough to be CAUGHT; the return-scatter is the payoff
   const GATHER_HARD_MS = 720000;           // whole-beat hard timeout — the slot ALWAYS frees; must exceed converge + max hold
-  const GATHER_AFTER_CD = 90 * 60 * 1000;  // it must stay rare even on a station left running for days
+  const GATHER_AFTER_CD = 90 * 60 * 1000;  // it must stay rare even on a keep left running for days
   const GATHER_SPEAK_MS = 2600, GATHER_GAP_MS = 1500;         // the overseer's line, then a real beat of silence
   const OVERSEER_BREAK_MS = 900;           // ⛔ the overseer holds AFTER everyone else bolts — see endGathering
   const GATHER_STAND_R = 5;                // audience packs within this radius of the assembly point
@@ -4756,9 +4756,9 @@ const World = (() => {
   function gatherIds() { return gathering ? gathering.ids.slice() : []; }
   function gatherBodiesLive() { return gatherIds().map(bodyForAgent).filter(Boolean); }
 
-  /* Is the station unattended RIGHT NOW? Work of any kind, a summoned hero, a live chat stare, or a
+  /* Is the keep unattended RIGHT NOW? Work of any kind, a summoned hero, a live chat stare, or a
      Commander who is actually moving the cursor all count as attended and re-stamp the clock. */
-  function stationAttended(now) {
+  function keepAttended(now) {
     if (activity === 'task') return true;
     if (chatHot(now)) return true;
     if (crew.some(b => b && b.working)) return true;
@@ -4814,7 +4814,7 @@ const World = (() => {
       ring.sort((p, q) => (Math.abs(p.x - over.x) + Math.abs(p.y - over.y)) - (Math.abs(q.x - over.x) + Math.abs(q.y - over.y)));
       for (const c of ring) slots.push(c);
     }
-    // the overseer is the hero when it is on the floor (it is the station's own agent); otherwise the
+    // the overseer is the hero when it is on the floor (it is the keep's own agent); otherwise the
     // body standing nearest the chosen spot takes the part. Never invent a body that is not there.
     const overseer = (agent && !agent.unplaced && bodies.indexOf(agent) >= 0) ? agent
       : bodies.slice().sort((p, q) => (Math.abs(tileOf(p.px, p.py).x - over.x) + Math.abs(tileOf(p.px, p.py).y - over.y))
@@ -4837,17 +4837,17 @@ const World = (() => {
     return { center, plan, overseer };
   }
 
-  /* maybeGather — the station-level selection hook (NOT a per-body decideIdle roll: this is one
-     station-wide event, so it is decided once per tick from the tick itself). */
+  /* maybeGather — the keep-level selection hook (NOT a per-body decideIdle roll: this is one
+     keep-wide event, so it is decided once per tick from the tick itself). */
   function maybeGather(now) {
-    if (gathering || socialBeat) return false;                       // one station-level thing at a time
-    if (reduceMotion()) return false;                                // no station-wide walking beat under reduce-motion
+    if (gathering || socialBeat) return false;                       // one keep-level thing at a time
+    if (reduceMotion()) return false;                                // no keep-wide walking beat under reduce-motion
     if (now < gatherGateUntil) return false;
     if (!pageVisible()) return false;                                /* ⛔ "quiet" correlates with "nobody is
        watching": an hourly roll gated only on idleness fires all night into an empty room, and the one
        feature whose entire point is being SEEN would go weeks unwitnessed. Visible-only is what makes it land. */
     if (cursorPresent(now)) return false;                            // the Commander is right there
-    if (now - stationBusyAt < GATHER_QUIET_MS) return false;         // not unattended long enough
+    if (now - keepBusyAt < GATHER_QUIET_MS) return false;         // not unattended long enough
     if (now < gatherRollAt) return false;
     gatherRollAt = now + GATHER_ROLL_EVERY_MS;                       // roll at most hourly, win or lose
     if (!U.chance(GATHER_CHANCE)) return false;
@@ -4875,13 +4875,13 @@ const World = (() => {
       p.body.stilling = false; p.body.usingProp = null; p.body.sitting = false;
       p.body.pauseUntil = 0; p.body.pauseLook = null; p.body.studyKey = null;
     }
-    armBeat(now);                                                    // the station's shared calm budget still applies
+    armBeat(now);                                                    // the keep's shared calm budget still applies
     return true;
   }
 
   /* gatheringBroken — the scatter trigger, and the beat's most important predicate. ANY of: work
      arriving on any participant, the hero summoned, a live chat stare, or the Commander simply
-     MOVING THE CURSOR. That last one is the Planet of the Apes shot: the guard walks in and the room
+     MOVING THE CURSOR. That last one is the Realm of the Apes shot: the guard walks in and the room
      stops being what it was. */
   function gatheringBroken(now) {
     if (!gathering) return true;
@@ -4910,7 +4910,7 @@ const World = (() => {
       releaseFromGathering(b, now, scatter);
     }
     if (scatter) {
-      // keep the slot alive purely to hold the overseer a beat longer; stepGatheringStation finishes it
+      // keep the slot alive purely to hold the overseer a beat longer; stepGatheringKeep finishes it
       g.phase = 'breaking'; g.scatterAt = now; gathering = g;
       gatherGateUntil = now + GATHER_AFTER_CD;
       return;
@@ -4934,8 +4934,8 @@ const World = (() => {
     }
   }
 
-  /* stepGatheringStation — the station-level phase machine, ticked once per frame (not per body). */
-  function stepGatheringStation(now) {
+  /* stepGatheringKeep — the keep-level phase machine, ticked once per frame (not per body). */
+  function stepGatheringKeep(now) {
     if (!gathering) return;
     if (gathering.phase === 'breaking') {                            // the overseer's last beat, then gone
       if (now - gathering.scatterAt >= OVERSEER_BREAK_MS) {
@@ -4962,7 +4962,7 @@ const World = (() => {
   /* gatherSpeak — the overseer talking in his own tongue. Deliberately NOT routed through
      setTalking/startChatter: those require a live `socialBeat` + `b.social` and would null the line.
      ⛔ Seeds on the ABSOLUTE deadline (`until`), never a turn index — a turn counter resets every
-     encounter and made every agent replay one identical script for the life of the station (the
+     encounter and made every agent replay one identical script for the life of the keep (the
      glyph-speech escape). Same law, same fix, applied here on purpose. */
   function gatherSpeak(b, now) {
     if (!b || !b.gather || !gathering) return;
@@ -5054,7 +5054,7 @@ const World = (() => {
      An IDLE body TRACKS the moving cursor with continuously-updated FACING for 3-6s (a follow, not one glance),
      then snaps away and resumes. No movement — facing only (rides self.goal='mimic', stepped every tick). Cursor
      must be fresh at start AND stay fresh (stale mid-beat → end early). Per-body cooldown in the quirk band
-     (45-90s); consults + arms the D2 station gate (crewBeatDamp/armBeat) so it shares the calm budget. reduceMotion
+     (45-90s); consults + arms the D2 keep gate (crewBeatDamp/armBeat) so it shares the calm budget. reduceMotion
      → degrade to a single glance. Selected from decideIdle at the idle cadence (self = the deciding body). */
   const MIMIC_MIN_MS = 3000, MIMIC_MAX_MS = 6000;
   const MIMIC_CD_MIN = 45000, MIMIC_CD_MAX = 90000;   // quirk-cooldown band (per-body)
@@ -5063,7 +5063,7 @@ const World = (() => {
     if (!cursorBeatEligible(self, now)) return false;
     if (now < (self.mimicCd || 0)) return false;                  // per-body quirk-band cooldown
     if ((now - lastCursor.t) >= CURSOR_FRESH_MS) return false;    // cursor must be fresh at START
-    if (crewBeatDamp(now) === 0) return false;                    // G5: station calm budget (no-op for hero)
+    if (crewBeatDamp(now) === 0) return false;                    // G5: keep calm budget (no-op for hero)
     if (reduceMotion()) {                                          // reduceMotion: degrade the follow to ONE glance toward you
       const dir = dirToward(self.px, self.py, lastCursor.wx, lastCursor.wy);
       setGlance(dir === 'north' ? 'south' : dir, U.irnd(600, 1000), now);
@@ -5076,7 +5076,7 @@ const World = (() => {
     self.mimic = { until: now + U.irnd(MIMIC_MIN_MS, MIMIC_MAX_MS) };
     self.mimicCd = now + U.irnd(MIMIC_CD_MIN, MIMIC_CD_MAX);
     self.trackUntil = 0; self.glance = null;                      // attention is on YOU — drop any in-flight box-track / head-turn
-    armBeat(now);                                                 // a noticeable beat — count it against the station budget (G5)
+    armBeat(now);                                                 // a noticeable beat — count it against the keep budget (G5)
     stepMimic(now);                                               // face you THIS tick (no one-frame lag)
     return true;
   }
@@ -5100,7 +5100,7 @@ const World = (() => {
   /* ---- BEAT 3 — THE CHASE (the headline; ultra-rare) ----
      An idle body breaks toward the cursor and PURSUES it (repathing ~1/s so it lags like a real pursuer) for
      3-6s, then STOPS and stares at where the cursor was (2-4s), then walks off as if nothing happened. Rarity
-     is sacred: a LONG station cooldown (8-15 min), one chaser EVER (chaseId), mutually exclusive with a live
+     is sacred: a LONG keep cooldown (8-15 min), one chaser EVER (chaseId), mutually exclusive with a live
      social beat (socialBeat), only considered when the D2 gate is open + cursor fresh AND actively MOVING. If
      the cursor leaves the chaser's zone mid-chase → halt at the clamped boundary tile and stare across the
      border, then release. reduceMotion → no chase (degrade to the mimic's single glance). */
@@ -5108,19 +5108,19 @@ const World = (() => {
   const CHASE_STARE_MIN = 2000, CHASE_STARE_MAX = 4000;   // the held stare at where the cursor was
   const CHASE_HARD_MS = 15000;                            // absolute whole-beat timeout (belt-and-suspenders)
   const CHASE_REPATH_MS = 1000;                           // low repath cadence → it LAGS the cursor (a real pursuer)
-  const CHASE_GATE_MIN = 480000, CHASE_GATE_MAX = 900000; // 8-15 min station cooldown between chases (RARITY IS SACRED)
+  const CHASE_GATE_MIN = 480000, CHASE_GATE_MAX = 900000; // 8-15 min keep cooldown between chases (RARITY IS SACRED)
   // roll THE CHASE. Selected from decideIdle at the idle cadence with self = the deciding idle body. Returns true
   // iff a chase was armed (⇒ decideIdle stops). Most sessions return false forever — that is correct.
   function maybeChase(now) {
     if (reduceMotion()) return false;                            // reduceMotion → no chase (mimic already gave a single glance)
-    if (chaseId != null) return false;                          // one chaser EVER (station-level)
+    if (chaseId != null) return false;                          // one chaser EVER (keep-level)
     if (socialBeat) return false;                              // mutually exclusive with a live social beat (one noticeable thing at a time)
-    if (now < chaseGateUntil) return false;                    // LONG station cooldown — the rarity backbone
-    if (crewBeatDamp(now) === 0) return false;                 // only when the D2 station gate is open (G5)
+    if (now < chaseGateUntil) return false;                    // LONG keep cooldown — the rarity backbone
+    if (crewBeatDamp(now) === 0) return false;                 // only when the D2 keep gate is open (G5)
     if (!cursorBeatEligible(self, now)) return false;          // idle, placed, goal==null, not chat-focused, not already in a beat
     if ((now - lastCursor.t) >= CURSOR_FRESH_MS) return false; // cursor must be FRESH
     if ((now - cursorMoveT) >= CURSOR_MOVING_MS) return false; // AND actively MOVING (recent real displacement, not mere presence)
-    // arm the chase. Draw the LONG station cooldown NOW (from chase start) so nothing re-rolls for minutes.
+    // arm the chase. Draw the LONG keep cooldown NOW (from chase start) so nothing re-rolls for minutes.
     chaseId = self.id; chaseGateUntil = now + U.irnd(CHASE_GATE_MIN, CHASE_GATE_MAX);
     self.goal = 'chase'; self.stilling = false; self.usingProp = null; self.sitting = false; self.state = 'idle';
     self.chase = { phase: 'pursue', endAt: now + U.irnd(CHASE_MIN_MS, CHASE_MAX_MS), hardUntil: now + CHASE_HARD_MS, repathAt: now, faceX: lastCursor.wx, faceY: lastCursor.wy, border: false };
@@ -5162,13 +5162,13 @@ const World = (() => {
     self.dir = dirToward(self.px, self.py, pl.faceX, pl.faceY);
     if (now >= (pl.until || 0)) endChase(now);
   }
-  // free THE CHASE: clear the station chaser lock + this body's plan/goal → idle. Idempotent. The long station
+  // free THE CHASE: clear the keep chaser lock + this body's plan/goal → idle. Idempotent. The long keep
   // cooldown was drawn at chase START (maybeChase), so endChase does NOT re-draw it.
   function endChase(now) {
     if (chaseId != null && self && self.id === chaseId) chaseId = null;
     if (self) { self.chase = null; if (self.goal === 'chase') { self.goal = null; self.state = 'idle'; self.pathPts = null; self.target = null; self.idleUntil = now + U.irnd(800, 1800); } }
   }
-  // STATION-LEVEL CHASE SWEEP (mirrors the social slot sweep) — run every tick from the hero tick(), independent
+  // KEEP-LEVEL CHASE SWEEP (mirrors the social slot sweep) — run every tick from the hero tick(), independent
   // of the chaser's own stepper, so a summoned / despawned / chat-focused chaser ALWAYS frees the lock same-tick.
   // Reads only; the actual clear happens by re-pointing self to the chaser (endChaseFor) so the plan is torn down.
   function sweepChase(now) {
@@ -5198,7 +5198,7 @@ const World = (() => {
     // Crew keep a smaller share than the hero (the hero stays the most Commander-attuned). This is the ONLY
     // spot crew ambient facing is randomized (via lookAround/standStill), so it never fights a held goal, a
     // glance, a chat-stare, or work facing (those don't route through here). Ambient TEXTURE, not a noticeable
-    // beat → NOT gated by the D2 station budget (G5). cursorGazeCd is undefined on fresh bodies → `|| 0` = ready.
+    // beat → NOT gated by the D2 keep budget (G5). cursorGazeCd is undefined on fresh bodies → `|| 0` = ready.
     const drift = self === agent ? 0.12 : 0.06;
     if ((now - lastCursor.t) < 8000 && now >= (self.cursorGazeCd || 0) && U.chance(drift)) {
       self.cursorGazeCd = now + U.irnd(20000, 45000);
@@ -5209,7 +5209,7 @@ const World = (() => {
 
   /* ================= SUBJECT-FACING (2026-08-08 idle-life pass) =================
      THE DEFECT: every ambient facing in this engine was `U.pick(['east','west','south','north'])`
-     — a blind cardinal. In a walled station with no windows, roughly half of those point the body
+     — a blind cardinal. In a walled keep with no windows, roughly half of those point the body
      at bare wall a tile from its nose, and the "eerie contemplation" beats (gaze-out at the room
      EDGE facing OUTWARD, face-a-wall, the vigil) pointed at wall BY CONSTRUCTION. Andrew's read
      was the correct one: it isn't contemplative, it's a character with nothing to look at.
@@ -5342,7 +5342,7 @@ const World = (() => {
     while (novelty.length) {
       const n = novelty.pop();
       let foot = { x: n.tx, y: n.ty, w: 1, h: 1 };
-      if (n.kind === 'prop' && n.pid && geo.props) { const p = geo.props.find(q => q.id === n.pid); if (!p || !mayTouchProp(self.id, p) || (!purposefulIdleProp(p) && !(isWorkstationProp(p.t) && p.agentId === self.id))) continue; foot = p; }
+      if (n.kind === 'prop' && n.pid && geo.props) { const p = geo.props.find(q => q.id === n.pid); if (!p || !mayTouchProp(self.id, p) || (!purposefulIdleProp(p) && !(isWorkkeepProp(p.t) && p.agentId === self.id))) continue; foot = p; }
       const extra = n.kind === 'belt' ? beltUnion() : blocked;   // for a belt, stand beside it — not on the machinery
       const a = PropAnchor.deriveAnchor(foot, geo, { approach: 'auto', extra });
       if (a && tileInZone(zone, a.tx, a.ty) && setPathTo({ x: a.tx, y: a.ty })) {
@@ -5362,22 +5362,22 @@ const World = (() => {
     const belts = (geo && geo.belts) || [];
     // pick a belt tile that is itself in-zone (the body stands BESIDE it, but an in-zone belt keeps the approach in-zone).
     // BOUNDED (see THE CONVEYOR IS NOT A SPECTATOR SPORT, top of file): only if this body is off its own
-    // belt cooldown AND nobody else currently holds the station's single watcher claim. Both checks are
+    // belt cooldown AND nobody else currently holds the keep's single watcher claim. Both checks are
     // reads — the claim/cooldown are ARMED below, only once a watch actually commits.
     const beltOk = now >= (self.beltWatchCd || 0) && !beltWatchTaken(now);
     const inBelts = beltOk ? belts.filter(b => tileInZone(zone, b.x, b.y)) : [];
     if (inBelts.length) { const b = inBelts[U.irnd(0, inBelts.length - 1)]; cands.push({ kind: 'watch', key: 'belt:' + b.x + ',' + b.y, foot: { x: b.x, y: b.y, w: 1, h: 1 }, extra: beltUnion() }); }
     const props = (geo && geo.props) || [];
-    // A deliberate prop study means checking THIS body's assigned workstation. Decorative blockers are
+    // A deliberate prop study means checking THIS body's assigned workkeep. Decorative blockers are
     // scenery, not "machines" to walk over and stare at; leisure is handled by planPlay/planProp.
-    const machines = props.filter(p => isWorkstationProp(p.t) && p.agentId === self.id && (seenCount.get(p.id) || 0) < 4 && tileInZone(zone, p.x, p.y));
+    const machines = props.filter(p => isWorkkeepProp(p.t) && p.agentId === self.id && (seenCount.get(p.id) || 0) < 4 && tileInZone(zone, p.x, p.y));
     if (machines.length) { const p = machines[U.irnd(0, machines.length - 1)]; cands.push({ kind: 'inspect', key: p.id, foot: p, extra: blocked }); }
     if (cands.length === 2 && U.chance(0.5)) cands.reverse();
     for (const c of cands) {
       const a = PropAnchor.deriveAnchor(c.foot, geo, { approach: 'auto', extra: c.extra });
       if (a && tileInZone(zone, a.tx, a.ty) && setPathTo({ x: a.tx, y: a.ty })) {
         self.goal = c.kind; self.useFace = a.face; self.usingProp = null; self.inspectNovel = false; self.studyKey = c.key;
-        // a belt watch COMMITTED: take the station's single watcher claim and arm this body's own cooldown.
+        // a belt watch COMMITTED: take the keep's single watcher claim and arm this body's own cooldown.
         // `until` only has to outlast walk + the longest watch dwell (arrive() caps it at ~14s) — it exists
         // so an abandoned claim expires on its own rather than needing a release call on every exit path.
         if (c.kind === 'watch') { beltWatch = { body: self, until: now + 45000 }; self.beltWatchCd = now + U.irnd(BELT_WATCH_CD_MIN, BELT_WATCH_CD_MAX); }
@@ -5464,7 +5464,7 @@ const World = (() => {
   function offbeat(now, ms) {
     if (reduceMotion()) return ms;
     // J2: per-body off-beat gate — a crew dwell-stretch must NOT throttle hero/siblings (was the shared module global).
-    // D2 (G5): a CREW roll is also hard-gated by the station budget (no-op for the hero); a fire arms the station gate.
+    // D2 (G5): a CREW roll is also hard-gated by the keep budget (no-op for the hero); a fire arms the keep gate.
     if (now >= (self.offbeatCd || 0) && U.chance(0.09 * crewBeatDamp(now))) { self.offbeatCd = now + U.irnd(70000, 140000); armBeat(now); return Math.round(ms * (220 + U.irnd(0, 80)) / 100); }
     return ms;
   }
@@ -5493,7 +5493,7 @@ const World = (() => {
 
   /* ---------- inner life: needs + temperament decide WHICH goal it pursues ---------- */
   // the desk-seat tile of the CURRENT body (self): the hero falls back to its synthetic module `seat`; a crew body
-  // resolves its OWN assigned workstation's chair (deskSeat(deskPropFor(self.id))) — never the hero's seat, so the
+  // resolves its OWN assigned workkeep's chair (deskSeat(deskPropFor(self.id))) — never the hero's seat, so the
   // social-refill tether (nearDesk) + the lonely planner (planSeekDesk) measure/path to each body's own desk (J2/J3).
   // null when the body has no desk (a deskless crew body simply never gets the desk-proximity social refill).
   function seatFor(body) {
@@ -5520,7 +5520,7 @@ const World = (() => {
   // lonely → drift to a tile by the desk and face south (its window to the Commander); refills social
   function planSeekDesk(now) {
     if (now < (self.deskVisitCd || 0)) return false;   // checking in is useful; bouncing back after every other activity is not
-    const seat = seatFor(self);   // the CURRENT body's own desk (hero → synthetic `seat`; crew → its workstation chair) — never the hero's seat for a crew body (J2/J3)
+    const seat = seatFor(self);   // the CURRENT body's own desk (hero → synthetic `seat`; crew → its workkeep chair) — never the hero's seat for a crew body (J2/J3)
     if (!seat) return false;
     const zone = zoneFor(self);   // J3: the desk spots derive from the seat with +2 south / ±1 offsets; clamp them to the body's OWN zone like every sibling picker
     const spots = [[seat.tx, seat.ty + 1], [seat.tx - 1, seat.ty], [seat.tx + 1, seat.ty], [seat.tx, seat.ty]];
@@ -5532,7 +5532,7 @@ const World = (() => {
     return false;
   }
   /* After a real stretch of downtime, take one trip beyond the current room when the existing zone
-     permits it. This is not free station roaming: zoneFor still limits the destination to the stable
+     permits it. This is not free keep roaming: zoneFor still limits the destination to the stable
      home/spawn radius, and setPathTo owns the normal collision-safe, reachable walk. */
   function planExplore(now) {
     if (!self || !geo || !geo.allRects || !geo.allRects.length) return false;
@@ -5574,9 +5574,9 @@ const World = (() => {
     }
     return false;
   }
-  /* deep downtime → take up a VANTAGE and look out over the station (long quiet dwell).
+  /* deep downtime → take up a VANTAGE and look out over the keep (long quiet dwell).
      WAS planGazeOut: it walked to the outermost EDGE tile of the zone and faced OUTWARD — i.e. it
-     walked to a wall and stared at it, which in a windowless station is exactly what it looked
+     walked to a wall and stared at it, which in a windowless keep is exactly what it looked
      like. Same beat, same goal ('gaze'), same dwell: the body now walks to a tile with a real LINE
      OF SIGHT (a doorway it can look through, a long open run, a machine, the belt) and faces the
      thing. The contemplation survives; the drywall doesn't. */
@@ -5637,18 +5637,18 @@ const World = (() => {
     if (now < (self.quirkCd || 0)) return false;   // J2: per-body cooldown — a crew quirk must NOT throttle the hero or siblings (was the shared module global)
     let p = 0.085 * (0.6 + self.pers.restless * 0.4);
     // B3/D2: the hero's probability is UNCHANGED (J1 byte-parity). A CREW body's roll is hard-gated (p*=0) while the
-    // station-wide beat gate holds — any noticeable beat anywhere on the floor (a quirk OR a D2-budgeted stroll/
+    // keep-wide beat gate holds — any noticeable beat anywhere on the floor (a quirk OR a D2-budgeted stroll/
     // off-beat/revisit) armed it — so the floor never beats in unison and the crew's COLLECTIVE rate stays bounded
     // (G3/G5). Not awareness: the body learns nothing about the other; it's a global rarity governor on the dice only.
     p *= crewBeatDamp(now);
     if (!U.chance(p)) return false;
     self.quirkCd = now + U.irnd(45000, 90000);    // quirks stay special — even rarer now, so each lands with weight
-    armBeat(now);                                 // D2 (G5): arm the floor-wide governor — a quirk is a noticeable beat, so it also damps the NEXT crew quirk AND the station's stroll/off-beat/revisit budget (subsumes the old per-quirk lastQuirkAt)
+    armBeat(now);                                 // D2 (G5): arm the floor-wide governor — a quirk is a noticeable beat, so it also damps the NEXT crew quirk AND the keep's stroll/off-beat/revisit budget (subsumes the old per-quirk lastQuirkAt)
     const r = U.irnd(0, 999);
     if (r < 320) return quirkListen(now);    // 32% — freeze + snap toward a sound only it heard
     if (r < 520) return quirkScan(now);      // 20% — one slow, deliberate subject-facing look
     if (r < 680) return quirkPonder(now);    // 16% — stops, faces away, lost in thought
-    if (r < 790) return planVantage(now);    // 11% — drifts to a vantage and looks out over the station
+    if (r < 790) return planVantage(now);    // 11% — drifts to a vantage and looks out over the keep
     if (r < 870) return quirkDoorway(now) || quirkScan(now);  //  8% — stands in a doorway looking through; no threshold falls back to one calm look
     if (r < 945 && quirkVigil(now)) return true;   // ~7.5% — the VIGIL: dead-center, faces one wall, holds (falls through to the stare if no center is free)
     return quirkStare(now);                  // ~5.5% — the long stare straight at YOU (rarest, eeriest)
@@ -5693,7 +5693,7 @@ const World = (() => {
   }
   function quirkVigil(now) {   // walks to a room's center, holds dead still — the held emptiness (silent)
     if (!geo || !geo.allRects || !geo.allRects.length) return false;
-    const zone = zoneFor(self);   // P1: the vigil stands at a rect-center INSIDE the zone (a solo whole-station zone admits every center)
+    const zone = zoneFor(self);   // P1: the vigil stands at a rect-center INSIDE the zone (a solo whole-keep zone admits every center)
     for (let t = 0; t < 24; t++) {
       const r = geo.allRects[U.irnd(0, geo.allRects.length - 1)];
       const tx = (r.x1 + r.x2) >> 1, ty = (r.y1 + r.y2) >> 1;
@@ -5713,9 +5713,9 @@ const World = (() => {
     return true;
   }
 
-  /* ---------- the agent ACTS ON the station: place / rearrange its OWN decor (rare, safety-railed) ---------- */
+  /* ---------- the agent ACTS ON the keep: place / rearrange its OWN decor (rare, safety-railed) ---------- */
   function emptySpotNear() {
-    if (!geo || !station || !station.canPlaceProp) return null;
+    if (!geo || !keep || !keep.canPlaceProp) return null;
     const cur = tileOf(self.px, self.py);
     const belts = new Set(((geo && geo.belts) || []).map(b => b.x + ',' + b.y));
     for (let tries = 0; tries < 40; tries++) {
@@ -5725,16 +5725,16 @@ const World = (() => {
       if (belts.has(x + ',' + y)) continue;                       // not on a belt
       if (seat && x === seat.tx && y === seat.ty) continue;       // not the work seat
       const t = AGENT_DECOR[U.irnd(0, AGENT_DECOR.length - 1)];
-      if (!station.canPlaceProp(t, x, y, 1, 1).ok) continue;      // model: on a deck, no prop overlap (never the Commander's stuff)
+      if (!keep.canPlaceProp(t, x, y, 1, 1).ok) continue;      // model: on a deck, no prop overlap (never the Commander's stuff)
       for (const [ax, ay] of SEAT_NB) if (geo.walkable(x + ax, y + ay, blocked) && !belts.has((x + ax) + ',' + (y + ay))) return { x, y, t, ax: x + ax, ay: y + ay };
     }
     return null;
   }
   function maybePlace(now) {
-    if (now < placeCd || !station || !station.addProp || !geo) return false;
+    if (now < placeCd || !keep || !keep.addProp || !geo) return false;
     if (!U.chance(0.5)) return false;                              // even when eligible, only sometimes
     if (agentDecor.length >= 3) {                                  // at cap -> sometimes REARRANGE: remove one of ITS OWN (a fresh one may return later)
-      if (!U.chance(0.5) || !station.removeProp) return false;
+      if (!U.chance(0.5) || !keep.removeProp) return false;
       const id = agentDecor[U.irnd(0, agentDecor.length - 1)];
       const p = geo.props && geo.props.find(q => q.id === id);
       if (!p) { const i = agentDecor.indexOf(id); if (i >= 0) agentDecor.splice(i, 1); return false; }
@@ -5839,7 +5839,7 @@ const World = (() => {
     return true;
   }
 
-  /* ---------- caretaker rounds: a deliberate 2-3 stop lap of the station, an ownership beat at each ----------
+  /* ---------- caretaker rounds: a deliberate 2-3 stop lap of the keep, an ownership beat at each ----------
      TIER D · D5 beat 1 — INSPECTION ROUNDS: for the HERO (the OVERSEER) only, when crew are WORKING in the hero's
      zone, the rounds prefers a supervisor stop ~2 tiles behind each working crew body (reusing the D3 watch-a-peer
      stand-point geometry) with a shorter FACE-THE-WORKER hold than a D3 social watch (a glance, not a study). With
@@ -5866,7 +5866,7 @@ const World = (() => {
     if (now < (self.roundsCd || 0) || !geo || typeof PropAnchor === 'undefined') return false;
     const zone = zoneFor(self);   // P1: a caretaker lap stays inside the zone (no straddling into the next room)
     const cur = tileOf(self.px, self.py), stops = [];
-    for (const p of (geo.props || [])) if (isWorkstationProp(p.t) && p.agentId === self.id && tileInZone(zone, p.x, p.y) && (Math.abs(p.x - cur.x) + Math.abs(p.y - cur.y)) <= 11) stops.push({ prop: p });   // desk check, never a tour of decorative blockers
+    for (const p of (geo.props || [])) if (isWorkkeepProp(p.t) && p.agentId === self.id && tileInZone(zone, p.x, p.y) && (Math.abs(p.x - cur.x) + Math.abs(p.y - cur.y)) <= 11) stops.push({ prop: p });   // desk check, never a tour of decorative blockers
     const belts = (geo.belts || []).filter(b => tileInZone(zone, b.x, b.y)); if (belts.length) stops.push({ belt: belts[U.irnd(0, belts.length - 1)] });
     // D5 beat 1 (HERO-ONLY): fold in a supervisor stop behind each crew body WORKING in the hero's zone. Guarded on
     // self===agent so crew rounds are byte-identical (crew never scan crew — zero crew-side diff); the whole block is
@@ -5920,7 +5920,7 @@ const World = (() => {
   // rarely, drawn back to its favorite spot just to be there a while (gated by a long cooldown + a real favorite)
   function maybeRevisit(now) {
     if (now < (self.revisitCd || 0)) return false;
-    // D2 (G5): station budget — a CREW body skips a haunt-revisit while the station gate holds, so N crew don't all
+    // D2 (G5): keep budget — a CREW body skips a haunt-revisit while the keep gate holds, so N crew don't all
     // drift to their favorites at once (no-op for the hero → N=1 parity). A skip leaves revisitCd untouched, so the
     // beat simply re-considers on the next idle tick once the gate expires — no starvation.
     if (crewBeatDamp(now) < 1) return false;
@@ -5931,7 +5931,7 @@ const World = (() => {
     if (!geo.walkable(f.x, f.y, blocked) || !setPathTo({ x: f.x, y: f.y })) return false;
     self.goal = 'revisit'; self.useFace = lookDirFrom(f.x, f.y, { except: self }); self.usingProp = null; self.studyKey = null;   // back at the haunt, looking at whatever made it a haunt
     self.revisitCd = now + U.irnd(60000, 120000);
-    armBeat(now);   // D2 (G5): a haunt-revisit walk is a noticeable beat — count it against the station budget
+    armBeat(now);   // D2 (G5): a haunt-revisit walk is a noticeable beat — count it against the keep budget
     if (!self.target) arrive(now);
     return true;
   }
@@ -5969,7 +5969,7 @@ const World = (() => {
     if (self === agent) {
       if (pendingMourn && planMourn(now)) return;      // grief reflex: a beloved spot was just emptied — go stand where it was
       if (novelty.length && planInspect(now)) return;  // curiosity reflex: a fresh placement always wins
-      if (maybeBoardPost(now)) return;                 // TIER D · D5 beat 2: OVERSEER surveys the MISSION BOARD when the queue is non-empty (rare, 2-4min cd, board in-zone; ARMS the station budget on fire — not damp-gated, crewBeatDamp is a hero no-op). HERO-ONLY. Draws ZERO RNG when the queue is empty / cd unexpired ⇒ a no-queue floor is byte-identical.
+      if (maybeBoardPost(now)) return;                 // TIER D · D5 beat 2: OVERSEER surveys the MISSION BOARD when the queue is non-empty (rare, 2-4min cd, board in-zone; ARMS the keep budget on fire — not damp-gated, crewBeatDamp is a hero no-op). HERO-ONLY. Draws ZERO RNG when the queue is empty / cd unexpired ⇒ a no-queue floor is byte-identical.
     }
     if (maybeQuirk(now)) return;                       // rare unpredictable detour — the eerie inner life surfacing
     // AUTONOMOUS PROP PLACEMENT — REMOVED (Thronglet direction). The agent no longer drops
@@ -5994,15 +5994,15 @@ const World = (() => {
        ~zero despite correctly-tuned lanes. They now run at EVERY idle re-decide (matching the rate model the
        D3/D4 constants were calibrated against). Safe to hoist: each maybe* is fully self-gated (the 8-15min
        chase gate + cursor fresh/moving, the 5-8min social lane + slot + pair cooldowns, the mimic per-body
-       cooldown + cursor gate + D2 station budget, and all the eligibility/goal==null checks) — consulting more
+       cooldown + cursor gate + D2 keep budget, and all the eligibility/goal==null checks) — consulting more
        often changes WHEN they're considered, never their budgets; the lanes remain the rate governors. Position
        preserves every existing precedence: chat-stare > hero reflexes > quirk > sleep > chase > social > mimic
        > the want-engine — identical RNG draw ORDER on the old (content) reachable passes, and on quiet paths
        (stale cursor / no pair / lanes closed) all three no-op BEFORE any roll, so N=1 unattended stays
        byte-identical. */
-    if (maybeChase(now)) return;         // TIER D · D4 THE CHASE: ultra-rare (8-15 min station cooldown, one chaser ever, mutually exclusive with a live social beat, cursor fresh+MOVING) — breaks toward the cursor, pursues, stops+stares, walks off. Rolled FIRST but hardest-gated: most idle decisions never even reach the roll.
-    if (maybeSocial(now)) return;        // TIER D · D3: a rare SILENT social encounter (huddle/watch/border/half-follow) between idle neighbors — bounded movement, one live station-wide, zone-clamped, per-pair cooldown (G3/G4/G5); selected here at the idle cadence off neighborsOf (K4 — never off observing another encounter)
-    if (maybeMimic(now)) return;         // TIER D · D4 CURSOR-MIMIC: a rare quirk-band head-only follow of the moving cursor (3-6s, per-body 45-90s cooldown, station-gated); reduceMotion → a single glance
+    if (maybeChase(now)) return;         // TIER D · D4 THE CHASE: ultra-rare (8-15 min keep cooldown, one chaser ever, mutually exclusive with a live social beat, cursor fresh+MOVING) — breaks toward the cursor, pursues, stops+stares, walks off. Rolled FIRST but hardest-gated: most idle decisions never even reach the roll.
+    if (maybeSocial(now)) return;        // TIER D · D3: a rare SILENT social encounter (huddle/watch/border/half-follow) between idle neighbors — bounded movement, one live keep-wide, zone-clamped, per-pair cooldown (G3/G4/G5); selected here at the idle cadence off neighborsOf (K4 — never off observing another encounter)
+    if (maybeMimic(now)) return;         // TIER D · D4 CURSOR-MIMIC: a rare quirk-band head-only follow of the moving cursor (3-6s, per-body 45-90s cooldown, keep-gated); reduceMotion → a single glance
     if (maybeJoinBar(now)) return;       // rare, same-room reuse: join exactly one existing bar sitter on another stool
     /* FOLLOW-THROUGH (continuity of attention, drive half). The three drives were re-raced from scratch on
        every re-decide, so PARTLY satisfying one could flip the winner and send the body off to an unrelated
@@ -6043,7 +6043,7 @@ const World = (() => {
       // no-queue floor keeps the exact 0.3 (byte-identical), and crew (self!==agent) always use 0.3.
       // ENTERTAINMENT FIRST (2026-08-08). Bored, and there is a games room in reach? Go and play.
       // This is the branch idle downtime actually lands in, and until now it could not reach a
-      // single leisure prop (see planPlay) — the whole reason a station full of arcade machines
+      // single leisure prop (see planPlay) — the whole reason a keep full of arcade machines
       // read as scenery. Ahead of the caretaker lap on purpose: a lap is what you do when there is
       // nothing better, and the Commander placing a pinball table is them saying there is.
       if (U.chance(0.55) && planPlay(now)) return;                                      //   bored + something fun placed -> often play, never always
@@ -6053,7 +6053,7 @@ const World = (() => {
       // the vantage beat is a PUNCTUATION MARK, not a pastime. At 0.35 after 30s it became the most
       // common thing the hero did (measured: 98 of 259 idle samples) and the floor read as a body
       // wandering off to stare at nothing every few seconds. Rarer, and only after a long quiet.
-      if (idleAge > 60000 && U.chance(0.12) && planVantage(now)) return;                //   long quiet -> take up a vantage and look out over the station
+      if (idleAge > 60000 && U.chance(0.12) && planVantage(now)) return;                //   long quiet -> take up a vantage and look out over the keep
       if (p.restless * ph.restless > 1.0 && pace(now)) return;                          //   antsy -> pace in place
     }
     // graceful fallbacks so it never freezes
@@ -6186,24 +6186,24 @@ const World = (() => {
     if (!agent || agent.unplaced || !geo || awakeFrozen) return;   // frozen during the awakening: the newborn holds still, facing the Commander
     self = agent;                                                  // B1: the hero tick runs with self===agent (engine core reads the current body via self) — byte-identical hero path
     if (!agent.lastTaskAt) agent.lastTaskAt = now;                 // anchor downtime at the first live tick
-    // TIER D · D3 — STATION-LEVEL SLOT SWEEP (G4): the whole-encounter hard timeout + broken-participant check run
+    // TIER D · D3 — KEEP-LEVEL SLOT SWEEP (G4): the whole-encounter hard timeout + broken-participant check run
     // here EVERY tick, independent of any body's own stepper — so even if BOTH participants get seized in the same
     // tick (neither runs its per-body guard), the slot ALWAYS frees. self===agent here (set below/above), and
     // endEncounter is idempotent; this is the belt-and-suspenders that makes the slot un-leakable.
     if (socialBeat && (now >= socialBeat.until || encounterBroken(now))) endEncounter(now);
-    /* TIER E — THE GATHERING, at station level for the same belt-and-suspenders reason as the sweep
+    /* TIER E — THE GATHERING, at keep level for the same belt-and-suspenders reason as the sweep
        above: the phase machine, the hard timeout and the SCATTER check must run even on a tick where
        no participant's own stepper does, or a seized assembly could hold the floor. Stamping
-       `stationBusyAt` here (rather than in an event handler) keeps "is the station attended" a single
+       `keepBusyAt` here (rather than in an event handler) keeps "is the keep attended" a single
        read of live state instead of a second bookkeeping surface that could drift out of date. */
-    if (stationAttended(now) || cursorPresent(now)) stationBusyAt = now;
-    stepGatheringStation(now);
+    if (keepAttended(now) || cursorPresent(now)) keepBusyAt = now;
+    stepGatheringKeep(now);
     if (!gathering) maybeGather(now);
-    sweepChase(now);                                              // TIER D · D4: station-level chase sweep (G4) — a seized/despawned/chat-focused chaser ALWAYS frees the lock same-tick, independent of its own stepper
+    sweepChase(now);                                              // TIER D · D4: keep-level chase sweep (G4) — a seized/despawned/chat-focused chaser ALWAYS frees the lock same-tick, independent of its own stepper
     decayHabits(now);                                             // habituation fades (see FORGET_MS) — a floor watched for an hour must not run out of things worth looking at
     tickNeeds(dt);                                              // the inner meters drain/refill by what it is doing
     if (!agent.sitting && !agent.seated) ensureAgentValid();       // CONTAINMENT BACKSTOP (2026-07-12): a standing hero off the floor re-homes NOW, not at the next refit (rederive was the only caller — any missed frame-shift left it adrift until then)
-    stepCrew(dt, now);                                             // the OTHER agents wander the station while idle (the hero is below)
+    stepCrew(dt, now);                                             // the OTHER agents wander the keep while idle (the hero is below)
     const SPEED = 34 * (agent.pers ? agent.pers.pace : 1);         // temperament: each agent walks at its own pace
     // settle: a beat of sitting (loading context) before the screens light + typing latches on
     if (agent.goal === 'work' && !agent.working && agent.settleUntil && now >= agent.settleUntil) { agent.working = true; agent.settleUntil = 0; }
@@ -6238,7 +6238,7 @@ const World = (() => {
     }
     // THE DESK-TRIP INVARIANT: while activity==='task' the agent is seized HERE — this block runs ABOVE every
     // idle/leisure branch in the tick ladder, and all of those are gated on activity==='idle', so the agent
-    // walks to the workstation and STAYS seated working until activity flips off 'task' (the branch below then
+    // walks to the workkeep and STAYS seated working until activity flips off 'task' (the branch below then
     // stands it up). Never add a branch that moves the body while activity==='task'. NOTE: chat.js now ARMS
     // 'task' REACTIVELY — the moment a run makes its first real tool call (walkToDesk), not the instant the
     // Commander sends a message — so a question answered from memory never triggers this. Once armed it holds
@@ -6247,13 +6247,13 @@ const World = (() => {
     if (!awaitPrompt && activity === 'task' && agent.goal !== 'work') {
       if (agent.goal !== 'summon' && agent.goal !== 'fetch') { releaseSeat(); if (chaseId === agent.id) chaseId = null; agent.chase = null; agent.mimic = null; agent.goal = 'summon'; agent.sitting = false; agent.working = false; agent.stilling = false; agent.usingProp = null; agent.watchProp = null; agent.target = null; agent.pathPts = null; agent.pauseUntil = 0; agent.pauseLook = null; agent.state = 'idle'; agent.dir = 'north'; agent.thinkUntil = now + U.irnd(400, 1200); curiositySay(SELF_ONDUTY, 0.9, now); }
       // CONVEYOR-DELIVERED work (cron/channel): first walk UP TO this agent's ASSIGNED conveyor (its bound bay),
-      // THEN to the workstation. Only when the work actually rode a belt (taskViaConveyor) AND this agent owns a
+      // THEN to the workkeep. Only when the work actually rode a belt (taskViaConveyor) AND this agent owns a
       // reachable bay; otherwise straight to the seat (in-app chat is byte-identical — no detour).
       else if (agent.goal === 'summon' && now >= agent.thinkUntil) {
         const conv = agent.taskViaConveyor ? assignedConveyorTile(agent.id) : null;
         if (conv && setPathTo({ x: conv.x, y: conv.y })) agent.goal = 'fetch'; else goToSeat(now);
       }
-      // reached the conveyor → now head to the workstation and work
+      // reached the conveyor → now head to the workkeep and work
       else if (agent.goal === 'fetch' && agent.state !== 'walk' && (!agent.pathPts || agent.pathIdx >= agent.pathPts.length)) goToSeat(now);
     }
     if (!awaitPrompt && activity === 'task' && agent.goal === 'work' && !agent.sitting && !agent.target && now >= (agent.workRetryAt || 0)) goToSeat(now);
@@ -6367,12 +6367,12 @@ const World = (() => {
   let lastFaultMsg = '';        // de-dupe console spam: only log a NEW error message
   const RENDER_FAULT_LIMIT = 30;
 
-  /* The backdrop the station floats in — THE VOID by default, or whichever the commander picked
-     (SpaceBG owns the registry + the selection; StationUI's appearance section sets it). Base
+  /* The backdrop the keep floats in — THE VOID by default, or whichever the commander picked
+     (SpaceBG owns the registry + the selection; KeepUI's appearance section sets it). Base
      fill included, so callers never pre-fill. `cam` lets finite-distance layers parallax; the
      fallback exists because a missing SpaceBG must still leave a black stage, not a stale frame. */
   function drawBackdrop(now, cam) {
-    // A LANDED station has no sky to draw: the ground layer covers the whole frame in world
+    // A LANDED keep has no sky to draw: the ground layer covers the whole frame in world
     // space below, so building and blitting a starfield underneath it would be pure waste.
     if (typeof Terrain !== 'undefined' && Terrain.active()) {
       ctx.fillStyle = Terrain.baseColor(); ctx.fillRect(0, 0, cv.width, cv.height);
@@ -6413,7 +6413,7 @@ const World = (() => {
     }
   }
 
-  // an honest fault overlay: the station render loop is faulting, and the app SAYS SO rather than freezing on a
+  // an honest fault overlay: the keep render loop is faulting, and the app SAYS SO rather than freezing on a
   // stale frame (truthful telemetry). Screen-space, VT323 + phosphor glow, drawn on the raw device pixels.
   function drawRenderFault() {
     if (!ctx || !cv) return;
@@ -6427,7 +6427,7 @@ const World = (() => {
     ctx.font = Math.round(14 * (window.devicePixelRatio || 1)) + 'px VT323, monospace';
     ctx.shadowBlur = 6 * (window.devicePixelRatio || 1);
     ctx.fillStyle = '#ffb0a0';
-    ctx.fillText('the station render loop is faulting — reload if this persists', cx, cy + Math.round(26 * (window.devicePixelRatio || 1)));
+    ctx.fillText('the keep render loop is faulting — reload if this persists', cx, cy + Math.round(26 * (window.devicePixelRatio || 1)));
     ctx.shadowBlur = 0; ctx.textAlign = 'left'; ctx.textBaseline = 'alphabetic';
   }
 
@@ -6473,7 +6473,7 @@ const World = (() => {
         g.clip(shadowReceiverPath);
       }
       PropSprites.setCtx(g);
-      if(geo&&geo.props)for(const p of geo.props)if(propOnScreen(p))PropSprites.drawShadow(p,station&&station.mountOf?station.mountOf(p):null);
+      if(geo&&geo.props)for(const p of geo.props)if(propOnScreen(p))PropSprites.drawShadow(p,keep&&keep.mountOf?keep.mountOf(p):null);
       if(desk&&!deskPropId)PropSprites.drawShadow({t:'desk',x:desk.tx,y:desk.ty,w:desk.w,h:desk.h},null);
     } finally {g.restore();PropSprites.setCtx(ctx);}
   }
@@ -6539,7 +6539,7 @@ const World = (() => {
     if (bakeDirty || !cache) rebake();
     if(now-lastProbeAt>=PROBE_MS||now-lastStageProbeAt>=PROBE_MS)prepareProbeBatch();
     if(probeBatch)try {
-      watchCanvasLoss(now);   // a zeroed bake plate heals here, BEFORE it can paint a black station
+      watchCanvasLoss(now);   // a zeroed bake plate heals here, BEFORE it can paint a black keep
       if (bakeDirty || !cache) rebake();
       watchStageLoss(now);    // a DEAD stage context heals here too — the rest of this frame draws onto the replacement
     } finally {probeBatch=null;}
@@ -6575,24 +6575,24 @@ const World = (() => {
         scale = camLerp.scale; panX = camLerp.panX; panY = camLerp.panY; camLerp = null;
       }
     }
-    /* THE BACKDROP — what the station floats in (SpaceBG). Drawn AFTER the camera settle block
+    /* THE BACKDROP — what the keep floats in (SpaceBG). Drawn AFTER the camera settle block
        above so its parallax reads THIS frame's pan: sampling the camera before camAnim/camLock/
-       camLerp ran would leave every finite-distance layer a frame behind the station, which is
+       camLerp ran would leave every finite-distance layer a frame behind the keep, which is
        exactly the "picture behind a picture" tell the parallax exists to kill. Still screen
        space, still under the identity transform, still first — nothing has drawn yet. */
     drawScene(now, dt, slices);
   }
 
-  /* THE SCENE PASS — the station drawn once onto whatever {cv, ctx, scale, panX, panY} currently are. The frame
+  /* THE SCENE PASS — the keep drawn once onto whatever {cv, ctx, scale, panX, panY} currently are. The frame
      loop runs it on the stage every frame; renderStill() runs it once on an offscreen canvas. Everything that
      belongs to the live stage alone (the backdrop, bloom, the curve, scanlines, the heartbeat pixel, the camera
      readout) is skipped for a still. */
   function drawEyeholdOtherTerritories() {
-    if (typeof EyeholdEnvironments === 'undefined' || !station || !station.rooms || !geo || !geo.origin) return;
+    if (typeof EyeholdEnvironments === 'undefined' || !keep || !keep.rooms || !geo || !geo.origin) return;
     const tile = geo.TILE || T, ox = geo.origin.tx, oy = geo.origin.ty;
     const viewX1 = (-panX / scale) - 24, viewY1 = (-panY / scale) - 24;
     const viewX2 = ((cv.width-panX)/scale)+24, viewY2 = ((cv.height-panY)/scale)+24;
-    for (const room of station.rooms()) {
+    for (const room of keep.rooms()) {
       if (!room || room.kind === 'corridor' || !EyeholdEnvironments.isEnvironment(room.eyeTerritory)) continue;
       for (const r of room.rects || []) {
         const x=(r.x1-ox)*tile,y=(r.y1-oy)*tile;
@@ -6604,12 +6604,12 @@ const World = (() => {
   }
 
   function drawEyeholdKeepFloor() {
-    if (typeof EyeholdTerritories === 'undefined' || !station.rooms || !geo.origin) return;
+    if (typeof EyeholdTerritories === 'undefined' || !keep.rooms || !geo.origin) return;
     const tile = geo.TILE || T, ox = geo.origin.tx, oy = geo.origin.ty;
     const visibleX1 = (-panX / scale) - 24, visibleY1 = (-panY / scale) - 24;
     const visibleX2 = ((cv.width - panX) / scale) + 24;
     const visibleY2 = ((cv.height - panY) / scale) + 24;
-    for (const room of station.rooms()) {
+    for (const room of keep.rooms()) {
       if (!room || room.kind === 'corridor' || room.eyeTerritory !== 'keep') continue;
       for (const r of room.rects || []) {
         const x = (r.x1 - ox) * tile, y = (r.y1 - oy) * tile;
@@ -6681,12 +6681,12 @@ const World = (() => {
 
     ctx.setTransform(scale, 0, 0, scale, panX, panY); ctx.imageSmoothingEnabled = false;
 
-    /* THE GROUND — only when the station is landed. Drawn HERE, inside the world transform and
-       before the bake, which is the entire reason it works: pan, zoom and the station's own
-       coordinate frame are already applied, so ground at the station's plane needs no parallax
+    /* THE GROUND — only when the keep is landed. Drawn HERE, inside the world transform and
+       before the bake, which is the entire reason it works: pan, zoom and the keep's own
+       coordinate frame are already applied, so ground at the keep's plane needs no parallax
        maths at all. A backdrop must never zoom; the ground must always zoom. Same picker,
        opposite requirement — which is why they are two layers and not one.
-       The bake occupies world rect (0,0,baseCv.w,baseCv.h), so that IS the station footprint. */
+       The bake occupies world rect (0,0,baseCv.w,baseCv.h), so that IS the keep footprint. */
     if (typeof Terrain !== 'undefined' && Terrain.active()) {
       Terrain.draw(ctx, { scale, panX, panY }, cv.width, cv.height,
         { x: 0, y: 0, w: cache.baseCv.width, h: cache.baseCv.height });
@@ -6700,7 +6700,7 @@ const World = (() => {
     // EYEHOLD — first original environment layer. This draws only a decorative
     // tapestry/sigil *inside* rooms assigned to the Keep, under props and agents.
     // It never changes world geometry, pathing, tool permissions, or live status.
-    if (station && geo && geo.origin) {
+    if (keep && geo && geo.origin) {
       drawEyeholdKeepFloor();
       drawEyeholdOtherTerritories();
     }
@@ -6738,7 +6738,7 @@ const World = (() => {
         for (const box of convey.peekBoxes()) if (!(box.sink > 0)) scanningTiles.add(box.x + ':' + box.y);
       }
       if (PropSprites.setOutboxCrates) PropSprites.setOutboxCrates(outboxCrateMap());   // G2.3: each chute stacks only ITS line's uncollected results (10-03)
-      if (PropSprites.setMissionPins) { const mp = missionPinCounts(now); PropSprites.setMissionPins(mp[0], mp[1], mp[2], mp[3]); maybePinProposal(now, mp[3]); }   // G1b/G1c: open quests pin to the MISSION BOARD; a station-gap keeps it breathing; a jammed routine flags an amber JAM stub; G4: pending proposals + the walk-and-pin body
+      if (PropSprites.setMissionPins) { const mp = missionPinCounts(now); PropSprites.setMissionPins(mp[0], mp[1], mp[2], mp[3]); maybePinProposal(now, mp[3]); }   // G1b/G1c: open quests pin to the MISSION BOARD; a keep-gap keeps it breathing; a jammed routine flags an amber JAM stub; G4: pending proposals + the walk-and-pin body
       if (PropSprites.setTrophyCount) PropSprites.setTrophyCount(trophyCount(now));   // G3b: earned trophies stand behind glass in the TROPHY CASE
       if (PropSprites.setJourneyStage) {
         let journeyStage = 0;
@@ -6754,13 +6754,13 @@ const World = (() => {
         // and everything else — props, crates, bodies — is drawn ON them. Decals carry no seat/mount/live
         // state (no `use` row, nothing stands on them), so this branch skips work the decal cannot use.
         if (isFlatProp(p.t)) { decals.push(p); continue; }
-        const work = (p.t === 'outbox' && outboxLit) || (p.t === 'bay' && bayLit(p, now)) || workstationLit(p) || leisureProps.has(p.id);
-        // G0.2/G0.3 live desk truth: a LIT assigned workstation carries its agent's real activity heat
+        const work = (p.t === 'outbox' && outboxLit) || (p.t === 'bay' && bayLit(p, now)) || workkeepLit(p) || leisureProps.has(p.id);
+        // G0.2/G0.3 live desk truth: a LIT assigned workkeep carries its agent's real activity heat
         // (token/tool-driven, heatFor) + a task-progress fraction ONLY when a real one was published
         // (deskProgFor — a live harness run has none and renders none).
-        let live = (p.agentId && workstationLit(p)) ? { heat: heatFor(p.agentId), prog: deskProgFor(p.agentId) } : null;
-        if (isWorkstationProp(p.t)) live = Object.assign({ heat: 0, prog: null }, live, {
-          occupied: workstationOccupied(p), still: reduceMotion()
+        let live = (p.agentId && workkeepLit(p)) ? { heat: heatFor(p.agentId), prog: deskProgFor(p.agentId) } : null;
+        if (isWorkkeepProp(p.t)) live = Object.assign({ heat: 0, prog: null }, live, {
+          occupied: workkeepOccupied(p), still: reduceMotion()
         });
         if (p.t === 'filter') live = Object.assign({}, live, { scanning: scanningTiles.has(p.x + ':' + p.y), still: reduceMotion() });
         // A stool/chair sorts just BEHIND its sitter; a couch sorts just IN FRONT so the tall sofa back
@@ -6781,8 +6781,8 @@ const World = (() => {
         let sy = sitter ? sitter.seatPy + (sitterUse && sitterUse.kind === 'couch' && !remasteredCouch(p) && !sitterSide ? 1 : -1) : (p.y + (p.h || 1)) * T;
         // MOUNT LIFT, resolved per FRAME rather than stored on the prop: a table-top prop only rides the
         // table while the table is actually under it. Reclaim the table and the prop drops back to the
-        // deck instead of floating — which is why no saved station ever needs migrating for this.
-        const mounted = (station && station.mountOf) ? station.mountOf(p) : null;
+        // deck instead of floating — which is why no saved keep ever needs migrating for this.
+        const mounted = (keep && keep.mountOf) ? keep.mountOf(p) : null;
         let dp = mounted ? Object.assign({}, p, { mount: mounted }) : p;
         // A far-row child on a deep table must sort after the WHOLE host, not just its own row.
         if (mounted === 'surface') {
@@ -6818,20 +6818,20 @@ const World = (() => {
         // the COVERS, after the body (bodySortY puts a sleeper at sy + 0.5). Keyed off the same live
         // `sleeper` read as the base pass, so the quilt is never held back with nobody under it.
         if (sleeper && PropSprites.drawOver) items.push({ y: sy + 0.75, draw: () => PropSprites.drawOver(dp) });
-        // an ASSIGNED workstation is the hero's desk with another name: give it the same chair, in front,
+        // an ASSIGNED workkeep is the hero's desk with another name: give it the same chair, in front,
         // y-sorted at the same fractional anchor as its agent so the body sits in it. Scoped
         // to assigned PCs so a decorative/unmanned console keeps its existing look and the chair only ever
         // appears where an agent will actually sit (chair + sitter stay in lockstep — see stepCrewToSeat).
         const embeddedSeat=typeof PropRemaster!=='undefined'&&PropRemaster.viewGeometry(p.t,['s','w','n','e'][(p.r|0)&3])?.spec.embeddedSeat;
-        if (p.agentId && isWorkstationProp(p.t) && !embeddedSeat) { const s = deskSeat(p); if (s) items.push({ y: seatFoot(s).y + 1, draw: () => drawSeatChair(s.tx, s.ty, s.cx, s.cy, s.face) }); }
+        if (p.agentId && isWorkkeepProp(p.t) && !embeddedSeat) { const s = deskSeat(p); if (s) items.push({ y: seatFoot(s).y + 1, draw: () => drawSeatChair(s.tx, s.ty, s.cx, s.cy, s.face) }); }
       }
     }
     // one chair art everywhere: seats route through the canonical prop renderer (old F_chair = fallback)
     function drawSeatChair(tx, ty, cx, cy, face) {
       const sx = (cx == null ? tx : cx), sy = (cy == null ? ty : cy);
-      /* A WORKSTATION SEAT USES ITS OWN ART. 'seatchair' is the glow-up chair; it is not in the CATALOG,
+      /* A WORKKEEP SEAT USES ITS OWN ART. 'seatchair' is the glow-up chair; it is not in the CATALOG,
          so the PLACEABLE chair prop keeps its shipped art. Falls back to 'chair' if absent, which is what
-         every station saved before this existed still renders. */
+         every keep saved before this existed still renders. */
       const seatT = (typeof PropSprites !== 'undefined' && PropSprites.has('seatchair')) ? 'seatchair'
                   : (typeof PropSprites !== 'undefined' && PropSprites.has('chair')) ? 'chair' : null;
       if (seatT) {
@@ -6844,23 +6844,23 @@ const World = (() => {
         drawLitProp(chair, false);
       } else F_chair(sx * T, sy * T);
     }
-    if (desk && !deskPropId) items.push({ y: (desk.ty + desk.h) * T, draw: () => {   // skip the synthetic desk when a PLACED workstation prop is the hero's desk (the prop draws itself)
+    if (desk && !deskPropId) items.push({ y: (desk.ty + desk.h) * T, draw: () => {   // skip the synthetic desk when a PLACED workkeep prop is the hero's desk (the prop draws itself)
       // one desk art everywhere: the synthetic auto-desk routes through the canonical prop renderer,
       // carrying the truthful G0.2/G0.3 live data (heat + published progress) into the prop desk
       const work = !!(agent && agent.working);
       const live = { heat: work ? heatFor(agent.id) : 0, prog: work ? deskProgFor(agent.id) : null,
-        occupied: bodyAtWorkstationSeat(agent, seat), still: reduceMotion() };
+        occupied: bodyAtWorkkeepSeat(agent, seat), still: reduceMotion() };
       if (typeof PropSprites !== 'undefined' && PropSprites.has('desk')) {
         PropSprites.setCtx(ctx); PropSprites.setNow(now);
         drawLitProp({ t: 'desk', x: desk.tx, y: desk.ty, w: desk.w, h: desk.h }, work, live);
       } else F_desk(desk.tx * T, desk.ty * T, desk.w * T, desk.h * T, { x: desk.tx, work, heat: live ? live.heat : 0, prog: live ? live.prog : null });
     } });
-    if (desk && !deskPropId && typeof PropSprites !== 'undefined' && PropSprites.lightOf) {   // the auto-desk's CRT lights the deck while the hero works, like any placed workstation
-      const lt = PropSprites.lightOf({ t: 'desk', x: desk.tx, y: desk.ty, w: desk.w, h: desk.h }, !!(agent && agent.working), reduceMotion(), { occupied: bodyAtWorkstationSeat(agent, seat) });
+    if (desk && !deskPropId && typeof PropSprites !== 'undefined' && PropSprites.lightOf) {   // the auto-desk's CRT lights the deck while the hero works, like any placed workkeep
+      const lt = PropSprites.lightOf({ t: 'desk', x: desk.tx, y: desk.ty, w: desk.w, h: desk.h }, !!(agent && agent.working), reduceMotion(), { occupied: bodyAtWorkkeepSeat(agent, seat) });
       if (lt) propLights.push(Object.assign({}, lt, { originX: (desk.tx + desk.w / 2) * T, originY: (desk.ty + desk.h / 2) * T }));
     }
     if (seat && !deskPropId) items.push({ y: seatFoot(seat).y + 1, draw: () => drawSeatChair(seat.tx, seat.ty, seat.cx, seat.cy, deskFace) });
-  // a PLACED hero desk's chair is drawn by the workstation loop above; draw here only for the synthetic auto-desk
+  // a PLACED hero desk's chair is drawn by the workkeep loop above; draw here only for the synthetic auto-desk
     /* a body dormant IN a bed sorts INSIDE its bed — after the frame + pillow, before the quilt — which
        is the whole two-pass trick. Everything else keeps the old key exactly (cushion pos when seated,
        feet otherwise). Drawn through drawSleeper so the sprite is clipped to the mattress. */
@@ -6890,7 +6890,7 @@ const World = (() => {
        paints. One pass rather than per-item so a shadow can never land on a neighbour's body: the props
        and bodies are y-sorted and paint OVER this. The synthetic auto-desk casts one too. */
     reviewMark('sceneSetup');
-    if (sceneRenderer) sceneRenderer.prepareLight(propLights, { ambient: StationBake.LIGHT.ambient, emission: CRT.emit });
+    if (sceneRenderer) sceneRenderer.prepareLight(propLights, { ambient: KeepBake.LIGHT.ambient, emission: CRT.emit });
     drawPropShadows();
     if (sceneRenderer && crewInScene) sceneRenderer.drawGrounding(ctx, [agent, ...crew].filter(b => b && !b.unplaced && !b.seated && !b.lying)
       .map(b => ({ x: bodyPosX(b), y: bodyPosY(b), width: 7, height: 20, opacity: .16 })));
@@ -6918,7 +6918,7 @@ const World = (() => {
     drawShippedPallet(now);   // SHIPPED TODAY: completed jobs stack as product crates at the OUTBOX (server-truth count)
 
     reviewMark('entities');
-    const nextLight = sceneRenderer && sceneRenderer.drawLight(ctx, propLights, { ambient: StationBake.LIGHT.ambient, emission: CRT.emit });
+    const nextLight = sceneRenderer && sceneRenderer.drawLight(ctx, propLights, { ambient: KeepBake.LIGHT.ambient, emission: CRT.emit });
     if (!nextLight) {
       ctx.drawImage(cache.lightCv, 0, 0);
       ctx.save();
@@ -6956,7 +6956,7 @@ const World = (() => {
     if (arrivalScene) drawArrival(now);
     if (floodAt) drawFlood(now);   // THE FLOOD — the cascade of knowledge streaming in, over the dark room
     if (dawnAt && now - dawnAt < 1300) drawDawnBloom(now);   // the room takes its first breath of light
-    // (the context-window gauge now lives engraved in the bottom bar — StationUI.ctxTick, not the desk)
+    // (the context-window gauge now lives engraved in the bottom bar — KeepUI.ctxTick, not the desk)
     if (overlaysOn) {
     drawRunClocks(now);   // G0.2: the honest elapsed-time tag at every desk with a live run (world-space, over the lightmap)
     drawWorkGlyphs(now);  // stage-ticker STRETCH: the "▸ TOOL" tag at a desk with a real tool in flight (one line below the run clock)
@@ -6987,7 +6987,7 @@ const World = (() => {
     // widget consumer keeps honest numbers — only the floating canvas readout is gone.
     if (stillPass) { if (sceneRenderer) sceneRenderer.finish(); return; }   // a still ends here: no stage chrome, no post-processing
     if (linkStaleDim) drawLinkDown(now);   // E1: honest "the live telemetry is not live" marker in the chrome
-    // (station growth headline now lives in the top bar's STATION chip — see xpstore.pushTopbar)
+    // (keep growth headline now lives in the top bar's KEEP chip — see xpstore.pushTopbar)
     drawBloom(now); // phosphor bloom: the bright things in the frame haze outward (screen-space, before the warp so it bows with the picture)
     drawCurve(now); // barrel-warp the whole feed IN-CANVAS — the original (dot-matrix-era) curve, no dots
     reviewMark('postProcess');
@@ -6999,28 +6999,28 @@ const World = (() => {
     // NOTE: the next rAF is scheduled by the frame() crash-guard wrapper, BEFORE this body runs — never here.
   }
 
-  /* A STILL OF THE WHOLE STATION, for a surface that is not this window (StarNet Remote's phone view).
+  /* A STILL OF THE WHOLE KEEP, for a surface that is not this window (Eyehold Remote's phone view).
      It is the same scene pass the stage gets — floor, walls, props, crew where they really stand, light — aimed
-     at an offscreen canvas framed on the full station. It never reads the live stage canvas. Returns
+     at an offscreen canvas framed on the full keep. It never reads the live stage canvas. Returns
      { canvas, width, height, bodies:[{ agentId, name, x, y, working }] } with bodies in still pixels, or null
      when there is no honest picture to give (no bake yet, the awakening is still playing). */
   let stillPass = null;
   function renderStill(maxPx, opts) {
     // A window that has not drawn a frame yet (opened behind other tabs: the browser runs no frames there) has not
-    // built its station either. Build it here, exactly as the first frame would, so the phone still gets a picture.
-    if (!stillPass && station && geo !== undefined) {
-      try { if (geoDirty) rederive(); if (bakeDirty || !cache) rebake(); } catch (e) { try { console.error('[world] still could not build the station:', e); } catch (_) {} }
+    // built its keep either. Build it here, exactly as the first frame would, so the phone still gets a picture.
+    if (!stillPass && keep && geo !== undefined) {
+      try { if (geoDirty) rederive(); if (bakeDirty || !cache) rebake(); } catch (e) { try { console.error('[world] still could not build the keep:', e); } catch (_) {} }
     }
     if (stillPass || !cache || !cv || !ctx || !geo || camAnim || kindleArmed || arrivalScene || wakeDark > 0.002) return null;
     const W = cache.baseCv.width, H = cache.baseCv.height;
     if (!(W > 1 && H > 1)) return null;
-    // opts.crop { x, y, w, h } in station pixels draws only that part (the lead builder's close look at a room); absent = the whole station
+    // opts.crop { x, y, w, h } in keep pixels draws only that part (the lead builder's close look at a room); absent = the whole keep
     const cr = (opts && opts.crop) ? (() => { const c = opts.crop, x = Math.max(0, Math.floor(c.x)), y = Math.max(0, Math.floor(c.y));
       const w = Math.min(W, Math.ceil(c.x + c.w)) - x, h = Math.min(H, Math.ceil(c.y + c.h)) - y; return w > 1 && h > 1 ? { x, y, w, h } : null; })() : null;
     if (opts && opts.crop && !cr) return null;
     const CW = cr ? cr.w : W, CH = cr ? cr.h : H;
     const cap = Math.max(320, Math.min(2400, Number(maxPx) || 1600));
-    const s = Math.max(1, Math.min(6, cap / Math.max(CW, CH)));   // never draw the pixel art below 1:1 (that crushes it); a big station is shrunk smoothly afterwards
+    const s = Math.max(1, Math.min(6, cap / Math.max(CW, CH)));   // never draw the pixel art below 1:1 (that crushes it); a big keep is shrunk smoothly afterwards
     const off = document.createElement('canvas');
     off.width = Math.max(1, Math.round(CW * s)); off.height = Math.max(1, Math.round(CH * s));
     const g = off.getContext('2d');
@@ -7033,7 +7033,7 @@ const World = (() => {
     // the wall clock, never the last frame's time: a hidden or minimized window stops its frames, and a stale
     // clock froze every timed effect (a failed run's red desk flash stayed lit in every still)
     try { drawScene(performance.now(), 0); drawn = true; }
-    catch (e) { try { console.error('[world] station still failed:', e); } catch (_) {} }
+    catch (e) { try { console.error('[world] keep still failed:', e); } catch (_) {} }
     finally {
       stillPass = null;
       cv = keep.cv; ctx = keep.ctx; scale = keep.scale; panX = keep.panX; panY = keep.panY; overlaysOn = keep.overlaysOn;
@@ -7058,18 +7058,18 @@ const World = (() => {
     return { canvas: out, width: out.width, height: out.height, bodies, scale: s * k };
   }
 
-  /* A STILL OF SOME OF THE STATION'S OWN TILES (the lead builder's station.map { look: a room }): renderStill cropped to
+  /* A STILL OF SOME OF THE KEEP'S OWN TILES (the lead builder's keep.map { look: a room }): renderStill cropped to
      world tiles x1..x2, y1..y2, one tile of margin round them and the wall faces above the top row. Null when no still. */
   function renderStillOfTiles(t, maxPx, opts) {
-    if (!t || !station) return null;
+    if (!t || !keep) return null;
     try { if (geoDirty) rederive(); if (bakeDirty || !cache) rebake(); } catch (_) { return null; }
     if (!geo || !geo.origin) return null;
-    const up = (typeof StationBake !== 'undefined' && StationBake.WALL && StationBake.WALL.up) || T;
+    const up = (typeof KeepBake !== 'undefined' && KeepBake.WALL && KeepBake.WALL.up) || T;
     const x = (t.x1 - geo.origin.tx - 1) * T, y = (t.y1 - geo.origin.ty - 1) * T - up;
     return renderStill(maxPx, Object.assign({}, opts, { crop: { x, y, w: (t.x2 - t.x1 + 3) * T, h: (t.y2 - t.y1 + 3) * T + up } }));
   }
 
-  /* THE CREW AS THE STAGE LAST DREW THEM, for a surface that draws them itself (the phone's live station view):
+  /* THE CREW AS THE STAGE LAST DREW THEM, for a surface that draws them itself (the phone's live keep view):
      each body's sprite track + frame and the exact rectangle drawBody put it in, in world pixels. Read-only:
      it reports what was drawn and decides nothing. A body not drawn yet is left out. */
   function crewFrames() {
@@ -7107,7 +7107,7 @@ const World = (() => {
     _scanCv = pc; _scanKey = key;
     return _scanCv;
   }
-  // The station's own CRT is NOT user-optional — the feed is a tube, and the Appearance dial only
+  // The keep's own CRT is NOT user-optional — the feed is a tube, and the Appearance dial only
   // thins the screen-space glass over the HTML (style.css body.crt-dull). `no-scan` remains the one
   // and only suppressor here, and it is internal: scripts/verify-stars2.mjs sets it to flatten the
   // feed for star-pixel checks. Do not wire a settings class into this pass.
@@ -7188,7 +7188,7 @@ const World = (() => {
     }
     ctx.globalCompositeOperation = 'source-over';
   }
-  // A larger tile avoids a visible repeat across the station. A triangular
+  // A larger tile avoids a visible repeat across the keep. A triangular
   // distribution keeps most speckles fine, with occasional stronger static.
   // Its mean is the exact overlay neutral (127.5), so no fog layer is added.
   const GRAIN_S = 512;
@@ -7466,7 +7466,7 @@ const World = (() => {
      flicker). Painted ADDITIVELY over the lightmap, so the deck under a screen takes its phosphor, a body at a
      lamp takes its warmth, and the source itself glows — the same 'lighter' pass the lamp shimmer uses.
      One radial gradient per source, cached by (position, radius, colour): the gradient never changes, only
-     the alpha it is painted at, so a busy station costs one fillRect per source per frame and no allocation.
+     the alpha it is painted at, so a busy keep costs one fillRect per source per frame and no allocation.
      CRT.emit scales the whole pass (0 = off = the pre-overhaul deck). */
   const _emitGrad = new Map();
   function drawPropLights(now, lights) {
@@ -7477,7 +7477,7 @@ const World = (() => {
       const key = l.x + ',' + l.y + ',' + l.r + ',' + l.c[0] + ',' + l.c[1] + ',' + l.c[2];
       let g = _emitGrad.get(key);
       if (!g) {
-        if (_emitGrad.size > 600) _emitGrad.clear();   // a station is rebuilt, not grown, past this — never let the cache grow unbounded
+        if (_emitGrad.size > 600) _emitGrad.clear();   // a keep is rebuilt, not grown, past this — never let the cache grow unbounded
         g = ctx.createRadialGradient(l.x, l.y, 1, l.x, l.y, l.r);
         const rgb = l.c[0] + ',' + l.c[1] + ',' + l.c[2];
         g.addColorStop(0, 'rgba(' + rgb + ',1)'); g.addColorStop(0.3, 'rgba(' + rgb + ',0.55)');
@@ -7772,20 +7772,23 @@ const World = (() => {
       const bodyLight = sceneRenderer && sceneRenderer.sampleLight(who.px, who.py);
       // The original Eyehold overseer renders through the same agent draw pass.
       // Preserve normal sprites in every other room and for every worker.
-      // Faction presentation follows the canonical workstation room assignment,
+      // Faction presentation follows the canonical workkeep room assignment,
       // not the focused agent or an invented status. The fallback is the native skin.
-      const roomId = station && station.agentRoomId && who.id
-        ? station.agentRoomId(who.id) : null;
-      const ownRoom = roomId && station.roomById ? station.roomById(roomId) : null;
+      const roomId = keep && keep.agentRoomId && who.id
+        ? keep.agentRoomId(who.id) : null;
+      const ownRoom = roomId && keep.roomById ? keep.roomById(roomId) : null;
       const territory = ownRoom && ownRoom.eyeTerritory;
       const assignedSpecialty = who === agent ? (who.specialtyId || null) : (who.eyeSpecialtyId || null);
       const verifiedFaction = typeof EyeholdAgentBinding !== 'undefined'
         ? EyeholdAgentBinding.resolve(assignedSpecialty, territory) : null;
-      const isEye = who === agent && territory === 'keep' && typeof EyeholdSprites !== 'undefined';
+      const isEye = who === agent && typeof EyeholdSprites !== 'undefined';
       const isFaction = !isEye && verifiedFaction && typeof EyeholdFactions !== 'undefined'
         && Object.prototype.hasOwnProperty.call(EyeholdFactions.sprites, verifiedFaction);
+      const factionId = isFaction ? verifiedFaction : 'wanderer';
+      const isWanderer = !isEye && !isFaction && typeof EyeholdFactions !== 'undefined'
+        && Object.prototype.hasOwnProperty.call(EyeholdFactions.sprites, 'wanderer');
       if (isEye) geom = EyeholdSprites.draw(ctx, who, now);
-      else if (isFaction) {
+      else if (isFaction || isWanderer) {
         // Only actual tracked backend run IDs, refreshed by run events/snapshot,
         // activate the work pose. Seated/idle agents never fake productivity.
         const aid = who === agent ? who.id : (who.agentId || who.id);
@@ -7793,7 +7796,7 @@ const World = (() => {
         const backendRunning = !!(liveRuns && liveRuns.size > 0);
         geom = EyeholdFactions.draw(ctx, Object.assign({}, who, {
           eyeBackendRunning: backendRunning
-        }), now, territory);
+        }), now, factionId);
       }
       if (!geom && typeof SPRITES !== 'undefined' && SPRITES.ready) geom = SPRITES.drawBody(ctx, who, now,
         bodyLight ? { reducedMotion: reduceMotion(), light: bodyLight,
@@ -7883,11 +7886,11 @@ const World = (() => {
 
   /* ---------- hover nameplate: a compact terminal tag for the agent under the cursor ----------
      Screen-space (always sharp — not the zoom-blurred world-space sliver it replaced): a slim CRT
-     plate in the station's own VT323 face (the same font stack the DOM uses, so it matches whether
+     plate in the keep's own VT323 face (the same font stack the DOM uses, so it matches whether
      VT323 is loaded or falls back to Courier), with a faint phosphor glow + scanlines. Codename,
      level, and the 1px XP-to-next sliver along the bottom all share the suit color — one tiny extra.
      Anchored just above the head, clamped to the viewport. Intentionally small: a glance, not a window. */
-  const PLATE_FONT = '"VT323","Courier New",monospace';   // the station terminal face (mirrors the body font stack)
+  const PLATE_FONT = '"VT323","Courier New",monospace';   // the keep terminal face (mirrors the body font stack)
   function floorDisplayName(who) {
     const raw = String((who && who.name) || '');
     const key = raw.trim().toUpperCase();
@@ -7962,7 +7965,7 @@ const World = (() => {
   /* ---------- the RUN CLOCK (G0.2): tiny elapsed-time tag at each working desk ----------
      A live harness run has NO knowable percent, so the desk shows the one thing that IS knowable:
      how long the run has actually been going (agent.run.start -> .end, runStartByAgent). World-space,
-     the station's VT323 terminal face with a faint phosphor bloom — a glance, never a window. */
+     the keep's VT323 terminal face with a faint phosphor bloom — a glance, never a window. */
   const RUN_FONT = "7px 'VT323','Courier New',monospace";
   function drawRunClocks(now) {
     if (!runStartByAgent.size) return;
@@ -7977,7 +7980,7 @@ const World = (() => {
       const sec = Math.max(0, Math.floor((now - t0) / 1000));
       const mm = Math.floor(sec / 60), ss = String(sec % 60).padStart(2, '0');
       const label = 'RUN ' + (mm >= 60 ? Math.floor(mm / 60) + ':' + String(mm % 60).padStart(2, '0') + ':' + ss : mm + ':' + ss);
-      // anchor beside the desk's crown (placed workstation, or the hero's synthetic desk), else above the body
+      // anchor beside the desk's crown (placed workkeep, or the hero's synthetic desk), else above the body
       let ax, ay;
       const dp = deskPropFor(aid);
       if (dp) { ax = (dp.x + (dp.w || 1)) * T + 1; ay = dp.y * T + 3; }
@@ -8317,10 +8320,10 @@ const World = (() => {
     // (a) a BOUND bay whose room grants no computer: routed work arrives and the run can't act (the compute
     //     gate stays shut). Same bayObjects check as BUILD MODE's NO COMPUTE ghost, now visible in the live world.
     //     Walks dockBays (EVERY bound bay, belt-hooked or standalone) — a lone dock deserves the same truth.
-    if (routingPlan.dockBays && station && typeof station.bayObjects === 'function') {
+    if (routingPlan.dockBays && keep && typeof keep.bayObjects === 'function') {
       for (const b of routingPlan.dockBays) {
         let objs = [];
-        try { objs = station.bayObjects(b.agentId, b.propId) || []; } catch (_) {}   // THIS dock's room (multi-bay)
+        try { objs = keep.bayObjects(b.agentId, b.propId) || []; } catch (_) {}   // THIS dock's room (multi-bay)
         if (objs.indexOf('computer') >= 0) continue;
         out.push({ x: b.x, y: b.y, w: b.w || 1, h: b.h || 1, label: 'NO COMPUTE — ADD A PC', warn: true });
       }
@@ -8528,7 +8531,7 @@ const World = (() => {
       tile: T, zoom: scale / (window.devicePixelRatio || 1), viewport, selected: selectedRoutingTile,
       measure: text => ctx.measureText(text).width,
       containerFor: n => {
-        const id = roomOfLocalTile(n.x, n.y), room = id && station.roomById && station.roomById(id);
+        const id = roomOfLocalTile(n.x, n.y), room = id && keep.roomById && keep.roomById(id);
         const ox = geo.origin.tx, oy = geo.origin.ty;
         const r = room && room.rects.find(r => n.x + ox >= r.x1 && n.x + ox <= r.x2 && n.y + oy >= r.y1 && n.y + oy <= r.y2);
         return r ? { x: (r.x1 - ox) * T + 2, y: (r.y1 - oy) * T + 2,
@@ -8573,7 +8576,7 @@ const World = (() => {
   function setOnMissionBoard(fn) { onMissionBoard = fn; }   // G1b: click a placed MISSION BOARD → open the quest log
   function setOnTrophyCase(fn) { onTrophyCase = fn; }   // G3b: click a placed TROPHY CASE → open the trophy surface
   function setOnPluginTerminal(fn) { onPluginTerminal = fn; }   // click a placed PLUGIN TERMINAL → that plugin's window (or why not)
-  function setOnDesk(fn) { onDesk = fn; }   // DESK SCREEN: click an agent's workstation → that agent's live work (deskscreen.js)
+  function setOnDesk(fn) { onDesk = fn; }   // DESK SCREEN: click an agent's workkeep → that agent's live work (deskscreen.js)
   // G2.3 — the live uncollected-crate count (ReturnStore's pending ledger); 0 when the store isn't loaded (headless tests).
   function returnCrates() {
     try { return (typeof ReturnStore !== 'undefined' && ReturnStore.pendingCount) ? (ReturnStore.pendingCount() | 0) : 0; } catch (_) { return 0; }
@@ -8633,7 +8636,7 @@ const World = (() => {
   }
   /* ---------- G1b MISSION BOARD: the quest log's body ----------
      missionPinCounts — the board's truthful readout, recomputed at most once a second (the projection walk
-     is too heavy for every frame): [how many quests are OPEN in the visible log, whether a station-gap
+     is too heavy for every frame): [how many quests are OPEN in the visible log, whether a keep-gap
      fix-it is among them]. Zeroes when the quest stores aren't loaded (headless tests / title screen). */
   let mpAt = -1e9, mpOpen = 0, mpHot = false, mpJam = false, mpProp = 0;
   function missionPinCounts(t) {
@@ -8644,7 +8647,7 @@ const World = (() => {
         const all = (v && Array.isArray(v.quests)) ? v.quests : [];
         const vis = (typeof QuestStateStore !== 'undefined' && QuestStateStore.visible) ? QuestStateStore.visible(all) : all;
         mpOpen = vis.filter(q => q && q.status !== 'done').length;
-        mpHot = (typeof StationQuestStore !== 'undefined' && StationQuestStore.openCount) ? StationQuestStore.openCount() > 0 : false;
+        mpHot = (typeof KeepQuestStore !== 'undefined' && KeepQuestStore.openCount) ? KeepQuestStore.openCount() > 0 : false;
         // G1c: a repeatedly-skipped routine reads as a JAM — an amber stub pins on the board (pure Factorio).
         mpJam = (typeof MaintQuestStore !== 'undefined' && MaintQuestStore.jammedJobs) ? (MaintQuestStore.jammedJobs().length > 0) : false;
         // G4 feature 2: pending autojob PROPOSAL cards the agent pinned to the board.
@@ -8666,7 +8669,7 @@ const World = (() => {
     }
     return null;
   }
-  /* ---------- G3b TROPHY CASE: the station's achievements made permanent ----------
+  /* ---------- G3b TROPHY CASE: the keep's achievements made permanent ----------
      trophyCount — the case's truthful readout, recomputed at most once a second (the trophy walk is heavy):
      how many REAL trophies are earned (completed quests + earned milestones, via the Trophies projection over
      the live quest view + durable QuestState memory). Zero when the surface isn't loaded (headless / title). */
@@ -8707,14 +8710,14 @@ const World = (() => {
     }
     return null;
   }
-  // hit-test: an agent's WORKSTATION under a world-space point → { agentId } (null if none). A placed computer prop
+  // hit-test: an agent's WORKKEEP under a world-space point → { agentId } (null if none). A placed computer prop
   // counts only while it is assigned to an agent that has a body on this floor (an unassigned desk has no one's work
   // to show); the hero's synthetic fallback desk counts for the hero. The screen art sits inside the footprint; a
   // small spill up/down keeps the monitor top and the desk front clickable.
   function deskAt(wp) {
     if (!geo || !geo.props) return null;
     for (const p of geo.props) {
-      if (!p.agentId || !isWorkstationProp(p.t) || !bodyForAgent(p.agentId)) continue;
+      if (!p.agentId || !isWorkkeepProp(p.t) || !bodyForAgent(p.agentId)) continue;
       const s = specOf(p.t) || {};
       const x0 = p.x * T, y0 = p.y * T - 6;
       const x1 = (p.x + (p.w || s.w || 1)) * T, y1 = (p.y + (p.h || s.h || 1)) * T + 2;
@@ -8799,7 +8802,7 @@ const World = (() => {
   /* OVERLAP-SAFE RUN REFCOUNT (the black-screen-while-working fix). The work pose, serverLit set and the
      run clock are all AGENT-keyed, but an agent's runs can OVERLAP (a scheduled routine ending while a chat
      run streams, two channel runs, a background workstream). Extinguishing on the FIRST run.end used to
-     tear the desk pose + darken the workstation screens of an agent that was still genuinely working — the
+     tear the desk pose + darken the workkeep screens of an agent that was still genuinely working — the
      app asserting idle while the harness could prove a live run (truthful-telemetry violation, inverted).
      So every live run registers by runId here, and only the LAST live run's end may extinguish agent-keyed
      state. noteRunEnd is IDEMPOTENT per runId (Set.delete), so every run.end consumer can call it and read
@@ -8969,7 +8972,7 @@ const World = (() => {
     for (const [aid, f] of deskFlash) {
       const k = 1 - (now - f.at) / FLASH_MS;
       if (k <= 0) { deskFlash.delete(aid); continue; }
-      // the desk rect (placed workstation / the hero's synthetic desk), else the body's own spot
+      // the desk rect (placed workkeep / the hero's synthetic desk), else the body's own spot
       let x, y, w, h;
       const b = bodyForAgent(aid), dp = deskPropFor(aid);
       if (dp) { x = dp.x * T; y = dp.y * T; w = (dp.w || 1) * T; h = (dp.h || 1) * T; }
@@ -8991,17 +8994,17 @@ const World = (() => {
   // after a DISCONNECT they kept polling /api/connectors every 5s and the EventSource self-reconnected forever
   // from the title screen. Hoisted here so pauseBridge() (on disconnect) can release them and resumeBridge()
   // (on re-entry) can re-arm them. The U.bus.on(...) subscriptions stay put (idempotent under `bridged`).
-  // E6f — API base consistency: the SSE bridge already prefixes window.__STARNET_API__ (the sidecar's loopback
+  // E6f — API base consistency: the SSE bridge already prefixes window.__EYEHOLD_API__ (the sidecar's loopback
   // origin) so it resolves in the desktop build, where the page origin is the Tauri asset host, NOT the sidecar.
   // Bare /api/* fetches (routing POST, connectors poll) skipped that prefix and would hit the wrong origin there.
   // apiUrl() is the single source of truth so all three use the same base. (Auth token is attached by harness.js's
   // window.fetch monkey-patch for /api/ URLs; the SSE path can't send a header so it presents a single-use ApiTicket.sseUrl ticket.)
-  function apiBase() { return (typeof window !== 'undefined' && window.__STARNET_API__) ? window.__STARNET_API__ : ''; }
+  function apiBase() { return (typeof window !== 'undefined' && window.__EYEHOLD_API__) ? window.__EYEHOLD_API__ : ''; }
   function apiUrl(path) { return apiBase() + path; }
   let chanES = null, connPollTimer = null, connPollFn = null, connOpenFn = null, bridgePaused = false;
   let bridgeCursor = '', bridgeRecovering = false;
   let spotifyPollTimer = null, spotifyPollFn = null;   // JUKEBOX dead-vs-live poll (shares the bridge pause/resume lifecycle)
-  // LINK-DOWN HONESTY (Lane E1): the live station telemetry (queue gauges, run clocks) is only truthful while
+  // LINK-DOWN HONESTY (Lane E1): the live keep telemetry (queue gauges, run clocks) is only truthful while
   // the SSE bridge is actually delivering events. Track the last DATA event's wall-clock and the socket's
   // readyState so a dead/stalled link renders an honest degraded state instead of freezing the last-known truth.
   // The server sends a keep-alive COMMENT (`: ka`) every 25s (see index.js handleChannelEvents) — comment lines
@@ -9090,12 +9093,12 @@ const World = (() => {
     // B5: enrich each bay with the capability objectTypes in its room, so the sidecar can isolate that agent's
     // tools to exactly what the floor placed there (the bay->agent binding decides WHO; the room decides WHAT).
     // dockBays too — a LONE bay (no belt) is a complete dock and isolates identically (sense pass 2026-07-05).
-    if (routingPlan && station && typeof station.bayObjects === 'function') {
+    if (routingPlan && keep && typeof keep.bayObjects === 'function') {
       // PER DOCK (multi-bay, 2026-09-22): each bay record carries ITS room's objects (a deskful agent's desk room
       // on every one of its bays — worldmodel.bayObjects prefers the desk), so a hop runs with the room of the
       // bay it is AT, never the union of the agent's bays.
-      for (const b of (routingPlan.bays || [])) b.objects = station.bayObjects(b.agentId, b.propId);
-      for (const b of (routingPlan.dockBays || [])) b.objects = station.bayObjects(b.agentId, b.propId);
+      for (const b of (routingPlan.bays || [])) b.objects = keep.bayObjects(b.agentId, b.propId);
+      for (const b of (routingPlan.dockBays || [])) b.objects = keep.bayObjects(b.agentId, b.propId);
     }
     postRoutingPlan(routingPlan);
     lineStatsSoon();   // LINE WATCH: the floor's lines changed — re-ask their numbers once the plan has landed
@@ -9134,7 +9137,7 @@ const World = (() => {
     function flush() { return new Promise(resolve => { if (!inflight && timer == null) resolve(state()); else waiters.push(resolve); }); }
     /* ONE POST AT A TIME, IN ORDER (2026-10-08). Two POSTs on separate connections can ARRIVE out of order: the
        sidecar then kept the OLDER floor while this page committed the newer hash and believed it delivered — a
-       built line read READY TO RUN while the router said "no armed work line" (station-builder e2e, intermittent
+       built line read READY TO RUN while the router said "no armed work line" (keep-builder e2e, intermittent
        under load). While a POST is on the wire, the newest offer waits in `queued` and goes out when it settles. */
     function offer(plan, hash) {
       if (inflight) {
@@ -9297,7 +9300,7 @@ const World = (() => {
     p.box = 'ore';
     if (p.weight == null) p.weight = 0.3;
     // WHERE does this work ENTER the floor? (multi-network law, 2026-07-05 — Andrew's two-room bug):
-    //  • a COMMS directive is a DIRECT order to a specific agent — it skips the station doors entirely and
+    //  • a COMMS directive is a DIRECT order to a specific agent — it skips the keep doors entirely and
     //    lands at that agent's BAY (the model sentence: "COMMS orders skip the ride in");
     //  • addressed channel/cron work enters through the INBOX whose line actually REACHES its agent's dock
     //    (Pipeline.sourceFor — each room's INBOX feeds its own network, never another room's outbox);
@@ -9305,7 +9308,7 @@ const World = (() => {
     //  • no reaching line → the work lands directly at the agent's BAY dock (a lone bay is a complete build).
     /* A HANDOFF DOES NOT ENTER THROUGH THE FRONT DOOR. A `chain` work-item is stage N of a work line: it was
        produced at the UPSTREAM dock and rides that dock's lane to this one. Spawning it at an INTAKE would
-       draw a lie — the station never received anything, one of its own agents did. The upstream dock is the
+       draw a lie — the keep never received anything, one of its own agents did. The upstream dock is the
        event's `from` (the PRODUCER — the chain runner names it since 2026-08-04); an old event without it
        falls back to the plan heuristic (alphabetically-first dock whose chain reaches this agent). The crate
        is PRODUCT, not ore, because that is exactly what it is; `fromAgentId` rides the payload so the
@@ -9385,7 +9388,7 @@ const World = (() => {
        • a status LAMP on every bound bay — IDLE / WORKING (only once agent.run.start confirms a run AT that dock) /
          WAITING (a crate queued there) / FAILED (last run there died; until the next success or a click) /
          PAUSED (a step-through test is paused after this dock). Hover = a tiny glance plate; never a window.
-       • CRATE INSPECT — click a crate riding a belt: a small station card (cratecard.js) with what the harness
+       • CRATE INSPECT — click a crate riding a belt: a small keep card (cratecard.js) with what the harness
          proved about it (job, line, route, the run working it, its outcome), plus the logbook / Workflow doors.
        • a per-line PLATE at each line's INBOX — today's runs / shipped / failed, $ today vs the line's daily cap,
          median time per run — straight from GET /api/routing/lines/stats, reconciled on the SHIPPED counter's
@@ -9396,7 +9399,7 @@ const World = (() => {
   let lineStatsTimer = 0, stepPollTimer = 0;
   let hoverBay = null, hoverCrate = null;
   let lwDrawOff = false;   // verify-only A/B switch (_dbgLineWatch().setDraw) for the frame-cost measurement — never user-facing
-  const LW_ACK_KEY = 'starnet.linewatch.acked';
+  const LW_ACK_KEY = 'eyehold.linewatch.acked';
   function lineWatch() {
     if (!watch && typeof LineWatch !== 'undefined') {
       watch = LineWatch.create({ entryDock: aid => (routingPlan && routingPlan.entryDock) ? (routingPlan.entryDock[aid] || null) : null });
@@ -9589,15 +9592,15 @@ const World = (() => {
       resolve: row => { const c = crateCtx(payload); c.row = row || null; return LineWatch.crateCard(payload, c); },
       runIdOf: () => { const c = crateCtx(payload); return (c.run && c.run.runId) || payload.runId || null; },
       runEnded: () => { const c = crateCtx(payload); return !!((c.run && c.run.ended) || payload.outbound); },
-      openRun: a => { if (!a || !a.agentId) return; if (onClick) onClick(a.agentId); if (typeof StationUI !== 'undefined' && StationUI.openTerm) StationUI.openTerm('logbook'); },
+      openRun: a => { if (!a || !a.agentId) return; if (onClick) onClick(a.agentId); if (typeof KeepUI !== 'undefined' && KeepUI.openTerm) KeepUI.openTerm('logbook'); },
       openWorkflow: f => { if (!f || typeof Build === 'undefined') return; try { if (!Build.isOpen()) Build.open(); if (f.dockId && Build.openAssign) Build.openAssign(f.dockId); } catch (_) { /* BUILD MODE absent: nothing to open */ } }
     });
     return true;
   }
   // the floor rectangle of the room a local tile sits in (the nag layout's containerFor, reused)
   function lwRoomBox(tx, ty) {
-    if (!station || !station.roomById || !geo || !geo.origin) return null;
-    const id = roomOfLocalTile(tx, ty), room = id && station.roomById(id);
+    if (!keep || !keep.roomById || !geo || !geo.origin) return null;
+    const id = roomOfLocalTile(tx, ty), room = id && keep.roomById(id);
     const ox = geo.origin.tx, oy = geo.origin.ty;
     const rr = room && room.rects.find(q => tx + ox >= q.x1 && tx + ox <= q.x2 && ty + oy >= q.y1 && ty + oy <= q.y2);
     return rr ? { x: (rr.x1 - ox) * T + 2, y: (rr.y1 - oy) * T + 2, w: (rr.x2 - rr.x1 + 1) * T - 4, h: (rr.y2 - rr.y1 + 1) * T - 4 } : null;
@@ -9931,7 +9934,7 @@ const World = (() => {
   }
   /* Lane E6b — roster-change map sweep. The per-agent maps (heat/deskProg/xp/computeOk) and the pairwise social
      cooldown accumulate an entry per agent id that appears; a roster removal (a bay unbound, a summoned worker
-     retired) used to leave those entries behind to grow unbounded on a 24/7 station. Called from the one place
+     retired) used to leave those entries behind to grow unbounded on a 24/7 keep. Called from the one place
      roster membership is reconciled (syncCrewFromPlan), it clears entries for ids no longer present (hero + live
      crew are always kept). NOTE: `seenCount` is deliberately EXCLUDED — it is keyed by prop-id/belt studyKey, not
      agentId (see its set/get sites), so sweeping it here by agent id would wrongly drop prop-familiarity state. */
@@ -9974,10 +9977,10 @@ const World = (() => {
     return footOf(t.x, t.y);
   }
   // give a summoned agent a real floor body (idempotent). Static like crew, but flagged `summoned` so the
-  // floor-reset paths (loadStation / syncCrewFromPlan) preserve it, and lit by setActivityFor on a real run.
+  // floor-reset paths (loadKeep / syncCrewFromPlan) preserve it, and lit by setActivityFor on a real run.
   function spawnAgent(a) {
     if (!a || !a.id || (agent && a.id === agent.id)) return;
-    // already on the floor as a plan-derived bay body (loadStation's rederive runs before this on boot):
+    // already on the floor as a plan-derived bay body (loadKeep's rederive runs before this on boot):
     // REHYDRATE its inner life instead of bailing. `summoned` is runtime-only, so across a relaunch a
     // bay-bound roster agent otherwise freezes at its bay foot (stepCrew gates the sentience engine on the
     // flag) and VANISHES outright if its bay is later deleted (syncCrewFromPlan keeps only summoned bodies
@@ -9986,7 +9989,7 @@ const World = (() => {
     const ex = crew.find(b => b.agentId === a.id);
     if (ex) {
       ex.summoned = true;
-      // loadStation derives bay-bound bodies from the floor plan before App replays the saved roster. The plan
+      // loadKeep derives bay-bound bodies from the floor plan before App replays the saved roster. The plan
       // knows only the agent id, so that provisional body carries the default skin/id label/synthetic color.
       // Rehydrate the roster-owned display identity here too; returning with only `summoned` restored made every
       // bay-bound agent LOOK reset after relaunch even though its dossier still held the chosen skin.
@@ -10011,9 +10014,9 @@ const World = (() => {
 
      It reuses the D3 huddle wholesale: the greeter walks over, both wave as they settle, they take
      turns in the silent exchange, and they part with a wave. So it costs one function, inherits
-     every existing safety property (one encounter station-wide, zone-clamped targets, work seizes
+     every existing safety property (one encounter keep-wide, zone-clamped targets, work seizes
      instantly, the hard timeout), and CANNOT stack — if an encounter is already live, the newcomer
-     simply arrives unremarked, which is honest. The station LANE cooldown is deliberately bypassed
+     simply arrives unremarked, which is honest. The keep LANE cooldown is deliberately bypassed
      (a welcome is not ambient chatter) but the fired encounter still arms it, so a burst of spawns
      produces ONE welcome, not one per body. */
   function greetNewcomer(newBody, now) {
@@ -10189,7 +10192,7 @@ const World = (() => {
     else { wakeIn(); }   // the hero (or an unrouted box)
   }
   /* ---------- the CAM-HUD ACTIVITY TICKER (stage narration) ----------
-     A single diegetic security-camera line at the bottom of the .cam-hud overlay that names WHAT the station
+     A single diegetic security-camera line at the bottom of the .cam-hud overlay that names WHAT the keep
      is doing RIGHT NOW, driven purely by real harness events (agent.run.* / agent.tool_call|result /
      provider.fallback). Truthful telemetry law: nothing shows unless the harness actually emitted it.
      Event-driven only — no rAF loop. Rapid bursts coalesce to ~2 updates/sec, always ending on the latest
@@ -10310,7 +10313,7 @@ const World = (() => {
     });
     // NO per-tool failure tick (2026-07-31). This used to push a red '✗ <summary>' line for every errored
     // tool call — and since successes tick nothing, failure was the ONLY outcome the HUD ever narrated: a
-    // research run probing a few blocked sites read as a station-wide malfunction. A negative tool result
+    // research run probing a few blocked sites read as a keep-wide malfunction. A negative tool result
     // is the agent working, and the next agent.tool_call line already shows it moving; the COMMS chips
     // keep the per-call truth one click away. Red on this HUD now means one thing: the run itself died.
     U.bus.on('agent.run.error', p => {
@@ -10350,7 +10353,7 @@ const World = (() => {
     U.bus.on('provider.fallback', p => {
       if (!p || !p.toModel) return;
       const to = String(p.toModel).split('/').pop();
-      pushTicker('STATION ▸ REROUTE · ' + tickerClip(to, 32).toUpperCase(), '', null);
+      pushTicker('KEEP ▸ REROUTE · ' + tickerClip(to, 32).toUpperCase(), '', null);
     });
     // ── STRETCH: desk work-glyph state — a tool in flight (tool_call → its tool_result) marks the agent;
     //    the render pass (drawWorkGlyphs) draws a tiny tag at that desk. run.end clears any stale mark. ──
@@ -10372,7 +10375,7 @@ const World = (() => {
     // THE FLOOR ECONOMY — fold the harness's real cost/outcome events into FloorStats (the floating
     // canvas readout was removed 2026-07-09; the fold stays for panel/widget consumers). harness.js
     // re-emits every sidecar event onto U.bus, and routed/crew runs arrive the same way over the SSE
-    // bridge, so these tally the WHOLE station's spend->yield, not just the hero.
+    // bridge, so these tally the WHOLE keep's spend->yield, not just the hero.
     if (!floor && typeof FloorStats !== 'undefined') floor = FloorStats.create();
     if (!slaglog && typeof SlagLog !== 'undefined') slaglog = SlagLog.create();
     U.bus.on('agent.cost', p => {
@@ -10395,10 +10398,10 @@ const World = (() => {
     // the floor stats AND surface a LOGBOOK line so the operator sees the harness rerouting around a bad provider.
     U.bus.on('provider.fallback', p => {
       if (floor) floor.onEvent('provider.fallback', p, Date.now());
-      if (p && typeof StationUI !== 'undefined' && StationUI.notify) {
+      if (p && typeof KeepUI !== 'undefined' && KeepUI.notify) {
         const how = p.rotate ? 'rotated credential' : 'switched model';
         // subscription stacking: a hop between connected sign-ins keeps the model — name the account it moved to
-        StationUI.notify(p.toAccount
+        KeepUI.notify(p.toAccount
           ? '⤳ failover (' + (p.reason || 'error') + ') · continued on ' + p.toAccount + ' · ' + (p.toModel || '?')
           : '⤳ failover (' + (p.reason || 'error') + ') · ' + how + ': ' + (p.fromModel || '?') + ' → ' + (p.toModel || '?'), 'warn');
       }
@@ -10444,9 +10447,9 @@ const World = (() => {
       // the desk strobe) — a simultaneous SLAG toast made ONE failure read as two (2026-07-31). The
       // post-mortem record + slag crate below still happen for every dead reason; only the duplicate
       // toast is skipped. Budget/step-limit/refusal deaths keep it: nothing else announces those.
-      if (typeof StationUI !== 'undefined' && StationUI.notify && r !== 'error') {
+      if (typeof KeepUI !== 'undefined' && KeepUI.notify && r !== 'error') {
         const clean = s => String(s || '').replace(/\bspend\b/ig, 'run resources').replace(/\bdollars?\b/ig, 'limits');
-        StationUI.notify('⚠ a run ended with nothing to show · ' + clean(SlagLog.line(diag)), 'warn', undefined, { kind: 'alert', go: { term: 'agents', section: 'record' } });
+        KeepUI.notify('⚠ a run ended with nothing to show · ' + clean(SlagLog.line(diag)), 'warn', undefined, { kind: 'alert', go: { term: 'agents', section: 'record' } });
       }
       enqueueSlag(diag, p && p.agentId, p);
     });
@@ -10461,7 +10464,7 @@ const World = (() => {
     U.bus.on('agent.run.start', p => { if (p && delegateLead) { const b = bodyForAgent(p.agentId); if (b && b !== agent) handoff(delegateLead, p.agentId, 'spawned'); } });
     U.bus.on('agent.run.end', p => { if (p) { const b = bodyForAgent(p.agentId); if (b && b !== agent && !noteRunEnd(p.agentId, p.runId)) handoff(null, p.agentId, 'done'); } });
     // AUTONOMOUS WORK (cron / channel / night shift): a server-initiated run has no in-app chat driving its body,
-    // so bind its run lifecycle to the work pose HERE — the agent goes to its workstation and works for the run's
+    // so bind its run lifecycle to the work pose HERE — the agent goes to its workkeep and works for the run's
     // REAL duration, then stands when it ends. This is what makes an unattended run VISIBLE: the conveyor box rides
     // in (kind 'cron'/'telegram') AND the agent actually runs to its PC and types until done. Interactive chat
     // (trigger 'directive') drives its own body via chat.js and is excluded; a delegated worker (also 'directive')
@@ -10472,11 +10475,11 @@ const World = (() => {
     U.bus.on('agent.run.start', p => { if (p && p.agentId && p.trigger && p.trigger !== 'directive') { serverLit.add(p.agentId); if (agent && p.agentId === agent.id) agent.taskViaConveyor = true; setActivityFor(p.agentId, 'task'); } });
     U.bus.on('agent.run.end', p => { if (p && p.agentId && !noteRunEnd(p.agentId, p.runId) && serverLit.has(p.agentId)) { serverLit.delete(p.agentId); setActivityFor(p.agentId, 'idle'); } });
     // M-mem.4 → notification diet (2026-08-18): auto-compaction no longer toasts — it is loop plumbing,
-    // not news. The bottom-bar CTX gauge still flashes its mint "compacted" echo (StationUI listens to
+    // not news. The bottom-bar CTX gauge still flashes its mint "compacted" echo (KeepUI listens to
     // agent.compact directly), which is the honest, glanceable trace of the same event.
     // ── consume-side telemetry that was already validated + SSE-broadcast but had NO frontend listener
     //    (the wiring-honesty pass: render the events already on the bus so the floor reflects real activity). ──
-    const hudNote = (txt, cls, opts, category) => { try { if (typeof StationUI !== 'undefined' && StationUI.notify) StationUI.notify(txt, cls || '', category, opts); } catch (_) {} };
+    const hudNote = (txt, cls, opts, category) => { try { if (typeof KeepUI !== 'undefined' && KeepUI.notify) KeepUI.notify(txt, cls || '', category, opts); } catch (_) {} };
     // Notification diet (2026-08-18): cron.fire no longer toasts — "fired" then "completed" seconds later
     // read as two events for one routine, and the conveyor box + work pose already make the fire visible.
     // cron.result outcomes (cron-driver.js finishFire): 'failed' warns (always — a failure needs eyes);
@@ -10491,7 +10494,7 @@ const World = (() => {
     // REWIND: the rare, important "we rolled the workspace back" beat. checkpoint.created is frequent + quiet
     // (the workbench already pulses on shell), so only the restore is toasted.
     U.bus.on('checkpoint.restored', () => hudNote('↶ rewound to an earlier restore point', 'warn'));
-    // G0.6 CHANNEL ARRIVAL MADE VISIBLE: a real Telegram/Discord message just reached the station
+    // G0.6 CHANNEL ARRIVAL MADE VISIBLE: a real Telegram/Discord message just reached the keep
     // (hub.js emits { channel, chatId, agentId, kind } on every admitted inbound) — the receiving
     // agent's DISH fires (the web/comms on-ramp lighting up). The riding crate + queue gauge still
     // come from workitem.*/queue.status.
@@ -10509,14 +10512,14 @@ const World = (() => {
       // agentId (additive 2026-07-06) names WHICH agent replied. On a multi-agent floor, pulse ONLY that agent's
       // dish: its own dish, else a dish in its room. If the acting agent has NO dish in its room, pulse NOTHING —
       // it is a lie to strobe an unrelated agent's dish (do NOT fall back to any/cands[0]). Legacy sends with no
-      // agentId keep the old any-dish behavior so a single-agent station still lights.
+      // agentId keep the old any-dish behavior so a single-agent keep still lights.
       let dish;
       if (p.agentId) {
-        dish = (geo && geo.props) ? geo.props.filter(pr => (station && station.capForProp && station.capForProp(pr.t) === 'dish') || pr.t === 'dish')
+        dish = (geo && geo.props) ? geo.props.filter(pr => (keep && keep.capForProp && keep.capForProp(pr.t) === 'dish') || pr.t === 'dish')
           .find(pr => pr.agentId === p.agentId) : null;
         if (!dish) {
           const room = actingRoomId(p.agentId);
-          if (room && geo && geo.props) dish = geo.props.filter(pr => (station && station.capForProp && station.capForProp(pr.t) === 'dish') || pr.t === 'dish')
+          if (room && geo && geo.props) dish = geo.props.filter(pr => (keep && keep.capForProp && keep.capForProp(pr.t) === 'dish') || pr.t === 'dish')
             .find(pr => roomOfLocalTile(pr.x, pr.y) === room);
         }
         if (!dish) return;   // acting agent has no dish in reach -> no pulse (truthful telemetry, no wrong-dish strobe)
@@ -10527,7 +10530,7 @@ const World = (() => {
       // NO hudNote (notification diet): same law as channel.inbound — the dish pulse IS the confirmation.
     });
     // EL-11 #11 CHANNEL TROUBLE MADE VISIBLE: transport health (channel.connect) used to be seen ONLY inside the open
-    // CHANNELS panel. A drop/fatal-token that happens while you're anywhere else in the station now surfaces a single
+    // CHANNELS panel. A drop/fatal-token that happens while you're anywhere else in the keep now surfaces a single
     // honest HUD line naming the channel + state — so a silently-dead channel can't swallow your messages unnoticed.
     // Enum is FROZEN to ['up','down','error'] (shared/events.js). Recovery replaces the active outage card under
     // one stable toast key, so the HUD never keeps asserting DOWN after the self-healing poller has proven UP.
@@ -10542,7 +10545,7 @@ const World = (() => {
       if (state === 'up') {
         if (!unhealthyChannels.delete(raw)) return;   // initial/steady health stays quiet
         hudNote('✓ ' + name + ' reconnected', 'good', { key: toastKey });
-        try { if (StationUI.settleNotifs) StationUI.settleNotifs(toastKey); } catch (_) {}   // the outage entry is handled
+        try { if (KeepUI.settleNotifs) KeepUI.settleNotifs(toastKey); } catch (_) {}   // the outage entry is handled
         return;
       }
       if (state !== 'down' && state !== 'error') return;
@@ -10789,7 +10792,7 @@ const World = (() => {
   //  backlog stays visible through the physical crate jam at the INTAKE (drawQueueJam), which
   //  reads the same queueDepthNow() truth.)
 
-  /* LINK DOWN marker (E1) — the honest "the live station telemetry has gone dark" chrome tag. Screen-space,
+  /* LINK DOWN marker (E1) — the honest "the live keep telemetry has gone dark" chrome tag. Screen-space,
      top-center in the canvas chrome (never over a desk), VT323 + red phosphor bloom + a slow breathing blink so
      it reads as a live fault, not a frozen label. A glance, never a window (hover law). Only drawn while the SSE
      bridge is genuinely down (linkStaleDim) — clears itself the frame the link recovers. */
@@ -10845,10 +10848,10 @@ const World = (() => {
      optimistically on agent.run.end and reconciled by a 60s poll, so a page reload never zeroes the
      day. No OUTBOX on the floor → no pallet (the outbox IS the shipping surface); nothing draws until
      the server has actually answered (known), so it can never flash a fake number.
-     EACH OUTBOX STACKS ONLY ITS OWN LINE (Andrew 10-03: the outbox is that conveyor's, never the whole station's): the pallet
+     EACH OUTBOX STACKS ONLY ITS OWN LINE (Andrew 10-03: the outbox is that conveyor's, never the whole keep's): the pallet
      is the line plate's own SHIPPED (/api/routing/lines/stats — jobs that left through THAT line's OUTBOX today), so the
      pallet and the INBOX plate can never disagree. An OUTBOX on no line ships nothing and stacks nothing. shipStats stays
-     the station-wide day count the run ticker reads ("· N SHIPPED TODAY"). Clicking an OUTBOX opens its line's results. */
+     the keep-wide day count the run ticker reads ("· N SHIPPED TODAY"). Clicking an OUTBOX opens its line's results. */
   let shipStats = { day: '', done: 0, known: false };
   const shipDay = () => { const d = new Date(); return d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate(); };
   const shipMidnight = () => { const d = new Date(); d.setHours(0, 0, 0, 0); return d.getTime(); };
@@ -10978,7 +10981,7 @@ const World = (() => {
       clientY: r.top + c.y * (r.height / cv.height)
     };
   };
-  // CDP-verify hook (DESK SCREEN): CLIENT coordinates for the centre of agent `aid`'s workstation (its assigned
+  // CDP-verify hook (DESK SCREEN): CLIENT coordinates for the centre of agent `aid`'s workkeep (its assigned
   // computer prop, or the hero's synthetic fallback desk) — so a verify script dispatches a REAL canvas click on it.
   const _dbgDeskClientPoint = (aid) => {
     if (!cv) return null;
@@ -11019,7 +11022,7 @@ const World = (() => {
      backing store of every cached plate WITHOUT touching the objects or their sizes — which is
      precisely what the browser does and precisely why nothing downstream notices. There is no JS
      API to lose a 2D context on demand (unlike WEBGL_lose_context above), so reproducing the
-     black station means reproducing its EFFECT. `sky`/`ground` reach into the other two cache
+     black keep means reproducing its EFFECT. `sky`/`ground` reach into the other two cache
      owners, so one call reproduces the whole reported frame, not just the floor. */
   const _dbgLoseCanvases = (mode = 'all') => {
     const wipe = c => {
@@ -11092,10 +11095,10 @@ const World = (() => {
       bays: () => (routingPlan && routingPlan.dockBays ? routingPlan.dockBays.filter(d => d.agentId).map(d => { const b = bayPlateBox(d); return { propId: d.propId, agentId: d.agentId, sx: b.cx * scale + panX, sy: (d.y + (d.h || 1) / 2) * T * scale + panY, lampX: (b.left + b.width - 4.75) * scale + panX, lampY: (b.top - 0.9) * scale + panY }; }) : []),
       plates: () => (routingPlan && routingPlan.lines && geo ? routingPlan.lines.map(l => { const ip = geo.props.find(q => q.id === (l.intakes && l.intakes[0])); return ip ? { lineId: l.lineId, sx: (ip.x + (ip.w || 1) / 2) * T * scale + panX, sy: ip.y * T * scale + panY } : null; }).filter(Boolean) : []),
       dpr: window.devicePixelRatio || 1 }),
-    // BUILD MODE freezes this world and can display its already-painted station.
+    // BUILD MODE freezes this world and can display its already-painted keep.
     // Identity and both invalidation flags prevent borrowing another save or a
     // pre-edit bake. The editor replaces its reference on its first real edit.
-    refitBake: st => st === station && !geoDirty && !bakeDirty && cache && geo
+    refitBake: st => st === keep && !geoDirty && !bakeDirty && cache && geo
       ? { cache, geo } : null,
     // FEED TRUTH accessor (guided workflows): the exact server-proven state the NO FEED nag keys on —
     // BUILD MODE's finish-the-line card reads THIS, never a parallel poll, so the two can never disagree.
@@ -11112,19 +11115,19 @@ const World = (() => {
        now if the floor is dirty, then resolve with the poster's verdict + the compiled plan's BLOCKING errors
        (the same codes the floor nags with), so the caller can refuse instead of running a stale or broken line. */
     syncPlan: () => {
-      if (station && (geoDirty || !geo)) rederive();
+      if (keep && (geoDirty || !geo)) rederive();
       const errors = (routingPlan && routingPlan.errors ? routingPlan.errors : []).filter(e => !e.warn);
       return planPoster.flush().then(s => Object.assign({ errors: errors, hash: routingPlan ? routingPlan.hash : null }, s));
     },
-    /* PLAN SYNC, READ-ONLY (station.layout, 2026-09-28): the facts syncPlan resolves with — the poster's verdict +
+    /* PLAN SYNC, READ-ONLY (keep.layout, 2026-09-28): the facts syncPlan resolves with — the poster's verdict +
        the compiled plan's BLOCKING errors — plus `pending` (the floor changed since its last compile, e.g. while
        BUILD MODE holds the world frozen), WITHOUT recompiling or posting: a read must never be what sends a half-built
-       floor to the router. `station: false` = no floor loaded (nothing is known). */
-    planStatus: () => Object.assign({ station: !!station, pending: !!(station && (geoDirty || !geo)),
+       floor to the router. `keep: false` = no floor loaded (nothing is known). */
+    planStatus: () => Object.assign({ keep: !!keep, pending: !!(keep && (geoDirty || !geo)),
       errors: (routingPlan && routingPlan.errors ? routingPlan.errors : []).filter(e => !e.warn), hash: routingPlan ? routingPlan.hash : null }, planPoster.state()),
-    loadStation, spawn, spawnAgent, despawnAgent, setSkin, relabel, setActivityFor, agentRunsLive, dropRun: noteRunEnd, focusBody, lockBody, cameraMode, cameraState, restoreCamera, setFrameCap, setOverlays, setCinecamIdle, setChatFocus, chatFocusPing, start, stop, setActivity, wakeIn, beginAwakening, playArrival, cancelArrival, setWakeProgress, igniteSpark, armKindle, kindleHold, camPushIn, camCreep, camPunch, camPullBack, awakenTurn, truthPulse, beginFlood, collapseFlood, endAwakening, releaseAwakening, say, focusAgent, getActivity: () => activity, getUse: () => (agent ? agent.usingProp : null), setOnClick, setOnArcade, setOnOutbox, setOnMissionBoard, setOnTrophyCase, setOnPluginTerminal, setOnDesk, setOnBayAssign, setOnIntakeFeed, setOnIntakeSample, refit, pauseBridge, resumeBridge, linkState, _dbgSeedRun, _dbgAgeRun, _dbgReconcile, _dbgSweep, _dbgLinkState, _dbgDropBridge, _dbgCurveState, _dbgLoseCurveContext, _dbgLoseCanvases, _dbgCanvasLoss, _dbgKillStageContext, _dbgStageState, _dbgBeltLegibility, _dbgPropClientPoint, _dbgDeskClientPoint, _dbgSleep, _dbgUseProp, _dbgArrive, _dbgLeisure,
+    loadKeep, spawn, spawnAgent, despawnAgent, setSkin, relabel, setActivityFor, agentRunsLive, dropRun: noteRunEnd, focusBody, lockBody, cameraMode, cameraState, restoreCamera, setFrameCap, setOverlays, setCinecamIdle, setChatFocus, chatFocusPing, start, stop, setActivity, wakeIn, beginAwakening, playArrival, cancelArrival, setWakeProgress, igniteSpark, armKindle, kindleHold, camPushIn, camCreep, camPunch, camPullBack, awakenTurn, truthPulse, beginFlood, collapseFlood, endAwakening, releaseAwakening, say, focusAgent, getActivity: () => activity, getUse: () => (agent ? agent.usingProp : null), setOnClick, setOnArcade, setOnOutbox, setOnMissionBoard, setOnTrophyCase, setOnPluginTerminal, setOnDesk, setOnBayAssign, setOnIntakeFeed, setOnIntakeSample, refit, pauseBridge, resumeBridge, linkState, _dbgSeedRun, _dbgAgeRun, _dbgReconcile, _dbgSweep, _dbgLinkState, _dbgDropBridge, _dbgCurveState, _dbgLoseCurveContext, _dbgLoseCanvases, _dbgCanvasLoss, _dbgKillStageContext, _dbgStageState, _dbgBeltLegibility, _dbgPropClientPoint, _dbgDeskClientPoint, _dbgSleep, _dbgUseProp, _dbgArrive, _dbgLeisure,
     // AGENT GROWTH: XpStore pushes pre-computed Xp.compute() snapshots here; pulseLevelUp fires
-    // the addressed body's gold ring. The colony headline is the top-bar STATION chip.
+    // the addressed body's gold ring. The colony headline is the top-bar KEEP chip.
     setXp: (agentId, a) => {
       if (a === undefined && (agentId == null || typeof agentId === 'object')) { a = agentId; agentId = agent && agent.id; }   // old one-arg shape
       const id = agentId || (agent && agent.id) || 'agent';
@@ -11158,7 +11161,7 @@ const World = (() => {
          _dbgLos      — ask the shipped sightline test about any two tiles (walls/doors of the real bake)
          _dbgSpacing  — the CLOSEST pair of placed bodies right now, in px + tiles, against the law's
                         threshold. `min >= personalPx` sampled every frame IS the no-overlap proof.
-         _dbgBeltWatch— who (if anyone) holds the station's single conveyor-watch claim, and every body's
+         _dbgBeltWatch— who (if anyone) holds the keep's single conveyor-watch claim, and every body's
                         remaining cooldown: the readout that tells a congregation from a coincidence. */
     _dbgLos: (ax, ay, bx, by) => losClear(ax | 0, ay | 0, bx | 0, by | 0),
     _dbgSpacing: () => {
@@ -11223,17 +11226,17 @@ const World = (() => {
       const front={x:Math.floor(p.x+p.w/2),y:p.y+p.h},back={x:front.x,y:p.y-1};
       const walkable=q=>geo.walkable(q.x,q.y,blocked);
       const route=walkable(front)&&walkable(back)?geo.path(front.x,front.y,back.x,back.y,blocked):null;
-      const anchor=isWorkstationProp(p.t)?deskSeat(p):u&&PropAnchor.deriveAnchor(p,geo,{approach:useApproach(u,p),sit:!!u.sit,extra:blocked});
-      const out={id:p.id,type:p.t,r:p.r||0,mirror:!!p.m,footprint:[p.w,p.h],canonical:[f.w,f.h],mount:station.mountOf(p),
-        kind:u?.kind||null,workstation:isWorkstationProp(p.t),front:walkable(front),back:walkable(back),route:route?route.length:null,
+      const anchor=isWorkkeepProp(p.t)?deskSeat(p):u&&PropAnchor.deriveAnchor(p,geo,{approach:useApproach(u,p),sit:!!u.sit,extra:blocked});
+      const out={id:p.id,type:p.t,r:p.r||0,mirror:!!p.m,footprint:[p.w,p.h],canonical:[f.w,f.h],mount:keep.mountOf(p),
+        kind:u?.kind||null,workkeep:isWorkkeepProp(p.t),front:walkable(front),back:walkable(back),route:route?route.length:null,
         floorFront:front,anchor:anchor||null,side:sideSeat(p),flat:!!s.flat,interaction:'none',motion:{spd:b.spd,odo:b.odo,odoAge:performance.now()-(b.odoAt||0),paused:fnow<(b.pauseUntil||0),frozen:awakeFrozen,activity,bodies:allBodies().length}};
       out.result={seated:!!b.seated,sitting:!!b.sitting,lying:!!b.lying,dir:b.dir,usingProp:b.usingProp||null,px:b.px,py:b.py,seatLift:b.seatLift||0,seatKey:b.seatKey||null};
       if(action==='inspect')return out;
-      if(action==='use'&&isWorkstationProp(p.t)){
+      if(action==='use'&&isWorkkeepProp(p.t)){
         // The generated working chair belongs to an assigned desk. Exercise
         // that real ownership path so the fixture never sits on a bare tile.
-        for(const q of geo.props)if(q.agentId===aid&&isWorkstationProp(q.t))station.assignPropAgent(q.id,'');
-        station.assignPropAgent(p.id,aid);rederive();
+        for(const q of geo.props)if(q.agentId===aid&&isWorkkeepProp(q.t))keep.assignPropAgent(q.id,'');
+        keep.assignPropAgent(p.id,aid);rederive();
       }
       const keep=self;self=b;
       try{
@@ -11252,8 +11255,8 @@ const World = (() => {
         }else if(u?.kind==='bed'){
           out.interaction='bed';out.planned=planBedSleep(now,p.id,zone);
           if(action!=='live'&&out.planned&&b.pendSeat){b.target=null;b.pathPts=null;arrive(now);}
-        }else if(isWorkstationProp(p.t)&&anchor){
-          out.interaction='workstation';const pt=seatFoot(anchor);b.px=pt.x;b.py=pt.y;stepCrewToSeat(b,anchor,16,now);out.planned=!!b.sitting;
+        }else if(isWorkkeepProp(p.t)&&anchor){
+          out.interaction='workkeep';const pt=seatFoot(anchor);b.px=pt.x;b.py=pt.y;stepCrewToSeat(b,anchor,16,now);out.planned=!!b.sitting;
         }else if(u&&anchor){
           out.interaction='approach';out.planned=setPathTo({x:anchor.tx,y:anchor.ty});
           if(out.planned){b.goal='use';b.usingProp=p.id;b.useFace=anchor.face;b.useSit=!!anchor.sit;b.target=null;b.pathPts=null;const pt=footOf(anchor.tx,anchor.ty);b.px=pt.x;b.py=pt.y;arrive(now);}
@@ -11293,7 +11296,7 @@ const World = (() => {
     // read-only snapshot of the live assembly — roles, slots, who has actually arrived, and the phase.
     _dbgGatherState: () => gatherStateSnapshot(),
     /* Which gate is actually holding the gathering back (or tearing it down)? gatheringBroken is an OR
-       of six conditions and a live station gives no clue which one fired — the first probe run saw the
+       of six conditions and a live keep gives no clue which one fired — the first probe run saw the
        assembly scatter within one tick and the only honest way to find out was to read them apart. */
     _dbgGatherGates: () => {
       const now = (typeof performance !== 'undefined') ? performance.now() : fnow;
@@ -11301,7 +11304,7 @@ const World = (() => {
       return {
         cursorPresent: cursorPresent(now), pageVisible: pageVisible(),
         heroTasked: activity === 'task', chatHot: chatHot(now),
-        attended: stationAttended(now), quietMs: Math.round(now - stationBusyAt),
+        attended: keepAttended(now), quietMs: Math.round(now - keepBusyAt),
         live: !!gathering, phase: gathering ? gathering.phase : null,
         party: bodies.length, planless: bodies.filter(b => b.gather == null).map(b => b.id),
         working: bodies.filter(b => b.working).map(b => b.id),
@@ -11398,9 +11401,9 @@ const World = (() => {
       try { return planCouchSit(performance.now(), p, tvId || null, face || 'north', zoneFor(b)); }
       finally { self = keep; }
     },
-    // read-only body snapshot for the DEV test harness (window.__SKYNET_TEST__) — the Tier A/B/C substrate.
+    // read-only body snapshot for the DEV test harness (window.__EYEHOLD_TEST__) — the Tier A/B/C substrate.
     // Pure read, no side effects: the hero + every crew body, each with tile/zone/glance/goal/moving so the
-    // floor invariants (idle stays in-zone · awareness is gaze-only · summoned walks to its OWN workstation)
+    // floor invariants (idle stays in-zone · awareness is gaze-only · summoned walks to its OWN workkeep)
     // can be auto-asserted instead of eyeballed. Mirrors dbg()'s clock (fnow) and helpers (tileOf/zoneFor).
     bodies: () => {
       const snap = (b, hero) => {
@@ -11442,10 +11445,10 @@ const World = (() => {
     // (simple single-agent floor) any placed workbench grants it. The run client sends this so the hero's run
     // gains shell ADDITIVELY on top of its default office (the room layout is the permission system, for the hero too).
     heroWorkbench: (agentId) => {
-      if (!station) return false;
-      const viaBay = (station.bayObjects && agentId) ? station.bayObjects(agentId) : [];
+      if (!keep) return false;
+      const viaBay = (keep.bayObjects && agentId) ? keep.bayObjects(agentId) : [];
       if (viaBay && viaBay.length) return viaBay.indexOf('workbench') >= 0;
-      return !!(station.propsByType && station.propsByType('workbench').length);
+      return !!(keep.propsByType && keep.propsByType('workbench').length);
     },
     // THE MOAT (FLOOR-REAL): the agent's REAL placed capability set — the EARNED reach the run client sends so the
     // sidecar grants exactly what's on the floor (dish→web · cabinet→files · workbench→terminal · notebook→memory ·
@@ -11453,11 +11456,11 @@ const World = (() => {
     // is never a dead wall) and CONNECTORS are account-level (added server-side), so both are excluded here — this is
     // purely the placed-on-top set. An equipped BAY governs; with no bay (the simple single-agent floor) every distinct
     // cap-prop placed anywhere is the hero's. Returns [{objectType}] room-object entries the sidecar appends as extras.
-    // QUEST-LOG read: honest floor counts for the station-arc quests (belts laid, portals placed). A pure
-    // projection of the live station doc — read-only, no caching, gates nothing.
-    stationCounts: () => {
-      if (!station || !station.doc) return { belts: 0, connectors: 0, liveRoute: 0 };
-      const d = station.doc() || {};
+    // QUEST-LOG read: honest floor counts for the keep-arc quests (belts laid, portals placed). A pure
+    // projection of the live keep doc — read-only, no caching, gates nothing.
+    keepCounts: () => {
+      if (!keep || !keep.doc) return { belts: 0, connectors: 0, liveRoute: 0 };
+      const d = keep.doc() || {};
       return {
         belts: d.belts ? Object.keys(d.belts).length : 0,
         connectors: d.props ? d.props.filter(p => p && p.t === 'connector_portal').length : 0,
@@ -11466,9 +11469,9 @@ const World = (() => {
         liveRoute: beltLiveSet ? Object.keys(beltLiveSet).length : 0
       };
     },
-    // the live station document (read-only) — the station-quest generator reads props[] to detect the
-    // OUTBOX / MISSION-BOARD standing gaps and to resolve a placement. Null when no station is loaded (headless).
-    stationDoc: () => (station && station.doc ? station.doc() : null),
+    // the live keep document (read-only) — the keep-quest generator reads props[] to detect the
+    // OUTBOX / MISSION-BOARD standing gaps and to resolve a placement. Null when no keep is loaded (headless).
+    keepDoc: () => (keep && keep.doc ? keep.doc() : null),
     renderStats: () => sceneRenderer ? sceneRenderer.stats() : { generation: 'classic' },
     // G1c — the live SlagLog ring (read-only): the most-recent wasted-spend post-mortems the floor has diagnosed.
     // The maintenance-quest generator (maintqueststore.js) tallies these by cause; a recurring cause mints a
@@ -11489,18 +11492,18 @@ const World = (() => {
       return { left: a.x, top: a.y, right: b.x, bottom: b.y, cx: c.x, cy: c.y };
     },
     heroCaps: (agentId) => {
-      if (!station) return [];
-      const viaBay = (station.bayObjects && agentId) ? station.bayObjects(agentId) : [];
+      if (!keep) return [];
+      const viaBay = (keep.bayObjects && agentId) ? keep.bayObjects(agentId) : [];
       const norm = o => (o && typeof o === 'object') ? o.objectType : o;   // bayObjects entries are strings or {objectType}
       // bayObjects() returns [] both for no bay and for a real but empty assigned room. The latter is still
-      // authoritative: use agentRoomId to preserve its empty scope instead of falling back station-wide.
+      // authoritative: use agentRoomId to preserve its empty scope instead of falling back keep-wide.
       let hasBay = false;
-      if (station.agentRoomId && agentId) {
-        try { hasBay = !!station.agentRoomId(agentId); } catch (_) { return []; }
+      if (keep.agentRoomId && agentId) {
+        try { hasBay = !!keep.agentRoomId(agentId); } catch (_) { return []; }
       }
       const src = (hasBay || (viaBay && viaBay.length))
         ? viaBay.map(norm)
-        : ((station.doc && station.doc().props) || []).map(p => (station.capForProp ? station.capForProp(p.t) : null));
+        : ((keep.doc && keep.doc().props) || []).map(p => (keep.capForProp ? keep.capForProp(p.t) : null));
       const out = [], seen = {};
       for (const cap of src) {
         if (!cap || cap === 'computer' || cap === 'connector' || cap === 'plugin') continue;   // compute = freebie; connectors = added server-side; plugins below
@@ -11508,26 +11511,26 @@ const World = (() => {
         out.push({ objectType: cap });
       }
       // PLUGIN TERMINALS are per-instance (like connector portals) and carry WHICH plugin they are: same room scope
-      // as above — the agent's room when it has one, else the station — one entry per bound plugin.
+      // as above — the agent's room when it has one, else the keep — one entry per bound plugin.
       const terminals = (hasBay || (viaBay && viaBay.length))
         ? viaBay.filter(o => o && typeof o === 'object' && o.objectType === 'plugin' && o.pluginId).map(o => o.pluginId)
-        : ((station.doc && station.doc().props) || []).filter(p => p && p.t === 'plugin_terminal' && p.pluginId).map(p => p.pluginId);
+        : ((keep.doc && keep.doc().props) || []).filter(p => p && p.t === 'plugin_terminal' && p.pluginId).map(p => p.pluginId);
       for (const pluginId of terminals) {
         if (seen['plugin:' + pluginId]) continue; seen['plugin:' + pluginId] = true;
         out.push({ objectType: 'plugin', pluginId });
       }
       return out;
     },
-    // STATION-WIDE gear (Class Loadouts shared-gear model): every capability objectType placed ANYWHERE on the
-    // station, deduped — the shared gear any agent draws on under the overseer, regardless of whose desk it is in.
-    // Used for SKILL availability only (a class's recipes need the station to have the gear, not the agent's own
+    // KEEP-WIDE gear (Class Loadouts shared-gear model): every capability objectType placed ANYWHERE on the
+    // keep, deduped — the shared gear any agent draws on under the overseer, regardless of whose desk it is in.
+    // Used for SKILL availability only (a class's recipes need the keep to have the gear, not the agent's own
     // room). Tool reach stays room-scoped via heroCaps. Returns [{objectType}] like heroCaps; [] on any hiccup.
-    stationCaps: () => {
-      if (!station) return [];
-      const props = (station.doc && station.doc().props) || [];
+    keepCaps: () => {
+      if (!keep) return [];
+      const props = (keep.doc && keep.doc().props) || [];
       const out = [], seen = {};
       for (const p of props) {
-        const cap = station.capForProp ? station.capForProp(p.t) : null;
+        const cap = keep.capForProp ? keep.capForProp(p.t) : null;
         if (!cap || cap === 'computer' || cap === 'connector') continue;   // compute = freebie; connectors = server-side
         if (seen[cap]) continue; seen[cap] = true;
         out.push({ objectType: cap });

@@ -9,7 +9,7 @@ focused campaign after the fast gate. The fast gate checks that this wiring rema
 ## Complete local execution journey
 
 `test/customer-journey.e2e.test.js` drives the production sidecar through five provider paths:
-managed StarNet, OpenRouter BYOK, custom compatible BYOK, native Gemini and Codex OAuth.
+managed Eyehold, OpenRouter BYOK, custom compatible BYOK, native Gemini and Codex OAuth.
 For each, save a roster/model and routine, connect using the real desktop key push seam
 (managed link and Codex token stores are fixtures), execute a sample, direct task and routine,
 perform a real filesystem tool call, send its result to a second inference, and require final
@@ -28,17 +28,17 @@ The focused campaign also exercises existing regressions:
 | Managed account mistaken for BYOK billing identity | Linked zero wallet permits BYOK without debit; managed request refuses |
 | Repair one adapter and miss siblings | OpenRouter/compatible/Codex malformed history; Gemini metadata; credential failover during compaction |
 | Output exists but is not delivered | Delegated worker to Commander session, channel ingress/reply, routine transcript |
-| Persistence proved without recovery | Saved routing restart, station recovery, expired OAuth, connector session recovery |
+| Persistence proved without recovery | Saved routing restart, keep recovery, expired OAuth, connector session recovery |
 | UI offers the wrong recovery | Tier catalog and connector state regressions |
 
 ## Live UI and release acceptance
 
-On an isolated seeded station (`node dev/seed.js --keep`), run
+On an isolated seeded keep (`node dev/seed.js --keep`), run
 `node dev/email-support-live-proof.mjs` with `EMAIL_PROOF_URL` and `EMAIL_PROOF_CDP` set
 to its local ports. It creates an ONCE routine through the DOM and injects lost acknowledgement,
 missing readback, stale arm-state and duplicate cases. It requires truthful messages and retained
 drafts. Restart the same seed with `--keep`; run the proof with `--restart` to require exactly
-one saved routine visible in Active Routines. Use a new scratch station for each campaign.
+one saved routine visible in Active Routines. Use a new scratch keep for each campaign.
 
 Local mocks establish harness behavior. They do not prove provider account allowance, a
 production relay deployment, OAuth login through a real account, OS keychain persistence,

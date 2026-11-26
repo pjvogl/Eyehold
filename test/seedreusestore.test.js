@@ -45,11 +45,11 @@ A.eq(tools[0].name, 'morning brief', 'the seed name is carried');
 A.eq(tools[0].runs, 6, 'lifetime run count is the honest total');
 
 /* ---------- persistence to its own key ---------- */
-A.ok(Object.prototype.hasOwnProperty.call(mem, 'starnet.seedreuse.v1'), 'it self-persists to its OWN key (no save.js change)');
+A.ok(Object.prototype.hasOwnProperty.call(mem, 'eyehold.seedreuse.v1'), 'it self-persists to its OWN key (no save.js change)');
 
 /* ---------- reset: a fresh Commander inherits no tally ---------- */
 SeedReuseStore.reset();
 A.eq(SeedReuseStore.livingTools().length, 0, 'reset wipes the shelf — a new Commander starts with no tool-usage history');
-A.eq(mem['starnet.seedreuse.v1'], undefined, '…and clears its persisted key');
+A.eq(mem['eyehold.seedreuse.v1'], undefined, '…and clears its persisted key');
 
 A.report('seedreusestore.test');

@@ -5,17 +5,17 @@ const fixture=SidecarFixture.create({entry:path.join(__dirname,'helpers/save-rea
 (async()=>{
  try {
   await fixture.start();
-  const body={id:'retained',label:'Retained',request:'A retained reading',display:'metric',source:{kind:'agent',id:'starnet'}};
+  const body={id:'retained',label:'Retained',request:'A retained reading',display:'metric',source:{kind:'agent',id:'eyehold'}};
   const created=await fixture.json('POST','/api/widgets/configure',body);
   assert.equal(created.status,200,JSON.stringify(created.body));
-  const file=path.join(fixture.workspace,'station.widgets.json'),control=path.join(fixture.workspace,'save-read-fault.json');
+  const file=path.join(fixture.workspace,'keep.widgets.json'),control=path.join(fixture.workspace,'save-read-fault.json');
   const original=fs.readFileSync(file,'utf8');
   for(const mode of ['primary','missing','empty','torn']){
    fs.writeFileSync(file,original);fs.writeFileSync(file+'.bak',original);
    if(mode==='missing')fs.unlinkSync(file);
    if(mode==='empty')fs.writeFileSync(file,'');
    if(mode==='torn')fs.writeFileSync(file,'{torn');
-   const target=mode==='primary'?'station.widgets.json':'station.widgets.json.bak';
+   const target=mode==='primary'?'keep.widgets.json':'keep.widgets.json.bak';
    fs.writeFileSync(control,JSON.stringify({file:target}));
    await fixture.json('GET','/api/widgets');
    const write=await fixture.json('POST','/api/widgets/configure',{...body,id:'must-not-replace'});

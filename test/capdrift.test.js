@@ -1,6 +1,6 @@
 /* test/capdrift.test.js — guards the prop⇄capability seam against silent drift.
    Three parallel structures describe "what a placed prop grants": the PropSprites CATALOG
-   (what the palette sells), WorldModel.CAP_PROP_MAP (what the station projects to the sidecar),
+   (what the palette sells), WorldModel.CAP_PROP_MAP (what the keep projects to the sidecar),
    and CAP_REGISTRY (what resolveTools actually grants). A prop present in one but missing from
    the next fails SILENTLY in the live app — the palette promises a power the run never gets.
    This test makes that drift fail HERE instead. */
@@ -26,10 +26,10 @@ for (const c of PS.CATALOG) {
   if (c.cat === 'capability') {
     A.ok(!!MAP[c.id], 'capability prop "' + c.id + '" is in CAP_PROP_MAP (grants something real)');
   }
-  if (c.cat === 'workstation') {
+  if (c.cat === 'workkeep') {
     const t = MAP[c.id];
     A.ok(t === 'computer' || t === 'workbench',
-      'workstation prop "' + c.id + '" projects compute or terminal (got ' + t + ')');
+      'workkeep prop "' + c.id + '" projects compute or terminal (got ' + t + ')');
   }
 }
 
@@ -42,7 +42,7 @@ for (const propId of Object.keys(MAP)) {
    orchestrator: conferred by role (the overseer), never by a placeable object.
    (jukebox is now a placeable grant via CAP_PROP_MAP — a placed JUKEBOX projects the spotify tools,
    inert until Spotify is connected in TOOLSETS — so it is reachable, not a conferral.)
-   Anything else unreachable = a grant family no station can ever earn = dead registry weight. */
+   Anything else unreachable = a grant family no keep can ever earn = dead registry weight. */
 const CONFERRED = ['orchestrator'];
 const reachable = new Set(Object.values(MAP));
 for (const t of REG_TYPES) {

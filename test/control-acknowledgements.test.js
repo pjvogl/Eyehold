@@ -1,6 +1,6 @@
 'use strict';
 const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm'),path=require('node:path');
-const ui=fs.readFileSync(path.join(__dirname,'../frontend/app/stationui.js'),'utf8');
+const ui=fs.readFileSync(path.join(__dirname,'../frontend/app/keepui.js'),'utf8');
 const messaging=fs.readFileSync(path.join(__dirname,'../frontend/app/windows/messaging.js'),'utf8');
 const handlers=[...ui.matchAll(/Harness\.api\.post\('\/api\/execution\/(?:policy|ssh|sync|cleanup)'[\s\S]*?\.catch\(\(\) => \{[^\n]*\}\);/g)].map(m=>m[0]);
 assert.equal(handlers.length,5,'all execution mutation handlers must be exercised');

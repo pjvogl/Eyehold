@@ -1,4 +1,4 @@
-/* STARNET — propsprites.js : the canonical PROP (furniture) art + catalog.
+/* EYEHOLD — propsprites.js : the canonical PROP (furniture) art + catalog.
 
    v7's sprites.js drew ~85 furniture pieces as detailed PROCEDURAL pixel art — outlined
    casings, 2–3 tone shading, contact shadows, and animated emissive bits (a TV cycling
@@ -12,7 +12,7 @@
      - draw(f, work) — blit one prop. f = {t, x, y, w, h} in LOCAL tile coords (the bake frame),
                   exactly like world.js's existing F_desk pass. Call setCtx()/setNow() per frame.
 
-   Props ANIMATE, so they are drawn per-frame OVER the static StationBake base and UNDER the
+   Props ANIMATE, so they are drawn per-frame OVER the static KeepBake base and UNDER the
    lightmap (so they're lit) — never baked. Depends only on the global `U` (util.js) + a 2D ctx.
    Headless-safe: requiring the module does nothing until setCtx() is called. */
 'use strict';
@@ -36,7 +36,7 @@ const PropSprites = (() => {
   let ctx = null, now = 0;
 
   /* ============ v13 LOCAL COLOUR — one knob over every pixel a prop paints ============
-     MEASURED, not guessed (gal/shot.mjs, 29 lounge/decor props on a live seeded station): the
+     MEASURED, not guessed (gal/shot.mjs, 29 lounge/decor props on a live seeded keep): the
      catalog's MEAN AUTHORED CHROMA is 28/255, and the render pipeline (ambient plate + room cut +
      CRT scan/fade/vig) delivers only **54%** of it to the screen — mean rendered chroma 15. The
      plants are the extreme: monstera authors 44 and renders 8. That is why a room full of props
@@ -78,7 +78,7 @@ const PropSprites = (() => {
      which lerps to white or black — so a desk's shadow side was the same hue with less light, and its
      highlight the same hue washed grey. Painted pixel art hue-shifts: shadow travels cool (toward
      blue-violet) and gains saturation; light travels warm (toward yellow) and thins. This is the same
-     helper the station bake uses, at exactly U.shade's lightness, so every tone relationship the
+     helper the keep bake uses, at exactly U.shade's lightness, so every tone relationship the
      props were authored on survives; only the colour of the step changes. Cached per (hex, f). */
   const HUE = { darkTo: 250, darkRot: 34, darkSat: 0.18, lightTo: 50, lightRot: 26, lightSat: 0.08 };
   const _shadeCache = new Map();
@@ -186,7 +186,7 @@ const PropSprites = (() => {
   const blink = (period, phase) => ((now / period + (phase || 0)) % 1) < 0.5;
   const flick = (period, phase) => Math.sin(now / period + (phase || 0) * 7);
   const scrCols = ['#62ff9e', '#3fd07c', '#7adfb0', '#2fa863'];
-  // Workstations west of world zero carry a negative x phase. JS remainder keeps the dividend's sign, so during
+  // Workkeeps west of world zero carry a negative x phase. JS remainder keeps the dividend's sign, so during
   // the first seconds after launch the old expression indexed scrCols[-N] and handed undefined to shade().
   // That exception killed REFIT's first animation frame; enough uptime (or DONE + reopen) made the phase positive
   // and the floor mysteriously returned. Normalize the index into [0,n) for every world coordinate and uptime.
@@ -315,7 +315,7 @@ const PropSprites = (() => {
   };
 
   /* ============ v2 OBLIQUE KIT ============
-     One projection law for every prop, matching the station bake (walls = lit TOP band +
+     One projection law for every prop, matching the keep bake (walls = lit TOP band +
      a south-facing FACE): a prop's footprint bottom edge IS its floor contact line; the
      body is drawn as a foreshortened TOP surface + a vertical FRONT face + legs/base that
      touch the floor, under one light (high + slightly west, like the walls). Bodies use
@@ -326,7 +326,7 @@ const PropSprites = (() => {
      glow-up props already use, so the whole catalog reads as one room. */
   const LINE = '#161d22';                        // universal silhouette outline
   /* casings are toned DOWN ~15% (sheen rows 20%) from the authoring values so props sit inside the
-     station's dim CRT lighting instead of popping against it — a locked pre-merge call. Emissives
+     keep's dim CRT lighting instead of popping against it — a locked pre-merge call. Emissives
      and ACC accents keep full brightness; only the body ramps dim. */
   const dim = (c, k) => {   // module-load-safe darken (U isn't defined under a bare Node require)
     k = k || -0.15;
@@ -340,7 +340,7 @@ const PropSprites = (() => {
     fabric:styledRamp({ top: dim('#46565f'), face: dim('#39464e'), lit: dim('#5a6b75'), sheen: dim('#70828c', -0.2), dk: dim('#28323a'), ao: dim('#141b20') }, UPHOLSTERY),
   };
   /* ============ v12 MATERIAL — the same hue, the WHOLE value range ============
-     Measured, not guessed. The crew sprites (assets.js, the art this station already ships and is
+     Measured, not guessed. The crew sprites (assets.js, the art this keep already ships and is
      judged against) run a 218-of-255 luma spread. Every prop in this file runs RAMP.steel, whose
      BRIGHTEST stop — `sheen` — is luma 110. So a prop's entire range lives in the bottom 43% of the
      scale, and the near-black LINE it is outlined with has nothing bright to contour. That is why a
@@ -396,7 +396,7 @@ const PropSprites = (() => {
        lounge keeps the colour it already had. Chroma is left LOW on purpose — this material is meant
        to sit quietly in the room, and the couch is a five-tile mass. */
     fabric: styledRamp(MX('#46565f', 1.00), UPHOLSTERY),  // upholstery — the catalog's own blue-grey
-    /* ⛔ A WARM BROWN SEAT READS AS WOOD, AND A WOODEN CHAIR HAS NO PLACE ON THIS STATION.
+    /* ⛔ A WARM BROWN SEAT READS AS WOOD, AND A WOODEN CHAIR HAS NO PLACE ON THIS KEEP.
        ⛔ LIGHT SILVER, AND NOT VIA MX (2026-08-16, Andrew's call — the teal is gone entirely).
        This is authored by hand rather than built from MX because MX anchors `face` at L 0.235, and
        `face` is the chair's dominant surface: any base colour run through it comes out DARK, which is
@@ -405,7 +405,7 @@ const PropSprites = (() => {
        short of white, so it still takes shading instead of blowing out.
        ⛔ SEPARATION IS BY VALUE, NOT HUE. A dark graphite chair landed on the desk's own mid band and
        vanished, which is what sent this to teal in the first place. Sitting ABOVE the desk's band
-       solves it the other way round, and keeps the station monochrome.
+       solves it the other way round, and keeps the keep monochrome.
        ⛔ `ink` STAYS DARK. It is the contour; lifting it with the rest would erase the silhouette. */
     seat: { ink: '#333a3f', ao: '#454d52', dk: '#5b6469', face: '#8f989e', top: '#9ea7ad',
             mid: '#adb6bb', lit: '#bdc5ca', hi: '#ccd3d7', sheen: '#dae0e3', spec: '#dae0e3' },
@@ -414,7 +414,7 @@ const PropSprites = (() => {
   /* ---- v12 surface kit: the Starbound-grade marks, each riding the value structure ---- */
   // a bolt/rivet head: lit crown + dark seat. TWO pixels, but it is the two that make metal read.
   const boltH = (bx, by, r2) => { px(bx, by, 1, 1, r2.hi); px(bx, by + 1, 1, 1, r2.ao); };
-  // a panel seam: dark groove with a lit lip ABOVE it (light falls from the north in this station)
+  // a panel seam: dark groove with a lit lip ABOVE it (light falls from the north in this keep)
   const seamLit = (sx, sy, sw2, r2) => { px(sx, sy, sw2, 1, r2.ao); px(sx, sy - 1, sw2, 1, r2.mid); };
   const seamLitV = (sx, sy, sh2, r2) => { px(sx, sy, 1, sh2, r2.ao); px(sx - 1, sy, 1, sh2, r2.mid); };
   // brushed grain that RIDES the row it lands on instead of replacing it with a fixed tint
@@ -531,7 +531,7 @@ const PropSprites = (() => {
      v3 locked PROJECTION and SILHOUETTE and is NOT reopened here. v4 only fixes what v3 left flat —
      MATERIAL and LIGHT — so footprints, the oblique law, and the bolted-to-deck language all stand:
        (1) TWO-TONE LIGHT. A prop lit by one white lamp reads flat no matter how many tones its ramp
-           has. Real metal takes a WARM key off the station's ceiling strips (high + west) on its lit
+           has. Real metal takes a WARM key off the keep's ceiling strips (high + west) on its lit
            edges and a COOL sky bounce on its shade edges. keyEdge/rimEdge are 1px washes that add
            that split on top of the existing ramp instead of replacing it.
        (2) FALLOFF EMISSIVES. glow() stamps one flat alpha rect, which reads as a translucent sticker.
@@ -540,13 +540,13 @@ const PropSprites = (() => {
        (3) BOLDER SILHOUETTE. rr() cuts 1px corners — at 12px tiles that still reads as a lozenge.
            chamf() cuts k px (default 2) so a body can be genuinely chamfered, and cable() hangs a
            real sagging line, which is the cheapest way to break a boxy outline. */
-  const KEY = '#ffe0b0';                         // warm key — the station's ceiling strips, west-biased
+  const KEY = '#ffe0b0';                         // warm key — the keep's ceiling strips, west-biased
   const SKY = '#7fb4d8';                         // cool sky bounce — fills the shade side
   const keyEdge = (x, y, w, h, a) => { ctx.globalAlpha = a == null ? 0.22 : a; px(x, y, w, h, KEY); ctx.globalAlpha = 1; };
   const rimEdge = (x, y, w, h, a) => { ctx.globalAlpha = a == null ? 0.24 : a; px(x, y, w, h, SKY); ctx.globalAlpha = 1; };
 
   // Equipment finish: cold rolled steel with a satin face and a bright machined edge.
-  // Scoped to workstation/capability bodies; upholstery and decorative furniture keep their ramps.
+  // Scoped to workkeep/capability bodies; upholstery and decorative furniture keep their ramps.
   const EQUIPMENT = styledRamp({ ink:'#26313b', ao:'#111922', dk:'#29343e', face:'#475560', top:'#647580', mid:'#7b8c95', lit:'#a6b5bc', hi:'#c9d4d7', sheen:'#dde5e5', spec:'#dde5e5' }, ARMOR);
   const INSTRUMENT = styledRamp({ ink:'#1b242e', ao:'#0e141c', dk:'#222f3b', face:'#33434e', top:'#4b5d69', mid:'#697f8b', lit:'#8fa4af', hi:'#b5c6cd', sheen:'#d2dfe3', spec:'#d2dfe3' }, CHASSIS);
   const panelFinish = (x,y,w,h,r) => {
@@ -720,7 +720,7 @@ const PropSprites = (() => {
     // --- HEADER BAND: a title block of word-shapes + a right-hand lamp cluster ---
     px(gx, gy, gw, 2, on ? '#0b2630' : '#08181e');
     let tw = gx + 2;
-    for (const k of [5, 3, 7, 4]) { px(tw, gy, k, 1, dc(ACC.data, -0.55)); tw += k + 2; }   // "STATION FEED"
+    for (const k of [5, 3, 7, 4]) { px(tw, gy, k, 1, dc(ACC.data, -0.55)); tw += k + 2; }   // "KEEP FEED"
     px(gx + 2, gy + 1, 22, 1, dc(shade(ACC.data, -0.45), -0.6));  // subtitle rule under the title
     for (let i = 0; i < 3; i++)
       px(gx + gw - 8 + i * 3, gy, 2, 1, blink(700 + i * 210, i + ph) ? dc(i === 2 ? ACC.flow : ACC.work, -0.5) : '#123028');
@@ -863,7 +863,7 @@ const PropSprites = (() => {
   F.holotable = (x, y, w, h, f) => {
     // HOLOTABLE (4x2) — v4. The other props in this family are LIT SURFACES; this one is a lit VOLUME, so
     // the differentiator is a real emitter ring in the well and a visible projection cone carrying light up
-    // to a station hologram floating above the slab. Cyan lives in the light only; the table stays steel.
+    // to a keep hologram floating above the slab. Cyan lives in the light only; the table stays steel.
     const r = RAMP.steel, ph = (f && f.x) || 0, on = !!(f && f.work);
     const g0 = on ? 1 : 0.55;                                      // idle still projects, just weaker
     shadow2(x + 3, y + h - 1, w - 6);
@@ -917,7 +917,7 @@ const PropSprites = (() => {
     ctx.beginPath(); ctx.moveTo(wx + 4, wy + 1); ctx.lineTo(hcx - 9, hcy + 1);
     ctx.lineTo(hcx + 9, hcy + 1); ctx.lineTo(wx + ww - 4, wy + 1); ctx.closePath(); ctx.fill();
     ctx.restore();
-    // the hologram itself: a station core with wings, an orbit ring and one blip running it
+    // the hologram itself: a keep core with wings, an circuit ring and one blip running it
     const gA = (0.42 + 0.24 * Math.sin(now / 400 + ph)) * g0;
     ctx.globalAlpha = gA;
     px(hcx - 8, hcy - 1, 16, 2, ACC.data);                         // main ring/hull bar
@@ -1246,11 +1246,11 @@ const PropSprites = (() => {
   };
 
   F.bench = (x, y, w, h, f) => {
-    /* v45 WORK BENCH (4x1) — a long shared bench: TWO unlike stations with genuinely empty deck
+    /* v45 WORK BENCH (4x1) — a long shared bench: TWO unlike keeps with genuinely empty deck
        between them, on one continuous top.
        ⛔ 48px OF ANYTHING IS A HORIZON UNLESS YOU BREAK ITS RHYTHM, and the strongest break available
           is EMPTY SPACE. The gap in the middle does more work than any amount of kit would.
-       ⛔ THE TWO STATIONS MUST BE UNLIKE — a screen-and-keyboard post at one end, a stacked terminal
+       ⛔ THE TWO KEEPS MUST BE UNLIKE — a screen-and-keyboard post at one end, a stacked terminal
           with a bar-graph at the other. Two of the same thing reads as a repeated tile.
        ⛔ FOUR LEGS, and the middle pair carries a stretcher rail, or a bench this long sags visually. */
     const r = EQUIPMENT, b = INSTRUMENT, s = MAT.seat, on = !!f.work, ph = f.x || 0;
@@ -1282,7 +1282,7 @@ const PropSprites = (() => {
     px(x + 16, y - 2, 1, 7, r.ink); px(x + 17, y - 2, 1, 7, r.mid);      // the top's own seam
     px(x + 31, y - 2, 1, 7, r.ink); px(x + 32, y - 2, 1, 7, r.mid);
 
-    /* ---- STATION A (west): screen on a stand + keyboard ---- */
+    /* ---- KEEP A (west): screen on a stand + keyboard ---- */
     equipmentApron(x, y + 5, w, r);
     const mX = x + 2, mW = 12, mT = y - 13;
     px(mX + 5, y - 4, 2, 3, b.face); px(mX + 5, y - 4, 1, 3, b.top);
@@ -1307,7 +1307,7 @@ const PropSprites = (() => {
     /* ---- THE GAP (x+17 .. x+31): deliberately empty deck. Only a coil of cable on the top. ---- */
     px(x + 21, y + 1, 5, 1, r.dk); px(x + 22, y, 3, 1, r.mid);
 
-    /* ---- STATION B (east): a stacked terminal with a bar-graph, no keyboard ---- */
+    /* ---- KEEP B (east): a stacked terminal with a bar-graph, no keyboard ---- */
     const tX = x + 33, tW = 12, tT = y - 11;
     px(tX, tT, tW, 10, b.ink);
     px(tX + 1, tT + 1, tW - 2, 2, b.lit); px(tX + 2, tT + 1, 4, 1, b.hi);
@@ -1325,10 +1325,10 @@ const PropSprites = (() => {
   };
 
   F.desk = (x, y, w, h, f) => {
-    if (typeof IndustrialTextures !== 'undefined' && IndustrialTextures.workstation(ctx, x, y, w, h, 's', { ...f, now })) return;
-    /* v43 WORKSTATION — the desk is EXACTLY as it was (v19 body: slab, apron, legs, PC tower,
+    if (typeof IndustrialTextures !== 'undefined' && IndustrialTextures.workkeep(ctx, x, y, w, h, 's', { ...f, now })) return;
+    /* v43 WORKKEEP — the desk is EXACTLY as it was (v19 body: slab, apron, legs, PC tower,
        monitor, keyboard). The ONLY change is the chair.
-       ⛔ CHAIR CHANGES ONLY. The v42 pass rebuilt the whole workstation off the reference and Andrew
+       ⛔ CHAIR CHANGES ONLY. The v42 pass rebuilt the whole workkeep off the reference and Andrew
           pulled it back: the desk was already right, and reworking things that are already approved
           is how a session burns an hour for nothing. */
     const r = EQUIPMENT, b = INSTRUMENT, s = MAT.seat, on = !!f.work, ph = f.x || 0;
@@ -1423,8 +1423,8 @@ const PropSprites = (() => {
   };
 
   F.desk2 = (x, y, w, h, f) => {
-    if (typeof IndustrialTextures !== 'undefined' && IndustrialTextures.workstation(ctx, x, y, w, h, 's', { ...f, now })) return;
-    /* v45 DUAL WORKSTATION (2x1) — the desk's slab and chair, but TWO screens on a shared crossbar
+    if (typeof IndustrialTextures !== 'undefined' && IndustrialTextures.workkeep(ctx, x, y, w, h, 's', { ...f, now })) return;
+    /* v45 DUAL WORKKEEP (2x1) — the desk's slab and chair, but TWO screens on a shared crossbar
        and no tower. Six props grant COMPUTE and they must differ by what is ON the desk, since the
        slab underneath is the same piece of furniture in every one of them.
        ⛔ TWO SCREENS MUST NOT BE ONE WIDE SCREEN. A visible gap plus separate bezels and a crossbar
@@ -1488,12 +1488,12 @@ const PropSprites = (() => {
   };
 
   F.pixelrig = (x, y, w, h, f) => {
-    /* v45 PIXEL RIG (2x1) — the art station. Same slab and chair as the desk; what makes it a
+    /* v45 PIXEL RIG (2x1) — the art keep. Same slab and chair as the desk; what makes it a
        different prop is the KIT ON IT: one wide screen pushed back, a big TILTED DRAWING TABLET
        taking the whole front of the desk, and a stylus in a cradle.
        ⛔ THE TABLET IS THE TELL AND IT MUST BE TILTED. A flat rectangle on a desk is a mousemat; a
           wedge stepping in one pixel per row is a drawing surface angled toward the user.
-       ⛔ ITS ACCENT IS MAGENTA (ACC.lounge), not the workstation green — the one prop in COMPUTE that
+       ⛔ ITS ACCENT IS MAGENTA (ACC.lounge), not the workkeep green — the one prop in COMPUTE that
           makes pictures should not glow the same colour as the ones that make text. */
     const r = EQUIPMENT, b = INSTRUMENT, s = MAT.seat, on = !!f.work, ph = f.x || 0;
     const P = ACC.lounge;
@@ -1814,7 +1814,7 @@ const PropSprites = (() => {
     rimEdge(x + 9, y - 7, 1, 6, 0.14);                               // cool sky on the shade side of the tower
     px(x + 9, y + 2, 2, 2, '#1f5228'); px(x + 10, y + 4, 1, 2, '#1f5228');   // one tendril flopping over the rim
     // NO status lamp. A blinking cyan "bioluminescent bud" floated one pixel clear of the tallest blade, so it
-    // read as a free-standing indicator light hovering over a houseplant. Emissive blinks are this station's
+    // read as a free-standing indicator light hovering over a houseplant. Emissive blinks are this keep's
     // TELEMETRY vocabulary (connector state, workbench pulse, cap surges) — spending it on a pot plant both
     // lies about the object and dilutes the lamps that carry real state. The sway is the only motion a planter
     // earns, because air handling is a mechanism that actually exists here.
@@ -2007,7 +2007,7 @@ const PropSprites = (() => {
        v4 was a pure FRONT ELEVATION: no top plane anywhere, the picture you get crouching in front
        of a tank. v5 over-corrected into an almost pure PLAN — ten rows of surface over a three-row
        sliver of glass — and Andrew's read was that it looked weird and made no sense. He is right:
-       ⛔⛔⛔ A PLAN VIEW OF A TANK IS A PUDDLE. A glass box at this station's 3/4 camera shows BOTH
+       ⛔⛔⛔ A PLAN VIEW OF A TANK IS A PUDDLE. A glass box at this keep's 3/4 camera shows BOTH
        of its faces, and the tank's whole subject lives in the TALLER one:
          · a FORESHORTENED SURFACE PLANE across the top — that is the 3/4, and it is exactly what v4
            had none of: you look DOWN onto the water and onto the hood;
@@ -2309,7 +2309,7 @@ const PropSprites = (() => {
     // COMMS WALL (6x1, blocks:FALSE) — v4 REBUILD. The CATALOG says agents walk in FRONT of this, so the old
     // freestanding rack-row on stub feet was simply wrong: it is now a SHALLOW bulkhead unit hung off lugs,
     // casting onto the wall, never touching the deck. 72px is far too long for one motif stamped ten times,
-    // so the span carries three DIFFERENT stations west->east — a patch bay where channels land, the QUEUE
+    // so the span carries three DIFFERENT keeps west->east — a patch bay where channels land, the QUEUE
     // glass in the middle (the hero, by area not brightness), and a channel stack that dispatches. One packet
     // crosses the whole run on the conduit rail; that is what makes it read as ONE bus instead of three props.
     const r = RAMP.steel, ph = (f && f.x) || 0, on = !!(f && f.work);
@@ -2326,10 +2326,10 @@ const PropSprites = (() => {
     rimEdge(x + w - 1, bt + 2, 1, bh - 4, 0.22);                  // cool sky bounce down the shade side
     px(x + 2, bt + bh - 2, w - 4, 1, shade(r.face, -0.26));
     px(x + 2, bt + bh - 1, w - 4, 1, r.ao);                       // shallow underside, NOT a floor line
-    // CONDUIT RAIL — the only element that crosses all three stations
+    // CONDUIT RAIL — the only element that crosses all three keeps
     px(x + 2, bt + 2, w - 4, 2, '#0e1a17');
     px(x + 2, bt + 2, w - 4, 1, shade(r.face, -0.42));
-    for (let i = 0; i < 4; i++) {                                 // junction boxes at the station seams
+    for (let i = 0; i < 4; i++) {                                 // junction boxes at the keep seams
       const jx = x + 4 + i * 17;
       px(jx, bt + 1, 4, 4, LINE); px(jx + 1, bt + 2, 2, 2, shade(r.face, 0.10));
       px(jx + 1, bt + 2, 2, 1, r.lit);
@@ -2394,7 +2394,7 @@ const PropSprites = (() => {
   };
 
   F.console = (x, y, w, h, f) => {
-    /* v45 OPS CONSOLE (2x1) — the instrument station. The thing that separates it from the desk is
+    /* v45 OPS CONSOLE (2x1) — the instrument keep. The thing that separates it from the desk is
        that its readout is BUILT IN, not stood on top: a raised instrument bank across the back of
        the slab, a recessed CRT sunk into that bank, and physical dials and toggles on the working
        surface. A desk is furniture you put a monitor ON; a console IS the instrument.
@@ -2821,7 +2821,7 @@ const PropSprites = (() => {
   };
 
   F.beltH = (x, y, w, h) => {
-    // CONVEYOR — a FLOOR-FLAT belt segment carrying work boxes between stations (walk-level deck
+    // CONVEYOR — a FLOOR-FLAT belt segment carrying work boxes between keeps (walk-level deck
     // hardware, integral to the floor — no separate plate). Moving tread + hazard ends + a drive-motor
     // indicator. Bolder restyle in the RAMP/ACC language, matched to conveyor.js's live-belt look.
     const r = RAMP.steel;
@@ -2931,7 +2931,7 @@ const PropSprites = (() => {
     if (act || cyc > 0.86) bloom(x + 4, y - 4, 16, 9, ACC.flow, act ? 0.20 + 0.06 * Math.sin(now / 300) : 0.10);
     else glow(x + 4, y - 4, 16, 9, ACC.flow, 0.05);                // never a dead black hole when idle
 
-    /* ---- cyan SIGNAL MAST: the station is LISTENING ---- */
+    /* ---- cyan SIGNAL MAST: the keep is LISTENING ---- */
     const ax = x + w - 3, ping = blink(640, ph);
     px(ax, y + 2, 1, 10, r.dk); px(ax - 1, y + 2, 3, 1, r.lit); px(ax, y + 7, 1, 1, r.sheen);
     px(ax, y + 1, 1, 1, ping ? '#7df0ff' : shade(ACC.data, -0.55));
@@ -3206,7 +3206,7 @@ const PropSprites = (() => {
     // flat outlined slab. It is now a WALL-HUNG briefing frame: chamfered slate carcass on two lugs, a
     // recessed cork well, a phosphor header and a rail of pinned cards. Every card stub is ONE real open
     // quest (f.pins), so the COUNT leads — the cards stay plain paper rectangles at an even pitch and the
-    // header prints the number outright. f.hot = a station-gap quest is open, f.jam = a routine is backed
+    // header prints the number outright. f.hot = a keep-gap quest is open, f.jam = a routine is backed
     // up, f.proposals = agent-pinned requisitions. Click -> QUEST LOG.
     const r = RAMP.gun, ph = (f && f.x) || 0;
     const pins = Math.max(0, (f && f.pins) | 0);
@@ -3271,7 +3271,7 @@ const PropSprites = (() => {
       px(x + 6, bt + 12, w - 12, 1, '#202b21'); px(x + 6, bt + 14, w - 18, 1, '#1c2620');
       px(x + w - 7, bt + 12, 1, 1, blink(2200, ph) ? '#3a4a3e' : '#222d24');  // one bare pin left in the board
     }
-    // BEACON: a station-gap quest is OPEN — the frame breathes gold. Slow and gentle: a state, not an event.
+    // BEACON: a keep-gap quest is OPEN — the frame breathes gold. Slow and gentle: a state, not an event.
     if (f && f.hot) {
       const b = 0.09 + 0.07 * (0.5 + 0.5 * Math.sin(now / 420));
       bloom(x, bt, w, bh, '#e8c860', b);
@@ -3335,7 +3335,7 @@ const PropSprites = (() => {
     px(x + 2, top + 1, w - 4, 1, '#463a29'); keyEdge(x + 2, top + 1, 7, 1, 0.30);
     // COMMANDER JOURNEY CROWN — a permanent physical transformation, not an unlock. Each stage means one
     // distinct goal id whose final goal-arc milestone was verified. Four cells fill first; later goals deepen
-    // the crown's halo in four-goal waves so long-lived stations keep changing instead of hitting a dead cap.
+    // the crown's halo in four-goal waves so long-lived keeps keep changing instead of hitting a dead cap.
     const js = Math.max(0, (f && f.journeyStage) | 0), journeyShown = Math.min(4, js);
     const wave = js > 4 ? Math.floor((js - 1) / 4) : 0, waveFill = js > 4 ? ((js - 1) % 4) + 1 : 0;
     for (let i = 0; i < 4; i++) {
@@ -4362,7 +4362,7 @@ const PropSprites = (() => {
     px(x, y + h - 11, 1, 5, shade(r.face, 0.08)); px(x + w - 1, y + h - 11, 1, 5, r.dk);
     rimEdge(x + w - 1, y + h - 11, 1, 5, 0.20);
     px(x, y + h - 7, w, 1, r.ao);
-    // two operator stations on the face: a rose contact bank west, an amber tasking bank east (kept blinks)
+    // two operator keeps on the face: a rose contact bank west, an amber tasking bank east (kept blinks)
     inset(x + 7, y + h - 11, 8, 3, '#241218');
     for (let i = 0; i < 3; i++) px(x + 8 + i * 2, y + h - 10, 1, 1, blink(500, i + ph) ? ROSE : '#3a2030');
     inset(x + w - 15, y + h - 11, 8, 3, '#241218');
@@ -4625,11 +4625,11 @@ const PropSprites = (() => {
           HORIZONTAL IS A 1px LINE, FROM ABOVE EVERY HORIZONTAL IS A PLANE.
        ⛔ IT WAS TOO TALL. 38 rows over a 12px-deep footprint made it the tallest thing in any room
           it landed in and it read as a wall; 26 reads as a rack.
-       The contents stay STATION HARDWARE — cases, collared canisters, drive units, cartridges, all
+       The contents stay KEEP HARDWARE — cases, collared canisters, drive units, cartridges, all
        of them countable steel — but every one now carries a lit TOP, standing on the far edge of a
        board whose own top surface shows in front of it. ⛔ Binders were tried here and cut: coloured
        book spines turn a bolted equipment rack into library furniture, and this prop is FILES the
-       capability, not files the stationery. */
+       capability, not files the keepery. */
     const r = EQUIPMENT, br = MAT.brass, on = !!(f && f.work);
     const base = y + h, top = base - 26;
     const G = ACC.work;
@@ -4844,7 +4844,7 @@ const PropSprites = (() => {
       px(tk - 1, y - 2, 1, 1, '#7a8894');                               // spout
     }
     if ((now % 2400) < 200) px(tx + 3, y - 1, 1, 1, '#ffd9a0');         // a drip off the middle tap
-    // ---- SERVICE ON THE COUNTER. Grouped west / centre / east so it reads as three stations, not litter.
+    // ---- SERVICE ON THE COUNTER. Grouped west / centre / east so it reads as three keeps, not litter.
     px(x + 5, y - 1, 3, 4, '#8a98a8'); px(x + 5, y - 1, 3, 1, BRS); px(x + 5, y - 1, 1, 4, '#c2ced6');  // can
     px(x + 10, y, 2, 3, '#7adfd0'); px(x + 10, y - 1, 2, 1, '#3a6a62'); px(x + 10, y, 1, 3, '#bffff2');  // bottle
     chamf(x + Math.round(w / 2) - 4, y + 1, 8, 3, '#1c2426', 1);        // bar mat
@@ -5428,7 +5428,7 @@ const PropSprites = (() => {
     // BED (2x2) — v7, drawn FLAT, from above. v6 stood it up: a tall headboard, a tall footboard and
     // the bedding as flat frontal bands between them, so it read as a framed picture leaning against
     // the wall rather than a bed lying on the deck. Andrew rejected it outright, and the diagnosis is
-    // the same one that condemned the tables — the station camera looks DOWN, so a bed is a big
+    // the same one that condemned the tables — the keep camera looks DOWN, so a bed is a big
     // horizontal SURFACE with a short south face and legs under it, not an elevation.
     //
     // That also happens to be the Minecraft read he asked for, which is no coincidence: that bed is
@@ -5436,7 +5436,7 @@ const PropSprites = (() => {
     // the rest — inside a thin timber rim, with four stubby corner posts. No headboard at all. The
     // frame is trim, never the subject; v6 gave the frame nine rows of headboard and it ate the bed.
     //
-    // The catalog id stays 'bunk': saved stations carry the type string, and retiring a type strands
+    // The catalog id stays 'bunk': saved keeps carry the type string, and retiring a type strands
     // an invisible obstacle in them (the v5 lane law). Only the LABEL is BED.
     const sT = y + h - 8, bx = x + 3, bw = w - 6;                        // south face top / bedding span
     shadow2(x + 1, y + h - 1, w - 2);
@@ -5494,12 +5494,12 @@ const PropSprites = (() => {
     px(x + 1, sT + 5, w - 2, 1, shade(WD_DK, -0.34));                 // floor-line AO under the rail
   };
 
-  /* v5 RUG (4x3) — the station's biggest FLOOR DECAL. Zero rise, ever.
+  /* v5 RUG (4x3) — the keep's biggest FLOOR DECAL. Zero rise, ever.
      The whole point of this prop is that it is IN the ground plane: no oblique body, no front face, no
      contact shadow. It's the largest walked-over surface in the game, so any 3D read here would make
      every agent that crosses it look like it is clipping through furniture.
 
-     v4 was slate-on-slate — the same value and hue as the deck it lies on, so at station zoom it read as
+     v4 was slate-on-slate — the same value and hue as the deck it lies on, so at keep zoom it read as
      a patch of dirty floor rather than as textile. v5 fixes that with VALUE and MATERIAL, not with
      pattern: a warm oxblood wool against a cold deck, and the rug's read carried by pile and wear.
 
@@ -5508,7 +5508,7 @@ const PropSprites = (() => {
      palette is muted and matte, and it was rejected on sight. So v5 holds ONE narrow value band: nothing
      lighter than ~+8% or darker than ~-14% of its own base, no white, no second hue, no border teeth and
      no fringe ticks. The medallion is an OUTLINE at +8%, half-erased by the traffic path over it — a rug
-     you notice the second time you look, which is what everything else in this station does. */
+     you notice the second time you look, which is what everything else in this keep does. */
   const RUG_BASE = '#54332e', RUG_RIM = '#472b27';
   F.rug = (x, y, w, h, f) => {
     const INK = shade(RUG_BASE, -0.13), PALE = shade(RUG_BASE, 0.08);
@@ -5690,7 +5690,7 @@ const PropSprites = (() => {
 
   F.seatchair = (x, y, w, h, f) => {
     if (typeof IndustrialTextures !== 'undefined' && IndustrialTextures.chair(ctx, x, y, w, h)) return;
-    /* SEAT CHAIR (1x1) — the chair world.js draws at a workstation seat. NOT in the CATALOG, so the
+    /* SEAT CHAIR (1x1) — the chair world.js draws at a workkeep seat. NOT in the CATALOG, so the
        PLACEABLE chair prop (F.chair) keeps its shipped art untouched.
        ⛔ THIS IS F.chair's SILHOUETTE, PIXEL FOR PIXEL. Only the MATERIAL changed. Two rewrites failed
           before this: one baked the chair into the desk sprite (the sitter sorts a tile south, so the
@@ -5740,8 +5740,8 @@ const PropSprites = (() => {
   F.chair = (x, y, w, h, f) => {
     if (typeof IndustrialTextures !== 'undefined' && IndustrialTextures.chair(ctx, x, y, w, h)) return;
     // CHAIR — the renderer draws this at EVERY agent's seat, so it appears more often than any other prop
-    // on the station. It is therefore deliberately QUIET: no emissives, no accent LEDs, no bloom. Its only
-    // job is to sit next to a workstation and never compete with it. v4 adds material (chrome stem, warm
+    // on the keep. It is therefore deliberately QUIET: no emissives, no accent LEDs, no bloom. Its only
+    // job is to sit next to a workkeep and never compete with it. v4 adds material (chrome stem, warm
     // crown / cold flank on the pad) and nothing louder.
     if (f && f.big) {   // command throne (kept branch)
       ctx.globalAlpha = 0.22; px(x + 2, y + 9, 9, 2, '#000'); ctx.globalAlpha = 1;
@@ -5925,7 +5925,7 @@ const PropSprites = (() => {
      should never be one: the moment tables disagree on height, every mounted prop needs a lookup. */
   /* THE THREE TABLES ARE DRAWN TOP-DOWN. v6 drew all three EDGE-ON — you saw the front lip of the
      top as a 3-4px band with legs under it, which is the view you get standing at eye level beside a
-     table. This station is TOP-BIAS OBLIQUE: the camera looks DOWN, so a table's whole subject is its
+     table. This keep is TOP-BIAS OBLIQUE: the camera looks DOWN, so a table's whole subject is its
      TOP SURFACE, drawn as a foreshortened plane, with only a short thickness and legs beneath it.
      Andrew rejected all three on exactly this ("set up as if you're looking at it at eye level, which
      you're not") and approved the crate and the bar, both of which lead with a big top plane — as do
@@ -6610,7 +6610,7 @@ const PropSprites = (() => {
        POD CHAIR   — ROUND. A deep moulded bucket on a swivel pedestal, opening toward whatever it
                      faces. Lounge furniture: soft, warm-cushioned, no hard edge on it anywhere.
      ⛔ TWO EARLIER ATTEMPTS AT A SECOND SEAT WERE CUT ON SIGHT — a hooped brass cafe chair (fragile
-        at this size and furniture from the wrong planet) and a harnessed crash seat. This station's
+        at this size and furniture from the wrong realm) and a harnessed crash seat. This keep's
         seating is MOULDED: a rigid shell with something soft set into it. When one design in a pair
         lands and the others do not, the survivor is the brief. */
 
@@ -6821,7 +6821,7 @@ const PropSprites = (() => {
   /* ---- THE GUITAR (2026-08-17) — the last casual prop, and ELECTRIC on Andrew's call. Everything
      else built today is FURNITURE: things a room is arranged around. This is the opposite kind of
      object and that is its whole job — one crew member's belonging left standing where they put it
-     down, which is what makes a lounge read as lived in rather than furnished. The station already
+     down, which is what makes a lounge read as lived in rather than furnished. The keep already
      had a speaker, a jukebox and a DJ booth; nobody owned an instrument.
      ⛔ AN ELECTRIC IS ITS HORNS, AN ACOUSTIC IS ITS WAIST. The acoustic draft here read as a PADLOCK
         ON A STICK until the body was painted row by row for the pinch; the electric abandons that
@@ -6941,7 +6941,7 @@ const PropSprites = (() => {
     px(sx, sy, sw, sh2, on ? '#100809' : '#0c0708');                // idle glass keeps a red bias, not a black hole
     ctx.globalAlpha = 0.55; px(sx, sy, sw, 2, '#000'); ctx.globalAlpha = 1;
     const pulse = 0.55 + 0.45 * (0.5 + 0.5 * Math.sin(now / 1000));  // wireframe pulse (kept)
-    // STATION DECK-PLAN WIREFRAME (kept 1:1) — hull, left deck, spine, cross corridor
+    // KEEP DECK-PLAN WIREFRAME (kept 1:1) — hull, left deck, spine, cross corridor
     ctx.save();
     ctx.globalAlpha = (on ? 0.85 : 0.45) * pulse;
     ctx.strokeStyle = RED; ctx.lineWidth = 1;
@@ -7696,7 +7696,7 @@ const PropSprites = (() => {
   F.workbench = (x, y, w, h, f) => {
     /* v45 WORKBENCH (2x1) — TERMINAL: shell.exec + verify.run. It is the one COMPUTE-adjacent prop
        with NO chair and NO screen-on-a-stand, because you STAND at it and work with your hands.
-       ⛔ NO CHAIR IS THE SILHOUETTE. Six workstations in the catalog all have a seat behind them;
+       ⛔ NO CHAIR IS THE SILHOUETTE. Six workkeeps in the catalog all have a seat behind them;
           this one has an open front and a tool wall above it, and that alone separates it.
        ⛔ THE PEGBOARD IS THE HERO — a dark perforated panel with countable tools hung on it. Tools
           read by OUTLINE (a hammer head, a wrench fork, a driver shaft), never by detail.
@@ -8603,7 +8603,7 @@ const PropSprites = (() => {
     // Paired against bridge_dispatch_pylon this is the family's hardest read: both are 1x2 columns. They are
     // separated on the axis of their light — the pylon is ONE continuous VERTICAL bar; this is a stack of
     // discrete HORIZONTAL segments climbing bottom-up behind smoked glass, like a threat gauge filling. The
-    // body is bulked out to match: an external rib CAGE, a flared foot and an orbit RING on the crown, against
+    // body is bulked out to match: an external rib CAGE, a flared foot and an circuit RING on the crown, against
     // the pylon's smooth slim column and single mast. f.work = escalated -> 5 segments lit instead of 3.
     const r = RAMP.gun, ph = (f && f.x) || 0, on = !!(f && f.work);
     const ROSE = '#ff5c7a', ROSEL = '#ffd9e2', AMB = '#ffb84d';
@@ -8668,7 +8668,7 @@ const PropSprites = (() => {
       px(x + 3, vy, w - 6, 1, '#0d0e10');
       px(x + 3, vy + 1, w - 6, 1, shade(r.face, 0.12));
     }
-    // CROWN: a real orbit RING with the sweep dot riding it — the pylon's crown is a flat mast head
+    // CROWN: a real circuit RING with the sweep dot riding it — the pylon's crown is a flat mast head
     const hubx = x + Math.floor(w / 2), huby = y - 8;
     px(hubx - 1, huby, 2, 3, LINE); px(hubx - 1, huby, 1, 3, r.lit);
     ctx.save();
@@ -9244,7 +9244,7 @@ const PropSprites = (() => {
     // behind product rows. So the interior here is a dead-even tube per shelf with the stock silhouetted
     // against it, and the only warm light on the whole machine is the header and the dispense mouth —
     // two temperatures, 20px apart, which is the strongest depth cue this narrow a prop can get.
-    // f.work = the station is busy: the READY lamp burns hotter. Header/chase/ready clocks all preserved.
+    // f.work = the keep is busy: the READY lamp burns hotter. Header/chase/ready clocks all preserved.
     const r = RAMP.steel, ph = (f && f.x) || 0, on = !!(f && f.work);
     const cw = w + 1, cold = '#cfe9f5', amber = '#ffb84d';   // the cabinet runs a touch proud of its tile (kept)
     shadow2(x + 1, y + h - 1, cw - 2);
@@ -9736,7 +9736,7 @@ const PropSprites = (() => {
   F.bookshelf = (x, y, w, h, f) => {
     /* v64 BOOKSHELF (2x1) — PROJECTION FIXED (2026-08-17). v63's art was good and is kept almost
        tone for tone; what was wrong is that it was drawn as a FRONT ELEVATION — the picture you get
-       standing at eye level in front of a bookcase. This station is top-down 3/4, and the tell is
+       standing at eye level in front of a bookcase. This keep is top-down 3/4, and the tell is
        always the same: at eye level every horizontal is a 1px LINE, from above every horizontal is
        a PLANE. v63 had a 2px "crown", 1px shelf boards and books with 1px tops. So:
        ⛔ THE CASE TOP IS A PLANE, NOT A CROWN LINE. 5 rows of timber we look down onto, keyed down
@@ -9997,7 +9997,7 @@ const PropSprites = (() => {
     px(x + 5, sy + 3, 1, 1, shade(HOT, -0.30));                                 // one lit fleck inside it
     px(x + 5, sy + 7, 2, 1, shade(DARK, 0.30));                                 // a wisp trailing below
     bloom(x + 3, sy - 1, 6, 9, LIQ_LIT, 0.10);                                    // it displaces the glow around it
-    /* (5) MOTES rising — one per column, each on its own loop, deterministic per station */
+    /* (5) MOTES rising — one per column, each on its own loop, deterministic per keep */
     for (let i = 0; i < 9; i++) {
       const k = U.hash('inc' + x + i);
       const mx = x + 2 + (k % (w - 4));
@@ -10312,7 +10312,7 @@ const PropSprites = (() => {
     /* (2) THE ARMS. This prop has now failed in both directions and the useful part is WHY:
        ⛔ v5 was 1.6x oversize (a 30px rifle against a 35px body — "too big for the agents").
        ⛔ v6 was measured EXACTLY right at 18px and Andrew could no longer tell what he was looking
-          at. Both are true: a 0.9m rifle at the station's ~20px/metre IS 18px, and 18px cannot hold
+          at. Both are true: a 0.9m rifle at the keep's ~20px/metre IS 18px, and 18px cannot hold
           the silhouette that identifies a rifle. That is the RESOLUTION CEILING this catalog keeps
           hitting, not an art failure.
        So the answer is not a third size, it is FEWER THINGS WITH MORE ROOM: one rifle and one blade
@@ -10390,13 +10390,13 @@ const PropSprites = (() => {
   };
   F.weaponrack_r = mirrorV(F.weaponrack);
   /* ============ THE COLOUR SHELF (2026-08-17) ============
-     Andrew's brief: the station is hard to make look good because there are too FEW props, too many
+     Andrew's brief: the keep is hard to make look good because there are too FEW props, too many
      face the same way, and almost none carry colour. These are the answer to the third and the
      hardest: each is a FLOOR-SIZED object (never a tabletop trinket) built around ONE saturated
      identity — cyan glass, racing red, plasma violet, soda orange — so a room furnished from this
      shelf stops reading as a grey machine hall.
      ⛔ COLOUR IS LOCAL, LIGHT IS NOT. A prop may own any hue it likes; it is still lit by the
-        station's warm west KEY and cool east SKY, and its contour is still a dark tint of its OWN
+        keep's warm west KEY and cool east SKY, and its contour is still a dark tint of its OWN
         hue. Saturated art under the shipped lightmap is the whole trick — a prop that lights itself
         differently from the room reads as a sticker.
      ⛔ ONE SILHOUETTE, THEN FILLS. Paint the whole outline first, then interiors over it. Outlining
@@ -10535,7 +10535,7 @@ const PropSprites = (() => {
     }
   };
 
-  /* Industrial station furnishing expansion. Dimensions are WORLD pixels here, already
+  /* Industrial keep furnishing expansion. Dimensions are WORLD pixels here, already
      multiplied by TILE. Every solid shares its footprint contact line; only the
      two floor inserts rotate as decals. Purpose stays decorative and explicit. */
   F.industrial_locker = (x,y,w,h) => {
@@ -10678,7 +10678,7 @@ const PropSprites = (() => {
                  tile via propanchor.js; sit=true seats the agent, approach biases the side. */
   /* short Fallout-style blurbs for the hover card (functional props). Reused where the effect is identical. */
   // Command-deck scenery stays in DECOR: these screens depict navigation art,
-  // not harness telemetry. Existing workstations still own agent assignments.
+  // not harness telemetry. Existing workkeeps still own agent assignments.
   const bridgeFurniture = (name, fallback) => (x, y, w, h, f) => {
     if (typeof IndustrialTextures !== 'undefined' && IndustrialTextures.furniture(ctx, name, x, y, w, h)) return;
     fallback(x, y, w, h, f);
@@ -10692,7 +10692,7 @@ const PropSprites = (() => {
     try { F.hazardpad(x, y, w, h, f); } finally { ctx.restore(); }
   });
 
-  const D_WS = 'WORKSTATION — assign an agent here and it walks over and sits to work whenever it gets a task.';
+  const D_WS = 'WORKKEEP — assign an agent here and it walks over and sits to work whenever it gets a task.';
   const D_FILES = 'CAPABILITY — gives the agent in this room file access (read & write its own files).';
   const D_WEB = 'CAPABILITY — gives the agent in this room web access (live search & fetch).';
   const D_MEM = 'CAPABILITY — gives the agent in this room long-term memory AND its skill library (a notebook it recalls facts from, and where it saves & reloads reusable skills).';
@@ -10700,7 +10700,7 @@ const PropSprites = (() => {
   /* CATALOG is split into two TIERS for the builder palette (shown as ⚙ SYSTEMS / ✦ DECOR):
        functional — SYSTEMS: props that DO something (place · assign · wire into real workflows)
        cosmetic   — DECOR: looks only (decoration, atmosphere, leisure)
-     `tier` + `cat` drive the palette grouping; `seat:true` marks an agent-assignable workstation;
+     `tier` + `cat` drive the palette grouping; `seat:true` marks an agent-assignable workkeep;
      `desc` is the hover-card blurb. None of this is read by the routing/capability backend (it keys on prop.t).
 
      THE MOUNT AXIS (three states — worldmodel.js checkProp enforces them):
@@ -10718,13 +10718,114 @@ const PropSprites = (() => {
   // loaded remaster advertises them; a missing pack keeps the old facing contract.
   for (const id of ['desk','desk2']) for (const facing of ['e','n']) {
     F[id+':'+facing]=(x,y,w,h,f)=>{
-      if(remasterStyle() && IndustrialTextures.workstation(ctx,x,y,w,h,facing,{...f,now}))return;
+      if(remasterStyle() && IndustrialTextures.workkeep(ctx,x,y,w,h,facing,{...f,now}))return;
       F[id](x,y,w,h,f);
     };
   }
   for (const facing of ['e','n']) F['seatchair:'+facing]=(x,y,w,h,f)=>{
     if(remasterStyle() && IndustrialTextures.chair(ctx,x,y,w,h,facing))return;
     F.seatchair(x,y,w,h,f);
+  };
+
+  /* EYEHOLD KEEP FURNISHINGS. Original procedural pixel props for the seeded stone
+     room. They do not sample an upstream sheet, and none of them grant a capability.
+     Coordinates are the pixel box draw() already scaled from the catalog footprint. */
+  const EH = {
+    ink:'#1c1418', timber:'#704424', timber2:'#4e2e18', gold:'#e6ac65', ember:'#d6682a',
+    flame:'#f4dcaa', parchment:'#e8d6b0', cloth:'#70242e', leaf:'#2e5230', stone:'#4e4236',
+    stone2:'#3a322a', brass:'#ba8e46', coal:'#241610', water:'#2a4a62'
+  };
+  const ehFlick = (x) => (Math.floor(now / 160) + (x | 0)) & 1;
+  F.eyehold_hearth = (x, y, w, h) => {
+    const bob = ehFlick(x);
+    px(x + 1, y + h - 6, w - 2, 5, EH.stone);
+    px(x + 2, y + 8, 4, h - 14, EH.stone2);
+    px(x + w - 6, y + 8, 4, h - 14, EH.stone2);
+    px(x + 1, y + 5, w - 2, 4, EH.timber);
+    px(x + 3, y + 6, w - 6, 1, EH.gold);
+    px(x + 6, y + 12, w - 12, h - 18, EH.coal);
+    px(x + 8, y + 13 - bob, 3, 7 + bob, EH.ember);
+    px(x + Math.floor(w / 2) - 1, y + 11 - bob, 3, 9 + bob, EH.flame);
+    px(x + w - 11, y + 15, 3, 5, EH.ember);
+    px(x, y + h - 2, w, 2, EH.ink);
+  };
+  F.eyehold_bookcase = (x, y, w, h) => {
+    px(x, y, w, h, EH.timber2);
+    px(x + 1, y + 1, w - 2, h - 3, EH.ink);
+    for (let i = 0; i < 3; i++) {
+      const sy = y + 2 + i * 7;
+      px(x + 1, sy, w - 2, 2, EH.timber);
+      px(x + 2, sy + 2, 2, 4, EH.cloth);
+      px(x + 4, sy + 3, 2, 3, EH.leaf);
+      px(x + 6, sy + 2, 2, 4, EH.gold);
+      px(x + 8, sy + 3, 2, 3, EH.parchment);
+    }
+    px(x, y + h - 2, w, 2, EH.ink);
+  };
+  F.eyehold_banner = (x, y, w) => {
+    px(x + 1, y - 32, 3, 6, EH.brass);
+    px(x + w - 4, y - 32, 3, 6, EH.brass);
+    px(x + 2, y - 30, w - 4, 3, EH.timber);
+    px(x + 4, y - 27, w - 8, 30, EH.cloth);
+    px(x + 8, y - 20, 6, 6, EH.gold);
+    px(x + 10, y - 18, 2, 12, EH.gold);
+    px(x + 6, y - 6, 3, 5, EH.timber2);
+    px(x + w - 9, y - 4, 3, 5, EH.timber2);
+  };
+  F.eyehold_map = (x, y, w) => {
+    px(x + 2, y - 26, w - 4, 3, EH.timber);
+    px(x + 3, y - 23, w - 6, 28, EH.parchment);
+    px(x + 6, y - 18, 10, 1, EH.leaf);
+    px(x + 8, y - 15, 8, 1, EH.stone2);
+    px(x + 5, y - 12, 12, 1, EH.water);
+    px(x + 7, y - 9, 1, 6, EH.water);
+    px(x + 14, y - 10, 3, 3, EH.ember);
+    px(x + 4, y + 4, w - 8, 2, EH.brass);
+  };
+  F.eyehold_rug = (x, y, w, h) => {
+    px(x + 1, y + 1, w - 2, h - 2, EH.cloth);
+    px(x + 4, y + 4, w - 8, h - 8, EH.timber2);
+    px(x + 7, y + 7, w - 14, h - 14, EH.gold);
+    px(x + Math.floor(w / 2) - 3, y + Math.floor(h / 2) - 3, 6, 6, EH.ink);
+    px(x + 2, y + 2, w - 4, 2, EH.brass);
+    px(x + 2, y + h - 4, w - 4, 2, EH.brass);
+    px(x + 2, y + 2, 2, h - 4, EH.brass);
+    px(x + w - 4, y + 2, 2, h - 4, EH.brass);
+  };
+  F.eyehold_runner = (x, y, w, h) => {
+    px(x, y + 1, w, h - 2, EH.cloth);
+    px(x + 2, y + 3, w - 4, h - 6, EH.timber2);
+    px(x + 4, y + 4, 4, h - 8, EH.gold);
+    px(x + w - 8, y + 4, 4, h - 8, EH.gold);
+    px(x, y + 1, w, 2, EH.brass);
+    px(x, y + h - 3, w, 2, EH.brass);
+  };
+  F.eyehold_scribe = (x, y, w, h) => {
+    px(x + 1, y + h - 4, 3, 3, EH.timber2);
+    px(x + w - 4, y + h - 4, 3, 3, EH.timber2);
+    px(x, y + 1, w, 6, EH.timber);
+    px(x + 2, y + 2, w - 4, 2, EH.gold);
+    px(x + 3, y + 3, 8, 3, EH.parchment);
+    px(x + 4, y + 4, 6, 1, EH.ink);
+    px(x + w - 7, y, 3, 4, EH.brass);
+    px(x + w - 6, y - 2, 1, 3, EH.ink);
+  };
+  F.eyehold_chest = (x, y, w, h) => {
+    px(x + 1, y + 5, w - 2, h - 6, EH.timber);
+    px(x + 2, y + 2, w - 4, 5, EH.timber2);
+    px(x + 1, y + 6, w - 2, 2, EH.brass);
+    px(x + Math.floor(w / 2) - 1, y + 8, 3, 2, EH.gold);
+    px(x + 2, y + h - 3, 2, 2, EH.stone2);
+    px(x + w - 4, y + h - 3, 2, 2, EH.stone2);
+  };
+  F.eyehold_candle = (x, y) => {
+    const bob = ehFlick(x);
+    px(x + 4, y + 6, 4, 5, EH.parchment);
+    px(x + 3, y + 10, 6, 2, EH.brass);
+    px(x + 5, y + 5, 2, 2, EH.ink);
+    px(x + 4, y + 2 - bob, 4, 4, EH.ember);
+    px(x + 5, y + 1 - bob, 2, 3, EH.flame);
+    px(x + 5, y + 7, 2, 2, EH.gold);
   };
 
   const CATALOG = [
@@ -10743,14 +10844,14 @@ const PropSprites = (() => {
     { id: "industrial_cabletray", label: "CABLE CHANNEL", cat: "decor", tier: "cosmetic", w: 3, h: 1, animated: false, blocks: false, flat: true },
 
     /* ===================== FUNCTIONAL ===================== */
-    // WORKSTATIONS — the agent's seat. Assign ONE agent; it walks here and sits to work when tasked.
-    { id: "desk", label: "DESK", cat: "workstation", tier: "functional", seat: true, w: 2, h: 1, animated: true, blocks: true, desc: D_WS },
-    { id: "desk2", label: "DESK ×2", cat: "workstation", tier: "functional", seat: true, w: 2, h: 1, animated: true, blocks: true, desc: D_WS },
-    { id: "console", label: "CONSOLE", cat: "workstation", tier: "functional", seat: true, w: 2, h: 1, animated: true, blocks: true, desc: D_WS },
-    { id: "consoleL", label: "CONSOLE L", cat: "workstation", tier: "functional", seat: true, w: 3, h: 1, animated: true, blocks: true, desc: D_WS },
-    { id: "pixelrig", label: "PIXEL RIG", cat: "workstation", tier: "functional", seat: true, w: 2, h: 1, animated: true, blocks: true, desc: D_WS },
-    { id: "bench", label: "BENCH", cat: "workstation", tier: "functional", seat: true, w: 4, h: 1, animated: true, blocks: true, desc: D_WS },
-    { id: "workbench", label: "WORKBENCH", cat: "workstation", tier: "functional", w: 2, h: 1, animated: true, blocks: true, desc: "WORKBENCH — grants the room's agent shell + verify, so it can run and test real code. Pair it with a workstation in the same room." },
+    // WORKKEEPS — the agent's seat. Assign ONE agent; it walks here and sits to work when tasked.
+    { id: "desk", label: "DESK", cat: "workkeep", tier: "functional", seat: true, w: 2, h: 1, animated: true, blocks: true, desc: D_WS },
+    { id: "desk2", label: "DESK ×2", cat: "workkeep", tier: "functional", seat: true, w: 2, h: 1, animated: true, blocks: true, desc: D_WS },
+    { id: "console", label: "CONSOLE", cat: "workkeep", tier: "functional", seat: true, w: 2, h: 1, animated: true, blocks: true, desc: D_WS },
+    { id: "consoleL", label: "CONSOLE L", cat: "workkeep", tier: "functional", seat: true, w: 3, h: 1, animated: true, blocks: true, desc: D_WS },
+    { id: "pixelrig", label: "PIXEL RIG", cat: "workkeep", tier: "functional", seat: true, w: 2, h: 1, animated: true, blocks: true, desc: D_WS },
+    { id: "bench", label: "BENCH", cat: "workkeep", tier: "functional", seat: true, w: 4, h: 1, animated: true, blocks: true, desc: D_WS },
+    { id: "workbench", label: "WORKBENCH", cat: "workkeep", tier: "functional", w: 2, h: 1, animated: true, blocks: true, desc: "WORKBENCH — grants the room's agent shell + verify, so it can run and test real code. Pair it with a workkeep in the same room." },
     // WORKFLOW — how work enters, moves, routes, and leaves.
     // (id stays 'intake' — saves/routing keys never rename; INBOX is the user-facing word, mirroring OUTBOX)
     // Docks (2×2 floor machines) are SOLID: belts hook to their ring tiles (connectBelt's pathable
@@ -10764,13 +10865,13 @@ const PropSprites = (() => {
     { id: "splitter", label: "SPLITTER", cat: "workflow", tier: "functional", w: 1, h: 1, animated: true, blocks: false, desc: "SPLITTER — one belt into several. With a JOINER after the branches, every branch gets a COPY of the job and they run at the same time; without one, jobs TAKE TURNS between the branches (share the load). Drop it ON a belt." },
     { id: "joiner", label: "JOINER", cat: "workflow", tier: "functional", w: 1, h: 1, animated: true, blocks: false, desc: "JOINER — waits until every branch of the same job has finished (or 10 minutes pass), then sends ONE combined result on, each branch's part labelled. Put a SPLITTER before the branches so each one gets a copy." },
     { id: "loop", label: "LOOP", cat: "workflow", tier: "functional", w: 1, h: 1, animated: true, blocks: false, desc: "LOOP — sends work BACK to an earlier step for another pass, until the reviewer approves it or the passes run out (5 by default, 20 at most), then sends it ON. Belt one exit back to the earlier BAY and one exit onward. Spend stays inside the line's dollar cap." },
-    { id: "outbox", label: "OUTBOX", cat: "workflow", tier: "functional", w: 2, h: 2, animated: true, blocks: true, desc: "OUTBOX — the dispatch chute where an agent's finished reply leaves the station. Click it to read and rate every finished run waiting for you." },
+    { id: "outbox", label: "OUTBOX", cat: "workflow", tier: "functional", w: 2, h: 2, animated: true, blocks: true, desc: "OUTBOX — the dispatch chute where an agent's finished reply leaves the keep. Click it to read and rate every finished run waiting for you." },
     // NOTE: the old "CONVEYOR" palette prop (beltH) is retired — it was inert scenery that LOOKED like the
     // routing system and taught users the wrong model (you can't assign or route through it). Real belts are
-    // laid with the BELT tool and compile into the RoutingPlan. F.beltH stays so stations that placed one
+    // laid with the BELT tool and compile into the RoutingPlan. F.beltH stays so keeps that placed one
     // still render; it just can't be placed anew.
     // CAPABILITY — object = capability. Place one in a BAY's room to grant that agent a power.
-    { id: "plugin_terminal", artId: "bridge_dispatch_pylon", label: "PLUGIN TERMINAL", cat: "capability", tier: "functional", w: 1, h: 2, animated: true, blocks: true, desc: "PLUGIN TERMINAL — one of your plugins, standing in the station. Gives the room's agent that plugin's tools (each call asks you first, unless you choose Always or Full access) and opens its window when clicked. Installing a plugin with tools places one for you." },
+    { id: "plugin_terminal", artId: "bridge_dispatch_pylon", label: "PLUGIN TERMINAL", cat: "capability", tier: "functional", w: 1, h: 2, animated: true, blocks: true, desc: "PLUGIN TERMINAL — one of your plugins, standing in the keep. Gives the room's agent that plugin's tools (each call asks you first, unless you choose Always or Full access) and opens its window when clicked. Installing a plugin with tools places one for you." },
     { id: "connector_portal", label: "CONNECTOR", cat: "capability", tier: "functional", w: 1, h: 2, animated: true, blocks: true, desc: "CONNECTOR — bind an MCP server here to grant the room's agent that server's live tools. Click it to bind one." },
     { id: "comms_dish", label: "DISH", cat: "capability", tier: "functional", w: 2, h: 2, animated: true, blocks: true, desc: D_WEB },
     { id: "comms_uplink", label: "UPLINK", cat: "capability", tier: "functional", w: 2, h: 2, animated: true, blocks: true, desc: D_WEB },
@@ -10787,10 +10888,10 @@ const PropSprites = (() => {
     // ISOLATION — seal a room off on the floor.
     { id: "airlock", label: "AIRLOCK", cat: "isolation", tier: "functional", w: 1, h: 1, animated: true, blocks: false, desc: "AIRLOCK — seals a room on the floor (a staging / merge gate); the agent's body can't path in or out. Click to cycle open / sealed / jammed." },
     // COMMAND — mission surfaces (functional-but-not-capability: they grant no tools; they make the
-    // station's real state readable + clickable. The workstation-model rule: functional props that aren't
+    // keep's real state readable + clickable. The workkeep-model rule: functional props that aren't
     // capability objects get their own category, never mixed into cosmetics).
     { id: "missionboard", label: "MISSION BOARD", cat: "command", tier: "functional", w: 3, h: 1, animated: true, blocks: false, desc: "MISSION BOARD — the quest log made physical. Every pinned card is a real open quest; click the board to read them. It suggests, never gates." },
-    { id: "trophycase", label: "TROPHY CASE", cat: "command", tier: "functional", w: 2, h: 2, animated: true, blocks: true, desc: "TROPHY CASE — the station's real achievements made permanent. Earned milestones, completed quests, and your living tools stand behind glass; click to open the case. It grants nothing — it remembers." },
+    { id: "trophycase", label: "TROPHY CASE", cat: "command", tier: "functional", w: 2, h: 2, animated: true, blocks: true, desc: "TROPHY CASE — the keep's real achievements made permanent. Earned milestones, completed quests, and your living tools stand behind glass; click to open the case. It grants nothing — it remembers." },
 
     /* ===================== COSMETIC ===================== */
     // SCREENS — ops & display dressing.
@@ -10832,7 +10933,7 @@ const PropSprites = (() => {
     { id: "goldcrate", label: "GOLD CRATE", cat: "storage", tier: "cosmetic", w: 2, h: 1, animated: true, blocks: true },
     // NOTE: "PARCELS" is retired from the palette (2026-08-16, Andrew's call) — it was a stack of
     // unreadable 1-tile boxes that added nothing the CRATE does not say better. F.parcels stays so
-    // stations that already placed one still render; it just can't be placed anew. Same treatment the
+    // keeps that already placed one still render; it just can't be placed anew. Same treatment the
     // old CONVEYOR prop got — retiring the TYPE outright would strand an invisible obstacle in saves.
     { id: "gigs_partsbin", label: "PARTS BIN", cat: "storage", tier: "cosmetic", w: 2, h: 1, animated: true, blocks: true, stack: true },
     { id: "treasury_coinsorter", label: "COIN SORTER", cat: "storage", tier: "cosmetic", w: 2, h: 1, animated: true, blocks: true },
@@ -10855,7 +10956,7 @@ const PropSprites = (() => {
     { id: "bar", label: "BAR", cat: "lounge", tier: "cosmetic", w: 4, h: 1, animated: true, blocks: true, use: { kind: 'bar', sit: false, approach: 'south' } },
     { id: "tv", label: "TV", cat: "lounge", tier: "cosmetic", w: 3, h: 1, animated: true, blocks: true, use: { kind: 'tv', sit: false, approach: 'south' } },
     // SEAT LAW (2026-08-04): `sit: true` is reserved for props a body can credibly be ON — its own
-    // workstation chair and the single-tile seats (STOOL/CHAIR). A couch/bed/beanbag is a place a body
+    // workkeep chair and the single-tile seats (STOOL/CHAIR). A couch/bed/beanbag is a place a body
     // walks to and STANDS at: the sit sprite is a chair pose, and pasting it on a mattress or a cushion
     // read as a body parked upright on the furniture. Changing `sit` here is the whole switch.
     { id: "couch", label: "COUCH", cat: "lounge", tier: "cosmetic", w: 5, h: 1, animated: true, blocks: true, use: { kind: 'couch', sit: false, approach: 'south' } },
@@ -10970,6 +11071,16 @@ const PropSprites = (() => {
        planCouchSit + world.js SIDE_SEAT, which supply a real cushion anchor and a real occlusion order. */
     { id: "recliner", label: "RECLINER ‹ LEFT", cat: "lounge", tier: "cosmetic", w: 1, h: 1, animated: false, blocks: true, use: { kind: 'couch', sit: false, approach: 'west' } },
     { id: "recliner_r", label: "RECLINER RIGHT ›", cat: "lounge", tier: "cosmetic", w: 1, h: 1, animated: false, blocks: true, use: { kind: 'couch', sit: false, approach: 'east' } },
+    // Eyehold keep furnishings. Cosmetic only: the seeded workkeep stays the one desk that grants compute.
+    { id: "eyehold_hearth", label: "STONE HEARTH", cat: "decor", tier: "cosmetic", w: 2, h: 2, animated: true, blocks: true },
+    { id: "eyehold_bookcase", label: "OAK BOOKCASE", cat: "decor", tier: "cosmetic", w: 1, h: 2, animated: false, blocks: true },
+    { id: "eyehold_banner", label: "KEEP BANNER", cat: "decor", tier: "cosmetic", w: 2, h: 1, animated: false, blocks: false, mount: "wall" },
+    { id: "eyehold_map", label: "REALM MAP", cat: "decor", tier: "cosmetic", w: 2, h: 1, animated: false, blocks: false },
+    { id: "eyehold_rug", label: "KEEP RUG", cat: "decor", tier: "cosmetic", w: 2, h: 2, animated: false, blocks: false, flat: true },
+    { id: "eyehold_runner", label: "LONG RUG", cat: "decor", tier: "cosmetic", w: 3, h: 1, animated: false, blocks: false, flat: true },
+    { id: "eyehold_scribe", label: "SCRIBE DESK", cat: "decor", tier: "cosmetic", w: 2, h: 1, animated: false, blocks: true },
+    { id: "eyehold_chest", label: "BANDED CHEST", cat: "decor", tier: "cosmetic", w: 1, h: 1, animated: false, blocks: true },
+    { id: "eyehold_candle", label: "TALLOW CANDLE", cat: "decor", tier: "cosmetic", w: 1, h: 1, animated: true, blocks: false, stack: true },
   ];
   const BY_ID = {};
   // The wider industrial art occupies three real tiles; picking, placement and
@@ -10990,7 +11101,7 @@ const PropSprites = (() => {
      has no way to know which matter. This is that answer: THE SAME props the tutorial kit
      requisitions (tutorial.js KIT_SPEC — files, web, terminal, memory) plus STUDIO (media — the
      power users miss). Andrew's scope call 2026-08-18: capability grants ONLY — no BAY (that is
-     conveyor equipment, not a necessity) and no workstation. The shelf stays for EVERY station
+     conveyor equipment, not a necessity) and no workkeep. The shelf stays for EVERY keep
      until each power is placed, then retires; a placed prop granting the same power satisfies its
      tile (a VAULT counts for the INTEL CAB slot — the shelf tracks powers, not skins). Ids, not
      labels: the palette resolves each through BY_ID so a renamed prop can never strand the shelf. */
@@ -10998,13 +11109,13 @@ const PropSprites = (() => {
 
   /* The display names for the two TIERS and every CATEGORY. These live HERE, with the catalog they
      describe, because more than one consumer needs them: build.js paints them on the palette tabs and
-     propsearch.js matches against them (typing "systems" or "workstations" must find what the tab says).
+     propsearch.js matches against them (typing "systems" or "workkeeps" must find what the tab says).
      They used to be private to build.js and hand-copied into the test, which is a drift waiting to
      happen — a renamed tab would leave the test asserting a label no user can see. One map, one truth.
      A category with no entry is not an error: callers fall back to the id, uppercased. */
   const TIER_LABEL = { functional: '⚙ SYSTEMS', cosmetic: '✦ DECOR' };
   const CAT_LABEL = {
-    workstation: 'WORKSTATIONS', workflow: 'WORKFLOW', capability: 'CAPABILITY', isolation: 'ISOLATION',
+    workkeep: 'WORKKEEPS', workflow: 'WORKFLOW', capability: 'CAPABILITY', isolation: 'ISOLATION',
     command: 'COMMAND',   // G1b: mission surfaces — functional-but-not-capability (MISSION BOARD)
     screens: 'SCREENS', lab: 'LAB', storage: 'STORAGE', comms: 'COMMS', lounge: 'LOUNGE', decor: 'DECOR',
     yours: 'MADE BY YOU',   // player-made props (userprops.js): decoration only, one south view each
@@ -11200,7 +11311,7 @@ const PropSprites = (() => {
      the world layer maps a firing tool to the prop that GRANTS it (fs->cabinet · web/browser->dish ·
      notebook/skill/recall/todo->notebook · image->studio · spotify->jukebox, via toolprops.js) and calls
      pulseProp(propId, capType); draw() overlays a bright surge in that capability's accent that decays
-     1 -> 0 over PULSE_MS. Colors ride the station's semantic economy (amber=files, cyan=web/data,
+     1 -> 0 over PULSE_MS. Colors ride the keep's semantic economy (amber=files, cyan=web/data,
      green=memory, magenta=media, gold=audio). */
   const CAP_GLOW = { cabinet: '#e8c860', dish: '#4ad9ff', notebook: '#41ff8a', studio: '#ff6ad5', jukebox: '#ffd34a' };
   const PROP_FAIL = '#ff5c5c';   // a DENIED/FAILED tool call — the workbench verify-red cue, generalized
@@ -11216,7 +11327,7 @@ const PropSprites = (() => {
   function setOutboxCrates(n) { outboxCrates = (n && typeof n === 'object') ? n : Math.max(0, n | 0); }
 
   // G1b — the MISSION BOARD's live readout: `pins` = how many quests are OPEN in the (visible) quest log,
-  // `hot` = a station-gap fix-it quest is currently open (the board breathes gold). The world layer feeds
+  // `hot` = a keep-gap fix-it quest is currently open (the board breathes gold). The world layer feeds
   // both from the real quest projection (throttled ~1s) — the sprite stays a pure function of its inputs.
   let missionPins = 0, missionHot = false, missionJam = false, missionProposals = 0;
   // G4 feature 2: `proposals` (4th arg) = pending autojob PROPOSAL cards the agent pinned to the board (a distinct
@@ -11235,7 +11346,7 @@ const PropSprites = (() => {
   /* draw one prop. f = {t, x, y, w, h} in LOCAL tile coords; `work` lights its screens.
      `live` (G0.2/G0.3, optional) carries the seated agent's TRUTHFUL activity: { heat, prog } — heat
      is real token/tool flow (0..1, ~2s decay, world.js heatFor); prog is a real published task
-     fraction or null (live harness runs have none). Only ever passed for a lit assigned workstation. */
+     fraction or null (live harness runs have none). Only ever passed for a lit assigned workkeep. */
   /* THE OVERLAY PASS (2026-08-10). A prop whose art has to be split around a BODY registers here: draw()
      paints everything under the body, drawOver() paints what covers it. Exactly one prop needs it today —
      the BED, whose quilt has to lie over a sleeping agent while the pillow stays under its head — and the
@@ -11357,11 +11468,11 @@ const PropSprites = (() => {
     if (f.t === 'bunk') o.sleeper = !!f.sleeper;      // a dormant body is IN it → hold the quilt back for drawOver
     if (f.t === 'jukebox') o.live = jukeConnected;   // dead until Spotify is connected in TOOLSETS (object=capability truth)
     if (f.t === 'outbox') o.crates = (outboxCrates && typeof outboxCrates === 'object') ? Math.max(0, outboxCrates[f.id] | 0) : outboxCrates;   // G2.3: THIS chute's uncollected results stack as crates
-    if (f.t === 'missionboard') { o.pins = missionPins; o.hot = missionHot; o.jam = missionJam; o.proposals = missionProposals; }   // G1b/G1c: open quests pinned + the station-gap beacon + the routine-JAM amber stub; G4: pending autojob PROPOSAL cards
+    if (f.t === 'missionboard') { o.pins = missionPins; o.hot = missionHot; o.jam = missionJam; o.proposals = missionProposals; }   // G1b/G1c: open quests pinned + the keep-gap beacon + the routine-JAM amber stub; G4: pending autojob PROPOSAL cards
     if (f.t === 'trophycase') { o.trophies = trophyCount; o.journeyStage = journeyStage; }   // earned trophies + distinct reached-goal crown beacons
     /* ORIENTATION. `r` = quarter turns clockwise (0 = south, the shipped facing), `m` = mirrored.
        Both are re-checked against what this prop's art can HONESTLY do rather than trusted from the
-       record: a saved station outlives catalog changes, and a prop that lost its turned view must
+       record: a saved keep outlives catalog changes, and a prop that lost its turned view must
        fall back to facing south, never render a lie.
        Two ways a facing gets drawn (viewAt picks): an AUTHORED view, blitted straight into the box
        it was drawn for; or, for a floor DECAL only, the south art under a footprint transform —
@@ -11432,7 +11543,7 @@ const PropSprites = (() => {
      Two things every prop in a shipped pixel-art game has and ours had neither of:
 
      1. A CAST SHADOW ON THE DECK. `shadow2` is a contact line — the 2px dark seam where the object meets the
-        floor. It seats the prop but it does not give it HEIGHT. The station's key light is high and
+        floor. It seats the prop but it does not give it HEIGHT. The keep's key light is high and
         north-west (every prop's sheen is west-biased, every top face is north-lit), so a standing object
         throws a soft pool to its SOUTH-EAST. Painted by world.js in ONE pass over the deck (after the floor
         decals, before the y-sorted items), so a shadow lands on rugs and under neighbours and never on top of
@@ -11444,7 +11555,7 @@ const PropSprites = (() => {
         now they lit nothing: the lightmap only knows the ceiling fixtures. `lightOf` answers, per prop,
         "what colour, how far, how strong" and world.js paints it as an additive pool over the lightmap each
         frame (drawPropLights), so the floor and anything standing near a source takes its colour. Screens
-        flicker; fire and plasma breathe; lamps hold steady. `work` gates a workstation: an idle desk's CRT is
+        flicker; fire and plasma breathe; lamps hold steady. `work` gates a workkeep: an idle desk's CRT is
         a dark slab (that is what the art shows), so it emits only while its agent is actually working —
         truthful telemetry, not a mood light. Values are WORLD px (TILE = 12), authored for camera scale 2. */
   const SHADOW_RGB = '8,10,24';                     // a shadow has a colour: cool, the bounce-lit unlit side
@@ -11586,7 +11697,7 @@ const PropSprites = (() => {
     return true;
   }
   // Project each silhouette once. Repeating skewed translucent canvas blits for
-  // the whole station stalls the GPU; a straight blit of this 4x raster retains
+  // the whole keep stalls the GPU; a straight blit of this 4x raster retains
   // the shaped penumbra and remains sharp through the normal camera zoom range.
   const projectedShadows = new WeakMap();
   const contactShadows = new WeakMap();
@@ -11677,7 +11788,7 @@ const PropSprites = (() => {
   }
   /* colour [r,g,b] · radius (world px) · strength · mode:
        'screen' flickers (phosphor), 'fire' breathes fast and ragged, 'pulse' breathes slow, 'steady' holds.
-     `work: 1` = emits only while the prop is lit by real work (workstations). `y` = where the source sits
+     `work: 1` = emits only while the prop is lit by real work (workkeeps). `y` = where the source sits
      in the footprint (0 = north edge, 1 = south) — a desk's CRT is at the back, a floor lamp's head is up. */
   const SCR_RGB = [98, 255, 158], BLUE_RGB = [110, 190, 255], AMBER_RGB = [255, 190, 110], WARM_RGB = [255, 214, 150];
   const EMIT = {
@@ -11722,6 +11833,8 @@ const PropSprites = (() => {
     treasury_token_furnace: { c: [255, 130, 50], r: 26, a: 0.16, m: 'fire', y: 0.45 }, goldcrate: { c: [255, 214, 120], r: 14, a: 0.06, m: 'steady', y: 0.4 },
     gigs_servercart: { c: [120, 255, 180], r: 14, a: 0.08, m: 'screen', y: 0.4 }, bridge_relaystack: { c: [120, 200, 255], r: 20, a: 0.10, m: 'screen', y: 0.3 },
     airlock: { c: [255, 90, 70], r: 18, a: 0.10, m: 'pulse', y: 0.5 }, steamvent: { c: [255, 170, 120], r: 12, a: 0.05, m: 'fire', y: 0.5 },
+    eyehold_hearth: { c: [255, 140, 60], r: 36, a: 0.22, m: 'fire', y: 0.45 },
+    eyehold_candle: { c: [255, 200, 120], r: 14, a: 0.16, m: 'fire', y: 0.25 },
   };
   /* the light a placed prop emits THIS frame, or null. `work` is the same lit flag `draw` receives. The
      modulation is deterministic on `now` + the prop's position, so two identical screens never flicker in
@@ -11745,10 +11858,10 @@ const PropSprites = (() => {
     if(!authoredScreen&&remasterStyle()&&(f.t==='desk'||f.t==='desk2')&&!(typeof PropRemaster!=='undefined'&&PropRemaster.enabled(f.t))){
       const facing=(f.r|0)&3,view=viewAt(f.t,facing),source=facing===2?'n':facing===0?'s':'e';
       const mirror=((((canMirror(f.t)&&f.m)?1:0)^(view&&view.mirror?1:0))&1)!==0;
-      if(typeof IndustrialTextures.workstationEmitter==='function'){
+      if(typeof IndustrialTextures.workkeepEmitter==='function'){
         // The atlas loader measures its own screen centroid and applies the same
-        // fit as workstation(). null means no visible screen; never invent one.
-        const point=IndustrialTextures.workstationEmitter(X,Y,W,H,source);
+        // fit as workkeep(). null means no visible screen; never invent one.
+        const point=IndustrialTextures.workkeepEmitter(X,Y,W,H,source);
         if(!point||!Number.isFinite(point.x)||!Number.isFinite(point.y))return null;
         x=point.x;y=point.y;
       }else{
@@ -11811,7 +11924,7 @@ const PropSprites = (() => {
         ctx.fillStyle='#11191d';ctx.fillRect(left,top,width,h);
         ctx.strokeStyle='#657077';ctx.lineWidth=.35;ctx.strokeRect(left,top,width,h);
         ctx.strokeStyle='#28353c';ctx.strokeRect(left+.7,top+.7,width-1.4,h-1.4);
-        // A small cyan rail ties the plate to the station's screen language.
+        // A small cyan rail ties the plate to the keep's screen language.
         ctx.strokeStyle='#64a7af';ctx.lineWidth=.5;ctx.beginPath();ctx.moveTo(left+2,top+h-1.1);ctx.lineTo(left+width-2,top+h-1.1);ctx.stroke();
         ctx.font=layout.font+"px 'VT323','Courier New',monospace";ctx.fillStyle='#d4e0e3';
         layout.lines.forEach((line,i)=>ctx.fillText(line,x,anchor+(i-(layout.lines.length-1)/2)*4.5-.25));
@@ -11838,11 +11951,11 @@ const PropSprites = (() => {
   }
   function surfaceLift(f){return f.mount==='surface'?(surfaceMounts?surfaceMounts.liftFor(f):SURFACE_RISE):0;}
   function surfacePlacement(f){return f.mount==='surface'&&surfaceMounts?surfaceMounts.placementFor(f):null;}
-  /* PLAYER-MADE PROPS (userprops.js + sidecar/userprops.js). A player types a noun, the StarNet cloud draws it in
-     the catalog's style, and the station keeps the PNG. Each one joins the catalog at RUNTIME as plain decoration:
+  /* PLAYER-MADE PROPS (userprops.js + sidecar/userprops.js). A player types a noun, the Eyehold cloud draws it in
+     the catalog's style, and the keep keeps the PNG. Each one joins the catalog at RUNTIME as plain decoration:
      cosmetic tier, category 'yours', one south view, no function (object = capability: a made prop never claims
      a power it does not have). Its art is a PropRemaster runtime view; until that is decoded (or if it is gone
-     from disk) the prop draws as a dim placeholder box, so a saved station never has an invisible obstacle. */
+     from disk) the prop draws as a dim placeholder box, so a saved keep never has an invisible obstacle. */
   const USER_ID = /^user_[a-z0-9_]{3,60}$/;
   function drawUserPlaceholder(X, Y, W, H) {
     if (!ctx) return;
@@ -11864,7 +11977,7 @@ const PropSprites = (() => {
     F[id] = (x, y, w2, h2, o = {}) => drawUserView(id, 's', row.w, row.h, x, y, w2, h2, o);
     return row;
   }
-  // Draw a made prop's view. A copy saved at another SIZE (resized later, or placed in another crew member's station)
+  // Draw a made prop's view. A copy saved at another SIZE (resized later, or placed in another crew member's keep)
   // is drawn from the current art scaled into its own saved box, so it keeps its size and never turns into a placeholder.
   function drawUserView(id, view, fw, fh, x, y, w2, h2, o) {
     const ok = typeof PropRemaster !== 'undefined' && typeof PropRemaster.draw === 'function';
@@ -11943,7 +12056,7 @@ const PropSprites = (() => {
       // rebake is the existing public render invalidation; it does not edit the save.
       if (typeof World !== 'undefined' && typeof World.rebake === 'function') World.rebake();
       if (typeof window !== 'undefined' && window.dispatchEvent && typeof CustomEvent !== 'undefined')
-        window.dispatchEvent(new CustomEvent('starnet:prop-art-ready',{detail:{revision:PropRemaster.revision()}}));
+        window.dispatchEvent(new CustomEvent('eyehold:prop-art-ready',{detail:{revision:PropRemaster.revision()}}));
     });
   }
 
@@ -11976,7 +12089,7 @@ const PropSprites = (() => {
     pulseProp,
     // G2.3 uncollected-crate stack on the OUTBOX (the world layer feeds this from ReturnStore.pendingCount)
     setOutboxCrates,
-    // G1b MISSION BOARD pins + station-gap beacon (the world layer feeds these from the live quest projection)
+    // G1b MISSION BOARD pins + keep-gap beacon (the world layer feeds these from the live quest projection)
     setMissionPins,
     // G3b TROPHY CASE earned-trophy count (the world layer feeds this from the live trophy projection)
     setTrophyCount,

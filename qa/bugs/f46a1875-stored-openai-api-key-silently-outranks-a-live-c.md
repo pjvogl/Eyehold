@@ -24,7 +24,7 @@ On the overseer create screen the OPENAI card shows the green "connected to Chat
 
 ## Repro
 
-1. Fresh desktop station, OPENAI card selected. Paste an OpenAI API key that has no prepaid API credit, press WAKE — the key is written to the keychain by `validateAndSetKey` BEFORE `preflightWire` runs, and the wire test fails with the 429.
+1. Fresh desktop keep, OPENAI card selected. Paste an OpenAI API key that has no prepaid API credit, press WAKE — the key is written to the keychain by `validateAndSetKey` BEFORE `preflightWire` runs, and the wire test fails with the 429.
 2. Clear the key field (desktop shows the "stored in keychain — leave blank to keep" placeholder). Press SIGN IN WITH CHATGPT and complete the OAuth; the card turns green.
 3. Press WAKE OVERSEER with the key field blank. Before the fix the branch in `frontend/app/app.js` (`onWakeAttempt`, merged OPENAI card) required `!Harness.hasStoredCredential('openai')` to ride codex, so the wake fell through to the API-key branch and hit api.openai.com with the zero-credit key. The error label `openai-compatible` (not `codex http NNN`) proves the request never rode the ChatGPT sign-in.
 
@@ -37,11 +37,11 @@ On the overseer create screen the OPENAI card shows the green "connected to Chat
 
 ## Verdict
 
-A credential the Commander cannot see or remove must never outrank the one the card visibly asserts. A LIVE ChatGPT sign-in with a blank key field now rides codex; a TYPED key still wins (explicit beats ambient); a merely STORED key no longer does. The dead-wire line names the door it rode: `(via your ChatGPT sign-in)`, `(via the OpenAI API key stored on this station)` or `(via the OpenAI API key you typed)`. Fix commit `f7e050e6f` on `agent/codex-wins-wake`. Installed-desktop reproduction with a real stored key plus real ChatGPT tokens was not exercised; the regression test drives the real `onWakeAttempt` body.
+A credential the Commander cannot see or remove must never outrank the one the card visibly asserts. A LIVE ChatGPT sign-in with a blank key field now rides codex; a TYPED key still wins (explicit beats ambient); a merely STORED key no longer does. The dead-wire line names the door it rode: `(via your ChatGPT sign-in)`, `(via the OpenAI API key stored on this keep)` or `(via the OpenAI API key you typed)`. Fix commit `f7e050e6f` on `agent/codex-wins-wake`. Installed-desktop reproduction with a real stored key plus real ChatGPT tokens was not exercised; the regression test drives the real `onWakeAttempt` body.
 
 ## Regression
 
-Before fix: `test/genesis-wake-credential.test.js` case `stored:true, connected:true` selected provider `openai` (the old assertion "a real saved API key keeps the API route" locked the defect). After fix: the same case selects `codex` with zero key writes; `stored:true, connected:false` still selects `openai` and reaches preflight; a typed key selects `openai` even with a sign-in live; each dead-wire message carries its `(via …)` door. 16 assertions pass. `test/genesis-starnet-link.test.js` (47 assertions) still finds the codex branch by source grep.
+Before fix: `test/genesis-wake-credential.test.js` case `stored:true, connected:true` selected provider `openai` (the old assertion "a real saved API key keeps the API route" locked the defect). After fix: the same case selects `codex` with zero key writes; `stored:true, connected:false` still selects `openai` and reaches preflight; a typed key selects `openai` even with a sign-in live; each dead-wire message carries its `(via …)` door. 16 assertions pass. `test/genesis-eyehold-link.test.js` (47 assertions) still finds the codex branch by source grep.
 
 ## Sibling coverage
 
@@ -78,7 +78,7 @@ Before fix: `test/genesis-wake-credential.test.js` case `stored:true, connected:
     {
       "target": "OPENAI card codex branch presence",
       "state": "covered",
-      "test": "test/genesis-starnet-link.test.js",
+      "test": "test/genesis-eyehold-link.test.js",
       "scenario": "source grep pins the codexConnected branch to setProv('codex')",
       "gate": "fast"
     }
@@ -88,7 +88,7 @@ Before fix: `test/genesis-wake-credential.test.js` case `stored:true, connected:
       "target": "Dead-wire message names the door",
       "state": "covered",
       "test": "test/genesis-wake-credential.test.js",
-      "scenario": "the failure line carries (via your ChatGPT sign-in) / (via the OpenAI API key stored on this station) / (via the OpenAI API key you typed)",
+      "scenario": "the failure line carries (via your ChatGPT sign-in) / (via the OpenAI API key stored on this keep) / (via the OpenAI API key you typed)",
       "gate": "fast"
     }
   ],

@@ -15,7 +15,7 @@
   const filters = { category: query.get('category') || '', search: query.get('q') || '', facing: query.get('facing') || '', mount: query.get('mount') || '', page: Number(query.get('page')) || 0 };
   let powered = false, moving = false, outlines = false, scale = 2, requestedScale='fit', room = null, frame = 0, selected = null;
   await Promise.all([IndustrialTextures.ready, PropRemaster.ready]);
-  await SPRITES.init(); await SPRITES.ensureSkin('station_minion');
+  await SPRITES.init(); await SPRITES.ensureSkin('keep_minion');
   for (const c of data.categories) {
     const option = document.createElement('option'), entries = data.views.filter(v => v.category === c.id);
     option.value = c.id; option.textContent = c.label + ' · ' + new Set(entries.map(v => v.id)).size + ' types';
@@ -49,10 +49,10 @@
   }
   function rebuild() {
     cancelAnimationFrame(frame); selected = F.page(data, filters); filters.page = selected.index; syncURL();
-    const fixture = F.create(selected.entries, PropSprites, WorldModel), geo = fixture.station.projectGeometry();
-    const rendered = geo.props.map(p => ({ ...p, mount: fixture.station.mountOf(p) }));
+    const fixture = F.create(selected.entries, PropSprites, WorldModel), geo = fixture.keep.projectGeometry();
+    const rendered = geo.props.map(p => ({ ...p, mount: fixture.keep.mountOf(p) }));
     PropSprites.setSurfaceLayout(rendered);
-    room = { ...fixture, geo, rendered, bake: StationBake.bake(geo) }; resize();
+    room = { ...fixture, geo, rendered, bake: KeepBake.bake(geo) }; resize();
     $('page').textContent = 'Room ' + (selected.index + 1) + ' / ' + selected.pages;
     $('previous').disabled = selected.index === 0; $('next').disabled = selected.index + 1 >= selected.pages;
     $('entries').replaceChildren();
@@ -73,7 +73,7 @@
     PropSprites.setCtx(ctx); PropSprites.setNow(now); PropSprites.setSurfaceLayout(rendered);
     for (const p of rendered) PropSprites.drawShadow(p, p.mount);
     const order = p => PropSprites.surfacePlacement(p)?.sortY ?? (p.y + p.h) * 12;
-    const crew = { id: 'catalog-scale-crew', skin: 'station_minion', px: (room.crew.x - geo.origin.tx) * 12, py: (room.crew.y - geo.origin.ty) * 12, state: 'idle', dir: 'south' };
+    const crew = { id: 'catalog-scale-crew', skin: 'keep_minion', px: (room.crew.x - geo.origin.tx) * 12, py: (room.crew.y - geo.origin.ty) * 12, state: 'idle', dir: 'south' };
     const items = rendered.map(p => ({ y: order(p), draw: () => PropSprites.draw(p, powered, { still: !moving, occupied: powered }) }));
     items.push({ y: crew.py, draw: () => SPRITES.drawBody(ctx, crew, now, { reducedMotion: !moving }) });
     items.sort((a, b) => a.y - b.y).forEach(item => item.draw()); ctx.drawImage(bake.lightCv, 0, 0);
@@ -87,7 +87,7 @@
       const p = rendered.find(p => p.id === s.prop.id);
       if (p) ctx.fillText(String(selected.entries.indexOf(s.entry) + 1), p.x * 12, (p.y + p.h) * 12 + 6);
     });
-    ctx.fillText('WORKSTATION + CHAIR     CREW     CRATE / SCALE REFERENCES', (3 - geo.origin.tx) * 12, (room.anchorY + 4 - geo.origin.ty) * 12); ctx.restore();
+    ctx.fillText('WORKKEEP + CHAIR     CREW     CRATE / SCALE REFERENCES', (3 - geo.origin.tx) * 12, (room.anchorY + 4 - geo.origin.ty) * 12); ctx.restore();
     const status = PropRemaster.status(), loaded = new Set(status.views), mounts = rendered.filter(p => p.mount === 'surface').map(p => ({ id: p.id, ...PropSprites.surfacePlacement(p) }));
     const missing = selected.entries.filter(v => !loaded.has(v.id + ':' + v.artFace));
     const runtimeDrift = selected.entries.filter(v => !PropSprites.facings(v.id).includes(v.r) || JSON.stringify(PropSprites.footprintAt(v.id, v.r)) !== JSON.stringify(v.footprint));

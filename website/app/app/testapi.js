@@ -1,6 +1,6 @@
-/* SKYNET — testapi.js : DEV-ONLY behavioral + truthfulness test surface (window.__SKYNET_TEST__).
+/* SKYNET — testapi.js : DEV-ONLY behavioral + truthfulness test surface (window.__EYEHOLD_TEST__).
 
-   GATED ON window.__STARNET_DEV__ — this entire module is INERT in a normal/shipped build (the dev
+   GATED ON window.__EYEHOLD_DEV__ — this entire module is INERT in a normal/shipped build (the dev
    hook is only ever injected by a SKYNET_DEV sidecar; a packaged Tauri build never sets it). So it
    can live in the always-served frontend without leaking a debug API to users.
 
@@ -8,7 +8,7 @@
    screenshot. This exposes the live substrate so scripts/audit (P2) can AUTO-ASSERT, over CDP:
      • Tier A/B/C floor behavior — bodies()/hero()/crew() give each body's tile, zone, glance, goal,
        moving flag + target tile, so "idle stays in its zone", "awareness is gaze-only (no body walks
-       toward another)", and "a summoned agent walks to ITS OWN workstation" become PASS/FAIL.
+       toward another)", and "a summoned agent walks to ITS OWN workkeep" become PASS/FAIL.
      • Truthful telemetry (the no-app-lies mandate) — a FROZEN U.bus event log + INDEPENDENT reducers
        (the same pure folds the app uses: FloorStats / Xp / CtxGauge) so every on-screen number can be
        checked to equal a reduction over the real agent.* events, not a free-floating counter.
@@ -17,7 +17,7 @@
    mutated, so turning it on cannot change what a normal session would do. */
 'use strict';
 (() => {
-  if (typeof window === 'undefined' || !window.__STARNET_DEV__) return;   // DEV gate — inert otherwise
+  if (typeof window === 'undefined' || !window.__EYEHOLD_DEV__) return;   // DEV gate — inert otherwise
 
   const VERSION = '1';
   const LOG_CAP = 5000;
@@ -97,9 +97,9 @@
   }
   function displayedHud() {
     const txt = (id) => { const el = document.getElementById(id); return el ? (el.textContent || '').trim() : null; };
-    const s = txt('gt-station');
+    const s = txt('gt-keep');
     return {
-      station: { text: s, value: parseNum(s) },     // STATION, e.g. "Lv 3"
+      keep: { text: s, value: parseNum(s) },     // KEEP, e.g. "Lv 3"
     };
   }
   const captureBaseline = () => { if (!baseline) baseline = displayedHud(); return baseline; };
@@ -125,16 +125,16 @@
     const known = Number.isFinite(level);
     const commander = { level: known ? level : null, source: known ? (stale ? 'saved' : 'current') : 'unavailable' };
     const expectedText = known ? 'Lv ' + level + (stale ? ' · saved' : '') : '—';
-    checks.push({ metric: 'stationLevel', displayed: displayed.station.value,
+    checks.push({ metric: 'keepLevel', displayed: displayed.keep.value,
       expected: commander.level, mode: 'eq', expectedText, source: commander.source,
-      ok: displayed.station.value === commander.level && displayed.station.text === expectedText });
+      ok: displayed.keep.value === commander.level && displayed.keep.text === expectedText });
     return { displayed, baseline: base, commander, reduced: { totals, floor, xp, ctx: ctx() }, checks, allOk: checks.every((c) => c.ok) };
   }
 
   // ---- readiness + one-call probe ----
   function ready() {
     try {
-      if (!window.__STARNET_DEV__) return false;
+      if (!window.__EYEHOLD_DEV__) return false;
       const g = document.getElementById('screen-game');
       const inGame = !!(g && g.classList.contains('active'));
       return inGame && bodies().length > 0;
@@ -155,6 +155,6 @@
   // Capture the HUD zero-point once the floor is up, so delta-truthfulness has a baseline.
   (function armBaseline(tries) { if (ready()) { captureBaseline(); return; } if (tries < 150) setTimeout(() => armBaseline(tries + 1), 200); })(0);
 
-  window.__SKYNET_TEST__ = api;
-  try { console.log('[testapi] window.__SKYNET_TEST__ armed (DEV) v' + VERSION); } catch (_) {}
+  window.__EYEHOLD_TEST__ = api;
+  try { console.log('[testapi] window.__EYEHOLD_TEST__ armed (DEV) v' + VERSION); } catch (_) {}
 })();

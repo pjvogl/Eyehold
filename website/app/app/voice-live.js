@@ -1,4 +1,4 @@
-/* voice-live.js — persistent local speech session over whichever provider powers the active Starnet agent. */
+/* voice-live.js — persistent local speech session over whichever provider powers the active Eyehold agent. */
 'use strict';
 
 const VoiceLive = (() => {
@@ -8,7 +8,7 @@ const VoiceLive = (() => {
   // ---- NATIVE LIVE CALL (see startRealtime) ----
   // `realtime` is the mode flag; the rest is the live peer connection and its plumbing.
   let realtime = false, pc = null, dataChannel = null, remoteAudio = null, callProvider = '';
-  // keeps the live session's picture of the station current without spamming an update every tick
+  // keeps the live session's picture of the keep current without spamming an update every tick
   let contextTimer = null, lastContextFingerprint = '';
   let sessionSeq = 0;
   let stream = null, context = null, source = null, processor = null, sink = null;
@@ -25,10 +25,10 @@ const VoiceLive = (() => {
   let reconnectTimer = null, reconnectAttempt = 0, transientErrorTimer = null;
   let warmupNotice = false;
   const $ = id => document.getElementById(id);
-  const POSITION_KEY = 'starnet.liveVoice.position.v1';
+  const POSITION_KEY = 'eyehold.liveVoice.position.v1';
   // Which of the provider's voices speaks. Empty = the provider descriptor's default.
-  const LOCAL_VOICE_KEY = 'starnet.liveVoice.localVoice.v1';
-  const TURN_END_KEY = 'starnet.liveVoice.turnEndMs.v1';
+  const LOCAL_VOICE_KEY = 'eyehold.liveVoice.localVoice.v1';
+  const TURN_END_KEY = 'eyehold.liveVoice.turnEndMs.v1';
   // Start complete turns on the proven QUICK boundary. A partial that visibly trails off still gets the
   // existing +600ms continuation grace below, and NORMAL/PATIENT remain explicit Commander choices.
   const DEFAULT_TURN_END_MS = 1200;
@@ -133,7 +133,7 @@ const VoiceLive = (() => {
     panel.hidden = true;
     panel.setAttribute('role', 'dialog');
     panel.setAttribute('aria-modal', 'false');
-    panel.setAttribute('aria-label', 'Starnet local live voice');
+    panel.setAttribute('aria-label', 'Eyehold local live voice');
     panel.innerHTML = [
       '<header class="lv-head">',
         '<span class="lv-brand">LOCAL LIVE</span>',
@@ -162,7 +162,7 @@ const VoiceLive = (() => {
         '<option value="2600">PATIENT · 2.6S</option>',
       '</select></label>',
       '<details class="lv-details"><summary>VOICE DETAILS</summary><dl class="lv-rail">',
-        '<div class="lv-row"><dt>ROUTE</dt><dd id="lv-route">LOCAL SPEECH · ACTIVE STARNET AGENT</dd></div>',
+        '<div class="lv-row"><dt>ROUTE</dt><dd id="lv-route">LOCAL SPEECH · ACTIVE EYEHOLD AGENT</dd></div>',
         '<div class="lv-row lv-row-dl"><dt>SPEECH</dt><dd id="lv-model">LOCAL MODELS: CHECKING</dd></div>',
         '<div class="lv-row"><dt>LATENCY</dt><dd id="lv-timing" title="First words: detected speech to transcript. Send: last voiced frame to submission. Speech start: latest spoken chunk queued to actual playback.">Speak to measure this turn.</dd></div>',
         '<div class="lv-row"><dt>TASK</dt><dd id="lv-task" class="lv-task">No active task detected.</dd></div>',
@@ -553,7 +553,7 @@ const VoiceLive = (() => {
      session's agent. The call now remembers the session it was OPENED in and pins focus back to it before
      every utterance — browsing while silent is free, but spoken words always reach the session the call
      belongs to. The ONE legitimate rebind is the Commander steering the call BY VOICE ("open the research
-     session"): station.switch_session calls rebind() when a live call is up, because that switch came
+     session"): keep.switch_session calls rebind() when a live call is up, because that switch came
      through the call itself. A UI click never routes through that verb. */
   let boundWsId = null;
   function bindSession() {
@@ -635,7 +635,7 @@ const VoiceLive = (() => {
       return true;
     }
     if (typeof Chat === 'undefined' || !Chat.sendOrQueue) {
-      setError('The signed-in Starnet agent is not ready yet.');
+      setError('The signed-in Eyehold agent is not ready yet.');
       return true;
     }
     const result = Chat.sendOrQueue(value);
@@ -1154,7 +1154,7 @@ const VoiceLive = (() => {
     button.setAttribute('aria-label', on ? 'Stop Local Live hands-free voice' : 'Start Local Live hands-free voice');
     button.title = on
       ? 'Stop Local Live hands-free voice'
-      : 'Local Live hands-free voice — local speech with your active Starnet agent';
+      : 'Local Live hands-free voice — local speech with your active Eyehold agent';
   }
 
   async function start(retry) {
@@ -1167,10 +1167,10 @@ const VoiceLive = (() => {
     // how this panel used to show users a raw "Cannot find module" string.
     // A failed sidecar probe refuses before touching the microphone. Every engine below still depends on
     // that sidecar, so "try anyway" can only produce a live-looking session that cannot hear or speak.
-    /* ONE ENGINE FOR EVERY STATION (Andrew, 2026-07-30). The provider-native realtime path is deliberately NOT
+    /* ONE ENGINE FOR EVERY KEEP (Andrew, 2026-07-30). The provider-native realtime path is deliberately NOT
        taken any more, even where it is available. It gave the smoothest turns but tied the feature to one
        vendor, capped the personality behind that vendor's guardrails, and made the behaviour differ between
-       stations depending on who the Commander happened to connect. The built-in engine is slower per turn and
+       keeps depending on who the Commander happened to connect. The built-in engine is slower per turn and
        wins everything else: identical on every provider, no credential at all, and the persona speaks in its
        own words with no third-party ceiling. `realtimeCapability()` and startRealtime() are kept, unreferenced
        from here, so the choice is reversible without rebuilding it — but nothing routes to them.
@@ -1183,15 +1183,15 @@ const VoiceLive = (() => {
       $('live-voice-panel').hidden = false;
       setState('offline');
       caption('user', readiness.staleSession
-        ? 'This page lost its connection when the station restarted.'
-        : 'Local Live could not reach the station.');
+        ? 'This page lost its connection when the keep restarted.'
+        : 'Local Live could not reach the keep.');
       caption('agent', readiness.staleSession
         ? 'Reload this page to reconnect, then start Local Live again.'
-        : 'Confirm the station is running, then try again.');
+        : 'Confirm the keep is running, then try again.');
       if (readiness.staleSession) {
-        setUnrecoverableError('The station restarted — reload this page to reconnect voice.');
+        setUnrecoverableError('The keep restarted — reload this page to reconnect voice.');
       } else {
-        setError('Local voice could not reach the station.');
+        setError('Local voice could not reach the keep.');
       }
       reflectButton(false);
       return;
@@ -1231,7 +1231,7 @@ const VoiceLive = (() => {
       // session (restored on exit if we were the ones who flipped it) — otherwise live voice opens silent and
       // looks broken until the Commander hunts down a toggle.
       if (Voice.forceSpeakOn) Voice.forceSpeakOn();
-      // Local Live is now Starnet's one hands-free surface. A legacy loop can still exist through
+      // Local Live is now Eyehold's one hands-free surface. A legacy loop can still exist through
       // older saved state or API callers; close it before attaching this persistent microphone.
       if (Voice.inVoiceMode && Voice.inVoiceMode() && Voice.stopConvo) Voice.stopConvo();
       if (Voice.setLocalTts) Voice.setLocalTts(true);
@@ -1285,7 +1285,7 @@ const VoiceLive = (() => {
      The audio path is deliberately OUR microphone stream: the same one that scrolls the level strip. That is
      why the meter and barge-in work here and were dead on the dictation leg — nothing was opening a mic.
 
-     Tool calls arrive on the data channel and are answered against the live station, so "what's running?"
+     Tool calls arrive on the data channel and are answered against the live keep, so "what's running?"
      and "start X" move real workstreams instead of being described. Anything we cannot answer truthfully is
      returned as an error to the model rather than invented.
      =================================================================================================== */
@@ -1309,11 +1309,11 @@ const VoiceLive = (() => {
 
   /* WHO IS SPEAKING, AND WHAT DO THEY KNOW.
      The live call must BE the selected agent — same name, same persona, same composed system prompt the typed
-     chat uses — not a separate "voice assistant" bolted on beside it. It also has to know the station it is
+     chat uses — not a separate "voice assistant" bolted on beside it. It also has to know the keep it is
      standing in: which crew exist, which sessions are open, which one is active, what is running. The server's
      starting instructions are deliberately generic because only the page knows any of this, so the moment the
-     channel opens we replace them with the real thing, and refresh whenever the station changes underneath. */
-  function stationContext() {
+     channel opens we replace them with the real thing, and refresh whenever the keep changes underneath. */
+  function keepContext() {
     const agent = (typeof App !== 'undefined' && App.currentAgent) ? App.currentAgent() : null;
     const crew = (typeof App !== 'undefined' && App.agents) ? (App.agents() || []) : [];
     const streams = (typeof Workstreams !== 'undefined' && Workstreams.list) ? (Workstreams.list() || []) : [];
@@ -1328,14 +1328,14 @@ const VoiceLive = (() => {
   }
 
   function voiceInstructions() {
-    const ctx = stationContext();
+    const ctx = keepContext();
     const agent = ctx.agent;
-    const name = (agent && agent.name) || 'the station agent';
+    const name = (agent && agent.name) || 'the keep agent';
     const lines = [];
     // 1) IDENTITY — the agent's own composed prompt, verbatim. It already carries persona, role, dossier and
     //    crew clause, so the spoken agent and the typed agent are the same character rather than two.
     if (agent && agent.systemPrompt) lines.push(String(agent.systemPrompt));
-    lines.push('You are ' + name + ', speaking aloud to the Commander in StarNet. You are the SAME agent they type to — same memory, same work, same voice of character. Never describe yourself as a separate voice assistant or a control layer.');
+    lines.push('You are ' + name + ', speaking aloud to the Commander in Eyehold. You are the SAME agent they type to — same memory, same work, same voice of character. Never describe yourself as a separate voice assistant or a control layer.');
     /* 2) THE PERSONALITY IS THE POINT, AND SPEAKING IT ALOUD MUST NOT SAND IT DOWN.
        This block used to say "speak naturally and briefly, a sentence or two at a time", which quietly
        overrode the persona above and produced a flat, careful assistant no matter which archetype was
@@ -1349,17 +1349,17 @@ const VoiceLive = (() => {
       lines.push('Honor the effective style, language preference and custom instructions in your composed personality; speaking aloud does not reset those settings.');
     }
     lines.push('Speak in a natural spoken rhythm — the length a person would actually say out loud rather than a written paragraph. Let the Commander interrupt you at any moment and stop immediately when they do.');
-    // 3) THE STATION, as it is right now.
+    // 3) THE KEEP, as it is right now.
     if (ctx.crew.length) {
-      lines.push('The crew on this station: ' + ctx.crew.map(a => (a.name || a.id) + (a.role ? ' (' + a.role + ')' : '')).join('; ') + '.');
+      lines.push('The crew on this keep: ' + ctx.crew.map(a => (a.name || a.id) + (a.role ? ' (' + a.role + ')' : '')).join('; ') + '.');
     }
     if (ctx.streams.length) {
       lines.push('Open sessions: ' + ctx.streams.slice(0, 12).map(w => (w.title || 'General')).join('; ') + '.');
     }
     if (ctx.activeWs) lines.push('The active session is "' + (ctx.activeWs.title || 'General') + '".');
-    lines.push('Call get_starnet_status before answering any question about what is running, what is waiting for approval, or what the crew is doing — never guess or invent task state, tool results, approvals or files.');
-    lines.push('For anything requiring research, code, file changes, tools or sustained work, call start_starnet_task rather than claiming you did it yourself. Afterwards confirm in one short sentence and note that the work is visible in the session.');
-    lines.push('Use interrupt_starnet_task only when the Commander clearly asks to stop or change direction.');
+    lines.push('Call get_eyehold_status before answering any question about what is running, what is waiting for approval, or what the crew is doing — never guess or invent task state, tool results, approvals or files.');
+    lines.push('For anything requiring research, code, file changes, tools or sustained work, call start_eyehold_task rather than claiming you did it yourself. Afterwards confirm in one short sentence and note that the work is visible in the session.');
+    lines.push('Use interrupt_eyehold_task only when the Commander clearly asks to stop or change direction.');
     lines.push('Do not ask for credentials or read secrets aloud.');
     return lines.join('\n\n');
   }
@@ -1389,16 +1389,16 @@ const VoiceLive = (() => {
     try { if (typeof Chat !== 'undefined' && Chat.typeLine) Chat.typeLine([{ text: said, cps: 1200 }], null, { silent: true }); } catch (_) {}
   }
 
-  // ---- the three tools the session config declares, answered from live station state ----
+  // ---- the three tools the session config declares, answered from live keep state ----
   async function runVoiceTool(name, args) {
-    if (name === 'get_starnet_status') {
+    if (name === 'get_eyehold_status') {
       const snap = statusSnapshot();
       if (!snap || snap.active === null && !(snap.workstreams || []).length) {
-        return { ok: false, error: 'the station is still starting up — no workstreams are readable yet' };
+        return { ok: false, error: 'the keep is still starting up — no workstreams are readable yet' };
       }
       return { ok: true, ...snap };
     }
-    if (name === 'start_starnet_task') {
+    if (name === 'start_eyehold_task') {
       const instruction = String((args && args.instruction) || '').trim();
       if (!instruction) return { ok: false, error: 'no instruction was given' };
       const dispatch = (typeof Chat !== 'undefined') && (Chat.sendOrQueue || Chat.send);
@@ -1414,7 +1414,7 @@ const VoiceLive = (() => {
         return { ok: false, error: String((error && error.message) || error) };
       }
     }
-    if (name === 'interrupt_starnet_task') {
+    if (name === 'interrupt_eyehold_task') {
       const stop = (typeof Chat !== 'undefined') && (Chat.stopActive || Chat.abort);
       if (!stop) return { ok: false, error: 'nothing to interrupt' };
       if (typeof Chat.isBusy === 'function' && !Chat.isBusy()) return { ok: true, interrupted: false, note: 'nothing was running' };
@@ -1519,7 +1519,7 @@ const VoiceLive = (() => {
       dataChannel = pc.createDataChannel('oai-events');
       dataChannel.onmessage = event => { onRealtimeEvent(event.data); };
       // The server can only send generic instructions — it does not know which agent is selected or what is
-      // open. The instant the channel is live, replace them with THIS agent's identity and the real station
+      // open. The instant the channel is live, replace them with THIS agent's identity and the real keep
       // state, then keep them current: switching agent or session mid-call must not leave the voice talking
       // as whoever was selected when it started.
       dataChannel.onopen = () => {
@@ -1527,7 +1527,7 @@ const VoiceLive = (() => {
         clearInterval(contextTimer);
         contextTimer = setInterval(() => {
           if (!active || !realtime) return;
-          const fingerprint = voiceContextFingerprint(stationContext());
+          const fingerprint = voiceContextFingerprint(keepContext());
           if (fingerprint === lastContextFingerprint) return;
           lastContextFingerprint = fingerprint;
           pushSessionContext();
@@ -1547,7 +1547,7 @@ const VoiceLive = (() => {
       if (!active || seq !== sessionSeq) return;
 
       setState('warming');
-      // The spoken voice is a CHOICE, not a constant. Stored per station; the server validates it against the
+      // The spoken voice is a CHOICE, not a constant. Stored per keep; the server validates it against the
       // provider's real voice list (status().voices) and falls back to the descriptor default.
       let wantVoice = '';
       try { wantVoice = String(localStorage.getItem(LOCAL_VOICE_KEY) || '').trim(); } catch (_) {}
@@ -1632,7 +1632,7 @@ const VoiceLive = (() => {
     reflectButton(true);
     if (typeof Voice !== 'undefined') {
       /* ⛔ THE SAME LEVER start() PULLS, INCLUDING THE DEGRADE PATH. An explicit opt-out or damaged/custom
-         bundle lands here even in an installed station. Wiring the speaker auto-enable only into the models
+         bundle lands here even in an installed keep. Wiring the speaker auto-enable only into the models
          path left that room muted: the Commander could talk, but never hear an answer. */
       if (Voice.forceSpeakOn) Voice.forceSpeakOn();
       if (Voice.inVoiceMode && Voice.inVoiceMode() && Voice.stopConvo) Voice.stopConvo();

@@ -99,7 +99,7 @@ function startMockOpenRouter() {
 
 function boot(port, env, attemptsLeft) {
   return new Promise((resolve, reject) => {
-    const child = spawn(process.execPath, [INDEX], { env: Object.assign({}, process.env, env, { SKYNET_PORT: String(port) }), stdio: ['ignore', 'pipe', 'pipe'] });
+    const child = spawn(process.execPath, [INDEX], { env: Object.assign({}, process.env, env, { EYEHOLD_PORT: String(port) }), stdio: ['ignore', 'pipe', 'pipe'] });
     let out = '', settled = false;
     const onData = d => {
       out += d.toString();
@@ -136,10 +136,10 @@ async function startSse(url) {
   const mock = await startMockOpenRouter();
   const ws = fs.mkdtempSync(path.join(os.tmpdir(), 'sk-workshop-e2e-'));
   const openLog = path.join(ws, 'open-invocations.log');   // W7: the CI open-seam appends here instead of launching an app
-  // SKYNET_DEV=1 marks this as a dev/CI context so the TEST open-seam (SKYNET_TEST_OPEN_LOG) is honored. The seam
-  // is now gated on DEV_MODE (audit 1.4): a production process carrying SKYNET_TEST_OPEN_LOG must NOT fake-launch,
+  // EYEHOLD_DEV=1 marks this as a dev/CI context so the TEST open-seam (EYEHOLD_TEST_OPEN_LOG) is honored. The seam
+  // is now gated on DEV_MODE (audit 1.4): a production process carrying EYEHOLD_TEST_OPEN_LOG must NOT fake-launch,
   // so the env var alone no longer installs the fake opener — the run must also declare itself dev/test.
-  const env = { SKYNET_WORKSPACES: ws, SKYNET_DEV: '1', SKYNET_OPENROUTER_BASE: mock.base, SKYNET_OPENROUTER_KEY: 'sk-or-v1-workshop-fake', SKYNET_DEFAULT_MODEL: 'test/model', SKYNET_TEST_OPEN_LOG: openLog };
+  const env = { EYEHOLD_WORKSPACES: ws, EYEHOLD_DEV: '1', EYEHOLD_OPENROUTER_BASE: mock.base, EYEHOLD_OPENROUTER_KEY: 'sk-or-v1-workshop-fake', EYEHOLD_DEFAULT_MODEL: 'test/model', EYEHOLD_TEST_OPEN_LOG: openLog };
   const firstBoot = await boot(8960 + (process.pid % 30), env, 20);
   let child = firstBoot.child;
   let B = 'http://' + HOST + ':' + firstBoot.port;
@@ -147,7 +147,7 @@ async function startSse(url) {
   try {
     const token = await bootToken(B, B);
     A.ok(token.length >= 32, 'got a session API token');
-    const headers = { 'Content-Type': 'application/json', 'X-StarNet-Token': token, Origin: B };
+    const headers = { 'Content-Type': 'application/json', 'X-Eyehold-Token': token, Origin: B };
     sse = await startSse(B + '/api/channels/events?' + require('./_httpToken.js').sseQuery(token));
 
     // 0. EMPTY BACKLOG (granted, nothing queued) -> silent no-op, no workshop.built.
@@ -236,7 +236,7 @@ async function startSse(url) {
 
     // AUDIT 0.3 — OPAQUE-ORIGIN SANDBOX: a served deliverable is same-origin executable HTML, so it MUST carry
     // `Content-Security-Policy: sandbox allow-scripts` (scripts run, but NO allow-same-origin → opaque origin →
-    // can't read window.__STARNET_API_TOKEN__ or make credentialed /api/* calls). allow-same-origin would defeat
+    // can't read window.__EYEHOLD_API_TOKEN__ or make credentialed /api/* calls). allow-same-origin would defeat
     // the whole fence, so assert it is ABSENT. HEAD carries the same header (a preflight probe must see the fence).
     const cspOf = r => (r.headers.get('content-security-policy') || '');
     A.ok(/\bsandbox\b/.test(cspOf(pageRes)), 'AUDIT 0.3: served html carries a sandbox CSP');
@@ -267,7 +267,7 @@ async function startSse(url) {
     const oldT = Tickets.mint(token, 'run', Tickets.scopeRun('builder', webRun), { now: Date.now() - Tickets.KINDS.run.maxTtlMs - 1000 });
     const expiredRun = await fetch(B + '/workshop-run/~t/' + oldT + '/builder/' + webRun + '/index.html');
     A.eq(expiredRun.status, 403, 'W7: an EXPIRED run ticket is 403');
-    const viaHeader = await fetch(plainBase + '/index.html', { headers: { 'x-starnet-token': token } });
+    const viaHeader = await fetch(plainBase + '/index.html', { headers: { 'x-eyehold-token': token } });
     A.eq(viaHeader.status, 200, 'W7: a fetch with the header still reads the run (no URL credential needed)');
 
     // (3) TRAVERSAL IMPOSSIBLE — a ../ escape and an encoded escape both refuse (never reach a file outside the jail).
@@ -299,7 +299,7 @@ async function startSse(url) {
     A.eq(openMissing.status, 403, 'W7: missing paths cannot reach a native opener');
 
     // (6) decide keep { open:true } copies only and never opens the destination.
-    const keepOpenDir = path.join(os.tmpdir(), 'starnet-keepopen-' + Date.now());
+    const keepOpenDir = path.join(os.tmpdir(), 'eyehold-keepopen-' + Date.now());
     const koRes = await fetch(B + '/api/workshop/decide', { method: 'POST', headers, body: JSON.stringify({ agentId: 'builder', runId: webRun, decision: 'keep', destPath: keepOpenDir, open: true }) });
     const koJ = await koRes.json();
     A.ok(koRes.status === 200 && koJ.ok === true && koJ.opened === false, 'W7: keep copies but HTTP cannot open the destination');
@@ -354,7 +354,7 @@ async function startSse(url) {
     const runId2 = ((keepStream.find(e => e.name === 'workshop.shift.result') || {}).payload || {}).runId;
     A.ok(runId2 && runId2 !== runId, 'a second shift built a second deliverable with its own runId');
 
-    const keepDir = path.join(os.tmpdir(), 'starnet-keep-' + Date.now());
+    const keepDir = path.join(os.tmpdir(), 'eyehold-keep-' + Date.now());
     const keep1 = await fetch(B + '/api/workshop/decide', { method: 'POST', headers, body: JSON.stringify({ agentId: 'builder', runId: runId2, decision: 'keep', destPath: keepDir }) });
     const keep1j = await keep1.json();
     A.ok(keep1.status === 200 && keep1j.ok === true && keep1j.copied >= 1, 'keep to a fresh folder copies the deliverable files');
@@ -395,7 +395,7 @@ async function startSse(url) {
     await sleep(180);
     const restarted = await boot(firstBoot.port, env, 20); child = restarted.child; B = 'http://' + HOST + ':' + restarted.port;
     const token2 = await bootToken(B, B);
-    const headers2 = { 'Content-Type': 'application/json', 'X-StarNet-Token': token2, Origin: B };
+    const headers2 = { 'Content-Type': 'application/json', 'X-Eyehold-Token': token2, Origin: B };
     const afterRestart = await (await fetch(B + '/api/deliverables', { headers: headers2 })).json();
     A.ok(afterRestart.items.some(r => r.runId === runId2 && r.status === 'kept'), 'kept deliverable remains indexed after sidecar restart');
     A.ok(afterRestart.items.some(r => r.runId === runId && r.status === 'discarded'), 'discarded deliverable remains indexed after cleanup undo and restart');

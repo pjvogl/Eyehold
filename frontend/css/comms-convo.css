@@ -1,4 +1,4 @@
-/* STARNET — comms-convo.css : COMMS as a CONVERSATION (Andrew 10-03).
+/* EYEHOLD — comms-convo.css : COMMS as a CONVERSATION (Andrew 10-03).
    "hard to read sometimes with the way everythings clustered all together, hard to see when you sent things …
    it needs to be clean, nice and conversational and pleasant to use".
 
@@ -57,7 +57,7 @@ body #chat-panel :is(#chat-log, #gc-log) .cmsg:is(.agent, .user):is(:hover, :foc
 /* a same-speaker follow-up stamped the same minute as the row above: one message, one stamp */
 body #chat-panel :is(#chat-log, #gc-log) .cmsg.ts-repeat:is(.agent, .user) > .cmsg-head { display: none; }
 
-/* callsigns read as station type: the same RGB-fringe phosphor the CREW names wear */
+/* callsigns read as keep type: the same RGB-fringe phosphor the CREW names wear */
 body #chat-panel :is(#chat-log, #gc-log) .cmsg:is(.agent, .user) > .cmsg-head > .who { text-shadow: var(--pg-glow-soft, none); letter-spacing: 1.4px; }
 
 /* ---- THE DITHER FIELD — both speakers' text sits on its rail over a faint 1px ordered-dither field: pipglass's own
@@ -126,7 +126,7 @@ body #chat-panel :is(#chat-log, #gc-log) .comms-presence.resolved.err { color: v
 body #chat-panel :is(#chat-log, #gc-log) .comms-presence.resolved.stopped { color: var(--gold); opacity: .85; }
 body #chat-panel :is(#chat-log, #gc-log) .run-fold { margin: 2px 0 6px 14px; }
 
-/* ---- STATION LINES (trophies, quests, level-ups) — a ruled ASCII line, the time break's sibling: ─┐ ◆ TROPHY … ┌─.
+/* ---- KEEP LINES (trophies, quests, level-ups) — a ruled ASCII line, the time break's sibling: ─┐ ◆ TROPHY … ┌─.
    No box (Andrew 10-03: not a fan of the text boxes). ---- */
 body #chat-panel :is(#chat-log, #gc-log) .cmsg.broadcast {
   display: flex !important; align-items: center; gap: 10px; margin: 6px 2px; padding: 0;
@@ -162,7 +162,7 @@ body #chat-panel :is(#chat-log, #gc-log) .cmsg .body .md-pre {
   border: 0; border-left: 1px solid rgba(var(--ph-rgb), .4); border-radius: 0;
   background: rgba(0, 0, 0, .22); padding: 6px 36px 6px 12px;
 }
-/* list bullets as the station's ▸ glyph, the pipboy list marker */
+/* list bullets as the keep's ▸ glyph, the pipboy list marker */
 body #chat-panel :is(#chat-log, #gc-log) .cmsg .body .md-list:not(ol) > li::marker { content: '▸  '; color: var(--ph); }
 
 /* ---- ASIDES (the agent's gentle nudge) — the same rail + light dither, in the beat family's gold, not a framed card ---- */

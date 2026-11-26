@@ -33,8 +33,8 @@ const { normSupport, SUPPORT_PLACEHOLDER } = Diag._internals;
 
 // ---- a real address passes through (trimmed) ----
 {
-  A.eq(normSupport('help@starnet.app'), 'help@starnet.app', 'a plausible address passes through unchanged');
-  A.eq(normSupport('  help@starnet.app  '), 'help@starnet.app', 'surrounding whitespace is trimmed');
+  A.eq(normSupport('help@eyehold.app'), 'help@eyehold.app', 'a plausible address passes through unchanged');
+  A.eq(normSupport('  help@eyehold.app  '), 'help@eyehold.app', 'surrounding whitespace is trimmed');
   A.eq(normSupport('androo.agi@gmail.com'), 'androo.agi@gmail.com', 'the current shipped address is valid');
 }
 

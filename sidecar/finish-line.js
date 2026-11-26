@@ -17,10 +17,10 @@ function block(opts) {
     'Use tools whenever they materially improve correctness or completeness. If a tool returns empty, partial, stale, or failed output, inspect the exact failure and try a different query, arguments, strategy, or tool before giving up. Never repeat an identical failing call blindly.'
   ];
   if (tools.has('tool.search')) {
-    lines.push('Before claiming a capability is missing, use tool.search to discover deferred tools and alternate routes that the live station has granted. A tool not shown in the first row may still be available through search.');
+    lines.push('Before claiming a capability is missing, use tool.search to discover deferred tools and alternate routes that the live keep has granted. A tool not shown in the first row may still be available through search.');
   }
   if (tools.has('browser.login')) {
-    lines.push('When a website genuinely requires authentication and the Commander is watching, use browser.login: it opens the station\'s visible, dedicated Chrome window for the Commander to sign in themselves, then returns you to the authenticated headless session. Do not replace that first-class path with command-line or remote-debugging setup instructions.');
+    lines.push('When a website genuinely requires authentication and the Commander is watching, use browser.login: it opens the keep\'s visible, dedicated Chrome window for the Commander to sign in themselves, then returns you to the authenticated headless session. Do not replace that first-class path with command-line or remote-debugging setup instructions.');
   }
   lines.push(
     'Act on the obvious safe interpretation instead of asking how to begin. Ask the Commander only for irreducible human input or a decision that cannot be retrieved and would materially change the action; credentials, MFA, and explicit consent stay with them.',

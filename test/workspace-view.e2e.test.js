@@ -22,7 +22,7 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
 
 function boot(port, env, attemptsLeft) {
   return new Promise((resolve, reject) => {
-    const child = spawn(process.execPath, [INDEX], { env: Object.assign({}, process.env, env, { SKYNET_PORT: String(port) }), stdio: ['ignore', 'pipe', 'pipe'] });
+    const child = spawn(process.execPath, [INDEX], { env: Object.assign({}, process.env, env, { EYEHOLD_PORT: String(port) }), stdio: ['ignore', 'pipe', 'pipe'] });
     let out = '', settled = false;
     const onData = d => {
       out += d.toString();
@@ -48,9 +48,9 @@ function boot(port, env, attemptsLeft) {
   fs.writeFileSync(path.join(agentDir, 'site', '.git', 'config'), '[core]');
   fs.writeFileSync(path.join(agentDir, 'notes.md'), '# private notes');
   fs.writeFileSync(path.join(agentDir, 'root.html'), '<p>root page</p>');
-  // the scratch HOME/APPDATA keep this sidecar off the real station entirely
-  const env = { SKYNET_WORKSPACES: ws, SKYNET_DEV: '1', HOME: scratch, USERPROFILE: scratch, APPDATA: scratch, LOCALAPPDATA: scratch,
-    SKYNET_OPENROUTER_KEY: 'sk-or-v1-view-fake', SKYNET_DEFAULT_MODEL: 'test/model' };
+  // the scratch HOME/APPDATA keep this sidecar off the real keep entirely
+  const env = { EYEHOLD_WORKSPACES: ws, EYEHOLD_DEV: '1', HOME: scratch, USERPROFILE: scratch, APPDATA: scratch, LOCALAPPDATA: scratch,
+    EYEHOLD_OPENROUTER_KEY: 'sk-or-v1-view-fake', EYEHOLD_DEFAULT_MODEL: 'test/model' };
   const booted = await boot(9010 + (process.pid % 30), env, 20);
   const child = booted.child;
   const B = 'http://' + HOST + ':' + booted.port;
@@ -108,7 +108,7 @@ function boot(port, env, attemptsLeft) {
     A.eq((await fetch(B + view('') + 'root.html')).status, 200, 'a root-level page renders on a root ticket');
 
     // (6) the page's own minter builds URLs this route accepts
-    global.window = { __STARNET_API_TOKEN__: token, __STARNET_API__: '', crypto: require('node:crypto').webcrypto };
+    global.window = { __EYEHOLD_API_TOKEN__: token, __EYEHOLD_API__: '', crypto: require('node:crypto').webcrypto };
     delete require.cache[require.resolve('../frontend/app/apiticket.js')];
     const P = require('../frontend/app/apiticket.js');
     const u1 = P.viewUrl('builder', 'site/index.html');

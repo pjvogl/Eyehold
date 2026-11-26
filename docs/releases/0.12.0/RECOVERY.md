@@ -8,7 +8,7 @@ The running installed desktop reports clean commit `fd55ee2b26fcb30ebc9397f43af4
 
 The staging allowlist excluded `assets/industrial/calibration/crate.png` while the production loader unconditionally requests it and treats its absence as a pack failure. This is why the merged graphics disappear in the installer even though source/browser checks pass. Evidence: `.dogfood/release-recovery/installed-before.json` and `installed-before.png` in the release-preparation worktree.
 
-The current source baseline is `1cbd6384d`, which also includes the subsequent ChatGPT-sign-in precedence fix. The graphical coordination, sprite, shell, station-default, and response-audit branch tips are all ancestors of this baseline. The earlier installer does not contain the sign-in fix.
+The current source baseline is `1cbd6384d`, which also includes the subsequent ChatGPT-sign-in precedence fix. The graphical coordination, sprite, shell, keep-default, and response-audit branch tips are all ancestors of this baseline. The earlier installer does not contain the sign-in fix.
 
 ## Acceptance still to earn
 
@@ -16,7 +16,7 @@ The current source baseline is `1cbd6384d`, which also includes the subsequent C
 
 The installed intermediate build still rendered legacy agent sets and portraits. The sprite lane was merged, but its complete motion manifest and roster were installed only by the localhost `?skinSet=study` review hook. Git ancestry alone did not detect this. Evidence: `.dogfood/release-recovery/sprites-before.json` from the real Tauri origin.
 
-Production now maps the existing saved skin IDs to all 37 selected sets and ships their complete motion tracks in the canonical sprite manifest. The retained Pikachu stays selected; the retired duplicate `minionchar` remains readable as the approved Station Minion without becoming an extra picker choice. Portraits, first-paint preload, lazy loading, leader loading, and scale resolution follow the production selection. No saved agent records are rewritten. The preview remains an optional review surface.
+Production now maps the existing saved skin IDs to all 37 selected sets and ships their complete motion tracks in the canonical sprite manifest. The retained Pikachu stays selected; the retired duplicate `minionchar` remains readable as the approved Keep Minion without becoming an extra picker choice. Portraits, first-paint preload, lazy loading, leader loading, and scale resolution follow the production selection. No saved agent records are rewritten. The preview remains an optional review surface.
 
 The production renderer regression verifies selected bytes/order for every track, all four walking directions, measured ground contact, existing skin IDs, and default/leader resolution. Installed acceptance now also requires selected catalog mappings, actual world draw tracks, and loaded portraits with preview mode disabled. Neither previous installer is the complete release candidate.
 
@@ -26,7 +26,7 @@ The first recovery build is `725664380009a5e609b77a0a44f2efaa9b942948`. It is an
 
 The second graphics build is `58e85d261e85248bb510879e034fac04e0adac55`, with all 37 production skin selections and 2,924 byte-verified staged animation frames. Its updater signature verifies against the baked key; fast gate 812/812 passed. This remains intermediate: the picker compatibility fix `495c3c6e0` and memory-reliability lane through `dcc1dc27f` are included afterward, the latter via merge `e2f0de9c7`. The final candidate must bind their combined source, executable and fresh gates.
 
-The broader branch audit found prop worker changes incorporated as equivalent cherry-picks, and authored content/machinery runtime files identical to their worker tips. The older expression branch is intentionally excluded: the owner requested "merge without all the gestures" in the Add expressive agent animations task; its bear-frame repair is present as `4628cfcf0`. Dedicated couch-specific skin frames remain deferred under the accepted temporary seating compromise. Review fixtures such as the Kepler showcase remain local-only; they must not replace a user's saved station layout.
+The broader branch audit found prop worker changes incorporated as equivalent cherry-picks, and authored content/machinery runtime files identical to their worker tips. The older expression branch is intentionally excluded: the owner requested "merge without all the gestures" in the Add expressive agent animations task; its bear-frame repair is present as `4628cfcf0`. Dedicated couch-specific skin frames remain deferred under the accepted temporary seating compromise. Review fixtures such as the Kepler showcase remain local-only; they must not replace a user's saved keep layout.
 
 - Package every runtime dependency and test the real loader against the staging rule.
 - Build from a clean, identified candidate; verify the updater signature.

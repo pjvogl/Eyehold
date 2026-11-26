@@ -40,7 +40,7 @@ const env = {
   LOCALAPPDATA: localBase,
   APPDATA: appBase,
   XDG_DATA_HOME: xdgBase,
-  STARNET_WORKSPACES: configuredRoot,
+  EYEHOLD_WORKSPACES: configuredRoot,
   SKYNET_WORKSPACES: ''
 };
 

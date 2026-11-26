@@ -84,7 +84,7 @@ function normalizeContract(raw) {
   if (errors.length || requirements.length !== rows.length) return { contract: null, errors };
   return {
     contract: {
-      schemaVersion: 'starnet.task-postconditions.v1',
+      schemaVersion: 'eyehold.task-postconditions.v1',
       authority: 'commander',
       requirements
     },

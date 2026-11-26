@@ -77,7 +77,7 @@ function startMockOpenRouter() {
 function boot(port, env, attemptsLeft) {
   return new Promise((resolve, reject) => {
     const child = spawn(process.execPath, [INDEX], {
-      env: Object.assign({}, process.env, env, { SKYNET_PORT: String(port), STARNET_PORT: String(port) }),
+      env: Object.assign({}, process.env, env, { EYEHOLD_PORT: String(port), EYEHOLD_PORT: String(port) }),
       stdio: ['ignore', 'pipe', 'pipe']
     });
     let out = '', settled = false;
@@ -178,15 +178,15 @@ async function waitUntil(fn, ms, label) {
   const mock = await startMockOpenRouter();
   const ws = fs.mkdtempSync(path.join(os.tmpdir(), 'sk-subagent-bg-e2e-'));
   const env = {
-    SKYNET_WORKSPACES: ws,
-    STARNET_WORKSPACES: ws,
-    SKYNET_OPENROUTER_BASE: mock.base,
-    STARNET_OPENROUTER_BASE: mock.base,
-    SKYNET_DEFAULT_MODEL: 'test/model',
-    STARNET_DEFAULT_MODEL: 'test/model',
+    EYEHOLD_WORKSPACES: ws,
+    EYEHOLD_WORKSPACES: ws,
+    EYEHOLD_OPENROUTER_BASE: mock.base,
+    EYEHOLD_OPENROUTER_BASE: mock.base,
+    EYEHOLD_DEFAULT_MODEL: 'test/model',
+    EYEHOLD_DEFAULT_MODEL: 'test/model',
     // team.spawn is consent-gated (2026-07-14, same as team.summon) and this e2e is headless — bypass via the
     // full-auto posture exactly like e2e.summon.test; the APPROVAL prompt path is covered by the consent suites.
-    SKYNET_FULL_ACCESS: '1'
+    EYEHOLD_FULL_ACCESS: '1'
   };
   const { child, port } = await boot(8990 + (process.pid % 50), env, 20);
   const B = 'http://' + HOST + ':' + port;
@@ -194,7 +194,7 @@ async function waitUntil(fn, ms, label) {
   try {
     const token = await bootToken(B, B);
     A.ok(token.length >= 32, 'got a session API token');
-    const headers = { 'Content-Type': 'application/json', 'X-StarNet-Token': token, Origin: B };
+    const headers = { 'Content-Type': 'application/json', 'X-Eyehold-Token': token, Origin: B };
     sse = await startSseCollector(B + '/api/channels/events?' + require('./_httpToken.js').sseQuery(token));
 
     const res = await fetch(B + '/api/run', {
@@ -211,20 +211,20 @@ async function waitUntil(fn, ms, label) {
     await sse.waitFor(events => events.some(e => e.name === 'task' && e.payload && e.payload.kind === 'subagent' && e.payload.status === 'running'), 5000, 'subagent task running');
     await sse.waitFor(events => events.some(e => e.name === 'agent.run.start' && e.payload && /^sub-/.test(e.payload.agentId || '')), 5000, 'subagent run start');
     const startedEvent = sse.events.find(e => e.name === 'agent.run.start' && e.payload && /^sub-/.test(e.payload.agentId || ''));
-    const liveSnapshot = await (await fetch(B + '/api/state/snapshot', { headers: { 'X-StarNet-Token': token, Origin: B } })).json();
+    const liveSnapshot = await (await fetch(B + '/api/state/snapshot', { headers: { 'X-Eyehold-Token': token, Origin: B } })).json();
     A.ok((liveSnapshot.runs || []).some(r => r.runId === startedEvent.payload.runId && r.agentId === startedEvent.payload.agentId && r.source === 'subagent'),
       'reconnect snapshot includes the confirmed background worker while its provider run is still live');
     await sse.waitFor(events => events.some(e => e.name === 'agent.run.end' && e.payload && /^sub-/.test(e.payload.agentId || '')), 5000, 'subagent run end');
     await sse.waitFor(events => events.some(e => e.name === 'task' && e.payload && e.payload.kind === 'subagent' && e.payload.status === 'done'), 5000, 'subagent task done');
 
     const done = await waitUntil(async () => {
-      const j = await (await fetch(B + '/api/subagents?leadId=agent', { headers: { 'X-StarNet-Token': token, Origin: B } })).json();
+      const j = await (await fetch(B + '/api/subagents?leadId=agent', { headers: { 'X-Eyehold-Token': token, Origin: B } })).json();
       const rows = (j && j.records) || [];
       return rows.find(r => r.status === 'done' && String(r.result || '').indexOf('background subagent done') >= 0);
     }, 5000, 'durable background subagent completion');
     A.ok(done && done.id, '/api/subagents exposes the completed background worker');
     A.ok(Array.isArray(done.events) && done.events.some(e => e.name === 'agent.run.start') && done.events.some(e => e.name === 'agent.run.end'), 'subagent record keeps watchable lifecycle events');
-    const settledSnapshot = await (await fetch(B + '/api/state/snapshot', { headers: { 'X-StarNet-Token': token, Origin: B } })).json();
+    const settledSnapshot = await (await fetch(B + '/api/state/snapshot', { headers: { 'X-Eyehold-Token': token, Origin: B } })).json();
     A.ok(!(settledSnapshot.runs || []).some(r => r.runId === done.runId), 'reconnect snapshot drops the background worker after its run.end');
     A.ok(mock.requests.some(r => r.agentId === 'agent') && mock.requests.some(r => /^sub-/.test(r.agentId || '')), 'mock provider saw both lead and background worker calls');
   } finally {

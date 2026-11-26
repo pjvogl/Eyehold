@@ -11,7 +11,7 @@ You are the ONLY driver that touches trunk `feat/harness-backend`. Each tick:
   2. **MERGE, never rebase**, any branch a live loop (Codex or Claude) may still commit to.
      Small dead branches may sync-rebase first.
   3. NEVER trust auto-merge on hotfiles (sidecar/loop.js, billing.js, budget.js,
-     routing/router.js, station-store.js, orchestration.js, frontend/app/worldmodel.js,
+     routing/router.js, keep-store.js, orchestration.js, frontend/app/worldmodel.js,
      build.js, package.json, matching test/*). After merging one: `node --check` it and grep
      that every symbol it calls is still defined.
   4. package.json test-chain conflict → union both sides' script entries (trunk canonical).

@@ -1,15 +1,15 @@
 #!/usr/bin/env node
-/* scripts/qa/ready.mjs — the Self-Testing Station's READY GATE (lane EL-7).  (`npm run qa:ready`)
+/* scripts/qa/ready.mjs — the Self-Testing Keep's READY GATE (lane EL-7).  (`npm run qa:ready`)
  *
  * WHY THIS EXISTS: session after session told Andrew "everything is in perfect standing, ready to
- * go public" while the QA station's OWN ledger showed open findings and the Green Guardian sat RED.
+ * go public" while the QA keep's OWN ledger showed open findings and the Green Guardian sat RED.
  * The aggregate "ready / go-public" claim was never gated on anything machine-checkable — it was a
  * vibe. This module makes it a VERDICT. One command, one answer: READY or NOT READY with a numbered
  * list of reasons and an auditable receipts block (per check: the artifact consulted, its stamp, its
  * value). Exit 0 ONLY when every check is READY.
  *
- * THE LAW IT ENFORCES (READY-GATE, docs/DECISIONS.md + .claude/skills/starnet-verify): no session,
- * report, or doc may claim StarNet is release-ready / "ready" / "go-public-able" without a fresh
+ * THE LAW IT ENFORCES (READY-GATE, docs/DECISIONS.md + .claude/skills/eyehold-verify): no session,
+ * report, or doc may claim Eyehold is release-ready / "ready" / "go-public-able" without a fresh
  * `npm run qa:ready` receipt printed alongside the claim. Lane-level done stays lane-level.
  * Scope boundary: READY is this six-check release-readiness aggregate only. It is not exhaustive
  * product-perfection proof and must never be reported as `PRODUCT PERFECT`; that exact verdict is

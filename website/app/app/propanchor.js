@@ -1,4 +1,4 @@
-/* STARNET — propanchor.js : where an agent STANDS or SITS to use a prop.
+/* EYEHOLD — propanchor.js : where an agent STANDS or SITS to use a prop.
 
    The gen prop model (worldmodel.js) stores props as pure rectangles; a blocking
    prop's whole footprint is unwalkable, so an agent can never path ONTO a couch/
@@ -56,7 +56,7 @@ const PropAnchor = (() => {
   };
 
   /* CENTRE-OUT ordering of one edge's tiles. deriveAnchor used to take sideTiles' first walkable tile,
-     which is always the WEST-most one — so on a 2-wide workstation the chair (and the body sitting in
+     which is always the WEST-most one — so on a 2-wide workkeep the chair (and the body sitting in
      it) parked at the desk's far-left corner while the monitor and keyboard sit right of centre. An
      agent should approach the MIDDLE of a desk/couch/bar and fan outward only if the middle is blocked.
      Ties on an even-width prop break toward the higher index, so the pick sits just right of the centre

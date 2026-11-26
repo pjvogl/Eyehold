@@ -1,4 +1,4 @@
-/* node test/workspace-lineage.http.test.js — real host reports and recovers a selected prior station across restart. */
+/* node test/workspace-lineage.http.test.js — real host reports and recovers a selected prior keep across restart. */
 'use strict';
 const A = require('./_assert.js');
 const fs = require('node:fs');
@@ -31,42 +31,42 @@ function waitExit(child, ms) {
     child.once('exit', (code, signal) => { clearTimeout(timer); resolve({ code, signal }); });
   });
 }
-function station(name, updatedAt, marker) {
+function keep(name, updatedAt, marker) {
   return {
     version: 1, agentId: 'agent', updatedAt, savedAt: updatedAt,
     doc: {
-      schema: 'starnet.save', version: 5, updatedAt,
+      schema: 'eyehold.save', version: 5, updatedAt,
       agent: { id: 'agent', name },
-      station: { rooms: [{ id: marker }], props: [] },
+      keep: { rooms: [{ id: marker }], props: [] },
       workstreams: [{ id: 'general', history: [{ role: 'user', content: marker }] }]
     }
   };
 }
 
 (async () => {
-  const sandbox = fs.mkdtempSync(path.join(os.tmpdir(), 'starnet-lineage-http-'));
+  const sandbox = fs.mkdtempSync(path.join(os.tmpdir(), 'eyehold-lineage-http-'));
   const appData = path.join(sandbox, 'appdata');
   const current = path.join(appData, 'ai.skynet.harness', 'workspaces');
-  const legacyA = path.join(appData, 'StarNet', 'workspaces');
+  const legacyA = path.join(appData, 'Eyehold', 'workspaces');
   const legacyB = path.join(appData, 'Skynet', 'workspaces');
   fs.mkdirSync(current, { recursive: true }); fs.mkdirSync(legacyA, { recursive: true }); fs.mkdirSync(legacyB, { recursive: true });
   fs.writeFileSync(path.join(current, '.migration-receipt.json'), JSON.stringify({ version: 1, validated: true, files: [] }));
-  fs.writeFileSync(path.join(legacyA, 'agent.save.json'), JSON.stringify(station('NOVA', 77, 'private-nova-marker')));
-  fs.writeFileSync(path.join(legacyB, 'agent.save.json'), JSON.stringify(station('ORION', 88, 'private-orion-marker')));
+  fs.writeFileSync(path.join(legacyA, 'agent.save.json'), JSON.stringify(keep('NOVA', 77, 'private-nova-marker')));
+  fs.writeFileSync(path.join(legacyB, 'agent.save.json'), JSON.stringify(keep('ORION', 88, 'private-orion-marker')));
   const legacyABytes = fs.readFileSync(path.join(legacyA, 'agent.save.json'));
   const legacyBBytes = fs.readFileSync(path.join(legacyB, 'agent.save.json'));
   const baseEnv = Object.assign({}, process.env, {
     LOCALAPPDATA: appData, APPDATA: appData,
     HOME: sandbox, USERPROFILE: sandbox, HOMEDRIVE: path.parse(sandbox).root.replace(/[\\\/]$/, ''), HOMEPATH: sandbox.slice(path.parse(sandbox).root.length - 1),
-    SKYNET_WORKSPACES: current, SKYNET_API_TOKEN: TOKEN,
-    SKYNET_LIVE_PRICES: '0', SKYNET_QUEST_REFRESH: '0', SKYNET_CRON: '0',
-    SKYNET_OPENROUTER_KEY: '', STARNET_OPENROUTER_KEY: ''
+    EYEHOLD_WORKSPACES: current, EYEHOLD_API_TOKEN: TOKEN,
+    EYEHOLD_LIVE_PRICES: '0', EYEHOLD_QUEST_REFRESH: '0', EYEHOLD_CRON: '0',
+    EYEHOLD_OPENROUTER_KEY: '', EYEHOLD_OPENROUTER_KEY: ''
   });
   let child = null;
   async function launch() {
     const port = await freePort(); let output = '';
     child = spawn(process.execPath, [INDEX], {
-      env: Object.assign({}, baseEnv, { SKYNET_PORT: String(port) }), stdio: ['ignore', 'pipe', 'pipe']
+      env: Object.assign({}, baseEnv, { EYEHOLD_PORT: String(port) }), stdio: ['ignore', 'pipe', 'pipe']
     });
     child.stdout.on('data', d => { output += d; }); child.stderr.on('data', d => { output += d; });
     await waitFor(() => output.includes('http://127.0.0.1:' + port), 20000);
@@ -74,57 +74,57 @@ function station(name, updatedAt, marker) {
   }
   try {
     const first = await launch();
-    const r = await fetch('http://127.0.0.1:' + first.port + '/api/save?agent=agent', { headers: { 'X-StarNet-Token': TOKEN } });
+    const r = await fetch('http://127.0.0.1:' + first.port + '/api/save?agent=agent', { headers: { 'X-Eyehold-Token': TOKEN } });
     const body = await r.json();
     A.eq(r.status, 200, 'real save route answers');
     A.eq(body.save, null, 'active workspace is definitively empty');
     A.eq(body.lineage && body.lineage.priorInstallEvidence, true, 'host still proves a prior installation');
     A.eq(body.lineage && body.lineage.onboardingAllowed, false, 'host explicitly refuses the genesis inference');
-    A.eq(body.lineage.recovery.recoverableCount, 2, 'both valid station generations are disclosed');
-    A.eq(body.lineage.recovery.automaticCandidateId, null, 'real host refuses to guess between conflicting stations');
-    const selected = body.lineage.recovery.candidates.find(row => row.stationName === 'ORION');
-    A.ok(selected && selected.id, 'Commander can identify the desired station without exposing save contents');
+    A.eq(body.lineage.recovery.recoverableCount, 2, 'both valid keep generations are disclosed');
+    A.eq(body.lineage.recovery.automaticCandidateId, null, 'real host refuses to guess between conflicting keeps');
+    const selected = body.lineage.recovery.candidates.find(row => row.keepName === 'ORION');
+    A.ok(selected && selected.id, 'Commander can identify the desired keep without exposing save contents');
 
-    const reportRes = await fetch('http://127.0.0.1:' + first.port + '/api/lineage/report', { headers: { 'X-StarNet-Token': TOKEN } });
+    const reportRes = await fetch('http://127.0.0.1:' + first.port + '/api/lineage/report', { headers: { 'X-Eyehold-Token': TOKEN } });
     const reportRaw = await reportRes.text();
     const report = JSON.parse(reportRaw);
     A.eq(reportRes.status, 200, 'redacted recovery report downloads through the real authenticated route');
-    A.eq(report.schema, 'starnet.workspace-recovery-report', 'report carries the recovery-report schema');
-    A.ok(reportRes.headers.get('content-disposition').includes('starnet-recovery-report.json'), 'report supplies a safe download filename');
+    A.eq(report.schema, 'eyehold.workspace-recovery-report', 'report carries the recovery-report schema');
+    A.ok(reportRes.headers.get('content-disposition').includes('eyehold-recovery-report.json'), 'report supplies a safe download filename');
     A.ok(!reportRaw.includes(sandbox) && !reportRaw.includes('private-orion-marker'), 'report contains neither home path nor save contents');
 
     const recover = await fetch('http://127.0.0.1:' + first.port + '/api/lineage/recover', {
-      method: 'POST', headers: { 'X-StarNet-Token': TOKEN, 'Content-Type': 'application/json' }, body: JSON.stringify({ candidateId: selected.id })
+      method: 'POST', headers: { 'X-Eyehold-Token': TOKEN, 'Content-Type': 'application/json' }, body: JSON.stringify({ candidateId: selected.id })
     });
     A.eq(recover.status, 202, 'authenticated selection is accepted for restart-time recovery');
     const exit = await waitExit(first.child, 5000);
     A.eq(exit.code, 75, 'sidecar exits with the guardian restart code after persisting the request');
 
     const second = await launch();
-    const recoveredRes = await fetch('http://127.0.0.1:' + second.port + '/api/save?agent=agent', { headers: { 'X-StarNet-Token': TOKEN } });
+    const recoveredRes = await fetch('http://127.0.0.1:' + second.port + '/api/save?agent=agent', { headers: { 'X-Eyehold-Token': TOKEN } });
     const recovered = await recoveredRes.json();
     A.eq(recoveredRes.status, 200, 'restarted sidecar answers from the activated generation');
-    A.eq(recovered.save && recovered.save.agent && recovered.save.agent.name, 'ORION', 'next pre-store boot activates exactly the selected station');
-    A.eq(recovered.save.station.rooms[0].id, 'private-orion-marker', 'selected station data survives the complete HTTP restart path');
+    A.eq(recovered.save && recovered.save.agent && recovered.save.agent.name, 'ORION', 'next pre-store boot activates exactly the selected keep');
+    A.eq(recovered.save.keep.rooms[0].id, 'private-orion-marker', 'selected keep data survives the complete HTTP restart path');
     A.eq(fs.readFileSync(path.join(legacyA, 'agent.save.json')).equals(legacyABytes), true, 'unselected source remains byte-exact');
     A.eq(fs.readFileSync(path.join(legacyB, 'agent.save.json')).equals(legacyBBytes), true, 'selected source remains byte-exact');
     A.ok(fs.readdirSync(path.dirname(current)).some(name => name.startsWith('workspaces.recovery-rollback-')), 'empty current generation is retained as rollback');
 
-    // START FRESH over the real route: the recovered station's save is removed (the "manual reset" a stranded
+    // START FRESH over the real route: the recovered keep's save is removed (the "manual reset" a stranded
     // user performs), leftover ledgers remain, legacy roots still exist → the gate fires with nothing chosen.
     // Start fresh must quarantine the leftovers, acknowledge the legacy roots, exit 75, and the next boot
     // must allow onboarding — with every legacy source byte-exact.
     try { second.child.kill('SIGKILL'); } catch (_) {}
     await waitExit(second.child, 5000);   // release the owner claim before editing the workspace
     for (const name of fs.readdirSync(current)) if (/^agent\.save\.json/.test(name)) fs.unlinkSync(path.join(current, name));
-    try { fs.unlinkSync(path.join(current, '.starnet-workspace-owner.json')); } catch (_) {}
+    try { fs.unlinkSync(path.join(current, '.eyehold-workspace-owner.json')); } catch (_) {}
     fs.writeFileSync(path.join(current, 'ledger.jsonl'), '{"event":"leftover"}\n');
     const third = await launch();
-    const gated = await (await fetch('http://127.0.0.1:' + third.port + '/api/save?agent=agent', { headers: { 'X-StarNet-Token': TOKEN } })).json();
+    const gated = await (await fetch('http://127.0.0.1:' + third.port + '/api/save?agent=agent', { headers: { 'X-Eyehold-Token': TOKEN } })).json();
     A.eq(gated.save, null, 'fixture: the active save is gone again');
     A.eq(gated.lineage.priorInstallEvidence, true, 'fixture: the gate fires on leftovers + legacy roots');
     const fresh = await fetch('http://127.0.0.1:' + third.port + '/api/lineage/start-fresh', {
-      method: 'POST', headers: { 'X-StarNet-Token': TOKEN, 'Content-Type': 'application/json' }, body: '{}'
+      method: 'POST', headers: { 'X-Eyehold-Token': TOKEN, 'Content-Type': 'application/json' }, body: '{}'
     });
     const freshBody = await fresh.json();
     A.eq(fresh.status, 202, 'START FRESH is accepted over the authenticated route');
@@ -133,7 +133,7 @@ function station(name, updatedAt, marker) {
     const exit3 = await waitExit(third.child, 5000);
     A.eq(exit3.code, 75, 'sidecar exits with the guardian restart code after starting fresh');
     const fourth = await launch();
-    const after = await (await fetch('http://127.0.0.1:' + fourth.port + '/api/save?agent=agent', { headers: { 'X-StarNet-Token': TOKEN } })).json();
+    const after = await (await fetch('http://127.0.0.1:' + fourth.port + '/api/save?agent=agent', { headers: { 'X-Eyehold-Token': TOKEN } })).json();
     A.eq(after.lineage.priorInstallEvidence, false, 'after START FRESH the next boot finds no gating evidence');
     A.eq(after.lineage.onboardingAllowed, true, 'onboarding is allowed — the user is no longer stranded');
     A.eq(fs.readFileSync(path.join(legacyA, 'agent.save.json')).equals(legacyABytes), true, 'legacy A remains byte-exact after START FRESH');

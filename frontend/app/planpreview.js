@@ -1,13 +1,13 @@
-/* frontend/app/planpreview.js — the station builder's approval card DRAWS its plan (vibe design, 2026-09-29).
+/* frontend/app/planpreview.js — the keep builder's approval card DRAWS its plan (vibe design, 2026-09-29).
 
-   Before the Commander approves, the card shows where the build goes and what goes where: the station's rooms as flat
+   Before the Commander approves, the card shows where the build goes and what goes where: the keep's rooms as flat
    plates (dimmed), the room the plan adds or changes lit, each zone outlined and numbered, and what will stand there.
-   The same recipe as the station preset cards (build.js showStationBuilds): plank decks warm, others steel, belts in the
-   accent, equipment gold, every other piece green. The data is StationBuilder's plan.preview, read from the plan the
-   page parked (StationCommands.previewFor), never from the model's words. */
+   The same recipe as the keep preset cards (build.js showKeepBuilds): plank decks warm, others steel, belts in the
+   accent, equipment gold, every other piece green. The data is KeepBuilder's plan.preview, read from the plan the
+   page parked (KeepCommands.previewFor), never from the model's words. */
 'use strict';
 const PlanPreview = (() => {
-  const W = 230, H_MIN = 56, H_MAX = 140;   // drawing units (the canvas is twice this, for crisp plates); the height follows the station's shape
+  const W = 230, H_MIN = 56, H_MAX = 140;   // drawing units (the canvas is twice this, for crisp plates); the height follows the keep's shape
   function el(pv) {
     if (!pv || !Array.isArray(pv.rooms) || !pv.rooms.length) return null;
     const fig = document.createElement('figure'); fig.className = 'consent-plan';
@@ -35,7 +35,7 @@ const PlanPreview = (() => {
     let accent = '#b6a375';
     try { accent = getComputedStyle(document.documentElement).getPropertyValue('--ph').trim() || accent; } catch (_) {}
     ctx.scale(2, 2);
-    // the rooms: the station dimmed, the plan's room lit
+    // the rooms: the keep dimmed, the plan's room lit
     for (const pass of [false, true]) for (const r of pv.rooms) {
       if (!!r.mine !== pass) continue;
       ctx.globalAlpha = r.mine ? 1 : 0.45;

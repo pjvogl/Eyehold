@@ -1,13 +1,13 @@
-# StarNet release readiness — RC freeze + soak
+# Eyehold release readiness — RC freeze + soak
 
 Solo, 2am, tired. This is the protocol that stops **you** from being the first real tester. It sits
 in front of `docs/RELEASE_RUNBOOK.md`: the runbook cuts and ships a version; **this doc decides a
 version is allowed to be cut at all.** Every step is a command to paste or an exact decision — nothing
 here says "ensure that."
 
-**The one law (READY-GATE):** no version gets cut, and no session/doc claims StarNet is "ready" or
+**The one law (READY-GATE):** no version gets cut, and no session/doc claims Eyehold is "ready" or
 "go-public-able", without a fresh `npm run qa:ready` printing **READY** next to the claim. Lane-green is
-not project-green. "Lane X verified" only ever means lane X — station-wide status is whatever
+not project-green. "Lane X verified" only ever means lane X — keep-wide status is whatever
 `qa:ready` says, nothing softer.
 
 **Why this exists (session audit 2026-07-07):** the EL loop fixed *detection* but not the *repeat* —
@@ -26,7 +26,7 @@ kills (c), the soak kills (b), and `qa:ready` kills (a).
   exe and writes the stamp `qa:ready` reads. The soak's proof-of-life. See `qa/installed/README.md` for
   the exact operator recipe (relaunch with `WEBVIEW2_ADDITIONAL_BROWSER_ARGUMENTS=--remote-debugging-port=9333`).
 - The dogfood loop `loops/dogfood.md` (lane `agent/dogfood`, EL-9) is the soak's **workload driver** — a
-  standing session that USES StarNet like a user (recruit → assign real multi-step work → interrupt →
+  standing session that USES Eyehold like a user (recruit → assign real multi-step work → interrupt →
   restart → open deliverables → channels) with REAL providers. The soak IS that loop, pointed at the
   installed build for ≥48h.
 - The failing-scenario law (EL-3): every escape lands a failing journey/assertion (or a ledger KNOWN
@@ -97,7 +97,7 @@ frozen RC branch, then install it:
 
 - Check out the RC branch (`git checkout rc/0.3.1`) and cut the signed installer locally with
   `npm run release:cut`. That produces the signed Windows NSIS installer + updater `.sig` + a staged
-  `latest.json` under `release/` (it needs the updater key at `~/.tauri/starnet-updater.key`; see
+  `latest.json` under `release/` (it needs the updater key at `~/.tauri/eyehold-updater.key`; see
   `docs/RELEASE_RUNBOOK.md` §4 for key handling). **This is a local build, not the release train** —
   `.github/workflows/release-train.yml` triggers only on `v*` tags and its `assemble` job hard-fails
   unless the tag is exactly `v<version>` from `tauri.conf.json`, so an `rc/0.3.1-rc.1` tag does **not**
@@ -105,7 +105,7 @@ frozen RC branch, then install it:
   (Future work: teach the train to build `rc/*` tags into a DRAFT prerelease so the RC binary is
   CI-built and signed like the real release across all platforms — until then, `release:cut` is the
   path, and it builds the Windows installer only.)
-- Install the Windows installer over your current StarNet (silent NSIS, same as
+- Install the Windows installer over your current Eyehold (silent NSIS, same as
   `docs/RELEASE_RUNBOOK.md` §1.10's canary step). **Purge the WebView2 cache after installing** or the
   soak tests the OLD embedded frontend — `docs/MISTAKES.md` "WebView2 caches the embedded frontend"
   and `desktop-bundles-frontend-directly` memory carry the exact purge recipe (kill app +

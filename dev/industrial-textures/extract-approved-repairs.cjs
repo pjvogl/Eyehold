@@ -3,7 +3,7 @@
 const fs = require('node:fs');
 const crypto = require('node:crypto');
 const sharp = require('sharp');
-const docs = 'docs/station-remaster/approved-sheet/storage';
+const docs = 'docs/keep-remaster/approved-sheet/storage';
 const out = 'frontend/assets/industrial/approved-sheet';
 const hash = b => crypto.createHash('sha256').update(b).digest('hex');
 const receipt = JSON.parse(fs.readFileSync(docs + '/repair-sheet-receipt.json'));

@@ -14,7 +14,7 @@ const {
 
 const SHA = 'a'.repeat(40);
 const TREE = 'b'.repeat(40);
-const ARTIFACT = { path: 'C:/Program Files/StarNet/skynet-desktop.exe', sha256: 'c'.repeat(64), size: 456789 };
+const ARTIFACT = { path: 'C:/Program Files/Eyehold/skynet-desktop.exe', sha256: 'c'.repeat(64), size: 456789 };
 const EVIDENCE = { path: 'qa/installed/smoke-run/link.json', sha256: 'd'.repeat(64), size: 123 };
 const ISO = '2026-07-12T12:00:00.000Z';
 const SECRET = 'sk-or-v1-attended-runtime-secret-value';
@@ -120,7 +120,7 @@ function scenario(overrides = {}) {
   A.eq(LINK_RECEIPT_SCHEMA, 1, 'link companion receipt schema is explicit');
   A.eq(FIRST_TASK_ID, 'tutorial-hello-file-v1', 'runner binds to the product tutorial task');
   A.eq(FIRST_TASK_PATH, 'hello.txt', 'actual file, not a reply, is the deliverable');
-  A.ok(/starnet_build_info/.test(INSTALLED_IDENTITY_PROBE), 'identity comes from the running executable');
+  A.ok(/eyehold_build_info/.test(INSTALLED_IDENTITY_PROBE), 'identity comes from the running executable');
   A.ok(/\/api\/version/.test(INSTALLED_IDENTITY_PROBE), 'running sidecar identity is cross-checked');
 
   // Exact installed identity: browser/dev, dirty, wrong source, and wrong executable all fail closed.
@@ -242,10 +242,10 @@ function scenario(overrides = {}) {
   }
 
   const gate = fs.readFileSync(path.join(__dirname, '..', 'scripts', 'qa', 'product-perfect', 'gates', 'wave-1-installed-first-run.mjs'), 'utf8');
-  A.ok(/STARNET_W1_LINK_PROBE/.test(gate), 'W1 gate invokes the candidate-owned installed link companion probe');
-  A.ok(/STARNET_W1_LINK_CHALLENGE/.test(gate), 'W1 gate supplies a fresh challenge instead of accepting a prewritten receipt');
+  A.ok(/EYEHOLD_W1_LINK_PROBE/.test(gate), 'W1 gate invokes the candidate-owned installed link companion probe');
+  A.ok(/EYEHOLD_W1_LINK_CHALLENGE/.test(gate), 'W1 gate supplies a fresh challenge instead of accepting a prewritten receipt');
   A.ok(/validateLinkReceipt/.test(gate), 'W1 gate validates link receipt semantics');
-  A.ok(/STARNET_FIRST_RUN_EXPECTED_ARTIFACT_SHA256/.test(gate) && /artifactAfterProofSequence/.test(gate), 'one gate-minted artifact identity binds journey, link, and final bytes');
+  A.ok(/EYEHOLD_FIRST_RUN_EXPECTED_ARTIFACT_SHA256/.test(gate) && /artifactAfterProofSequence/.test(gate), 'one gate-minted artifact identity binds journey, link, and final bytes');
   A.ok(/for \(const name of \[/.test(gate) && !/process\.stdout\.write\(probeRun/.test(gate), 'link probe receives an allowlisted environment and its output is not forwarded');
   A.ok(/installed-first-run\.mjs/.test(gate), 'W1 gate invokes the live installed journey');
   const linkProbePreflight = gate.indexOf('const probeOwned = candidateOwnedFile(linkProbeRelative)');
@@ -261,7 +261,7 @@ function scenario(overrides = {}) {
   A.ok(!/CONTROLLER_PRINCIPAL_SHA256/.test(runnerSource), 'separate-user proof cannot be supplied as an arbitrary controller hash');
   A.ok(/getBoundingClientRect/.test(runnerSource) && /provider-failure-state-stale/.test(runnerSource), 'provider failure proof requires newly visible UI, not stale hidden text');
   const blockedGate = spawnSync(process.execPath, ['scripts/qa/product-perfect/gates/wave-1-installed-first-run.mjs'], {
-    cwd: path.join(__dirname, '..'), env: Object.assign({}, process.env, { STARNET_PRODUCT_PERFECT_CANDIDATE_SHA: '' }), encoding: 'utf8'
+    cwd: path.join(__dirname, '..'), env: Object.assign({}, process.env, { EYEHOLD_PRODUCT_PERFECT_CANDIDATE_SHA: '' }), encoding: 'utf8'
   });
   A.eq(blockedGate.status, 2, 'gate without exact controller candidate exits BLOCKED');
 

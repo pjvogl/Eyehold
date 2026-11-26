@@ -1,6 +1,6 @@
-/* STARNET — the DEAD-ENGINE diagnostic fallback (2026-07-29).
+/* EYEHOLD — the DEAD-ENGINE diagnostic fallback (2026-07-29).
 
-   WHY THIS TEST EXISTS. A 0.7.0 user sat on "Can't reach StarNet's local service" for a day. All support ever
+   WHY THIS TEST EXISTS. A 0.7.0 user sat on "Can't reach Eyehold's local service" for a day. All support ever
    received was a screenshot of that sentence — because the app's one self-service diagnostic door,
    "⧉ copy diagnostics for a bug report", fetched GET /api/diagnostics FROM THE SIDECAR. So in the exact failure
    the door is offered under, it returned nothing and the user had nothing to send. Worse, that one sentence
@@ -52,7 +52,7 @@ const Diag = require('../frontend/app/diagnostics.js');
     const savedHarness = global.Harness;
     try {
       global.Harness = { pingEngine: () => Promise.resolve(false) };
-      const gateDead = await Diag.localReport({ kind: 'SAVE-NET · SAVE REQUEST LOST', error: 'the app loaded, but its saved-station request did not return' });
+      const gateDead = await Diag.localReport({ kind: 'SAVE-NET · SAVE REQUEST LOST', error: 'the app loaded, but its saved-keep request did not return' });
       A.ok(/NOT REACHABLE/.test(verdictLine(gateDead)), 'with no engineAlive the report measures, and a dead probe reads NOT REACHABLE');
       global.Harness = { pingEngine: () => Promise.resolve(null) };
       A.ok(/UNPROVEN/.test(verdictLine(await Diag.localReport({ kind: 'SAVE-NET · SAVE REQUEST LOST' }))), 'a timed-out probe stays UNPROVEN');
@@ -64,7 +64,7 @@ const Diag = require('../frontend/app/diagnostics.js');
     A.ok(/network/.test(withCtx), 'the classified kind is carried into the report');
 
     // ---- (3) it must never carry a secret. The report reads the API ORIGIN but must not touch the token. ----
-    global.window = { __STARNET_API__: 'http://127.0.0.1:53124', __STARNET_API_TOKEN__: 'supersecrettoken123456' };
+    global.window = { __EYEHOLD_API__: 'http://127.0.0.1:53124', __EYEHOLD_API_TOKEN__: 'supersecrettoken123456' };
     const withOrigin = await Diag.localReport({ engineAlive: false });
     A.ok(/127\.0\.0\.1:53124/.test(withOrigin), 'the loopback origin is included (a wrong/absent port is the tell)');
     A.ok(!/supersecrettoken123456/.test(withOrigin), 'the per-launch API token is NEVER in the report');

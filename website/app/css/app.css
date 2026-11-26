@@ -1,4 +1,4 @@
-/* STARNET — app.css : screens for the REAL harness (title · connect · game).
+/* EYEHOLD — app.css : screens for the REAL harness (title · connect · game).
    Reuses the v7 phosphor/CRT design language from style.css (vars + body::before/after).
    No "web app" softness — 2px hard lines, inverted-block headers, heavy bloom. */
 
@@ -18,9 +18,9 @@
 @media (prefers-reduced-motion: reduce) { .boot-veil { animation: none; } .boot-dots::after { animation: none; } }
 #screen-connect.active { align-items: center; justify-content: center; }
 /* THE CABINET IS HARDWARE — TEXT SIZE is a type dial, not a magnifying glass.
-   body carries the TEXT SIZE zoom (stationui.js applySettings), and it multiplies into every
+   body carries the TEXT SIZE zoom (keepui.js applySettings), and it multiplies into every
    length below, so the whole frame used to swell with the text: at HUGE the crew rail went
-   232→336px and COMMS 360→522px, and the station view — the thing you are actually watching —
+   232→336px and COMMS 360→522px, and the keep view — the thing you are actually watching —
    was squeezed 1279→995px (-29% area). --sn-unzoom is the exact reciprocal, so every CABINET
    dimension here resolves back to the size it was designed at while the type inside still grows.
    `1fr` then hands the reclaimed space to the stage automatically. Unset (the 100% default)
@@ -28,7 +28,7 @@
    --chat-w (chatresize.js, the draggable COMMS seam) and --crew-w (leftrail.js, the CREW seam) are
    written in VISUAL px for the same reason, so a dragged width means the same thing at every text size. */
 /* Both seam widths are read ONLY by #screen-game's own grid (the element they are written on). A plain
-   custom property INHERITS, so every seam-drag frame re-styled every element of the station — ~1000 COMMS
+   custom property INHERITS, so every seam-drag frame re-styled every element of the keep — ~1000 COMMS
    spans, ~16ms a frame, a 20-30fps drag (10-02). Not inheriting, a width write re-styles one element. */
 @property --chat-w { syntax: '*'; inherits: false; }
 @property --crew-w { syntax: '*'; inherits: false; }
@@ -159,7 +159,7 @@ input:focus, textarea.key-input:focus {
 input::placeholder, textarea.key-input::placeholder { color: var(--ph-dim); opacity: 1; }
 
 /* ---------- CONTROL FLOOR — NO control may ever paint itself with OS chrome ----------
-   LAW (2026-07-27, Andrew): every control in this product is station hardware. The browser's
+   LAW (2026-07-27, Andrew): every control in this product is keep hardware. The browser's
    own paint — buttonface white, ButtonBorder grey, black system text — is a BUG here, every
    single time it surfaces, and it has surfaced repeatedly (the SURFACE/REFIT bare <button>,
    the CHANNELS "RUNS AS" select, the DELIVERABLES status filter). The cause was always the
@@ -173,7 +173,7 @@ input::placeholder, textarea.key-input::placeholder { color: var(--ph-dim); opac
    all 17 windows open, every <details> expanded): 210 computed-style deltas, and exactly TWO
    elements changed bounding box. The deltas are 2 white selects becoming phosphor fields
    (#tg-bot-agent, #dl-status), 5 OS-blue accents becoming phosphor, 200 buttons leaving Arial
-   for the station font stack — and the rest are no-ops on invisible surfaces (border-colour on
+   for the keep font stack — and the rest are no-ops on invisible surfaces (border-colour on
    zero-width borders, text colour on empty icon buttons, radius on borderless elements).
 
    Do not "clean this up" by deleting it and re-skinning per surface — that is the exact
@@ -219,11 +219,11 @@ input[type=file]::file-selector-button {
 }
 input[type=file]::file-selector-button:hover { border-color: var(--ph); background-color: var(--ph-faint); color: var(--ph-bright); }
 
-/* STATION TOOLTIP — the phosphor hover card that replaces the browser's native `title` bubble
+/* KEEP TOOLTIP — the phosphor hover card that replaces the browser's native `title` bubble
    (tooltip.js). Same molded-card language as .model-dock-tip, which had this right in one place;
    this generalizes it to every [title] in the app. position:fixed + body-child = its style px are
    ZOOMED px (uiZoom law) — tooltip.js divides by z, this sheet must not re-scale anything. */
-.station-tip {
+.keep-tip {
   position: fixed; z-index: 200; pointer-events: none;
   width: max-content; max-width: 280px;
   padding: 7px 10px; text-align: left;
@@ -234,30 +234,30 @@ input[type=file]::file-selector-button:hover { border-color: var(--ph); backgrou
   opacity: 0; transform: translateY(3px);
   transition: opacity .12s var(--ease-out, ease-out), transform .12s var(--ease-out, ease-out);
 }
-.station-tip[hidden] { display: none; }
-.station-tip.show { opacity: 1; transform: translateY(0); }
+.keep-tip[hidden] { display: none; }
+.keep-tip.show { opacity: 1; transform: translateY(0); }
 /* the arrow tracks the anchor's centre (--tip-arrow, set by tooltip.js after clamping) */
-.station-tip::after {
+.keep-tip::after {
   content: ''; position: absolute; left: var(--tip-arrow, 50%); margin-left: -6px;
   top: 100%; border: 6px solid transparent; border-top-color: var(--ph);
 }
-.station-tip.below::after { top: auto; bottom: 100%; border-top-color: transparent; border-bottom-color: var(--ph); }
+.keep-tip.below::after { top: auto; bottom: 100%; border-top-color: transparent; border-bottom-color: var(--ph); }
 /* THE BUILD LIBRARY'S TIP (2026-09-30): over the library's glass tiles the card is that glass — one hairline edge, the dark sheet,
    8px, no glow — and it keeps its line breaks, so a tile's tip reads as its name, then what it does */
-.station-tip.glass-tip {
+.keep-tip.glass-tip {
   max-width: 300px; padding: 9px 12px; white-space: pre-line; color: var(--text);
   background: linear-gradient(165deg, rgba(var(--ph-rgb),.09), transparent 55%), var(--panel2);
   border: 1px solid rgba(var(--ph-rgb),.35); border-radius: 8px; box-shadow: 0 8px 24px rgba(0,0,0,.45);
 }
-.station-tip.glass-tip::first-line { color: var(--ph-bright); }
-.station-tip.glass-tip::after { border-top-color: rgba(var(--ph-rgb),.35); }
-.station-tip.glass-tip.below::after { border-top-color: transparent; border-bottom-color: rgba(var(--ph-rgb),.35); }
+.keep-tip.glass-tip::first-line { color: var(--ph-bright); }
+.keep-tip.glass-tip::after { border-top-color: rgba(var(--ph-rgb),.35); }
+.keep-tip.glass-tip.below::after { border-top-color: transparent; border-bottom-color: rgba(var(--ph-rgb),.35); }
 @media (prefers-reduced-motion: reduce) {
-  .station-tip { transition: none; transform: none; }
-  .station-tip.show { transform: none; }
+  .keep-tip { transition: none; transform: none; }
+  .keep-tip.show { transform: none; }
 }
 
-/* (The standalone TITLE screen was removed — boot auto-resumes into the station, or opens CREATE/RESUME
+/* (The standalone TITLE screen was removed — boot auto-resumes into the keep, or opens CREATE/RESUME
    directly. The data-status line that used to live there now sits in the connect-screen footer.) */
 .title-status { color: var(--ph-dim); font-size: 14px; letter-spacing: 1px; }
 
@@ -275,13 +275,8 @@ input[type=file]::file-selector-button:hover { border-color: var(--ph); backgrou
     radial-gradient(ellipse 34% 26% at 14% 78%, rgba(var(--ph-rgb),.07), transparent 70%),
     radial-gradient(ellipse 60% 42% at 50% 52%, rgba(var(--ph-rgb),.06), transparent 72%);
 }
-/* the grid floor: a plane of phosphor graph lines pitched away from the camera, faded into the horizon */
-.sp-floor {
-  position: absolute; left: -18%; right: -18%; bottom: 0; height: 46vh;
-  perspective: 340px; perspective-origin: 50% 0%; pointer-events: none;
-  -webkit-mask-image: linear-gradient(180deg, transparent 0, #000 34%, #000 100%);
-  mask-image: linear-gradient(180deg, transparent 0, #000 34%, #000 100%);
-}
+/* The night forest is painted on #sp-stars. The old pitched grid stays in the markup and stays hidden. */
+.sp-floor { display: none; }
 .sp-grid {
   position: absolute; inset: 0; transform: rotateX(62deg); transform-origin: 50% 0%;
   background:
@@ -336,7 +331,7 @@ input[type=file]::file-selector-button:hover { border-color: var(--ph); backgrou
 /* ---------- CONNECT / COMMISSION CONSOLE ----------
    Desktop-first: a wide terminal that lays BRAIN+IDENTITY beside VOICE instead of one tall scroll.
    Heavier chrome (corner brackets, an ASCII titlebar, a faux boot stamp) so it reads as a premium
-   piece of station hardware, not a web form. Collapses to one column under 860px. */
+   piece of keep hardware, not a web form. Collapses to one column under 860px. */
 .connect-panel {
   width: min(1060px, 95%); padding: 0;             /* % of `.screen` (fixed inset:0) — a bare 95vw is not a cap under the TEXT SIZE zoom */
   position: relative; overflow: hidden;            /* clip the corner brackets + scanline to the bezel */
@@ -389,7 +384,7 @@ input[type=file]::file-selector-button:hover { border-color: var(--ph); backgrou
 .cc-tb-mode { color: var(--ph); letter-spacing: 3px; }
 .cc-tb-rec { color: var(--ok); letter-spacing: 2px; animation: cc-blink 1.4s steps(1) infinite; }   /* live-local session dot */
 /* PHOSPHOR tint selector — lives in the titlebar as console hardware (zero added panel height). Each
-   swatch recolours the WHOLE station live and persists (app.js → StationUI.setTheme). */
+   swatch recolours the WHOLE keep live and persists (app.js → KeepUI.setTheme). */
 .cc-tb-phosphor { display: flex; align-items: center; gap: 7px; }
 .cc-tb-plabel { color: var(--ph-dim); letter-spacing: 2px; }
 .phosphor-swatches { display: flex; gap: 5px; }
@@ -413,7 +408,7 @@ input[type=file]::file-selector-button:hover { border-color: var(--ph); backgrou
   .phosphor-swatches { flex-wrap: wrap; }
 }
 
-/* .cc-grid is the CONNECTORS catalog grid (stationui.js), NOT genesis — genesis uses .ov-grid. Kept here;
+/* .cc-grid is the CONNECTORS catalog grid (keepui.js), NOT genesis — genesis uses .ov-grid. Kept here;
    the old genesis two-column body (cc-col, cc-emblem, cc-ascii, cc-stamp, cc-cursor, lead-banner) is deleted. */
 .cc-grid {
   display: grid; grid-template-columns: 1fr 1fr; gap: 0;
@@ -510,7 +505,7 @@ input[type=file]::file-selector-button:hover { border-color: var(--ph); backgrou
    The custom theme's --cam-grade desaturates the entire feed,
    making identical room lighting look dull after opening a saved custom theme.
    A modest colour boost and gentler contrast keep the softer grain clear while
-   preserving dark exposure. Brightness presets still use StationBake.LIGHT. */
+   preserving dark exposure. Brightness presets still use KeepBake.LIGHT. */
 .refit-canvas,
 #stage { display: block; width: 100%; height: 100%; image-rendering: pixelated; filter: saturate(1.14) contrast(1.08) brightness(0.94); }
 
@@ -553,7 +548,7 @@ input[type=file]::file-selector-button:hover { border-color: var(--ph); backgrou
 
    NO SPECULAR SWEEP (2026-08-07). There used to be a second gradient here —
    `ellipse 72% 52% at 32% 3%, rgba(255,247,228,0.17)` — a big warm bloom pinned to
-   the upper-left of the glass. On a station-only frame it passes as a reflection;
+   the upper-left of the glass. On a keep-only frame it passes as a reflection;
    over open void it is a fixed cream haze sitting in DEEP SPACE, brighter than the
    nebulas it covers and nailed to the screen while the sky drifts under it. Andrew
    called it out as "this prefixed light" and had it removed. The rim highlight in
@@ -568,7 +563,7 @@ input[type=file]::file-selector-button:hover { border-color: var(--ph); backgrou
 }
 body.no-curve #stage-wrap::before { background: none; box-shadow: none; }
 /* NOTE: the Appearance CRT dial deliberately does NOT reach this rule. The tube glass over the feed
-   is part of the station being a tube, not a reading surface — DULLED thins the glass over the HTML
+   is part of the keep being a tube, not a reading surface — DULLED thins the glass over the HTML
    only (style.css body.crt-dull). `no-curve` above stays an internal/debug hatch. */
 
 /* NOTE: scanlines are painted IN-CANVAS now (world.js drawCRT — device-px integer lines, drawn OVER
@@ -632,7 +627,7 @@ body.no-curve #stage-wrap::before { background: none; box-shadow: none; }
 #chat-log { user-select: text; }
 #chat-log .cmsg .body { cursor: text; }
 :is(#chat-log, #gc-log) :is(button, .who, .cmsg-ts, .tb-when) { user-select: none; }
-/* SELECTABLE WINDOWS (#87) — what a station window SAYS is text you can select and copy: a workflow's result,
+/* SELECTABLE WINDOWS (#87) — what a keep window SAYS is text you can select and copy: a workflow's result,
    a deliverable's WHAT CAME BACK, a dossier's notes. Same split as the transcript: the words select, the
    controls never do, so a drag across a card copies prose and not button captions. Draggable cards and
    role=button rows stay unselectable so a drag still moves them. */
@@ -1031,7 +1026,7 @@ body.no-curve #stage-wrap::before { background: none; box-shadow: none; }
 
 /* JUST-IN-TIME CURIOSITY nudge — a QUIET aside, not a second lit reply. It used to reuse .cmsg.agent.reply
    (the glowing headline), so it read as a duplicate answer competing with the real one. Now it shares the
-   soft gold-inset language of the consent / turn-in beats: clearly "the station is asking", visually subordinate
+   soft gold-inset language of the consent / turn-in beats: clearly "the keep is asking", visually subordinate
    to the live reply above it. One post-run beat at a time (chat.js retires a nudge if a turn-in claims the moment). */
 .cmsg.agent.nudge {
   border-left: 2px solid var(--gold); background: rgba(var(--gold-rgb),.05);
@@ -1108,14 +1103,14 @@ body.no-curve #stage-wrap::before { background: none; box-shadow: none; }
 }
 .mc-edit:focus { outline: none; border-color: var(--ph); }
 
-/* COMMANDER DOSSIER (Phase A): the station-wide glass box — one model of the user, every belief editable */
+/* COMMANDER DOSSIER (Phase A): the keep-wide glass box — one model of the user, every belief editable */
 .cd-fam { display: inline-flex; align-items: center; gap: 7px; }
 .cd-fk { display: inline-block; width: 120px; height: 6px; border-radius: 3px; background: var(--ph-faint); border: 1px solid var(--ph-dim); overflow: hidden; vertical-align: middle; }
 .cd-ff { display: block; height: 100%; background: var(--gold); }
 .cd-fpct { color: var(--ph-bright); font-size: 12px; letter-spacing: 0.5px; }
 .cd-sub { font-size: 12px; color: var(--ph-dim); margin: 8px 0 6px; letter-spacing: 0.3px; }
 .cd-sub b { color: var(--ph); }
-/* STATION RECORD (G3a pride layer): the durable lifetime counters — a compact grid of honest numbers.
+/* KEEP RECORD (G3a pride layer): the durable lifetime counters — a compact grid of honest numbers.
    Reads PrideStore.snapshot(); a counter with no real sample yet shows "—" (never a fabricated 0). */
 .cd-record { margin: 12px 0 4px; padding: 9px 11px; background: var(--ph-faint); border-left: 2px solid var(--gold); border-radius: 0 5px 5px 0; }
 .cd-record-h { font-family: inherit; font-size: 10px; letter-spacing: .16em; color: var(--gold); opacity: .9; margin-bottom: 8px; }
@@ -1158,7 +1153,7 @@ body.no-curve #stage-wrap::before { background: none; box-shadow: none; }
 .cd-reenable:hover { border-color: var(--ph); border-style: solid; }
 .cd-rec { padding: 7px 10px; border-radius: 3px; background: var(--ph-faint); border: 1px solid var(--ph-faint); border-left: 2px solid var(--ph-dim); margin-bottom: 7px; }
 .cd-rec.pinned { border-left-color: var(--gold); }
-.cd-rec.cd-observed { border-left-color: var(--ph-mid, var(--ph-dim)); border-left-style: dashed; }   /* GROWTH Tier 1: a station-observed (study) belief reads distinct from a Commander-authored one */
+.cd-rec.cd-observed { border-left-color: var(--ph-mid, var(--ph-dim)); border-left-style: dashed; }   /* GROWTH Tier 1: a keep-observed (study) belief reads distinct from a Commander-authored one */
 .cd-body { color: var(--ph-bright); font-size: 14px; line-height: 1.4; white-space: pre-wrap; word-break: break-word; }
 .cd-meta { margin-top: 6px; font-size: 11px; color: var(--ph-dim); letter-spacing: 0.3px; }
 .cd-observed-tag { display: inline-block; margin-right: 6px; padding: 0 5px; font-size: 10px; letter-spacing: .12em; text-transform: uppercase; color: var(--ink); background: var(--ph-dim); border-radius: 2px; vertical-align: 1px; }
@@ -1444,7 +1439,7 @@ body.no-curve #stage-wrap::before { background: none; box-shadow: none; }
    that reads RECORD in every UI vocabulary there is, at 16px inside a 38x34 box it did not fill.
    The shape carries the meaning now: ONE solid halt square, 22px, nothing drawn around it — the plainest
    thing that can only mean stop, sitting in the same bare-glyph register as the paperclip and mic beside
-   it. The live-run signal is a FLASH on the glyph, on the station's own terminal cadence: 1s `steps(1)`,
+   it. The live-run signal is a FLASH on the glyph, on the keep's own terminal cadence: 1s `steps(1)`,
    the same hard snap as the COMMS caret (@keyframes blink) — no easing, because RobCo terminals snap.
    It flashes to a DIM FLOOR, never to 0: this is a control you are reaching for mid-run, and a target
    that blinks out from under the cursor is a target you misclick. Hover/press take the RobCo invert
@@ -1700,7 +1695,7 @@ body.no-curve #stage-wrap::before { background: none; box-shadow: none; }
 .voice-live[aria-pressed="true"] { color: var(--ink); background: var(--ph); box-shadow: 0 0 16px var(--ph-glow); }
 .voice-live[aria-pressed="true"] svg { filter: none; }
 
-/* Recovery candidate picker: explicit station generations, never an OS-native list control. */
+/* Recovery candidate picker: explicit keep generations, never an OS-native list control. */
 .lineage-candidates { display:grid; gap:7px; margin-top:12px; }
 .lineage-candidate { display:grid; grid-template-columns:1fr auto; gap:2px 12px; width:100%; padding:8px 10px; text-align:left; color:var(--ph-dim); border:1px solid color-mix(in srgb, var(--ph) 35%, transparent); background:color-mix(in srgb, var(--ink) 88%, var(--ph)); }
 .lineage-candidate b { color:var(--ph); letter-spacing:.06em; }
@@ -1713,8 +1708,8 @@ body.no-curve #stage-wrap::before { background: none; box-shadow: none; }
    A SMALL WINDOW, not a typical one (Andrew, 2026-07-29). Two earlier passes missed on opposite
    sides: a 300-440px CRT panel with a bezel, a title bar and a three-row readout rail read as one
    more window to manage; a chromeless capsule glued to the dock stopped reading as its own thing
-   at all. What this wants to be is a little piece of station hardware that POPS UP over the
-   station — framed, floating, obviously separate — and is done in one glance.
+   at all. What this wants to be is a little piece of keep hardware that POPS UP over the
+   keep — framed, floating, obviously separate — and is done in one glance.
 
    So it keeps a frame, a lift shadow and the curved-glass sheen (it is a screen), and drops every
    piece of window furniture: no title chip, no drag bar, no engraved rail, no window buttons.
@@ -1724,7 +1719,7 @@ body.no-curve #stage-wrap::before { background: none; box-shadow: none; }
   --lv-amp: 0;                 /* live mic RMS, 0..1 — written by voice-live.js pushLevel() */
   --lv-dl: 0%;                 /* local-model download percent, when the sidecar reports one */
   --lv-accent: var(--ph-dim);  /* per-state accent; every lit part of the module reads this */
-  --lv-talker: var(--lv-accent); /* current voice: user follows state; agent uses station gold */
+  --lv-talker: var(--lv-accent); /* current voice: user follows state; agent uses keep gold */
   position: fixed; z-index: 275; left: 18px; bottom: 68px;
   width: 150px; max-width: calc(100vw - 16px);
   display: flex; flex-wrap: wrap; align-items: center; gap: 4px;
@@ -1734,7 +1729,7 @@ body.no-curve #stage-wrap::before { background: none; box-shadow: none; }
     radial-gradient(ellipse 130% 90% at 50% 0%, var(--ph-glow2), transparent 46%),
     linear-gradient(180deg, rgba(9, 5, 2, 0.97), rgba(4, 2, 1, 0.985));
   /* a RIM and a LIFT, not a --bezel: one hairline of phosphor so it reads as hardware, and a deep
-     drop so it floats above the station instead of sitting in it */
+     drop so it floats above the keep instead of sitting in it */
   box-shadow:
     inset 0 0 0 1px var(--ph-dim),
     inset 0 1px 0 rgba(var(--ph-bright-rgb), 0.08),
@@ -1742,7 +1737,7 @@ body.no-curve #stage-wrap::before { background: none; box-shadow: none; }
     0 0 22px var(--ph-glow2);
   transform-origin: left bottom; animation: lv-pop .2s var(--ease-out);
 }
-/* curved glass over the whole module — it is a screen, like every other StarNet surface */
+/* curved glass over the whole module — it is a screen, like every other Eyehold surface */
 .live-voice-panel::after {
   content: ''; position: absolute; inset: 0; border-radius: inherit;
   pointer-events: none; z-index: 6; background: var(--glass);
@@ -1841,7 +1836,7 @@ body.no-curve #stage-wrap::before { background: none; box-shadow: none; }
 .lv-meter:active { transform: translateY(1px); box-shadow: inset 0 2px 7px rgba(0,0,0,.92); }
 .lv-meter:focus-visible { outline: 2px solid var(--ph); outline-offset: 2px; }
 
-/* level — a rolling window of real RMS, oldest at the left, TYPED in the station's own block ramp
+/* level — a rolling window of real RMS, oldest at the left, TYPED in the keep's own block ramp
    (▁▂▃▄▅▆▇█, the same glyphs the link-status bars use). Scaled rectangles read as a widget drawn
    over the terminal; glyphs read as the terminal itself printing what it hears. voice-live.js
    writes one character per column — nothing here interpolates, so a step you see is a step the
@@ -1862,11 +1857,11 @@ body.no-curve #stage-wrap::before { background: none; box-shadow: none; }
 }
 /* The history is one strip, but every cell retains who produced it. This makes turn ownership
    readable without a legend or a second meter: user samples use the live state color, agent
-   samples use the station's established gold voice color. */
+   samples use the keep's established gold voice color. */
 .lv-wave i[data-src="self"] { color: var(--lv-accent); }
 .lv-wave i[data-src="agent"] { color: var(--gold); text-shadow: 0 0 7px color-mix(in srgb, var(--gold) 42%, transparent); }
 
-/* working states (connecting / warming / thinking / transcribing): the station is BUSY, not
+/* working states (connecting / warming / thinking / transcribing): the keep is BUSY, not
    hearing. A sweep across the meter says so WITHOUT touching the bars — the bars are the
    microphone and must never move to a timer, or the module would claim to hear a silent room. */
 .live-voice-panel[data-state="connecting"] .lv-meter::after,
@@ -2188,7 +2183,7 @@ body.no-curve #stage-wrap::before { background: none; box-shadow: none; }
 .ov-foot-cap { color: var(--ph-dim); font-size: 12px; letter-spacing: .3px; }
 .ov-actions { display: flex; align-items: center; gap: 12px; }
 
-/* ===== RESUME / RECOVERY banner — shown when re-entering an existing station whose creds went missing.
+/* ===== RESUME / RECOVERY banner — shown when re-entering an existing keep whose creds went missing.
    Phosphor-styled (gold inset rule + bloom), it reassures the Commander the agent is safe and locks the
    identity fields below so a resume can't silently re-spec the agent. ===== */
 .ov-recovery {
@@ -2292,7 +2287,7 @@ input.field-locked { opacity: .55; filter: none; cursor: not-allowed; background
    the archetype chip is the entire voice choice now. Resumed agents keep saved voiceTraits/customVoice.) */
 
 /* ============================================================
-   STATION HUD — top bar · crew manifest · bottom bar · panels.
+   KEEP HUD — top bar · crew manifest · bottom bar · panels.
    The phosphor/CRT chrome (#topbar/#left/#bottombar bezels, .bb,
    .term, .crew-*, .kb-*, .ag-*, .set-*, .nf, .perk-*) is reused
    verbatim from the v7 style.css already loaded above; this block
@@ -2389,12 +2384,12 @@ body.row-resizing { cursor: row-resize; user-select: none; }
 #crew.shut { padding: 0; }
 
 /* the v7 screen-flicker animation targets #app (which this app doesn't
-   have) — re-point it at the live station so the SETTINGS toggle works.
+   have) — re-point it at the live keep so the SETTINGS toggle works.
    #69: the dip is the LAST 4% of the old 7s cycle (flick-dip = 96%..100% of it, same opacities), played
-   once every 7s by StationUI's flicker clock. An infinite opacity animation on the whole screen made
+   once every 7s by KeepUI's flicker clock. An infinite opacity animation on the whole screen made
    the compositor re-draw the full window every vsync for the 96% of the cycle where nothing changes —
    measured ~0.75 GPU-process cores with the world stopped. isolation keeps the stacking context the
-   running animation always created, so nothing above/below the station re-layers between dips. */
+   running animation always created, so nothing above/below the keep re-layers between dips. */
 body:not(.no-flicker) #screen-game.active { isolation: isolate; }
 body:not(.no-flicker) #screen-game.active.flick-dip { animation: flick-dip 280ms 1; }
 
@@ -2525,7 +2520,7 @@ body:not(.no-flicker) #screen-game.active.flick-dip { animation: flick-dip 280ms
 .bb-menu .bb:hover .bb-tx small, .bb-menu .bb:focus-visible .bb-tx small { color: var(--ph); }
 .bb-menu .bb:hover::before, .bb-menu .bb:hover::after { content: none; }  /* no pip-boy [..] brackets inside the menu */
 .bb-menu .bb.active { background: var(--ph-faint); color: var(--ph-bright); box-shadow: inset 0 0 0 2px var(--ph); }
-/* STATION SYSTEMS ONLINE (systems.js): on a fresh station a system's dock button is not shown until it comes
+/* KEEP SYSTEMS ONLINE (systems.js): on a fresh keep a system's dock button is not shown until it comes
    online — nothing is locked, every window still opens from every other door (slash, deep links, quests, the agent,
    QUESTS › Progress). A system that just came online wears NEW until opened; its dock trigger carries a lit dot. */
 .bb-menu .bb[data-offline], .bb-menu .bb[hidden] { display: none; }
@@ -2992,7 +2987,7 @@ body:not(.no-flicker) #screen-game.active.flick-dip { animation: flick-dip 280ms
 .ws-row.busy .ws-meta { color: var(--ph-bright); }
 .ws-row.attn .ws-meta { color: var(--gold); }
 
-/* ---------- SESSION ROWS = INBOX (StationUI setting `sessionRow`, body.rows-inbox) ----------
+/* ---------- SESSION ROWS = INBOX (KeepUI setting `sessionRow`, body.rows-inbox) ----------
    The SAME .ws-row markup, re-laid as a three-line card. The two extra spans (.ws-agent, .ws-receipt)
    are ALWAYS in the DOM and simply display:none in COMPACT, so switching the setting is a repaint —
    renderRail is never re-run, and rail focus, scroll position and an in-place rename all survive it.
@@ -3269,7 +3264,7 @@ body.rows-inbox #workstreams .ws-kebab { grid-area: meta; }
 #chat-panel h3 #chat-status.status-idle { display: none; }
 /* In-flight run state lives ONLY in the transcript's presence card (WORKING + tool + time). The header
    copy (spinner + "working…"/"thinking…" + elapsed) was a duplicate — Andrew 10-03, asked 5×: never in the
-   header. Faults (stopping / station unreachable) still show here. */
+   header. Faults (stopping / keep unreachable) still show here. */
 #chat-panel h3 #chat-status:is(.status-thinking, .status-working, .status-connecting, .status-approval),
 #chat-panel h3 #chat-elapsed { display: none !important; }
 #chat-status.status-thinking { color: var(--ph-bright); text-shadow: 0 0 7px var(--ph-glow2); }
@@ -3278,7 +3273,7 @@ body.rows-inbox #workstreams .ws-kebab { grid-area: meta; }
 #chat-status.status-working, #chat-status.status-approval { color: var(--gold); text-shadow: 0 0 7px rgba(var(--gold-rgb),.4); }
 #chat-status.status-stopping { color: var(--bad); text-shadow: 0 0 7px rgba(255,74,61,.35); }
 /* F2: bridge provably dead (World.linkState E1 — same predicate as the topbar LINK DOWN / canvas marker):
-   the idle label can't honestly read 'online', so it reads 'station unreachable' in the fault palette. */
+   the idle label can't honestly read 'online', so it reads 'keep unreachable' in the fault palette. */
 #chat-status.status-down { color: #ff6a4c; text-shadow: 0 0 7px rgba(255,106,76,.35); }
 
 /* COMMS PROCESSING TIMER — a small engraved readout in the amber header that counts a turn's REAL
@@ -3309,7 +3304,7 @@ body.rows-inbox #workstreams .ws-kebab { grid-area: meta; }
   padding-bottom: 10px; margin-bottom: 2px;
   border-bottom: 1px solid var(--ph-faint);
 }
-/* 100px, matching PORTRAIT_W in stationui.js — the well is sized so the largest shipped character clears
+/* 100px, matching PORTRAIT_W in keepui.js — the well is sized so the largest shipped character clears
    an integer ×2 nearest-neighbour upscale (see the PORTRAIT_W comment; dev/skin-bounds.mjs measures it). */
 .ag-portrait-wrap { flex: 0 0 100px; }
 /* recessed portrait WELL (Phase-2 dossier hero): a dark inset floor the body glows out
@@ -3547,7 +3542,7 @@ body.rows-inbox #workstreams .ws-kebab { grid-area: meta; }
   border: 1px solid rgba(var(--gold-rgb), .45); border-radius: 2px; padding: 0 4px; white-space: nowrap; }
 /* AHEAD — visible and numbered, never locked: the order is information, not a gate. */
 .q-node-ahead .q-node-dot { border-style: dashed; }
-/* the payoff line — what finishing the path advances the station to. Sits under the nodes, above the
+/* the payoff line — what finishing the path advances the keep to. Sits under the nodes, above the
    action, so the path reads: here is the route, here is where it leads, here is the next step. */
 .q-track-payoff { margin-top: 13px; padding-top: 10px; border-top: 1px solid var(--ph-glow2);
   font-size: 11px; opacity: .9; }
@@ -3578,7 +3573,7 @@ body.rows-inbox #workstreams .ws-kebab { grid-area: meta; }
 /* ---- THE QUEST CARD (2026-08-13) ---------------------------------------------------------------
    The card's SKIN lives here; its GRID lives in motion.css (`.gx-quests .q-grid`), which loads after
    this file and outranks it — putting a second `grid-template-columns` here would just create a
-   silent second painter for the same property. The card takes the station's existing card language —
+   silent second painter for the same property. The card takes the keep's existing card language —
    one top-left light, matte, `--raise`, no gloss — so it belongs to the same family as the catalog
    and deliverable cards instead of inventing a look for quests alone. */
 .q-grid .q-card { display: flex; flex-direction: column; gap: 3px; padding: 11px 13px 12px;
@@ -3748,21 +3743,21 @@ body.rows-inbox #workstreams .ws-kebab { grid-area: meta; }
 .tro-hd .nm { min-width:0; }
 .tro-hd .gx-tag { margin-left:auto; flex:0 0 auto; white-space:nowrap; }
 
-.gx-station { border:1px solid var(--gold); border-radius:2px; background:var(--ph-faint); padding:12px 14px; margin-top:6px; }
-.gx-station .hd { display:flex; align-items:center; gap:8px; margin-bottom:11px; }
-.gx-station .badge { font-family:inherit; font-size:11px; letter-spacing:.1em; color:var(--ink); background:var(--gold); padding:1px 6px; border-radius:2px; }
-.gx-station .ttl { font-family:inherit; font-size:12px; letter-spacing:.16em; color:var(--gold); }
-.gx-station .agents { margin-left:auto; font-family:inherit; font-size:10px; letter-spacing:.1em; color:var(--ph-dim); }
-.gx-station .body { display:flex; align-items:flex-end; gap:16px; }
-.gx-station .lv { flex:0 0 auto; text-align:center; border-right:1px solid var(--ph-glow2); padding-right:16px; }
-.gx-station .lv .n { font-family:inherit; font-size:28px; line-height:.85; color:var(--gold); text-shadow:0 0 10px rgba(var(--gold-rgb),.4); }
+.gx-keep { border:1px solid var(--gold); border-radius:2px; background:var(--ph-faint); padding:12px 14px; margin-top:6px; }
+.gx-keep .hd { display:flex; align-items:center; gap:8px; margin-bottom:11px; }
+.gx-keep .badge { font-family:inherit; font-size:11px; letter-spacing:.1em; color:var(--ink); background:var(--gold); padding:1px 6px; border-radius:2px; }
+.gx-keep .ttl { font-family:inherit; font-size:12px; letter-spacing:.16em; color:var(--gold); }
+.gx-keep .agents { margin-left:auto; font-family:inherit; font-size:10px; letter-spacing:.1em; color:var(--ph-dim); }
+.gx-keep .body { display:flex; align-items:flex-end; gap:16px; }
+.gx-keep .lv { flex:0 0 auto; text-align:center; border-right:1px solid var(--ph-glow2); padding-right:16px; }
+.gx-keep .lv .n { font-family:inherit; font-size:28px; line-height:.85; color:var(--gold); text-shadow:0 0 10px rgba(var(--gold-rgb),.4); }
 
 .ag-lv { font-family:inherit; font-size:11px; letter-spacing:.08em; color:var(--gold); border:1px solid var(--gold); border-radius:2px; padding:0 5px; margin-left:7px; }
 
-.tb-stat.station { border:1px solid var(--gold); border-radius:2px; padding:1px 8px; }
-.tb-stat.station b { color:var(--gold); }
-.tb-stat.station.lvup { animation: gx-stationpulse 1.5s ease-out; }
-@keyframes gx-stationpulse { 0%{ box-shadow:0 0 0 0 rgba(var(--gold-rgb),.55); } 100%{ box-shadow:0 0 16px 2px rgba(var(--gold-rgb),0); } }
+.tb-stat.keep { border:1px solid var(--gold); border-radius:2px; padding:1px 8px; }
+.tb-stat.keep b { color:var(--gold); }
+.tb-stat.keep.lvup { animation: gx-keeppulse 1.5s ease-out; }
+@keyframes gx-keeppulse { 0%{ box-shadow:0 0 0 0 rgba(var(--gold-rgb),.55); } 100%{ box-shadow:0 0 16px 2px rgba(var(--gold-rgb),0); } }
 
 /* narrow-window fallback: the GROWTH dossier collapses gracefully if the term is squeezed */
 @media (max-width: 560px) {
@@ -3849,7 +3844,7 @@ body.crew-rail-off #screen-game.active {
 }
 
 /* ============================================================
-   REFIT MODE — the diegetic full-screen station builder (build.js).
+   REFIT MODE — the diegetic full-screen keep builder (build.js).
    Sits above the HUD + floating windows but UNDER the global CRT
    scanline/vignette layers (z 940/950) so it stays behind the glass.
    ============================================================ */
@@ -3880,7 +3875,7 @@ body.crew-rail-off #screen-game.active {
 .refit-zoomb { min-width: 26px; padding-inline: 0; justify-content: center; font-size: 17px; line-height: 1; }
 .refit-zoomlvl { min-width: 54px; justify-content: center; font-size: 12px; letter-spacing: 1px; border-inline: 0 !important; }
 
-/* The build panel — a full-height left sidebar in the station's premium window chrome.
+/* The build panel — a full-height left sidebar in the keep's premium window chrome.
    MODE (tool grid) is fixed at the top, OPTIONS is the ONE scroll region (the palette can
    grow forever — room kinds, the whole prop gallery), the hint is pinned at the foot. */
 /* Sized off the OVERLAY (100%), never the viewport (vh/vw): TEXT SIZE is a body zoom and a
@@ -3896,7 +3891,7 @@ body.crew-rail-off #screen-game.active {
      over, because both dense palettes are gated on exactly this number: at 356px of content the
      material grid goes 4 → 5 columns (13 recipes in 3 rows, not 4) and the prop gallery 3 → 4
      (a whole category visible without scrolling). 376 also still reads as a SIDEBAR to
-     viewInsets (< 60% of the glass), so FIT keeps framing the station in the visible half. */
+     viewInsets (< 60% of the glass), so FIT keeps framing the keep in the visible half. */
   width: min(380px, calc(100% - 28px)); max-height: calc(100% - 68px);
   padding: 0; border-radius: 9px; overflow: hidden;
   background: var(--panel);
@@ -3904,7 +3899,7 @@ body.crew-rail-off #screen-game.active {
 }
 /* MOBILE CONTROL REACHABILITY: a touch-only Commander has no hardware Escape key, so
    DONE and every editor action must stay on the glass. The title owns row one and six
-   compact station keys share row two. */
+   compact keep keys share row two. */
 @media (max-width: 600px) {
   .refit-top {
     display: grid;
@@ -3955,7 +3950,7 @@ body.crew-rail-off #screen-game.active {
 }
 
 /* ---------- THE BUILD KIT (2026-08-07 build-mode overhaul) ----------
-   The dock used to open with a tiny grey "MODE" caption over ten identical buttons — station
+   The dock used to open with a tiny grey "MODE" caption over ten identical buttons — keep
    hardware with no faceplate. It now leads with an inverse-phosphor header plate (the same
    vocabulary as .refit-title and every window titlebar), and the ten verbs are banded into four
    named groups, each with the QUESTION it answers in lowercase under the band name. */
@@ -4084,7 +4079,7 @@ body.crew-rail-off #screen-game.active {
 .refit-searchclear { flex: 0 0 auto; font-size: 12px; padding-inline: 8px; line-height: 1; }
 /* MAKE A PROP — player-made props (userprops.js). Built from the REFIT glass recipes in refit-polish.css
    (--refit-glass / --refit-edge, the .refit-tool-help card and its buttons, .refit-presets-entry for the door,
-   .station-build-art for the sketch well): matte glass, soft corners, no glow, no black CRT well. */
+   .keep-build-art for the sketch well): matte glass, soft corners, no glow, no black CRT well. */
 .refit-makeprop {
   width: 100%; min-width: 0; margin: 6px 0 4px; padding: 10px 11px; display: flex; flex-direction: column; gap: 7px;
   border: 1px solid var(--refit-edge, rgba(var(--ph-rgb),.2)); border-radius: 9px;
@@ -4112,14 +4107,14 @@ body.crew-rail-off #screen-game.active {
 /* the one paid step reads as the primary action: the selected-tile look, still matte */
 .refit-overlay .refit-makeprop #refit-makeprop-makeit { border-color: rgba(var(--ph-rgb),.55); background: rgba(var(--ph-rgb),.13); color: var(--ph-bright); }
 .refit-makeprop-actions { display: flex; gap: 6px; flex-wrap: wrap; }
-/* the credits card: shown up front when the station has no StarNet credits (the .refit-presets-entry recipe) */
+/* the credits card: shown up front when the keep has no Eyehold credits (the .refit-presets-entry recipe) */
 .refit-makeprop-cta {
   display: flex; flex-direction: column; align-items: flex-start; gap: 7px; padding: 9px 10px; border: 1px solid rgba(var(--ph-rgb),.34); border-radius: 8px;
   background: rgba(var(--ph-rgb),.06); box-shadow: inset 0 1px rgba(var(--ph-bright-rgb),.1); font-family: 'VT323', monospace;
 }
 .refit-makeprop-cta span { font-size: 13px; line-height: 1.35; letter-spacing: .2px; color: var(--text); }
 .refit-overlay .refit-makeprop .refit-makeprop-cta .bb { border-color: rgba(var(--ph-rgb),.55); background: rgba(var(--ph-rgb),.13); color: var(--ph-bright); }
-/* the sketch card: a .station-build-card (quiet inner glass) with the .station-build-art well */
+/* the sketch card: a .keep-build-card (quiet inner glass) with the .keep-build-art well */
 .refit-makeprop-preview {
   display: flex; gap: 10px; align-items: flex-start; padding: 8px; border: 1px solid var(--refit-edge, rgba(var(--ph-rgb),.2)); border-radius: 8px;
   background: rgba(var(--ph-rgb),.025); box-shadow: inset 0 1px rgba(var(--ph-bright-rgb),.06);
@@ -4251,7 +4246,7 @@ body.crew-rail-off #screen-game.active {
 }
 
 /* COLOUR — the same recipe rendered in every tone, so the row answers "what does PLANK look like
-   in COBALT?" rather than showing a flat colour the station never actually renders. */
+   in COBALT?" rather than showing a flat colour the keep never actually renders. */
 .refit-huegrid { display: flex; flex-wrap: wrap; gap: 5px; width: 100%; }
 .refit-hue {
   flex: 0 0 auto; padding: 0; line-height: 0; cursor: pointer; overflow: hidden;
@@ -4373,7 +4368,7 @@ body.crew-rail-off #screen-game.active {
 .refit-propcard .pc-foot { color: var(--ph-dim); font-size: 11px; letter-spacing: 1px; }
 .refit-propcard .pc-assign { margin-top: 7px; padding-top: 6px; border-top: 1px solid var(--ph-faint); font-size: 12px; letter-spacing: .5px; color: var(--warn); }
 .refit-propcard .pc-assign.ok { color: #aaffc8; }
-/* workstation/bay picker: the agent's model chip beside its name */
+/* workkeep/bay picker: the agent's model chip beside its name */
 .ws-model { opacity: .55; font-size: 10px; letter-spacing: .5px; }
 
 /* primary (safe) action button — inverted phosphor, NOT the danger red */
@@ -4417,19 +4412,19 @@ body.crew-rail-off #screen-game.active {
 #bb-build.refit-nudge { color: var(--ph-bright); animation: refit-pulse 2s ease-in-out infinite; }
 
 /* first-use guide card */
-.station-build-box { box-sizing: border-box; width: min(850px, calc(94vw / var(--station-build-scale, 1))); max-height: calc(88vh / var(--station-build-scale, 1)); overflow: auto; padding: 22px; background: var(--panel); border: 1px solid var(--ph); color: var(--text); }
-.station-build-heading, .station-build-actions { display: flex; align-items: center; justify-content: space-between; gap: 14px; }
-.station-build-heading h2 { margin: 0; color: var(--ph-bright); font-size: 22px; }
-.station-build-box p { line-height: 1.45; margin: 14px 0; }
-.station-build-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
-.station-build-card { display: flex; flex-direction: column; align-items: stretch; text-align: left; padding: 10px; gap: 7px; white-space: normal; }
-.station-build-card canvas { width: 100%; height: auto; background: rgba(0,0,0,.35); }
-.station-build-card b { color: var(--ph-bright); font-size: 16px; }
-.station-build-card small { font-size: 13px; line-height: 1.35; color: var(--text); }
-.station-build-card[aria-pressed="true"] { outline: 2px solid var(--ph); outline-offset: 2px; }
-.station-build-status { min-height: 3em; }
-@media (max-width: 700px) { .station-build-grid { grid-template-columns: repeat(2,minmax(0,1fr)); } .station-build-actions { flex-wrap: wrap; } }
-@media (max-width: 420px) { .station-build-grid { grid-template-columns: 1fr; } }
+.keep-build-box { box-sizing: border-box; width: min(850px, calc(94vw / var(--keep-build-scale, 1))); max-height: calc(88vh / var(--keep-build-scale, 1)); overflow: auto; padding: 22px; background: var(--panel); border: 1px solid var(--ph); color: var(--text); }
+.keep-build-heading, .keep-build-actions { display: flex; align-items: center; justify-content: space-between; gap: 14px; }
+.keep-build-heading h2 { margin: 0; color: var(--ph-bright); font-size: 22px; }
+.keep-build-box p { line-height: 1.45; margin: 14px 0; }
+.keep-build-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.keep-build-card { display: flex; flex-direction: column; align-items: stretch; text-align: left; padding: 10px; gap: 7px; white-space: normal; }
+.keep-build-card canvas { width: 100%; height: auto; background: rgba(0,0,0,.35); }
+.keep-build-card b { color: var(--ph-bright); font-size: 16px; }
+.keep-build-card small { font-size: 13px; line-height: 1.35; color: var(--text); }
+.keep-build-card[aria-pressed="true"] { outline: 2px solid var(--ph); outline-offset: 2px; }
+.keep-build-status { min-height: 3em; }
+@media (max-width: 700px) { .keep-build-grid { grid-template-columns: repeat(2,minmax(0,1fr)); } .keep-build-actions { flex-wrap: wrap; } }
+@media (max-width: 420px) { .keep-build-grid { grid-template-columns: 1fr; } }
 .refit-guide {
   position: absolute; inset: 0; z-index: 4; display: flex; align-items: center; justify-content: center;
   background: rgba(2,1,0,.55); backdrop-filter: blur(1px);
@@ -4721,7 +4716,7 @@ select.fbc-sel:focus { border-color: var(--ph); box-shadow: inset 0 2px 5px rgba
    independent `translate` property is a separate animatable property cardIn never touches, so it
    composes freely (probed: a real 6px move). Same family as the `.cc-card.added` opacity trap. */
 
-/* The front door is seated in a RECESSED WELL — the station's own `--well` recipe — so the six routes
+/* The front door is seated in a RECESSED WELL — the keep's own `--well` recipe — so the six routes
    read as keys set into a console face rather than as six more paragraphs. Matte: an inset floor and
    one top-left light, no specular sheen (`--glass` is the tube in front of the picture, not a panel). */
 .ab-router {
@@ -5382,7 +5377,7 @@ select.fbc-sel:focus { border-color: var(--ph); box-shadow: inset 0 2px 5px rgba
 .perm-agent.full .pa-mode { color: var(--gold); border-color: rgba(var(--gold-rgb), 0.45); }
 .perm-agent .pa-state { flex: 1 1 auto; min-width: 0; font-size: 12px; color: var(--ph-dim); line-height: 1.35; }
 .perm-agent .bb { flex: 0 0 auto; margin-left: auto; }
-/* the two whole-station switches sit clear of the row list they act on */
+/* the two whole-keep switches sit clear of the row list they act on */
 .perm-allacts { margin-top: 10px; }
 /* the lede under each numbered header: same dim body copy, but measured and spaced as a paragraph
    (.set-about alone carries a 12px top margin tuned for the bottom of a long section) */
@@ -5433,7 +5428,7 @@ select.fbc-sel:focus { border-color: var(--ph); box-shadow: inset 0 2px 5px rgba
 .perm-postures { margin: 0 0 12px; }
 .pp-head { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; margin-bottom: 8px; }
 .pp-q { font-size: 13px; letter-spacing: 1px; color: var(--ph-bright); }
-/* CUSTOM is the honest resting state of a hand-tuned station — dim, not an error. A matched posture
+/* CUSTOM is the honest resting state of a hand-tuned keep — dim, not an error. A matched posture
    is the only thing that lights, because a card may never claim a state it does not hold. */
 .pp-state { font-size: 10px; letter-spacing: 1px; color: var(--ph-dim); opacity: 0.8; }
 .pp-state.matched { color: var(--ph); opacity: 1; }
@@ -5458,7 +5453,7 @@ select.fbc-sel:focus { border-color: var(--ph); box-shadow: inset 0 2px 5px rgba
 .pp-blurb { font-size: 12px; line-height: 1.4; color: var(--ph-dim); }
 .pp-who { font-size: 10px; letter-spacing: 1px; color: var(--ph-dim); opacity: 0.7; }
 .pp-foot { margin: 8px 0 0; font-size: 11px; color: var(--ph-dim); opacity: 0.8; }
-/* the hairline between tier 1 (station-wide) and tier 2 (per-agent): the two are the same question
+/* the hairline between tier 1 (keep-wide) and tier 2 (per-agent): the two are the same question
    at two scopes, so they need a seam, not a heading, to say "and now the exceptions". */
 .perm-tier-rule { border-top: 1px solid var(--ph-faint); margin: 14px 0 2px; }
 /* tier 3: real controls, rarely touched. ONE fold — never a fold inside a fold. */
@@ -5552,7 +5547,7 @@ select.fbc-sel:focus { border-color: var(--ph); box-shadow: inset 0 2px 5px rgba
 .sandbox-chip-fix { display: block; color: var(--bad); opacity: .9; margin: 0 0 4px; }
 .perm-crew-row .pc-truth .sandbox-chip, .perm-crew-row .pc-truth .sandbox-chip-fix { opacity: 1; }
 .perm-crew-row .pc-more { margin-top: 9px; padding-top: 8px; border-top: 1px solid var(--ph-faint); }
-/* THE THREE ANSWERS, per agent (2026-10-04): the same three words as the station cards, as one even row
+/* THE THREE ANSWERS, per agent (2026-10-04): the same three words as the keep cards, as one even row
    so the choice reads as one question. The exact reach ladder / asking / sandbox fold under MORE OPTIONS. */
 .perm-crew-row .pc-posture-chips { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; margin-top: 10px; }
 .perm-crew-row .pc-posture-chips .ov-vchip { justify-content: center; text-align: center; padding: 7px 8px; }
@@ -5799,7 +5794,7 @@ button:disabled, select:disabled, input:disabled, textarea:disabled {
    Two bands per card, and the whole visual grammar exists to keep them apart:
      .dlv-say   — the AGENT'S prose (title + one line). Reads like writing.
      .dlv-facts — HARNESS truth (status pill, crew chips, counts). Reads like instrumentation.
-   A person must be able to tell at a glance which half the station is standing behind, so the say band gets
+   A person must be able to tell at a glance which half the keep is standing behind, so the say band gets
    normal text colour and the facts band gets chips/rails. Matte throughout: recessed fills and 1px structure,
    no gloss, and no glow standing in for an edge. */
 .dlv-split { display: grid; grid-template-columns: minmax(132px, 168px) minmax(0, 1fr); gap: 12px; align-items: start; }
@@ -5949,7 +5944,7 @@ button:disabled, select:disabled, input:disabled, textarea:disabled {
 /* Provisional recognition may still change; confirmed words retain normal contrast. */
 .lv-provisional { opacity: .62; }
 
-/* Intent navigation and grouped history preserve the same station controls at every depth. */
+/* Intent navigation and grouped history preserve the same keep controls at every depth. */
 .con-intents { display: grid; gap: 6px; padding: 8px; border-bottom: 1px solid var(--ph-faint); }
 .con-intent { text-align: left; padding: 10px 8px; white-space: normal; }
 .con-intent[aria-pressed="true"], .ws-kind-filter button[aria-pressed="true"] { color: var(--ph-bright); background: rgba(var(--ph-rgb), .12); border-color: var(--ph); }
@@ -5965,7 +5960,7 @@ button:disabled, select:disabled, input:disabled, textarea:disabled {
 .ag-effective .perk-desc { white-space: normal; }
 .cf-group-summary { overflow-wrap: anywhere; }
 
-/* Life-goal controls use station paint and remain usable in narrow quest windows. */
+/* Life-goal controls use keep paint and remain usable in narrow quest windows. */
 .gx-quests .q-life-goal, .gx-quests .q-life-quest { margin-top: 12px; min-width: 0; }
 .gx-quests .q-life-goal details, .gx-quests .q-life-quest details, .gx-quests .q-life-report { margin: 8px 0; border-top: 1px solid var(--ph-faint); padding-top: 8px; }
 .gx-quests .q-life-goal label, .gx-quests .q-life-quest label, .gx-quests .q-life-report label { display: block; margin: 8px 0; color: var(--ph-dim); }
@@ -5976,7 +5971,7 @@ button:disabled, select:disabled, input:disabled, textarea:disabled {
 .gx-quests .q-deferred { margin: 12px 0; }
 .gx-quests .q-life-quest .consent-btns { flex-wrap: wrap; }
 
-/* The station and its interface share one restrained glass treatment. Canvas
+/* The keep and its interface share one restrained glass treatment. Canvas
    already draws its own fine scanlines; avoid a second dominant grille. */
 body:has(#screen-game.active)::after { opacity: .62; }
 body:has(#screen-game.active)::before {
@@ -5994,7 +5989,7 @@ body:has(#screen-game.active)::before {
 /* INSPECT FULL REQUEST: the copy key sits under the request it copies */
 .consent-full .consent-full-copy { display: inline-block; margin-top: 6px; }
 .consent-full .consent-full-copy[hidden] { display: none; }
-/* the station builder's card draws its plan (planpreview.js): the station preset cards' plate recipe, the card's width */
+/* the keep builder's card draws its plan (planpreview.js): the keep preset cards' plate recipe, the card's width */
 .consent-plan { margin: 8px 0; }
 .consent-plan canvas { display: block; width: 100%; height: auto; image-rendering: pixelated; }
 .consent-plan figcaption { margin-top: 6px; line-height: 1.5; color: var(--ph-dim); }

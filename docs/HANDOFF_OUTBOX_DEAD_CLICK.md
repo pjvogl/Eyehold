@@ -37,7 +37,7 @@ His other two questions, answered from the code (VERIFIED by reading `drawShippe
 ## Proof (VERIFIED, live app)
 
 `dev/outbox-click-proof.mjs` — attaches to a running `dev/seed-deliverables.js`, stamps a real
-outbox via the station store, and drives REAL MouseEvents on the game canvas:
+outbox via the keep store, and drives REAL MouseEvents on the game canvas:
 - A: mousedown → 2px move → mouseup at the chute centre ⇒ OUTBOX window opens
 - B: live cursor sweep ⇒ clickable half-width at the pallet row 67px vs 34px at the chute row
 - C: clean click on an OUTER crate column ⇒ OUTBOX window opens

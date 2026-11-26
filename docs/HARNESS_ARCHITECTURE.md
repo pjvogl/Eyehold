@@ -1,4 +1,4 @@
-# STARNET Harness — Architecture Reference
+# EYEHOLD Harness — Architecture Reference
 
 > Engineering reference for the agent-harness backend. The *roadmap* (what to build when) lives in
 > `archive/INCREMENTAL_ROADMAP.md` (historical) and the approved plan; this doc is the *target shape* (modules, interfaces,
@@ -60,7 +60,7 @@ sidecar/       harness logic (in-browser behind Harness now; Node sidecar at M6)
     builtin/       notebook.js [M1] · fs.js [M5] · shell.js [M5] · web.js [M5]
   capability/
     registry.js    CAP_REGISTRY: objectType -> grant[]            (THE static map)
-    resolve.js     resolveTools(agent, station) -> {tools[], approvalRules[], budgetCaps, networkCaps}
+    resolve.js     resolveTools(agent, keep) -> {tools[], approvalRules[], budgetCaps, networkCaps}
     capGate.js     canAgentUse(org, agentId, need) -> {ok} | {ok:false, code:'capdenied', need}
     permissions.js consent broker: prompt/response, decisions keyed by (agent, tool, scope), deny-list floor
 
@@ -221,7 +221,7 @@ CAP_REGISTRY = {                              // static map; the builder UI edit
   dish:     [ {tool:'web.fetch',  scope:'execute', requiresConsent:true, network:true, allowlist:[...]} ], // M5
 }
 
-resolveTools(agent, station) -> { tools[], approvalRules[], budgetCaps, networkCaps }   // pure, called FRESH every turn
+resolveTools(agent, keep) -> { tools[], approvalRules[], budgetCaps, networkCaps }   // pure, called FRESH every turn
   1. find the agent's ASSIGNED room (capability follows the desk, not the body tile)
   2. collect placed object instances in that room
   3. look each objectType up in CAP_REGISTRY, expand grants, apply paramConstraints, de-dupe

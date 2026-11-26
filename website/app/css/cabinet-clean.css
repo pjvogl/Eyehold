@@ -1,6 +1,6 @@
 /* CABINET CLEAN (Andrew 10-01: "without changing the interface's orientation, simplify it and make it cleaner
-   while still keeping starnet's core style"). Same layout, same features, same CRT overlay — less noise:
-   · ONE panel language: CREW, COMMS, the top bar, the dock and the station tube share a 10px shape and a plain
+   while still keeping eyehold's core style"). Same layout, same features, same CRT overlay — less noise:
+   · ONE panel language: CREW, COMMS, the top bar, the dock and the keep tube share a 10px shape and a plain
      title over a hairline (CREW set it in crew-glass.css; COMMS follows). The etched corner marks go.
    · the empty widget rails show a small + key instead of a second and third "PIN A WIDGET" label
    · COMMS starter cards show their title; the sentence and the result are the hover tip (chat.js b.title) */
@@ -31,7 +31,7 @@ body.glass-demo:not(.hud-mode) #screen-game .widget-rail[data-empty="1"] .wg-add
   color: var(--ph-bright); border-color: rgba(var(--ph-rgb), .45); background: rgba(var(--ph-rgb), .1);
 }
 
-/* (the CTX gauge keeps StarNet's own ▮▯ ASCII cells — Andrew 10-01: smoothing it away read as "not starnet") */
+/* (the CTX gauge keeps Eyehold's own ▮▯ ASCII cells — Andrew 10-01: smoothing it away read as "not eyehold") */
 
 /* ---------- COMMS starters: title only, the detail is the tip ---------- */
 body.glass-demo:not(.hud-mode) #chat-panel .cmsg-empty .cmsg-starter { min-height: 46px; align-items: center; padding-block: 11px; }

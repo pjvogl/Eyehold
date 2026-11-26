@@ -67,7 +67,7 @@ function startProvider() {
 
 function boot(port, env, attempts) {
   return new Promise((resolve, reject) => {
-    const child = spawn(process.execPath, [INDEX], { env: Object.assign({}, process.env, env, { SKYNET_PORT: String(port) }), stdio: ['ignore', 'pipe', 'pipe'] });
+    const child = spawn(process.execPath, [INDEX], { env: Object.assign({}, process.env, env, { EYEHOLD_PORT: String(port) }), stdio: ['ignore', 'pipe', 'pipe'] });
     let output = '', settled = false;
     const onData = d => {
       output += d.toString();
@@ -85,7 +85,7 @@ function boot(port, env, attempts) {
 
 async function run(base, token, body) {
   const res = await fetch(base + '/api/run', {
-    method: 'POST', headers: { 'Content-Type': 'application/json', 'X-StarNet-Token': token, Origin: base }, body: JSON.stringify(body)
+    method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Eyehold-Token': token, Origin: base }, body: JSON.stringify(body)
   });
   A.eq(res.status, 200, 'image task run streams');
   return (await res.text()).split('\n').map(s => s.trim()).filter(Boolean).map(s => { try { return JSON.parse(s); } catch (_) { return null; } }).filter(Boolean);
@@ -93,13 +93,13 @@ async function run(base, token, body) {
 
 (async () => {
   const provider = await startProvider();
-  const workspace = fs.mkdtempSync(path.join(os.tmpdir(), 'starnet-image-task-e2e-'));
-  const noOpenRouterKey = { STARNET_OPENROUTER_KEY: '', SKYNET_OPENROUTER_KEY: '', OPENROUTER_KEY: '', OPENROUTER_API_KEY: '' };
+  const workspace = fs.mkdtempSync(path.join(os.tmpdir(), 'eyehold-image-task-e2e-'));
+  const noOpenRouterKey = { EYEHOLD_OPENROUTER_KEY: '', EYEHOLD_OPENROUTER_KEY: '', OPENROUTER_KEY: '', OPENROUTER_API_KEY: '' };
   const env = Object.assign({}, noOpenRouterKey, {
-    SKYNET_WORKSPACES: workspace,
-    STARNET_OPENROUTER_BASE: provider.baseUrl,
-    SKYNET_FULL_ACCESS: '1',
-    SKYNET_AUX_BUDGET: '0'
+    EYEHOLD_WORKSPACES: workspace,
+    EYEHOLD_OPENROUTER_BASE: provider.baseUrl,
+    EYEHOLD_FULL_ACCESS: '1',
+    EYEHOLD_AUX_BUDGET: '0'
   });
   const { child, port } = await boot(8870 + (process.pid % 40), env, 20);
   const base = 'http://' + HOST + ':' + port;
@@ -115,7 +115,7 @@ async function run(base, token, body) {
     });
     const blockedError = blocked.find(e => e.name === 'agent.run.error');
     A.ok(blockedError && /for custom \/ test\/model/.test(blockedError.payload.message), 'configured model/key mismatch surfaces the exact STUDIO blocker');
-    A.ok(/link this station/.test(blockedError.payload.message), 'the blocker tells the user exactly how to authorize generation');
+    A.ok(/link this keep/.test(blockedError.payload.message), 'the blocker tells the user exactly how to authorize generation');
     A.eq(provider.requests.length, beforeBlocked, 'an impossible route never calls the configured model or a fallback');
     A.eq(blocked.filter(e => e.name === 'agent.run.end').pop().payload.reason, 'error', 'the impossible route ends error, never OK');
 

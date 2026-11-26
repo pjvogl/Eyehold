@@ -4,7 +4,7 @@
     {
       "number": 20,
       "title": "[Bug]: Ollama agent runs complete with 0 tool calls despite File Cabinet tools being available",
-      "url": "https://github.com/androoAGI/starnet/issues/20",
+      "url": "https://github.com/Eyehold/eyehold/issues/20",
       "state": "OPEN",
       "updatedAt": "2026-09-19T07:00:37Z",
       "commentsRetrieved": 0,
@@ -13,7 +13,7 @@
     {
       "number": 19,
       "title": "[Feature]: Support models/gemini-3.1-pro-preview",
-      "url": "https://github.com/androoAGI/starnet/issues/19",
+      "url": "https://github.com/Eyehold/eyehold/issues/19",
       "state": "OPEN",
       "updatedAt": "2026-09-17T22:35:35Z",
       "commentsRetrieved": 1,
@@ -22,7 +22,7 @@
     {
       "number": 18,
       "title": "[Bug]: Cannot rate interactive replies in a conversation containing scheduled routine activity",
-      "url": "https://github.com/androoAGI/starnet/issues/18",
+      "url": "https://github.com/Eyehold/eyehold/issues/18",
       "state": "OPEN",
       "updatedAt": "2026-09-16T01:47:18Z",
       "commentsRetrieved": 0,
@@ -31,7 +31,7 @@
     {
       "number": 17,
       "title": "[Bug]: Main agent: complex overuse of information",
-      "url": "https://github.com/androoAGI/starnet/issues/17",
+      "url": "https://github.com/Eyehold/eyehold/issues/17",
       "state": "OPEN",
       "updatedAt": "2026-09-17T00:22:40Z",
       "commentsRetrieved": 4,
@@ -39,17 +39,17 @@
     },
     {
       "number": 15,
-      "title": "[Feature]: Station Templates, Community Gallery & AI-Assisted Station Building",
-      "url": "https://github.com/androoAGI/starnet/issues/15",
+      "title": "[Feature]: Keep Templates, Community Gallery & AI-Assisted Keep Building",
+      "url": "https://github.com/Eyehold/eyehold/issues/15",
       "state": "OPEN",
       "updatedAt": "2026-09-18T00:55:35Z",
       "commentsRetrieved": 2,
-      "disposition": "Feature request for station templates/community gallery/agent assistance; no additional reproduced defect assigned."
+      "disposition": "Feature request for keep templates/community gallery/agent assistance; no additional reproduced defect assigned."
     },
     {
       "number": 14,
       "title": "[Bug]: Telegram-bound orchestrator does not expose `team.dispatch`",
-      "url": "https://github.com/androoAGI/starnet/issues/14",
+      "url": "https://github.com/Eyehold/eyehold/issues/14",
       "state": "CLOSED",
       "updatedAt": "2026-09-11T21:22:02Z",
       "commentsRetrieved": 0,
@@ -58,7 +58,7 @@
     {
       "number": 13,
       "title": "[Bug]: Delegated agent cannot access MCP connector tools available in live session",
-      "url": "https://github.com/androoAGI/starnet/issues/13",
+      "url": "https://github.com/Eyehold/eyehold/issues/13",
       "state": "CLOSED",
       "updatedAt": "2026-09-11T20:18:08Z",
       "commentsRetrieved": 0,
@@ -67,7 +67,7 @@
     {
       "number": 12,
       "title": "[Bug]: Cross-provider fallback keeps Codex provider when switching to OpenRouter model",
-      "url": "https://github.com/androoAGI/starnet/issues/12",
+      "url": "https://github.com/Eyehold/eyehold/issues/12",
       "state": "CLOSED",
       "updatedAt": "2026-09-11T20:18:07Z",
       "commentsRetrieved": 0,
@@ -76,7 +76,7 @@
     {
       "number": 11,
       "title": "[Feature]: Allow steering prompts while the commander is working",
-      "url": "https://github.com/androoAGI/starnet/issues/11",
+      "url": "https://github.com/Eyehold/eyehold/issues/11",
       "state": "CLOSED",
       "updatedAt": "2026-09-07T21:05:42Z",
       "commentsRetrieved": 1,
@@ -85,7 +85,7 @@
     {
       "number": 10,
       "title": "[Feature]: Make google email API keys removeable",
-      "url": "https://github.com/androoAGI/starnet/issues/10",
+      "url": "https://github.com/Eyehold/eyehold/issues/10",
       "state": "OPEN",
       "updatedAt": "2026-09-06T00:51:42Z",
       "commentsRetrieved": 0,
@@ -94,7 +94,7 @@
     {
       "number": 6,
       "title": "[Bug]: Stuck on agent resume screen",
-      "url": "https://github.com/androoAGI/starnet/issues/6",
+      "url": "https://github.com/Eyehold/eyehold/issues/6",
       "state": "OPEN",
       "updatedAt": "2026-09-05T00:53:31Z",
       "commentsRetrieved": 8,
@@ -103,7 +103,7 @@
     {
       "number": 5,
       "title": "[Bug]: Gmail OAuth reports connected but tool calls return 401; Wix OAuth times out on tools/list",
-      "url": "https://github.com/androoAGI/starnet/issues/5",
+      "url": "https://github.com/Eyehold/eyehold/issues/5",
       "state": "CLOSED",
       "updatedAt": "2026-09-03T21:01:15Z",
       "commentsRetrieved": 1,
@@ -112,7 +112,7 @@
     {
       "number": 2,
       "title": "[Bug]:",
-      "url": "https://github.com/androoAGI/starnet/issues/2",
+      "url": "https://github.com/Eyehold/eyehold/issues/2",
       "state": "CLOSED",
       "updatedAt": "2026-09-03T21:01:16Z",
       "commentsRetrieved": 1,
@@ -121,7 +121,7 @@
     {
       "number": 1,
       "title": "[Feature]:",
-      "url": "https://github.com/androoAGI/starnet/issues/1",
+      "url": "https://github.com/Eyehold/eyehold/issues/1",
       "state": "CLOSED",
       "updatedAt": "2026-08-27T06:29:37Z",
       "commentsRetrieved": 0,
@@ -129,7 +129,7 @@
     }
   ],
   "gmail": {
-    "queryScope": "Inbound StarNet messages after September 16, excluding sent/draft/spam/trash",
+    "queryScope": "Inbound Eyehold messages after September 16, excluding sent/draft/spam/trash",
     "messages": 9,
     "threads": 8,
     "dispositions": [

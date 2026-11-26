@@ -49,12 +49,12 @@ global.Harness = hn;
 
 let scheduled = [];
 let boardHere = false;   // G4 feature 2: is a MISSION BOARD placed? toggled per-case below
-const SYSTEM = 'SYSTEM PROMPT\nWHAT YOU KNOW ABOUT YOUR COMMANDER: goals — ship StarNet.';
+const SYSTEM = 'SYSTEM PROMPT\nWHAT YOU KNOW ABOUT YOUR COMMANDER: goals — ship Eyehold.';
 const deps = {
   getSystem: () => SYSTEM,
   getName: () => 'NOVA',
   readiness: () => ({ ready: true, reasons: [] }),
-  getBeliefs: () => ({ goals: ['ship StarNet'], pain: ['manual standups'] }),
+  getBeliefs: () => ({ goals: ['ship Eyehold'], pain: ['manual standups'] }),
   getExistingJobs: () => Promise.resolve(['Morning brief']),
   scheduleJob: (body) => { scheduled.push(body); return Promise.resolve({ ok: true }); },
   boardPlaced: () => boardHere
@@ -67,7 +67,7 @@ function clearFakes() { hn.calls = []; dlg.opened = dlg.noded = dlg.closed = 0; 
 
 const TWO = [
   'JOB: Standup draft', 'WHY: kills the standup pain', 'GROUNDS: manual standups', 'CADENCE: morning', 'RUN: Draft the standup from what you know.',
-  '', 'JOB: Ship nudge', 'WHY: advances the goal', 'GROUNDS: ship StarNet', 'CADENCE: weekly', 'RUN: Draft the next ship step.'
+  '', 'JOB: Ship nudge', 'WHY: advances the goal', 'GROUNDS: ship Eyehold', 'CADENCE: weekly', 'RUN: Draft the next ship step.'
 ].join('\n');
 
 /* ---------- init subscribes read-only ---------- */
@@ -108,7 +108,7 @@ global.Onboarding = undefined;
     A.eq(call.isTask, false, 'reason-only (isTask:false)');
     A.eq(call.placed, [], 'no capabilities (placed:[]) — it cannot touch tools');
     A.eq(call.internal, true, 'internal → harness suppresses run.start/end re-emit (the self-talk never counts)');
-    A.ok(call.messages[0].content.indexOf('ship StarNet') >= 0, 'the directive grounds on the real beliefs');
+    A.ok(call.messages[0].content.indexOf('ship Eyehold') >= 0, 'the directive grounds on the real beliefs');
     A.ok(call.messages[0].content.indexOf('Morning brief') >= 0, 'the directive lists existing jobs (dedup)');
 
     A.eq(dlg.noded, 2, 'one approval node per proposal');
@@ -157,13 +157,13 @@ global.Onboarding = undefined;
     A.eq(AutoJobStore._state().proposed, true, 'declining all still spends the one-time proactive offer (delivered)');
 
     /* ---------- fire-once persists through localStorage (survives reload) ---------- */
-    A.ok(mem['starnet.autojobs.v1'] && JSON.parse(mem['starnet.autojobs.v1']).proposed === true, 'the proactive flag persists to its own key');
+    A.ok(mem['eyehold.autojobs.v1'] && JSON.parse(mem['eyehold.autojobs.v1']).proposed === true, 'the proactive flag persists to its own key');
     AutoJobStore.init(deps);   // simulate reload
     A.eq(AutoJobStore._decide({ reason: 'done', agentId: 'agent' }), { go: false, reason: 'already-proposed' }, 'the persisted flag blocks a re-offer after reload');
 
     /* ---------- reset re-arms for a brand-new hero ---------- */
     AutoJobStore.reset();
-    A.eq(mem['starnet.autojobs.v1'], undefined, 'reset() removes the persisted key');
+    A.eq(mem['eyehold.autojobs.v1'], undefined, 'reset() removes the persisted key');
     AutoJobStore.init(deps);
     A.eq(AutoJobStore._state().proposed, false, 'after reset the new hero re-earns the proactive offer');
     // (the read-only "never emits on U.bus" discipline is enforced across all frontend files by the lint-emits gate)

@@ -2,7 +2,7 @@
 
    WHY THIS EXISTS. An agent browsing on its own dead-ends at every login, 2FA prompt and CAPTCHA, and the
    Commander could not even see that it had. STEP-IN is the handoff: the agent asks (browser.need_human), its run
-   PARKS here, the station shows the agent's own browser in a docked window, the Commander signs in inside that
+   PARKS here, the keep shows the agent's own browser in a docked window, the Commander signs in inside that
    SAME browser, presses HAND BACK, and the agent carries on from the page they left it on. One browser, two
    drivers, never at the same time.
 
@@ -15,7 +15,7 @@
        the clock, so a slow sign-in is never cut off by the time the request sat unanswered.
      · The agent is FROZEN while a handoff is live. This module owns the live-state truth (isLive) the browser
        session's frozen guard reads; the session refuses every page read until the handoff settles.
-     · The agent never sees what the Commander types. Frames and input flow between the station page and the
+     · The agent never sees what the Commander types. Frames and input flow between the keep page and the
        browser only: nothing here is placed on a tool result, and input events are never stored or logged.
      · Truthful telemetry: every state the UI shows comes from `view()` of a record in this registry; a terminal
        record says HOW it ended (returned / cancelled / expired / aborted) — never a stale "waiting for you".
@@ -36,7 +36,7 @@ const FRAME_POLL_MAX_MS = 15000;
 function clip(s, n) { s = String(s == null ? '' : s); return s.length > n ? s.slice(0, n) : s; }
 
 /* The UI shows WHERE the agent is, never a full URL: a query string can carry a one-time token or an email
-   address the site put there, and the station SSE log is replayable. Origin + path is enough to say
+   address the site put there, and the keep SSE log is replayable. Origin + path is enough to say
    "github.com/login". */
 function safeLocation(raw) {
   try {
@@ -49,7 +49,7 @@ function safeLocation(raw) {
 const num = (v, lo, hi, d) => { const n = Number(v); return Number.isFinite(n) ? Math.max(lo, Math.min(hi, n)) : d; };
 const BUTTONS = new Set(['left', 'middle', 'right', 'none']);
 
-/* The ONLY input shapes the station page may forward. Anything else is refused before it reaches Chrome:
+/* The ONLY input shapes the keep page may forward. Anything else is refused before it reaches Chrome:
    the endpoint drives a real signed-in browser, so it accepts pointer/keyboard vocabulary, not CDP. */
 function sanitizeInput(ev) {
   ev = ev || {};

@@ -1,4 +1,4 @@
-/* STARNET — ctxgauge.js : the CONTEXT-WINDOW gauge model. Pure + testable
+/* EYEHOLD — ctxgauge.js : the CONTEXT-WINDOW gauge model. Pure + testable
    (UMD: a `CtxGauge` global in the browser, module.exports under node).
 
    Turns real numbers into a render-agnostic gauge state:
@@ -86,7 +86,7 @@
   /* CALIBRATION — what makes a projection honest instead of invented.
 
      A request costs far more than the visible dialogue: the system prompt, every tool schema, and the
-     sidecar's own dressing (manual / capabilities / skills / memory) ride along. On this station that
+     sidecar's own dressing (manual / capabilities / skills / memory) ride along. On this keep that
      overhead measured ~13k tokens against a two-line chat, so a browser-side estimate of the dialogue
      alone understates the truth by an order of magnitude and is worse than useless.
 

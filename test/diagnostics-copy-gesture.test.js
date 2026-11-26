@@ -1,4 +1,4 @@
-/* STARNET — COPY DIAGNOSTICS must survive WebKit's user-activation rule (2026-10-07).
+/* EYEHOLD — COPY DIAGNOSTICS must survive WebKit's user-activation rule (2026-10-07).
 
    WHY THIS TEST EXISTS. A macOS customer clicked "⧉ copy diagnostics for a bug report" under a failed COMMS turn
    and got "copy failed — try again" EVERY time. Diag.copy() awaited GET /api/diagnostics and only THEN wrote the
@@ -104,7 +104,7 @@ const tick = () => new Promise(r => setImmediate(r));
       A.ok(!/copy failed — try again/.test(body), 'the COMMS pill no longer offers a retry that can only repeat the refusal');
       A.ok(!/Diag\.copy\([^)]*\)\.then\(/.test(body), 'diagAffordance reads the result through onDone (it needs the text)');
 
-      const sui = read('frontend/app/stationui.js');
+      const sui = read('frontend/app/keepui.js');
       A.ok(/Diag\.copy\(\{ notify: false, onDone: \(ok, text\)[\s\S]{0,1200}Diag\.showBlock\(body\.querySelector\('#diag-block'\) \|\| body, \{ text \}\)/.test(sui), 'Settings shows the text the failed copy already read (no second fetch)');
       A.ok(!/copy failed — try again/.test(sui), 'Settings no longer says "try again" for a refused clipboard');
 

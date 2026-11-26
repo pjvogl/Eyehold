@@ -35,7 +35,7 @@ const overrides={
   fs.copyFileSync(at(from),at(runtime+v.image));manifest.props[id]={views:{s:v}};adopted.push(id);
  }
  fs.writeFileSync(at(runtime+'manifest.json'),JSON.stringify(manifest,null,2)+'\n');
- const p=at('docs/station-remaster/props-v3/coverage.json'),ledger=JSON.parse(fs.readFileSync(p));
+ const p=at('docs/keep-remaster/props-v3/coverage.json'),ledger=JSON.parse(fs.readFileSync(p));
  for(const row of ledger.props)if(manifest.props[row.id])Object.assign(row,{status:'new-design-awaiting-review',views:Object.keys(manifest.props[row.id].views)});
  ledger.newDesigns=ledger.props.filter(p=>p.status==='new-design-awaiting-review').length;
  ledger.remainingFullRedesign=ledger.catalog-ledger.approved-ledger.newDesigns;

@@ -1,4 +1,4 @@
-/* STARNET — util.js : helpers + event bus */
+/* EYEHOLD — util.js : helpers + event bus */
 'use strict';
 
 const U = {
@@ -22,7 +22,7 @@ const U = {
   _id: 1,
   id() { return 't' + (U._id++); },
 
-  /* TEXT SIZE zoom (stationui applySettings sets body.style.zoom): element style px live in the
+  /* TEXT SIZE zoom (keepui applySettings sets body.style.zoom): element style px live in the
      body-zoomed space while getBoundingClientRect / clientX / innerWidth are visual px — they
      disagree by this factor. Any code writing style coordinates from visual reads divides by it. */
   uiZoom() { const z = parseFloat(document.body && document.body.style ? document.body.style.zoom : ''); return z > 0 ? z : 1; },
@@ -138,7 +138,7 @@ const U = {
    are fired by the sound Director in audio.js off real colony bus events.
 
    The palette is ONE coherent console voice: every cue is a breath of filtered
-   noise for TOUCH + a warm tonal body around A minor (the station's key —
+   noise for TOUCH + a warm tonal body around A minor (the keep's key —
    celebrations run its relative major) with a small pitch glide for MOTION,
    sharing one reverb for the room. Per-cue gates keep event storms from
    machine-gunning a sting into mud.
@@ -346,7 +346,7 @@ const SFX = {
     SFX.voice({ freq: 1800, dur: 0.026, type: 'sine', vol: 0.075, atk: 0.001, cut: 7000 });
     SFX.voice({ freq: 260, dur: 0.05, when: 0.012, type: 'sine', vol: 0.06, atk: 0.003 });
   },
-  // notify: the station bell — a warm detuned A5/E6 pair with a long room tail. Gated so a burst of
+  // notify: the keep bell — a warm detuned A5/E6 pair with a long room tail. Gated so a burst of
   // pings reads as ONE bell, not a carillon.
   notify() {
     if (!SFX._gate('notify', 300)) return;
@@ -368,7 +368,7 @@ const SFX = {
     SFX.voice({ freq: 196, glide: 110, dur: 0.22, type: 'sawtooth', vol: 0.16, cut: 800, atk: 0.01 });
     SFX.voice({ freq: 147, glide: 92, dur: 0.3, type: 'sawtooth', vol: 0.12, when: 0.08, cut: 620, atk: 0.01 });
   },
-  // level: the biggest sting the station owns — Sequence_06, the longest of the three (1572ms).
+  // level: the biggest sting the keep owns — Sequence_06, the longest of the three (1572ms).
   // The three celebration cues are graded by the pack's own lengths: quest 235ms < milestone 843ms < level.
   // vol > 1 is DELIBERATE, do not "correct" it: Sequence_06 is recorded ~12dB quieter than Confirm_02
   // and Sequence_07 (raw peaks -17.1 vs -4.4 / -5.3 dBFS), so at a normal 0.5 the longest sting came out
@@ -418,7 +418,7 @@ const SFX = {
     SFX.voice({ freq: 1046, dur: 0.55, type: 'sine', vol: 0.14, detune: 4, atk: 0.015, verb: 0.5 });
     SFX.voice({ freq: 1568, dur: 0.7, type: 'sine', vol: 0.09, when: 0.05, atk: 0.02, verb: 0.6 });
   },
-  // ship: something REAL left the station — a small launch whoosh under a rising pair.
+  // ship: something REAL left the keep — a small launch whoosh under a rising pair.
   ship() {
     if (!SFX._gate('ship', 200)) return;
     if (SFX._sample('ship', { rate: 1, vol: 0.5 })) return;

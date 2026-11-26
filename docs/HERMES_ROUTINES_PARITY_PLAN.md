@@ -8,7 +8,7 @@ conformance, repository gates, restart/fault injection, and a live seeded-app jo
 
 ## Conformance matrix
 
-| Capability | StarNet seam | Required proof | State |
+| Capability | Eyehold seam | Required proof | State |
 | --- | --- | --- | --- |
 | Result delivery | cron driver + channel/session delivery | exact final output reaches origin/specific target once | Implemented; focused + HTTP + live proof |
 | Script/no-agent | guarded shell script preflight | zero-provider execution, timeout/failure, durable stdout | Implemented; HTTP + live proof |

@@ -1,4 +1,4 @@
-/* STARNET — assets.js : PixelLab sprite loading + per-agent recoloring */
+/* EYEHOLD — assets.js : PixelLab sprite loading + per-agent recoloring */
 'use strict';
 
 const SPRITES = (() => {
@@ -16,7 +16,7 @@ const SPRITES = (() => {
   const loadedSets = new Set();
   let meta = { minion: { fw: 0, fh: 0 }, ultron: { fw: 0, fh: 0 } };
 
-  /* the crew base is a white space-suit astronaut with glowing CYAN visor eyes
+  /* the crew base is a white space-suit warden with glowing CYAN visor eyes
      (~hue 190). the light suit is ~desaturated so hue-rotate barely shifts it;
      the saturated eyes are what recolor — so each agent's accent color lands on
      the eyes (their identity) while the suit stays a clean premium white. */
@@ -142,7 +142,7 @@ const SPRITES = (() => {
       for (const f of side) { const g = bandGap(f); if (g && g > widest) widest = g; }
       // a real stride has to open the feet WIDER than standing; below that there is no swing to read
       if (idle && widest && widest - idle >= 3) {
-        // Remove the stationary boot width: only the extra separation represents leg travel.
+        // Remove the keepary boot width: only the extra separation represents leg travel.
         // The old ceiling forced every approved skin back to the same short, hurried cycle.
         const measured = 2 * (widest - idle) * sc;
         out = isReviewSet(set)
@@ -584,10 +584,10 @@ const SPRITES = (() => {
     // SPRITE rises, the shadow pool remains on the deck under the stool where light actually lands.
     // Gated on the RESOLVED track actually being a sit pose: a set with no sit frames (minionchar,
     // 2026-08-10) falls back to rot/stand, and lifting a STANDING body onto the pad reads as levitation.
-    // Industrial workstation backrests are tall: place the compact seated body on the cushion,
+    // Industrial workkeep backrests are tall: place the compact seated body on the cushion,
     // exposing its head above the backrest while the chair occludes the lap. Floor scale stays 19 px.
-    const workstationLift = isReviewSet(set) && b.sitting && !b.seated && (b.working || b.goal === 'work') ? 7 : 0;
-    const seatLift = b.sitting && /\.(sit|type)\./.test(key) ? (b.seatLift || workstationLift) : 0;
+    const workkeepLift = isReviewSet(set) && b.sitting && !b.seated && (b.working || b.goal === 'work') ? 7 : 0;
+    const seatLift = b.sitting && /\.(sit|type)\./.test(key) ? (b.seatLift || workkeepLift) : 0;
     // perched: anchor by THIS sit frame's own bottom padding (getTrackPad), not the standing footPad —
     // sets whose sit master carries extra empty rows below the tucked legs (skeleton) otherwise float.
     // Walking masters have slightly different packing below their boots. A set-wide idle
@@ -627,7 +627,7 @@ const SPRITES = (() => {
     if (!b.noShadow) {
       const lift = Math.max(0, -bob);           // bob is +down; a negative bob has raised the body
       if (set === 'ultron') {
-        // the station leader's menacing red spill — a wider, slower pulse beneath his own pool
+        // the keep leader's menacing red spill — a wider, slower pulse beneath his own pool
         groundShadow(ctx, b.px, b.py, shR * 1.55, { lift, color: '#ff4a3d', alpha: reduced ? 0.55 : 0.55 + 0.25 * Math.sin(nowMs / 400) });
       }
       // a perched body adds its seatLift to the shadow's lift: the pool tightens + fades the higher the
@@ -720,7 +720,7 @@ const SPRITES = (() => {
       if (!resp.ok) return;
       const man = await resp.json();
       tracksBySet = SpriteLoadPlan.groupTracks(man.sprites);
-      // ready when the DEFAULT skin's base pose loaded (the old `minion` astronaut set
+      // ready when the DEFAULT skin's base pose loaded (the old `minion` warden set
       // was retired in favour of DATA.SKINS — gating on it left ready=false forever, so
       // every body fell through to the procedural fallback regardless of picked skin).
       const defSet = (typeof DATA !== 'undefined' && DATA.SKINS && DATA.DEFAULT_SKIN

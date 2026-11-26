@@ -1,9 +1,9 @@
 /* sidecar/autonomy-ledger.js — the durable AUTONOMY DECISION LEDGER (NS-0, 2026-07-07).
 
-   Andrew left the station overnight at max autonomy and got ~nothing back, and separately the cron engine
+   Andrew left the keep overnight at max autonomy and got ~nothing back, and separately the cron engine
    duplicate-fired — because autonomy decisions across the harness are SILENT. A run that did NOT act (deferred
    past the cap, skipped for no capability, suppressed because paused) left no durable trace, so there was no
-   way to answer "what did the station decide overnight, and why?". This is that trace: an append-only,
+   way to answer "what did the keep decide overnight, and why?". This is that trace: an append-only,
    fsync-backed JSONL of every autonomous DECISION — fire / skip / defer (cron today; night-shift beats next).
 
    Same determinism split as runstore.js / the spend ledger: PURE given an injected `io` (readAll/append — the

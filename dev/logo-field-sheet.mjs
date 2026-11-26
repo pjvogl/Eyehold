@@ -24,7 +24,7 @@ const COMBOS = [
   { sigma: 2.5, iso: 0.30 }, { sigma: 2.5, iso: 0.45 }, { sigma: 2.5, iso: 0.60 },
 ];
 
-const master = toRGBA(decodePNG(readFileSync(path.join(REPO, 'frontend/assets/brand/starnet-logo.png'))));
+const master = toRGBA(decodePNG(readFileSync(path.join(REPO, 'frontend/assets/brand/eyehold-logo.png'))));
 const art = crop(master, contentBBox(master));
 const FW = Math.round(art.width * FH / art.height);
 const raw = densityField(art, FW, FH);

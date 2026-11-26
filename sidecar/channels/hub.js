@@ -36,7 +36,7 @@
      Pure + exported so the conveyor step-through test composes the identical entry run (2026-09-22). */
   function dockSystem(persona, brief, isTask) {
     return persona
-      + (brief ? '\n\nYOUR STANDING BRIEF FOR THIS STATION:\n' + String(brief).slice(0, 2000) : '')
+      + (brief ? '\n\nYOUR STANDING BRIEF FOR THIS KEEP:\n' + String(brief).slice(0, 2000) : '')
       + (isTask ? TASK_SUFFIX : '');
   }
   const DEFAULT_PERSONA = 'You are the Commander\'s AI agent, reachable over a messaging app. Address the user as "Commander", '
@@ -53,11 +53,11 @@
       : scope === 'day' ? 'hit the ' + cap + 'daily spend cap'
       : scope === 'global' ? 'hit the ' + cap + 'all-time spend cap'
       : 'hit a spend cap';
-    // a StarNet run whose ceiling admission clamped to the balance (agent.run.end budgetCapIsBalance) spent the wallet:
+    // a Eyehold run whose ceiling admission clamped to the balance (agent.run.end budgetCapIsBalance) spent the wallet:
     // the door is the top-up, not a cap to raise (mirrors chat.js budgetStopLine)
-    if (scope === 'run' && atBalance === true) return '\n\n(' + (cap ? 'used the ' + cap + 'left on your StarNet balance' : 'used what was left on your StarNet balance') + ' — add credits in the app under SETTINGS → AI & MODELS.)';
+    if (scope === 'run' && atBalance === true) return '\n\n(' + (cap ? 'used the ' + cap + 'left on your Eyehold balance' : 'used what was left on your Eyehold balance') + ' — add credits in the app under SETTINGS → AI & MODELS.)';
     // the caps live in SETTINGS › SPENDING LIMITS (MISSION CONTROL is only a room label). A per-RUN stop says
-    // "raise", never "remove" — on StarNet credits PER RUN 0 still stops at the managed default (mirrors chat.js).
+    // "raise", never "remove" — on Eyehold credits PER RUN 0 still stops at the managed default (mirrors chat.js).
     return '\n\n(' + what + (scope === 'run' ? ' — raise it' : ' — raise or remove it') + ' in the app under SETTINGS › SPENDING LIMITS.)';
   }
   function endNote(reason, state) {
@@ -206,7 +206,7 @@
   // hub can do (it owns the in-flight run and the transcript file).
   //
   // `owner` — WHO may run it (2026-09-25, sec-owner-gates). Anyone admitted to the chat (a whitelisted group's
-  // members, an allowed non-owner) can TALK to the agent, but only the bound owner may change the station:
+  // members, an allowed non-owner) can TALK to the agent, but only the bound owner may change the keep:
   //   'always' — owner-only in every form (state-changing, or reveals the owner's private spend/schedules)
   //   'write'  — the bare form is a read-only readout anyone may see; any argument (a change) is owner-only
   //   absent   — read-only, open to every admitted sender (status, agents, whoami, tools, help, start)
@@ -218,7 +218,7 @@
     { command: 'agents', description: 'List agents (→ marks the one you are talking to)' },
     { command: 'talk', description: 'Switch this chat to another agent', usage: '/talk <name>', owner: 'always' },
     { command: 'model', description: 'Show or change the current agent\'s model', usage: '/model [id]', owner: 'write' },
-    { command: 'usage', description: 'Real spend from the station ledger', slash: true, owner: 'always' },
+    { command: 'usage', description: 'Real spend from the keep ledger', slash: true, owner: 'always' },
     { command: 'tools', description: 'The tools this agent can actually call', slash: true },
     { command: 'routine', description: 'List, create or pause scheduled routines', usage: '/routine [list|add <schedule> | <task>|pause N|rm N]', slash: true, owner: 'always' },
     { command: 'away', description: 'Queue work to build on the away shift', usage: '/away [<what to build>|list|on|off]', slash: true, owner: 'always' },
@@ -305,7 +305,7 @@
        so sample #2 took resolveTarget's ADDRESSED branch and rode straight to the remembered dock, bypassing the
        FILTER/SPLITTER the route claims it exercises. The proof quietly stopped proving anything from its second run
        on. With bindChats:false the hub neither READS nor WRITES a binding for this chat, so every dispatch is
-       genuinely unaddressed — including on a station whose store already holds a stale 'sample' record. */
+       genuinely unaddressed — including on a keep whose store already holds a stale 'sample' record. */
     const bindChats = o.bindChats !== false;
     const groundedFor = typeof o.groundedFor === 'function' ? o.groundedFor : null;
     const newId = typeof o.newId === 'function' ? o.newId : (() => { let n = 0; return () => channel + '-run-' + (++n); })();
@@ -337,10 +337,10 @@
     const agentPrefix = o.agentPrefix || 'tg_';
     const resolveAgent = typeof o.resolveAgent === 'function' ? o.resolveAgent : null;   // Phase B: the placed floor's routing plan
     const getTag = typeof o.getTag === 'function' ? o.getTag : null;                     // FILTER content-routing key (B3 classifier)
-    const resolveStation = typeof o.resolveStation === 'function' ? o.resolveStation : null;   // B5: per-bay capability station
+    const resolveKeep = typeof o.resolveKeep === 'function' ? o.resolveKeep : null;   // B5: per-bay capability keep
     // STEP EDITOR (2026-08-05): stageBriefFor(agentId) -> the standing job brief of the dock this agent crews,
     // or null. PROMPT TEXT ONLY — appended to the entry run's system context below; it never widens grants,
-    // tools, or routing (those stay with resolveStation/resolveAgent). Chain hops get theirs inside chain.js.
+    // tools, or routing (those stay with resolveKeep/resolveAgent). Chain hops get theirs inside chain.js.
     const stageBriefFor = typeof o.stageBriefFor === 'function' ? o.stageBriefFor : null;
     // AGENTIC GRAPHS: the dock resolveAgent picked is stage ONE; the belts drawn PAST it say where its output
     // goes. `chain` is the injected executor (sidecar/routing/chain.js) already bound to the floor's edge
@@ -489,7 +489,7 @@
         // doesn't fit — a silent cut would ask for an approval of words the Commander never saw
         const ARGS_MAX = 3000;
         const args = String(f.argsSummary || '').trim();
-        const shown = args.length > ARGS_MAX ? args.slice(0, ARGS_MAX) + '\n… (' + (args.length - ARGS_MAX) + ' more characters: open StarNet to read the whole request before you allow it)' : args;
+        const shown = args.length > ARGS_MAX ? args.slice(0, ARGS_MAX) + '\n… (' + (args.length - ARGS_MAX) + ' more characters: open Eyehold to read the whole request before you allow it)' : args;
         const body = '🔐 Permission needed\n\n' + String(f.tool || 'a tool')
           + (f.scope ? '  (' + f.scope + ')' : '')
           + (shown ? '\n' + shown : '')
@@ -783,7 +783,7 @@
     }
 
     // agentId (optional, last arg) names WHICH roster agent produced this reply, so the floor can pulse the RIGHT
-    // agent's dish on a multi-agent station. Passed only for a real RUN reply (onInbound); administrative command
+    // agent's dish on a multi-agent keep. Passed only for a real RUN reply (onInbound); administrative command
     // replies (/agents, /model…) omit it — no agent "produced" them, so the floor should not attribute a dish.
     // sendOpts (optional) rides ONLY on the FINAL chunk — a keyboard must land under the last thing the user
     // reads, and Telegram would otherwise render one set of buttons per chunk of a long reply. Returns the final
@@ -968,7 +968,7 @@
     // live floor plan, which is content-per-message and not a stable "who am I talking to"). Used by /agents,
     // /talk confirmations, and /model to name the target honestly.
     function ownerOnlyReply(label) {
-      return '⚠ ' + label + ' is owner-only on this station — only the paired owner can use it. You can still talk to the agent here.';
+      return '⚠ ' + label + ' is owner-only on this keep — only the paired owner can use it. You can still talk to the agent here.';
     }
 
     function currentBoundAgent(chatId, boundAgentId, sec) {
@@ -1003,13 +1003,13 @@
       /* /start — the FIRST thing every Telegram user ever sends: the client shows a START button on a fresh
          chat and sends this literal text when it is pressed. It was in no command table, so it fell through
          parseCommand as an ordinary message, SPENT A PAID MODEL RUN, and the member's first ever exchange with
-         the station was an agent puzzling over the word "/start". Answered here, for free, with the one thing
+         the keep was an agent puzzling over the word "/start". Answered here, for free, with the one thing
          a newcomer actually needs: who they are talking to and what they can say. */
       if (cmd === 'start') {
         const me = (roster || []).find(x => String(x.agentId) === String(boundId));
         const who = me ? (me.name || me.agentId) : boundId;
         await deliver(chatId,
-          'STARNET online — you are talking to ' + who + '.\n\n'
+          'EYEHOLD online — you are talking to ' + who + '.\n\n'
           + 'Just say what you need in plain language and I will get on it. I can search and read the web, '
           + 'work with your files, remember things for you, and run scheduled work.\n\n'
           + helpText(), '', 'command');
@@ -1252,7 +1252,7 @@
         else if (from) notes.push('[the image "' + name + '"' + from + ' is attached to this turn]');
 
         /* VOICE NOTES WERE DEAD INPUT. We saved the .ogg and told the model "saved to <path>" — a path it
-           cannot hear — while the station has owned an STT engine the whole time. Transcribe here, where the
+           cannot hear — while the keep has owned an STT engine the whole time. Transcribe here, where the
            bytes already are, so a member can hold the button and talk to their agent from a phone.
 
            Only a real voice note (it.voice, set by the platform's normalize) is transcribed: a forwarded music
@@ -1509,7 +1509,7 @@
       // A FORWARDED "/away on" is a third party's words, not the Commander's command — never parse it as one.
       const parsed = carriesThirdPartyText(msg) ? null : parseCommand(msg.text);
       if (parsed) {
-        // OWNER GATE: a non-owner may talk to the agent, never reconfigure the station. Refused for free, before
+        // OWNER GATE: a non-owner may talk to the agent, never reconfigure the keep. Refused for free, before
         // any handler, write or slash-registry call — and said plainly, so the member knows it is a policy.
         if (commandNeedsOwner(parsed) && !senderIsOwner) {
           await deliver(chatId, ownerOnlyReply('/' + parsed.cmd), '', 'command');
@@ -1605,7 +1605,7 @@
       // still visualizes as talk — visualization only; the RUN gets the right prompt.)
       let isTask = !!classify(msg.text);
       /* THE WORK'S ORIGIN LINE, or null (work belongs to a line, 2026-08-07 — Andrew's ruling). A channel
-         message is OUTSIDE work arriving at the station, so if the dock that will run it is one a line's
+         message is OUTSIDE work arriving at the keep, so if the dock that will run it is one a line's
          own INBOX feeds, this IS that line running and its drawn stages may follow. Asked of the FINAL
          agentId — however it was resolved — because the per-agent bots deliberately hard-lock stage one to
          their bound agent and never consult floor routing; keying this on the resolution would have said
@@ -1627,7 +1627,7 @@
       try { emit('channel.inbound', { channel, chatId, agentId, userId: msg.userId || '', kind: msg.chatType === 'group' ? 'group' : 'dm' }); } catch (_) {}
 
       if (!sec.model || (!usingCodex && !sec.configured && !sec.key)) {
-        await deliver(chatId, '⚠ ' + (sec.error || 'No provider/model is configured yet. Open the STARNET app → Messaging tab and connect.'), '', 'error');
+        await deliver(chatId, '⚠ ' + (sec.error || 'No provider/model is configured yet. Open the EYEHOLD app → Messaging tab and connect.'), '', 'error');
         return;
       }
 
@@ -1736,9 +1736,9 @@
       if (stageBriefFor) { try { dockBrief = dockId ? stageBriefFor(agentId, dockId) : stageBriefFor(agentId); } catch (_) { dockBrief = null; } }
       const system = dockSystem(persona, dockBrief, isTask);
 
-      // B5: if this agent runs at a bound BAY, its tools are that bay room's objects (resolveStation), not the
+      // B5: if this agent runs at a bound BAY, its tools are that bay room's objects (resolveKeep), not the
       // default office — so a routed agent's reach is exactly what the floor granted it. null -> office default.
-      const bayStation = resolveStation ? (dockId ? resolveStation(agentId, dockId) : resolveStation(agentId)) : null;
+      const bayKeep = resolveKeep ? (dockId ? resolveKeep(agentId, dockId) : resolveKeep(agentId)) : null;
 
       // ---- run with bounded supersede-retry ------------------------------------------------------------------
       // ONE run per conversation: the prev.abort.abort() above told this chat's prior run to stop. But its host-side
@@ -1763,7 +1763,7 @@
          replacement, while an E-STOP means nothing else is coming at all. Returning the same silence for both
          made a deliberate stop indistinguishable from a crashed bot on the one surface that has no floor, no
          browser and no other signal to read. /stop typed from that same chat answers "Stopped the run in
-         progress."; the station's E-STOP owes the chat the same courtesy. halt.js sets `halted` for exactly
+         progress."; the keep's E-STOP owes the chat the same courtesy. halt.js sets `halted` for exactly
          this. Delivered at most once per run, whichever abandon-point is reached first. */
       let haltNoticeSent = false;
       const abandoned = async () => {
@@ -1771,7 +1771,7 @@
         if (myRec.halted && !haltNoticeSent) {
           haltNoticeSent = true;
           try {
-            await deliver(chatId, '⏹ Stopped — E-STOP was pressed in the station. This message got no reply and nothing further will run for it.', myRec.runId || '', 'command');
+            await deliver(chatId, '⏹ Stopped — E-STOP was pressed in the keep. This message got no reply and nothing further will run for it.', myRec.runId || '', 'command');
           } catch (_) { /* a stop notice must never crash the teardown */ }
         }
         return true;
@@ -1833,7 +1833,7 @@
             // is no floor here to be real about. See runOnce's `floorless` note (2026-07-28).
             floorless: true,
             prompt: consentPrompt,
-            broadcast: true,   // P1: mirror this routed run's lifecycle to the station floor over SSE — it has no browser-local stream
+            broadcast: true,   // P1: mirror this routed run's lifecycle to the keep floor over SSE — it has no browser-local stream
             // LINE WATCH (additive): the run row records the line + bay it worked AT (the per-line stats and bay lamps)
             lineId: lineId || undefined, dockId: dockId || undefined,
             // A channel task is real work the agent should learn from, exactly like a COMMS task. Admission is
@@ -1841,7 +1841,7 @@
             // must be whitelisted), and each record is stamped with its origin (channel:<name>) so the Commander
             // can see in Memory Core which surface formed a belief.
             reflect: true,
-            station: bayStation || undefined,
+            keep: bayKeep || undefined,
             taskKey: 'channel:' + channel + ':' + chatId,
             taskSource: channel,
             deliveryOrigin: { channel: channel, chatId: String(chatId), threadId: (routes.get(String(chatId)) || {}).threadId || null }
@@ -1888,7 +1888,7 @@
           signal: myRec.abort ? myRec.abort.signal : null,
           runAgent: async function (h) {
             // a hop is a plain autonomous run of ANOTHER agent: its OWN composed persona (never this channel's
-            // configured system prompt — that belongs to the agent the connection names), its OWN bay station,
+            // configured system prompt — that belongs to the agent the connection names), its OWN bay keep,
             // its OWN durable transcript. No consent keyboard: a downstream stage is machine-to-machine.
             // GRANTS LAW (2026-08-04): unattended grants never flow down a line — this call deliberately passes
             // NO unattendedGrants (a routine's grant names ONE agent; see cron-driver.js). `ownerTrusted` below
@@ -1931,7 +1931,7 @@
                 surface: 'autonomous', ownerTrusted: ownerTrusted, broadcast: true, reflect: true,
                 channelSender: tagSenderRuns, channelSenderOwner: channelSenderOwner,   // a hop keeps the entry sender's Full Power verdict
                 // the hop's OWN dock room (multi-bay: never the union of the agent's bays)
-                station: (resolveStation ? (h.dockId ? resolveStation(h.agentId, h.dockId) : resolveStation(h.agentId)) : null) || undefined,
+                keep: (resolveKeep ? (h.dockId ? resolveKeep(h.agentId, h.dockId) : resolveKeep(h.agentId)) : null) || undefined,
                 taskKey: 'chain:' + channel + ':' + chatId + ':' + h.agentId + (h.dockId ? '@' + h.dockId : ''), taskSource: channel,
                 lineId: lineId || undefined, dockId: h.dockId || undefined, workitemId: h.workitemId || undefined   // LINE WATCH: the hop's line + bay on its run row (+ its crate on run.start)
               });

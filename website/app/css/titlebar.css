@@ -1,6 +1,6 @@
-/* STARNET titlebar.css — custom window chrome (Windows desktop shell only).
+/* EYEHOLD titlebar.css — custom window chrome (Windows desktop shell only).
    Rendered by app/titlebar.js when the Rust shell removes the native Windows
-   titlebar (decorations(false)) and stamps __STARNET_CUSTOM_CHROME__. Everything
+   titlebar (decorations(false)) and stamps __EYEHOLD_CUSTOM_CHROME__. Everything
    rides the body.theme-* phosphor vars so MIN/MAX/CLOSE re-tint with the
    Commander's chosen theme. Inert (display:none + zero layout shift) unless
    body.sn-chrome is set, so browser preview / macOS never see it.

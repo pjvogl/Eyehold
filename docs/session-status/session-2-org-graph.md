@@ -5,7 +5,7 @@
 - Status: `HELD-S1-SIDECAR-AUTHORITY`
 - Branch/worktree: `agent/org-graph-gap2` in `C:\Users\<you>\gen-trees\org-graph-gap2`
 - Current slice: pure org graph validator plus additive `PipelineEdge` persistence/readiness; extended with duplicate/self/malformed raw `PipelineEdge` rejection, explicit grant-bound agent validation, footprint-level placed-object validation, and malformed `PipelineEdge.lane` rejection. Current run rechecked the dependency gate and found S1 still unmerged, so no sidecar acceptance/routing wiring was attempted.
-- Runbook note: `AGENTS.md` was requested but is absent under `C:\Users\<you>\gen-trees`; followed `docs/STARNET_SESSION_LOOPS_1_6.md`.
+- Runbook note: `AGENTS.md` was requested but is absent under `C:\Users\<you>\gen-trees`; followed `docs/EYEHOLD_SESSION_LOOPS_1_6.md`.
 
 ## Changed Files
 
@@ -82,15 +82,15 @@
 
 ## Blockers / Holds
 
-- `HELD-S1-SIDECAR-AUTHORITY`: runbook says if S1 is not merged, Session 2 works only on pure validation modules and tests. Sidecar station acceptance/routing integration remains blocked until S1 exposes the authority API.
-- Current coordination board command `node scripts/board.mjs --files frontend/app/orgvalidator.js test/org-validator.test.js test/pipeline.test.js test/worldmodel.test.js frontend/app/pipeline.js frontend/app/worldmodel.js package.json docs/session-status/session-2-org-graph.md` showed no uncommitted tracked edits for `frontend/app/orgvalidator.js`; it also showed `agent/station-authority-gap1` still unmerged and ahead of trunk, so the S1 dependency remains explicit.
+- `HELD-S1-SIDECAR-AUTHORITY`: runbook says if S1 is not merged, Session 2 works only on pure validation modules and tests. Sidecar keep acceptance/routing integration remains blocked until S1 exposes the authority API.
+- Current coordination board command `node scripts/board.mjs --files frontend/app/orgvalidator.js test/org-validator.test.js test/pipeline.test.js test/worldmodel.test.js frontend/app/pipeline.js frontend/app/worldmodel.js package.json docs/session-status/session-2-org-graph.md` showed no uncommitted tracked edits for `frontend/app/orgvalidator.js`; it also showed `agent/keep-authority-gap1` still unmerged and ahead of trunk, so the S1 dependency remains explicit.
 
 ## Readiness Claim
 
 - This checkpoint is ready as a pure Session 2 slice and is currently held for S1 integration.
-- Overall Session 2 done condition is not yet met because sidecar station/routing acceptance cannot be wired until S1 lands.
+- Overall Session 2 done condition is not yet met because sidecar keep/routing acceptance cannot be wired until S1 lands.
 
 ## Next Loop Condition
 
 - If S1 is still unmerged: select the next pure invariant (additional edge readiness or grant-to-placed-object cases) and add tests to `test/org-validator.test.js`.
-- If S1 is merged: wire `OrgValidator.validateOrg` into sidecar station acceptance and routing acceptance without editing shared event/schema contracts.
+- If S1 is merged: wire `OrgValidator.validateOrg` into sidecar keep acceptance and routing acceptance without editing shared event/schema contracts.

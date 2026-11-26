@@ -47,11 +47,11 @@ function fakeRoot(modelVal, effortVal) {
 
 // ---- shellHTML(): renders the model select always, the effort select only when asked ----
 {
-  const withEffort = MP.shellHTML({ id: 'x', inheritLabel: 'Follow station default', effort: true });
+  const withEffort = MP.shellHTML({ id: 'x', inheritLabel: 'Follow keep default', effort: true });
   A.ok(/class="mp-model"/.test(withEffort), 'shellHTML renders the model <select>');
   A.ok(/id="x-model"/.test(withEffort), 'the model select id is prefixed by the given id');
   A.ok(/class="mp-effort"/.test(withEffort), 'effort:true renders the effort <select>');
-  A.ok(/Follow station default/.test(withEffort), 'the inherit option label is rendered');
+  A.ok(/Follow keep default/.test(withEffort), 'the inherit option label is rendered');
 
   const noEffort = MP.shellHTML({ id: 'y' });
   A.ok(/class="mp-model"/.test(noEffort), 'the model select renders without an effort select too');

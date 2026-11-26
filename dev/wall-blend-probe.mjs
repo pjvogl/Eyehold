@@ -6,7 +6,7 @@ import {launchChrome,connectCDP,evalJS,sleep,capture} from '../scripts/lib/cdp.m
 const before=process.argv.includes('--before'),label=before?'before':'after';
 const out='.worldshots/wall-blend';mkdirSync(out,{recursive:true});
 let proc,cdp;const report={exceptions:[]};
-let bakeSource=before?execFileSync('git',['show','fe88f76b3:frontend/app/stationbake.js'],{encoding:'utf8',maxBuffer:2e6}):readFileSync('frontend/app/stationbake.js','utf8');
+let bakeSource=before?execFileSync('git',['show','fe88f76b3:frontend/app/keepbake.js'],{encoding:'utf8',maxBuffer:2e6}):readFileSync('frontend/app/keepbake.js','utf8');
 // Record the painter's clipped face pixels independently of the lighting mask.
 bakeSource=bakeSource.replace(/(?<!function )cornerFaceSlice\((put|putFace),/g,(_,paint)=>'cornerFaceSlice((...a)=>{window.__faceCapture=true;'+paint+'(...a);window.__faceCapture=false;},');
 bakeSource=bakeSource.replace('b.fillStyle = c; b.fillRect(cx0, y0, cx1 - cx0, yEnd - y0);',
@@ -19,17 +19,17 @@ try{
   await cdp.send('Page.enable');await cdp.send('Runtime.enable');
   cdp.on('Runtime.exceptionThrown',e=>report.exceptions.push(e.exceptionDetails.exception?.description||e.exceptionDetails.text));
   cdp.on('Fetch.requestPaused',async e=>{
-    const src=e.request.url.includes('stationbake.js')?bakeSource:readFileSync('frontend/app/world.js','utf8').replace('cameraDbg: () =>',hook).replace('function tick(dt, now) {','function tick(dt, now) { if(window.__wallFrozen)return;');
+    const src=e.request.url.includes('keepbake.js')?bakeSource:readFileSync('frontend/app/world.js','utf8').replace('cameraDbg: () =>',hook).replace('function tick(dt, now) {','function tick(dt, now) { if(window.__wallFrozen)return;');
     await cdp.send('Fetch.fulfillRequest',{requestId:e.requestId,responseCode:200,responseHeaders:[{name:'Content-Type',value:'text/javascript'}],body:Buffer.from(src).toString('base64')});
   });
-  await cdp.send('Fetch.enable',{patterns:[{urlPattern:'*/app/world.js*',requestStage:'Request'},{urlPattern:'*/app/stationbake.js*',requestStage:'Request'}]});
+  await cdp.send('Fetch.enable',{patterns:[{urlPattern:'*/app/world.js*',requestStage:'Request'},{urlPattern:'*/app/keepbake.js*',requestStage:'Request'}]});
   await cdp.send('Page.navigate',{url:'http://127.0.0.1:9177/'});
   for(let i=0;i<100;i++){if(await evalJS(cdp,`typeof World!=='undefined'&&World.cameraDbg().gates.cache&&typeof SPRITES!=='undefined'&&SPRITES.ready`))break;await sleep(300);}
   assert.ok(await evalJS(cdp,`typeof World!=='undefined'&&World.cameraDbg().gates.cache`),'World loaded: '+JSON.stringify(report.exceptions));
   await evalJS(cdp,`World.setCinecamIdle(3600000);window.__wallFrozen=true;Array.from(document.querySelectorAll('button')).find(b=>b.textContent.includes('GOT IT')&&b.offsetParent)?.click()`);
   report.rooms=await evalJS(cdp,`World._wallReview.geometry().allRects.filter(r=>!World._wallReview.geometry().isCorridor(r.z))`);
   report.pixels=await evalJS(cdp,`(()=>{
-    const geo=World._wallReview.geometry(),bake=StationBake.bake(geo),faces=window.__paintedFaces,crowns=window.__wallCrowns;
+    const geo=World._wallReview.geometry(),bake=KeepBake.bake(geo),faces=window.__paintedFaces,crowns=window.__wallCrowns;
     const read=cv=>cv.getContext('2d').getImageData(0,0,cv.width,cv.height).data;
     const mask=read(bake.interiorCv),base=read(bake.baseCv),light=read(bake.lightCv);
     const faceSet=new Set(),crownSet=new Set();

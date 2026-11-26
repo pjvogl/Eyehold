@@ -4,15 +4,15 @@
    has — it lifts the BLACK LEVEL of the panel glass toward the phosphor in force, so the ground
    brightens in the theme's own light. These lock that promise:
      · the lift mixes toward the ACCENT and is hard-capped well short of it (never toward white)
-     · only the three ground tokens lift — --bg (the page/room) and the station feed stay dark
-     · 0 (the default) writes nothing inline: an untouched station is byte-identical to shipped
+     · only the three ground tokens lift — --bg (the page/room) and the keep feed stay dark
+     · 0 (the default) writes nothing inline: an untouched keep is byte-identical to shipped
      · the override lands on document.body (the bezel-var trap side), and persists/exports */
 'use strict';
 const A = require('./_assert.js');
 const fs = require('fs');
 const path = require('path');
 
-const uiSrc = fs.readFileSync(path.join(__dirname, '../frontend/app/stationui.js'), 'utf8');
+const uiSrc = fs.readFileSync(path.join(__dirname, '../frontend/app/keepui.js'), 'utf8');
 
 /* ---- the setting exists, defaults OFF, and persists ---- */
 A.ok(/panelBright: 0,/.test(uiSrc), "defaults() seeds panelBright: 0 — a save written before this knob merges to the exact look it had");

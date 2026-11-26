@@ -11,7 +11,7 @@ const W = require('../frontend/app/workstreams.js');
 
 /* ---------- migrateV1: lossless v1 -> v2 workstreams slice ---------- */
 const V1 = {
-  schema: 'starnet.save', version: 1,
+  schema: 'eyehold.save', version: 1,
   agent: { id: 'agent', name: 'ULTRON', model: 'anthropic/claude-sonnet-4.5' },
   history: [
     { role: 'user', content: 'what is my purpose?' },
@@ -206,7 +206,7 @@ A.ok(/candles\.md/.test(hits[0].snippet), 'search returns a snippet around the m
 A.ok(W.search('CANDLE MARKET').length === 1, 'search matches title, case-insensitive');
 A.eq(W.search('   ').length, 0, 'blank query -> no hits');
 
-/* ---------- importTasks: station kanban col -> lane, empty history ---------- */
+/* ---------- importTasks: keep kanban col -> lane, empty history ---------- */
 W.reset();
 const made = W.importTasks([
   { id: 't1', title: 'todo card', col: 'todo', t: 1 },
@@ -406,7 +406,7 @@ function deletionHarness(busy) {
     };
     const Channels = { isBusy: id => { CTX.events.push('busy:' + id); return CTX.busy; } };
     const SFX = { bad: () => CTX.events.push('sfx.bad') };
-    const StationUI = { notify: (message, tone) => CTX.events.push('notify:' + tone + ':' + message) };
+    const KeepUI = { notify: (message, tone) => CTX.events.push('notify:' + tone + ':' + message) };
     function loadActiveStream() { CTX.events.push('loadActiveStream'); }
     function renderRail() { CTX.events.push('rail'); }
     function persist() { CTX.events.push('persist'); }

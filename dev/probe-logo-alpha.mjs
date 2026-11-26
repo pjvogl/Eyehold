@@ -13,7 +13,7 @@ import path from 'node:path';
 import { decodePNG } from '../scripts/lib/png.mjs';
 
 const REPO = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-const png = decodePNG(readFileSync(path.join(REPO, 'frontend/assets/brand/starnet-logo.png')));
+const png = decodePNG(readFileSync(path.join(REPO, 'frontend/assets/brand/eyehold-logo.png')));
 const { width: w, height: h, channels, pixels } = png;
 console.log(`master ${w}x${h} channels=${channels}`);
 

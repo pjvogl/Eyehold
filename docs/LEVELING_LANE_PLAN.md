@@ -1,6 +1,6 @@
 # LEVELING / XP LANE — plan
 
-**Date:** 2026-07-29 · **Branch:** `claude/starnet-improvement-ideas-feef01` · **Status:** ALL FIVE SLICES BUILT.
+**Date:** 2026-07-29 · **Branch:** `claude/eyehold-improvement-ideas-feef01` · **Status:** ALL FIVE SLICES BUILT.
 
 | Slice | Commit | What shipped |
 | --- | --- | --- |
@@ -34,8 +34,8 @@ carries each specialist's earned credential.)* Every reader of `a.stats` is a *d
 | Consumer | What it does with it |
 | --- | --- |
 | `world.js:146`, `world.js:6185` | hero name-tag "Lv N" + level-up pulse |
-| `topbar.js:28` | station XP sliver |
-| `stationui.js:1090/1212/1246/1310` | crew chip, dossier gauge, trophy case |
+| `topbar.js:28` | keep XP sliver |
+| `keepui.js:1090/1212/1246/1310` | crew chip, dossier gauge, trophy case |
 | `chat.js:4899` | `/whoami` line |
 | `queststore.js:15` | quest copy |
 | `confbeats.js:66` | one-time narration beat |
@@ -174,7 +174,7 @@ farm. Scope this properly once S1–S3 have landed; it is a design lane, not a f
 
 ## Verification plan
 
-Per `starnet-verify`: `node dev/seed.js --keep`, DOM round-trips for each "done means" above (canvas
+Per `eyehold-verify`: `node dev/seed.js --keep`, DOM round-trips for each "done means" above (canvas
 screenshots time out — assert on DOM/state, not pixels), and `npm run test:fast` green before any merge.
 New pure logic goes in `test/xp.test.js`; wiring goes in `test/xpstore.test.js`. For S1, prove it the honest
 way: revert the gate change and watch the new regression go red.

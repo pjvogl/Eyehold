@@ -1,4 +1,4 @@
-/* STARNET — classicons.js : the CLASS SEAL system for the Recruitment Bay.
+/* EYEHOLD — classicons.js : the CLASS SEAL system for the Recruitment Bay.
 
    A class is identified by an engraved emblem (a "challenge-coin" seal), NEVER by a character
    skin — the skin is the Commander's own choice at summon. This module is the single source for:
@@ -126,7 +126,7 @@
      Authoring 91 bespoke emblems is not the answer; a recipe's CATEGORY is the honest grouping the
      browse rail already sorts by, so one engraved seal per category gives every row real vector art
      that says something true about it. Same rules as the class seals above: 24x24, currentColor so it
-     rides the station phosphor, cut detail in the deboss colour, no <text> (that was the one seal that
+     rides the keep phosphor, cut detail in the deboss colour, no <text> (that was the one seal that
      ever picked up a system font). A CUSTOM recipe still falls back to the emoji its author chose. */
   const CATEGORY_ICONS = {
     code: ICONS.engineer, developer: ICONS.engineer, research: ICONS.researcher, writing: ICONS.writer,
@@ -153,7 +153,7 @@
      recolouring a mark is the part many brand guidelines forbid, so "their shape in our amber" carries
      MORE exposure than either a full-colour logo or a generic glyph — he took that call, it is his
      product). So the marks below now trace the SILHOUETTE where the silhouette is simple enough to
-     survive at seal size, drawn as a currentColor path with the deboss cut, and the station's phosphor
+     survive at seal size, drawn as a currentColor path with the deboss cut, and the keep's phosphor
      and engrave ride on top. NO colour ever comes from the vendor: one tube, one hue.
 
      WHICH ONES GET THE SILHOUETTE IS A LEGIBILITY DECISION, NOT A COMPLETENESS ONE. A seal renders at

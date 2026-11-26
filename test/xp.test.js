@@ -43,7 +43,7 @@ A.eq(Xp.xpForLevel(2), 50, 'L2 = 50');
 A.eq(Xp.xpForLevel(3), 150, 'L3 = 150');
 A.eq(Xp.xpForLevel(5), 500, 'L5 = 500');
 A.eq(Xp.xpForLevel(10), 2250, 'L10 = 2250');
-A.eq(Xp.xpForLevel(28), 18900, 'L28 = 18900 (the long-haul station number)');
+A.eq(Xp.xpForLevel(28), 18900, 'L28 = 18900 (the long-haul keep number)');
 
 A.eq(Xp.levelForXp(0), 1, '0 xp -> L1');
 A.eq(Xp.levelForXp(49), 1, 'just below L2 -> L1');
@@ -470,7 +470,7 @@ A.eq(Xp.reliability(run([done(), done(), ended('refusal')]).stats).attempted, 3,
 
 /* THE HONESTY LINE — a provider fault is NOT the agent's failure. This is the case that actually happens: a
    dead model id, a 404, an out-of-credit key. Charging it to the agent would understate every agent on a
-   misconfigured station. Excluded runs are still COUNTED so the dossier can name them. */
+   misconfigured keep. Excluded runs are still COUNTED so the dossier can name them. */
 const rFault = Xp.reliability(run([done(), done(), done(), errd(), errd(), ended('empty')]).stats);
 A.eq(rFault.attempted, 3, 'provider faults (error/empty) are EXCLUDED from the denominator');
 A.eq(rFault.pct, 100, 'a provider outage cannot drag an agent\'s reliability down');
@@ -540,7 +540,7 @@ for (let i = 0; i < 3; i++) rated = Xp.applyEvent(rated, { name: 'memory.feedbac
 const cRated = Xp.credential(rated);
 A.ok(/Commander rating: /.test(cRated.text), 'a rated agent publishes the Commander rating');
 A.ok(/finish rate: /.test(cRated.text), '…alongside the separately-sourced finish rate');
-A.ok(cRated.text.indexOf('Commander rating') < cRated.text.indexOf('finish rate'), 'what you said is listed before what the station saw');
+A.ok(cRated.text.indexOf('Commander rating') < cRated.text.indexOf('finish rate'), 'what you said is listed before what the keep saw');
 
 /* THE CHURN GUARD — this is what makes the credential safe to publish into a briefing. Ordinary work must not
    move the key; only a tier crossing or a band flip may. If this goes red, S3 re-POSTs the whole roster

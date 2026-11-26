@@ -23,7 +23,7 @@ test('browser live doctor sends the explicit consent bit and returns the receipt
 });
 
 test('settings keeps live probes behind a checkbox and renders the receipt as text', () => {
-  const src = fs.readFileSync(path.join(__dirname, '..', 'frontend', 'app', 'stationui.js'), 'utf8');
+  const src = fs.readFileSync(path.join(__dirname, '..', 'frontend', 'app', 'keepui.js'), 'utf8');
   assert.match(src, /id="diag-live-consent"/);
   assert.match(src, /!liveConsent \\|\\| !liveConsent\.checked/);
   assert.match(src, /liveOut\.textContent = result\.text/);

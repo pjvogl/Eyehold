@@ -35,7 +35,7 @@ A.ok(buildStep, 'release train has the signed desktop build step');
 const build = buildStep[1];
 A.ok(/cargo install trusted-signing-cli --locked/.test(build),
   'Windows build installs the Artifact Signing client');
-A.ok(/starnet-signing/.test(build) && /starnet-public/.test(build),
+A.ok(/eyehold-signing/.test(build) && /eyehold-public/.test(build),
   'Windows build selects the production signing account and public-trust profile');
 A.ok(!/Windows exe\/installer will be UNSIGNED/.test(build),
   'shipping Windows build has no unsigned-success escape hatch');
@@ -50,16 +50,16 @@ A.ok(/shell: pwsh/.test(trust), 'trust proof uses Windows signature APIs');
 A.ok(/Get-AuthenticodeSignature/.test(trust) && /Status -ne 'Valid'/.test(trust),
   'trust proof requires Windows to validate each embedded signature');
 A.ok(/TimeStamperCertificate/.test(trust), 'trust proof requires a trusted timestamp');
-A.ok(/skynet-desktop\.exe/.test(trust), 'trust proof checks the StarNet executable');
+A.ok(/skynet-desktop\.exe/.test(trust), 'trust proof checks the Eyehold executable');
 A.ok(/\*-setup\.exe/.test(trust), 'trust proof checks the NSIS installer');
 A.ok(/Start-Process[\s\S]*-ArgumentList '\/S',[\s\S]*\/D=\$installRoot/.test(trust),
   'trust proof silently installs the exact NSIS candidate into an isolated root');
 A.ok(/Get-ChildItem -LiteralPath \$installRoot[\s\S]*-Filter 'node\.exe'/.test(trust),
   'trust proof checks the bundled Node runtime from the installed payload');
 A.ok(/Get-ChildItem -LiteralPath \$installRoot[\s\S]*-Filter 'uninstall\.exe'/.test(trust)
-  && /installed StarNet uninstaller/.test(trust),
+  && /installed Eyehold uninstaller/.test(trust),
   'trust proof checks the generated uninstaller from the installed payload');
-A.ok(/CN=Andrew Sims/.test(trust), 'StarNet binaries must carry the verified publisher identity');
+A.ok(/CN=Eyehold/.test(trust), 'Eyehold binaries must carry the verified publisher identity');
 A.ok(/CN=OpenJS Foundation/.test(trust), 'bundled Node must retain its upstream publisher identity');
 A.ok(/prepare-node\.mjs[\s\S]*NODE_VERSION[\s\S]*\$node\.FullName --version[\s\S]*actualNodeVersion -ne \$expectedNodeVersion/.test(trust),
   'trust proof executes the installed Node runtime and matches it to the source-controlled release pin');

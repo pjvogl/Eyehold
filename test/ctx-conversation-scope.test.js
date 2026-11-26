@@ -1,6 +1,6 @@
 /* node test/ctx-conversation-scope.test.js — regression guard for THE CONTEXT GAUGE READING THE WRONG CHAT.
 
-   THE DEFECT (proven live 2026-08-03, seeded station on a real OpenRouter turn). Context occupancy was
+   THE DEFECT (proven live 2026-08-03, seeded keep on a real OpenRouter turn). Context occupancy was
    stored per AGENT: `contextByAgent[agentId] = { used: prompt_tokens }`. The bottom-bar gauge labels
    itself "MEMORY OF THIS CHAT". Those two are not the same quantity. Opening a new workstream — or
    switching to any other one — left the previous conversation's fill on screen: a stream with ZERO turns

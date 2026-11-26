@@ -1,7 +1,7 @@
-/* STARNET — floorstats.js : the FACTORY-FLOOR economy readout (pure, testable).
+/* EYEHOLD — floorstats.js : the FACTORY-FLOOR economy readout (pure, testable).
 
    Folds the harness's already-frozen usage/outcome events into ONE render-agnostic
-   snapshot the live floor HUD reads at a glance — so the running station is legible
+   snapshot the live floor HUD reads at a glance — so the running keep is legible
    the way a Factorio belt is: you look, and you know. Four numbers:
      - RUNS  : real task outcomes observed this session.
      - YIELD : the productive-run rate — products / decisive runs. The "are my agents

@@ -87,10 +87,10 @@ async function driveShell(fixture, decision) {
   const fixture = SidecarFixture.create({
     prefix: 'sk-full-access-',
     env: {
-      SKYNET_OPENROUTER_BASE: provider.baseUrl, STARNET_OPENROUTER_BASE: provider.baseUrl,
-      SKYNET_OPENROUTER_KEY: 'sk-or-v1-full-access-fake', STARNET_OPENROUTER_KEY: 'sk-or-v1-full-access-fake',
-      SKYNET_DEFAULT_MODEL: 'test/model', STARNET_DEFAULT_MODEL: 'test/model',
-      SKYNET_CONSENT_TIMEOUT_MS: '1000', STARNET_CONSENT_TIMEOUT_MS: '1000'
+      EYEHOLD_OPENROUTER_BASE: provider.baseUrl, EYEHOLD_OPENROUTER_BASE: provider.baseUrl,
+      EYEHOLD_OPENROUTER_KEY: 'sk-or-v1-full-access-fake', EYEHOLD_OPENROUTER_KEY: 'sk-or-v1-full-access-fake',
+      EYEHOLD_DEFAULT_MODEL: 'test/model', EYEHOLD_DEFAULT_MODEL: 'test/model',
+      EYEHOLD_CONSENT_TIMEOUT_MS: '1000', EYEHOLD_CONSENT_TIMEOUT_MS: '1000'
     }
   });
   try {
@@ -123,7 +123,7 @@ async function driveShell(fixture, decision) {
 
     const narrowedProfile = await fixture.json('POST', '/api/roster', {
       updatedAt: Date.now() + 10000,
-      agents: [{ agentId: 'david', system: 'You are DAVID.', name: 'DAVID', provider: 'openrouter', model: 'test/model', approvalMode: 'full', executionProfile: 'station-gear' }]
+      agents: [{ agentId: 'david', system: 'You are DAVID.', name: 'DAVID', provider: 'openrouter', model: 'test/model', approvalMode: 'full', executionProfile: 'keep-gear' }]
     });
     A.ok(narrowedProfile.body && narrowedProfile.body.ok === true, 'the stored execution profile can remain narrow while Full Power is explicit');
     const broad = await driveShell(fixture);

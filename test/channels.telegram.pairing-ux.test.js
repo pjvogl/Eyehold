@@ -41,7 +41,7 @@ A.ok(/could not prove reconnect was saved; the bot was not started/.test(sidecar
   && /could not prove disconnect was saved; the bot remains connected/.test(sidecar),
   'agent-bot lifecycle actions fail closed when their durable state cannot be proven');
 A.ok((sidecar.match(/streamReplies:\s*false/g) || []).length >= 2,
-  'station and agent Telegram bots publish final answers only instead of exposing raw token deltas');
+  'keep and agent Telegram bots publish final answers only instead of exposing raw token deltas');
 A.ok(/const provider = \(ag && ag\.provider\)/.test(ui) && /const model = \(ag && ag\.model\)/.test(ui),
   'agent-bot setup sends the selected roster agent provider/model, not the globally focused provider/model');
 A.ok(/channelRunConfigFor\(agentId,[\s\S]*?probeChannelRunConfig\(runConfig/.test(sidecar.slice(sidecar.indexOf('async function handleTelegramBotAdd'))),

@@ -63,8 +63,8 @@
     "exceptions": []
   },
   {
-    "state": "build-station",
-    "driven": "opened:REFIT STATION",
+    "state": "build-keep",
+    "driven": "opened:REFIT KEEP",
     "visibleControls": 183,
     "nativePaint": [],
     "exceptions": []

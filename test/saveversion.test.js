@@ -1,6 +1,6 @@
 /* node test/saveversion.test.js — FORWARD-VERSION GUARDS (update-safety audit P0.3).
 
-   A save written by a NEWER StarNet must never be silently adopted, migrated, re-stamped, or clobbered by this
+   A save written by a NEWER Eyehold must never be silently adopted, migrated, re-stamped, or clobbered by this
    older code. This locks the three seams that used to violate that:
 
      • frontend/app/save.js   — load()/loadStatus() REFUSE a doc whose version > CURRENT and leave the stored
@@ -22,7 +22,7 @@ global.localStorage = {
   removeItem: k => { delete mem[k]; },
   clear: () => { for (const k in mem) delete mem[k]; }
 };
-const SAVE_KEY = 'starnet.save';
+const SAVE_KEY = 'eyehold.save';
 
 // expose Save/Backup as globals too: cloudsave.js reads a module-scope `Save` global for its forward-version
 // ceiling + the re-validation re-read, exactly as it does in the browser (where these are window globals).
@@ -34,7 +34,7 @@ const FUTURE_V = Save.CURRENT + 42;   // unambiguously ahead of this build's cei
 // a well-formed envelope EXCEPT for a future version + a field this build has never heard of.
 function futureRaw(over) {
   return JSON.stringify(Object.assign({
-    schema: 'starnet.save', version: FUTURE_V, updatedAt: 5000,
+    schema: 'eyehold.save', version: FUTURE_V, updatedAt: 5000,
     agent: { id: 'agent', name: 'NOVA', stats: { xp: 9 } },
     somethingV99Added: { a: 1, b: [2, 3] }   // the "unread future field" that must not be dropped
   }, over || {}));
@@ -66,7 +66,7 @@ function futureRaw(over) {
 // ---- sanity: a CURRENT / older doc still loads + migrates normally (guard did not over-reach) ----
 {
   localStorage.clear();
-  localStorage.setItem(SAVE_KEY, JSON.stringify({ schema: 'starnet.save', version: Save.CURRENT, updatedAt: 1, agent: { id: 'agent', name: 'NOVA' } }));
+  localStorage.setItem(SAVE_KEY, JSON.stringify({ schema: 'eyehold.save', version: Save.CURRENT, updatedAt: 1, agent: { id: 'agent', name: 'NOVA' } }));
   const d = Save.load();
   A.ok(d && d.agent && d.agent.name === 'NOVA', 'a current-version save still loads normally');
   A.ok(!Save.isFuture(), 'isFuture() is false for a current-version save');
@@ -95,7 +95,7 @@ function futureRaw(over) {
 // 2b. future REMOTE (pull returns a newer doc) → not adopted, sentinel, cache untouched
 {
   localStorage.clear();
-  const localRaw = JSON.stringify({ schema: 'starnet.save', version: Save.CURRENT, updatedAt: 10, agent: { id: 'agent', name: 'LOCALGUY' } });
+  const localRaw = JSON.stringify({ schema: 'eyehold.save', version: Save.CURRENT, updatedAt: 10, agent: { id: 'agent', name: 'LOCALGUY' } });
   localStorage.setItem(SAVE_KEY, localRaw);
   const localDoc = JSON.parse(localRaw);
 
@@ -114,7 +114,7 @@ function futureRaw(over) {
 {
   localStorage.clear();
   // no local at all → remote wins. remote is a valid v(CURRENT) doc, so Save.load() re-reads a migrated doc.
-  const remote = { schema: 'starnet.save', version: Save.CURRENT, updatedAt: 500, agent: { id: 'agent', name: 'REMOTEGAL', stats: { xp: 1 } } };
+  const remote = { schema: 'eyehold.save', version: Save.CURRENT, updatedAt: 500, agent: { id: 'agent', name: 'REMOTEGAL', stats: { xp: 1 } } };
   global.fetch = () => Promise.resolve({ ok: true, json: () => Promise.resolve({ save: remote }) });
   const out = await CloudSave.reconcile(null);
   A.ok(out && out.agent && out.agent.name === 'REMOTEGAL', 'a valid older/current remote is still adopted normally');
@@ -123,23 +123,23 @@ function futureRaw(over) {
 }
 
 // ============================================================================
-// 3. backup.js validate() — refuse a backup file from a newer StarNet
+// 3. backup.js validate() — refuse a backup file from a newer Eyehold
 // ============================================================================
 {
-  const goodStore = { 'starnet.save': JSON.stringify({ schema: 'starnet.save', version: Save.CURRENT, agent: { name: 'NOVA' } }) };
+  const goodStore = { 'eyehold.save': JSON.stringify({ schema: 'eyehold.save', version: Save.CURRENT, agent: { name: 'NOVA' } }) };
 
   // future backup version → refused with a clear string the import UI surfaces.
-  const err = Backup.validate({ schema: 'starnet.backup', version: Backup.VERSION + 1, store: goodStore });
-  A.ok(typeof err === 'string' && /newer StarNet/i.test(err), 'validate() refuses a future-version backup with a clear message');
+  const err = Backup.validate({ schema: 'eyehold.backup', version: Backup.VERSION + 1, store: goodStore });
+  A.ok(typeof err === 'string' && /newer Eyehold/i.test(err), 'validate() refuses a future-version backup with a clear message');
 
   // applyBundle refuses it too (never writes any key) — validate() gates it.
   localStorage.clear();
-  const res = Backup.applyBundle({ schema: 'starnet.backup', version: Backup.VERSION + 1, store: goodStore });
+  const res = Backup.applyBundle({ schema: 'eyehold.backup', version: Backup.VERSION + 1, store: goodStore });
   A.eq(res.ok, false, 'applyBundle refuses a future-version backup');
-  A.eq(localStorage.getItem('starnet.save'), null, 'no save key written from a refused future backup');
+  A.eq(localStorage.getItem('eyehold.save'), null, 'no save key written from a refused future backup');
 
   // a CURRENT-version backup still validates + applies (guard did not over-reach).
-  A.eq(Backup.validate({ schema: 'starnet.backup', version: Backup.VERSION, store: goodStore }), null, 'a current-version backup still validates');
+  A.eq(Backup.validate({ schema: 'eyehold.backup', version: Backup.VERSION, store: goodStore }), null, 'a current-version backup still validates');
 }
 
 A.report('saveversion');

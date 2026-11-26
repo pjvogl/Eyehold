@@ -3,12 +3,12 @@
   "release": "69baf91a5b2c22230f87e614da6a72882278bc6c",
   "notesSha256": "0ec2303c35313351c79fa5996cad4f177451a8ec31969864bfa5801e8bb7aafb",
   "sections": [
-    "Station visuals and performance",
+    "Keep visuals and performance",
     "Overseer creation and agent personalities",
     "Providers, connections and discovery",
     "Saves, conversations and recovery",
     "COMMS, reports and task feedback",
-    "Crew movement, furniture and station behavior",
+    "Crew movement, furniture and keep behavior",
     "Images, usage and speech",
     "API and automation reliability",
     "Desktop, installation and diagnostics",
@@ -246,7 +246,7 @@
     },
     {
       "sha": "3f2cc70d45b2f3ece0f34d1e4c70f1fdd87b1db3",
-      "subject": "Polish provider identities, status alignment and StarNet action"
+      "subject": "Polish provider identities, status alignment and Eyehold action"
     },
     {
       "sha": "61528ba957fade1872726f342dfae3d768401c38",
@@ -350,7 +350,7 @@
     },
     {
       "sha": "e9051515a4b87c326b9d048f726cd0db49df05c5",
-      "subject": "merge: include integrated station card polish in release audit"
+      "subject": "merge: include integrated keep card polish in release audit"
     },
     {
       "sha": "9441660d0968ec7f21903ae8851fc1a28e09ac34",
@@ -382,7 +382,7 @@
     },
     {
       "sha": "455ffc9ed1e20540f65a6b00601df5ba108c8a77",
-      "subject": "style: make station announcements readable"
+      "subject": "style: make keep announcements readable"
     },
     {
       "sha": "bed625bdd24afd44175b7c9d61d82952ae321121",
@@ -582,7 +582,7 @@
     },
     {
       "sha": "8c482f327f96883c57af64d1fd38d85973a102fc",
-      "subject": "fix: preserve current station branding during tutorial integration"
+      "subject": "fix: preserve current keep branding during tutorial integration"
     },
     {
       "sha": "652f7d62e0f556f4bce548a4a8a2b667e5b18786",
@@ -766,7 +766,7 @@
     },
     {
       "sha": "b16654186bee9d5e7261d9eef7c42ad8e56434f2",
-      "subject": "test: restrict audit probes to development stations"
+      "subject": "test: restrict audit probes to development keeps"
     },
     {
       "sha": "95840aed5fb3a94ff1cd0458b60c569837d2db98",
@@ -794,7 +794,7 @@
     },
     {
       "sha": "5c8d26e32f75b4475e2c17d606908c0fc3cf549c",
-      "subject": "style: use station controls for save recovery"
+      "subject": "style: use keep controls for save recovery"
     },
     {
       "sha": "a5aaaf3e1022b5000c1348dd7ed54466615e95b1",
@@ -958,7 +958,7 @@
     },
     {
       "sha": "c8ecf001323e709cb543019ffe5737cca20dba55",
-      "subject": "merge: synchronize creation interface with current StarNet"
+      "subject": "merge: synchronize creation interface with current Eyehold"
     },
     {
       "sha": "a5cc394eff48ead2b46aac2637c15de0096904b4",
@@ -1018,7 +1018,7 @@
     },
     {
       "sha": "dfab52ca9c65b8732efea29d0278e1f13fbf3fdb",
-      "subject": "design: simplify the StarNet start card without the subscription badge"
+      "subject": "design: simplify the Eyehold start card without the subscription badge"
     },
     {
       "sha": "0985f6314fa99c4902a7c6bfb79fb071c8cd7c88",
@@ -1062,7 +1062,7 @@
     },
     {
       "sha": "d262f37cf9d7314123591657d2efec814a1ea0e4",
-      "subject": "design: make the StarNet AI subscription offer unmistakable"
+      "subject": "design: make the Eyehold AI subscription offer unmistakable"
     },
     {
       "sha": "f3b9f5ab1c772f7997dd820c2853186696003d35",
@@ -1078,7 +1078,7 @@
     },
     {
       "sha": "25f6c8191d9e0a55d778e8ed6ccb1fdb36301f44",
-      "subject": "merge: synchronize adversarial audit with current StarNet"
+      "subject": "merge: synchronize adversarial audit with current Eyehold"
     },
     {
       "sha": "352f6a6362ab39d465d24aac4305ffcc18ed0628",
@@ -1098,7 +1098,7 @@
     },
     {
       "sha": "3bd3001cab4d940cb0bc225b364e313c0eda8930",
-      "subject": "merge: strengthen StarNet reliability and report output"
+      "subject": "merge: strengthen Eyehold reliability and report output"
     },
     {
       "sha": "2200988e909ee2eae4ddd04c56197c4f55bfb049",
@@ -1110,11 +1110,11 @@
     },
     {
       "sha": "8a30061b8695c5eb8d8a50503eb85e0e92be0146",
-      "subject": "qa: refresh StarNet wordmark source fingerprint"
+      "subject": "qa: refresh Eyehold wordmark source fingerprint"
     },
     {
       "sha": "908d6338c43dcd0f2bb81fdde7c543f129bd21e3",
-      "subject": "design: lead Overseer setup with the authentic StarNet wordmark"
+      "subject": "design: lead Overseer setup with the authentic Eyehold wordmark"
     },
     {
       "sha": "2350a90157eae4443033c4ca34f6c4adf845edf9",
@@ -1126,11 +1126,11 @@
     },
     {
       "sha": "ff595a596aaeaeb98da3b077b3b4d6487cd84bf6",
-      "subject": "chore: refresh combined StarNet source lock"
+      "subject": "chore: refresh combined Eyehold source lock"
     },
     {
       "sha": "79fea7e8d19aefd91421452066750c114649433e",
-      "subject": "merge: synchronize Hermes improvements with current StarNet"
+      "subject": "merge: synchronize Hermes improvements with current Eyehold"
     },
     {
       "sha": "75a814c1875f54de1e65e626f6a8c99dd248e5a7",
@@ -1226,7 +1226,7 @@
     },
     {
       "sha": "0946764a577ff628c1e08551db97b2e129850cf2",
-      "subject": "feat: rebuild Overseer setup controls and model flow with station glass"
+      "subject": "feat: rebuild Overseer setup controls and model flow with keep glass"
     },
     {
       "sha": "c2193f1fbc07f827db07814487769adaeb6467b3",
@@ -1354,11 +1354,11 @@
     },
     {
       "sha": "a039e5987cc73ce98e1f027595d9d5620c133e48",
-      "subject": "qa: refresh StarNet card source fingerprint"
+      "subject": "qa: refresh Eyehold card source fingerprint"
     },
     {
       "sha": "5d8ff8c2bacab3791c33eaa005eefd452ce8352a",
-      "subject": "feat: redesign StarNet start card with perimeter light trail"
+      "subject": "feat: redesign Eyehold start card with perimeter light trail"
     },
     {
       "sha": "f952835ab7e078d0f9dae490cbb52e7b9c8cc29f",
@@ -1374,11 +1374,11 @@
     },
     {
       "sha": "0dec053d1ffe2edf584f88014bb34ee1379b5dfd",
-      "subject": "fix: align StarNet setup logo and simplify character gallery"
+      "subject": "fix: align Eyehold setup logo and simplify character gallery"
     },
     {
       "sha": "009670cc3e2cf0a58bf01ebaaadcee25a04db6c6",
-      "subject": "docs: plan StarNet improvements from Hermes audit"
+      "subject": "docs: plan Eyehold improvements from Hermes audit"
     },
     {
       "sha": "d89e1d6e117309041dcc31be536ecfbdd8c9498a",
@@ -1580,7 +1580,7 @@
     },
     {
       "sha": "3f2cc70d45b2f3ece0f34d1e4c70f1fdd87b1db3",
-      "subject": "Polish provider identities, status alignment and StarNet action"
+      "subject": "Polish provider identities, status alignment and Eyehold action"
     },
     {
       "sha": "2c041bbe69124eda1f60a6eb5a11cc44676028cb",
@@ -1608,7 +1608,7 @@
     },
     {
       "sha": "455ffc9ed1e20540f65a6b00601df5ba108c8a77",
-      "subject": "style: make station announcements readable"
+      "subject": "style: make keep announcements readable"
     },
     {
       "sha": "bed625bdd24afd44175b7c9d61d82952ae321121",
@@ -1632,7 +1632,7 @@
     },
     {
       "sha": "8c482f327f96883c57af64d1fd38d85973a102fc",
-      "subject": "fix: preserve current station branding during tutorial integration"
+      "subject": "fix: preserve current keep branding during tutorial integration"
     },
     {
       "sha": "f129e19e340e589fe976d19082ccaaa55a779863",
@@ -1648,7 +1648,7 @@
     },
     {
       "sha": "5c8d26e32f75b4475e2c17d606908c0fc3cf549c",
-      "subject": "style: use station controls for save recovery"
+      "subject": "style: use keep controls for save recovery"
     },
     {
       "sha": "ff188bee70c34753216cef061a074109420985d7",
@@ -1708,7 +1708,7 @@
     },
     {
       "sha": "dfab52ca9c65b8732efea29d0278e1f13fbf3fdb",
-      "subject": "design: simplify the StarNet start card without the subscription badge"
+      "subject": "design: simplify the Eyehold start card without the subscription badge"
     },
     {
       "sha": "81b6f5703ed344f8748d0b5e0c8947cf3c5ae499",
@@ -1716,7 +1716,7 @@
     },
     {
       "sha": "d262f37cf9d7314123591657d2efec814a1ea0e4",
-      "subject": "design: make the StarNet AI subscription offer unmistakable"
+      "subject": "design: make the Eyehold AI subscription offer unmistakable"
     },
     {
       "sha": "38d28f9a809369683d0746d2308af093afa8b537",
@@ -1728,7 +1728,7 @@
     },
     {
       "sha": "908d6338c43dcd0f2bb81fdde7c543f129bd21e3",
-      "subject": "design: lead Overseer setup with the authentic StarNet wordmark"
+      "subject": "design: lead Overseer setup with the authentic Eyehold wordmark"
     },
     {
       "sha": "75a814c1875f54de1e65e626f6a8c99dd248e5a7",
@@ -1760,7 +1760,7 @@
     },
     {
       "sha": "0946764a577ff628c1e08551db97b2e129850cf2",
-      "subject": "feat: rebuild Overseer setup controls and model flow with station glass"
+      "subject": "feat: rebuild Overseer setup controls and model flow with keep glass"
     },
     {
       "sha": "774a5eeed83354a4c10772b4d2e878fc7c9a105d",
@@ -1804,7 +1804,7 @@
     },
     {
       "sha": "5d8ff8c2bacab3791c33eaa005eefd452ce8352a",
-      "subject": "feat: redesign StarNet start card with perimeter light trail"
+      "subject": "feat: redesign Eyehold start card with perimeter light trail"
     },
     {
       "sha": "f952835ab7e078d0f9dae490cbb52e7b9c8cc29f",
@@ -1812,7 +1812,7 @@
     },
     {
       "sha": "0dec053d1ffe2edf584f88014bb34ee1379b5dfd",
-      "subject": "fix: align StarNet setup logo and simplify character gallery"
+      "subject": "fix: align Eyehold setup logo and simplify character gallery"
     },
     {
       "sha": "d89e1d6e117309041dcc31be536ecfbdd8c9498a",
@@ -1937,7 +1937,7 @@
     "frontend/app/overseer-setup.js",
     "frontend/app/personas.js",
     "frontend/app/spacebg.js",
-    "frontend/app/stationui.js",
+    "frontend/app/keepui.js",
     "frontend/app/terrain.js",
     "frontend/app/tutorial.js",
     "frontend/app/voice-live.js",
@@ -2028,70 +2028,70 @@
     "frontend/assets/sprites/alien/walk_west_5.png",
     "frontend/assets/sprites/alien/walk_west_6.png",
     "frontend/assets/sprites/alien/walk_west_7.png",
-    "frontend/assets/sprites/astronaut/walk_east_0.png",
-    "frontend/assets/sprites/astronaut/walk_east_1.png",
-    "frontend/assets/sprites/astronaut/walk_east_2.png",
-    "frontend/assets/sprites/astronaut/walk_east_3.png",
-    "frontend/assets/sprites/astronaut/walk_east_4.png",
-    "frontend/assets/sprites/astronaut/walk_east_5.png",
-    "frontend/assets/sprites/astronaut/walk_east_6.png",
-    "frontend/assets/sprites/astronaut/walk_east_7.png",
-    "frontend/assets/sprites/astronaut/walk_north-east_0.png",
-    "frontend/assets/sprites/astronaut/walk_north-east_1.png",
-    "frontend/assets/sprites/astronaut/walk_north-east_2.png",
-    "frontend/assets/sprites/astronaut/walk_north-east_3.png",
-    "frontend/assets/sprites/astronaut/walk_north-east_4.png",
-    "frontend/assets/sprites/astronaut/walk_north-east_5.png",
-    "frontend/assets/sprites/astronaut/walk_north-east_6.png",
-    "frontend/assets/sprites/astronaut/walk_north-east_7.png",
-    "frontend/assets/sprites/astronaut/walk_north-west_0.png",
-    "frontend/assets/sprites/astronaut/walk_north-west_1.png",
-    "frontend/assets/sprites/astronaut/walk_north-west_2.png",
-    "frontend/assets/sprites/astronaut/walk_north-west_3.png",
-    "frontend/assets/sprites/astronaut/walk_north-west_4.png",
-    "frontend/assets/sprites/astronaut/walk_north-west_5.png",
-    "frontend/assets/sprites/astronaut/walk_north-west_6.png",
-    "frontend/assets/sprites/astronaut/walk_north-west_7.png",
-    "frontend/assets/sprites/astronaut/walk_north_0.png",
-    "frontend/assets/sprites/astronaut/walk_north_1.png",
-    "frontend/assets/sprites/astronaut/walk_north_2.png",
-    "frontend/assets/sprites/astronaut/walk_north_3.png",
-    "frontend/assets/sprites/astronaut/walk_north_4.png",
-    "frontend/assets/sprites/astronaut/walk_north_5.png",
-    "frontend/assets/sprites/astronaut/walk_north_6.png",
-    "frontend/assets/sprites/astronaut/walk_north_7.png",
-    "frontend/assets/sprites/astronaut/walk_south-east_0.png",
-    "frontend/assets/sprites/astronaut/walk_south-east_1.png",
-    "frontend/assets/sprites/astronaut/walk_south-east_2.png",
-    "frontend/assets/sprites/astronaut/walk_south-east_3.png",
-    "frontend/assets/sprites/astronaut/walk_south-east_4.png",
-    "frontend/assets/sprites/astronaut/walk_south-east_5.png",
-    "frontend/assets/sprites/astronaut/walk_south-east_6.png",
-    "frontend/assets/sprites/astronaut/walk_south-east_7.png",
-    "frontend/assets/sprites/astronaut/walk_south-west_0.png",
-    "frontend/assets/sprites/astronaut/walk_south-west_1.png",
-    "frontend/assets/sprites/astronaut/walk_south-west_2.png",
-    "frontend/assets/sprites/astronaut/walk_south-west_3.png",
-    "frontend/assets/sprites/astronaut/walk_south-west_4.png",
-    "frontend/assets/sprites/astronaut/walk_south-west_5.png",
-    "frontend/assets/sprites/astronaut/walk_south-west_6.png",
-    "frontend/assets/sprites/astronaut/walk_south-west_7.png",
-    "frontend/assets/sprites/astronaut/walk_south_0.png",
-    "frontend/assets/sprites/astronaut/walk_south_1.png",
-    "frontend/assets/sprites/astronaut/walk_south_2.png",
-    "frontend/assets/sprites/astronaut/walk_south_3.png",
-    "frontend/assets/sprites/astronaut/walk_south_4.png",
-    "frontend/assets/sprites/astronaut/walk_south_5.png",
-    "frontend/assets/sprites/astronaut/walk_south_6.png",
-    "frontend/assets/sprites/astronaut/walk_south_7.png",
-    "frontend/assets/sprites/astronaut/walk_west_0.png",
-    "frontend/assets/sprites/astronaut/walk_west_1.png",
-    "frontend/assets/sprites/astronaut/walk_west_2.png",
-    "frontend/assets/sprites/astronaut/walk_west_3.png",
-    "frontend/assets/sprites/astronaut/walk_west_4.png",
-    "frontend/assets/sprites/astronaut/walk_west_5.png",
-    "frontend/assets/sprites/astronaut/walk_west_6.png",
-    "frontend/assets/sprites/astronaut/walk_west_7.png",
+    "frontend/assets/sprites/warden/walk_east_0.png",
+    "frontend/assets/sprites/warden/walk_east_1.png",
+    "frontend/assets/sprites/warden/walk_east_2.png",
+    "frontend/assets/sprites/warden/walk_east_3.png",
+    "frontend/assets/sprites/warden/walk_east_4.png",
+    "frontend/assets/sprites/warden/walk_east_5.png",
+    "frontend/assets/sprites/warden/walk_east_6.png",
+    "frontend/assets/sprites/warden/walk_east_7.png",
+    "frontend/assets/sprites/warden/walk_north-east_0.png",
+    "frontend/assets/sprites/warden/walk_north-east_1.png",
+    "frontend/assets/sprites/warden/walk_north-east_2.png",
+    "frontend/assets/sprites/warden/walk_north-east_3.png",
+    "frontend/assets/sprites/warden/walk_north-east_4.png",
+    "frontend/assets/sprites/warden/walk_north-east_5.png",
+    "frontend/assets/sprites/warden/walk_north-east_6.png",
+    "frontend/assets/sprites/warden/walk_north-east_7.png",
+    "frontend/assets/sprites/warden/walk_north-west_0.png",
+    "frontend/assets/sprites/warden/walk_north-west_1.png",
+    "frontend/assets/sprites/warden/walk_north-west_2.png",
+    "frontend/assets/sprites/warden/walk_north-west_3.png",
+    "frontend/assets/sprites/warden/walk_north-west_4.png",
+    "frontend/assets/sprites/warden/walk_north-west_5.png",
+    "frontend/assets/sprites/warden/walk_north-west_6.png",
+    "frontend/assets/sprites/warden/walk_north-west_7.png",
+    "frontend/assets/sprites/warden/walk_north_0.png",
+    "frontend/assets/sprites/warden/walk_north_1.png",
+    "frontend/assets/sprites/warden/walk_north_2.png",
+    "frontend/assets/sprites/warden/walk_north_3.png",
+    "frontend/assets/sprites/warden/walk_north_4.png",
+    "frontend/assets/sprites/warden/walk_north_5.png",
+    "frontend/assets/sprites/warden/walk_north_6.png",
+    "frontend/assets/sprites/warden/walk_north_7.png",
+    "frontend/assets/sprites/warden/walk_south-east_0.png",
+    "frontend/assets/sprites/warden/walk_south-east_1.png",
+    "frontend/assets/sprites/warden/walk_south-east_2.png",
+    "frontend/assets/sprites/warden/walk_south-east_3.png",
+    "frontend/assets/sprites/warden/walk_south-east_4.png",
+    "frontend/assets/sprites/warden/walk_south-east_5.png",
+    "frontend/assets/sprites/warden/walk_south-east_6.png",
+    "frontend/assets/sprites/warden/walk_south-east_7.png",
+    "frontend/assets/sprites/warden/walk_south-west_0.png",
+    "frontend/assets/sprites/warden/walk_south-west_1.png",
+    "frontend/assets/sprites/warden/walk_south-west_2.png",
+    "frontend/assets/sprites/warden/walk_south-west_3.png",
+    "frontend/assets/sprites/warden/walk_south-west_4.png",
+    "frontend/assets/sprites/warden/walk_south-west_5.png",
+    "frontend/assets/sprites/warden/walk_south-west_6.png",
+    "frontend/assets/sprites/warden/walk_south-west_7.png",
+    "frontend/assets/sprites/warden/walk_south_0.png",
+    "frontend/assets/sprites/warden/walk_south_1.png",
+    "frontend/assets/sprites/warden/walk_south_2.png",
+    "frontend/assets/sprites/warden/walk_south_3.png",
+    "frontend/assets/sprites/warden/walk_south_4.png",
+    "frontend/assets/sprites/warden/walk_south_5.png",
+    "frontend/assets/sprites/warden/walk_south_6.png",
+    "frontend/assets/sprites/warden/walk_south_7.png",
+    "frontend/assets/sprites/warden/walk_west_0.png",
+    "frontend/assets/sprites/warden/walk_west_1.png",
+    "frontend/assets/sprites/warden/walk_west_2.png",
+    "frontend/assets/sprites/warden/walk_west_3.png",
+    "frontend/assets/sprites/warden/walk_west_4.png",
+    "frontend/assets/sprites/warden/walk_west_5.png",
+    "frontend/assets/sprites/warden/walk_west_6.png",
+    "frontend/assets/sprites/warden/walk_west_7.png",
     "frontend/assets/sprites/bear/walk_east_0.png",
     "frontend/assets/sprites/bear/walk_east_1.png",
     "frontend/assets/sprites/bear/walk_east_2.png",
@@ -4319,11 +4319,11 @@
     "qa/audits/hermes-stress-2026-09-10/probes/schema.cjs",
     "qa/audits/hermes-stress-2026-09-10/probes/seed-entry.cjs",
     "qa/audits/hermes-stress-2026-09-10/receipt.json",
-    "qa/audits/hermes-stress-2026-09-10/starnet-json_object-after.json",
-    "qa/audits/hermes-stress-2026-09-10/starnet-json_schema-after.json",
-    "qa/audits/hermes-stress-2026-09-10/starnet-partial-after.json",
-    "qa/audits/hermes-stress-2026-09-10/starnet-partial.json",
-    "qa/audits/hermes-stress-2026-09-10/starnet-schema-live-after.json",
+    "qa/audits/hermes-stress-2026-09-10/eyehold-json_object-after.json",
+    "qa/audits/hermes-stress-2026-09-10/eyehold-json_schema-after.json",
+    "qa/audits/hermes-stress-2026-09-10/eyehold-partial-after.json",
+    "qa/audits/hermes-stress-2026-09-10/eyehold-partial.json",
+    "qa/audits/hermes-stress-2026-09-10/eyehold-schema-live-after.json",
     "qa/bugs/04ca4207-new-backdrops-stall-switching-and-zoomed-out-ter.md",
     "qa/bugs/050da842-update-canary-uses-obsolete-saves-and-snapshots.md",
     "qa/bugs/0c148510-http-gate-watchdog-expires-before-the-full-suite.md",
@@ -4345,7 +4345,7 @@
     "qa/bugs/65587128-desktop-overlay-version-disagrees-with-sidecar-d.md",
     "qa/bugs/694472bf-linux-appimage-staging-includes-incompatible-mus.md",
     "qa/bugs/70860aa8-comms-loses-report-tables-list-hierarchy-quotes.md",
-    "qa/bugs/72af29f4-funded-station-false-zero-warning.md",
+    "qa/bugs/72af29f4-funded-keep-false-zero-warning.md",
     "qa/bugs/72da34d7-deleted-rooms-leave-floating-furniture.md",
     "qa/bugs/7546cccd-stale-client-save-overwrite.md",
     "qa/bugs/758185bc-windows-computer-movement-resolves-to-filesystem.md",
@@ -4607,7 +4607,7 @@
     "test/field-manual-accessibility.test.js",
     "test/first-value.test.js",
     "test/fixtures/github-device-preload.cjs",
-    "test/genesis-starnet-link.test.js",
+    "test/genesis-eyehold-link.test.js",
     "test/github-device.http.test.js",
     "test/github-device.test.js",
     "test/glass-interactions.test.js",
@@ -4678,7 +4678,7 @@
     "website/app/app/overseer-setup.js",
     "website/app/app/personas.js",
     "website/app/app/spacebg.js",
-    "website/app/app/stationui.js",
+    "website/app/app/keepui.js",
     "website/app/app/terrain.js",
     "website/app/app/tutorial.js",
     "website/app/app/voice-live.js",
@@ -4769,70 +4769,70 @@
     "website/app/assets/sprites/alien/walk_west_5.png",
     "website/app/assets/sprites/alien/walk_west_6.png",
     "website/app/assets/sprites/alien/walk_west_7.png",
-    "website/app/assets/sprites/astronaut/walk_east_0.png",
-    "website/app/assets/sprites/astronaut/walk_east_1.png",
-    "website/app/assets/sprites/astronaut/walk_east_2.png",
-    "website/app/assets/sprites/astronaut/walk_east_3.png",
-    "website/app/assets/sprites/astronaut/walk_east_4.png",
-    "website/app/assets/sprites/astronaut/walk_east_5.png",
-    "website/app/assets/sprites/astronaut/walk_east_6.png",
-    "website/app/assets/sprites/astronaut/walk_east_7.png",
-    "website/app/assets/sprites/astronaut/walk_north-east_0.png",
-    "website/app/assets/sprites/astronaut/walk_north-east_1.png",
-    "website/app/assets/sprites/astronaut/walk_north-east_2.png",
-    "website/app/assets/sprites/astronaut/walk_north-east_3.png",
-    "website/app/assets/sprites/astronaut/walk_north-east_4.png",
-    "website/app/assets/sprites/astronaut/walk_north-east_5.png",
-    "website/app/assets/sprites/astronaut/walk_north-east_6.png",
-    "website/app/assets/sprites/astronaut/walk_north-east_7.png",
-    "website/app/assets/sprites/astronaut/walk_north-west_0.png",
-    "website/app/assets/sprites/astronaut/walk_north-west_1.png",
-    "website/app/assets/sprites/astronaut/walk_north-west_2.png",
-    "website/app/assets/sprites/astronaut/walk_north-west_3.png",
-    "website/app/assets/sprites/astronaut/walk_north-west_4.png",
-    "website/app/assets/sprites/astronaut/walk_north-west_5.png",
-    "website/app/assets/sprites/astronaut/walk_north-west_6.png",
-    "website/app/assets/sprites/astronaut/walk_north-west_7.png",
-    "website/app/assets/sprites/astronaut/walk_north_0.png",
-    "website/app/assets/sprites/astronaut/walk_north_1.png",
-    "website/app/assets/sprites/astronaut/walk_north_2.png",
-    "website/app/assets/sprites/astronaut/walk_north_3.png",
-    "website/app/assets/sprites/astronaut/walk_north_4.png",
-    "website/app/assets/sprites/astronaut/walk_north_5.png",
-    "website/app/assets/sprites/astronaut/walk_north_6.png",
-    "website/app/assets/sprites/astronaut/walk_north_7.png",
-    "website/app/assets/sprites/astronaut/walk_south-east_0.png",
-    "website/app/assets/sprites/astronaut/walk_south-east_1.png",
-    "website/app/assets/sprites/astronaut/walk_south-east_2.png",
-    "website/app/assets/sprites/astronaut/walk_south-east_3.png",
-    "website/app/assets/sprites/astronaut/walk_south-east_4.png",
-    "website/app/assets/sprites/astronaut/walk_south-east_5.png",
-    "website/app/assets/sprites/astronaut/walk_south-east_6.png",
-    "website/app/assets/sprites/astronaut/walk_south-east_7.png",
-    "website/app/assets/sprites/astronaut/walk_south-west_0.png",
-    "website/app/assets/sprites/astronaut/walk_south-west_1.png",
-    "website/app/assets/sprites/astronaut/walk_south-west_2.png",
-    "website/app/assets/sprites/astronaut/walk_south-west_3.png",
-    "website/app/assets/sprites/astronaut/walk_south-west_4.png",
-    "website/app/assets/sprites/astronaut/walk_south-west_5.png",
-    "website/app/assets/sprites/astronaut/walk_south-west_6.png",
-    "website/app/assets/sprites/astronaut/walk_south-west_7.png",
-    "website/app/assets/sprites/astronaut/walk_south_0.png",
-    "website/app/assets/sprites/astronaut/walk_south_1.png",
-    "website/app/assets/sprites/astronaut/walk_south_2.png",
-    "website/app/assets/sprites/astronaut/walk_south_3.png",
-    "website/app/assets/sprites/astronaut/walk_south_4.png",
-    "website/app/assets/sprites/astronaut/walk_south_5.png",
-    "website/app/assets/sprites/astronaut/walk_south_6.png",
-    "website/app/assets/sprites/astronaut/walk_south_7.png",
-    "website/app/assets/sprites/astronaut/walk_west_0.png",
-    "website/app/assets/sprites/astronaut/walk_west_1.png",
-    "website/app/assets/sprites/astronaut/walk_west_2.png",
-    "website/app/assets/sprites/astronaut/walk_west_3.png",
-    "website/app/assets/sprites/astronaut/walk_west_4.png",
-    "website/app/assets/sprites/astronaut/walk_west_5.png",
-    "website/app/assets/sprites/astronaut/walk_west_6.png",
-    "website/app/assets/sprites/astronaut/walk_west_7.png",
+    "website/app/assets/sprites/warden/walk_east_0.png",
+    "website/app/assets/sprites/warden/walk_east_1.png",
+    "website/app/assets/sprites/warden/walk_east_2.png",
+    "website/app/assets/sprites/warden/walk_east_3.png",
+    "website/app/assets/sprites/warden/walk_east_4.png",
+    "website/app/assets/sprites/warden/walk_east_5.png",
+    "website/app/assets/sprites/warden/walk_east_6.png",
+    "website/app/assets/sprites/warden/walk_east_7.png",
+    "website/app/assets/sprites/warden/walk_north-east_0.png",
+    "website/app/assets/sprites/warden/walk_north-east_1.png",
+    "website/app/assets/sprites/warden/walk_north-east_2.png",
+    "website/app/assets/sprites/warden/walk_north-east_3.png",
+    "website/app/assets/sprites/warden/walk_north-east_4.png",
+    "website/app/assets/sprites/warden/walk_north-east_5.png",
+    "website/app/assets/sprites/warden/walk_north-east_6.png",
+    "website/app/assets/sprites/warden/walk_north-east_7.png",
+    "website/app/assets/sprites/warden/walk_north-west_0.png",
+    "website/app/assets/sprites/warden/walk_north-west_1.png",
+    "website/app/assets/sprites/warden/walk_north-west_2.png",
+    "website/app/assets/sprites/warden/walk_north-west_3.png",
+    "website/app/assets/sprites/warden/walk_north-west_4.png",
+    "website/app/assets/sprites/warden/walk_north-west_5.png",
+    "website/app/assets/sprites/warden/walk_north-west_6.png",
+    "website/app/assets/sprites/warden/walk_north-west_7.png",
+    "website/app/assets/sprites/warden/walk_north_0.png",
+    "website/app/assets/sprites/warden/walk_north_1.png",
+    "website/app/assets/sprites/warden/walk_north_2.png",
+    "website/app/assets/sprites/warden/walk_north_3.png",
+    "website/app/assets/sprites/warden/walk_north_4.png",
+    "website/app/assets/sprites/warden/walk_north_5.png",
+    "website/app/assets/sprites/warden/walk_north_6.png",
+    "website/app/assets/sprites/warden/walk_north_7.png",
+    "website/app/assets/sprites/warden/walk_south-east_0.png",
+    "website/app/assets/sprites/warden/walk_south-east_1.png",
+    "website/app/assets/sprites/warden/walk_south-east_2.png",
+    "website/app/assets/sprites/warden/walk_south-east_3.png",
+    "website/app/assets/sprites/warden/walk_south-east_4.png",
+    "website/app/assets/sprites/warden/walk_south-east_5.png",
+    "website/app/assets/sprites/warden/walk_south-east_6.png",
+    "website/app/assets/sprites/warden/walk_south-east_7.png",
+    "website/app/assets/sprites/warden/walk_south-west_0.png",
+    "website/app/assets/sprites/warden/walk_south-west_1.png",
+    "website/app/assets/sprites/warden/walk_south-west_2.png",
+    "website/app/assets/sprites/warden/walk_south-west_3.png",
+    "website/app/assets/sprites/warden/walk_south-west_4.png",
+    "website/app/assets/sprites/warden/walk_south-west_5.png",
+    "website/app/assets/sprites/warden/walk_south-west_6.png",
+    "website/app/assets/sprites/warden/walk_south-west_7.png",
+    "website/app/assets/sprites/warden/walk_south_0.png",
+    "website/app/assets/sprites/warden/walk_south_1.png",
+    "website/app/assets/sprites/warden/walk_south_2.png",
+    "website/app/assets/sprites/warden/walk_south_3.png",
+    "website/app/assets/sprites/warden/walk_south_4.png",
+    "website/app/assets/sprites/warden/walk_south_5.png",
+    "website/app/assets/sprites/warden/walk_south_6.png",
+    "website/app/assets/sprites/warden/walk_south_7.png",
+    "website/app/assets/sprites/warden/walk_west_0.png",
+    "website/app/assets/sprites/warden/walk_west_1.png",
+    "website/app/assets/sprites/warden/walk_west_2.png",
+    "website/app/assets/sprites/warden/walk_west_3.png",
+    "website/app/assets/sprites/warden/walk_west_4.png",
+    "website/app/assets/sprites/warden/walk_west_5.png",
+    "website/app/assets/sprites/warden/walk_west_6.png",
+    "website/app/assets/sprites/warden/walk_west_7.png",
     "website/app/assets/sprites/bear/walk_east_0.png",
     "website/app/assets/sprites/bear/walk_east_1.png",
     "website/app/assets/sprites/bear/walk_east_2.png",

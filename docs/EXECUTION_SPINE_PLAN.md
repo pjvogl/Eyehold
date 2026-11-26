@@ -1,6 +1,6 @@
 # Execution Spine — checkpoint → shell → verify
 
-> **StarNet** — the plan to take the harness from "can edit files in a jailed sandbox" to "can actually
+> **Eyehold** — the plan to take the harness from "can edit files in a jailed sandbox" to "can actually
 > run code, complete a real engineering goal, and prove it worked — safely." This is the #1 goal-completion
 > gap vs the reference harness (which has six shell backends + LSP lint-delta; we have neither). It obeys the same
 > discipline as `CRON_INTEGRATION_PLAN.md` / `REF_HARNESS_PARITY_PLAN.md`: pure-core / ambient-edge determinism
@@ -8,7 +8,7 @@
 > suite green before the next, and the gamification firewall (engine emits events; the world only observes).
 >
 > _Grounded against the real sidecar (2026-06-17): `runOnce` exists (`index.js:532`, accepts
-> `surface`/`trigger`/`runId`/`prompt`/`station`); the consent ladder + hardline floor + autonomous
+> `surface`/`trigger`/`runId`/`prompt`/`keep`); the consent ladder + hardline floor + autonomous
 > default-deny are live (`permissions.js`, `index.js` `hardlineFloor`); the capability gate is
 > object-placement based (`capability/capGate.js`, `resolve.js`); tools self-register fresh per run
 > (`tools/builtin/fs.js` is the template); the per-agent fs jail is `WORKSPACES/<agentId>/`._
@@ -38,7 +38,7 @@ the checkpoint net behind it; verify is only meaningful once the agent can act.
 
 | Capability | Where | Reuse for the spine |
 |---|---|---|
-| The sole run host `runOnce({...,surface,trigger,runId,prompt,station,emit,signal})` | `index.js:532` | shell/verify tools register into the same fresh per-run registry; no second engine. |
+| The sole run host `runOnce({...,surface,trigger,runId,prompt,keep,emit,signal})` | `index.js:532` | shell/verify tools register into the same fresh per-run registry; no second engine. |
 | The consent ladder: hardline → bypass(FULL_ACCESS) → cache(allowlist) → resolve(surface) | `permissions.js:81-99` | shell.exec is a **danger-gated** tool — it walks this exact ladder. Autonomous = default-deny. |
 | `hardlineFloor` — refuses writes to `.env`/`.git` BEFORE any bypass | `index.js` (`hardlineFloor`) | extend the *concept* (not the function) into the abs-path floor §4; shell inherits it. |
 | The per-agent fs jail `resolveInside(agentId, rel)` rejecting `..`/abs/drive/null | `tools/builtin/fs.js:39-52` | shell's `cwd` is the jail root; shell output paths are validated by the same proof. |

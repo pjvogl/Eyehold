@@ -1,10 +1,10 @@
 /* node test/nightshift-grant.e2e.test.js — real sidecar proof for the DIAL-IS-THE-CONSENT fix (2026-07-13).
 
    THE BUG: at dial initiative:'free' reach:'sandbox' (buildsUnattended) with no away-workshop grant, every
-   night-shift beat silently degraded to a reason-only draft — "dial at max, station never builds". The fix:
+   night-shift beat silently degraded to a reason-only draft — "dial at max, keep never builds". The fix:
    POST /api/autonomy/posture records the night-shift agent's grant through the SAME workshopStore authority,
    never overriding an explicit per-agent decision, and GET /api/nightshift/status names the build-vs-draft
-   mode + the readiness detail so a degraded/cold station SAYS so.
+   mode + the readiness detail so a degraded/cold keep SAYS so.
 
    Proves, against the ACTUAL sidecar (no model calls needed — these are pure consent/telemetry routes):
      · a build-capable dial write AUTO-GRANTS the undecided default agent (disk-provable, restart-safe);
@@ -26,7 +26,7 @@ const INDEX = path.resolve(__dirname, '..', 'sidecar', 'index.js');
 
 function boot(port, env, attemptsLeft) {
   return new Promise((resolve, reject) => {
-    const child = spawn(process.execPath, [INDEX], { env: Object.assign({}, process.env, env, { SKYNET_PORT: String(port) }), stdio: ['ignore', 'pipe', 'pipe'] });
+    const child = spawn(process.execPath, [INDEX], { env: Object.assign({}, process.env, env, { EYEHOLD_PORT: String(port) }), stdio: ['ignore', 'pipe', 'pipe'] });
     let out = '', settled = false;
     const onData = d => {
       out += d.toString();
@@ -49,12 +49,12 @@ function wsRecord(ws) { try { return JSON.parse(fs.readFileSync(path.join(ws, 'a
 
 (async () => {
   const ws = fs.mkdtempSync(path.join(os.tmpdir(), 'sk-nsgrant-e2e-'));
-  const env = { SKYNET_WORKSPACES: ws, SKYNET_DEV: '1' };
+  const env = { EYEHOLD_WORKSPACES: ws, EYEHOLD_DEV: '1' };
   let { child, port } = await boot(8960 + (process.pid % 30), env, 20);
   let B = 'http://' + HOST + ':' + port;
   try {
     let token = await bootToken(B, B);
-    let headers = { 'Content-Type': 'application/json', 'X-StarNet-Token': token, Origin: B };
+    let headers = { 'Content-Type': 'application/json', 'X-Eyehold-Token': token, Origin: B };
 
     // ===== 1. a BELOW-build dial write does NOT grant (reach observe → buildsUnattended false). =====
     let j = await setPosture(B, headers, 'leash', 'observe');
@@ -86,7 +86,7 @@ function wsRecord(ws) { try { return JSON.parse(fs.readFileSync(path.join(ws, 'a
     ({ child, port } = await boot(port + 1, env, 20));
     B = 'http://' + HOST + ':' + port;
     token = await bootToken(B, B);
-    headers = { 'Content-Type': 'application/json', 'X-StarNet-Token': token, Origin: B };
+    headers = { 'Content-Type': 'application/json', 'X-Eyehold-Token': token, Origin: B };
     st = await status(B, headers);
     A.eq(st.workshopGranted, true, 'the auto-grant survives a restart');
     A.eq(st.buildMode, 'build', 'build mode survives a restart');

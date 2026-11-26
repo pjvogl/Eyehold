@@ -40,7 +40,7 @@
   // a delegated worker's added kit, on top of the autonomous full office (compute/web/files/memory/studio/jukebox):
   // the WORKBENCH (terminal). Paired with the SHARED lead consent broker, writes follow the lead's APPROVAL posture.
   // Commands do NOT in ASK mode: a worker runs surface:'autonomous', so the run authority withholds shell.exec /
-  // verify.run unless the worker (or the station) is Full Access — see the runOnce call below. The worker is told
+  // verify.run unless the worker (or the keep) is Full Access — see the runOnce call below. The worker is told
   // that plainly, with the step that works (sidecar/capability/withheld.js, issue #77).
   const WORKER_KIT = [{ instanceId: 'wb_worker', objectType: 'workbench' }];
   const boundedDomainTask = (text) => {
@@ -350,7 +350,7 @@
     const baseUrl = deps.baseUrl || deps.base_url || '';
     const reasoningEffort = deps.reasoningEffort || 'medium';
     const subagents = deps.subagents || null;
-    /* runRecord(runId) -> the station's durable run-history row, or null (host injects runStore.latest). It is how a
+    /* runRecord(runId) -> the keep's durable run-history row, or null (host injects runStore.latest). It is how a
        lead VERIFIES a foreground team.dispatch: that path never enters the background registry, so team.subagents
        used to answer [] for real, recorded worker runs and the lead reported them as never having happened (#57). */
     const runRecord = (typeof deps.runRecord === 'function') ? deps.runRecord : null;
@@ -423,11 +423,11 @@
     // the worker runs on the LEAD's provider+model (never a foreign model on the lead's wire) with an honest
     // note in the dispatch result.
     const providerAuth = (typeof deps.providerAuth === 'function') ? deps.providerAuth : null;
-    /* THE STATION BRIDGE (optional) — { request(verb, args) -> {ok, result|error} }. Sessions are PAGE state, so
+    /* THE KEEP BRIDGE (optional) — { request(verb, args) -> {ok, result|error} }. Sessions are PAGE state, so
        resolving "the research session" to a stream id, and folding a worker's answer into that session's thread,
        both have to ask the live page. Absent (headless run, bare unit caller) -> session targeting is refused
-       honestly rather than silently ignored. See sidecar/station-bridge.js. */
-    const station = (deps.station && typeof deps.station.request === 'function') ? deps.station : null;
+       honestly rather than silently ignored. See sidecar/keep-bridge.js. */
+    const keep = (deps.keep && typeof deps.keep.request === 'function') ? deps.keep : null;
     function workerWire(ident) {
       const wanted = (ident && ident.provider) ? String(ident.provider) : '';
       const ownModel = (ident && ident.model) ? String(ident.model) : '';
@@ -436,7 +436,7 @@
       }
       const auth = providerAuth ? providerAuth(wanted) : null;
       if (auth) return { provider: auth.provider || wanted, key: auth.key || '', baseUrl: auth.baseUrl || '', model: ownModel, note: '' };
-      return { provider, key, baseUrl, model, note: 'worker provider "' + wanted + '" has no credential on this station — ran on the lead\'s model instead' };
+      return { provider, key, baseUrl, model, note: 'worker provider "' + wanted + '" has no credential on this keep — ran on the lead\'s model instead' };
     }
     // Opt-in ceiling only. Omitted/zero means dispatch every requested worker.
     const maxWorkers = (typeof deps.maxWorkers === 'number' && isFinite(deps.maxWorkers) && deps.maxWorkers > 0) ? Math.floor(deps.maxWorkers) : 0;
@@ -452,7 +452,7 @@
     // shares; that keeps the shares summing to the budget instead of each worker seeing a full, never-shrinking one.
     const hasClock = (typeof deps.now === 'function');
     const now = hasClock ? deps.now : (() => 0);
-    /* freeSlots() -> how many NEW distinct agents the station's admission gate can accept right now, or null for
+    /* freeSlots() -> how many NEW distinct agents the keep's admission gate can accept right now, or null for
        "no cap wired". A parallel dispatch runs in WAVES of this size instead of firing everything at once and
        letting the gate refuse the excess (2026-07-26 audit finding B). Read fresh per dispatch: the free capacity
        depends on what else is running (another COMMS session, a cron beat) at that moment. */
@@ -482,17 +482,17 @@
       const wanted = jobs.filter(j => !j.error && j.session);
       if (!wanted.length) return;
       const refuseAll = (why) => { for (const j of wanted) j.error = why(j); };
-      if (!station) {
-        return refuseAll(j => 'this run cannot target sessions — no live station page is attached to resolve "'
+      if (!keep) {
+        return refuseAll(j => 'this run cannot target sessions — no live keep page is attached to resolve "'
           + j.session + '". Dispatch without `session` and the work runs in the current one.');
       }
       let list = null, why = '';
       try {
-        const out = await station.request('station.sessions', {});
+        const out = await keep.request('keep.sessions', {});
         if (out && out.ok && out.result && Array.isArray(out.result.sessions)) list = out.result.sessions;
-        else why = String((out && out.error) || 'the station did not answer');
+        else why = String((out && out.error) || 'the keep did not answer');
       } catch (e) { why = String((e && e.message) || e); }
-      if (!list) return refuseAll(j => 'could not read this station\'s session list, so "' + j.session + '" could not be resolved — ' + why);
+      if (!list) return refuseAll(j => 'could not read this keep\'s session list, so "' + j.session + '" could not be resolved — ' + why);
       const named = list.filter(s => s && String(s.title || '').trim());
       const nameList = named.map(s => String(s.title).trim());
       for (const j of wanted) {
@@ -508,7 +508,7 @@
         j.error = hits.length > 1
           ? 'more than one session matches "' + want + '" (' + hits.map(h => String(h.title || h.id)).join(', ')
             + ') — name it exactly, or pass the session id. This worker did NOT run.'
-          : 'there is no session called "' + want + '" on this station'
+          : 'there is no session called "' + want + '" on this keep'
             + (nameList.length ? '. Open sessions: ' + nameList.join(', ') : '')
             + '. Create it first, or dispatch without `session` to run in the current one. This worker did NOT run.';
       }
@@ -519,26 +519,26 @@
        session they named. Failure is REPORTED on the row, never swallowed: a lead that says "it's in research"
        when the fold failed is the same lie as misfiling it. */
     async function deliverToSession(job, row) {
-      if (!station || !job.streamId) return;
+      if (!keep || !job.streamId) return;
       let out = null;
       const args = {
         streamId: job.streamId, sessionTitle: job.sessionTitle || job.session || '',
         agentId: job.agentId, runId: row.runId || '', prompt: job.prompt, text: row.result
       };
-      try { out = await station.request('station.deliver', args); }
+      try { out = await keep.request('keep.deliver', args); }
       catch (e) { out = { ok: false, error: String((e && e.message) || e) }; }
       if (out && out.ok) row.session = job.sessionTitle || job.streamId;
       else row.sessionNote = 'the work ran and is filed under the "' + (job.sessionTitle || job.streamId)
-        + '" session, but the station could not show it there: ' + String((out && out.error) || 'no answer')
+        + '" session, but the keep could not show it there: ' + String((out && out.error) || 'no answer')
         + '. The completed run is durable and will be reconciled when that session is opened.';
     }
 
     // Busy state belongs to the TARGET session, not whichever session the Commander is currently viewing.
     // This is intentionally best-effort: a missing page must never delay or cancel paid worker work.
     function noteSessionActivity(verb, job, runId) {
-      if (!station || !job.streamId) return;
+      if (!keep || !job.streamId) return;
       try {
-        const pending = station.request(verb, {
+        const pending = keep.request(verb, {
           streamId: job.streamId, sessionTitle: job.sessionTitle || job.session || '',
           agentId: job.agentId, runId: runId || ''
         });
@@ -558,7 +558,7 @@
       // user keeps the frictionless flow by choosing it. Lead-only conferral + budget caps + the concurrency
       // ceiling + autonomous workers (default-deny) all still stand underneath.
       name: 'team.dispatch', capability: 'orchestrator', scope: 'execute', requiresConsent: true,
-      description: 'Delegate subtasks to your specialist crew. Each worker runs its OWN real agent loop (live web search/read, files, memory) and returns its result for you to synthesize into the final answer. Address workers by the agentId listed under YOUR TEAM. Runs sequentially by default; pass parallel:true to run them at once. Pass background:true to start watchable workers and keep working. SESSIONS: pass `session` on a worker (the session\'s NAME, as the Commander says it) to make that subtask run in — and be filed under — that session instead of this one. Use an existing relevant session or create a named working session first. A name that does not match one on this station is REFUSED, not guessed, and that worker does not run. FILES: in a conversation scoped to a trusted project, a worker\'s RELATIVE file paths (fs_write, image_generate, voice_generate) land in that project folder, the same place yours do, so fs_read finds them by the same relative path. Otherwise each worker saves into its OWN private workspace — you cannot fs.read another agent\'s private files, so never "verify" such a file with your own file tools (absence in YOUR workspace proves nothing); every save receipt names the absolute location. The result\'s artifacts list is the proof of what each worker saved, and the Commander is shown those files as cards automatically — reference them as "<workerId>\'s workspace: <path>". COMMANDS: in ASK mode a delegated worker cannot run shell commands (shell_exec / verify_run are withheld from delegated runs, WORKBENCH or not, unless that worker is set to Full Access); run commands in this conversation yourself, or have the worker return the exact commands to you.',
+      description: 'Delegate subtasks to your specialist crew. Each worker runs its OWN real agent loop (live web search/read, files, memory) and returns its result for you to synthesize into the final answer. Address workers by the agentId listed under YOUR TEAM. Runs sequentially by default; pass parallel:true to run them at once. Pass background:true to start watchable workers and keep working. SESSIONS: pass `session` on a worker (the session\'s NAME, as the Commander says it) to make that subtask run in — and be filed under — that session instead of this one. Use an existing relevant session or create a named working session first. A name that does not match one on this keep is REFUSED, not guessed, and that worker does not run. FILES: in a conversation scoped to a trusted project, a worker\'s RELATIVE file paths (fs_write, image_generate, voice_generate) land in that project folder, the same place yours do, so fs_read finds them by the same relative path. Otherwise each worker saves into its OWN private workspace — you cannot fs.read another agent\'s private files, so never "verify" such a file with your own file tools (absence in YOUR workspace proves nothing); every save receipt names the absolute location. The result\'s artifacts list is the proof of what each worker saved, and the Commander is shown those files as cards automatically — reference them as "<workerId>\'s workspace: <path>". COMMANDS: in ASK mode a delegated worker cannot run shell commands (shell_exec / verify_run are withheld from delegated runs, WORKBENCH or not, unless that worker is set to Full Access); run commands in this conversation yourself, or have the worker return the exact commands to you.',
       schema: {
         type: 'object', required: ['workers'], properties: {
           workers: {
@@ -666,7 +666,7 @@
           let result;
           const contractedPrompt = openingMessage(job.prompt, job.context, job.resultSchema);
           const previousMessages = job.sessionContext && job.sessionContext.messages || [];
-          noteSessionActivity('station.dispatch_start', job, workerRunId);
+          noteSessionActivity('keep.dispatch_start', job, workerRunId);
           try {
             result = await runOnce({
               ...projectOptions(job.sessionContext || ctx), ...connectorOptions(ctx),
@@ -704,16 +704,16 @@
               steer: typeof o2.steer === 'function' ? o2.steer : undefined
             });
           } catch (e) {
-            noteSessionActivity('station.dispatch_end', job, workerRunId);
+            noteSessionActivity('keep.dispatch_end', job, workerRunId);
             if (timedOut) return timeoutRow(null);   // the abort we fired surfaced as a throw — still an honest timeout
             return { agentId: job.agentId, reason: 'error', result: 'worker run failed: ' + ((e && e.message) || e), usd: 0 };
           } finally {
             if (timer) clearTimeout(timer);
             if (child) child.detach();
           }
-          noteSessionActivity('station.dispatch_end', job, workerRunId);
+          noteSessionActivity('keep.dispatch_end', job, workerRunId);
           if (timedOut) return timeoutRow(result);   // keep whatever partial text the aborted run did produce
-          if (!result) return { agentId: job.agentId, reason: 'refused', result: 'worker could not start — the station\'s concurrent-agent cap was full at that instant, or a provider sign-in is needed. A parallel dispatch already runs in waves sized to the free capacity and retries a refusal once, so a refusal that survives means the cap is genuinely saturated: raise MAX_CONCURRENT_AGENTS in SETTINGS, or dispatch these workers in a follow-up call.', usd: 0 };
+          if (!result) return { agentId: job.agentId, reason: 'refused', result: 'worker could not start — the keep\'s concurrent-agent cap was full at that instant, or a provider sign-in is needed. A parallel dispatch already runs in waves sized to the free capacity and retries a refusal once, so a refusal that survives means the cap is genuinely saturated: raise MAX_CONCURRENT_AGENTS in SETTINGS, or dispatch these workers in a follow-up call.', usd: 0 };
           const firstText = lastAssistant(result.messages) || '(the worker returned no text)';
           const contract = await enforceStructured(job.resultSchema, firstText, async (errors) => {
             const spent = Number(result.usd) || 0;
@@ -801,7 +801,7 @@
 
         /* WAVES — one code path for both modes (2026-07-26 audit findings A + B).
            SEQUENTIAL is waves of 1: legible, one box at a time (the default).
-           PARALLEL is waves sized to the station's REAL free fan-out capacity. It used to fan out all at once and
+           PARALLEL is waves sized to the keep's REAL free fan-out capacity. It used to fan out all at once and
            let an explicitly configured concurrency gate REFUSE the excess: with MAX_CONCURRENT_AGENTS 3, and the
            lead holds a slot for the whole dispatch) a 4-worker parallel dispatch ran 2 and handed the lead two
            'refused' rows that nothing ever retried — half the crew silently didn't work. Waves run every worker,
@@ -968,7 +968,7 @@
               settle(r); return { status: 'error', reason: r.reason, result: r.result, usd: r.usd, taintedBy: r.taintedBy || '' };
             }
             if (!result) {
-              const r = { label, agentId: ephemeralId, reason: 'refused', result: 'subagent could not start — the concurrency cap (STARNET_MAX_CONCURRENT_AGENTS) is full or a sign-in is needed. Try fewer at once.', usd: 0 };
+              const r = { label, agentId: ephemeralId, reason: 'refused', result: 'subagent could not start — the concurrency cap (EYEHOLD_MAX_CONCURRENT_AGENTS) is full or a sign-in is needed. Try fewer at once.', usd: 0 };
               settle(r); return { status: 'error', reason: 'refused', result: r.result, usd: 0 };
             }
             const firstText = lastAssistant(result.messages) || '(the subagent returned no text)';
@@ -1034,7 +1034,7 @@
     // work with team.dispatch in the SAME run. consent-gated (APPROVAL beat); ctx.summon is only present on a
     // live interactive lead run, so a headless/worker call degrades to a clear "not available" message.
     // THE DESK RIDES ALONG: an agent created because the Commander asked for one is useless standing on bare
-    // deck, so the browser's summon seeds that agent's workstation too and reports WHERE on the ack. That is the
+    // deck, so the browser's summon seeds that agent's workkeep too and reports WHERE on the ack. That is the
     // only prop this path places, and only for the agent being created — team.summon is not a build tool.
     // Class Loadouts S1: the specialist class list is composed from the SHARED catalog (deps.classes =
     // [{id, tagline}]), NOT hardcoded here, so it never drifts from the Recruitment Bay. Falls back to a
@@ -1047,7 +1047,7 @@
       // completed" instead of tripping the 30s fast-tool default mid-wait. The happy path acks in well under a second.
       timeoutMs: 180000,
       name: 'team.summon', capability: 'orchestrator', scope: 'write', requiresConsent: true,
-      description: 'Summon a NEW specialist agent onto the crew for the Commander, live — the same thing they would do in the Recruitment Bay. Use this when a specialist you need does not exist yet; if it is already listed under YOUR TEAM, delegate to it with team.dispatch instead. Pick a class with specId (one of: ' + SPEC_IDS + ') or describe a custom one with name + purpose. The station places the new agent\'s workstation with it, so never tell the Commander to go build it a desk. Returns the new agentId, which you can immediately delegate to. In APPROVAL mode the Commander confirms the summon first.',
+      description: 'Summon a NEW specialist agent onto the crew for the Commander, live — the same thing they would do in the Recruitment Bay. Use this when a specialist you need does not exist yet; if it is already listed under YOUR TEAM, delegate to it with team.dispatch instead. Pick a class with specId (one of: ' + SPEC_IDS + ') or describe a custom one with name + purpose. The keep places the new agent\'s workkeep with it, so never tell the Commander to go build it a desk. Returns the new agentId, which you can immediately delegate to. In APPROVAL mode the Commander confirms the summon first.',
       schema: {
         type: 'object', required: ['name'], properties: {
           name: { type: 'string' },        // the new agent's display name (e.g. "RESEARCHER")
@@ -1058,7 +1058,7 @@
         }
       },
       run: async (args, ctx) => {
-        if (!ctx || typeof ctx.summon !== 'function') return { content: 'Summoning is only available on the live station (an interactive run). Ask the Commander to summon this agent from the Recruitment Bay.', summary: 'unavailable' };
+        if (!ctx || typeof ctx.summon !== 'function') return { content: 'Summoning is only available on the live keep (an interactive run). Ask the Commander to summon this agent from the Recruitment Bay.', summary: 'unavailable' };
         const a = args || {};
         const spec = {
           name: String(a.name || '').trim().slice(0, 40),
@@ -1071,17 +1071,17 @@
         let ack;
         try { ack = await ctx.summon(spec); }
         catch (e) { return { content: 'summon failed: ' + ((e && e.message) || e), summary: 'error' }; }
-        // the station resolves { agentId, desk }; a bare id string is still accepted (older stubs/callers).
+        // the keep resolves { agentId, desk }; a bare id string is still accepted (older stubs/callers).
         const newId = (ack && typeof ack === 'object') ? ack.agentId : ack;
         const desk = (ack && typeof ack === 'object' && ack.desk) ? String(ack.desk) : '';
-        if (!newId) return { content: 'The summon was not completed — the Commander declined it, or the station did not respond. No agent was created.', summary: 'declined' };
-        // DESK: a summoned specialist needs a workstation to sit and work at, so the station sorts its desk as
-        // part of THIS summon. Reported only when the station named a room — never assumed, so the reply can't
+        if (!newId) return { content: 'The summon was not completed — the Commander declined it, or the keep did not respond. No agent was created.', summary: 'declined' };
+        // DESK: a summoned specialist needs a workkeep to sit and work at, so the keep sorts its desk as
+        // part of THIS summon. Reported only when the keep named a room — never assumed, so the reply can't
         // promise furniture the floor doesn't have (and can't tell the Commander to go build a second one).
-        // Worded "workstation is in X", not "placed": the station may have bound a free desk it already had.
+        // Worded "workkeep is in X", not "placed": the keep may have bound a free desk it already had.
         const out = { agentId: newId, name: spec.name || spec.specId };
-        if (desk) out.workstation = desk;
-        return { content: JSON.stringify(out), summary: 'summoned ' + newId + (desk ? ' (workstation in ' + desk + ')' : '') + ' — now delegate work to it with team.dispatch' };
+        if (desk) out.workkeep = desk;
+        return { content: JSON.stringify(out), summary: 'summoned ' + newId + (desk ? ' (workkeep in ' + desk + ')' : '') + ' — now delegate work to it with team.dispatch' };
       }
     };
 
@@ -1090,7 +1090,7 @@
        current run, or by an earlier run recorded under this lead's agentId. A dispatch still in flight is recorded
        when its worker ends, so "not found" says that instead of implying the work never happened. */
     function verifyDelegatedRun(runId, leadId, ctx) {
-      if (!runRecord) return { content: 'The station\'s run history is not reachable from this run, so run ' + runId + ' cannot be checked here.', summary: 'unavailable' };
+      if (!runRecord) return { content: 'The keep\'s run history is not reachable from this run, so run ' + runId + ' cannot be checked here.', summary: 'unavailable' };
       const read = (id) => { try { return runRecord(id) || null; } catch (_) { return null; } };
       const row = read(runId);
       const parentId = row && String(row.parentRunId || '');
@@ -1098,7 +1098,7 @@
       const byThisLead = row && row.delegatedBy ? row.delegatedBy === leadId
         : !!parentId && ((ctx && parentId === ctx.runId) || ((read(parentId) || {}).agentId === leadId));
       if (!row || !byThisLead) return {
-        content: 'No run ' + runId + ' that you delegated is in this station\'s run history. A worker is recorded when its run ends,'
+        content: 'No run ' + runId + ' that you delegated is in this keep\'s run history. A worker is recorded when its run ends,'
           + ' so a background worker still running is not here yet (check it with team.subagents by id).',
         summary: 'not found'
       };
@@ -1110,8 +1110,8 @@
 
     const subagentsTool = {
       name: 'team.subagents', capability: 'orchestrator', scope: 'read', requiresConsent: false,
-      description: 'List or inspect your BACKGROUND subagents (team.dispatch with background:true, and team.spawn). Pass id for one worker, or omit id to list recent workers for this lead. Returned records include the current generation, status, event tail, result, steering history, and whether they can be interrupted or resumed. Use the returned id + generation for team.steer. A normal (foreground) team.dispatch is NEVER in this list — to confirm one really ran, pass runId (from its dispatch result) and the station\'s run history answers.',
-      schema: { type: 'object', properties: { id: { type: 'string' }, agentId: { type: 'string' }, status: { type: 'string' }, runId: { type: 'string', description: 'A worker runId from a team.dispatch result: look it up in the station\'s durable run history.' } } },
+      description: 'List or inspect your BACKGROUND subagents (team.dispatch with background:true, and team.spawn). Pass id for one worker, or omit id to list recent workers for this lead. Returned records include the current generation, status, event tail, result, steering history, and whether they can be interrupted or resumed. Use the returned id + generation for team.steer. A normal (foreground) team.dispatch is NEVER in this list — to confirm one really ran, pass runId (from its dispatch result) and the keep\'s run history answers.',
+      schema: { type: 'object', properties: { id: { type: 'string' }, agentId: { type: 'string' }, status: { type: 'string' }, runId: { type: 'string', description: 'A worker runId from a team.dispatch result: look it up in the keep\'s durable run history.' } } },
       run: async (args, ctx) => {
         const leadId = (ctx && ctx.agentId) || 'agent';
         if (args && args.runId) return verifyDelegatedRun(String(args.runId), leadId, ctx);

@@ -21,18 +21,18 @@ function run(args, env) {
 
 function proof(hash, bytes, overrides) {
   return Object.assign({
-    schema: 'starnet.clean-install-proof.v1',
+    schema: 'eyehold.clean-install-proof.v1',
     generatedAt: new Date().toISOString(),
     sourceMachine: { os: 'Windows 11 Test VM' },
     machineKind: 'windows-sandbox',
     cleanMachine: true,
     installer: { sha256: hash, bytes },
-    install: { succeeded: true, method: 'manual', installLocation: 'C:\\Users\\WDAGUtilityAccount\\AppData\\Local\\Programs\\StarNet' },
+    install: { succeeded: true, method: 'manual', installLocation: 'C:\\Users\\WDAGUtilityAccount\\AppData\\Local\\Programs\\Eyehold' },
     launch: {
       succeeded: true,
-      observedWindowTitle: 'StarNet',
-      exePath: 'C:\\Users\\WDAGUtilityAccount\\AppData\\Local\\Programs\\StarNet\\skynet-desktop.exe',
-      startupRoot: 'C:\\Users\\WDAGUtilityAccount\\AppData\\Local\\Programs\\StarNet',
+      observedWindowTitle: 'Eyehold',
+      exePath: 'C:\\Users\\WDAGUtilityAccount\\AppData\\Local\\Programs\\Eyehold\\skynet-desktop.exe',
+      startupRoot: 'C:\\Users\\WDAGUtilityAccount\\AppData\\Local\\Programs\\Eyehold',
       workspaceRoot: 'C:\\Users\\WDAGUtilityAccount\\AppData\\Roaming\\ai.skynet.harness\\workspaces'
     },
     notes: []
@@ -41,7 +41,7 @@ function proof(hash, bytes, overrides) {
 
 const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 't0-clean-install-'));
 try {
-  const installer = path.join(tmp, 'StarNet_0.1.0_x64-setup.exe');
+  const installer = path.join(tmp, 'Eyehold_0.1.0_x64-setup.exe');
   fs.writeFileSync(installer, 'fake installer');
   const hash = crypto.createHash('sha256').update('fake installer').digest('hex');
   const bytes = fs.statSync(installer).size;
@@ -51,10 +51,10 @@ try {
   {
     const out = path.join(tmp, 'blocked-out');
     const res = run([], {
-      STARNET_T0_INSTALLER_EXE: installer,
-      STARNET_T0_CLEAN_INSTALL_DIR: out,
-      STARNET_T0_CLEAN_INSTALL_LATEST_DIR: path.join(tmp, 'blocked-latest'),
-      STARNET_T0_CLEAN_SURFACE_MOCK: surfaceNone
+      EYEHOLD_T0_INSTALLER_EXE: installer,
+      EYEHOLD_T0_CLEAN_INSTALL_DIR: out,
+      EYEHOLD_T0_CLEAN_INSTALL_LATEST_DIR: path.join(tmp, 'blocked-latest'),
+      EYEHOLD_T0_CLEAN_SURFACE_MOCK: surfaceNone
     });
     assert.equal(res.status, 2, res.stderr || res.stdout);
     const status = JSON.parse(fs.readFileSync(path.join(out, 't0-clean-install-status.json'), 'utf8'));
@@ -68,10 +68,10 @@ try {
     fs.writeFileSync(evidence, JSON.stringify(proof(hash, bytes), null, 2));
     const out = path.join(tmp, 'green-out');
     const res = run(['--evidence', evidence], {
-      STARNET_T0_INSTALLER_EXE: installer,
-      STARNET_T0_CLEAN_INSTALL_DIR: out,
-      STARNET_T0_CLEAN_INSTALL_LATEST_DIR: path.join(tmp, 'green-latest'),
-      STARNET_T0_CLEAN_SURFACE_MOCK: surfaceNone
+      EYEHOLD_T0_INSTALLER_EXE: installer,
+      EYEHOLD_T0_CLEAN_INSTALL_DIR: out,
+      EYEHOLD_T0_CLEAN_INSTALL_LATEST_DIR: path.join(tmp, 'green-latest'),
+      EYEHOLD_T0_CLEAN_SURFACE_MOCK: surfaceNone
     });
     assert.equal(res.status, 0, res.stderr || res.stdout);
     const status = JSON.parse(fs.readFileSync(path.join(out, 't0-clean-install-status.json'), 'utf8'));
@@ -101,10 +101,10 @@ try {
     fs.writeFileSync(evidence, '\ufeff' + JSON.stringify(proof(hash, bytes), null, 2), 'utf8');
     const out = path.join(tmp, 'bom-green-out');
     const res = run(['--evidence', evidence], {
-      STARNET_T0_INSTALLER_EXE: installer,
-      STARNET_T0_CLEAN_INSTALL_DIR: out,
-      STARNET_T0_CLEAN_INSTALL_LATEST_DIR: path.join(tmp, 'bom-green-latest'),
-      STARNET_T0_CLEAN_SURFACE_MOCK: surfaceNone
+      EYEHOLD_T0_INSTALLER_EXE: installer,
+      EYEHOLD_T0_CLEAN_INSTALL_DIR: out,
+      EYEHOLD_T0_CLEAN_INSTALL_LATEST_DIR: path.join(tmp, 'bom-green-latest'),
+      EYEHOLD_T0_CLEAN_SURFACE_MOCK: surfaceNone
     });
     assert.equal(res.status, 0, res.stderr || res.stdout);
     const status = JSON.parse(fs.readFileSync(path.join(out, 't0-clean-install-status.json'), 'utf8'));
@@ -118,10 +118,10 @@ try {
     fs.writeFileSync(evidence, JSON.stringify(proof('00' + hash.slice(2), bytes), null, 2));
     const out = path.join(tmp, 'red-out');
     const res = run(['--evidence=' + evidence], {
-      STARNET_T0_INSTALLER_EXE: installer,
-      STARNET_T0_CLEAN_INSTALL_DIR: out,
-      STARNET_T0_CLEAN_INSTALL_LATEST_DIR: path.join(tmp, 'red-latest'),
-      STARNET_T0_CLEAN_SURFACE_MOCK: surfaceYes
+      EYEHOLD_T0_INSTALLER_EXE: installer,
+      EYEHOLD_T0_CLEAN_INSTALL_DIR: out,
+      EYEHOLD_T0_CLEAN_INSTALL_LATEST_DIR: path.join(tmp, 'red-latest'),
+      EYEHOLD_T0_CLEAN_SURFACE_MOCK: surfaceYes
     });
     assert.equal(res.status, 1, res.stderr || res.stdout);
     const status = JSON.parse(fs.readFileSync(path.join(out, 't0-clean-install-status.json'), 'utf8'));
@@ -132,21 +132,21 @@ try {
   {
     const evidence = path.join(tmp, 'smoke-proof.json');
     fs.writeFileSync(evidence, JSON.stringify(proof(hash, bytes, {
-      install: { succeeded: true, method: 'manual', installLocation: 'C:\\Users\\andro\\AppData\\Local\\Programs\\StarNetT4UpdateSmoke-20260628-065002' },
+      install: { succeeded: true, method: 'manual', installLocation: 'C:\\Users\\andro\\AppData\\Local\\Programs\\EyeholdT4UpdateSmoke-20260628-065002' },
       launch: {
         succeeded: true,
-        observedWindowTitle: 'StarNet',
-        exePath: 'C:\\Users\\andro\\AppData\\Local\\Programs\\StarNetT4UpdateSmoke-20260628-065002\\skynet-desktop.exe',
-        startupRoot: 'C:\\Users\\andro\\AppData\\Local\\Programs\\StarNetT4UpdateSmoke-20260628-065002',
-        workspaceRoot: 'C:\\Users\\andro\\AppData\\Local\\Programs\\StarNetT4UpdateSmoke-20260628-065002\\sidecar\\workspaces'
+        observedWindowTitle: 'Eyehold',
+        exePath: 'C:\\Users\\andro\\AppData\\Local\\Programs\\EyeholdT4UpdateSmoke-20260628-065002\\skynet-desktop.exe',
+        startupRoot: 'C:\\Users\\andro\\AppData\\Local\\Programs\\EyeholdT4UpdateSmoke-20260628-065002',
+        workspaceRoot: 'C:\\Users\\andro\\AppData\\Local\\Programs\\EyeholdT4UpdateSmoke-20260628-065002\\sidecar\\workspaces'
       }
     }), null, 2));
     const out = path.join(tmp, 'smoke-red-out');
     const res = run(['--evidence=' + evidence], {
-      STARNET_T0_INSTALLER_EXE: installer,
-      STARNET_T0_CLEAN_INSTALL_DIR: out,
-      STARNET_T0_CLEAN_INSTALL_LATEST_DIR: path.join(tmp, 'smoke-red-latest'),
-      STARNET_T0_CLEAN_SURFACE_MOCK: surfaceYes
+      EYEHOLD_T0_INSTALLER_EXE: installer,
+      EYEHOLD_T0_CLEAN_INSTALL_DIR: out,
+      EYEHOLD_T0_CLEAN_INSTALL_LATEST_DIR: path.join(tmp, 'smoke-red-latest'),
+      EYEHOLD_T0_CLEAN_SURFACE_MOCK: surfaceYes
     });
     assert.equal(res.status, 1, res.stderr || res.stdout);
     const status = JSON.parse(fs.readFileSync(path.join(out, 't0-clean-install-status.json'), 'utf8'));
@@ -157,10 +157,10 @@ try {
   {
     const out = path.join(tmp, 'surface-out');
     const res = run([], {
-      STARNET_T0_INSTALLER_EXE: installer,
-      STARNET_T0_CLEAN_INSTALL_DIR: out,
-      STARNET_T0_CLEAN_INSTALL_LATEST_DIR: path.join(tmp, 'surface-latest'),
-      STARNET_T0_CLEAN_SURFACE_MOCK: surfaceYes
+      EYEHOLD_T0_INSTALLER_EXE: installer,
+      EYEHOLD_T0_CLEAN_INSTALL_DIR: out,
+      EYEHOLD_T0_CLEAN_INSTALL_LATEST_DIR: path.join(tmp, 'surface-latest'),
+      EYEHOLD_T0_CLEAN_SURFACE_MOCK: surfaceYes
     });
     assert.equal(res.status, 2, res.stderr || res.stdout);
     const status = JSON.parse(fs.readFileSync(path.join(out, 't0-clean-install-status.json'), 'utf8'));

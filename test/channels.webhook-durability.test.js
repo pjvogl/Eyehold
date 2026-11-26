@@ -107,7 +107,7 @@ function signedRequest(auth, nonce, body) {
 
 (function jsonlRoundTripAcrossRestart() {
   // The composition-root shape: append+fsync JSONL on real disk, reloaded by a fresh verifier.
-  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'starnet-webhook-nonces-'));
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'eyehold-webhook-nonces-'));
   const file = path.join(dir, 'webhook-nonces.jsonl');
   const io = {
     load() {

@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <title>{{NAME_HTML}}</title>
-<!-- The station kit (sn-* classes, glass tokens, VT323, the `starnet` bridge) is added to this page automatically.
+<!-- The keep kit (sn-* classes, glass tokens, VT323, the `eyehold` bridge) is added to this page automatically.
      Your own CSS always wins over it — restyle anything you like. -->
 <style>
   .note-time { color: var(--ph); font-size: 15px; white-space: nowrap; }
@@ -32,12 +32,12 @@
     </form>
     <div>
       <h4 class="sn-sect">▮ Saved notes</h4>
-      <ul class="sn-list" id="list"><li class="sn-empty">No notes yet. They are saved by the station, so they survive a restart.</li></ul>
+      <ul class="sn-list" id="list"><li class="sn-empty">No notes yet. They are saved by the keep, so they survive a restart.</li></ul>
     </div>
   </section>
 
   <section data-pane="kit" class="sn-stack" hidden>
-    <p class="sn-hint">Every class the kit gives you, drawn in your station's live colours. Change the phosphor in SETTINGS and watch this repaint.</p>
+    <p class="sn-hint">Every class the kit gives you, drawn in your keep's live colours. Change the phosphor in SETTINGS and watch this repaint.</p>
     <div class="sn-row-flex">
       <button class="sn-btn">sn-btn</button>
       <button class="sn-btn primary">primary</button>
@@ -77,7 +77,7 @@
     document.getElementById('stat-notes').textContent = notes.length;
     listEl.innerHTML = '';
     if (!notes.length) {
-      listEl.innerHTML = '<li class="sn-empty">No notes yet. They are saved by the station, so they survive a restart.</li>';
+      listEl.innerHTML = '<li class="sn-empty">No notes yet. They are saved by the keep, so they survive a restart.</li>';
       return;
     }
     notes.forEach((n) => {
@@ -97,14 +97,14 @@
   async function change(edit, failText) {
     writing++;
     try {
-      const fresh = (await starnet.store.get('notes')) || [];
+      const fresh = (await eyehold.store.get('notes')) || [];
       notes = edit(fresh);
-      await starnet.store.set('notes', notes);
+      await eyehold.store.set('notes', notes);
       document.getElementById('stat-saved').textContent = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
       render();
       return true;
     } catch (err) {
-      starnet.ui.toast(failText + ': ' + err.message, 'bad').catch(() => {});
+      eyehold.ui.toast(failText + ': ' + err.message, 'bad').catch(() => {});
       return false;
     } finally { writing--; }
   }
@@ -114,7 +114,7 @@
     const text = input.value.trim();
     if (!text) return;
     input.value = '';
-    if (await change((list) => [{ text, at: Date.now() }].concat(list), 'Could not save')) starnet.ui.toast('Note saved').catch(() => {});
+    if (await change((list) => [{ text, at: Date.now() }].concat(list), 'Could not save')) eyehold.ui.toast('Note saved').catch(() => {});
   });
 
   document.querySelectorAll('.sn-tab').forEach((tab) => tab.addEventListener('click', () => {
@@ -123,20 +123,20 @@
   }));
 
   const showTheme = (v) => { document.getElementById('stat-theme').textContent = (v['--ph'] || '').toUpperCase() || '—'; };
-  starnet.theme.onChange(showTheme);
+  eyehold.theme.onChange(showTheme);
 
-  await starnet.ready;
-  showTheme(starnet.theme.vars);
-  notes = (await starnet.store.get('notes')) || [];
+  await eyehold.ready;
+  showTheme(eyehold.theme.vars);
+  notes = (await eyehold.store.get('notes')) || [];
   render();
 
   // Stay live: notes the crew adds (add_note) and the backend's own count (api.handle('stats') in index.js).
-  // A timeout CHAIN, not setInterval: a slow station never stacks up overlapping polls.
+  // A timeout CHAIN, not setInterval: a slow keep never stacks up overlapping polls.
   async function poll() {
     try {
-      const fresh = (await starnet.store.get('notes')) || [];
+      const fresh = (await eyehold.store.get('notes')) || [];
       if (!writing && JSON.stringify(fresh) !== JSON.stringify(notes)) { notes = fresh; render(); }
-      const s = await starnet.backend.call('stats');
+      const s = await eyehold.backend.call('stats');
       document.getElementById('stat-calls').textContent = s.toolCalls;
     } catch (_) { /* a window-only copy of this starter has no backend: the stat stays — */ }
     setTimeout(poll, 4000);

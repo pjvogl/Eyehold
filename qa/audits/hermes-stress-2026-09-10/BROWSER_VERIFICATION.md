@@ -18,6 +18,6 @@ At a 1000 x 800 viewport, narrow table cells originally split ordinary words suc
 - Browser console error query returned an empty list.
 - Focused renderer/copy regression: 33 assertions. Full fast suite: 757/757 steps, exit 0. Prior backend HTTP receipt remains 110/110; backend files did not change in this follow-up.
 
-The model/provider was a local controlled fixture, so these are runtime/UI checks rather than live-model quality measurements. App UI zoom remained at its default; this is not an all-window, all-zoom, installed-desktop or station-wide readiness claim. The temporary tab was closed, viewport override reset, and only the verified test process tree stopped.
+The model/provider was a local controlled fixture, so these are runtime/UI checks rather than live-model quality measurements. App UI zoom remained at its default; this is not an all-window, all-zoom, installed-desktop or keep-wide readiness claim. The temporary tab was closed, viewport override reset, and only the verified test process tree stopped.
 
 See browser-receipt.json for measurements and the fast-log hash. The remaining work is integration, the same-model comparison after model/provider and spending approval, and the subsequent soak.

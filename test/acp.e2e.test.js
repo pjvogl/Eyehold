@@ -1,9 +1,9 @@
-/* node test/acp.e2e.test.js — StarNet's ACP agent, end to end, as an EDITOR would drive it.
+/* node test/acp.e2e.test.js — Eyehold's ACP agent, end to end, as an EDITOR would drive it.
 
    test/acp-core.test.js proves the protocol decisions against fakes. This is the honest proof that the surface
    exists: it boots the REAL sidecar, SPAWNS the real bridge process (sidecar/acp/serve.js) exactly the way an
    editor does, and speaks JSON-RPC 2.0 over its stdin/stdout as a client. Nothing is stubbed on either side of
-   the pipe — the bridge discovers the station's per-launch token by scraping the served page (no --token given,
+   the pipe — the bridge discovers the keep's per-launch token by scraping the served page (no --token given,
    so that path is under test too), drives a real agent run through /api/run, and the answer comes back as
    session/update notifications.
 
@@ -12,10 +12,10 @@
         would corrupt the stream and an editor would drop the agent);
      2. a prompt produces a real run whose text streams back as agent_message_chunk;
      3. a tool call appears as a live tool_call / tool_call_update pair with a human title and a file location;
-     4. the station's consent gate surfaces as a native session/request_permission, and the ANSWER reaches the
-        station — an approved write really happens, a rejected one really does not;
+     4. the keep's consent gate surfaces as a native session/request_permission, and the ANSWER reaches the
+        keep — an approved write really happens, a rejected one really does not;
      5. session/cancel stops a turn, and the turn still resolves (an unresolved prompt hangs the editor);
-     6. with the station DOWN, the bridge answers with an honest error instead of a fabricated reply. */
+     6. with the keep DOWN, the bridge answers with an honest error instead of a fabricated reply. */
 'use strict';
 
 const A = require('./_assert.js');
@@ -104,7 +104,7 @@ function startMockOpenRouter(script) {
 function bootSidecar(port, env, attemptsLeft) {
   return new Promise((resolve, reject) => {
     const child = spawn(process.execPath, [INDEX], {
-      env: Object.assign({}, process.env, env, { SKYNET_PORT: String(port) }),
+      env: Object.assign({}, process.env, env, { EYEHOLD_PORT: String(port) }),
       stdio: ['ignore', 'pipe', 'pipe']
     });
     let out = '', settled = false;
@@ -195,7 +195,7 @@ function makeAcpClient(port, onPermission) {
 
 (async () => {
   const mock = await startMockOpenRouter([
-    { when: 'say hello', text: 'Hello from the station.' },
+    { when: 'say hello', text: 'Hello from the keep.' },
     { when: 'write the notes file', tool: { name: 'fs.write', args: { path: 'acp-notes.md', content: 'written through ACP' } } },
     { when: 'write the secret file', tool: { name: 'fs.write', args: { path: 'acp-denied.md', content: 'must never exist' } } },
     { when: 'read the notes file', tool: { name: 'fs.read', args: { path: 'acp-notes.md' } } },
@@ -208,10 +208,10 @@ function makeAcpClient(port, onPermission) {
   const projectGrant = 'path:' + path.resolve(project);
   fs.writeFileSync(path.join(ws, 'permissions.allow.json'), JSON.stringify({ version: 1, allow: [projectGrant], meta: { [projectGrant]: { grantedAt: 1 } } }), 'utf8');
   const env = {
-    SKYNET_WORKSPACES: ws,
-    SKYNET_OPENROUTER_BASE: mock.base,
-    SKYNET_OPENROUTER_KEY: 'sk-or-v1-acp-fake',
-    SKYNET_DEFAULT_MODEL: 'test/model'
+    EYEHOLD_WORKSPACES: ws,
+    EYEHOLD_OPENROUTER_BASE: mock.base,
+    EYEHOLD_OPENROUTER_KEY: 'sk-or-v1-acp-fake',
+    EYEHOLD_DEFAULT_MODEL: 'test/model'
   };
   const { child: sidecar, port } = await bootSidecar(9110 + (process.pid % 40), env, 20);
 
@@ -230,11 +230,11 @@ function makeAcpClient(port, onPermission) {
       const r = await client.send('initialize', {
         protocolVersion: 1,
         clientCapabilities: { fs: { readTextFile: false, writeTextFile: false } },
-        clientInfo: { name: 'starnet-acp-e2e', version: '1.0.0' }
+        clientInfo: { name: 'eyehold-acp-e2e', version: '1.0.0' }
       });
       A.ok(r.result, 'initialize answered: ' + JSON.stringify(r.error || '').slice(0, 200));
       A.eq(r.result.protocolVersion, 1, 'the bridge answers protocol v1');
-      A.eq(r.result.agentInfo.name, 'starnet', 'the agent identifies as starnet');
+      A.eq(r.result.agentInfo.name, 'eyehold', 'the agent identifies as eyehold');
       A.eq(r.result.agentCapabilities.loadSession, true, 'loadSession is advertised over the wire');
 
       const s = await client.send('session/new', { cwd: process.cwd(), mcpServers: [] });
@@ -250,7 +250,7 @@ function makeAcpClient(port, onPermission) {
       }, 60000);
       A.ok(r.result, 'session/prompt answered: ' + JSON.stringify(r.error || '').slice(0, 300));
       A.eq(r.result.stopReason, 'end_turn', 'a clean turn stops with end_turn');
-      A.ok(client.textFor(sessionId).indexOf('Hello from the station.') >= 0,
+      A.ok(client.textFor(sessionId).indexOf('Hello from the keep.') >= 0,
         'the model text really streamed back through ACP: ' + JSON.stringify(client.textFor(sessionId)));
       A.ok(client.updates(sessionId).length >= 1, 'the answer arrived as session/update notifications, not in the response body');
     }
@@ -265,7 +265,7 @@ function makeAcpClient(port, onPermission) {
       A.ok(r.result, 'the write turn answered: ' + JSON.stringify(r.error || '').slice(0, 300));
 
       const perm = decisions.find(d => d.method === 'session/request_permission');
-      A.ok(perm, 'the station consent gate surfaced in the editor as session/request_permission');
+      A.ok(perm, 'the keep consent gate surfaced in the editor as session/request_permission');
       A.ok(/acp-notes\.md/.test(perm.title), 'the card names the file in words: ' + perm.title);
       A.eq(perm.params.toolCall.kind, 'edit', 'a write is presented as an EDIT');
       A.eq(perm.params.options.map(o => o.optionId).join(','), 'once,session,deny', 'the three real options are offered');
@@ -280,7 +280,7 @@ function makeAcpClient(port, onPermission) {
       A.ok(upd, 'and it was closed out with a tool_call_update');
       A.eq(upd.status, 'completed', 'the approved write completed');
 
-      /* THE READ-BACK. An approved permission answer must actually reach the station, or the card is theatre.
+      /* THE READ-BACK. An approved permission answer must actually reach the keep, or the card is theatre.
          The file lives in the agent's workspace jail, so its presence on disk is the proof. */
       const written = path.join(ws, 'agent', 'acp-notes.md');
       A.ok(fs.existsSync(written), 'the APPROVED write really happened on disk at ' + written);
@@ -320,9 +320,9 @@ function makeAcpClient(port, onPermission) {
 
     /* ---- 5. cancel: the turn stops, resolves, and is reported as a CANCEL — not a failure -------
        The first cut accepted either 'cancelled' or 'end_turn' here, and that looseness hid a real bug: the
-       cancel destroyed the socket immediately, racing ahead of the station's own settle, so the turn came back
-       as 'end_turn' with "(StarNet could not complete this turn: aborted)" AND "(stopped: the run failed inside
-       StarNet — check the station log)". Pressing Esc told the user their work had crashed. Assert the exact
+       cancel destroyed the socket immediately, racing ahead of the keep's own settle, so the turn came back
+       as 'end_turn' with "(Eyehold could not complete this turn: aborted)" AND "(stopped: the run failed inside
+       Eyehold — check the keep log)". Pressing Esc told the user their work had crashed. Assert the exact
        reason, and assert the failure wording is ABSENT. */
     {
       client.clear();
@@ -340,7 +340,7 @@ function makeAcpClient(port, onPermission) {
       A.eq(r.result.stopReason, 'cancelled', 'a user cancel reports stopReason CANCELLED, not a generic end_turn');
       const said = client.textFor(sessionId);
       A.ok(!/could not complete this turn/.test(said), 'a deliberate cancel is NOT reported as a transport failure: ' + JSON.stringify(said).slice(0, 200));
-      A.ok(!/the run failed inside StarNet/.test(said), 'and does NOT tell the user to go check the station log');
+      A.ok(!/the run failed inside Eyehold/.test(said), 'and does NOT tell the user to go check the keep log');
       mock.release();   // drop the parked completion so the next phase starts from a clean inflight count
     }
 
@@ -389,21 +389,21 @@ function makeAcpClient(port, onPermission) {
     await sleep(200);
   }
 
-  /* ---- 6. WITH THE STATION DOWN, the bridge must be honest --------------------------------------
+  /* ---- 6. WITH THE KEEP DOWN, the bridge must be honest --------------------------------------
      The failure mode this forbids: an editor session that answers plausibly while nothing is actually running.
      Port 9 (discard) is closed, so token discovery fails and the run cannot start. */
   {
     const lonely = makeAcpClient(9, () => null);
     try {
       const init = await lonely.send('initialize', { protocolVersion: 1, clientInfo: { name: 'e2e' } }, 20000);
-      A.ok(init.result, 'the bridge still initializes with no station — it must load in the editor to explain itself');
+      A.ok(init.result, 'the bridge still initializes with no keep — it must load in the editor to explain itself');
       const s = await lonely.send('session/new', { cwd: process.cwd() }, 20000);
       A.ok(s.result.sessionId, 'and still opens a session');
       const r = await lonely.send('session/prompt', { sessionId: s.result.sessionId, prompt: [{ type: 'text', text: 'hello' }] }, 30000);
-      A.ok(r.result, 'a prompt against a dead station still resolves the turn');
+      A.ok(r.result, 'a prompt against a dead keep still resolves the turn');
       const said = lonely.textFor(s.result.sessionId);
       A.ok(/could not complete this turn/.test(said), 'and says plainly that it could not run: ' + JSON.stringify(said).slice(0, 300));
-      A.ok(/StarNet is not running|not reachable/.test(said), 'naming the real cause rather than inventing an answer');
+      A.ok(/Eyehold is not running|not reachable/.test(said), 'naming the real cause rather than inventing an answer');
     } finally { lonely.kill(); await sleep(150); }
   }
 

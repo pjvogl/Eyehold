@@ -1,4 +1,4 @@
-/* STARNET — confbeats.js : the CONFIDENCE NARRATIVE beats (Game session, Phase G3a / Layer 3+6).
+/* EYEHOLD — confbeats.js : the CONFIDENCE NARRATIVE beats (Game session, Phase G3a / Layer 3+6).
 
    Two one-shot spoken moments in the hero's reliability arc — the meter (xp.js EWMA confidence) already
    moves honestly; these give its two threshold crossings a VOICE, once each, ever:
@@ -19,7 +19,7 @@
        meter has already folded the verdict), NEVER emits. node-exportable for its test. */
 'use strict';
 const ConfBeats = (() => {
-  const KEY = 'starnet.confbeats.v1';
+  const KEY = 'eyehold.confbeats.v1';
   const TRUSTED_AT = 85;      // the same band xp.js compute() calls 'trusted' + the TRUSTED milestone uses
   const RETRY_MS = 7000;      // blocked-moment retry cadence (bounded), cloned from the away-digest defer
   const SETTLE_MS = 900;      // let XpStore fold + the rate control vanish before the beat slots in
@@ -29,7 +29,7 @@ const ConfBeats = (() => {
 
   const LINES = {
     calibrated: '✦ i’ve started keeping score of myself — GROWTH in my dossier shows how reliable i’ve been. three verdicts in; the number is real now.',
-    trusted: '✦ my reliability crossed ' + TRUSTED_AT + '% — the station calls that TRUSTED. the badge is lit in GROWTH, in my dossier. i intend to keep it.'
+    trusted: '✦ my reliability crossed ' + TRUSTED_AT + '% — the keep calls that TRUSTED. the badge is lit in GROWTH, in my dossier. i intend to keep it.'
   };
 
   function load() { try { const raw = localStorage.getItem(KEY); return raw ? JSON.parse(raw) : null; } catch (_) { return null; } }

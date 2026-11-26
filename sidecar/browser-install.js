@@ -1,8 +1,8 @@
 'use strict';
-/* A BROWSER FOR COMPUTERS THAT HAVE NONE (Andrew 2026-09-30: "EVERY user should be able to use starnet's built in
-   browser"). The station browser runs on the Commander's installed Chrome / Edge / Chromium. A machine with none of
+/* A BROWSER FOR COMPUTERS THAT HAVE NONE (Andrew 2026-09-30: "EVERY user should be able to use eyehold's built in
+   browser"). The keep browser runs on the Commander's installed Chrome / Edge / Chromium. A machine with none of
    them — a fresh Mac, a minimal Linux — would otherwise get "Chromium not found". Hermes answers this with
-   `agent-browser install` (it downloads Chromium); StarNet does the same, by itself, the first time a browser is
+   `agent-browser install` (it downloads Chromium); Eyehold does the same, by itself, the first time a browser is
    needed: Google's official Chrome for Testing build, from Google's own download host, into
    <workspaces>/.browsers/<version>/. Nothing is downloaded while an installed browser exists.
 
@@ -14,7 +14,7 @@
 const fs = require('fs');
 const path = require('path');
 const { pipeline: streamPipeline } = require('stream/promises');
-const CP = require('./child-env.js').guardChildProcess(require('child_process'));   // tar / ditto / unzip never inherit station secrets
+const CP = require('./child-env.js').guardChildProcess(require('child_process'));   // tar / ditto / unzip never inherit keep secrets
 const { note: failNote } = require('./failopen.js');
 
 const VERSIONS_URL = 'https://googlechromelabs.github.io/chrome-for-testing/last-known-good-versions-with-downloads.json';
@@ -26,7 +26,7 @@ function platformKey(platform, arch) {
   if (platform === 'darwin') return arch === 'arm64' ? 'mac-arm64' : 'mac-x64';
   if (platform === 'linux' && arch === 'x64') return 'linux64';
   if (platform === 'linux' && arch === 'arm64') return 'linux-arm64';   // listed by Google since 2026 (checked 2026-10-01)
-  return null;   // Chrome for Testing has no build here: the station says so
+  return null;   // Chrome for Testing has no build here: the keep says so
 }
 function exeInside(key) {
   if (key === 'win64' || key === 'win32') return path.join('chrome-' + key, 'chrome.exe');
@@ -36,7 +36,7 @@ function exeInside(key) {
 
 // Unpack a zip with the tool every supported OS already has (tar.exe ships with Windows 10+; ditto with macOS).
 // ASYNCHRONOUS (release review 2026-09-30): unpacking ~400 MB takes tens of seconds, and a synchronous child call
-// would freeze the whole station — every request, every stream — for all of it, right during first-run setup.
+// would freeze the whole keep — every request, every stream — for all of it, right during first-run setup.
 function runTool(cmd, args) {
   return new Promise((resolve, reject) => {
     CP.execFile(cmd, args, { windowsHide: true, timeout: 10 * 60 * 1000, maxBuffer: 1024 * 1024 }, err => (err ? reject(err) : resolve()));
@@ -80,7 +80,7 @@ function makeChromiumInstaller(deps) {
   let st = { state: 'idle', received: 0, total: 0, version: null, error: null };
   let inflight = null;
 
-  // the browser this station downloaded earlier, if it is still whole
+  // the browser this keep downloaded earlier, if it is still whole
   function find() {
     try {
       if (!F.existsSync(currentFile)) return null;

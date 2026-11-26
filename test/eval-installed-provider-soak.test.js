@@ -24,7 +24,7 @@ const A = require('./_assert.js');
   A.ok(/providerFailures === 0/.test(source) && /healthFailures === 0/.test(source), 'provider and health failures both fail the soak');
   A.ok(/gradeParityTrajectory/.test(source) && /fixtureCalls\.length > 0/.test(source), 'active samples require independent fixture grading and real host calls');
   const os = require('node:os'), fs = require('node:fs'), path = require('node:path');
-  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'starnet-soak-fingerprint-'));
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'eyehold-soak-fingerprint-'));
   try {
     fs.mkdirSync(path.join(root, 'sidecar')); fs.writeFileSync(path.join(root, 'sidecar', 'index.js'), 'one');
     A.eq(await hashFileStreamed(path.join(root, 'sidecar', 'index.js')), require('node:crypto').createHash('sha256').update('one').digest('hex'), 'candidate files are hashed as bounded streams');

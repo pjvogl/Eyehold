@@ -25,7 +25,7 @@ const URL = `http://127.0.0.1:${PORT}/`;
 const OUT = process.env.SKYNET_SHOT_OUT || join(process.cwd(), 'dev', '.shots-crewseam');
 
 const setScale = (v) => `(() => {
-  const KEY = 'starnet.station.v1';
+  const KEY = 'eyehold.keep.v1';
   const r = JSON.parse(localStorage.getItem(KEY) || '{"v":1}');
   r.settings = Object.assign({}, r.settings, { textScale: ${v} });
   localStorage.setItem(KEY, JSON.stringify(r));
@@ -45,7 +45,7 @@ const MEASURE = `(() => {
   const lr = left.getBoundingClientRect(), sr = stage.getBoundingClientRect();
   const seamR = seam ? seam.getBoundingClientRect() : null;
   const cmR = comms ? comms.getBoundingClientRect() : null, chR = chat.getBoundingClientRect();
-  let stored = null; try { stored = localStorage.getItem('starnet.crewrail.w'); } catch (_) {}
+  let stored = null; try { stored = localStorage.getItem('eyehold.crewrail.w'); } catch (_) {}
   return {
     innerWidth: window.innerWidth,
     zoom: document.body.style.zoom || '1',
@@ -113,7 +113,7 @@ const drag = (toX) => `(() => {
 
 const DBLCLICK = `(() => {
   document.getElementById('crew-resizer').dispatchEvent(new MouseEvent('dblclick', { bubbles: true, cancelable: true }));
-  let stored = null; try { stored = localStorage.getItem('starnet.crewrail.w'); } catch (_) {}
+  let stored = null; try { stored = localStorage.getItem('eyehold.crewrail.w'); } catch (_) {}
   return { crewVar: document.getElementById('screen-game').style.getPropertyValue('--crew-w') || '(unset)', stored };
 })()`;
 

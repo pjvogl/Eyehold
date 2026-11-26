@@ -68,7 +68,7 @@ function spy(jinaStatus) {
     A.eq(r.fullText, complete, 'the exact extracted page crosses the durable-output seam without a second fetch');
   }
 
-  /* ---- a hostile page must not be able to freeze the single-process station ----
+  /* ---- a hostile page must not be able to freeze the single-process keep ----
      htmlToText was a chain of lazy `[\s\S]*?` replaces, every one QUADRATIC on input the fetch does not
      control: `<script` with no `</script>` makes the scan walk to end-of-input from each start position.
      Measured on repeated "<script>": 64KB -> 55ms, 256KB -> 880ms, 1MB -> 14.3 SECONDS of event-loop

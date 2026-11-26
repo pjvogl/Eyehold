@@ -10,9 +10,9 @@ const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const rawArgs = process.argv.slice(2);
 const LOOP_ARG = rawArgs.find(a => /^--loop(=|$)/.test(a));
 const LOOP_MAX = LOOP_ARG ? Math.max(1, Number(LOOP_ARG.split('=')[1] || 3) || 3) : 1;
-const SKIP_PHASE4_BASELINE = /^(1|true|yes|on)$/i.test(String(process.env.STARNET_SKIP_PHASE4_BASELINE || '').trim());
+const SKIP_PHASE4_BASELINE = /^(1|true|yes|on)$/i.test(String(process.env.EYEHOLD_SKIP_PHASE4_BASELINE || '').trim());
 const STAMP = new Date().toISOString().replace(/[-:]/g, '').replace(/\..+$/, '').replace('T', '-');
-const OUT = resolve(process.env.STARNET_PHASE3_SEAL_DIR || join(ROOT, '.dogfood', 'phase3-seal-' + STAMP));
+const OUT = resolve(process.env.EYEHOLD_PHASE3_SEAL_DIR || join(ROOT, '.dogfood', 'phase3-seal-' + STAMP));
 const LATEST = join(ROOT, '.dogfood', 'phase3-seal-latest');
 const npmCmd = process.platform === 'win32' ? 'npm.cmd' : 'npm';
 const nodeCmd = process.execPath;
@@ -90,7 +90,7 @@ function writeSummary(results, loopsRun) {
   };
   writeFileSync(join(OUT, 'phase3-seal-status.json'), JSON.stringify(json, null, 2));
 
-  let md = '# StarNet Phase 3 Seal Evidence\n\n';
+  let md = '# Eyehold Phase 3 Seal Evidence\n\n';
   md += '- Generated: `' + json.generatedAt + '`\n';
   md += '- Verdict: `' + verdict + '`\n';
   md += '- Loops run: `' + loopsRun + '`\n\n';

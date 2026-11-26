@@ -1,7 +1,7 @@
 'use strict';
-/* configexport.test.js — pure-engine tests for the STATION BACKUP module (P1-7): buildExport / parseImport +
+/* configexport.test.js — pure-engine tests for the KEEP BACKUP module (P1-7): buildExport / parseImport +
    the secret-redaction law. No IO — the module is dependency-free (index.js wires the live stores). Proves:
-     - the envelope is schema-versioned (starnetExport: 1) so future imports can migrate;
+     - the envelope is schema-versioned (eyeholdExport: 1) so future imports can migrate;
      - a full round-trip (build -> parse) preserves the non-secret config;
      - SECRETS NEVER travel: connector tokens/headers/url-auth are redacted to a configured-marker only;
      - import is forward-tolerant (unknown sections dropped, newer schema accepted with a note) + fail-soft
@@ -38,11 +38,11 @@ const env = C.buildExport({
     id: 'bad-url', transport: 'http', url: 'https://bad host/mcp?opaque=MALFORMED_URL_SECRET'
   }],
   notifyPrefs: { runComplete: true, sound: false }
-}, { now: 123, app: 'StarNet' });
+}, { now: 123, app: 'Eyehold' });
 
-eq(env.starnetExport, 1, 'envelope carries the starnetExport:1 version pivot');
+eq(env.eyeholdExport, 1, 'envelope carries the eyeholdExport:1 version pivot');
 eq(env.exportedAt, 123, 'exportedAt stamped from injected clock');
-eq(env.app, 'StarNet', 'app name stamped');
+eq(env.app, 'Eyehold', 'app name stamped');
 eq(env.sections.budget.perRun, 2, 'budget section carried');
 eq(env.sections.fallback.models.length, 2, 'fallback chain carried as {models}');
 eq(env.sections.dossier.block, 'the commander block', 'dossier carried');
@@ -101,33 +101,33 @@ const fortyExport = C.buildExport({ connectors: [{ id: 'forty', transport: 'stdi
 eq(fortyExport.sections.connectors[0].args.length, 40, 'supported argv is exported without the former 32-entry truncation');
 eq(C.parseImport(fortyExport).sections.connectors[0].args.length, 40, 'supported argv is imported without truncation');
 assert.throws(() => C.buildExport({ connectors: [{ id: 'too-many', transport: 'stdio', command: 'node', args: Array(129).fill('x') }] }), /128/, 'oversized argv fails export explicitly'); n++;
-eq(C.parseImport({ starnetExport: 1, sections: { connectors: [{ id: 'too-many', transport: 'stdio', command: 'node', args: Array(129).fill('x') }] } }).ok, false, 'oversized argv is rejected before import');
-eq(C.parseImport({ starnetExport: 1, sections: { connectors: [{ id: 'bad-http', transport: 'http', url: 'file:///tmp/x' }] } }).ok, false, 'import applies the edit route HTTP URL rule');
-eq(C.parseImport({ starnetExport: 1, sections: { connectors: [{ id: 'bad-marker', transport: 'stdio', command: 'node', redactedFields: ['args:999'] }] } }).ok, false, 'out-of-range redaction markers are rejected');
-eq(C.parseImport({ starnetExport: 1, sections: { connectors: [
+eq(C.parseImport({ eyeholdExport: 1, sections: { connectors: [{ id: 'too-many', transport: 'stdio', command: 'node', args: Array(129).fill('x') }] } }).ok, false, 'oversized argv is rejected before import');
+eq(C.parseImport({ eyeholdExport: 1, sections: { connectors: [{ id: 'bad-http', transport: 'http', url: 'file:///tmp/x' }] } }).ok, false, 'import applies the edit route HTTP URL rule');
+eq(C.parseImport({ eyeholdExport: 1, sections: { connectors: [{ id: 'bad-marker', transport: 'stdio', command: 'node', redactedFields: ['args:999'] }] } }).ok, false, 'out-of-range redaction markers are rejected');
+eq(C.parseImport({ eyeholdExport: 1, sections: { connectors: [
   { id: 'duplicate', transport: 'http', url: 'https://one.example/mcp' },
   { id: 'duplicate', transport: 'http', url: 'https://two.example/mcp' }
 ] } }).ok, false, 'duplicate connector ids are rejected before mutation');
 
 // Old schema-1 exports omitted operational fields. Their absence must survive parsing so the live importer can
 // preserve an existing row or choose a disabled default for a new connector instead of activating it.
-const legacyConnector = C.parseImport({ starnetExport: 1, sections: { connectors: [{ id: 'old', transport: 'http', url: 'https://old.example/mcp' }] } }).sections.connectors[0];
+const legacyConnector = C.parseImport({ eyeholdExport: 1, sections: { connectors: [{ id: 'old', transport: 'http', url: 'https://old.example/mcp' }] } }).sections.connectors[0];
 eq(Object.prototype.hasOwnProperty.call(legacyConnector, 'enabled'), false, 'legacy missing enabled remains distinguishable from enabled=true');
 eq(Object.prototype.hasOwnProperty.call(legacyConnector, 'oauth'), false, 'legacy missing oauth remains distinguishable from oauth=false');
 
 // ---- validation: budget clamps out junk; fallback is cleaned + capped at 8 ----
-const badBudget = C.parseImport({ starnetExport: 1, sections: { budget: { perRun: -5, perDay: 'oops', global: 10 } } });
+const badBudget = C.parseImport({ eyeholdExport: 1, sections: { budget: { perRun: -5, perDay: 'oops', global: 10 } } });
 eq(badBudget.sections.budget.perRun, undefined, 'a negative budget value is dropped');
 eq(badBudget.sections.budget.perDay, undefined, 'a non-numeric budget value is dropped');
 eq(badBudget.sections.budget.global, 10, 'a valid budget value survives');
 
-const bigChain = C.parseImport({ starnetExport: 1, sections: { fallback: { models: Array.from({ length: 20 }, (_, i) => 'm/' + i) } } });
+const bigChain = C.parseImport({ eyeholdExport: 1, sections: { fallback: { models: Array.from({ length: 20 }, (_, i) => 'm/' + i) } } });
 eq(bigChain.sections.fallback.models.length, 8, 'the fallback chain is capped at 8 on import');
 
 // ---- forward-tolerance: unknown sections dropped (noted), newer schema accepted with a note ----
-const fwd = C.parseImport({ starnetExport: 99, sections: { budget: { perRun: 1 }, futureThing: { x: 1 } } });
+const fwd = C.parseImport({ eyeholdExport: 99, sections: { budget: { perRun: 1 }, futureThing: { x: 1 } } });
 ok(fwd.ok, 'a newer-schema file still imports what we understand');
-ok(fwd.notes.some(x => /newer StarNet/.test(x)), 'a newer schema is noted');
+ok(fwd.notes.some(x => /newer Eyehold/.test(x)), 'a newer schema is noted');
 ok(fwd.notes.some(x => /futureThing/.test(x)), 'an unknown section is noted, not fatal');
 eq(fwd.sections.futureThing, undefined, 'the unknown section is not applied');
 eq(fwd.sections.budget.perRun, 1, 'the known section still applies alongside the unknown one');
@@ -135,12 +135,12 @@ eq(fwd.sections.budget.perRun, 1, 'the known section still applies alongside the
 // ---- fail-soft + hard guards ----
 eq(C.parseImport({}).ok, false, 'a file with no version marker is rejected');
 eq(C.parseImport(null).ok, false, 'null is rejected, not thrown');
-eq(C.parseImport({ starnetExport: 1, sections: { budget: 'not an object' } }).ok, true, 'a malformed section does not fail the whole import');
+eq(C.parseImport({ eyeholdExport: 1, sections: { budget: 'not an object' } }).ok, true, 'a malformed section does not fail the whole import');
 
 
 // ---- security audit 2026-09-25: an imported file cannot bless folders (path:<root> grants are machine authority) ----
 {
-  const hostile = C.parseImport({ starnetExport: 1, sections: { permissions: { allow: ['fs.write:workspace', 'path:C:\\', 'PATH:/', 'path:/home/victim'] } } });
+  const hostile = C.parseImport({ eyeholdExport: 1, sections: { permissions: { allow: ['fs.write:workspace', 'path:C:\\', 'PATH:/', 'path:/home/victim'] } } });
   ok(hostile.ok, 'an import carrying path grants still parses');
   eq(JSON.stringify(hostile.sections.permissions.allow), JSON.stringify(['fs.write:workspace']), 'every path:<root> grant is dropped; capability grants survive');
   ok(hostile.notes.some(x => /skipped 3 project folder grants/.test(x)), 'the skipped folder grants are named in the import notes');

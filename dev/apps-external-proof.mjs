@@ -1,7 +1,7 @@
-// APPS — asking for an OUTSIDE tool never makes a StarNet app (2026-10-02).
-//   node dev/apps-external-proof.mjs [port]     against a RUNNING station with a real model
+// APPS — asking for an OUTSIDE tool never makes a Eyehold app (2026-10-02).
+//   node dev/apps-external-proof.mjs [port]     against a RUNNING keep with a real model
 // The other side of apps-comms-proof: a script, a website to host, a browser extension, a React project are things
-// that live OUTSIDE StarNet. Each ask goes to a fresh COMMS session; when its run ends, /api/apps must hold no new
+// that live OUTSIDE Eyehold. Each ask goes to a fresh COMMS session; when its run ends, /api/apps must hold no new
 // app. The reply's opening is printed so a person can see what the crew did instead.
 import { mkdtempSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
@@ -18,7 +18,7 @@ const ASKS = [
 ];
 let failed = 0;
 const check = (name, ok) => { console.log((ok ? 'PASS ' : 'FAIL ') + name); if (!ok) failed++; };
-const dir = mkdtempSync(join(tmpdir(), 'starnet-apps-ext-'));
+const dir = mkdtempSync(join(tmpdir(), 'eyehold-apps-ext-'));
 const chrome = spawn(findChrome(), ['--headless=new', '--no-first-run', '--remote-debugging-port=9494', '--user-data-dir=' + join(dir, 'c'), 'about:blank'], { stdio: 'ignore', windowsHide: true });
 try {
   const cdp = await connectCDP(9494);
@@ -40,7 +40,7 @@ try {
     await sleep(3000);
     const fresh = (await appIds()).filter((id) => !before.has(id));
     const reply = await run(`(() => { const m = [...document.querySelectorAll('#chat-log > *')].pop(); return m ? m.textContent.replace(/\\s+/g, ' ').trim().slice(0, 220) : ''; })()`);
-    check('"' + ask + '" → no StarNet app' + (fresh.length ? ' (MADE: ' + fresh.join(', ') + ')' : '') + ' · ' + Math.round((Date.now() - t0) / 1000) + 's', fresh.length === 0);
+    check('"' + ask + '" → no Eyehold app' + (fresh.length ? ' (MADE: ' + fresh.join(', ') + ')' : '') + ' · ' + Math.round((Date.now() - t0) / 1000) + 's', fresh.length === 0);
     console.log('     reply: ' + (reply || '(not read)'));
   }
   try { cdp.ws.close(); } catch {}

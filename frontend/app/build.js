@@ -1,11 +1,11 @@
-/* STARNET — build.js : the diegetic full-screen BUILD MODE (build) mode.
+/* EYEHOLD — build.js : the diegetic full-screen BUILD MODE (build) mode.
 
    Toggled from the dock. Dims the live sim and drops the Commander into an in-fiction
-   station-editor over the SAME procedural art: pan/zoom camera, phosphor build grid,
+   keep-editor over the SAME procedural art: pan/zoom camera, phosphor build grid,
    a ghost preview that snaps to tiles and tints green/red via the model's validators,
    and an in-fiction toolbar — PLACE ROOM · HALLWAY · SURFACE · MOVE · DELETE · UNDO.
 
-   It reads + mutates the canonical WorldModel station (the single source of truth) and
+   It reads + mutates the canonical WorldModel keep (the single source of truth) and
    re-bakes the environment when changed, then persists through the injected save hook.
    See frontend/app/BUILDER.md for the contract. */
 'use strict';
@@ -34,7 +34,7 @@ const Build = (() => {
     { id: 'prop', key: '6', label: 'PROPS', verb: 'click the deck to place it', hint: 'browse equipment and decoration, then click the deck to place your selection', cursor: 'crosshair' },
     { id: 'belt', key: '7', label: 'BELT', verb: 'click one machine, then another · or drag across the floor to lay belt by hand', hint: 'CLICK one machine, then another — the belt lays itself · (or drag to lay tiles by hand)', cursor: 'crosshair' },
     { id: 'dupe', key: '8', label: 'COPY', verb: 'click a room or prop to copy it', hint: 'click a room or prop to copy it · then every click stamps a copy — mirror your build fast', cursor: 'copy' },
-    { id: 'line', key: '9', label: 'CONVEYOR LINES', verb: 'choose a conveyor line below, then click clear floor to place it', hint: 'add connected workflow equipment to your existing station — choose a line, then place it on clear floor', cursor: 'copy' },
+    { id: 'line', key: '9', label: 'CONVEYOR LINES', verb: 'choose a conveyor line below, then click clear floor to place it', hint: 'add connected workflow equipment to your existing keep — choose a line, then place it on clear floor', cursor: 'copy' },
   ];
   // Every tool stays visible. The Select landing offers two starting points without
   // arming a placement tool. Shortcut numbers remain compatible with the guide/tutorial.
@@ -44,7 +44,7 @@ const Build = (() => {
      NOT in VT323 — the browser silently falls back to a system font for the symbol and keeps VT323
      for the word, so each button rendered in two typefaces at two weights (the standing
      symbol-glyph law). These are 12×12 pixel bitmaps painted on a canvas in the button's own
-     phosphor colour: one typeface, in the station's own art language, crisp at any DPR. */
+     phosphor colour: one typeface, in the keep's own art language, crisp at any DPR. */
   const ICON_PX = [
     ['select', '#...........,##..........,###.........,####........,#####.......,######......,#######.....,########....,#####.......,##.###......,#...###.....,.....###....'],
     ['room',   '############,#..........#,#..........#,#..........#,#..........#,#..........#,#..........#,#..........#,#..........#,#..........#,#..........#,#####..#####'],
@@ -84,18 +84,18 @@ const Build = (() => {
     });
   }
 
-  const SEEN_KEY = 'starnet.refit.seen';
+  const SEEN_KEY = 'eyehold.refit.seen';
   const PREVIEW_LABEL = '▶ TEST';   // 2026-09-28: ONE test control (the name kept: the guide and Field Manual quote it) — it opens the line's TEST view (WATCH IT free · STEP THROUGH · RUN ONE REAL JOB) and plays the free walkthrough   // the top-bar preview button — the guide and Field Manual name it by this constant
   // machines the BELT tool connects with two clicks (mirrors worldmodel CONNECTABLE)
   const CONNECT_TYPES = { intake: 1, bay: 1, outbox: 1, filter: 1, splitter: 1, merger: 1, joiner: 1, loop: 1 };
 
-  let opts = null, station = null, unsub = null;
+  let opts = null, keep = null, unsub = null;
   let connectFrom = null;   // connect-mode state: the armed FROM machine's propId (null = not connecting)
   let root, cv, ctx, tip, hintEl, undoBtn, redoBtn, propCard, dpr = 1, ro = null;
   let raf = 0, frameRetryTimer = 0, running = false, frameFailures = 0;
   let cache = null, cacheGeo = null, bakeDirty = true, bakeDirtyRects = null, bakeDirtyRectsGlobal = false, bakeVisibleOnly = false, valPlan = null, valLive = null;   // valPlan = live RoutingPlan (cost-safety ghosts); valLive = energized-belt tile set
   const sceneRenderer = typeof WorldRenderer !== 'undefined' ? WorldRenderer.create() : null;
-  let planDirty = true;   // routing-plan cache flag: set by EDITS (station.onChange / open), never by pure pans — see rebake()
+  let planDirty = true;   // routing-plan cache flag: set by EDITS (keep.onChange / open), never by pure pans — see rebake()
   let projectionDirty = false;
   const flashes = [];   // {rects, t0, bad} place/delete confirmations
   // short human labels for the routing-validation overlay (cost-safety: surfaced before any paid run)
@@ -149,7 +149,7 @@ const Build = (() => {
      Commander who was building a line last time comes back to the Conveyors tab instead of the furniture catalog. Only that
      tab is remembered: every other session still starts on Props, where the tutorial expects it. */
   let pendingGroup = null;
-  const LAST_GROUP_KEY = 'starnet.refit.lastGroup';
+  const LAST_GROUP_KEY = 'eyehold.refit.lastGroup';
   const readLastGroup = () => { try { return localStorage.getItem(LAST_GROUP_KEY) === 'workflow' ? 'workflow' : null; } catch (e) { return null; } };
   const writeLastGroup = g => { try { localStorage.setItem(LAST_GROUP_KEY, g === 'workflow' ? 'workflow' : 'props'); } catch (e) {} };
   const propShelfScroll = new Map();
@@ -163,10 +163,10 @@ const Build = (() => {
   // SURFACE targets one surface at a time — the deck or the walls — so the palette stays two rows
   // instead of four. 'follow' wall colour = inherit the room's floor hue (the default).
   let paintTarget = 'floor', wallMat = 'plating', wallStyle = 'follow';
-  // the SHELL axis — a room's exterior, the surface you see from outside the station (WorldModel's
+  // the SHELL axis — a room's exterior, the surface you see from outside the keep (WorldModel's
   // HULL_MATERIALS). 'follow' here means "the tone this material was drawn for", not "match the deck":
-  // an exterior has no deck to match, and STATION's own follow-tone is the shell grey it always was.
-  let hullMat = 'station', hullStyle = 'follow';
+  // an exterior has no deck to match, and KEEP's own follow-tone is the shell grey it always was.
+  let hullMat = 'keep', hullStyle = 'follow';
   let drag = null, hoverRoomId = null, hoverPropId = null, hoverTile = null, lastClient = { x: 0, y: 0 }, spaceHeld = false;
   /* THE CAPTURED POINTER (2026-08-07 conveyor audit). onDown setPointerCapture()s the canvas so a drag
      that leaves the element keeps tracking. Only onUp released it — every OTHER way a drag ends (ESC,
@@ -185,16 +185,16 @@ const Build = (() => {
      wave the pointer until the red went green. lineFields caches, PER BLUEPRINT, the full set of
      legal cursor tiles for the CURRENT floor; it is computed at most once per (blueprint, edit)
      and NEVER inside the frame loop's hot path (a full scan is ~thousands of checkBlueprint calls
-     — per frame it would melt). station.onChange drops the whole map; that is the only invalidation. */
+     — per frame it would melt). keep.onChange drops the whole map; that is the only invalidation. */
   const lineFields = Object.create(null);   // bpId -> { set:Set('tx,ty'), list:[{tx,ty}], runs:[…], edges:[…] }
   const lineFitsMemo = Object.create(null); // bpId -> bool, from the EARLY-EXIT probe (see lineFits)
   /* ---------- THE GEOMETRY VERSION: one explicit invalidation signal (2026-08-08 perf pass) ----------
      BUILD MODE's frame loop was re-deriving, at 60fps, a pile of answers that can only change when the
-     FLOOR changes: the station bounds, the belt list, every bound bay's capability objects, the
+     FLOOR changes: the keep bounds, the belt list, every bound bay's capability objects, the
      table-mount resolution for every prop, and the top readout's room/tile census. On a large deck
      that was the frame — bayObjects alone is O(bays × props × rooms).
 
-     `geoVer` is bumped by exactly one thing: station.onChange (plus open(), so a second session can
+     `geoVer` is bumped by exactly one thing: keep.onChange (plus open(), so a second session can
      never read a memo left by the first). Every memo below stores the version it was computed at
      and recomputes the instant that number moves. A memo is NEVER refreshed on a timer, a guess or
      a heuristic — a stale overlay would be the app asserting a floor the model does not hold, which
@@ -210,30 +210,30 @@ const Build = (() => {
     geoVer++;
     boundsMemo = null; beltsMemo = null; bayObjMemo = null; mountOrder = null; mountMap = null;
   }
-  // the station bounds, once per edit. Callers READ it (never mutate), so one shared object is safe.
-  const boundsMemoed = () => (boundsVer === geoVer && boundsMemo) ? boundsMemo : (boundsVer = geoVer, boundsMemo = station.bounds());
-  /* station.belts() allocates a fresh array of {x,y,dir} — one split(',') per belt tile — on every
+  // the keep bounds, once per edit. Callers READ it (never mutate), so one shared object is safe.
+  const boundsMemoed = () => (boundsVer === geoVer && boundsMemo) ? boundsMemo : (boundsVer = geoVer, boundsMemo = keep.bounds());
+  /* keep.belts() allocates a fresh array of {x,y,dir} — one split(',') per belt tile — on every
      call, and the frame called it once and handed it to three consumers. The model's belt graph
      cannot change without an onChange, and every consumer (conveyor.tick, conveyor.drawBelts, the
      ghost engine) treats it strictly read-only, so hand them all the SAME array for the edit. */
-  const beltsMemoed = () => (beltsVer === geoVer && beltsMemo) ? beltsMemo : (beltsVer = geoVer, beltsMemo = station.belts());
+  const beltsMemoed = () => (beltsVer === geoVer && beltsMemo) ? beltsMemo : (beltsVer = geoVer, beltsMemo = keep.belts());
   /* does this floor build by LINKS (conveyor-links phase B — every floor this build adopted)? Once per edit. On a linked
      floor a belt joins exactly the two machines it runs between, so the ring-rule advice (the spacing tip, "its belts
      stay behind") has nothing to say; it still speaks on a floor whose links were never adopted. */
   let linkedVer = 0, linkedMemo = false;
-  const linkedFloor = () => (linkedVer === geoVer) ? linkedMemo : (linkedVer = geoVer, linkedMemo = !!(station && typeof station.isLinked === 'function' && station.isLinked()));
+  const linkedFloor = () => (linkedVer === geoVer) ? linkedMemo : (linkedVer = geoVer, linkedMemo = !!(keep && typeof keep.isLinked === 'function' && keep.isLinked()));
   /* bayObjects, per (agentId, geometry). Also DEFENSIVE: world.js has always wrapped this call in a
      try/catch and BUILD MODE called it bare, so one throw took out the whole validation layer (and with
      it every routing callout on the floor) instead of one bay's NO-COMPUTE check. */
-  /* PER BAY (station.layout audit 2026-09-28): the router isolates a run's tools by the DOCK it runs at
-     (router.stationFor(agentId, dockId) — a desk-less agent's second bay in another room gets THAT room), so a
-     compute check keyed only by agent said "has a workstation" for a bay whose run had none. dockId optional. */
+  /* PER BAY (keep.layout audit 2026-09-28): the router isolates a run's tools by the DOCK it runs at
+     (router.keepFor(agentId, dockId) — a desk-less agent's second bay in another room gets THAT room), so a
+     compute check keyed only by agent said "has a workkeep" for a bay whose run had none. dockId optional. */
   function bayObjectsMemoed(agentId, dockId) {
     if (bayObjVer !== geoVer || !bayObjMemo) { bayObjVer = geoVer; bayObjMemo = new Map(); }
     const k = agentId + '|' + (dockId || '');
     if (bayObjMemo.has(k)) return bayObjMemo.get(k);
     let objs = [];
-    try { objs = station.bayObjects(agentId, dockId) || []; } catch (_) { objs = []; }
+    try { objs = keep.bayObjects(agentId, dockId) || []; } catch (_) { objs = []; }
     bayObjMemo.set(k, objs);
     return objs;
   }
@@ -242,19 +242,19 @@ const Build = (() => {
   let propThumbs = [], lastThumbTs = 0; // visual prop palette: live animated preview tiles + redraw throttle
   let propQuery = '';                   // palette SEARCH text: non-empty = browse the whole catalog flat, ignoring tier/cat
 
-  const T = () => (station ? station.TILE : 12);
+  const T = () => (keep ? keep.TILE : 12);
   const MAX_REFIT_CHUNKS = 18;
 
   /* ---------- lifecycle ---------- */
   function init(o) { opts = o; }
 
   function open() {
-    makeResumed = false;   // a fresh BUILD MODE session picks up a made-prop job still running in the station
+    makeResumed = false;   // a fresh BUILD MODE session picks up a made-prop job still running in the keep
     makeMsg = null; if (makeJob && (makeJob.status === 'done' || makeJob.status === 'failed')) makeJob = null;   // and never greets with an old message
     makeCreditsAsked = false;   // and re-reads the credit state (the player may have just linked or topped up)
     if (running) return;
-    station = opts.getStation();
-    if (!station) return;
+    keep = opts.getKeep();
+    if (!keep) return;
     spaceHeld = false; drag = null; dragPid = null; dupe = null; flashes.length = 0;   // never inherit latched state from a prior session
     /* SESSION-SCOPED UI STATE (2026-08-07 conveyor audit). Everything here outlived close() and lied on the
        next open. The load-bearing one is `layerFailed`: renderDegraded is a TRUTHFUL-TELEMETRY readout —
@@ -282,7 +282,7 @@ const Build = (() => {
     if (opts.world && opts.world.stop) opts.world.stop();       // freeze the live sim
     document.body.classList.add('refit-on');
     updateSafetyClearance();
-    unsub = station.onChange(p => {
+    unsub = keep.onChange(p => {
       projectionDirty = true;
       planDirty = true;   // every edit refreshes navigation, routing and sprite state
       clearLineFields();   // …and so is every cached "where can this blueprint go" answer
@@ -290,7 +290,7 @@ const Build = (() => {
       bumpGeo();           // …and every per-edit derived memo (bounds / belts / bayObjects / mounts / the readout census)
       /* A GLOBAL EDIT CANNOT BE INVALIDATED BY A RECTANGLE. The bake is cached in CHUNKS here, and
          `bakeDirtyRects` re-bakes only the chunks a rect touches — right for a deck or a prop, and
-         WRONG for the shell, whose skin grouping and skirt ownership are station-wide. Drop the
+         WRONG for the shell, whose skin grouping and skirt ownership are keep-wide. Drop the
          rect list entirely (null = re-bake everything) and latch it so a later rect-scoped edit in
          the same frame cannot re-narrow it. See the note on emit({global}) in worldmodel. */
       // ...and clear the pan-only flag, or a global edit arriving right after a pan would be
@@ -306,7 +306,7 @@ const Build = (() => {
       renderSelection();
       if (tool === 'prop') renderEquipmentInfo();
     });
-    const worldBake = opts.world && opts.world.refitBake && opts.world.refitBake(station);
+    const worldBake = opts.world && opts.world.refitBake && opts.world.refitBake(keep);
     projectionDirty = false;
     cache = worldBake ? worldBake.cache : null;
     cacheGeo = worldBake ? worldBake.geo : null;
@@ -316,7 +316,7 @@ const Build = (() => {
     convey = (typeof Conveyor !== 'undefined') ? Conveyor.create({ onDeliver: onBuildDeliver, onAdvance: onBuildAdvance }) : null;
     ghost = (typeof GhostLine !== 'undefined') ? GhostLine.create() : null;   // Phase 3: fresh projection per session
     testNotes.length = 0;   // never carry a prior session's ride captions into a fresh BUILD MODE
-    statSig = zoomSig = '';   // the top readout re-derives from THIS session's station, never a stale signature
+    statSig = zoomSig = '';   // the top readout re-derives from THIS session's keep, never a stale signature
     lastFrameTs = 0;
     resize();
     fitCamera();
@@ -326,7 +326,7 @@ const Build = (() => {
     if (typeof SFX !== 'undefined') SFX.open();
     raf = requestAnimationFrame(frame);
     /* the BUILD menu's own tooltip, armed under a pointer that did not move after the click, used to sit on the glass for the whole
-       session: BUILD MODE opens OVER that button, so its pointerout never fires. The station tooltip hides on a scroll signal. */
+       session: BUILD MODE opens OVER that button, so its pointerout never fires. The keep tooltip hides on a scroll signal. */
     try { document.dispatchEvent(new Event('scroll')); } catch (_) {}
   }
 
@@ -344,7 +344,7 @@ const Build = (() => {
     propThumbs.length = 0; lastThumbTs = 0;   // free the preview tiles' canvases
     if (unsub) unsub(), unsub = null;
     if (ro) { try { ro.disconnect(); } catch (e) {} ro = null; }
-    if (typeof WorkflowPanel !== 'undefined' && WorkflowPanel.isOpen()) WorkflowPanel.close();   // saves its open fields while the station is still ours
+    if (typeof WorkflowPanel !== 'undefined' && WorkflowPanel.isOpen()) WorkflowPanel.close();   // saves its open fields while the keep is still ours
     wfHighlightId = null; wfPaused = null;
     finCardEl = null; finComp = null; finSig = '';   // the card's DOM dies with root below
     document.body.classList.remove('refit-on');
@@ -357,7 +357,7 @@ const Build = (() => {
     window.removeEventListener('blur', onBlur);
     if (typeof SFX !== 'undefined') SFX.close();
     const saved = opts.persist ? opts.persist() : false;
-    if (saved && typeof StationUI !== 'undefined' && StationUI.notify) StationUI.notify('Station layout saved locally', 'good', undefined, { transient: true });
+    if (saved && typeof KeepUI !== 'undefined' && KeepUI.notify) KeepUI.notify('Keep layout saved locally', 'good', undefined, { transient: true });
     if (opts.world && opts.world.refit) opts.world.refit();     // recenter the live world on the new build
     if (opts.world && opts.world.start) opts.world.start();     // resume the live sim with the new build
     if (opts.onClose) opts.onClose();
@@ -385,13 +385,13 @@ const Build = (() => {
           <button class="bb sm" id="refit-undo" title="undo (Ctrl+Z)">↶ UNDO</button>
           <button class="bb sm" id="refit-redo" title="redo (Ctrl+Shift+Z)">↷ REDO</button>
         </span>
-        <button class="bb sm" id="refit-fit" title="frame the station">⊹ FIT</button>
+        <button class="bb sm" id="refit-fit" title="frame the keep">⊹ FIT</button>
         <button class="bb sm" id="refit-test" title="Test this line: WATCH IT is free (a crate rides the belts, no agent runs); STEP THROUGH and RUN ONE REAL JOB run it for real.">${esc(PREVIEW_LABEL)}</button>
         <button class="bb sm" id="refit-help" title="how to build">? HELP</button>
         <button class="bb sm refit-primary" id="refit-done" title="finish + save (or press Esc twice)">SAVE & EXIT</button>
       </div>
       <div class="refit-dock" role="region" aria-label="Construction kit">
-        <div class="refit-dock-head"><span class="refit-dock-head-t">BUILD LIBRARY</span><button class="bb refit-presets-entry" id="refit-stations" type="button">▦ Presets</button><button class="bb sm" type="button" id="refit-kit-toggle" aria-expanded="true" aria-controls="refit-option-section">MINIMIZE ▴</button></div>
+        <div class="refit-dock-head"><span class="refit-dock-head-t">BUILD LIBRARY</span><button class="bb refit-presets-entry" id="refit-keeps" type="button">▦ Presets</button><button class="bb sm" type="button" id="refit-kit-toggle" aria-expanded="true" aria-controls="refit-option-section">MINIMIZE ▴</button></div>
         <nav class="refit-library-tabs" aria-label="Build categories"></nav>
         <div class="refit-dock-section refit-mode-section">
           <div id="refit-tools"></div>
@@ -472,13 +472,13 @@ const Build = (() => {
     root.querySelector('#refit-done').onclick = close;
     root.querySelector('#refit-help').onclick = showGuide;
     root.querySelector('#refit-fit').onclick = () => { fitCamera(); };
-    root.querySelector('#refit-stations').onclick = showStationBuilds;
+    root.querySelector('#refit-keeps').onclick = showKeepBuilds;
     root.querySelector('#refit-zin').onclick = () => zoomStep(+1);
     root.querySelector('#refit-zout').onclick = () => zoomStep(-1);
     root.querySelector('#refit-zlvl').onclick = () => zoomTo(2);   // 2 = the entering default (a tile reads at 24px)
     root.querySelector('#refit-test').onclick = (e) => openTest(e);
-    undoBtn.onclick = () => { if (station.undo().ok) sfx('click'); else sfx('bad'); };
-    redoBtn.onclick = () => { if (station.redo().ok) sfx('click'); else sfx('bad'); };
+    undoBtn.onclick = () => { if (keep.undo().ok) sfx('click'); else sfx('bad'); };
+    redoBtn.onclick = () => { if (keep.redo().ok) sfx('click'); else sfx('bad'); };
 
     cv.addEventListener('pointerdown', onDown);
     cv.addEventListener('pointermove', onMove);
@@ -507,9 +507,9 @@ const Build = (() => {
   // propsprites.js first today, but a silently-empty label map is a miserable way to find that out.
   const TIER_LABEL = () => (typeof PropSprites !== 'undefined' && PropSprites.TIER_LABEL) || {};
   const CAT_LABEL = () => (typeof PropSprites !== 'undefined' && PropSprites.CAT_LABEL) || {};
-  // the agent-assignable workstation types — the 'computer' props the agent walks to + sits at (matches
-  // world.js isWorkstationProp / deskPropFor seating + the CATALOG seat:true set). These open the picker on place/click.
-  const WORKSTATION_TYPES = { desk: 1, desk2: 1, console: 1, consoleL: 1, pixelrig: 1, bench: 1 };
+  // the agent-assignable workkeep types — the 'computer' props the agent walks to + sits at (matches
+  // world.js isWorkkeepProp / deskPropFor seating + the CATALOG seat:true set). These open the picker on place/click.
+  const WORKKEEP_TYPES = { desk: 1, desk2: 1, console: 1, consoleL: 1, pixelrig: 1, bench: 1 };
   const catalog = () => (typeof PropSprites !== 'undefined') ? PropSprites.CATALOG : [];
   // the ordered list of category ids that belong to a tier (first-appearance order in the catalog)
   function catsForTier(tier) {
@@ -528,7 +528,7 @@ const Build = (() => {
      presentation. Two things are load-bearing and easy to get wrong:
        1. a keystroke rebuilds the GALLERY ONLY — never the row holding the <input>, or focus dies;
        2. while a search is up the tier/cat rows are HIDDEN, not just ignored. A lit "LOUNGE" tab above a
-          grid of workstations is the UI asserting something false about what you're looking at. */
+          grid of workkeeps is the UI asserting something false about what you're looking at. */
   const catLabelOf = c => CAT_LABEL()[c] || String(c || '').toUpperCase();
   const tierLabelOf = t => TIER_LABEL()[t] || String(t || '').toUpperCase();
   // the power word printed on the tile's badge (COMPUTE / WEB / FILES / …), or '' for inert decor.
@@ -559,10 +559,10 @@ const Build = (() => {
   const isSearching = () => (typeof PropSearch !== 'undefined') && PropSearch.active(propQuery);
 
   // what the gallery is showing right now: matches across the WHOLE catalog, or the chosen tab
-  // Props the STATION places for you (a plugin's terminal appears when an approved plugin brings tools) are never
+  // Props the KEEP places for you (a plugin's terminal appears when an approved plugin brings tools) are never
   // offered in the picker: a Commander placing one by hand would get a terminal bound to nothing.
-  const STATION_PLACED = new Set(['plugin_terminal']);
-  const pickable = (list) => list.filter(c => !STATION_PLACED.has(c.id));
+  const KEEP_PLACED = new Set(['plugin_terminal']);
+  const pickable = (list) => list.filter(c => !KEEP_PLACED.has(c.id));
   function propsForGrid() {
     if (isSearching()) return pickable(PropSearch.matchProps(catalog(), propQuery, searchOpts()));
     if (propSection === 'abilities') return pickable(propAbility
@@ -579,7 +579,7 @@ const Build = (() => {
   /* Leave search mode and go back to browsing. This must rebuild the WHOLE palette, not just the
      gallery: picking a prop out of a search result moves propTier/propCat to that prop's own drawer,
      so the tier and category buttons carry stale `active` classes until they are re-created. Clearing
-     with only a grid re-render is what left the palette showing WORKSTATIONS with nothing lit while a
+     with only a grid re-render is what left the palette showing WORKKEEPS with nothing lit while a
      beanbag was the armed prop. Re-focus the field afterwards — the caller is still typing. */
   function clearSearch({ refocus = true } = {}) {
     propQuery = '';
@@ -589,21 +589,21 @@ const Build = (() => {
     if (f) f.focus();
   }
 
-  /* MAKE A PROP (player-made props, userprops.js): type any object, StarNet draws it in the station's style on
-     StarNet credits, and it joins the catalog under MADE BY YOU as decoration. The status line reads ONLY the job
-     state the station reports (step, try n of 3, the cost the cloud actually billed); the job keeps running in
-     the station if BUILD MODE closes, and this panel picks it back up on reopen. */
+  /* MAKE A PROP (player-made props, userprops.js): type any object, Eyehold draws it in the keep's style on
+     Eyehold credits, and it joins the catalog under MADE BY YOU as decoration. The status line reads ONLY the job
+     state the keep reports (step, try n of 3, the cost the cloud actually billed); the job keeps running in
+     the keep if BUILD MODE closes, and this panel picks it back up on reopen. */
   let makeJob = null, makeMsg = null, makeWatching = '';
   let makeBusy = false;      // a paid start (preview, make, side view) is in flight: one at a time, from every door (button, Enter, kit)
   let makeDraft = '', makeFocused = false;   // what is typed survives a palette redraw (a job landing, a chip click)
   const MAKE_PRICE = 0.35;
-  const MAKE_STEP = { queued: 'Queued', waiting: 'Working', starting: 'Starting', saving: 'Saving it to the station', sizing: 'Sizing it against the catalog', drawing: 'Drawing', retrying: 'Redrawing', checking: 'Checking it matches the station' };
+  const MAKE_STEP = { queued: 'Queued', waiting: 'Working', starting: 'Starting', saving: 'Saving it to the keep', sizing: 'Sizing it against the catalog', drawing: 'Drawing', retrying: 'Redrawing', checking: 'Checking it matches the keep' };
   function makeStatusText() {
     if (makeMsg) return makeMsg;
     if (!makeJob) {
       const bal = makeCredits && makeCredits.linked ? makeCredits.balanceUsd : null;
-      if (bal != null && bal > 0 && bal < MAKE_PRICE) return { text: 'StarNet credits \u00b7 $' + bal.toFixed(2) + ' left \u00b7 not enough to make a prop (about $0.35)', tone: 'bad', door: true };
-      return { text: (bal != null && bal > 0 ? 'StarNet credits \u00b7 $' + bal.toFixed(2) + ' left' : 'StarNet credits') + ' \u00b7 preview first (about 5\u00a2), then make it (about $0.35; a side view about $0.30)', tone: '' };
+      if (bal != null && bal > 0 && bal < MAKE_PRICE) return { text: 'Eyehold credits \u00b7 $' + bal.toFixed(2) + ' left \u00b7 not enough to make a prop (about $0.35)', tone: 'bad', door: true };
+      return { text: (bal != null && bal > 0 ? 'Eyehold credits \u00b7 $' + bal.toFixed(2) + ' left' : 'Eyehold credits') + ' \u00b7 preview first (about 5\u00a2), then make it (about $0.35; a side view about $0.30)', tone: '' };
     }
     const j = makeJob, spent = j.costUsd > 0 ? ' \u00b7 $' + j.costUsd.toFixed(2) + ' so far' : '';
     if (j.status === 'done' && j.kind === 'side') return { text: 'Side view made \u00b7 cost $' + (Number(j.costUsd) || 0).toFixed(2) + (j.costPending ? ' (final cost settling)' : '') + ' \u00b7 press R to turn it', tone: 'ok' };
@@ -633,8 +633,8 @@ const Build = (() => {
     if (cta) {
       cta.hidden = !need;
       if (need) {
-        cta.querySelector('span').textContent = need === 'link' ? 'Props are made with StarNet credits: about 5\u00a2 to preview, 35\u00a2 to make.' : 'You\u2019re out of StarNet credits. A prop is about 35\u00a2.';
-        cta.querySelector('button').textContent = need === 'link' ? 'GET STARNET CREDITS' : 'TOP UP CREDITS';
+        cta.querySelector('span').textContent = need === 'link' ? 'Props are made with Eyehold credits: about 5\u00a2 to preview, 35\u00a2 to make.' : 'You\u2019re out of Eyehold credits. A prop is about 35\u00a2.';
+        cta.querySelector('button').textContent = need === 'link' ? 'GET EYEHOLD CREDITS' : 'TOP UP CREDITS';
       }
     }
     if (door) door.hidden = !!need || !((makeMsg && makeMsg.door) || (!makeMsg && st.door));   // the card above already carries the door
@@ -775,7 +775,7 @@ const Build = (() => {
     paintMakeStatus();
     return false;
   }
-  // BUILD MODE reopened while the station still has a job in flight: pick it back up instead of forgetting it.
+  // BUILD MODE reopened while the keep still has a job in flight: pick it back up instead of forgetting it.
   let makeResumed = false;   // once per BUILD MODE open: a render must not refetch (and race) the made-prop list
   let makeCredits = null, makeCreditsAsked = false;   // { linked, balanceUsd } from /api/credits; null = not known (show nothing)
   function loadMakeCredits() {
@@ -796,10 +796,10 @@ const Build = (() => {
     const door = typeof Friendly !== 'undefined' && Friendly.actionButton && Friendly.actionButton({ action: 'store' });
     if (!door || !door.run) return;
     door.run();
-    // land ON the StarNet card (PROVIDERS opens at the top of a long list); it renders after its own credits read
+    // land ON the Eyehold card (PROVIDERS opens at the top of a long list); it renders after its own credits read
     let tries = 0;
     const seek = () => {
-      const card = document.querySelector('.prov-card[data-provider="starnet"]');
+      const card = document.querySelector('.prov-card[data-provider="eyehold"]');
       if (card && card.offsetParent) { try { card.scrollIntoView({ block: 'center' }); } catch (_) {} return; }
       if (++tries < 12) setTimeout(seek, 250);
     };
@@ -814,11 +814,11 @@ const Build = (() => {
       if (j && !makeJob) watchMakeJob(j);
       else if (!makeJob && !makeMsg && r && Array.isArray(r.recent)) {
         let seen = [];
-        try { seen = JSON.parse(localStorage.getItem('starnet.userprops.seen') || '[]'); } catch (_) { seen = []; }
+        try { seen = JSON.parse(localStorage.getItem('eyehold.userprops.seen') || '[]'); } catch (_) { seen = []; }
         const miss = r.recent.find((x) => x && x.status === 'failed' && !seen.includes(x.id));
         if (miss) {
           makeMsg = { text: 'While BUILD MODE was closed: ' + (miss.noun || 'a prop') + ' \u2014 ' + ((miss.error && miss.error.message) || 'it could not be made.'), tone: 'bad' };
-          try { localStorage.setItem('starnet.userprops.seen', JSON.stringify(seen.concat(r.recent.map((x) => x.id)).slice(-50))); } catch (_) { /* per-viewer convenience only */ }
+          try { localStorage.setItem('eyehold.userprops.seen', JSON.stringify(seen.concat(r.recent.map((x) => x.id)).slice(-50))); } catch (_) { /* per-viewer convenience only */ }
         }
       }
       paintMakeStatus();
@@ -834,38 +834,38 @@ const Build = (() => {
     if (next === cur) return;
     const g = UserProps.geometry(made, next);
     // check this floor first: every copy must fit at the new box before anything changes
-    const copies = station ? station.props().filter((p) => p.t === made.id) : [];
+    const copies = keep ? keep.props().filter((p) => p.t === made.id) : [];
     const boxOf = (p) => ((p.r | 0) & 1) && g.side ? g.side.footprint : ((p.r | 0) & 1) && made.symmetric ? { w: g.front.footprint.h, h: g.front.footprint.w } : g.front.footprint;
     let res = { ok: true };
-    if (copies.length && station.transact) {
-      res = station.transact(() => {
-        for (const p of copies) { const x = station.removeProp(p.id); if (!x.ok) return x; }
-        for (const p of copies) { const b = boxOf(p); const x = station.addProp({ t: p.t, x: p.x, y: p.y, w: b.w, h: b.h, r: p.r, m: p.m }); if (!x.ok) return x; }
+    if (copies.length && keep.transact) {
+      res = keep.transact(() => {
+        for (const p of copies) { const x = keep.removeProp(p.id); if (!x.ok) return x; }
+        for (const p of copies) { const b = boxOf(p); const x = keep.addProp({ t: p.t, x: p.x, y: p.y, w: b.w, h: b.h, r: p.r, m: p.m }); if (!x.ok) return x; }
         return { ok: true };
       });
     }
     if (!res.ok) { makeJob = null; makeMsg = { text: 'At ' + Math.round(next * 100) + '% ' + copies.length + ' placed ' + (copies.length === 1 ? 'copy does' : 'copies do') + ' not fit where ' + (copies.length === 1 ? 'it stands' : 'they stand') + '. Move things aside or pick a smaller size.', tone: 'bad' }; paintMakeStatus(); return; }
     const r = await UserProps.setScale(made.id, next);
-    if (!r || !r.ok) { if (copies.length && station.undo) station.undo(); makeJob = null; makeMsg = { text: (r && r.message) || 'That size could not be saved.', tone: 'bad' }; paintMakeStatus(); return; }
+    if (!r || !r.ok) { if (copies.length && keep.undo) keep.undo(); makeJob = null; makeMsg = { text: (r && r.message) || 'That size could not be saved.', tone: 'bad' }; paintMakeStatus(); return; }
     makeJob = null;
     makeMsg = { text: (made.label || 'Prop') + ' size ' + Math.round(next * 100) + '% \u00b7 ' + g.front.footprint.w + '\u00d7' + g.front.footprint.h + ' tiles' + (copies.length ? ' \u00b7 ' + copies.length + ' placed ' + (copies.length === 1 ? 'copy' : 'copies') + ' resized' : ''), tone: 'ok' };
-    if (selectedPropId && station) {   // the selected copy was re-laid under a new id: keep it selected
+    if (selectedPropId && keep) {   // the selected copy was re-laid under a new id: keep it selected
       const sel = copies.find((p) => p.id === selectedPropId);
-      if (sel) { const now2 = station.props().find((p) => p.t === made.id && p.x === sel.x && p.y === sel.y); selectedPropId = now2 ? now2.id : null; }
+      if (sel) { const now2 = keep.props().find((p) => p.t === made.id && p.x === sel.x && p.y === sel.y); selectedPropId = now2 ? now2.id : null; }
       setHint(makeMsg.text);
     }
     if (root) { renderPalette(); renderSelection(); }
     paintMakeStatus();
   }
-  // DELETE a made prop: the station deletes it first (files, index, tombstone); only then are its placed copies on
+  // DELETE a made prop: the keep deletes it first (files, index, tombstone); only then are its placed copies on
   // this floor removed, as one undo. Credits spent are not refunded, and the armed label says so before it happens.
   async function deleteMadeProp() {
     const made = typeof UserProps !== 'undefined' && UserProps.get ? UserProps.get(propType) : null;
     if (!made) return;
     const r = await UserProps.remove(made.id);
     if (!r || !r.ok) { makeJob = null; makeMsg = { text: (r && r.message) || 'That prop could not be deleted.', tone: 'bad' }; paintMakeStatus(); return; }
-    const copies = station ? station.props().filter((p) => p.t === made.id).map((p) => p.id) : [];
-    if (copies.length && station.transact) station.transact(() => { for (const id of copies) { const x = station.removeProp(id); if (!x.ok) return x; } return { ok: true }; });
+    const copies = keep ? keep.props().filter((p) => p.t === made.id).map((p) => p.id) : [];
+    if (copies.length && keep.transact) keep.transact(() => { for (const id of copies) { const x = keep.removeProp(id); if (!x.ok) return x; } return { ok: true }; });
     if (typeof PropSprites !== 'undefined' && PropSprites.unregisterUserProp) PropSprites.unregisterUserProp(made.id);
     propType = 'plant'; propCat = 'all'; selectedPropId = null;
     makeJob = null;
@@ -876,13 +876,13 @@ const Build = (() => {
   }
   function makePropPanel() {
     const box = document.createElement('section'); box.className = 'refit-makeprop'; box.setAttribute('aria-label', 'Make a prop');
-    box.innerHTML = '<div class="refit-makeprop-head"><b>MAKE A PROP</b><small>Type any object. StarNet draws it in the station\u2019s style.</small></div>' +
+    box.innerHTML = '<div class="refit-makeprop-head"><b>MAKE A PROP</b><small>Type any object. Eyehold draws it in the keep\u2019s style.</small></div>' +
       '<div class="refit-makeprop-cta" id="refit-makeprop-cta" hidden><span></span><button type="button" class="bb sm" id="refit-makeprop-cta-go"></button></div>' +
       '<div class="refit-makeprop-row"><input type="text" class="refit-input refit-searchfield" id="refit-makeprop-input" maxlength="60" spellcheck="false" autocomplete="off" aria-label="Object to make" placeholder="e.g. a grandfather clock">' +
       '<button type="button" class="bb sm" id="refit-makeprop-go">PREVIEW</button></div>' +
       '<div class="refit-makeprop-preview" id="refit-makeprop-preview" hidden></div>' +
       '<div class="refit-makeprop-foot"><span class="refit-makeprop-status" id="refit-makeprop-status" role="status" aria-live="polite"></span>' +
-      '<button type="button" class="bb sm" id="refit-makeprop-door" hidden>\u25b8 STARNET CREDITS</button></div>' +
+      '<button type="button" class="bb sm" id="refit-makeprop-door" hidden>\u25b8 EYEHOLD CREDITS</button></div>' +
       '<div class="refit-makeprop-size" id="refit-makeprop-size" hidden><span class="refit-makeprop-sizelbl">SIZE</span><button type="button" class="bb sm" data-size="-1" aria-label="Smaller">\u2212</button><b class="refit-makeprop-sizeval">100%</b><button type="button" class="bb sm" data-size="1" aria-label="Bigger">+</button></div>' +
       '<div class="refit-makeprop-actions"><button type="button" class="bb sm refit-makeprop-sidebtn" id="refit-makeprop-side" hidden>\u21bb MAKE SIDE VIEW</button>' +
       '<button type="button" class="bb sm" id="refit-makeprop-del" hidden>\u2715 DELETE</button></div>';
@@ -902,7 +902,7 @@ const Build = (() => {
     box.querySelector('#refit-makeprop-side').onclick = () => { startMakeSide(); sfx('click'); };
     box.querySelectorAll('[data-size]').forEach((b) => { b.onclick = () => { sizeMadeProp(Number(b.dataset.size)); sfx('click'); }; });
     const delBtn = box.querySelector('#refit-makeprop-del');
-    const copiesHere = station && UserProps.get && UserProps.get(propType) ? station.props().filter((p) => p.t === propType).length : 0;
+    const copiesHere = keep && UserProps.get && UserProps.get(propType) ? keep.props().filter((p) => p.t === propType).length : 0;
     if (typeof ArmConfirm !== 'undefined' && ArmConfirm.wire) ArmConfirm.wire(delBtn, { armedLabel: '\u2715 DELETE FOR GOOD?' + (copiesHere ? ' \u00b7 removes ' + copiesHere + ' placed ' + (copiesHere === 1 ? 'copy' : 'copies') : '') + ' \u00b7 credits are not refunded', onArm: () => sfx('bad'), onConfirm: () => deleteMadeProp() });
     box.querySelector('#refit-makeprop-door').onclick = openCreditsDoor;
     box.querySelector('#refit-makeprop-cta-go').onclick = () => { openCreditsDoor(); sfx('click'); };
@@ -1030,7 +1030,7 @@ const Build = (() => {
   // The selected prop's existing palette explains purpose, scope and effective access.
   function libraryAgent() {
     const agents = (opts && opts.agents && opts.agents()) || [];
-    const h = typeof StationUI !== 'undefined' && StationUI.h;
+    const h = typeof KeepUI !== 'undefined' && KeepUI.h;
     const chosen = h && h.present && h.present[h.sel];
     if (!agents.some(a => a.id === equipmentAgentId)) equipmentAgentId = (chosen && chosen.id) || (agents[0] && agents[0].id) || 'agent';
     return { agents, id: equipmentAgentId };
@@ -1090,17 +1090,17 @@ const Build = (() => {
       const preview = inspector.querySelector('#refit-selected-prop');
       preview.insertBefore(box, preview.querySelector('.refit-placement-note'));
     }
-    const { id } = libraryAgent(), facts = EquipmentHelp.inspect(station, id, spec.id), category = sectionOf(spec);
+    const { id } = libraryAgent(), facts = EquipmentHelp.inspect(keep, id, spec.id), category = sectionOf(spec);
     const key = [spec.id, id, geoVer].join('|');
     if (box.dataset.infoKey !== key) {
       box.dataset.infoKey = key;
-      const purpose = facts.purpose || PALETTE_PURPOSE[spec.id] || spec.desc || (category === 'decoration' ? 'Changes the look of your station. Adds no agent tools.' : 'Equipment for arranging work in the station.');
+      const purpose = facts.purpose || PALETTE_PURPOSE[spec.id] || spec.desc || (category === 'decoration' ? 'Changes the look of your keep. Adds no agent tools.' : 'Equipment for arranging work in the keep.');
       box.innerHTML = '<p class="refit-purpose">' + esc(purpose) + '</p>' +
         (facts.cap ? '<div class="equipment-status" role="status">Checking current access…</div><div class="refit-equipment-scope">' +
         esc('Equipment sharing: ' + facts.scope + '.') + '</div>' :
-        category === 'decoration' ? '' : '<div class="refit-equipment-scope">Organizes the station; does not add an ability.</div>') +
+        category === 'decoration' ? '' : '<div class="refit-equipment-scope">Organizes the keep; does not add an ability.</div>') +
         '<div class="refit-equipment-detail">' + esc(facts.cap ? facts.duplicates : spec.desc || '') +
-        (facts.cap ? '<p>Without a workflow bay, an agent draws on station equipment. With a bay, it uses equipment in its desk room (or bay room if there is no desk). Each workflow agent needs its own desk.</p><p>Connected accounts and providers are configured in Abilities.</p>' : '') + '</div>';
+        (facts.cap ? '<p>Without a workflow bay, an agent draws on keep equipment. With a bay, it uses equipment in its desk room (or bay room if there is no desk). Each workflow agent needs its own desk.</p><p>Connected accounts and providers are configured in Abilities.</p>' : '') + '</div>';
     }
     refreshLibraryAccess(facts, id);
   }
@@ -1118,20 +1118,20 @@ const Build = (() => {
     let box = pal.querySelector('.refit-equipment-info');
     if (!box) { box = document.createElement('div'); box.className = 'refit-equipment-info'; (pal.querySelector('.refit-propinspector') || pal).appendChild(box); }
     const agents = (opts && opts.agents && opts.agents()) || [];
-    const h = typeof StationUI !== 'undefined' && StationUI.h;
+    const h = typeof KeepUI !== 'undefined' && KeepUI.h;
     const chosen = h && h.present && h.present[h.sel];
     const aid = box.querySelector('select')?.value || (chosen && chosen.id) || (agents[0] && agents[0].id) || 'agent';
     const infoKey = [spec.id, aid, geoVer, placedProp && placedProp.id].join('|');
     if (box.dataset.infoKey === infoKey) return;
     box.dataset.infoKey = infoKey;
-    const facts = EquipmentHelp.inspect(station, aid, spec.id);
+    const facts = EquipmentHelp.inspect(keep, aid, spec.id);
     const sharingOpen = !!box.querySelector('details[open]');
-    const propRoom = placedProp && station.roomById(station.roomAt(placedProp.x, placedProp.y));
-    box.innerHTML = '<p class="refit-purpose">' + esc(facts.purpose || spec.desc || 'Station decoration.') + '</p>'
+    const propRoom = placedProp && keep.roomById(keep.roomAt(placedProp.x, placedProp.y));
+    box.innerHTML = '<p class="refit-purpose">' + esc(facts.purpose || spec.desc || 'Keep decoration.') + '</p>'
       + (facts.cap ? (agents.length > 1 ? '<label> For <select class="refit-input" aria-label="Inspect equipment for agent">' + agents.map(a => '<option value="' + esc(a.id) + '"' + (a.id === aid ? ' selected' : '') + '>' + esc(a.name || a.id) + '</option>').join('') + '</select></label>' : '')
       + '<div class="equipment-status" role="status">Checking current access…</div>'
       + '<div>Equipment scope: ' + esc(facts.scope) + (propRoom ? ' · This copy: ' + esc(propRoom.name || propRoom.id) : '') + '</div>'
-      + '<details' + (sharingOpen ? ' open' : '') + '><summary>Sharing, rooms & extra copies</summary><p>' + facts.count + ' matching prop' + (facts.count === 1 ? '' : 's') + '. ' + esc(facts.duplicates) + '</p>Without a workflow bay, the lead draws on equipment across the station. With a bay, an agent uses its desk room (or the bay room if it has no desk). Agents in that room share equipment; each needs its own desk. Moving or removing the last matching prop changes that room’s equipment; access settings may still supply its tools. Connect external services in Abilities.</details>' : '<div>' + esc(facts.duplicates) + '</div>');
+      + '<details' + (sharingOpen ? ' open' : '') + '><summary>Sharing, rooms & extra copies</summary><p>' + facts.count + ' matching prop' + (facts.count === 1 ? '' : 's') + '. ' + esc(facts.duplicates) + '</p>Without a workflow bay, the lead draws on equipment across the keep. With a bay, an agent uses its desk room (or the bay room if it has no desk). Agents in that room share equipment; each needs its own desk. Moving or removing the last matching prop changes that room’s equipment; access settings may still supply its tools. Connect external services in Abilities.</details>' : '<div>' + esc(facts.duplicates) + '</div>');
     const select = box.querySelector('select');
     if (select) select.onchange = () => renderEquipmentInfo(spec.id, placedProp);
     const status = box.querySelector('.equipment-status');
@@ -1157,7 +1157,7 @@ const Build = (() => {
     if (head) {
       head.setAttribute('role', 'button'); head.tabIndex = 0;
       head.setAttribute('aria-expanded', String(open));
-      head.dataset.tip = open ? 'Close MAKE A PROP' : 'Make your own prop: type any object, StarNet draws it in the station\u2019s style (StarNet credits)';
+      head.dataset.tip = open ? 'Close MAKE A PROP' : 'Make your own prop: type any object, Eyehold draws it in the keep\u2019s style (Eyehold credits)';
       const toggle = () => {
         if (busy) return;   // a running job, a preview or a message keeps it open
         makeOpen = !box.classList.contains('is-compact') ? false : true;
@@ -1224,33 +1224,33 @@ const Build = (() => {
       pal.appendChild(note);
       const finder=document.createElement('select');finder.setAttribute('aria-label','Find a placed object');finder.className='refit-object-finder';
       const refresh=()=>{finder.replaceChildren();const blank=document.createElement('option');blank.value='';blank.textContent='Find a placed object…';finder.append(blank);
-        for(const p of station.props().slice().sort((a,b)=>propLabel(a.t).localeCompare(propLabel(b.t)))){const o=document.createElement('option');o.value=p.id;o.textContent=propLabel(p.t)+' · '+p.x+', '+p.y;finder.append(o);}};
+        for(const p of keep.props().slice().sort((a,b)=>propLabel(a.t).localeCompare(propLabel(b.t)))){const o=document.createElement('option');o.value=p.id;o.textContent=propLabel(p.t)+' · '+p.x+', '+p.y;finder.append(o);}};
       refresh();finder.onfocus=refresh;
-      finder.onchange=()=>{const p=station.propById(finder.value);if(!p)return;onInspect(p,orientEv());zoom=Math.max(zoom,1);panX=cv.width*.72-(p.x+p.w/2)*T()*zoom;panY=cv.height*.5-(p.y+p.h/2)*T()*zoom;};
+      finder.onchange=()=>{const p=keep.propById(finder.value);if(!p)return;onInspect(p,orientEv());zoom=Math.max(zoom,1);panX=cv.width*.72-(p.x+p.w/2)*T()*zoom;panY=cv.height*.5-(p.y+p.h/2)*T()*zoom;};
       note.insertBefore(finder, note.querySelector('.refit-keyrows'));   // the finder first (it acts), the keys under it (they teach)
     } else if (tool === 'room' || (tool === 'select' && buildGroup === 'rooms')) {
       /* ROOM TYPE was the last palette in BUILD MODE still made of bare text chips, next to a prop
          gallery of live animated previews and a material grid painted by the real bake. A room
          kind IS a deck (a hue × a material), so it can preview itself the same honest way every
-         other surface here does — through StationBake, so the chip can never promise a floor the
-         station won't deliver. Now you pick FOUNDRY because you can see the rust tread. */
+         other surface here does — through KeepBake, so the chip can never promise a floor the
+         keep won't deliver. Now you pick FOUNDRY because you can see the rust tread. */
       paletteLabel = 'TYPE';
       const grid = document.createElement('div'); grid.className = 'refit-matgrid refit-kindgrid';
       grid.setAttribute('aria-label', 'Room types');
-      station.KIND_ORDER.forEach(k => {
-        const def = station.ROOM_KINDS[k]; if (!def) return;
+      keep.KIND_ORDER.forEach(k => {
+        const def = keep.ROOM_KINDS[k]; if (!def) return;
         const active = tool === 'room' && k === kind;   // nothing armed = nothing lit: the grid is a choice, not a state
         const b = document.createElement('button');
         b.type = 'button';
         b.className = 'refit-mattile refit-kindtile' + (active ? ' active' : '');
         b.dataset.kind = k;
         b.setAttribute('aria-pressed', active ? 'true' : 'false');
-        const hue = (station.FLOOR_STYLES[def.floor] || station.FLOOR_STYLES.hull).base;
+        const hue = (keep.FLOOR_STYLES[def.floor] || keep.FLOOR_STYLES.hull).base;
         b.appendChild(matSwatchCanvas(def.mat || 'plate', hue, 5, 3));
         const nm = document.createElement('span'); nm.className = 'refit-matname'; nm.textContent = def.label;
         b.appendChild(nm);
-        const hueDef = station.FLOOR_STYLES[def.floor];
-        b.title = def.label + ' — ' + ((station.FLOOR_MATERIALS[def.mat] || {}).label || def.mat || 'plate')
+        const hueDef = keep.FLOOR_STYLES[def.floor];
+        b.title = def.label + ' — ' + ((keep.FLOOR_MATERIALS[def.mat] || {}).label || def.mat || 'plate')
           + ' deck in ' + ((hueDef && hueDef.label) || def.floor) + ' (SURFACE re-lays it any time)';
         b.onclick = () => { kind = k; if (tool !== 'room') selectTool('room', { silent: true }); else { renderPalette(); setHint(); } sfx('click'); };
         grid.appendChild(b);
@@ -1295,7 +1295,7 @@ const Build = (() => {
       if (propSection === 'decoration' && typeof UserProps !== 'undefined') browser.append(makePropMount());
       else if (typeof UserProps !== 'undefined') {   // the door to MAKE A PROP from the other shelves: one click to FURNITURE with the field focused
         const door = document.createElement('button'); door.type = 'button'; door.className = 'bb sm refit-makeprop-door';
-        door.innerHTML = '<b>MAKE A PROP</b><small>Type any object. StarNet draws it in the station\u2019s style.</small>';
+        door.innerHTML = '<b>MAKE A PROP</b><small>Type any object. Eyehold draws it in the keep\u2019s style.</small>';
         door.onclick = () => { makeOpen = true; chooseLibrarySection('decoration'); setTimeout(() => { const f = root && root.querySelector('#refit-makeprop-input'); if (f) f.focus(); }, 0); sfx('click'); };
         browser.append(door);
       }
@@ -1341,14 +1341,14 @@ const Build = (() => {
          let the UA paint its own grey buttonface + Arial behind every material name — raw HTML
          chrome sitting inside a CRT panel. Never ship a bare button here. */
       /* THREE surfaces now, not two (2026-08-05). DECK and WALLS dress the inside of a room; SHELL is
-         what the station shows the sky — and it was the one surface with no palette at all. Same two
+         what the keep shows the sky — and it was the one surface with no palette at all. Same two
          sections, same card language: adding the axis is a third target, not a third panel. */
       const walls = paintTarget === 'walls', shell = paintTarget === 'hull';
       paletteLabel = shell ? 'SHELL' : walls ? 'WALLS' : 'DECK';
-      const styles = station.FLOOR_STYLES || {};
-      const matCatalog = shell ? (station.HULL_MATERIALS || {}) : walls ? (station.WALL_MATERIALS || {}) : (station.FLOOR_MATERIALS || {});
-      const order = shell ? (station.HULL_ORDER || Object.keys(matCatalog))
-        : walls ? (station.WALL_ORDER || Object.keys(matCatalog)) : (station.MAT_ORDER || Object.keys(matCatalog));
+      const styles = keep.FLOOR_STYLES || {};
+      const matCatalog = shell ? (keep.HULL_MATERIALS || {}) : walls ? (keep.WALL_MATERIALS || {}) : (keep.FLOOR_MATERIALS || {});
+      const order = shell ? (keep.HULL_ORDER || Object.keys(matCatalog))
+        : walls ? (keep.WALL_ORDER || Object.keys(matCatalog)) : (keep.MAT_ORDER || Object.keys(matCatalog));
       const curMat = shell ? hullMat : walls ? wallMat : mat;
       const curHue = shell ? hullStyle : walls ? wallStyle : style;
       // AUTO is a MODE, not a colour, on both whole-room surfaces — see the auto chip below
@@ -1423,7 +1423,7 @@ const Build = (() => {
       hueGrid.setAttribute('aria-label', shell ? 'Shell colours' : walls ? 'Wall colours' : 'Deck colours');
       if (walls || shell) {
         // AUTO — walls inherit the room's deck hue; a SHELL has no deck to inherit, so its AUTO is
-        // the tone its material was drawn for (TIMBER→walnut, BRICK→rust, STATION→the shell grey it
+        // the tone its material was drawn for (TIMBER→walnut, BRICK→rust, KEEP→the shell grey it
         // shipped as). Either way it's the default and the one most people want, so it leads. It is
         // NOT a colour but a MODE, which is why it takes its own full-width row instead of standing
         // in the grid as a 22nd chip.
@@ -1443,7 +1443,7 @@ const Build = (() => {
       }
       // every hue chip previews the CURRENTLY SELECTED MATERIAL in that tone, painted by the real
       // bake — so the row answers "what does PLANK look like in COBALT?" instead of showing a flat
-      // colour the station will never actually render.
+      // colour the keep will never actually render.
       Object.keys(styles).forEach(sid => {
         const b = document.createElement('button');
         b.type = 'button';
@@ -1635,7 +1635,7 @@ const Build = (() => {
       b.setAttribute('aria-pressed', on ? 'true' : 'false');
       const purpose = PALETTE_PURPOSE[c.id] || '', how = MACHINE_GROUPS[gi][1] || '';
       /* THE TILE IS THE PROPS TAB'S TILE (2026-09-30): the machine's own art, big, its name, and its wiring drawn small under it.
-         The sentence that used to sit under the name is the tile's hover tip (the station tooltip) and its accessible
+         The sentence that used to sit under the name is the tile's hover tip (the keep tooltip) and its accessible
          description, with its group's how-to ("drop these ON a belt") beside it. */
       b.setAttribute('aria-label', c.label);
       b.setAttribute('aria-description', purpose + (how ? ' — ' + how : ''));
@@ -1728,7 +1728,7 @@ const Build = (() => {
     // always lives under a different tier/category than the one still selected behind the results. Move
     // the tabs to the prop's own drawer NOW (silently, no re-render) so that whenever the search is
     // cleared the palette opens on the shelf holding what you actually armed, with the tile lit. Without
-    // this, clearing dropped you back on WORKSTATIONS with nothing selected while a beanbag was armed.
+    // this, clearing dropped you back on WORKKEEPS with nothing selected while a beanbag was armed.
     b.onclick = () => {
       propType = c.id;
       setLibraryPlacement(true);
@@ -1786,7 +1786,7 @@ const Build = (() => {
       '<div class="refit-preview-actions">' +
       (canTurn(c.id) ? '<button class="bb xs" type="button" data-preview-turn>↻ TURN · R</button>' : '') +
       (canFlip(c.id) ? '<button class="bb xs" type="button" data-preview-flip>⇆ FLIP · M</button>' : '') + '</div></div>' +
-      '<span class="refit-placement-note">Click a clear spot on the station · Esc cancels</span>';
+      '<span class="refit-placement-note">Click a clear spot on the keep · Esc cancels</span>';
     const alternatives = capOf(c) && capOf(c) !== 'computer' ? catalog().filter(p => capOf(p) === capOf(c)) : [];
     const more = root.querySelector('.refit-prop-more');
     more?.querySelector('.refit-designs')?.remove();
@@ -1839,19 +1839,19 @@ const Build = (() => {
      UNSELECTED material previews in its own suggested tone, which stays honest because clicking it
      MOVES the hue there — the chip is showing you what that click produces. */
   function styleBaseFor(mid) {
-    const def = station.FLOOR_MATERIALS && station.FLOOR_MATERIALS[mid];
-    const sid = (mid !== mat && def && def.suggest && station.FLOOR_STYLES[def.suggest]) ? def.suggest : style;
-    return (station.FLOOR_STYLES[sid] || station.FLOOR_STYLES.hull).base;
+    const def = keep.FLOOR_MATERIALS && keep.FLOOR_MATERIALS[mid];
+    const sid = (mid !== mat && def && def.suggest && keep.FLOOR_STYLES[def.suggest]) ? def.suggest : style;
+    return (keep.FLOOR_STYLES[sid] || keep.FLOOR_STYLES.hull).base;
   }
-  /* the material chip is rendered by the REAL bake (StationBake.sampleMaterial paints through the
-     same per-tile painters the station uses), so a deck preview can never promise a look the
-     station won't deliver. Falls back to the flat colour chip if the bake module isn't loaded. */
+  /* the material chip is rendered by the REAL bake (KeepBake.sampleMaterial paints through the
+     same per-tile painters the keep uses), so a deck preview can never promise a look the
+     keep won't deliver. Falls back to the flat colour chip if the bake module isn't loaded. */
   function matSwatchCanvas(mid, base, cols, rows) {
     const w = (cols || 4) * SWATCH_TILE, h = (rows || 2) * SWATCH_TILE;
     const c = document.createElement('canvas'); c.width = w; c.height = h;
     const x = c.getContext('2d'); x.imageSmoothingEnabled = false;
     x.fillStyle = base; x.fillRect(0, 0, w, h);
-    try { if (typeof StationBake !== 'undefined' && StationBake.sampleMaterial) StationBake.sampleMaterial(x, mid, base, cols || 4, rows || 2, SWATCH_TILE); }
+    try { if (typeof KeepBake !== 'undefined' && KeepBake.sampleMaterial) KeepBake.sampleMaterial(x, mid, base, cols || 4, rows || 2, SWATCH_TILE); }
     catch (e) { /* a swatch must never break the palette */ }
     return c;
   }
@@ -1860,21 +1860,21 @@ const Build = (() => {
   // own, so it borrows the currently selected deck colour, which is exactly what "match the deck"
   // will produce.
   function wallBaseFor(mid) {
-    const def = station.WALL_MATERIALS && station.WALL_MATERIALS[mid];
-    if (wallStyle !== 'follow' && station.FLOOR_STYLES[wallStyle]) return station.FLOOR_STYLES[wallStyle].base;
-    const sid = (mid !== wallMat && def && def.suggest && station.FLOOR_STYLES[def.suggest]) ? def.suggest : style;
-    return (station.FLOOR_STYLES[sid] || station.FLOOR_STYLES.hull).base;
+    const def = keep.WALL_MATERIALS && keep.WALL_MATERIALS[mid];
+    if (wallStyle !== 'follow' && keep.FLOOR_STYLES[wallStyle]) return keep.FLOOR_STYLES[wallStyle].base;
+    const sid = (mid !== wallMat && def && def.suggest && keep.FLOOR_STYLES[def.suggest]) ? def.suggest : style;
+    return (keep.FLOOR_STYLES[sid] || keep.FLOOR_STYLES.hull).base;
   }
   /* the hue a SHELL chip previews in. Distinct from wallBaseFor in one way that matters: AUTO here
-     resolves to the MATERIAL's own suggested tone, and for STATION that suggestion is null — which
+     resolves to the MATERIAL's own suggested tone, and for KEEP that suggestion is null — which
      is not a missing value but the shell's own grey, and the bake must be told null to paint it. */
   function hullAutoBase(mid) {
-    const def = station.HULL_MATERIALS && station.HULL_MATERIALS[mid];
+    const def = keep.HULL_MATERIALS && keep.HULL_MATERIALS[mid];
     const sid = def && def.suggest;
-    return (sid && station.FLOOR_STYLES[sid]) ? station.FLOOR_STYLES[sid].base : null;
+    return (sid && keep.FLOOR_STYLES[sid]) ? keep.FLOOR_STYLES[sid].base : null;
   }
   function hullBaseFor(mid) {
-    if (hullStyle !== 'follow' && station.FLOOR_STYLES[hullStyle]) return station.FLOOR_STYLES[hullStyle].base;
+    if (hullStyle !== 'follow' && keep.FLOOR_STYLES[hullStyle]) return keep.FLOOR_STYLES[hullStyle].base;
     return hullAutoBase(mid);
   }
   // same contract as the other two: painted by the REAL hull recipes. A shell chip shows the plate
@@ -1886,7 +1886,7 @@ const Build = (() => {
     const x = c.getContext('2d'); x.imageSmoothingEnabled = false;
     const b = base === undefined ? hullBaseFor(mid) : base;
     x.fillStyle = b || '#191712'; x.fillRect(0, 0, w, h);
-    try { if (typeof StationBake !== 'undefined' && StationBake.sampleHull) StationBake.sampleHull(x, mid, b, cols || 4, h, SWATCH_TILE); }
+    try { if (typeof KeepBake !== 'undefined' && KeepBake.sampleHull) KeepBake.sampleHull(x, mid, b, cols || 4, h, SWATCH_TILE); }
     catch (e) { /* a swatch must never break the palette */ }
     return c;
   }
@@ -1898,7 +1898,7 @@ const Build = (() => {
     const x = c.getContext('2d'); x.imageSmoothingEnabled = false;
     const b = base || wallBaseFor(mid);
     x.fillStyle = b; x.fillRect(0, 0, w, h);
-    try { if (typeof StationBake !== 'undefined' && StationBake.sampleWall) StationBake.sampleWall(x, mid, b, cols || 4, h, SWATCH_TILE); }
+    try { if (typeof KeepBake !== 'undefined' && KeepBake.sampleWall) KeepBake.sampleWall(x, mid, b, cols || 4, h, SWATCH_TILE); }
     catch (e) { /* a swatch must never break the palette */ }
     return c;
   }
@@ -1910,7 +1910,7 @@ const Build = (() => {
   const blueprintOf = id => { for (const b of blueprints()) if (b.id === id) return b; return null; };
   // stamp centered under the cursor (a 17-tile line hung off the click point reads as a misfire)
   const lineOrigin = (bp, tx, ty) => ({ x: tx - (bp.w >> 1), y: ty - (bp.h >> 1) });
-  // one-line purposes for the shelf cards — what each line DOES, in station voice
+  // one-line purposes for the shelf cards — what each line DOES, in keep voice
   /* PLAIN DESCRIPTIONS (2026-09-30 — "the simplest friendliest UI possible, no confusion"): a line's tip says what it does in
      everyday words — no lanes, gates or doors */
   const LINE_PURPOSE = {
@@ -1936,7 +1936,7 @@ const Build = (() => {
     fire_escape: 'if the reviewer still is not happy after its tries, a fixer takes over',
   };
   /* PLAIN NAMES + KIND OF WORK (2026-09-28): each shelf line carries them in the catalog itself (WorldModel.BLUEPRINTS
-     .plain / .work), so the shelf, the agent's station builder and the tests read one source. */
+     .plain / .work), so the shelf, the agent's keep builder and the tests read one source. */
   const LINE_PLAIN = {}, LINE_WORK = {};
   for (const bp of ((typeof WorldModel !== 'undefined' && WorldModel.BLUEPRINTS) || [])) { if (bp.plain) LINE_PLAIN[bp.id] = bp.plain; if (bp.work) LINE_WORK[bp.id] = bp.work; }
   const LINE_WORK_GROUPS = [
@@ -2116,10 +2116,10 @@ const Build = (() => {
      "click roughly there" lands.
 
      COST + DETERMINISM. One scan is (bounds + FIELD_MARGIN)² checkBlueprint calls — far too much
-     for a frame. It runs lazily on first ask per blueprint and is cached until station.onChange
+     for a frame. It runs lazily on first ask per blueprint and is cached until keep.onChange
      drops it (clearLineFields). No RNG, no time input: the same floor always yields the same field.
      The scan is also bounded to the DECK's neighbourhood — every blueprint tile must sit on a room,
-     so a legal anchor can never be more than half a footprint outside the station bounds. */
+     so a legal anchor can never be more than half a footprint outside the keep bounds. */
   const FIELD_MARGIN = 2;   // tiles of slack around the bounds — a centred footprint may hang its anchor just outside
   const SNAP_R = 3;         // "roughly there" = within this many tiles of a legal anchor
   function clearLineFields() {
@@ -2143,14 +2143,14 @@ const Build = (() => {
   function stepLineLaid() {
     lineLaidT = 0;
     const id = lineLaidQueue.shift();
-    if (!id || !running || !station) return;
+    if (!id || !running || !keep) return;
     let r = null;
-    try { r = LineEdit.canPlaceBlueprint(station, id, lineNearTile()); } catch (e) { r = null; }
+    try { r = LineEdit.canPlaceBlueprint(keep, id, lineNearTile()); } catch (e) { r = null; }
     lineLaidMemo[id] = r && r.ok ? { ok: true, via: r.via } : { ok: false, needs: (r && r.needs) || null };
     if (root) for (const b of root.querySelectorAll('.refit-linetile[data-line="' + id + '"]')) { const bp = blueprintOf(id); if (bp) setLineTileFit(b, bp); }
     if (lineLaidQueue.length) lineLaidT = setTimeout(stepLineLaid, 30);
   }
-  // where a line would be laid when no click says: the middle of the view, else the middle of the station
+  // where a line would be laid when no click says: the middle of the view, else the middle of the keep
   function lineNearTile() {
     const v = viewCenterTile();
     if (v) return v;
@@ -2159,7 +2159,7 @@ const Build = (() => {
   }
   function lineField(bpId) {
     const bp = blueprintOf(bpId);
-    if (!bp || !station) return null;
+    if (!bp || !keep) return null;
     if (lineFields[bpId]) return lineFields[bpId];
     const b = boundsMemoed();
     const hw = bp.w >> 1, hh = bp.h >> 1;
@@ -2167,7 +2167,7 @@ const Build = (() => {
     const y0 = b.minTy + hh - FIELD_MARGIN, y1 = b.maxTy + hh + FIELD_MARGIN;
     const set = new Set(), list = [];
     for (let ty = y0; ty <= y1; ty++) for (let tx = x0; tx <= x1; tx++) {
-      if (!station.canPlaceBlueprint(bp.id, tx - hw, ty - hh).ok) continue;
+      if (!keep.canPlaceBlueprint(bp.id, tx - hw, ty - hh).ok) continue;
       set.add(tx + ',' + ty); list.push({ tx, ty });
     }
     // pre-merge the wash into horizontal RUNS and its outline into EDGE segments, once. The frame
@@ -2190,18 +2190,18 @@ const Build = (() => {
      needs only the FIRST legal anchor, so probe in the SAME scan order and stop at it. The two paths
      cannot disagree: both ask "does canPlaceBlueprint accept any anchor in the deck neighbourhood",
      over the identical rectangle. When the full field is already cached (the armed blueprint) it is
-     used verbatim. Both are dropped together by clearLineFields on every station.onChange. */
+     used verbatim. Both are dropped together by clearLineFields on every keep.onChange. */
   function lineFits(bpId) {
     if (lineFields[bpId]) return !!lineFields[bpId].list.length;
     if (bpId in lineFitsMemo) return lineFitsMemo[bpId];
     const bp = blueprintOf(bpId);
-    if (!bp || !station) return false;   // no blueprint = nothing to cache (lineField returned null here)
+    if (!bp || !keep) return false;   // no blueprint = nothing to cache (lineField returned null here)
     const b = boundsMemoed();
     const hw = bp.w >> 1, hh = bp.h >> 1;
     const x0 = b.minTx + hw - FIELD_MARGIN, x1 = b.maxTx + hw + FIELD_MARGIN;
     const y0 = b.minTy + hh - FIELD_MARGIN, y1 = b.maxTy + hh + FIELD_MARGIN;
     for (let ty = y0; ty <= y1; ty++) for (let tx = x0; tx <= x1; tx++)
-      if (station.canPlaceBlueprint(bp.id, tx - hw, ty - hh).ok) return (lineFitsMemo[bpId] = true);
+      if (keep.canPlaceBlueprint(bp.id, tx - hw, ty - hh).ok) return (lineFitsMemo[bpId] = true);
     return (lineFitsMemo[bpId] = false);
   }
   /* SNAP: the ghost follows the cursor but lands on the nearest legal anchor within SNAP_R, so a
@@ -2243,18 +2243,18 @@ const Build = (() => {
     const links = ghostLinks({ props: bp.props.map(p => ({ t: p.t, x: o.x + p.x, y: o.y + p.y, w: p.w, h: p.h })), belts: bp.belts.map(b => ({ x: o.x + b.x, y: o.y + b.y, d: b.d })) });
     const laid = lineLaidFits(bp.id);
     if (laid === undefined && !lineFits(bp.id)) queueLineLaid(bp.id);
-    return { rects, v: station.canPlaceBlueprint(bp.id, o.x, o.y), kind: 'line', label: LINE_PLAIN[bp.id] || bp.label, snapped: s.snapped, links, laid: !!(laid && laid.ok) };
+    return { rects, v: keep.canPlaceBlueprint(bp.id, o.x, o.y), kind: 'line', label: LINE_PLAIN[bp.id] || bp.label, snapped: s.snapped, links, laid: !!(laid && laid.ok) };
   }
-  /* the test job the Workflow panel saved for the line this prop is on (localStorage, per station — the panel's own store),
+  /* the test job the Workflow panel saved for the line this prop is on (localStorage, per keep — the panel's own store),
      plus the line key; read by the live INBOX's COMMS card so ONE REAL JOB runs the Commander's own input (2026-09-27 X1) */
   function testJobForProp(propId) {
     try {
-      const st = station || (opts && typeof opts.getStation === 'function' ? opts.getStation() : null);
+      const st = keep || (opts && typeof opts.getKeep === 'function' ? opts.getKeep() : null);
       if (!st || typeof Pipeline === 'undefined' || !Pipeline.lineComponents) return null;
       const c = Pipeline.lineComponents(st.projectGeometry()).find(x => x.props.indexOf(propId) >= 0);
       if (!c) return null;
       let text = '';
-      try { const o = JSON.parse(localStorage.getItem('starnet.refit.wftests.' + stationKeyOf(st)) || '{}'); const j = o && o.__jobs && o.__jobs[c.key]; if (typeof j === 'string') text = j.trim().slice(0, 2000); } catch (e) {}
+      try { const o = JSON.parse(localStorage.getItem('eyehold.refit.wftests.' + keepKeyOf(st)) || '{}'); const j = o && o.__jobs && o.__jobs[c.key]; if (typeof j === 'string') text = j.trim().slice(0, 2000); } catch (e) {}
       return { line: c.key, text };
     } catch (e) { return null; }
   }
@@ -2298,7 +2298,7 @@ const Build = (() => {
     b.dataset.line = bp.id;
     b.setAttribute('aria-pressed', tool === 'line' && bp.id === lineType ? 'true' : 'false');
     const name = LINE_PLAIN[bp.id] || bp.label, purpose = LINE_PURPOSE[bp.id] || bp.desc || '';
-    b.dataset.tip = name + (why ? '\n' + why : '') + (purpose ? '\n' + purpose : '');   // one name per line (2026-09-30): the station name is not a second name to learn
+    b.dataset.tip = name + (why ? '\n' + why : '') + (purpose ? '\n' + purpose : '');   // one name per line (2026-09-30): the keep name is not a second name to learn
     b.setAttribute('aria-description', (why ? why + ' — ' : '') + purpose);
     const view = document.createElement('span'); view.className = 'refit-linetile-view';
     view.appendChild(lineSchematic(bp));
@@ -2317,7 +2317,7 @@ const Build = (() => {
      user aims, gets red everywhere, and learns nothing. The card says so up front, from the SAME canPlaceBlueprint scan
      the ghost snaps to. It stays selectable (sandbox law: never gate) — arming it just shows an empty field and this reason.
      MAKE ROOM (2026-09-27 audit B1): 8 of the 19 lines never fit the starter room and nothing said how to get more floor.
-     One click builds a room big enough, touching the station (auto-doors connect it), and arms the line over it. One UNDO
+     One click builds a room big enough, touching the keep (auto-doors connect it), and arms the line over it. One UNDO
      removes the room. A sibling button — a button inside the card's button is not allowed.
      KEPT CURRENT (2026-09-28 retest): the cards were fit-checked only when the palette rendered, so an UNDO left eight of
      them claiming to fit a floor they no longer fit — the B1 trap again. setLineTileFit reconciles one card in place;
@@ -2358,12 +2358,12 @@ const Build = (() => {
   }
   function makeRoomFor(bpId, ev) {
     const bp = blueprintOf(bpId);
-    if (!bp || !station) return;
+    if (!bp || !keep) return;
     const laid = lineLaidFits(bp.id), need = laid && laid.needs ? laid.needs : { w: bp.w, h: bp.h };
     const W = Math.min(bp.w, need.w) + 2, H = Math.min(bp.h, need.h) + 2;   // the smaller of the drawn and the laid-out line, a tile of walking room round it
-    // the station's own room finder (worldmodel.roomSpots) — the same one the agent's station builder uses
-    for (const rect of (station.roomSpots ? station.roomSpots(W, H, 'hab') : [])) {
-      const res = station.addRoom({ kind: 'hab', rect });
+    // the keep's own room finder (worldmodel.roomSpots) — the same one the agent's keep builder uses
+    for (const rect of (keep.roomSpots ? keep.roomSpots(W, H, 'hab') : [])) {
+      const res = keep.addRoom({ kind: 'hab', rect });
       if (!res || !res.ok) continue;
       clearLineFields();
       lineType = bp.id; selectTool('line');
@@ -2373,7 +2373,7 @@ const Build = (() => {
       return;
     }
     sfx('bad');
-    flashTip(ev, 'no clear space beside the station for a ' + W + '×' + H + ' room — use Rooms to draw one where you want it', false);
+    flashTip(ev, 'no clear space beside the keep for a ' + W + '×' + H + ' room — use Rooms to draw one where you want it', false);
   }
   function stampLine(w, ev) {
     const bp = blueprintOf(lineType);
@@ -2381,12 +2381,12 @@ const Build = (() => {
     // the SAME snap the ghost showed — the click commits exactly what was on screen, never the raw tile
     const s = lineSnap(w.tx, w.ty);
     const o = lineOrigin(bp, s.tx, s.ty);
-    let res = station.stampBlueprint(bp.id, o.x, o.y, lineStampOpts(bp));   // ONE undoable action, with the card's cap + tries — see worldmodel.stampBlueprint
+    let res = keep.stampBlueprint(bp.id, o.x, o.y, lineStampOpts(bp));   // ONE undoable action, with the card's cap + tries — see worldmodel.stampBlueprint
     /* LAID OUT TO FIT (phase E): where the drawn tile map will not go, the same line is laid out on the floor near the click —
        its tidy shape, or anchored on its INBOX round what stands here — with the same cap and tries, one UNDO */
     let laidOut = false;
     if (!(res && res.ok) && typeof LineEdit !== 'undefined' && LineEdit.placeBlueprint) {
-      const lr = LineEdit.placeBlueprint(station, bp.id, { x: w.tx, y: w.ty }, { stamp: lineStampOpts(bp) });
+      const lr = LineEdit.placeBlueprint(keep, bp.id, { x: w.tx, y: w.ty }, { stamp: lineStampOpts(bp) });
       if (lr && lr.ok) { res = lr; laidOut = true; } else if (lr && lr.msg) res = lr;
     }
     if (res && res.ok) {
@@ -2394,9 +2394,9 @@ const Build = (() => {
       // LINE NAMING: a stamp leaves the intake's `label` UNSET (the save carries only what the Commander
       // typed) — but this session remembers which blueprint stamped it, so the intake card's name field
       // can offer the blueprint's name as its placeholder (session-scoped, like lastStampIds).
-      try { for (const id of (res.ids || [])) { const sp = station.propById(id); if (sp && sp.t === 'intake') stampNameOf[id] = LINE_PLAIN[bp.id] || bp.label; } } catch (_) {}
-      landProps((res.ids || []).map(id => station.propById(id)).filter(Boolean).sort((a, b) => a.x - b.x || a.y - b.y).map(p => p.id), 70);
-      if (laidOut) pushFlash((res.ids || []).map(id => station.propById(id)).filter(Boolean).map(p => ({ x1: p.x, y1: p.y, x2: p.x + (p.w || 1) - 1, y2: p.y + (p.h || 1) - 1 })), false);
+      try { for (const id of (res.ids || [])) { const sp = keep.propById(id); if (sp && sp.t === 'intake') stampNameOf[id] = LINE_PLAIN[bp.id] || bp.label; } } catch (_) {}
+      landProps((res.ids || []).map(id => keep.propById(id)).filter(Boolean).sort((a, b) => a.x - b.x || a.y - b.y).map(p => p.id), 70);
+      if (laidOut) pushFlash((res.ids || []).map(id => keep.propById(id)).filter(Boolean).map(p => ({ x1: p.x, y1: p.y, x2: p.x + (p.w || 1) - 1, y2: p.y + (p.h || 1) - 1 })), false);
       else pushFlash(bp.props.map(p => ({ x1: o.x + p.x, y1: o.y + p.y, x2: o.x + p.x + p.w - 1, y2: o.y + p.y + p.h - 1 })), false);
       sfx('chime');
       // PLACEMENT FLOW: a blueprint stamps ONCE, then the tool drops back to SELECT — the next
@@ -2407,12 +2407,12 @@ const Build = (() => {
          — the Workflow panel, starting with "Who works here?" — only appeared if you thought to click a BAY. It opens now, on the
          line's first BAY, the moment the line lands (compiled first, so it names the line). */
       let firstBay = null;
-      try { for (const id of (res.ids || [])) { const sp = station.propById(id); if (sp && sp.t === 'bay') { firstBay = sp.id; break; } } } catch (_) {}
+      try { for (const id of (res.ids || [])) { const sp = keep.propById(id); if (sp && sp.t === 'bay') { firstBay = sp.id; break; } } } catch (_) {}
       if (firstBay && typeof WorkflowPanel !== 'undefined') {
         try { rebake(); openFlowCard(firstBay); } catch (_) {}
         flashTip(ev, String(LINE_PLAIN[bp.id] || bp.label).toUpperCase() + (laidOut ? ' LAID OUT TO FIT HERE' : ' PLACED') + ' — pick who works each step in the panel', true);
       } else flashTip(ev, String(LINE_PLAIN[bp.id] || bp.label).toUpperCase() + ' PLACED — click each step to pick who works it', true);
-      if (typeof StationUI !== 'undefined' && StationUI.pokeQuests) { try { StationUI.pokeQuests(); } catch (_) {} }
+      if (typeof KeepUI !== 'undefined' && KeepUI.pokeQuests) { try { KeepUI.pokeQuests(); } catch (_) {} }
       // belts just landed — the same first-touch coach a hand-laid run earns (points at ▸ PREVIEW)
       if (typeof Tutorial !== 'undefined' && Tutorial.onBeltPlaced) Tutorial.onBeltPlaced();
     } else {
@@ -2422,8 +2422,8 @@ const Build = (() => {
   }
 
   /* NO STANDALONE CANVAS INVITATION (2026-08-07). A floating "START A WORK LINE HERE" prompt used
-     to live here, painted on an empty deck. It was retired: STATION ORDERS (renderOrders) already
-     sequences build mode — ① a second space → ② a deck → ③ a workstation → ④ STAMP A WORK LINE —
+     to live here, painted on an empty deck. It was retired: KEEP ORDERS (renderOrders) already
+     sequences build mode — ① a second space → ② a deck → ③ a workkeep → ④ STAMP A WORK LINE —
      and its step ④ arms this very tool. Two invitations to the same act is exactly the stacking the
      one-voice law forbids, and leading with the line reframed the whole mode as conveyor-first.
      The guidance path is: ORDERS invites → the tool arms → the candidate wash + snap below help
@@ -2453,12 +2453,12 @@ const Build = (() => {
   /* FRAME THE GHOST. At the entering zoom a 17-tile line is wider than the glass, so half the
      footprint you are placing is off-screen. Arming a blueprint that does not fit the viewport
      pulls the camera back — through fitCamera(), the SAME framer the ⊹ FIT button runs (framing
-     the station bounds necessarily frames any legal placement inside them; a second camera fitter
+     the keep bounds necessarily frames any legal placement inside them; a second camera fitter
      would be a second set of insets/clamps to keep in sync). A blueprint that already fits is left
      alone: re-framing on every arm would yank the camera away from where the user was looking. */
   function frameBlueprint() {
     const bp = blueprintOf(lineType);
-    if (!bp || !cv || !station) return;
+    if (!bp || !cv || !keep) return;
     const t = T(), ins = viewInsets();
     const vw = Math.max(1, cv.width - ins.l), vh = Math.max(1, cv.height - ins.t - ins.b);
     // a tile of breathing room each side: a footprint flush against the glass still cannot be read
@@ -2496,7 +2496,7 @@ const Build = (() => {
          belt under its own tile, and dropping one onto an existing lane is how every ready-made line is built — the old
          'clear deck tile' copy steered people to empty floor and three hand-wired belts. */
       const JUNC = { splitter: 1, joiner: 1, filter: 1, merger: 1, loop: 1 };
-      if (WORKSTATION_TYPES[propType]) verb = (spec ? spec.label + ' · ' : '') + 'click a clear deck tile to place ' + (deskOwner ? agentLabel(deskOwner) + '’s desk' : 'it, then pick who sits there');
+      if (WORKKEEP_TYPES[propType]) verb = (spec ? spec.label + ' · ' : '') + 'click a clear deck tile to place ' + (deskOwner ? agentLabel(deskOwner) + '’s desk' : 'it, then pick who sits there');
       else verb = (spec ? spec.label + ' · ' : '') + (JUNC[propType] ? 'drop it ON a belt to put it on that line, or on clear floor' : 'click a clear deck tile to place' + (rowable(propType) ? ' · drag for a row' : ''));
       const bits = [];
       if (canTurn(propType)) bits.push('R turn (facing ' + FACE_WORD[propFacing(propType)] + ')');
@@ -2527,13 +2527,13 @@ const Build = (() => {
     cv.style.cursor = spaceHeld ? 'grab' : (t ? t.cursor : 'default');
   }
   function updateUndoRedo() {
-    if (undoBtn) undoBtn.disabled = !station.canUndo();
-    if (redoBtn) redoBtn.disabled = !station.canRedo();
+    if (undoBtn) undoBtn.disabled = !keep.canUndo();
+    if (redoBtn) redoBtn.disabled = !keep.canRedo();
   }
 
   /* ---------- first-use guide: the three beats, drawn ----------
      One painter per beat, on a 128×72 board of 4px cells (canvas is 3× that for crispness). Every
-     mark is a rect — this is the same pixel vocabulary the station is built out of, and it renders
+     mark is a rect — this is the same pixel vocabulary the keep is built out of, and it renders
      the GESTURE, so the words underneath only have to name it. Colours come from the same three
      roles the live editor uses: phosphor for structure, green for a legal ghost, gold for a machine. */
   function guideStepArt(c, kind) {
@@ -2598,7 +2598,7 @@ const Build = (() => {
   }
 
   /* ---------- THE CARD STACK (2026-08-07 conveyor audit) ----------
-     Every modal card in BUILD MODE — the first-run guide, the step editor, the workstation picker, the flow /
+     Every modal card in BUILD MODE — the first-run guide, the step editor, the workkeep picker, the flow /
      belt / junction / connector / room / door cards — mounts as `.refit-guide` + its own marker class, and
      each one owns a `closeP` that does the work closing it OWES: the step card saves the job brief, the
      flow card saves the line name, the room card saves the rename. Nothing outside those closures could
@@ -2644,57 +2644,57 @@ const Build = (() => {
   // an opener calls this FIRST: whatever is up closes properly, then the new card takes the surface.
   function cardCloseAll() { for (let i = 0; i < 16; i++) { const el = cardTop(); if (!el) break; cardClose(el); } }
 
-  /* STATION PRESETS (reimagined 2026-09-28). Two groups: WORK presets — a whole station for one kind of work, its line
+  /* KEEP PRESETS (reimagined 2026-09-28). Two groups: WORK presets — a whole keep for one kind of work, its line
      wired, every step's instructions written, a sample job ready — and LOOK presets (rooms and furniture only). Picking
      a card previews what it builds; applying replaces the layout in one undoable step (the old one is backed up), and a
      WORK preset opens its setup guide straight after. Staffing is that guide's next click — a preset never hires. */
   const PRESET_GROUPS = [
-    ['work', 'BUILT FOR YOUR WORK', 'A whole station for one kind of work. Its line is wired, every step has instructions, and a sample job is ready to try.'],
+    ['work', 'BUILT FOR YOUR WORK', 'A whole keep for one kind of work. Its line is wired, every step has instructions, and a sample job is ready to try.'],
     ['look', 'JUST THE LOOK', 'Rooms and furniture only. Add a line from the Lines shelf whenever you want one.'],
   ];
   function presetPreviewHTML(item, doc) {
-    const guide = StationTemplates.guides && StationTemplates.guides[item.id];
+    const guide = KeepTemplates.guides && KeepTemplates.guides[item.id];
     const rooms = item.rooms + (item.rooms === 1 ? ' room' : ' rooms');
-    if (!guide) return '<span><b>' + esc(item.name) + '</b> · ' + rooms + ' · ' + doc.props.length + ' props</span><span class="station-build-need">Rooms and furniture only; add a line from the Lines shelf whenever you want one.</span>';
+    if (!guide) return '<span><b>' + esc(item.name) + '</b> · ' + rooms + ' · ' + doc.props.length + ' props</span><span class="keep-build-need">Rooms and furniture only; add a line from the Lines shelf whenever you want one.</span>';
     const steps = Object.values(guide.roles).map(r => r.name);
     return '<span><b>' + esc(item.name) + '</b> · ' + rooms + '</span>'
-      + '<span class="station-build-flow">' + guide.flow.map(esc).join(' <i>→</i> ') + '</span>'
+      + '<span class="keep-build-flow">' + guide.flow.map(esc).join(' <i>→</i> ') + '</span>'
       + '<span>' + esc(guide.purpose) + '</span>'
-      + '<span class="station-build-need">Next you choose who works ' + (steps.length === 1 ? 'its one step' : 'its ' + steps.length + ' steps') + ' (' + esc(steps.join(', ')) + '). One agent can work every step.'
+      + '<span class="keep-build-need">Next you choose who works ' + (steps.length === 1 ? 'its one step' : 'its ' + steps.length + ' steps') + ' (' + esc(steps.join(', ')) + '). One agent can work every step.'
       + (item.purpose === 'code' ? ' Point its Inbox at your project folder so the Builder works on your code.' : '') + '</span>';
   }
-  function showStationBuilds() {
-    if (!root || !station || typeof StationTemplates === 'undefined') return;
+  function showKeepBuilds() {
+    if (!root || !keep || typeof KeepTemplates === 'undefined') return;
     cardCloseAll();
     const g = document.createElement('div');
-    g.className = 'refit-guide refit-station-builds refit-workflow-editor';
-    g.setAttribute('role','dialog');g.setAttribute('aria-modal','true');g.setAttribute('aria-label','Station presets');
-    g.innerHTML = '<div class="refit-guide-box station-build-box"><div class="station-build-heading"><div><span class="station-build-eyebrow">BUILD MODE / STATION PRESETS</span><h2>A place for your work</h2></div><button class="bb sm" data-workflow-close>BACK TO BUILD</button></div>' +
-      '<p class="station-build-intro">Pick a station for the kind of work you do, then make it yours. Every station includes your workstation and all five essentials.</p>' +
-      '<div class="station-build-scroll">' + PRESET_GROUPS.map(([id, label, blurb]) => '<section class="station-build-section" data-build-section="' + id + '"><div class="station-build-section-head"><h3>' + label + '</h3><p>' + esc(blurb) + '</p></div><div class="station-build-grid" aria-label="' + esc(label.toLowerCase()) + '"></div></section>').join('') + '</div>' +
-      '<div class="station-build-footer"><div class="station-build-status" role="status">Select a preset to see what it builds.</div>' +
-      '<div class="station-build-actions"><button class="bb" data-restore-build>RESTORE PREVIOUS</button><button class="bb refit-primary" data-use-build disabled>CHOOSE A PRESET</button></div><small class="station-build-note">Applying replaces rooms, props and conveyors. Your current layout is backed up; agents and conversations stay.</small></div></div>';
-    g.style.setProperty('--station-build-scale', typeof U.uiZoom === 'function' ? U.uiZoom() : 1);
-    const closeP = () => { g.remove(); root?.querySelector('#refit-stations')?.focus(); };
+    g.className = 'refit-guide refit-keep-builds refit-workflow-editor';
+    g.setAttribute('role','dialog');g.setAttribute('aria-modal','true');g.setAttribute('aria-label','Keep presets');
+    g.innerHTML = '<div class="refit-guide-box keep-build-box"><div class="keep-build-heading"><div><span class="keep-build-eyebrow">BUILD MODE / KEEP PRESETS</span><h2>A place for your work</h2></div><button class="bb sm" data-workflow-close>BACK TO BUILD</button></div>' +
+      '<p class="keep-build-intro">Pick a keep for the kind of work you do, then make it yours. Every keep includes your workkeep and all five essentials.</p>' +
+      '<div class="keep-build-scroll">' + PRESET_GROUPS.map(([id, label, blurb]) => '<section class="keep-build-section" data-build-section="' + id + '"><div class="keep-build-section-head"><h3>' + label + '</h3><p>' + esc(blurb) + '</p></div><div class="keep-build-grid" aria-label="' + esc(label.toLowerCase()) + '"></div></section>').join('') + '</div>' +
+      '<div class="keep-build-footer"><div class="keep-build-status" role="status">Select a preset to see what it builds.</div>' +
+      '<div class="keep-build-actions"><button class="bb" data-restore-build>RESTORE PREVIOUS</button><button class="bb refit-primary" data-use-build disabled>CHOOSE A PRESET</button></div><small class="keep-build-note">Applying replaces rooms, props and conveyors. Your current layout is backed up; agents and conversations stay.</small></div></div>';
+    g.style.setProperty('--keep-build-scale', typeof U.uiZoom === 'function' ? U.uiZoom() : 1);
+    const closeP = () => { g.remove(); root?.querySelector('#refit-keeps')?.focus(); };
     cardRegister(g, closeP); root.appendChild(g);
     g.querySelector('[data-workflow-close]').onclick = closeP;
-    const status = g.querySelector('.station-build-status'), apply = g.querySelector('[data-use-build]');
+    const status = g.querySelector('.keep-build-status'), apply = g.querySelector('[data-use-build]');
     const current = currentPresetExample();
     if (current) {
       const setup = document.createElement('button'); setup.className='bb'; setup.textContent='SET UP ' + String(current.title).toUpperCase();
-      setup.onclick=openPresetExample; g.querySelector('.station-build-actions').prepend(setup);
+      setup.onclick=openPresetExample; g.querySelector('.keep-build-actions').prepend(setup);
     }
-    const backupKey = 'starnet.layoutBackup.' + station.doc().meta.createdAt;
+    const backupKey = 'eyehold.layoutBackup.' + keep.doc().meta.createdAt;
     let selected = null, armed = false;
     const backupButton = g.querySelector('[data-restore-build]');
     try { backupButton.disabled = !localStorage.getItem(backupKey); } catch (_) { backupButton.disabled = true; }
-    for (const item of StationTemplates.catalog) {
-      const grid = g.querySelector('[data-build-section="' + (item.group === 'work' ? 'work' : 'look') + '"] .station-build-grid');
-      const button = document.createElement('button'); button.className = 'bb station-build-card';
-      button.type = 'button'; button.dataset.stationBuild = item.id; button.setAttribute('aria-pressed','false');
-      const doc = StationTemplates.build(item.id, WorldModel, PropSprites);
+    for (const item of KeepTemplates.catalog) {
+      const grid = g.querySelector('[data-build-section="' + (item.group === 'work' ? 'work' : 'look') + '"] .keep-build-grid');
+      const button = document.createElement('button'); button.className = 'bb keep-build-card';
+      button.type = 'button'; button.dataset.keepBuild = item.id; button.setAttribute('aria-pressed','false');
+      const doc = KeepTemplates.build(item.id, WorldModel, PropSprites);
       const bays = doc.props.filter(p=>p.t==='bay').length;
-      button.innerHTML = '<div class="station-build-art"><canvas width="460" height="280" aria-hidden="true"></canvas><span class="station-build-check" aria-hidden="true">✓</span></div><div class="station-build-copy"><div class="station-build-meta"><span>' + item.rooms + (item.rooms === 1 ? ' ROOM' : ' ROOMS') + '</span>' + (bays ? '<span>'+bays+'-STEP LINE</span>' : '') + '</div><b>' + esc(item.name) + '</b><small>' + esc(item.description) + '</small></div>';
+      button.innerHTML = '<div class="keep-build-art"><canvas width="460" height="280" aria-hidden="true"></canvas><span class="keep-build-check" aria-hidden="true">✓</span></div><div class="keep-build-copy"><div class="keep-build-meta"><span>' + item.rooms + (item.rooms === 1 ? ' ROOM' : ' ROOMS') + '</span>' + (bays ? '<span>'+bays+'-STEP LINE</span>' : '') + '</div><b>' + esc(item.name) + '</b><small>' + esc(item.description) + '</small></div>';
       const bounds = WorldModel.create(doc).bounds(), ctx = button.querySelector('canvas').getContext('2d');
       ctx.scale(2,2);
       const theme = getComputedStyle(root), accent = theme.getPropertyValue('--ph').trim() || '#b6a375';
@@ -2709,7 +2709,7 @@ const Build = (() => {
       for(const p of doc.props) {ctx.fillStyle=WorldModel.capForProp(p.t)?'#d2b276':'#6d957e';ctx.fillRect(ox+(p.x-bounds.minTx)*scale,oy+(p.y-bounds.minTy)*scale,Math.max(2,p.w*scale),Math.max(2,p.h*scale));}
       button.onclick = () => {
         selected=item;armed=false;apply.disabled=false;apply.textContent='USE '+item.name;
-        for(const b of g.querySelectorAll('[data-station-build]'))b.setAttribute('aria-pressed',b===button?'true':'false');
+        for(const b of g.querySelectorAll('[data-keep-build]'))b.setAttribute('aria-pressed',b===button?'true':'false');
         status.innerHTML=presetPreviewHTML(item, doc);
       };
       grid.appendChild(button);
@@ -2718,9 +2718,9 @@ const Build = (() => {
       if(!selected)return;
       if(!armed){armed=true;apply.textContent='CONFIRM — USE '+selected.name;status.textContent='Replace the current rooms, props, and conveyors with '+selected.name+'? Agents and conversations remain. Click again to apply.';return;}
       try {
-        const doc=StationTemplates.build(selected.id,WorldModel,PropSprites,station.doc()._nid+100);
-        localStorage.setItem(backupKey,JSON.stringify(station.serialize()));
-        const result=station.replaceLayout(doc);if(!result.ok)throw Error(result.msg||result.error);
+        const doc=KeepTemplates.build(selected.id,WorldModel,PropSprites,keep.doc()._nid+100);
+        localStorage.setItem(backupKey,JSON.stringify(keep.serialize()));
+        const result=keep.replaceLayout(doc);if(!result.ok)throw Error(result.msg||result.error);
         fitCamera();closeP();sfx('click');
         if (currentPresetExample()) openPresetExample();   // a WORK preset: choosing who works it is the next click
       }catch(e){armed=false;status.textContent='Layout unchanged: '+e.message;apply.textContent='USE '+selected.name;}
@@ -2728,9 +2728,9 @@ const Build = (() => {
     backupButton.onclick = () => {
       try {
         const originalBackup=localStorage.getItem(backupKey),saved=JSON.parse(originalBackup);
-        const current=JSON.stringify(station.serialize());
+        const current=JSON.stringify(keep.serialize());
         localStorage.setItem(backupKey,current);
-        const result=station.replaceLayout(saved);
+        const result=keep.replaceLayout(saved);
         if(!result.ok){localStorage.setItem(backupKey,originalBackup);throw Error(result.msg||result.error);}
         fitCamera();closeP();
       }catch(e){status.textContent='Could not restore the previous layout: '+e.message;}
@@ -2738,13 +2738,13 @@ const Build = (() => {
   }
 
   function currentPresetExample() {
-    return typeof StationTemplates !== 'undefined' && StationTemplates.example
-      ? StationTemplates.example(station.serialize(),WorldModel,Pipeline,typeof WorkflowLine !== 'undefined' ? WorkflowLine : null) : null;
+    return typeof KeepTemplates !== 'undefined' && KeepTemplates.example
+      ? KeepTemplates.example(keep.serialize(),WorldModel,Pipeline,typeof WorkflowLine !== 'undefined' ? WorkflowLine : null) : null;
   }
   /* THE SETUP GUIDE (every WORK preset, 2026-09-28; was Creative Studio only, and refused one agent on both steps). Steps
      come in the line's run order. Each offers the crew, a one-click RECRUIT of that step's specialist (summonForRole —
      the Workflow panel's own seam) and, when the step's agent has no computer of its own there, the panel's ADD A
-     WORKSTATION fix (requisitionPcFor). One agent may work every step (multi-bay). Readiness is StationTemplates.example
+     WORKKEEP fix (requisitionPcFor). One agent may work every step (multi-bay). Readiness is KeepTemplates.example
      → WorkflowLine.readiness: the Workflow panel pill's own blocking list. RUN SAMPLE posts the plan and runs the
      preset's sample job through the real harness (finRunSample). */
   function openPresetExample() {
@@ -2754,7 +2754,7 @@ const Build = (() => {
     const g = document.createElement('div');
     g.className = 'refit-guide refit-preset-example';
     g.setAttribute('role','dialog'); g.setAttribute('aria-modal','true'); g.setAttribute('aria-label','Set up '+first.title);
-    g.innerHTML = '<div class="refit-guide-card"><header class="refit-prop-actions-head"><div><span class="ui-overline">SET UP YOUR STATION</span><h3>'+esc(first.title)+'</h3></div><button class="bb" data-workflow-close>CLOSE</button></header><div data-example-body></div></div>';
+    g.innerHTML = '<div class="refit-guide-card"><header class="refit-prop-actions-head"><div><span class="ui-overline">SET UP YOUR KEEP</span><h3>'+esc(first.title)+'</h3></div><button class="bb" data-workflow-close>CLOSE</button></header><div data-example-body></div></div>';
     let unsubscribe;
     const closeP = () => { unsubscribe?.(); g.remove(); root?.querySelector('[data-build-group="workflow"]')?.focus(); };
     cardRegister(g,closeP); root.appendChild(g); g.querySelector('[data-workflow-close]').onclick = closeP;
@@ -2767,19 +2767,19 @@ const Build = (() => {
       const pending = !!finSampleRes?.pending;
       const rosterOK = e.roles.length > 0 && e.roles.every(r=>agents.some(a=>a.id===r.agentId));
       const ready = e.ready && rosterOK;
-      const signature = JSON.stringify(station.serialize());
+      const signature = JSON.stringify(keep.serialize());
       const sr = finSampleRes?.key===e.key && finSampleRes?.exampleSignature===signature ? finSampleRes : null;
       const status = e.issue ? e.issue : !rosterOK ? 'Choose an agent from your crew for each step.' : sr?.pending ? 'Sample in progress…' : sr?.view?.ok ? 'Sample completed · the harness confirmed delivery to the outbox.' : 'Ready · try the sample job.';
       const canSummon = typeof App !== 'undefined' && !!App.summonAgent;
       const firstAid = e.roles[0] && e.roles[0].agentId;
       const offerAll = e.roles.length > 1 && !!firstAid && e.roles.some(r=>r.agentId!==firstAid);
-      const software = station.doc().meta.templateId === 'software';
+      const software = keep.doc().meta.templateId === 'software';
       const body = g.querySelector('[data-example-body]');
       body.innerHTML = '<p class="example-purpose">'+esc(e.purpose)+'</p><div class="example-flow" aria-label="How the line runs">'+e.flow.map(x=>'<span>'+esc(x)+'</span>').join('<b>→</b>')+'</div>'+
         '<h4>Choose who works each step</h4><div class="example-roles">'+e.roles.map((r,i)=>'<div class="example-role"><b>'+(i+1)+'. '+esc(r.name)+'</b><span>'+esc(r.description)+'</span>'+
           '<div class="example-role-pick"><select class="refit-input" aria-label="'+esc(r.name)+' agent" data-example-agent="'+esc(r.propId)+'"'+(pending?' disabled':'')+'><option value="">Choose an agent</option>'+agents.map(a=>'<option value="'+esc(a.id)+'"'+(a.id===r.agentId?' selected':'')+'>'+esc(a.name||a.id)+'</option>').join('')+'</select>'+
           (canSummon && r.role ? '<button type="button" class="bb sm" data-example-recruit="'+esc(r.propId)+'"'+(pending?' disabled':'')+'>+ RECRUIT</button>' : '')+'</div>'+
-          (needsPc(r) ? '<div class="example-role-fix"><span>This agent has no workstation of its own here.</span><button type="button" class="bb sm" data-example-pc="'+esc(r.propId)+'"'+(pending?' disabled':'')+'>+ ADD A WORKSTATION</button></div>' : '')+'</div>').join('')+'</div>'+
+          (needsPc(r) ? '<div class="example-role-fix"><span>This agent has no workkeep of its own here.</span><button type="button" class="bb sm" data-example-pc="'+esc(r.propId)+'"'+(pending?' disabled':'')+'>+ ADD A WORKKEEP</button></div>' : '')+'</div>').join('')+'</div>'+
         (offerAll ? '<button type="button" class="bb sm example-all" data-example-all'+(pending?' disabled':'')+'>USE '+esc(String(agentLabelFor(firstAid)).toUpperCase())+' FOR EVERY STEP</button>' : '')+
         '<p class="example-note">'+(agents.length ? 'One agent can work every step. ' : 'You have no agents yet. ')+(canSummon ? 'RECRUIT adds that step\'s specialist to your crew; it costs nothing until it works.' : '')+'</p>'+
         '<p class="example-note">Assignments save when selected. Each step\'s instructions live on its Bay; click the Bay to edit them.</p>'+
@@ -2792,7 +2792,7 @@ const Build = (() => {
         (e.inboxId ? '<button type="button" class="bb" data-example-inbox'+(pending?' disabled':'')+'>'+(software ? 'OPEN THE INBOX: FOLDER + START' : 'OPEN THE INBOX: HOW IT STARTS')+'</button>' : '')+'</section>';
       body.querySelectorAll('[data-example-agent]').forEach(select => { select.onchange = () => {
         const propId = select.dataset.exampleAgent;
-        const result = station.assignPropAgent(propId,select.value);
+        const result = keep.assignPropAgent(propId,select.value);
         if (!result.ok) say(result.msg || 'That assignment could not be saved.');
         else { refresh(); g.querySelector('[data-example-agent="'+propId+'"]')?.focus(); }
       }; });
@@ -2800,7 +2800,7 @@ const Build = (() => {
         const r = e.roles.find(x=>x.propId===b.dataset.exampleRecruit); if (!r) return;
         b.disabled = true;
         const ri = WorldModel.bayRoleInfo ? WorldModel.bayRoleInfo(r.role) : null;
-        const a = summonForRole(r.role, ri), res = a && station.assignPropAgent(r.propId, a.id);
+        const a = summonForRole(r.role, ri), res = a && keep.assignPropAgent(r.propId, a.id);
         if (res && res.ok) { sfx('chime'); refresh(); }
         else { b.disabled = false; sfx('bad'); say(a ? 'Recruited, but the step refused the assignment. Pick the new agent from the list.' : 'Recruiting failed. Pick an agent from your crew instead.'); }
       }; });
@@ -2808,19 +2808,19 @@ const Build = (() => {
         b.disabled = true;
         const res = requisitionPcFor(b.dataset.examplePc);
         if (res.ok) { bumpGeo(); sfx('chime'); refresh(); }
-        else { b.disabled = false; sfx('bad'); say(res.reason === 'no-room-for-a-desk' ? 'There is no clear floor for a desk in this room. Make some space, then try again.' : 'A workstation could not be placed here.'); }
+        else { b.disabled = false; sfx('bad'); say(res.reason === 'no-room-for-a-desk' ? 'There is no clear floor for a desk in this room. Make some space, then try again.' : 'A workkeep could not be placed here.'); }
       }; });
       const inboxBtn = body.querySelector('[data-example-inbox]');
       if (inboxBtn) inboxBtn.onclick = () => { closeP(); try { rebake(); openFlowCard(e.inboxId); } catch (_) {} };
       const all = body.querySelector('[data-example-all]');
-      if (all) all.onclick = () => { for (const r of e.roles) station.assignPropAgent(r.propId, firstAid); sfx('click'); refresh(); };
+      if (all) all.onclick = () => { for (const r of e.roles) keep.assignPropAgent(r.propId, firstAid); sfx('click'); refresh(); };
       body.querySelector('[data-example-run]').onclick = () => {
         const now = currentPresetExample();
         if (!now?.ready || finSampleRes?.pending) return;
-        finRunSample({key:now.key},{text:now.sample,exampleSignature:JSON.stringify(station.serialize()),onUpdate:refresh});
+        finRunSample({key:now.key},{text:now.sample,exampleSignature:JSON.stringify(keep.serialize()),onUpdate:refresh});
       };
     };
-    unsubscribe = station.onChange(refresh); refresh();
+    unsubscribe = keep.onChange(refresh); refresh();
   }
 
   /* ---------- first-use guide ---------- */
@@ -2834,7 +2834,7 @@ const Build = (() => {
      way and the Commander is actually building. #refit-help re-opens it on demand either way. */
   function tutorialCoaching() { try { return !!(typeof Tutorial !== 'undefined' && Tutorial.isCoaching && Tutorial.isCoaching()); } catch (e) { return false; } }
   /* THE NAMES THE GUIDE USES ARE READ FROM THE UI ITSELF (2026-09-23 playtest: the guide named a PROPS →
-     WORKSTATIONS & WORKFLOWS tab and a "LAYOUTS (9)" button that no longer existed). Tab, tool and button
+     WORKKEEPS & WORKFLOWS tab and a "LAYOUTS (9)" button that no longer existed). Tab, tool and button
      labels come from BUILD_GROUPS / TOOLS / PREVIEW_LABEL; counts from the live catalogs — so renaming a
      tab or adding a line updates the guide and the Field Manual (Build.refitNames) with it. */
   function guideNames() {
@@ -2853,12 +2853,12 @@ const Build = (() => {
     // & mechanic) lives in the FIELD MANUAL, so we point there instead of front-loading it all here.
     /* SHOWN, not told (2026-08-07). This card was four prose bullets — the first thing a Commander
        ever sees of build mode, and it read like documentation. The three beats are the same three
-       beats; each now leads with a PICTURE of the gesture (drawn in the station's own pixel language
+       beats; each now leads with a PICTURE of the gesture (drawn in the keep's own pixel language
        by guideStepArt) and carries one line of words under it. */
     const G = guideNames();
     g.innerHTML = `
       <div class="refit-guide-card refit-guide-wide" role="dialog" aria-modal="true" aria-labelledby="refit-guide-title">
-        <span class="refit-guide-kicker">BUILD MODE · QUICK GUIDE</span><h3 id="refit-guide-title">Shape your station</h3>
+        <span class="refit-guide-kicker">BUILD MODE · QUICK GUIDE</span><h3 id="refit-guide-title">Shape your keep</h3>
         <p class="refit-guide-lead">Add rooms, choose equipment, and make the space your own. When you want a repeatable workflow, connect an inbox, an agent’s bay, and an outbox.</p>
         <div class="refit-steps">
           <div class="refit-step" data-art="room">
@@ -2896,19 +2896,19 @@ const Build = (() => {
 
   /* ---------- BAY agent-picker (Phase B4c): bind a docking bay to an agent — work that reaches it runs as
      that agent. Sourced from the app's agent list (opts.agents()) when present, plus a free-text agent id. */
-  // is this prop a COMPUTER (PC)? — sourced from the station's CAP_PROP_MAP so the type list never drifts.
-  const isPcProp = t => !!(station && typeof station.capForProp === 'function' && station.capForProp(t) === 'computer');
+  // is this prop a COMPUTER (PC)? — sourced from the keep's CAP_PROP_MAP so the type list never drifts.
+  const isPcProp = t => !!(keep && typeof keep.capForProp === 'function' && keep.capForProp(t) === 'computer');
   /* ONE-CLICK CREW (guided workflows Phase 1): create a real agent for a role-carrying dock through
      the EXISTING creation seam — App.summonAgent, the same door the Recruitment Bay and the backend's
      crew.summon.request walk through (single source of agents; never a parallel mint). The spec rides
      the role's real Specialties class (loadout: model tier pin, effort, skill package), with the
-     purpose LED by the dock's own duty line (the roleDesc) so the agent knows which station line it
-     crews. Model: summonAgent inherits the hero's/station-default model unless the Commander pinned
+     purpose LED by the dock's own duty line (the roleDesc) so the agent knows which keep line it
+     crews. Model: summonAgent inherits the hero's/keep-default model unless the Commander pinned
      the class tier in SETTINGS — exactly the summon default everywhere else. */
   function summonForRole(role, ri) {
     if (typeof App === 'undefined' || !App.summonAgent) return null;
     const cls = (ri && ri.cls && typeof Specialties !== 'undefined' && Specialties.get) ? Specialties.get(ri.cls) : null;
-    const duty = 'You crew this station line as its ' + role + ' — you ' + ((ri && ri.desc) || 'work this dock') + '.';
+    const duty = 'You crew this keep line as its ' + role + ' — you ' + ((ri && ri.desc) || 'work this dock') + '.';
     const spec = Object.assign({}, cls || { name: role, model: 'balanced' });
     spec.purpose = duty + (cls && cls.purpose ? '\n\n' + cls.purpose : '');
     // a role that borrows another class (TESTER rides the reviewer class) names its recruit for the STEP — the button said
@@ -2931,7 +2931,7 @@ const Build = (() => {
   // a line's saved display name: the intake's `label` (line naming rides the INTAKE prop), or null
   function lineNameOf(c) {
     if (!c) return null;
-    for (const iid of c.intakes) { const ip = station.propById(iid); if (ip && ip.label) return ip.label; }
+    for (const iid of c.intakes) { const ip = keep.propById(iid); if (ip && ip.label) return ip.label; }
     return null;
   }
   /* REFIT-WORKFLOW-PURE-BEGIN */
@@ -2987,19 +2987,19 @@ const Build = (() => {
     if (typeof WorkflowPanel !== 'undefined' && WorkflowPanel.isOpen()) WorkflowPanel.refresh();
   }
   /* THE COMPUTE RULE, SAID PLAINLY  /* THE COMPUTE RULE, SAID PLAINLY (2026-08-22 sweep): the floor's amber "NO COMPUTE — ADD A PC IN THIS ROOM"
-     never said WHOSE PC — bayObjects grants `computer` only from a workstation in the bay's room that is
+     never said WHOSE PC — bayObjects grants `computer` only from a workkeep in the bay's room that is
      assigned to THIS agent (or unassigned in a one-agent room). The card states exactly that, with the
      one-click fix: a desk placed IN THIS ROOM and bound to the agent (requisitionPcFor — the same validated
      addProp path a hand placement takes; never a flag). Reads bayObjectsMemoed — the same truth the nag draws. */
   function requisitionPcFor(bayId) {
-    const p = station.propById(bayId); if (!p || !p.agentId) return { ok: false, reason: 'uncrewed' };
-    const rid = station.roomAt(p.x, p.y), rm = rid && station.roomById(rid);
+    const p = keep.propById(bayId); if (!p || !p.agentId) return { ok: false, reason: 'uncrewed' };
+    const rid = keep.roomAt(p.x, p.y), rm = rid && keep.roomById(rid);
     if (!rm || !rm.rects) return { ok: false, reason: 'no-room' };
     for (const r of rm.rects)
       for (let y = r.y1; y <= r.y2; y++)
         for (let x = r.x1; x <= r.x2; x++) {
-          if (!(station.canPlaceProp('desk', x, y, 2, 1) || {}).ok) continue;
-          const res = station.addProp({ t: 'desk', x, y, w: 2, h: 1, agentId: p.agentId });
+          if (!(keep.canPlaceProp('desk', x, y, 2, 1) || {}).ok) continue;
+          const res = keep.addProp({ t: 'desk', x, y, w: 2, h: 1, agentId: p.agentId });
           if (!res || !res.ok) continue;
           pushFlash([{ x1: x, y1: y, x2: x + 1, y2: y }], false);
           if (typeof Tutorial !== 'undefined' && Tutorial.onPropPlaced) Tutorial.onPropPlaced('desk');
@@ -3028,7 +3028,7 @@ const Build = (() => {
      two cards had moved into the panel, reorganized (simplify = organization, never removal). */
   function openStepCard(bayId, ev) {
     if (!root) return;
-    const p = station.propById(bayId); if (!p || p.t !== 'bay') return;
+    const p = keep.propById(bayId); if (!p || p.t !== 'bay') return;
     cardCloseAll();   // a modal that was up (a room card, the belt card) gives way — the panel never covers the floor
     finFocusLine(bayId);
     openWorkflowPanel(bayId);
@@ -3041,13 +3041,13 @@ const Build = (() => {
   const WF_PART = { bay: 1, intake: 1, outbox: 1, loop: 1, joiner: 1, merger: 1, splitter: 1 };
   let wfHighlightId = null, wfPaused = null, wfHostMemo = null, wfKitAuto = false;   // wfKitAuto: the panel minimized the Build Library (and owes it back)
   let wfArtRev = -1, wfArtAt = 0;   // the authored-art revision the panel's tiles were last painted at (frame(): repaint when it moves)
-  /* the HOST the panel is handed: live reads of THIS editor's state (station, compiled plan, camera) and the
+  /* the HOST the panel is handed: live reads of THIS editor's state (keep, compiled plan, camera) and the
      seams it already owns (sample, plan gate, flash/sfx). Lazy getters — the panel never caches a plan. */
   function wfHost() {
     if (wfHostMemo) return wfHostMemo;
     wfHostMemo = {
-      root: () => root, station: () => station, plan: () => valPlan, comps: () => valComps || [], geo: () => cacheGeo,
-      lineOfProp, lineNameOf, stampName: id => stampNameOf[id] || null, stationKey: () => stationKeyOf(station),
+      root: () => root, keep: () => keep, plan: () => valPlan, comps: () => valComps || [], geo: () => cacheGeo,
+      lineOfProp, lineNameOf, stampName: id => stampNameOf[id] || null, keepKey: () => keepKeyOf(keep),
       agents: () => (opts && typeof opts.agents === 'function' && opts.agents()) || [],
       agentLabel: agentLabelFor, esc, sfx, flashTip: (msg, ok) => flashTip(null, msg, ok), valLabel: valWhy,
       roleInfo: r => (typeof WorldModel !== 'undefined' && WorldModel.bayRoleInfo) ? WorldModel.bayRoleInfo(r) : null,
@@ -3057,13 +3057,13 @@ const Build = (() => {
       stepPositionOf,
       api: finApi, planGate: c => finPlanGate(c),
       runSample: (c, o) => finRunSample(c, o), sampleState: () => finSampleRes, sampleHTML: v => finSampleHTML(v),
-      stopSample: () => finStopSample(),   // ■ STOP on RUN ONE REAL JOB: this job only (E-STOP stops the station)
+      stopSample: () => finStopSample(),   // ■ STOP on RUN ONE REAL JOB: this job only (E-STOP stops the keep)
       feedState: () => (opts && opts.world && opts.world.feedState) ? opts.world.feedState() : { known: false, fed: false },
       pollFeed: () => { try { return Promise.resolve(opts && opts.world && opts.world.pollFeed && opts.world.pollFeed()); } catch (e) { return Promise.resolve(); } },
       human: d => { const tz = (() => { try { return Intl.DateTimeFormat().resolvedOptions().timeZone || ''; } catch (e) { return ''; } })();
         return (typeof CronHuman !== 'undefined' && CronHuman.describeDisplay) ? CronHuman.describeDisplay(d, { tz }) : String(d == null ? '' : d); },
       provider: () => (typeof Harness !== 'undefined' && Harness.getProv) ? Harness.getProv() : undefined,
-      openTerm: name => { close(); if (typeof StationUI !== 'undefined' && StationUI.openTerm) StationUI.openTerm(name); },
+      openTerm: name => { close(); if (typeof KeepUI !== 'undefined' && KeepUI.openTerm) KeepUI.openTerm(name); },
       highlight: id => { wfHighlightId = id || null; },
       focusProp: (id, onlyIfHidden) => focusPropOnFloor(id, onlyIfHidden),
       frameLine: key => frameLineOnFloor(key),
@@ -3083,7 +3083,7 @@ const Build = (() => {
       /* a junction's compiled cfg + where each of its out-belts leads, for the panel's SPLITTER / FILTER sections (2026-09-27 audit
          P1/P4): the same compiled plan the floor tags read, the same lane labels the loop's DONE picker uses */
       junctionInfo: id => {
-        const p = station.propById(id); if (!p) return null;
+        const p = keep.propById(id); if (!p) return null;
         const jt = junctionBeltTile(p), o = (cacheGeo && cacheGeo.origin) || { tx: 0, ty: 0 };
         const lk = jt ? (jt.x - o.tx) + ',' + (jt.y - o.ty) : null;
         const cfg0 = (lk && valPlan && valPlan.junctions) ? (valPlan.junctions[lk] || null) : null;
@@ -3102,20 +3102,20 @@ const Build = (() => {
       splitModeInfo: id => splitModeInfo(id),            // { mode: 'copy'|'turns', toCopy, toTurns } — the SPLITTER switch
       setSplitMode: (id, mode) => setSplitMode(id, mode), // swaps the JOINER/MERGER where the branches meet (one undo)
       loopExits: id => {
-        const p = station.propById(id), jt = p && junctionBeltTile(p), o = (cacheGeo && cacheGeo.origin) || { tx: 0, ty: 0 };
+        const p = keep.propById(id), jt = p && junctionBeltTile(p), o = (cacheGeo && cacheGeo.origin) || { tx: 0, ty: 0 };
         return jt ? loopExitLabels(valPlan, { x: jt.x - o.tx, y: jt.y - o.ty }, agentLabel) : [];
       },
       loopRuleTxt, loopBackTxt,
-      lineCycles: () => { let errs = []; try { errs = Pipeline.compileRoutingPlan(station.projectGeometry()).errors || []; } catch (e) { errs = []; } return errs.some(e => e.code === 'CYCLE' || e.code === 'CHAIN_CYCLE'); },
+      lineCycles: () => { let errs = []; try { errs = Pipeline.compileRoutingPlan(keep.projectGeometry()).errors || []; } catch (e) { errs = []; } return errs.some(e => e.code === 'CYCLE' || e.code === 'CHAIN_CYCLE'); },
       canInsertBay: (fromId, toId) => {
-        if (typeof station.canInsertBayBetween !== 'function') return { ok: true };
+        if (typeof keep.canInsertBayBetween !== 'function') return { ok: true };
         const sp = propSpec('bay');   // the SAME bay insertBay places — the dry run must try the size the real insert will
-        return station.canInsertBayBetween(fromId, toId, { w: sp.w, h: sp.h, block: sp.blocks !== false });
+        return keep.canInsertBayBetween(fromId, toId, { w: sp.w, h: sp.h, block: sp.blocks !== false });
       },
       insertBay: (fromId, toId, role) => {
-        if (typeof station.insertBayBetween !== 'function') return { ok: false, msg: 'this station model cannot insert a step' };
+        if (typeof keep.insertBayBetween !== 'function') return { ok: false, msg: 'this keep model cannot insert a step' };
         const sp = propSpec('bay');
-        const res = station.insertBayBetween(fromId, toId, { role: role || null, w: sp.w, h: sp.h, block: sp.blocks !== false });
+        const res = keep.insertBayBetween(fromId, toId, { role: role || null, w: sp.w, h: sp.h, block: sp.blocks !== false });
         if (res && res.ok) { pushFlash([{ x1: res.x, y1: res.y, x2: res.x + (sp.w || 2) - 1, y2: res.y + (sp.h || 2) - 1 }], false); if (typeof Tutorial !== 'undefined' && Tutorial.onPropPlaced) Tutorial.onPropPlaced('bay'); }
         return res;
       },
@@ -3124,7 +3124,7 @@ const Build = (() => {
          written back in ONE undo slot (lineEditRun). canLineEdit answers without laying anything, so a button that could
          only fail is shown off with its reason. */
       lineEdit: (op, propId, args, how) => lineEditRun(op, propId, args, how),
-      canLineEdit: (op, propId, args) => (typeof LineEdit === 'undefined' || !station) ? { ok: false, msg: 'the line editor is not loaded' } : LineEdit.check(station, propId, op, args, { sizes: lineSizes() }),
+      canLineEdit: (op, propId, args) => (typeof LineEdit === 'undefined' || !keep) ? { ok: false, msg: 'the line editor is not loaded' } : LineEdit.check(keep, propId, op, args, { sizes: lineSizes() }),
     };
     return wfHostMemo;
   }
@@ -3139,22 +3139,22 @@ const Build = (() => {
     return { x: Math.floor((ins.l + vw / 2 - panX) / zoom / t), y: Math.floor((ins.t + vh / 2 - panY) / zoom / t) };
   }
   function lineEditRun(op, propId, args, how) {
-    if (typeof LineEdit === 'undefined' || !station) return { ok: false, msg: 'the line editor is not loaded' };
+    if (typeof LineEdit === 'undefined' || !keep) return { ok: false, msg: 'the line editor is not loaded' };
     // where the line's machines stood before the edit (so the floor can show what moved and what went)
     const before = {};
     try {
-      const g0 = propId != null ? station.lineGraph(propId) : null;
+      const g0 = propId != null ? keep.lineGraph(propId) : null;
       if (g0 && g0.ok) for (const n of g0.graph.nodes) before[n.id] = { x1: n.pin.x, y1: n.pin.y, x2: n.pin.x + (n.w || 1) - 1, y2: n.pin.y + (n.h || 1) - 1 };
     } catch (e) { /* (only the courtesy flash depends on it) */ }
-    const res = LineEdit.run(station, propId, op, args, { near: viewCenterTile(), sizes: lineSizes(), tidy: !!(how && how.tidy) });
+    const res = LineEdit.run(keep, propId, op, args, { near: viewCenterTile(), sizes: lineSizes(), tidy: !!(how && how.tidy) });
     if (res && res.ok) {
-      const placed = Object.keys(res.ids || {}).filter(k => k.charAt(0) === '+').map(k => station.propById(res.ids[k])).filter(Boolean);
+      const placed = Object.keys(res.ids || {}).filter(k => k.charAt(0) === '+').map(k => keep.propById(res.ids[k])).filter(Boolean);
       if (placed.length) pushFlash(placed.map(p => ({ x1: p.x, y1: p.y, x2: p.x + (p.w || 1) - 1, y2: p.y + (p.h || 1) - 1 })), false);
       // WHAT MOVED, WHAT WENT: a machine the edit moved glides an outline from where it stood to where it stands (the floor
       // re-bakes at once — the glide is that jump made visible); one it took out flashes red where it was
       const moves = [];
       for (const id in before) {
-        const p = station.propById(id), b = before[id];
+        const p = keep.propById(id), b = before[id];
         if (p && (p.x !== b.x1 || p.y !== b.y1)) moves.push({ from: b, to: { x1: p.x, y1: p.y, x2: p.x + (p.w || 1) - 1, y2: p.y + (p.h || 1) - 1 } });
       }
       if (moves.length) pushMoves(moves);
@@ -3167,7 +3167,7 @@ const Build = (() => {
   }
   /* pan the floor so a part sits in the middle of the VISIBLE glass (clear of the kit dock and the panel) */
   function focusPropOnFloor(id, onlyIfHidden) {
-    const p = id && station && station.propById(id);
+    const p = id && keep && keep.propById(id);
     if (!p || !cv) return;
     const t = T(), ins = viewInsets();
     const vw = Math.max(1, cv.width - ins.l - (ins.r || 0)), vh = Math.max(1, cv.height - ins.t - ins.b);
@@ -3198,7 +3198,7 @@ const Build = (() => {
      BUILD MODE conveyor cannot hold a real crate mid-belt, so no crate is drawn riding: only where it waits. */
   function drawWorkflowMarks(t, now) {
     if (wfHighlightId) {
-      const p = station.propById(wfHighlightId);
+      const p = keep.propById(wfHighlightId);
       if (p) drawPropSelection(p, t, 'rgba(255,211,74,' + (0.55 + 0.35 * Math.sin(now / 260)).toFixed(2) + ')');
     }
     if (!wfPaused || !valPlan || !cacheGeo) return;
@@ -3220,15 +3220,15 @@ const Build = (() => {
   }
 
   /* ---------- WHO SITS AT THIS DESK (2026-10-07, Andrew: "SO SO SO CONFUSING" — replaces the CONFIGURE → modal picker).
-     A workstation carries an agentId exactly like a bay does (assignPropAgent is type-agnostic); world.js seats the agent
-     at the FIRST workstation bound to it (deskPropFor). So giving an agent this desk must also take it off any OTHER
-     workstation it holds — otherwise it keeps walking to the old one and the click looked like it did nothing. One
+     A workkeep carries an agentId exactly like a bay does (assignPropAgent is type-agnostic); world.js seats the agent
+     at the FIRST workkeep bound to it (deskPropFor). So giving an agent this desk must also take it off any OTHER
+     workkeep it holds — otherwise it keeps walking to the old one and the click looked like it did nothing. One
      transaction = one UNDO. The choice lives IN the selected-object card (renderSelection), one click per agent.
-     The rule itself is the station's (worldmodel.js assignDesk), shared with the overseer's station-control 'agent' op. */
+     The rule itself is the keep's (worldmodel.js assignDesk), shared with the overseer's keep-control 'agent' op. */
   function assignDesk(propId, aid) {
-    return station.assignDesk(propId, String(aid || ''));
+    return keep.assignDesk(propId, String(aid || ''));
   }
-  // the agent a "PLACE ITS DESK" door is placing a desk FOR (placeDeskFor) — the next workstation dropped is theirs
+  // the agent a "PLACE ITS DESK" door is placing a desk FOR (placeDeskFor) — the next workkeep dropped is theirs
   let deskOwner = null;
   function sitsRow(p) {
     const agents = (opts && typeof opts.agents === 'function' && opts.agents()) || [];
@@ -3249,41 +3249,41 @@ const Build = (() => {
       row.append(b);
     };
     for (const a of agents) {
-      const other = station.propsByAgent(a.id).some(q => q.id !== p.id && WORKSTATION_TYPES[q.t]);
+      const other = keep.propsByAgent(a.id).some(q => q.id !== p.id && WORKKEEP_TYPES[q.t]);
       chip(a.name || a.id, a.id, other && a.id !== p.agentId ? (a.name || a.id) + ' moves here from its other desk' : '');
     }
     if (p.agentId) chip('NOBODY', '');
     return box;
   }
-  // a double-click / openAssign on a workstation: select it — its card IS the picker now
-  function openWorkstationPicker(propId) {
-    const p = station.propById(propId); if (!p || !WORKSTATION_TYPES[p.t]) return;
+  // a double-click / openAssign on a workkeep: select it — its card IS the picker now
+  function openWorkkeepPicker(propId) {
+    const p = keep.propById(propId); if (!p || !WORKKEEP_TYPES[p.t]) return;
     cardCloseAll();
     groupIds = []; selectedRoomId = null; selectedPropId = propId; renderSelection();
     setHint('Selected ' + propLabel(p.t) + ' · pick who sits here');
   }
   /* PLACE ITS DESK (the deskless-agent door in COMMS → App.openDeskPlacement). It used to drive the palette by clicking
      DOM tabs that the 10-01 library rebuild renamed, so it often armed nothing, and the desk it did place belonged to
-     NOBODY — the agent still had nowhere to sit until the Commander found CONFIGURE. Now it arms a workstation for that
+     NOBODY — the agent still had nowhere to sit until the Commander found CONFIGURE. Now it arms a workkeep for that
      agent: the very next floor click drops the desk AND seats them there. */
   function placeDeskFor(agentId) {
     if (!running) open();
-    if (!station) return false;
+    if (!keep) return false;
     deskOwner = String(agentId || '') || null;
-    if (!WORKSTATION_TYPES[propType]) propType = 'desk';
+    if (!WORKKEEP_TYPES[propType]) propType = 'desk';
     const spec = catalog().find(c => c.id === propType);
     if (spec) { propSection = sectionOf(spec); propAbility = propSection === 'abilities' ? capOf(spec) : ''; }
     propCat = 'all'; propQuery = '';
     selectTool('prop', { silent: true });
     return true;
   }
-  // the desk that click drops: added, then seated through the same one-desk rule as the chips (station.assignDesk),
+  // the desk that click drops: added, then seated through the same one-desk rule as the chips (keep.assignDesk),
   // all in one transaction — one UNDO takes back the desk AND the move, and a refused drop changes nothing
   function addOwnedDesk(placement, owner) {
-    return station.transact(() => {
-      const added = station.addProp(placement);
+    return keep.transact(() => {
+      const added = keep.addProp(placement);
       if (!added || !added.ok) return added;
-      const seat = station.assignDesk(added.id, owner);
+      const seat = keep.assignDesk(added.id, owner);
       return seat && seat.ok ? added : seat;
     });
   }
@@ -3291,7 +3291,7 @@ const Build = (() => {
   /* ---------- FILTER junction editor (Polish P1): make content-routing reachable from the UI.
      A FILTER wants routes (tag -> out-lane) + a default lane — a missing default is an amber nag
      (FILTER_NO_DEFAULT, warn: unrouted work falls back def -> first lane, never dropped);
-     it calls station.configureJunction. Opens on place/click.
+     it calls keep.configureJunction. Opens on place/click.
      A MERGER has NO editor — like the splitter, it is pure topology. It used to offer a "combine K" field
      for a hold-K-then-emit-one barrier the harness never performed (see conveyor.js chooseExit), so the
      control was authoring a promise nothing could keep. A merger clicks through to the flow card instead. */
@@ -3302,7 +3302,7 @@ const Build = (() => {
   // the out-lanes leaving this tile: neighbouring belts that don't flow back in (where work can exit)
   function junctionOutLanes(tx, ty) {
     const out = [];
-    for (const d of J_LANES) { const v = J_DIRV[d], nb = station.beltAt(tx + v[0], ty + v[1]); if (nb && nb !== J_OPP[d]) out.push(d); }
+    for (const d of J_LANES) { const v = J_DIRV[d], nb = keep.beltAt(tx + v[0], ty + v[1]); if (nb && nb !== J_OPP[d]) out.push(d); }
     return out;
   }
   /* the belt tile a junction prop ATTACHES to — the SAME semantics as the compiler (pipeline.js
@@ -3312,11 +3312,11 @@ const Build = (() => {
      tile off its lane by MOVE) still COMPILED and routed, while its editor showed "lay belts OUT of this
      filter first" with zero lane buttons — an error the Commander could not fix. Returns {x,y} or null. */
   function junctionBeltTile(p) {
-    if (station.beltAt(p.x, p.y)) return { x: p.x, y: p.y };
+    if (keep.beltAt(p.x, p.y)) return { x: p.x, y: p.y };
     const w = p.w || 1, h = p.h || 1;
     for (let yy = p.y - 1; yy <= p.y + h; yy++)
       for (let xx = p.x - 1; xx <= p.x + w; xx++)
-        if (station.beltAt(xx, yy)) return { x: xx, y: yy };
+        if (keep.beltAt(xx, yy)) return { x: xx, y: yy };
     return null;
   }
   // Each editor explains the clicked prop. Actual connections are shown in context,
@@ -3404,7 +3404,7 @@ const Build = (() => {
   /* REFIT-JUNCTION-PURE-END */
   function openFlowCard(propId) {
     if (!root) return;
-    const p = station.propById(propId); if (!p) return;
+    const p = keep.propById(propId); if (!p) return;
     cardCloseAll();
     finFocusLine(propId);
     openWorkflowPanel(propId);
@@ -3418,7 +3418,7 @@ const Build = (() => {
   function openBeltCard(tx, ty, ev) {
     if (!root) return;
     cardCloseAll();
-    const dir = station.beltAt(tx, ty);
+    const dir = keep.beltAt(tx, ty);
     if (!dir) return;
     const o = (cacheGeo && cacheGeo.origin) || { tx: 0, ty: 0 };
     const r = (valPlan && typeof Pipeline !== 'undefined' && Pipeline.routeFrom)
@@ -3430,7 +3430,7 @@ const Build = (() => {
     const loose = linkedFloor() && !!valPlan && !!valPlan.belts && !valPlan.belts[(tx - o.tx) + ',' + (ty - o.ty)];
     if (linkedFloor() && !loose) {
       const seen = new Set();
-      for (const l of (station.links() || [])) {
+      for (const l of (keep.links() || [])) {
         if (l.from.prop == null || l.to.prop == null || !l.path.some(q => q.x === tx && q.y === ty)) continue;
         const k = l.from.prop + '>' + l.to.prop; if (seen.has(k)) continue; seen.add(k);
         li.push('This belt runs from <b>' + esc(machineName(l.from.prop)) + '</b> to <b>' + esc(machineName(l.to.prop)) + '</b>.');
@@ -3461,7 +3461,7 @@ const Build = (() => {
 
   // a machine as the floor names it: the agent crewing a BAY, a named line's INBOX, else the machine
   function machineName(id) {
-    const p = station.propById(id);
+    const p = keep.propById(id);
     if (!p) return 'a removed machine';
     if (p.t === 'bay') return p.agentId ? String(agentLabelFor(p.agentId)).toUpperCase() : 'AN EMPTY BAY';
     if (p.t === 'intake') return p.label ? 'LINE ' + String(p.label).toUpperCase() : 'THE INBOX';
@@ -3472,7 +3472,7 @@ const Build = (() => {
   function openJunctionEditor(propId, ev) {
     if (!root) return;
     cardCloseAll();
-    const p = station.propById(propId); if (!p || p.t !== 'filter') return;
+    const p = keep.propById(propId); if (!p || p.t !== 'filter') return;
     const g = document.createElement('div');
     g.className = 'refit-guide refit-junction-editor refit-workflow-editor';
     const closeP = () => { if (g.parentNode) g.parentNode.removeChild(g); };
@@ -3516,11 +3516,11 @@ const Build = (() => {
         });
       });
       g.querySelector('#j-ok').onclick = () => {
-        const res = station.configureJunction(propId, { routes: cur.routes, def: cur.def });
+        const res = keep.configureJunction(propId, { routes: cur.routes, def: cur.def });
         if (res && res.ok) { sfx('click'); flashTip(ev, cur.def ? 'filter routes saved' : 'set a default lane', !!cur.def); if (cur.def) closeP(); }
         else { sfx('bad'); }
       };
-      g.querySelector('#j-clear').onclick = () => { station.configureJunction(propId, null); sfx('click'); flashTip(ev, 'filter cleared', true); closeP(); };
+      g.querySelector('#j-clear').onclick = () => { keep.configureJunction(propId, null); sfx('click'); flashTip(ev, 'filter cleared', true); closeP(); };
     }
     g.querySelector('#j-cancel').onclick = closeP;
     g.addEventListener('click', e => { if (e.target === g) closeP(); });
@@ -3532,7 +3532,7 @@ const Build = (() => {
   function openConnectorEditor(propId, ev) {
     if (!root) return;
     cardCloseAll();
-    const p = station.propById(propId); if (!p || p.t !== 'connector_portal') return;
+    const p = keep.propById(propId); if (!p || p.t !== 'connector_portal') return;
     const g = document.createElement('div');
     g.className = 'refit-guide refit-connector-editor';
     const closeP = () => { if (g.parentNode) g.parentNode.removeChild(g); };
@@ -3547,8 +3547,8 @@ const Build = (() => {
     const rowsEl = g.querySelector('#c-rows');
     // semantic state → dot class (theme vars, no inline hex): up=ok · warming/offline=warn · error=bad
     const STATE_CLASS = { connected: 'ok', ready: 'ok', up: 'ok', cached: 'warn', warming: 'warn', offline: 'warn', down: 'warn', error: 'bad' };
-    const bind = (id, label) => { const res = station.bindConnector(propId, id); if (res && res.ok) { sfx('click'); flashTip(ev, 'bound → ' + (label || id), true); closeP(); } else sfx('bad'); };
-    g.querySelector('#c-unbind').onclick = () => { station.bindConnector(propId, ''); sfx('click'); flashTip(ev, 'portal unbound', true); closeP(); };
+    const bind = (id, label) => { const res = keep.bindConnector(propId, id); if (res && res.ok) { sfx('click'); flashTip(ev, 'bound → ' + (label || id), true); closeP(); } else sfx('bad'); };
+    g.querySelector('#c-unbind').onclick = () => { keep.bindConnector(propId, ''); sfx('click'); flashTip(ev, 'portal unbound', true); closeP(); };
     g.querySelector('#c-cancel').onclick = closeP;
     g.addEventListener('click', e => { if (e.target === g) closeP(); });
     if (typeof fetch === 'undefined') { rowsEl.innerHTML = '<div class="refit-conn-note">no sidecar — can\'t list connectors here.</div>'; return; }
@@ -3571,21 +3571,21 @@ const Build = (() => {
   function openPluginBinder(propId, ev) {
     if (!root) return;
     cardCloseAll();
-    const p = station.propById(propId); if (!p || p.t !== 'plugin_terminal') return;
+    const p = keep.propById(propId); if (!p || p.t !== 'plugin_terminal') return;
     const g = document.createElement('div');
     g.className = 'refit-guide refit-connector-editor';
     const closeP = () => { if (g.parentNode) g.parentNode.removeChild(g); };
     cardRegister(g, closeP);
     g.innerHTML = '<div class="refit-guide-card"><h3>▮ PLUGIN TERMINAL — choose its plugin</h3>'
       + '<ul><li>This terminal gives its room’s agent the chosen plugin’s <b>tools</b> (each call asks you first, unless you choose Always or Full access).</li>'
-      + '<li>Clicking it in the station opens that plugin’s window.</li></ul>'
+      + '<li>Clicking it in the keep opens that plugin’s window.</li></ul>'
       + '<div class="refit-conn-rows" id="pl-rows">loading…</div>'
       + '<div class="refit-actions"><button type="button" class="btn-sm" id="pl-unbind">✕ UNBIND</button><button type="button" class="btn-sm" id="pl-cancel">CANCEL</button></div></div>';
     root.appendChild(g);
     requestAnimationFrame(() => g.classList.add('refit-swap'));
     const rowsEl = g.querySelector('#pl-rows');
-    const bind = (id, label) => { const res = station.bindPlugin(propId, id); if (res && res.ok) { sfx('click'); flashTip(ev, 'bound → ' + (label || id), true); closeP(); } else sfx('bad'); };
-    g.querySelector('#pl-unbind').onclick = () => { station.bindPlugin(propId, ''); sfx('click'); flashTip(ev, 'terminal unbound', true); closeP(); };
+    const bind = (id, label) => { const res = keep.bindPlugin(propId, id); if (res && res.ok) { sfx('click'); flashTip(ev, 'bound → ' + (label || id), true); closeP(); } else sfx('bad'); };
+    g.querySelector('#pl-unbind').onclick = () => { keep.bindPlugin(propId, ''); sfx('click'); flashTip(ev, 'terminal unbound', true); closeP(); };
     g.querySelector('#pl-cancel').onclick = closeP;
     g.addEventListener('click', e => { if (e.target === g) closeP(); });
     if (typeof fetch === 'undefined') { rowsEl.innerHTML = '<div class="refit-conn-note">no sidecar — can’t list plugins here.</div>'; return; }
@@ -3702,9 +3702,9 @@ const Build = (() => {
     const { x, y } = info.tile, cfg = junctionCfgAt(x, y) || {};
     if (info.kind === 'filter') note(x, y, 'SORTED: ' + String(info.tag || 'general').toUpperCase() + ' → THIS BELT', '#5ad0ff');
     else if (info.kind === 'split') {
-      if ((info.fanout || cfg.fanout) && typeof Pipeline !== 'undefined' && Pipeline._internals && station) {
+      if ((info.fanout || cfg.fanout) && typeof Pipeline !== 'undefined' && Pipeline._internals && keep) {
         const map = {};
-        for (const b of station.belts()) map[b.x + ',' + b.y] = b.dir;
+        for (const b of keep.belts()) map[b.x + ',' + b.y] = b.dir;
         const lanes = Pipeline._internals.outLanes(map, x, y) || [];
         const V = Pipeline._internals.DIRV || {};
         const fam = bx.payload.family || ('fam-' + (++_testN));
@@ -3738,12 +3738,12 @@ const Build = (() => {
   // DOC-ORDER FIRST INTAKE — kept ONLY as the manual ▸ PREVIEW's last-resort fallback when no
   // compiled lane reaches a bound dock yet (the "③ SANK" caption is the honest teaching there).
   function intakeBeltTile() {
-    const intake = station.props().find(p => p.t === 'intake');
+    const intake = keep.props().find(p => p.t === 'intake');
     if (!intake) return null;
     const w = intake.w || 1, h = intake.h || 1;
     for (let yy = intake.y - 1; yy <= intake.y + h; yy++)
       for (let xx = intake.x - 1; xx <= intake.x + w; xx++)
-        if (station.beltAt(xx, yy)) return { x: xx, y: yy };
+        if (keep.beltAt(xx, yy)) return { x: xx, y: yy };
     return null;
   }
   /* the ride's SPAWN mouth, WORLD tiles — reach-aware (conveyor-audit 2026-08-10). The first
@@ -3819,11 +3819,11 @@ const Build = (() => {
   }
 
   /* ---------- THE FIRST CRATE NARRATES ITSELF (2026-08-04 onramp) ----------
-     The first time this station's floor compiles COMPLETE in BUILD MODE — an INTAKE lane actually
+     The first time this keep's floor compiles COMPLETE in BUILD MODE — an INTAKE lane actually
      reaching a BOUND bay (valPlan.reach), which is the moment liveTiles first energize a full
      route — the narrated ▸ PREVIEW ride auto-runs once, unprompted. That is exactly the teachable
-     moment: the user just bound the agent that powered the line on. Once per station, persisted
-     in localStorage keyed by the station doc's createdAt (doc.meta is whitelisted-fields
+     moment: the user just bound the agent that powered the line on. Once per keep, persisted
+     in localStorage keyed by the keep doc's createdAt (doc.meta is whitelisted-fields
      territory in migrate() — a save-schema field for a UI one-shot is the wrong tool; localStorage
      mirrors the SEEN_KEY idiom above and survives reloads the same way).
      LAW (tutorial-audit 2026-08-03): anything coach-like stands down while the tutorial is
@@ -3833,20 +3833,20 @@ const Build = (() => {
      fire from the frame loop once the coach clears — a deferred ride must not need another edit
      to re-trigger. A blueprint stamp alone can never fire this: its bays stamp unbound, so reach
      stays false until an agent is truly bound. */
-  // one per-station localStorage key root, shared by the first-ride flag and the finish-the-line
+  // one per-keep localStorage key root, shared by the first-ride flag and the finish-the-line
   // registry (same doc.meta.createdAt derivation — a UI one-shot never rides the save schema).
-  /* THE STATION'S OWN NAMESPACE. Every one-shot below (first ride, ORDERS dismissal, the finish-the-line
-     registry) is per-STATION, so it must hang off a durable per-station id — `doc.meta.createdAt`, stamped
-     once at creation and backfilled once on migrate (worldmodel.js stationId). Before 2026-08-07 nothing
-     ever stamped it, so this always answered 'default' and every "per-station" latch was in fact global:
-     a brand-new station inherited the first one's dismissals, never saw its first ride, and had its first
+  /* THE KEEP'S OWN NAMESPACE. Every one-shot below (first ride, ORDERS dismissal, the finish-the-line
+     registry) is per-KEEP, so it must hang off a durable per-keep id — `doc.meta.createdAt`, stamped
+     once at creation and backfilled once on migrate (worldmodel.js keepId). Before 2026-08-07 nothing
+     ever stamped it, so this always answered 'default' and every "per-keep" latch was in fact global:
+     a brand-new keep inherited the first one's dismissals, never saw its first ride, and had its first
      line retired before the card was ever shown. 'default' survives only as the storage-broken fallback. */
-  function stationKeyOf(st) {
+  function keepKeyOf(st) {
     let k = 'default';
     try { const d = st && st.doc && st.doc(); if (d && d.meta && d.meta.createdAt) k = String(d.meta.createdAt); } catch (e) {}
     return k;
   }
-  const RIDE_KEY = () => 'starnet.refit.firstride.' + stationKeyOf(station);
+  const RIDE_KEY = () => 'eyehold.refit.firstride.' + keepKeyOf(keep);
   function rideSeen() { try { return !!localStorage.getItem(RIDE_KEY()); } catch (e) { return true; } }   // broken storage → never risk a repeat
   function markRide() { try { localStorage.setItem(RIDE_KEY(), '1'); } catch (e) {} }
   let ridePending = false, rideTimer = 0, rideAgentId = null, ridePrevReach = null;
@@ -3938,7 +3938,7 @@ const Build = (() => {
      product crate delivers (world.js's delivery seam calls noteLineDelivered — event-driven).
      Line identity + membership come from Pipeline.lineComponents (key = smallest member prop id,
      stable in the save); retirement/dismissal persist in localStorage beside the first-ride flag. */
-  const FIN_KEY = st => 'starnet.refit.finline.' + stationKeyOf(st || station);
+  const FIN_KEY = st => 'eyehold.refit.finline.' + keepKeyOf(st || keep);
   function finRead(st) {
     try { const o = JSON.parse(localStorage.getItem(FIN_KEY(st)) || '{}'); return (o && typeof o === 'object') ? o : {}; }
     catch (e) { return {}; }
@@ -3957,7 +3957,7 @@ const Build = (() => {
      probe is forbidden: when the seam exists a POST IS the paid sample dispatch. Fails SAFE: on any
      doubt the button renders disabled ("coming online soon") and no request can spend anything. */
   let finSample = null;   // null = unprobed/in flight · false = absent · true = present
-  const finApi = p => ((typeof window !== 'undefined' && window.__STARNET_API__) ? window.__STARNET_API__ : '') + p;
+  const finApi = p => ((typeof window !== 'undefined' && window.__EYEHOLD_API__) ? window.__EYEHOLD_API__ : '') + p;
   function probeSampleSeam() {
     if (finSample !== null || typeof fetch === 'undefined') return;
     try {
@@ -3986,7 +3986,7 @@ const Build = (() => {
   }
   function finPick() {
     if (!valComps || !valComps.length) return null;
-    const reg = finRead(station);
+    const reg = finRead(keep);
     const live = valComps.filter(c => c.bays.length && c.beltCount && !(reg[c.key] && (reg[c.key].done || reg[c.key].dis)));
     if (!live.length) return null;
     const sel = live.find(c => c.key === finKeySel);
@@ -3998,8 +3998,8 @@ const Build = (() => {
     if (next) finKeySel = next.key;
     return next;
   }
-  /* ---------- STARTER GEAR (2026-08-18, Andrew — replaces STATION ORDERS) ----------
-     This slot used to hold STATION ORDERS (grow/dress/desk/line). Andrew's call: the thing a
+  /* ---------- STARTER GEAR (2026-08-18, Andrew — replaces KEEP ORDERS) ----------
+     This slot used to hold KEEP ORDERS (grow/dress/desk/line). Andrew's call: the thing a
      beginner must see FIRST is which props actually matter — the starter POWERS — and a shelf
      inside the prop palette was too easy to miss, so the powers checklist takes this card
      instead (same one-voice slot; FINISH THE LINE still takes over the moment a line compiles).
@@ -4011,9 +4011,9 @@ const Build = (() => {
      picked — the checklist is the control, not a description of one. It gates nothing. The card
      retires on its own at 5/5 WITHOUT burning the dismiss key, so reclaiming your only dish
      brings it back; ✕ still dismisses it forever for Commanders who know the drill. */
-  // PER STATION, like every other one-shot here (stationKeyOf) — this shipped with no suffix at all, so
-  // dismissing the card on one station silently dismissed it on every station the Commander ever builds.
-  const ORDERS_KEY = () => 'starnet.refit.orders.dis.' + stationKeyOf(station);
+  // PER KEEP, like every other one-shot here (keepKeyOf) — this shipped with no suffix at all, so
+  // dismissing the card on one keep silently dismissed it on every keep the Commander ever builds.
+  const ORDERS_KEY = () => 'eyehold.refit.orders.dis.' + keepKeyOf(keep);
   const ordersDismissed = () => { try { return !!localStorage.getItem(ORDERS_KEY()); } catch (e) { return false; } };
   let ordersSeenDone = null;   // which steps were already done last render (so a NEW completion can chime)
 
@@ -4021,7 +4021,7 @@ const Build = (() => {
     const starter = ((typeof PropSprites !== 'undefined' && PropSprites.STARTER) || [])
       .map(id => (PropSprites.spec ? PropSprites.spec(id) : null)).filter(Boolean);
     const placed = {};
-    for (const p of station.props()) { const g = grantLabelOf({ id: p.t }); if (g) placed[g] = 1; }
+    for (const p of keep.props()) { const g = grantLabelOf({ id: p.t }); if (g) placed[g] = 1; }
     return starter.map(c => {
       const g = grantLabelOf(c) || '?';
       return { id: c.id, done: !!placed[g], cat: c.cat, label: g + ' — ' + c.label,
@@ -4100,7 +4100,7 @@ const Build = (() => {
       finCardEl = document.createElement('div');
       root.appendChild(finCardEl);
     } else if (sig === finSig) return;
-    // ...and always restate the class: this element is SHARED with STATION ORDERS (the stage before
+    // ...and always restate the class: this element is SHARED with KEEP ORDERS (the stage before
     // a line exists), so handing off from orders to the line card has to shed `refit-orders` or the
     // card keeps orders' styling — and positionFinCard keys its top-right parking on that class.
     finCardEl.className = 'refit-finline';
@@ -4123,7 +4123,7 @@ const Build = (() => {
       <button type="button" class="bb fl-step${st.feedDone ? ' done' : ''}" data-act="feed"${st.feedDone ? ' disabled' : ''}>${esc(feedTxt)}</button>
       <button type="button" class="bb fl-step${sampleOn ? '' : ' off'}${sr && sr.view && sr.view.ok ? ' done' : ''}" data-act="sample" title="${esc(sampleTip)}">${esc(sampleTxt)}</button>
       ${sr && sr.view ? finSampleHTML(sr.view) : ''}`;
-    finCardEl.querySelector('.fl-x').onclick = () => { finMark(station, c.key, 'dis'); sfx('click'); renderFinCard(); };
+    finCardEl.querySelector('.fl-x').onclick = () => { finMark(keep, c.key, 'dis'); sfx('click'); renderFinCard(); };
     const example = currentPresetExample();
     const overviewButton = finCardEl.querySelector('[data-act="overview"]');
     if (example?.key === c.key) overviewButton.textContent = 'SET UP ' + String(example.title).toUpperCase();
@@ -4152,9 +4152,9 @@ const Build = (() => {
   function finOpenFeed(c) {
     sfx('click');
     const iid = c && c.intakes && c.intakes[0];
-    if (iid && station.propById(iid)) { openFlowCard(iid); return; }
+    if (iid && keep.propById(iid)) { openFlowCard(iid); return; }
     close();
-    if (typeof StationUI !== 'undefined' && StationUI.openTerm) StationUI.openTerm('messaging');
+    if (typeof KeepUI !== 'undefined' && KeepUI.openTerm) KeepUI.openTerm('messaging');
   }
   // ③ — Phase 4's seam, fired only when detected present + docks crewed. The card claims nothing the
   // harness didn't answer: success/refusal both surface as the server's own verdict.
@@ -4193,7 +4193,7 @@ const Build = (() => {
       if (!s) return null;
       const errs = (s.errors || []);
       if (errs.length) return { refuse: 'line not posted — fix the floor first: ' + errs.map(e => VAL_LABEL[e.code] || e.code).filter((v, i, a) => a.indexOf(v) === i).join(' · ') };
-      if (s.refusedHash && s.refusedHash === s.lastHash) return { refuse: 'the station refused this line — fix the nags on the floor first' };
+      if (s.refusedHash && s.refusedHash === s.lastHash) return { refuse: 'the keep refused this line — fix the nags on the floor first' };
       if (s.stale || s.inflight || s.retryPending) return { refuse: 'line not posted — sidecar unreachable, the old line was NOT run' };
       return null;
     }, () => ({ refuse: 'line not posted — the old line was NOT run' }));
@@ -4228,7 +4228,7 @@ const Build = (() => {
       } catch (e) { settle(bad('sample failed — sidecar unreachable')); }
     });
   }
-  /* ■ STOP (2026-09-29): RUN ONE REAL JOB could not be stopped short of the station-wide E-STOP. The sidecar kills THIS job's
+  /* ■ STOP (2026-09-29): RUN ONE REAL JOB could not be stopped short of the keep-wide E-STOP. The sidecar kills THIS job's
      runs (POST /api/routing/sample/stop — the E-STOP kill scoped to the sample hub) and the in-flight POST settles with the
      server's stopped verdict, so the readout says STOPPED from the server's answer, never on the click alone. Until it
      settles the button reads STOPPING… */
@@ -4327,7 +4327,7 @@ const Build = (() => {
        the card landed on the JOINER and OUTBOX a first-time user had placed and was about to belt. The card is advice; the
        machines are the work. The first spot that covers no workflow machine wins; the old order is the fallback. */
     const FIN_AVOID = { intake: 1, bay: 1, outbox: 1, filter: 1, splitter: 1, merger: 1, joiner: 1, loop: 1 };
-    const boxes = station.props().filter(p => FIN_AVOID[p.t]).map(p => ({ l: sx(p.x * t), t: sy(p.y * t), r: sx((p.x + (p.w || 1)) * t), b: sy((p.y + (p.h || 1)) * t) }));
+    const boxes = keep.props().filter(p => FIN_AVOID[p.t]).map(p => ({ l: sx(p.x * t), t: sy(p.y * t), r: sx((p.x + (p.w || 1)) * t), b: sy((p.y + (p.h || 1)) * t) }));
     const spots = cands.map(q => ({ x: clampX(q.x), y: clampY(q.y) }));
     const clear = q => !boxes.some(m => q.x < m.r && q.x + w > m.l && q.y < m.b && q.y + h > m.t);
     let { x, y } = spots.find(clear) || spots[0];
@@ -4339,16 +4339,16 @@ const Build = (() => {
     finCardEl.style.top = Math.round(y / uiz) + 'px';
   }
   /* the delivery-retirement hook — world.js calls this (WORLD tiles) when a real product crate sinks
-     at an outbox mouth. Works with BUILD MODE closed: resolves the station via opts and maps the tile to
-     its line in a fresh geometry frame. First delivery wins; done is forever (per station+line). */
+     at an outbox mouth. Works with BUILD MODE closed: resolves the keep via opts and maps the tile to
+     its line in a fresh geometry frame. First delivery wins; done is forever (per keep+line). */
   function noteLineDelivered(wtx, wty) {
-    /* THE LIVE STATION WINS. This hook fires from world.js with BUILD MODE CLOSED, and close() never nulls the
-       module-level `station` — so preferring it meant the retirement was booked against whatever station
+    /* THE LIVE KEEP WINS. This hook fires from world.js with BUILD MODE CLOSED, and close() never nulls the
+       module-level `keep` — so preferring it meant the retirement was booked against whatever keep
        the last BUILD MODE session held. Load a different save and the first real delivery retired a line on the
-       station you are no longer standing in. opts.getStation() is the app's live station; the stale
+       keep you are no longer standing in. opts.getKeep() is the app's live keep; the stale
        module field is only the fallback for a harness that injected no getter. */
-    const live = (opts && typeof opts.getStation === 'function') ? opts.getStation() : null;
-    const st = live || station;
+    const live = (opts && typeof opts.getKeep === 'function') ? opts.getKeep() : null;
+    const st = live || keep;
     if (!st || typeof Pipeline === 'undefined' || !Pipeline.lineComponents) return;
     let geo = null;
     try { geo = st.projectGeometry(); } catch (e) { return; }
@@ -4370,7 +4370,7 @@ const Build = (() => {
   /* ---------- THE ROOM CARD (2026-08-07) ----------
      SELECT's contract was "click a machine to open it", and clicking a ROOM — the thing you spend
      build mode making — did nothing at all. The most-clicked surface in the editor was a dead
-     click, and `station.renameRoom` had shipped in the model with no UI anywhere to reach it.
+     click, and `keep.renameRoom` had shipped in the model with no UI anywhere to reach it.
      This card is the room's own sheet: what it is, how big, what it's made of, and the three verbs
      that already existed (rename · re-deck · delete), each routed through the same mutation API the
      tools use — no new model surface, no state of its own. */
@@ -4383,25 +4383,25 @@ const Build = (() => {
     cardCloseAll();
     selectRoom(roomId);
   }
-  /* A HALLWAY JOINS TWO ROOMS (the station builder's rule, now Build Mode's too): a room move, nudge, resize or delete that
+  /* A HALLWAY JOINS TWO ROOMS (the keep builder's rule, now Build Mode's too): a room move, nudge, resize or delete that
      leaves a hallway leading nowhere is refused and nothing changes — Build Mode stranded hallways the builder refuses. A
      hallway already stranded before the edit is not this edit's doing. One edit, one undo (transact). */
   function keepsHalls(op) {
-    if (typeof StationBuilder === 'undefined' || !StationBuilder.strandedHalls || typeof station.transact !== 'function') return op();
-    const before = new Set(StationBuilder.strandedHalls(station));
-    return station.transact(() => {
+    if (typeof KeepBuilder === 'undefined' || !KeepBuilder.strandedHalls || typeof keep.transact !== 'function') return op();
+    const before = new Set(KeepBuilder.strandedHalls(keep));
+    return keep.transact(() => {
       const r = op(); if (!r || !r.ok) return r;
-      const now = StationBuilder.strandedHalls(station).filter(id => !before.has(id));
+      const now = KeepBuilder.strandedHalls(keep).filter(id => !before.has(id));
       if (!now.length) return r;
-      const h = station.roomById(now[0]);
+      const h = keep.roomById(now[0]);
       return { ok: false, error: 'STRANDS_HALL', msg: ((h && h.name) || 'A hallway') + ' would lead nowhere · keep it joined to two rooms, or delete the hallway first' };
     });
   }
   // the ONE room-removal path the card and the DELETE tool both take (flash, undo nudge, honest refusal)
   function doDeleteRoom(roomId, ev) {
-    const rm = station.roomById(roomId);
-    const on = rm ? station.props().filter(p => rm.rects.some(r => p.x <= r.x2 && p.x + (p.w || 1) - 1 >= r.x1 && p.y <= r.y2 && p.y + (p.h || 1) - 1 >= r.y1)).map(p => Object.assign({}, p)) : [];
-    const res = keepsHalls(() => station.removeRoom(roomId));
+    const rm = keep.roomById(roomId);
+    const on = rm ? keep.props().filter(p => rm.rects.some(r => p.x <= r.x2 && p.x + (p.w || 1) - 1 >= r.x1 && p.y <= r.y2 && p.y + (p.h || 1) - 1 >= r.y1)).map(p => Object.assign({}, p)) : [];
+    const res = keepsHalls(() => keep.removeRoom(roomId));
     if (res && res.ok) { if (rm) pushFlash(rm.rects, true); on.forEach(p => vanishProp(p)); flashUndo(); flashTip(ev, 'deleted — UNDO to restore', true); sfx('click'); }
     else if (res && res.error === 'SPAWN_ROOM') { flashTip(ev, 'spawn room — can’t delete (try MOVE)'); sfx('bad'); }
     else { flashTip(ev, (res && res.msg) || 'blocked'); sfx('bad'); }
@@ -4409,11 +4409,11 @@ const Build = (() => {
 
   function openDoorPicker(propId, ev) {
     if (!root) return;
-    const p = station.propById(propId); if (!p || p.t !== 'airlock') return;
+    const p = keep.propById(propId); if (!p || p.t !== 'airlock') return;
     cardCloseAll();
     const cur = p.door || 'open';
-    const room = station.roomAt(p.x, p.y);
-    const isTrunk = !!(room && typeof station.doc === 'function' && station.doc().meta.trunkRoomId === room);
+    const room = keep.roomAt(p.x, p.y);
+    const isTrunk = !!(room && typeof keep.doc === 'function' && keep.doc().meta.trunkRoomId === room);
     const STATES = [
       { id: 'closed', label: '▦ SEALED' },
       { id: 'open', label: '▢ OPEN' },
@@ -4439,7 +4439,7 @@ const Build = (() => {
     const closeP = () => { if (g.parentNode) g.parentNode.removeChild(g); };
     cardRegister(g, closeP);
     g.querySelectorAll('.door-state').forEach(b => b.onclick = () => {
-      const res = station.setDoorState(propId, b.dataset.st);
+      const res = keep.setDoorState(propId, b.dataset.st);
       if (res && res.ok) { sfx('click'); flashTip(ev, 'airlock → ' + res.door, true); closeP(); }
       else sfx('bad');
     });
@@ -4462,7 +4462,7 @@ const Build = (() => {
     if (running && (cv.width !== previousWidth || cv.height !== previousHeight)) fitCamera();
   }
   // the chrome-occluded margins of the canvas (device px): the build panel (left sidebar on
-  // desktop, bottom sheet on narrow screens) + the top bar — so FIT frames the station in the
+  // desktop, bottom sheet on narrow screens) + the top bar — so FIT frames the keep in the
   // VISIBLE viewport instead of centering half of it behind the panel.
   /* viewInsets reads three getBoundingClientRects — cheap once, but it is now consulted from the
      draw loop (the gesture badge and the invitation clamp to the VISIBLE glass, not the raw
@@ -4495,7 +4495,7 @@ const Build = (() => {
     return out;
   }
   function fitCamera() {
-    const b = station.bounds(), t = T();
+    const b = keep.bounds(), t = T();
     const wx1 = b.minTx * t, wy1 = b.minTy * t, wx2 = (b.maxTx + 1) * t, wy2 = (b.maxTy + 1) * t;
     const ww = (wx2 - wx1) + 8 * t, wh = (wy2 - wy1) + 8 * t;
     const ins = viewInsets();
@@ -4515,7 +4515,7 @@ const Build = (() => {
   }
   function propAtEvent(ev) {
     const c=toCanvas(ev),x=(c.x-panX)/zoom,y=(c.y-panY)/zoom,t=T();
-    const order=propDrawOrder(station.props());
+    const order=propDrawOrder(keep.props());
     for(let i=order.length-1;i>=0;i--){
       const p=order[i],m=mountMap.get(p.id),dp=m?{...p,mount:m}:p;
       const hit=PropSprites.hitTest?PropSprites.hitTest(dp,x,y):null;
@@ -4555,27 +4555,27 @@ const Build = (() => {
       const hd = selectedRoomId ? roomHandleAt(ev) : null;
       if (hd) { drag = { mode: 'roomresize', roomId: selectedRoomId, edge: hd.e, start: w, cur: w, moved: false }; return; }
       const pid = propAtEvent(ev);
-      const p = pid && station.propById(pid);
+      const p = pid && keep.propById(pid);
       // a member of a selected group: a drag moves the whole group, a click (no drag) selects just it; Shift+click adds / drops one
       if (p && groupIds.includes(p.id)) { drag={mode:'grouppress',propId:p.id,start:w,cur:w,moved:false,add:ev.shiftKey};return; }
       if (p) { drag={mode:'selectpress',propId:p.id,start:w,cur:w,moved:false,add:ev.shiftKey};return; }
-      if (station.beltAt(w.tx, w.ty)) { openBeltCard(w.tx, w.ty, ev); return; }
+      if (keep.beltAt(w.tx, w.ty)) { openBeltCard(w.tx, w.ty, ev); return; }
       // ...and a ROOM opens its own sheet — on the RELEASE now, so the same press can become a box. Clicking the thing
       // you spent build mode MAKING used to be the one dead click in the editor.
-      drag = { mode: 'boxpress', start: w, cur: w, moved: false, add: ev.shiftKey, roomId: station.roomAt(w.tx, w.ty) };
+      drag = { mode: 'boxpress', start: w, cur: w, moved: false, add: ev.shiftKey, roomId: keep.roomAt(w.tx, w.ty) };
       return;
     }
     if (tool === 'belt') {
       /* CONNECT MODE — the primary belt interaction (2026-07-05 UX reshape): click one MACHINE, then
-         another, and the path lays itself (station.connectBelt — oriented, hooked, junction-aware).
+         another, and the path lays itself (keep.connectBelt — oriented, hooked, junction-aware).
          Clicking empty floor still starts the classic hand-laid drag; a second click on the same
          machine (or any empty click mid-connect) cancels. */
       const pid = propAtEvent(ev);
-      const pp = pid && station.propById(pid);
+      const pp = pid && keep.propById(pid);
       if (pp && CONNECT_TYPES[pp.t]) {
         if (!connectFrom) { connectFrom = pid; sfx('click'); flashTip(ev, 'FROM ▸ ' + (propSpec(pp.t).label || pp.t).toUpperCase() + ' — now click a destination', true); return; }
         if (connectFrom === pid) { connectFrom = null; hideTip(); return; }
-        const res = station.connectBelt(connectFrom, pid);
+        const res = keep.connectBelt(connectFrom, pid);
         connectFrom = null;
         if (res && res.ok) {
           sfx('chime'); flashTip(ev, 'CONNECTED — ' + res.count + ' belts laid themselves', true);
@@ -4592,7 +4592,7 @@ const Build = (() => {
       // CLICK-ON-MACHINE WINS: with a copy armed, a click ON an existing machine inspects it instead
       // of silently attempting an invalid stamp on top of it.
       if (dupe) {
-        const pid = station.propAt(w.tx, w.ty), p = pid && station.propById(pid);
+        const pid = keep.propAt(w.tx, w.ty), p = pid && keep.propById(pid);
         if (p) { onInspect(p, ev); return; }
         stampDupe(w, ev);
       } else pickupDupe(w, ev);
@@ -4600,27 +4600,27 @@ const Build = (() => {
     } else if (tool === 'line') {
       // click-only tool: the armed starter line stamps under the cursor (the ghost already showed it).
       // CLICK-ON-MACHINE WINS: a click ON an existing machine inspects it — stamping only on clear deck.
-      const pid = station.propAt(w.tx, w.ty), p = pid && station.propById(pid);
+      const pid = keep.propAt(w.tx, w.ty), p = pid && keep.propById(pid);
       if (p) { onInspect(p, ev); return; }
       stampLine(w, ev);
       return;
     } else if (tool === 'move') {
       if(movingPropId){
-        const p=station.propById(movingPropId);
+        const p=keep.propById(movingPropId);
         if(!p){movingPropId=null;return;}
         const left=beltsLeftBehind(p,w.tx,w.ty);
-        const res=station.moveProp(p.id,w.tx-p.x,w.ty-p.y);
+        const res=keep.moveProp(p.id,w.tx-p.x,w.ty-p.y);
         feedback(res,ev,moveMsg(res,left,'moved · Undo restores the previous position'));
         if(res&&res.ok){const id=p.id;selectTool('select');selectedPropId=id;renderSelection();}
         return;
       }
       const pid = propAtEvent(ev);   // props sit on top of rooms — move them first
       if (pid) { drag = { mode: 'propmove', propId: pid, start: w, cur: w, moved: false }; return; }
-      const id = station.roomAt(w.tx, w.ty);
+      const id = keep.roomAt(w.tx, w.ty);
       if (!id) { flashTip(ev, 'nothing to move here'); return; }
       drag = { mode: 'move', roomId: id, start: w, cur: w, moved: false };
     } else if (tool === 'paint') {
-      const id = station.roomAt(w.tx, w.ty);
+      const id = keep.roomAt(w.tx, w.ty);
       if (!id) { flashTip(ev, 'nothing to paint here'); return; }
       drag = { mode: 'paint', roomId: id, start: w, cur: w, cells: new Set([w.tx + ',' + w.ty]), moved: false };
     } else if (tool === 'reclaim') {
@@ -4651,10 +4651,10 @@ const Build = (() => {
         if (hh) cv.style.cursor = hh.cur; else if (/resize$/.test(cv.style.cursor || '')) setCursor();
       } else hoverHandle = -1;
       hoverPropId = propAtEvent(ev);
-      hoverRoomId = station.roomAt(w.tx, w.ty);
+      hoverRoomId = keep.roomAt(w.tx, w.ty);
       hoverTile = { tx: w.tx, ty: w.ty };
       // hovering a placed FUNCTIONAL prop shows its Fallout-style card (what it does + its live assignment)
-      const hp = hoverPropId && station.propById(hoverPropId);
+      const hp = hoverPropId && keep.propById(hoverPropId);
       const sp = hp && (typeof PropSprites !== 'undefined') && PropSprites.spec(hp.t);
       if (sp && sp.tier === 'functional') showPropCard(sp, hp, ev.clientX, ev.clientY);
       else hidePropCard();
@@ -4668,7 +4668,7 @@ const Build = (() => {
     const d = drag; drag = null;
     setCursor();
     if (d.mode === 'pan') return;
-    if (d.mode === 'selectpress' || d.mode === 'grouppress') return d.add ? toggleInSelection(d.propId) : onInspect(station.propById(d.propId),ev);
+    if (d.mode === 'selectpress' || d.mode === 'grouppress') return d.add ? toggleInSelection(d.propId) : onInspect(keep.propById(d.propId),ev);
     if (d.mode === 'groupmove') return commitGroupMove(d, ev);
     if (d.mode === 'boxpress') return clickEmptyFloor(d, ev);
     if (d.mode === 'box') return commitBox(d, ev);
@@ -4706,8 +4706,8 @@ const Build = (() => {
     // CLICK-ON-MACHINE WINS: a plain click (no drag) on an existing machine inspects it — a 1×1
     // room/hall attempt on top of a prop was never anything but a red flash.
     if (!d.moved) {
-      const exist = station.propAt(d.cur.tx, d.cur.ty);
-      const ep = exist && station.propById(exist);
+      const exist = keep.propAt(d.cur.tx, d.cur.ty);
+      const ep = exist && keep.propById(exist);
       if (ep) { onInspect(ep, ev); return; }
     }
     /* a click stamps the remembered size (what the hover ghost was showing); a drag draws its own.
@@ -4719,7 +4719,7 @@ const Build = (() => {
     const isHall = tool === 'hall';
     const rect = !d.moved ? snapFit(stampRectFor(d.cur.tx, d.cur.ty), {})
       : snapFit(isHall ? laneRect(d.start, d.cur) : norm(d.start, d.cur), { resize: true });
-    const res = isHall ? station.placeHallway({ rect }) : station.addRoom({ kind, rect });
+    const res = isHall ? keep.placeHallway({ rect }) : keep.addRoom({ kind, rect });
     if (res && res.ok) {
       pushFlash([rect], false);
       rememberDrawn(rect);
@@ -4729,10 +4729,10 @@ const Build = (() => {
   }
   function commitMove(d, ev) {
     // the SAME snapped delta the move ghost drew — commit what was on screen, never the raw drag
-    const rm = station.roomById(d.roomId);
+    const rm = keep.roomById(d.roomId);
     const s = snapMoveDelta(rm, d.cur.tx - d.start.tx, d.cur.ty - d.start.ty);
     if (!s.dx && !s.dy) { hideTip(); return; }
-    feedback(keepsHalls(() => station.moveRoom(d.roomId, s.dx, s.dy)), ev, 'relocated');
+    feedback(keepsHalls(() => keep.moveRoom(d.roomId, s.dx, s.dy)), ev, 'relocated');
   }
   function propSpec(id) { return (typeof PropSprites !== 'undefined' && PropSprites.spec(id)) || { w: 1, h: 1 }; }
   /* ---------- PROP ORIENTATION (R / shift+R turn · M flip) ----------
@@ -4767,7 +4767,7 @@ const Build = (() => {
   // keyboard events carry no cursor position; the tip anchors to the last place the pointer was.
   const orientEv = () => ({ clientX: lastClient.x, clientY: lastClient.y });
   // Placement owns R/M. Browsing may rotate the hovered furniture; placing never edits it.
-  const orientTarget = () => (tool === 'select' && !drag && (hoverPropId || selectedPropId)) ? station.propById(hoverPropId || selectedPropId) : null;
+  const orientTarget = () => (tool === 'select' && !drag && (hoverPropId || selectedPropId)) ? keep.propById(hoverPropId || selectedPropId) : null;
   const propLabel = t => String(propSpec(t).label || t).toUpperCase();
 
   function turnUnderCursor(dir) {
@@ -4775,7 +4775,7 @@ const Build = (() => {
     if (p) {
       if (!canTurn(p.t)) { sfx('bad'); flashTip(ev, propLabel(p.t) + (/^user_/.test(p.t) ? ' has no side view yet \u00b7 select it and pick SIDE VIEW (about 30\u00a2) to turn it' : ' only faces one way — its turned art is not drawn')); return; }
       const nr = nextFace(p.t, p.r | 0, dir);
-      const res = station.faceProp(p.id, nr, propBox(p.t, nr, p));
+      const res = keep.faceProp(p.id, nr, propBox(p.t, nr, p));
       if (res && res.ok) pushFlash([{ x1: p.x, y1: p.y, x2: p.x + p.w - 1, y2: p.y + p.h - 1 }], false);   // p is mutated in place → the NEW box
       feedback(res, ev, 'turned · facing ' + FACE_WORD[(p.r | 0) & 3]);
       return;
@@ -4793,7 +4793,7 @@ const Build = (() => {
     const ev = orientEv(), p = orientTarget();
     if (p) {
       if (!canFlip(p.t)) { sfx('bad'); flashTip(ev, propLabel(p.t) + ' cannot be flipped — its light is painted in, not derived'); return; }
-      const res = station.mirrorProp(p.id);
+      const res = keep.mirrorProp(p.id);
       if (res && res.ok) pushFlash([{ x1: p.x, y1: p.y, x2: p.x + p.w - 1, y2: p.y + p.h - 1 }], false);
       feedback(res, ev, (res && res.m) ? 'flipped' : 'unflipped');
       return;
@@ -4806,8 +4806,8 @@ const Build = (() => {
     sfx('click'); flashTip(ev, propMir ? 'flipped' : 'unflipped', true); setHint();
   }
   // open the right editor for a logistics prop that carries config (BAY = agent, FILTER/MERGER = routing, AIRLOCK = seal)
-  // a workstation (PC/desk) opens the dedicated WORKSTATION picker; bays/junctions/etc. keep their editors.
-  // (Trunk's PC-binding via the BAY picker is unified into the workstation picker — same agentId field, richer UX.)
+  // a workkeep (PC/desk) opens the dedicated WORKKEEP picker; bays/junctions/etc. keep their editors.
+  // (Trunk's PC-binding via the BAY picker is unified into the workkeep picker — same agentId field, richer UX.)
   // a MERGER has no config (pure topology, like the splitter) — it explains itself via the flow card.
   /* THE INSPECT SEAM (2026-08-05): every "the user clicked a machine to look at it" path lands on
      this ONE dispatch point — select-mode clicks, click-on-machine-wins from armed tools, freshly
@@ -4832,28 +4832,28 @@ const Build = (() => {
   function renderSelection(){
     const host=root&&root.querySelector('#refit-selection');if(!host)return;
     if(groupIds.length){
-      const ps=groupIds.map(id=>station&&station.propById(id)).filter(Boolean);
+      const ps=groupIds.map(id=>keep&&keep.propById(id)).filter(Boolean);
       if(ps.length>1){host.hidden=false;root.classList.add('has-selection');return renderGroupCard(host,ps);}
       groupIds=[];if(ps.length===1)selectedPropId=ps[0].id;   // an undo took the rest away: one is just a selection
     }
     if(selectedRoomId){
-      const rm=station&&station.roomById(selectedRoomId);
+      const rm=keep&&keep.roomById(selectedRoomId);
       if(rm){host.hidden=false;root.classList.add('has-selection');return renderRoomCard(host,rm);}
       selectedRoomId=null;   // an undo took the room away
     }
-    const p=station&&station.propById(selectedPropId);host.hidden=!p;root.classList.toggle('has-selection',!!p);
+    const p=keep&&keep.propById(selectedPropId);host.hidden=!p;root.classList.toggle('has-selection',!!p);
     if(!p){host.replaceChildren();return;}
     host.innerHTML='<div class="refit-sel-head"><span class="refit-sel-art" aria-hidden="true"></span><span class="refit-sel-name"><b>'+esc(propLabel(p.t))+'</b><small>'+p.w+' × '+p.h+' tiles'+(canTurn(p.t)?' · facing '+FACE_WORD[(p.r|0)&3]:'')+' · arrows nudge</small></span>'
       +'<button class="bb sm refit-sel-x" type="button" aria-label="Deselect" data-tip="Deselect · Esc">\u2715</button></div><div class="refit-selection-actions"></div>';
     propArtInto(host.querySelector('.refit-sel-art'),p);
     host.querySelector('.refit-sel-x').onclick=()=>{selectedPropId=null;renderSelection();setHint();sfx('click');};
     const actions=host.querySelector('.refit-selection-actions');
-    if(WORKSTATION_TYPES[p.t])actions.before(sitsRow(p));   // the desk's agent is picked RIGHT HERE, one click (no CONFIGURE, no modal)
+    if(WORKKEEP_TYPES[p.t])actions.before(sitsRow(p));   // the desk's agent is picked RIGHT HERE, one click (no CONFIGURE, no modal)
     const addKey=(label,key,fn,cls)=>{const b=document.createElement('button');b.className='bb sm refit-sel-act'+(cls?' '+cls:'');b.type='button';b.innerHTML='<span>'+esc(label)+'</span>'+(key?'<kbd>'+esc(key)+'</kbd>':'');b.onclick=fn;actions.appendChild(b);return b;};
     const add=(label,fn)=>addKey(label,'',fn);
     addKey('MOVE','drag',()=>{const id=p.id;selectTool('move');movingPropId=id;selectedPropId=id;renderSelection();setHint('Click a clear spot to move '+propLabel(p.t)+' · Esc cancels');});
-    if(canTurn(p.t))addKey('TURN','R',()=>{const nr=nextFace(p.t,p.r|0,1);feedback(station.faceProp(p.id,nr,propBox(p.t,nr,p)),orientEv(),'turned');renderSelection();});
-    if(canFlip(p.t))addKey('FLIP','M',()=>{feedback(station.mirrorProp(p.id),orientEv(),'flipped');renderSelection();});
+    if(canTurn(p.t))addKey('TURN','R',()=>{const nr=nextFace(p.t,p.r|0,1);feedback(keep.faceProp(p.id,nr,propBox(p.t,nr,p)),orientEv(),'turned');renderSelection();});
+    if(canFlip(p.t))addKey('FLIP','M',()=>{feedback(keep.mirrorProp(p.id),orientEv(),'flipped');renderSelection();});
     addKey('DUPLICATE','Ctrl+D',()=>duplicateSelected(orientEv()));
     addKey('COPY','Ctrl+C',()=>copySelected(orientEv()));
     // a MADE prop carries its library controls right here: SIZE (free) and its side view, like the MAKE A PROP panel
@@ -4864,7 +4864,7 @@ const Build = (() => {
       if(k<UserProps.SCALES[UserProps.SCALES.length-1])add('SIZE + ('+Math.round(k*100)+'%)',()=>sizeMadeProp(1,p.t));
       if(!made.side&&!made.symmetric)add('\u21bb SIDE VIEW',async()=>{setHint('Starting a side view of '+(made.label||'this prop')+'\u2026');const r=await startMakeSide(p.t);if(!r)setHint('A prop job is already running \u00b7 wait for it to finish');else setHint(r.ok?'Making a side view of '+(made.label||'this prop')+' \u00b7 about $0.30 \u00b7 it turns with R when it lands':(r.message||'That side view could not be started.'));});
     }
-    if(isEditableProp(p.t)&&!WORKSTATION_TYPES[p.t])add('CONFIGURE',()=>configureProp(p,orientEv()));
+    if(isEditableProp(p.t)&&!WORKKEEP_TYPES[p.t])add('CONFIGURE',()=>configureProp(p,orientEv()));
     addKey('DELETE','Del',()=>deleteSelected(orientEv()),'refit-sel-del');
     // typing an exact tile: its own key in the grid (the arrows nudge; this is for "put it at 12, 4"), the fields only when asked
     addKey('POSITION','',()=>{positionOpen=!positionOpen;renderSelection();},'refit-sel-pos').setAttribute('aria-expanded',String(positionOpen));
@@ -4874,7 +4874,7 @@ const Build = (() => {
     position.querySelector('button').onclick=()=>{
       const inputs=position.querySelectorAll('input'),x=Number(inputs[0].value),y=Number(inputs[1].value);
       if(!Number.isInteger(x)||!Number.isInteger(y)){feedback({ok:false,msg:'Use whole tile coordinates'},orientEv());return;}
-      const res=station.moveProp(p.id,x-p.x,y-p.y);feedback(res,orientEv(),moveMsg(res,0,'position updated'));renderSelection();
+      const res=keep.moveProp(p.id,x-p.x,y-p.y);feedback(res,orientEv(),moveMsg(res,0,'position updated'));renderSelection();
     };host.append(position);
   }
   /* ---------- THE EDITOR KEYS (2026-10-01 build-mode upgrade) ----------
@@ -4893,7 +4893,7 @@ const Build = (() => {
   }
   // the nearest clear spot for a copy: right of it, below, left, above — then ring by ring outward
   function freeSpotNear(spec, x0, y0) {
-    const fits = (x, y) => !!(station.canPlaceProp(spec.t, x, y, spec.w, spec.h) || {}).ok;
+    const fits = (x, y) => !!(keep.canPlaceProp(spec.t, x, y, spec.w, spec.h) || {}).ok;
     for (const [dx, dy] of [[spec.w, 0], [0, spec.h], [-spec.w, 0], [0, -spec.h]]) if (fits(x0 + dx, y0 + dy)) return { x: x0 + dx, y: y0 + dy };
     for (let r = 1; r <= 10; r++) for (let dy = -r; dy <= r; dy++) for (let dx = -r; dx <= r; dx++) {
       if (Math.max(Math.abs(dx), Math.abs(dy)) !== r) continue;
@@ -4903,10 +4903,10 @@ const Build = (() => {
   }
   function deleteSelected(ev) {
     if (groupIds.length) return deleteGroup(ev);
-    const p = station.propById(selectedPropId); if (!p) return false;
-    const had = linkedFloor() && isWorkflowType(p.t) && (station.links() || []).some(l => l.from.prop === p.id || l.to.prop === p.id);
+    const p = keep.propById(selectedPropId); if (!p) return false;
+    const had = linkedFloor() && isWorkflowType(p.t) && (keep.links() || []).some(l => l.from.prop === p.id || l.to.prop === p.id);
     const was = Object.assign({}, p);
-    const res = station.removeProp(p.id);
+    const res = keep.removeProp(p.id);
     if (res && res.ok) { pushFlash([{ x1: was.x, y1: was.y, x2: was.x + was.w - 1, y2: was.y + was.h - 1 }], true); vanishProp(was); }
     feedback(res, ev, had ? 'removed · its belts stay, loose — nothing rides them until a machine stands where they end · Undo restores it' : 'removed · Undo restores it');
     if (res && res.ok) { selectedPropId = null; movingPropId = null; renderSelection(); setHint(); }
@@ -4914,14 +4914,14 @@ const Build = (() => {
   }
   function duplicateSelected(ev) {
     if (groupIds.length) return duplicateGroup(ev);
-    const p = station.propById(selectedPropId); if (!p) return false;
+    const p = keep.propById(selectedPropId); if (!p) return false;
     const spec = copySpecOf(p), at = freeSpotNear(spec, p.x, p.y);
     if (!at) { sfx('bad'); flashTip(ev, 'no clear floor beside it for a copy — clear some space, or COPY it to place one anywhere'); return true; }
-    const res = station.addProp(Object.assign({ t: spec.t, x: at.x, y: at.y, w: spec.w, h: spec.h, block: spec.block }, spec.cfg));
+    const res = keep.addProp(Object.assign({ t: spec.t, x: at.x, y: at.y, w: spec.w, h: spec.h, block: spec.block }, spec.cfg));
     if (res && res.ok) {
       pushFlash([{ x1: at.x, y1: at.y, x2: at.x + spec.w - 1, y2: at.y + spec.h - 1 }], false);
       landProps([res.id]);
-      if (typeof StationUI !== 'undefined' && StationUI.pokeQuests) { try { StationUI.pokeQuests(); } catch (_) {} }
+      if (typeof KeepUI !== 'undefined' && KeepUI.pokeQuests) { try { KeepUI.pokeQuests(); } catch (_) {} }
       if (typeof Tutorial !== 'undefined' && Tutorial.onPropPlaced) Tutorial.onPropPlaced(spec.t);
       if (res.id) { selectedPropId = res.id; renderSelection(); }
     }
@@ -4931,15 +4931,15 @@ const Build = (() => {
   let lastCopy = null;   // the last prop picked up with Ctrl+C / COPY — Ctrl+V picks it up again
   function copySelected(ev) {
     if (groupIds.length) { sfx('bad'); flashTip(ev, 'COPY holds one thing at a time — Ctrl+D duplicates the whole group'); return true; }
-    const p = station.propById(selectedPropId); if (!p) return false;
+    const p = keep.propById(selectedPropId); if (!p) return false;
     selectTool('dupe', { keepGroup: true, silent: true });
     pickupDupe({ tx: p.x, ty: p.y }, ev, p.id);
     return true;
   }
   function nudgeSelected(dx, dy, ev) {
     if (groupIds.length) return nudgeGroup(dx, dy, ev);
-    const p = station.propById(selectedPropId); if (!p) return false;
-    const res = station.moveProp(p.id, dx, dy);
+    const p = keep.propById(selectedPropId); if (!p) return false;
+    const res = keep.moveProp(p.id, dx, dy);
     if (res && res.ok) { snapTick('propmove'); pushMoves([{ from: { x1: p.x - dx, y1: p.y - dy, x2: p.x - dx + p.w - 1, y2: p.y - dy + p.h - 1 }, to: { x1: p.x, y1: p.y, x2: p.x + p.w - 1, y2: p.y + p.h - 1 } }]); renderSelection(); }
     else { sfx('bad'); flashTip(ev, (res && res.msg) || 'blocked — nothing moved'); }
     return true;
@@ -4948,17 +4948,17 @@ const Build = (() => {
      In SELECT a drag across empty floor draws a box, and everything it touches is selected (Shift adds to what is already
      selected); Shift+click adds or drops one; Ctrl+A takes the whole floor. The group then moves — drag any of them, or the
      arrows — duplicates (Ctrl+D: the whole arrangement again, beside itself) or goes (Delete) as ONE edit: one UNDO, and
-     all-or-nothing (station.transact puts back anything half-done). A plain click on empty floor lets go of a selection; with
+     all-or-nothing (keep.transact puts back anything half-done). A plain click on empty floor lets go of a selection; with
      nothing selected it still opens that room's card. */
   const selectionIds = () => groupIds.length ? groupIds.slice() : (selectedPropId ? [selectedPropId] : []);
   function setSelection(ids) {
-    const live = [...new Set(ids)].filter(id => station.propById(id));
+    const live = [...new Set(ids)].filter(id => keep.propById(id));
     groupIds = live.length > 1 ? live : [];
     selectedPropId = live.length === 1 ? live[0] : null;
     movingPropId = null; positionOpen = false; selectedRoomId = null;
     renderSelection();
     if (live.length > 1) setHint(live.length + ' selected · drag any of them to move them together · Ctrl+D duplicates · Delete removes');
-    else if (live.length === 1) setHint('Selected ' + propLabel(station.propById(live[0]).t) + ' · choose an action in the build kit');
+    else if (live.length === 1) setHint('Selected ' + propLabel(keep.propById(live[0]).t) + ' · choose an action in the build kit');
     else setHint();
   }
   const propRect = (p, dx, dy) => ({ x1: p.x + (dx | 0), y1: p.y + (dy | 0), x2: p.x + (dx | 0) + (p.w || 1) - 1, y2: p.y + (dy | 0) + (p.h || 1) - 1 });
@@ -4966,7 +4966,7 @@ const Build = (() => {
   let boxMemo = null;
   function propsInBox(r) {
     const key = [geoVer, r.x1, r.y1, r.x2, r.y2].join('|');
-    if (!boxMemo || boxMemo.key !== key) boxMemo = { key, ids: station.props().filter(p => rectsMeet(propRect(p), r)).map(p => p.id) };
+    if (!boxMemo || boxMemo.key !== key) boxMemo = { key, ids: keep.props().filter(p => rectsMeet(propRect(p), r)).map(p => p.id) };
     return boxMemo.ids;
   }
   function commitBox(d, ev) {
@@ -4987,7 +4987,7 @@ const Build = (() => {
     sfx('click'); setSelection(ids);
   }
   function selectAllProps(ev) {
-    const ids = station.props().map(p => p.id);
+    const ids = keep.props().map(p => p.id);
     if (!ids.length) { sfx('bad'); flashTip(ev, 'nothing on the floor to select yet'); return; }
     sfx('click'); setSelection(ids);
   }
@@ -4997,14 +4997,14 @@ const Build = (() => {
   function moveGroupBy(ids, dx, dy) {
     if (!dx && !dy) return { ok: true };
     // the model moves the group at once (a table under its own lamp, links re-laid after every member has moved)
-    if (typeof station.moveProps === 'function') return station.moveProps(ids, dx, dy);
-    const order = ids.map(id => station.propById(id)).filter(Boolean).sort((a, b) => (b.x * dx + b.y * dy) - (a.x * dx + a.y * dy)).map(p => p.id);
-    return station.transact(() => {
+    if (typeof keep.moveProps === 'function') return keep.moveProps(ids, dx, dy);
+    const order = ids.map(id => keep.propById(id)).filter(Boolean).sort((a, b) => (b.x * dx + b.y * dy) - (a.x * dx + a.y * dy)).map(p => p.id);
+    return keep.transact(() => {
       let pending = order, last = null;
       while (pending.length) {
         const next = [];
         for (const id of pending) {
-          const r = station.moveProp(id, dx, dy);
+          const r = keep.moveProp(id, dx, dy);
           if (!r || !r.ok) { next.push(id); last = r; continue; }
           if (Array.isArray(r.lost) && r.lost.length) return { ok: false, error: 'LINK_LOST', msg: 'moving these together would take up a belt link — move those machines one at a time (their belts follow)' };
         }
@@ -5023,10 +5023,10 @@ const Build = (() => {
     const ids = new Set(ps.map(p => p.id));
     let v = { ok: true };
     for (const p of ps) {
-      const r = station.canPlaceProp(p.t, p.x + dx, p.y + dy, p.w, p.h, p.id);
+      const r = keep.canPlaceProp(p.t, p.x + dx, p.y + dy, p.w, p.h, p.id);
       if (r && r.ok) continue;
       if (r && r.error === 'OVERLAP') {
-        const to = propRect(p, dx, dy), hit = station.props().find(q => !ids.has(q.id) && !propSpec(q.t).flat && rectsMeet(propRect(q), to));
+        const to = propRect(p, dx, dy), hit = keep.props().find(q => !ids.has(q.id) && !propSpec(q.t).flat && rectsMeet(propRect(q), to));
         if (!hit) continue;
         v = { ok: false, error: 'OVERLAP', msg: 'Blocked by ' + (propSpec(hit.t).label || hit.t) + ' · choose a clear space' }; break;
       }
@@ -5044,7 +5044,7 @@ const Build = (() => {
     if (res && res.ok) { landProps(ids, 25); renderSelection(); }
   }
   function nudgeGroup(dx, dy, ev) {
-    const ids = groupIds.slice(), from = ids.map(id => station.propById(id)).filter(Boolean).map(p => propRect(p));
+    const ids = groupIds.slice(), from = ids.map(id => keep.propById(id)).filter(Boolean).map(p => propRect(p));
     const res = moveGroupBy(ids, dx, dy);
     if (res && res.ok) { snapTick('propmove'); pushMoves(from.map(r => ({ from: r, to: { x1: r.x1 + dx, y1: r.y1 + dy, x2: r.x2 + dx, y2: r.y2 + dy } }))); renderSelection(); }
     else { sfx('bad'); flashTip(ev, refusalOf(res, ids, dx, dy).msg || 'blocked — nothing moved'); }
@@ -5053,13 +5053,13 @@ const Build = (() => {
   // a refused group move says what is in the way, the way its ghost did (the model's own refusal only knows "overlaps a prop")
   function refusalOf(res, ids, dx, dy) {
     if (!res || res.ok) return res;
-    const fit = groupFit(ids.map(id => station.propById(id)).filter(Boolean), dx, dy);
+    const fit = groupFit(ids.map(id => keep.propById(id)).filter(Boolean), dx, dy);
     return fit && !fit.ok && fit.msg ? fit : res;
   }
   function deleteGroup(ev) {
-    const was = groupIds.map(id => station.propById(id)).filter(Boolean).map(p => Object.assign({}, p));
+    const was = groupIds.map(id => keep.propById(id)).filter(Boolean).map(p => Object.assign({}, p));
     if (!was.length) return false;
-    const res = station.transact(() => { for (const p of was) { const r = station.removeProp(p.id); if (!r || !r.ok) return r; } return { ok: true }; });
+    const res = keep.transact(() => { for (const p of was) { const r = keep.removeProp(p.id); if (!r || !r.ok) return r; } return { ok: true }; });
     if (res && res.ok) { pushFlash(was.map(p => propRect(p)), true); was.forEach(p => vanishProp(p)); setSelection([]); flashUndo(); }
     feedback(res, ev, 'removed ' + was.length + ' things · Undo restores them');
     return true;
@@ -5068,21 +5068,21 @@ const Build = (() => {
      time — and the copies become the selection, so Ctrl+D again lays the next one. What stands on a table goes down after its
      table. A quick look at the floor first; the real lay-down (one transact, all-or-nothing) only where that look says yes. */
   function duplicateGroup(ev) {
-    const ps = groupIds.map(id => station.propById(id)).filter(Boolean);
+    const ps = groupIds.map(id => keep.propById(id)).filter(Boolean);
     if (ps.length < 2) return false;
     const x1 = Math.min(...ps.map(p => p.x)), y1 = Math.min(...ps.map(p => p.y));
     const W = Math.max(...ps.map(p => p.x + (p.w || 1))) - x1, H = Math.max(...ps.map(p => p.y + (p.h || 1))) - y1;
-    const onTable = p => (station.mountOf && station.mountOf(p)) ? 1 : 0;
+    const onTable = p => (keep.mountOf && keep.mountOf(p)) ? 1 : 0;
     const plan = ps.slice().sort((a, b) => onTable(a) - onTable(b)).map(p => ({ p, spec: copySpecOf(p) }));
-    const looksClear = (dx, dy) => plan.every(({ p, spec }) => onTable(p) || (station.canPlaceProp(spec.t, p.x + dx, p.y + dy, spec.w, spec.h) || {}).ok);
+    const looksClear = (dx, dy) => plan.every(({ p, spec }) => onTable(p) || (keep.canPlaceProp(spec.t, p.x + dx, p.y + dy, spec.w, spec.h) || {}).ok);
     const tries = [];
     for (let gap = 0; gap <= 6; gap++) tries.push([W + gap, 0], [0, H + gap], [-(W + gap), 0], [0, -(H + gap)]);
     for (const [dx, dy] of tries) {
       if (!looksClear(dx, dy)) continue;
       const made = [];
-      const res = station.transact(() => {
+      const res = keep.transact(() => {
         for (const { p, spec } of plan) {
-          const r = station.addProp(Object.assign({ t: spec.t, x: p.x + dx, y: p.y + dy, w: spec.w, h: spec.h, block: spec.block }, spec.cfg));
+          const r = keep.addProp(Object.assign({ t: spec.t, x: p.x + dx, y: p.y + dy, w: spec.w, h: spec.h, block: spec.block }, spec.cfg));
           if (!r || !r.ok) return r || { ok: false };
           made.push(r.id);
         }
@@ -5091,7 +5091,7 @@ const Build = (() => {
       if (!res || !res.ok) continue;
       pushFlash(plan.map(({ p }) => propRect(p, dx, dy)), false);
       landProps(made, 40);
-      if (typeof StationUI !== 'undefined' && StationUI.pokeQuests) { try { StationUI.pokeQuests(); } catch (_) {} }
+      if (typeof KeepUI !== 'undefined' && KeepUI.pokeQuests) { try { KeepUI.pokeQuests(); } catch (_) {} }
       setSelection(made);
       flashTip(ev, 'duplicated ' + made.length + ' · the copies are selected · Ctrl+D again for another', true);
       return true;
@@ -5104,10 +5104,10 @@ const Build = (() => {
      A selected room: its deck in the art well, its name (type to rename — Enter or leaving the field saves it), its size, then
      MOVE (arms the move tool), RESIZE (its gold handles: drag an edge out to grow it, in to shrink it — WorldModel.resizeRoom,
      everything on it must still stand on it, one undo), FLOOR (arms SURFACE), FURNISH (a whole furnished room in one click: the
-     station builder's own refurnish — its furniture cleared, the style laid, floor and walls too; lines and agents' desks stay;
+     keep builder's own refurnish — its furniture cleared, the style laid, floor and walls too; lines and agents' desks stay;
      one undo), CLEAR (its furniture goes; lines and desks stay) and DELETE (the spawn room is protected). */
   function selectRoom(rid) {
-    const rm = rid ? station.roomById(rid) : null;
+    const rm = rid ? keep.roomById(rid) : null;
     selectedPropId = null; groupIds = []; movingPropId = null; positionOpen = false; furnishOpen = false; roomDelArmedAt = 0; roomAsk = null;
     selectedRoomId = rm ? rm.id : null;
     renderSelection();
@@ -5115,13 +5115,13 @@ const Build = (() => {
     else setHint();
   }
   function roomTiles(rm) { let n = 0; for (const r of rm.rects) n += (r.x2 - r.x1 + 1) * (r.y2 - r.y1 + 1); return n; }
-  // the furnisher is the station builder's own planner (planned on a copy, applied in one undo) — Build mode only hands it the page
-  const furnishReady = () => typeof StationBuilder !== 'undefined' && !!StationBuilder.planEdit && !!StationBuilder.apply && typeof RoomStyles !== 'undefined' && !!RoomStyles.ROOMS
-    && typeof Pipeline !== 'undefined' && typeof WorkflowLine !== 'undefined' && typeof StationTemplates !== 'undefined';
+  // the furnisher is the keep builder's own planner (planned on a copy, applied in one undo) — Build mode only hands it the page
+  const furnishReady = () => typeof KeepBuilder !== 'undefined' && !!KeepBuilder.planEdit && !!KeepBuilder.apply && typeof RoomStyles !== 'undefined' && !!RoomStyles.ROOMS
+    && typeof Pipeline !== 'undefined' && typeof WorkflowLine !== 'undefined' && typeof KeepTemplates !== 'undefined';
   function furnishEnv() {
     const crew = (typeof App !== 'undefined' && App.agents ? App.agents() : []).map(x => ({ id: x.id, name: x.name }));
     return { WorldModel, Pipeline, WorkflowLine, crew, heroId: (typeof App !== 'undefined' && App.heroId) ? App.heroId() : null,
-      StationTemplates: typeof StationTemplates !== 'undefined' ? StationTemplates : null, PropSprites: typeof PropSprites !== 'undefined' ? PropSprites : null,
+      KeepTemplates: typeof KeepTemplates !== 'undefined' ? KeepTemplates : null, PropSprites: typeof PropSprites !== 'undefined' ? PropSprites : null,
       RoomStyles: typeof RoomStyles !== 'undefined' ? RoomStyles : null, LineLayout: typeof LineLayout !== 'undefined' ? LineLayout : null,
       LineEdit: typeof LineEdit !== 'undefined' ? LineEdit : null, EquipmentHelp: typeof EquipmentHelp !== 'undefined' ? EquipmentHelp : null, canRecruit: false };
   }
@@ -5134,19 +5134,19 @@ const Build = (() => {
     for (const set of rec.centre || []) for (const pc of set.pieces || []) if (known(pc[0]) && !/rug/.test(pc[0])) return pc[0];
     return 'plant';
   }
-  /* the edit is planned on a copy first (every check the station builder makes), then applied as planned in one undo. A plan
+  /* the edit is planned on a copy first (every check the keep builder makes), then applied as planned in one undo. A plan
      that takes out EQUIPMENT — a piece that gives agents an ability (object = capability), which the new style does not
      bring back — is not applied on the first click: the card names what goes and asks once more (roomAsk). */
   function runRoomEdit(req, ev, ask, confirmed) {
     const env = furnishEnv();
     let r;
-    try { r = StationBuilder.planEdit(station.serialize(), req, env); } catch (e) { r = { ok: false, error: String((e && e.message) || e) }; }
+    try { r = KeepBuilder.planEdit(keep.serialize(), req, env); } catch (e) { r = { ok: false, error: String((e && e.message) || e) }; }
     if (!r || !r.ok) { sfx('bad'); flashTip(ev, (r && r.error) || 'that does not fit this room'); return null; }
     const gear = gearLost(r.plan);
     if (gear.length && !confirmed) { roomAsk = Object.assign({ gear }, ask); sfx('tick'); renderSelection(); return null; }
     roomAsk = null;
     let a;
-    try { a = StationBuilder.apply(station, r.plan, env); } catch (e) { a = { ok: false, error: String((e && e.message) || e) }; }
+    try { a = KeepBuilder.apply(keep, r.plan, env); } catch (e) { a = { ok: false, error: String((e && e.message) || e) }; }
     if (!a || !a.ok) { sfx('bad'); flashTip(ev, (a && a.error) || 'the room could not be changed — nothing was'); return null; }
     return a;
   }
@@ -5154,7 +5154,7 @@ const Build = (() => {
   function gearLost(plan) {
     const spec = (plan && plan.spec) || {}, back = new Set(((spec.props) || []).map(q => q && q.t).filter(Boolean)), out = [], seen = {};
     for (const id of spec.removeProps || []) {
-      const p = station.propById(id); if (!p || back.has(p.t)) continue;
+      const p = keep.propById(id); if (!p || back.has(p.t)) continue;
       const cap = WorldModel.capForProp ? WorldModel.capForProp(p.t) : null; if (!cap) continue;
       const k = p.t + ':' + cap; if (seen[k]) continue; seen[k] = 1;
       out.push(propLabel(p.t) + ' (' + String((WorldModel.CAP_LABEL || {})[cap] || cap).toUpperCase() + ')');
@@ -5163,33 +5163,33 @@ const Build = (() => {
   }
   function furnishRoom(rm, sid, ev, confirmed) {
     if (!rm.name) { sfx('bad'); flashTip(ev, 'name this room first — then FURNISH it'); return; }
-    const before = new Set(station.props().map(p => p.id)), was = station.props().filter(p => station.roomAt(p.x, p.y) === rm.id).map(p => Object.assign({}, p));
+    const before = new Set(keep.props().map(p => p.id)), was = keep.props().filter(p => keep.roomAt(p.x, p.y) === rm.id).map(p => Object.assign({}, p));
     if (!runRoomEdit({ refurnish: { room: rm.name, style: sid } }, ev, { kind: 'furnish', sid }, confirmed)) return;
     furnishOpen = false;
-    was.filter(p => !station.propById(p.id)).forEach(p => vanishProp(p));
-    landProps(station.props().filter(p => !before.has(p.id)).sort((a, b) => a.y - b.y || a.x - b.x).map(p => p.id), 28);   // the new room drops in, piece by piece
+    was.filter(p => !keep.propById(p.id)).forEach(p => vanishProp(p));
+    landProps(keep.props().filter(p => !before.has(p.id)).sort((a, b) => a.y - b.y || a.x - b.x).map(p => p.id), 28);   // the new room drops in, piece by piece
     renderSelection(); flashUndo();
     sfx('chime'); flashTip(ev, 'furnished as ' + styleLabel(sid).toLowerCase() + ' · floor and walls too · one Undo puts it back', true);
   }
   function clearRoom(rm, ev, confirmed) {
     if (!rm.name) { sfx('bad'); flashTip(ev, 'name this room first — then CLEAR it'); return; }
-    const was = station.props().filter(p => station.roomAt(p.x, p.y) === rm.id).map(p => Object.assign({}, p));
+    const was = keep.props().filter(p => keep.roomAt(p.x, p.y) === rm.id).map(p => Object.assign({}, p));
     if (!runRoomEdit({ clear: rm.name }, ev, { kind: 'clear' }, confirmed)) return;
-    const gone = was.filter(p => !station.propById(p.id));
+    const gone = was.filter(p => !keep.propById(p.id));
     gone.forEach(p => vanishProp(p)); renderSelection(); flashUndo();
     flashTip(ev, 'cleared ' + gone.length + (gone.length === 1 ? ' piece' : ' pieces') + ' · its lines and desks stay · one Undo brings them back', true);
   }
   function deleteSelectedRoom(ev) {
-    const rm = station.roomById(selectedRoomId); if (!rm) return;
-    if (rm.id === station.spawnRoomId()) { sfx('bad'); flashTip(ev, 'the spawn room can’t be deleted — MOVE it instead'); return; }
+    const rm = keep.roomById(selectedRoomId); if (!rm) return;
+    if (rm.id === keep.spawnRoomId()) { sfx('bad'); flashTip(ev, 'the spawn room can’t be deleted — MOVE it instead'); return; }
     const now = performance.now();
     if (!roomDelArmedAt || now - roomDelArmedAt > 2500) { roomDelArmedAt = now; sfx('tick'); flashTip(ev, 'press Delete again to delete ' + (rm.name || 'this room') + ' — everything on it goes (one Undo brings it back)'); return; }
     roomDelArmedAt = 0; selectedRoomId = null; doDeleteRoom(rm.id, ev); renderSelection(); setHint();
   }
   function nudgeRoom(dx, dy, ev) {
-    const rm = station.roomById(selectedRoomId); if (!rm) return;
+    const rm = keep.roomById(selectedRoomId); if (!rm) return;
     const from = rm.rects.map(r => Object.assign({}, r));
-    const res = keepsHalls(() => station.moveRoom(rm.id, dx, dy));
+    const res = keepsHalls(() => keep.moveRoom(rm.id, dx, dy));
     if (res && res.ok) { snapTick('move'); pushMoves(from.map(r => ({ from: r, to: { x1: r.x1 + dx, y1: r.y1 + dy, x2: r.x2 + dx, y2: r.y2 + dy } }))); renderSelection(); }
     else { sfx('bad'); flashTip(ev, (res && res.msg) || 'blocked — the room did not move'); }
   }
@@ -5204,7 +5204,7 @@ const Build = (() => {
   }
   // a handle under the pointer — or anywhere along an edge (a narrower band), so a long wall need not be grabbed at its middle
   function roomHandleAt(ev) {
-    const rm = selectedRoomId && station.roomById(selectedRoomId);
+    const rm = selectedRoomId && keep.roomById(selectedRoomId);
     if (!rm || rm.rects.length !== 1 || !cv) return null;
     const c = toCanvas(ev), t = T(), wx = (c.x - panX) / zoom, wy = (c.y - panY) / zoom, R = Math.max(t * 0.45, 9 / zoom);
     let best = null, bd = Infinity;
@@ -5220,8 +5220,8 @@ const Build = (() => {
   }
   // the rect a resize drag asks for: the grabbed edges follow the pointer by whole tiles, never past the room's minimum
   function resizedRect(d) {
-    const rm = station.roomById(d.roomId); if (!rm) return null;
-    const r0 = rm.rects[0], e = d.edge, min = rm.kind === 'corridor' ? 1 : (station.MIN_ROOM || 3);
+    const rm = keep.roomById(d.roomId); if (!rm) return null;
+    const r0 = rm.rects[0], e = d.edge, min = rm.kind === 'corridor' ? 1 : (keep.MIN_ROOM || 3);
     const dx = d.cur.tx - d.start.tx, dy = d.cur.ty - d.start.ty, r = { x1: r0.x1, y1: r0.y1, x2: r0.x2, y2: r0.y2 };
     if (e.l) r.x1 = Math.min(r0.x1 + dx, r0.x2 - min + 1);
     if (e.r) r.x2 = Math.max(r0.x2 + dx, r0.x1 + min - 1);
@@ -5234,28 +5234,28 @@ const Build = (() => {
   function resizeCheck(rm, nr) {
     const key = [geoVer, rm.id, nr.x1, nr.y1, nr.x2, nr.y2].join('|');
     if (resizeMemo && resizeMemo.key === key) return resizeMemo.v;
-    let v = station.canPlaceRoom([nr], rm.kind, rm.id);
+    let v = keep.canPlaceRoom([nr], rm.kind, rm.id);
     if (v && v.ok) {
       const inOld = (x, y) => rm.rects.some(r => x >= r.x1 && x <= r.x2 && y >= r.y1 && y <= r.y2), inNew = (x, y) => x >= nr.x1 && x <= nr.x2 && y >= nr.y1 && y <= nr.y2;
-      outer: for (const p of station.props()) for (let y = p.y; y < p.y + (p.h || 1); y++) for (let x = p.x; x < p.x + (p.w || 1); x++)
+      outer: for (const p of keep.props()) for (let y = p.y; y < p.y + (p.h || 1); y++) for (let x = p.x; x < p.x + (p.w || 1); x++)
         if (inOld(x, y) && !inNew(x, y)) { v = { ok: false, error: 'CUTS_CONTENTS', msg: 'Move the ' + propLabel(p.t) + ' first · it would be left off the deck' }; break outer; }
-      if (v.ok) for (const k of Object.keys(station.belts() || {})) { const q = k.split(','); if (inOld(+q[0], +q[1]) && !inNew(+q[0], +q[1])) { v = { ok: false, error: 'CUTS_CONTENTS', msg: 'A belt would be left off the deck · clear it first' }; break; } }
+      if (v.ok) for (const k of Object.keys(keep.belts() || {})) { const q = k.split(','); if (inOld(+q[0], +q[1]) && !inNew(+q[0], +q[1])) { v = { ok: false, error: 'CUTS_CONTENTS', msg: 'A belt would be left off the deck · clear it first' }; break; } }
     } else v = { ok: false, error: (v && v.error) || 'BLOCKED', msg: String((v && v.msg) || 'blocked').replace(/^\w/, c => c.toUpperCase()) };
     resizeMemo = { key, v };
     return v;
   }
   function commitRoomResize(d, ev) {
-    const rm = station.roomById(d.roomId); if (!rm) return;
+    const rm = keep.roomById(d.roomId); if (!rm) return;
     const nr = resizedRect(d), r0 = rm.rects[0];
     if (!nr || (nr.x1 === r0.x1 && nr.y1 === r0.y1 && nr.x2 === r0.x2 && nr.y2 === r0.y2)) { hideTip(); return; }
     const pre = resizeCheck(rm, nr);
-    const res = pre && pre.ok ? keepsHalls(() => station.resizeRoom(rm.id, nr)) : pre;
+    const res = pre && pre.ok ? keepsHalls(() => keep.resizeRoom(rm.id, nr)) : pre;
     feedback(res, ev, 'resized to ' + (nr.x2 - nr.x1 + 1) + ' × ' + (nr.y2 - nr.y1 + 1) + ' · Undo puts it back');
     if (res && res.ok) { pushFlash([nr], false); renderSelection(); }
   }
   // on the floor: the selected room in gold, and its handles (the hovered one lit)
   function drawRoomSelection(t) {
-    const rm = station.roomById(selectedRoomId); if (!rm) return;
+    const rm = keep.roomById(selectedRoomId); if (!rm) return;
     ctx.save();
     ctx.strokeStyle = 'rgba(244,200,112,.9)'; ctx.lineWidth = 1.5 / zoom;
     for (const r of rm.rects) ctx.strokeRect(r.x1 * t + 0.75 / zoom, r.y1 * t + 0.75 / zoom, (r.x2 - r.x1 + 1) * t - 1.5 / zoom, (r.y2 - r.y1 + 1) * t - 1.5 / zoom);
@@ -5269,8 +5269,8 @@ const Build = (() => {
     ctx.restore();
   }
   function renderRoomCard(host, rm) {
-    const isSpawn = rm.id === station.spawnRoomId(), corridor = rm.kind === 'corridor', plain = rm.rects.length === 1;
-    const kd = station.ROOM_KINDS[rm.kind] || {}, b = rm.rects[0];
+    const isSpawn = rm.id === keep.spawnRoomId(), corridor = rm.kind === 'corridor', plain = rm.rects.length === 1;
+    const kd = keep.ROOM_KINDS[rm.kind] || {}, b = rm.rects[0];
     const shape = plain ? (b.x2 - b.x1 + 1) + ' × ' + (b.y2 - b.y1 + 1) : rm.rects.length + ' sections';
     host.innerHTML = '<div class="refit-sel-head"><span class="refit-sel-art is-room" aria-hidden="true"></span><span class="refit-sel-name">'
       + '<input class="refit-room-name" type="text" maxlength="40" aria-label="Room name" placeholder="name this room" value="' + esc(rm.name || '') + '">'
@@ -5278,8 +5278,8 @@ const Build = (() => {
       + '<button class="bb sm refit-sel-x" type="button" aria-label="Deselect" data-tip="Let go of the room · Esc">\u2715</button></div><div class="refit-selection-actions"></div>';
     // the art well: the room's own deck, painted by the bake
     try {
-      const matId = station.matOfRoom ? station.matOfRoom(rm.id) : (rm.floorMat || kd.mat);
-      const hue = (station.FLOOR_STYLES[rm.floorStyle] || station.FLOOR_STYLES[kd.floor] || station.FLOOR_STYLES.hull || {}).base || '#556';
+      const matId = keep.matOfRoom ? keep.matOfRoom(rm.id) : (rm.floorMat || kd.mat);
+      const hue = (keep.FLOOR_STYLES[rm.floorStyle] || keep.FLOOR_STYLES[kd.floor] || keep.FLOOR_STYLES.hull || {}).base || '#556';
       host.querySelector('.refit-sel-art').appendChild(matSwatchCanvas(matId || 'plate', hue, 7, 4));
     } catch (_) {}
     host.querySelector('.refit-sel-x').onclick = () => { selectRoom(null); sfx('click'); };
@@ -5289,7 +5289,7 @@ const Build = (() => {
     const saveName = () => {
       const v = (nameEl.value || '').trim();
       if (v === saved) return;
-      const res = station.renameRoom(rm.id, v);
+      const res = keep.renameRoom(rm.id, v);
       if (res && res.ok) { saved = v; sfx('click'); } else { sfx('bad'); nameEl.value = saved; }
     };
     nameEl.onkeydown = e => { if (e.key === 'Enter') { e.preventDefault(); nameEl.blur(); } else if (e.key === 'Escape') { e.preventDefault(); nameEl.value = saved; nameEl.blur(); } };
@@ -5298,7 +5298,7 @@ const Build = (() => {
     const key = (label, k, fn, cls) => { const el = document.createElement('button'); el.className = 'bb sm refit-sel-act' + (cls ? ' ' + cls : ''); el.type = 'button'; el.innerHTML = '<span>' + esc(label) + '</span>' + (k ? '<kbd>' + esc(k) + '</kbd>' : ''); el.onclick = fn; actions.appendChild(el); return el; };
     // THE EYEHOLD: territory is a presentation-only property on the canonical room.
     // Any number of rooms can reuse an environment. No tools or privileges change.
-    if (!corridor && typeof EyeholdTerritories !== 'undefined' && station.setRoomTerritory) {
+    if (!corridor && typeof EyeholdTerritories !== 'undefined' && keep.setRoomTerritory) {
       const chooser = document.createElement('label');
       chooser.className = 'refit-eye-territory';
       chooser.style.cssText = 'display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:8px 0;';
@@ -5321,7 +5321,7 @@ const Build = (() => {
       }
       select.value = current;
       select.onchange = () => {
-        const result = station.setRoomTerritory(rm.id, select.value);
+        const result = keep.setRoomTerritory(rm.id, select.value);
         if (result && result.ok) { sfx('click'); setHint('Territory assigned — visual assets will follow in the next stage'); }
         else { select.value = rm.eyeTerritory || 'generic'; sfx('bad'); }
       };
@@ -5332,7 +5332,7 @@ const Build = (() => {
     if (plain) key('RESIZE', 'edges', () => { sfx('click'); flashTip(orientEv(), 'drag a gold handle on its edge — out to grow it, in to shrink it', true); });
     key('FLOOR', '3', () => { selectTool('paint'); flashTip(orientEv(), 'pick a finish, then click the room to lay it', true); });
     if (!corridor && plain && furnishReady()) key('FURNISH', '', () => { furnishOpen = !furnishOpen; sfx('click'); renderSelection(); }, 'refit-room-furnish').setAttribute('aria-expanded', String(furnishOpen));
-    if (!corridor && furnishReady() && station.props().some(p => station.roomAt(p.x, p.y) === rm.id)) key('CLEAR', '', () => clearRoom(rm, orientEv()));
+    if (!corridor && furnishReady() && keep.props().some(p => keep.roomAt(p.x, p.y) === rm.id)) key('CLEAR', '', () => clearRoom(rm, orientEv()));
     const del = key(isSpawn ? 'PROTECTED' : 'DELETE', isSpawn ? '' : 'Del', () => deleteSelectedRoom(orientEv()), 'refit-sel-del');
     if (isSpawn) { del.disabled = true; del.setAttribute('data-tip', 'the spawn room can’t be deleted — MOVE it instead'); }
     // the ask: what equipment goes, and the two ways on — never applied until FURNISH ANYWAY / CLEAR ANYWAY
@@ -5347,7 +5347,7 @@ const Build = (() => {
       keep.onclick = () => { roomAsk = null; sfx('click'); renderSelection(); };
       host.appendChild(ask);
     }
-    // FURNISH: every whole-room style the station builder knows, as tiles — one click lays it (one undo)
+    // FURNISH: every whole-room style the keep builder knows, as tiles — one click lays it (one undo)
     if (furnishOpen && !corridor && plain && furnishReady()) {
       const grid = document.createElement('div'); grid.className = 'refit-furnish-grid'; grid.setAttribute('aria-label', 'Furnish this room as');
       for (const sid of RoomStyles.ROOM_ORDER || Object.keys(RoomStyles.ROOMS)) {
@@ -5383,7 +5383,7 @@ const Build = (() => {
   function configureProp(p, ev) {
     if (!p) return;
     const t = p.t;
-    if (WORKSTATION_TYPES[t]) return openWorkstationPicker(p.id, ev);
+    if (WORKKEEP_TYPES[t]) return openWorkkeepPicker(p.id, ev);
     if (t === 'bay') return openStepCard(p.id, ev);   // the per-dock STEP EDITOR (step + agent + job brief — one card)
     // routes are edited in the docked Workflow panel like every other machine (2026-09-27 audit P4); the modal stays as the fallback
     if (t === 'filter') return typeof WorkflowPanel !== 'undefined' ? openFlowCard(p.id) : openJunctionEditor(p.id, ev);
@@ -5396,17 +5396,17 @@ const Build = (() => {
     renderEquipmentInfo(t, p);
     flashTip(ev, ((sp.label || t) + '').toUpperCase() + ' — MOVE (4) relocates · DELETE (5) removes', true);
   }
-  const openPropEditor = (id, t, ev) => { const p = station && station.propById(id); if (p) configureProp(p, ev); };
+  const openPropEditor = (id, t, ev) => { const p = keep && keep.propById(id); if (p) configureProp(p, ev); };
   const PROP_EDITABLE = { bay: 1, filter: 1, merger: 1, splitter: 1, joiner: 1, loop: 1, airlock: 1, connector_portal: 1, plugin_terminal: 1, intake: 1, outbox: 1 };   // merger/splitter = flow card only (no config)
-  const isEditableProp = t => !!PROP_EDITABLE[t] || !!WORKSTATION_TYPES[t];   // a workstation binds an agent + opens its picker on place/click
+  const isEditableProp = t => !!PROP_EDITABLE[t] || !!WORKKEEP_TYPES[t];   // a workkeep binds an agent + opens its picker on place/click
   function commitPropStamp(d, ev) {
     // CLICK-ON-MACHINE WINS: a click (no drag) on ANY existing prop inspects it instead of attempting
     // a placement on top of it — placement happens only on clear deck. (The old rule only caught a
     // same-type editable prop, so clicking a bay with a desk armed silently tried an invalid place —
     // the exact "it believes I'm trying to place something" complaint.)
     if (!d.moved) {
-      const exist = station.propAt(d.cur.tx, d.cur.ty);
-      const ep = exist && station.propById(exist);
+      const exist = keep.propAt(d.cur.tx, d.cur.ty);
+      const ep = exist && keep.propById(exist);
       if (ep) { onInspect(ep, ev); return; }
     }
     const row = rowSpots(d);
@@ -5416,10 +5416,10 @@ const Build = (() => {
     // JUNCTION SNAP (connect-mode UX): a filter/splitter/merger only works ON a line — if it's dropped
     // NEXT to one, snap it onto the nearest belt tile instead of leaving an inert junction (the exact
     // silent failure of the 2026-07-05 playtest). Dropped ON a belt already? Unchanged.
-    if ((propType === 'filter' || propType === 'splitter' || propType === 'merger' || propType === 'joiner' || propType === 'loop') && !station.beltAt(px, py)) {
+    if ((propType === 'filter' || propType === 'splitter' || propType === 'merger' || propType === 'joiner' || propType === 'loop') && !keep.beltAt(px, py)) {
       let snapped = null;
       for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1], [1, 1], [1, -1], [-1, 1], [-1, -1]]) {
-        if (station.beltAt(px + dx, py + dy)) { snapped = { x: px + dx, y: py + dy }; break; }
+        if (keep.beltAt(px + dx, py + dy)) { snapped = { x: px + dx, y: py + dy }; break; }
       }
       if (snapped) { px = snapped.x; py = snapped.y; flashTip(ev, 'snapped onto the line', true); }
     }
@@ -5429,18 +5429,18 @@ const Build = (() => {
     if (pm) placement.m = 1;
     if (propType === 'airlock') placement.door = 'closed';   // a fresh airlock seals its room (then click to cycle)
     const grant = (typeof WorldModel !== 'undefined' && WorldModel.grantLabelForProp) ? WorldModel.grantLabelForProp(propType) : null;
-    const owner = WORKSTATION_TYPES[propType] ? deskOwner : null;   // PLACE ITS DESK: this desk is that agent's, and their only one
+    const owner = WORKKEEP_TYPES[propType] ? deskOwner : null;   // PLACE ITS DESK: this desk is that agent's, and their only one
     if (owner) placement.agentId = owner;
     const res = owner
       ? addOwnedDesk(placement, owner)
-      : station.addProp(placement);
+      : keep.addProp(placement);
     if (res && !res.ok) res.msg = placementReason({v:res,rects:[{x1:px,y1:py,x2:px+s.w-1,y2:py+s.h-1}]});
     if (res && res.ok) {
       pushFlash([{ x1: px, y1: py, x2: px + s.w - 1, y2: py + s.h - 1 }], false);
       landProps([res.id]);
-      // a prop just landed → resolve the quest generators + fold NOW, so a station gap this placement closes
+      // a prop just landed → resolve the quest generators + fold NOW, so a keep gap this placement closes
       // celebrates on its own edge (fast back-to-back placements can't coalesce it away on the 1s tick).
-      if (typeof StationUI !== 'undefined' && StationUI.pokeQuests) { try { StationUI.pokeQuests(); } catch (_) {} }
+      if (typeof KeepUI !== 'undefined' && KeepUI.pokeQuests) { try { KeepUI.pokeQuests(); } catch (_) {} }
       if (grant) sfx('chime');   // a capability just came online — a brighter note than the plain placement click
       // first-touch coachmark (tutorial.js): a portal teaches "live tools", any other gear teaches "props are
       // permissions". WORKFLOW props coach even though they're editable (their editor opens too) — otherwise
@@ -5457,7 +5457,7 @@ const Build = (() => {
       // Configuration is a separate, explicit click on the placed object.
     }
     if (res && res.ok) renderEquipmentInfo(propType);
-    if (res && res.ok && WORKSTATION_TYPES[propType]) {
+    if (res && res.ok && WORKKEEP_TYPES[propType]) {
       if (owner) { deskOwner = null; setHint(); }   // the next desk dropped is nobody's until picked
       selectedPropId = res.id; renderSelection();   // the tool stays armed; the new desk's card asks who sits there
       return feedback(res, ev, owner ? (agentLabel(owner) + '’s desk · they sit here now') : 'desk placed · pick who sits here');
@@ -5485,7 +5485,7 @@ const Build = (() => {
       spots = [];
       for (let k = 0; k < n; k++) {
         const x = d.start.tx + (across ? sign * k * step : 0), y = d.start.ty + (across ? 0 : sign * k * step);
-        spots.push({ x, y, w: s.w, h: s.h, v: station.canPlaceProp(propType, x, y, s.w, s.h) });
+        spots.push({ x, y, w: s.w, h: s.h, v: keep.canPlaceProp(propType, x, y, s.w, s.h) });
       }
     }
     rowMemo = { key, spots };
@@ -5493,12 +5493,12 @@ const Build = (() => {
   }
   function commitRow(row, ev) {
     const pr = propFacing(propType), pm = propFlipOn(propType), block = propSpec(propType).blocks !== false, made = [], laid = [];
-    const res = station.transact(() => {
+    const res = keep.transact(() => {
       for (const r of row) {
         const placement = { t: propType, x: r.x, y: r.y, w: r.w, h: r.h, block };
         if (pr) placement.r = pr;
         if (pm) placement.m = 1;
-        const a = station.addProp(placement);
+        const a = keep.addProp(placement);
         if (a && a.ok) { made.push(a.id); laid.push({ x1: r.x, y1: r.y, x2: r.x + r.w - 1, y2: r.y + r.h - 1 }); }
       }
       return made.length ? { ok: true } : { ok: false, msg: 'every spot on that row is taken — drag along clear floor' };
@@ -5506,7 +5506,7 @@ const Build = (() => {
     if (res && res.ok) {
       pushFlash(laid, false);
       landProps(made, 45);   // they drop in down the row, in the order it was dragged
-      if (typeof StationUI !== 'undefined' && StationUI.pokeQuests) { try { StationUI.pokeQuests(); } catch (_) {} }
+      if (typeof KeepUI !== 'undefined' && KeepUI.pokeQuests) { try { KeepUI.pokeQuests(); } catch (_) {} }
       if (typeof Tutorial !== 'undefined' && Tutorial.onPropPlaced) Tutorial.onPropPlaced(propType);
       renderEquipmentInfo(propType);
     }
@@ -5539,11 +5539,11 @@ const Build = (() => {
     // CLICK-ON-MACHINE WINS: connectable machines were consumed by the connect flow in onDown; a
     // plain click on any OTHER machine (a desk, decor) inspects it instead of a 1-tile invalid run.
     if (!d.moved) {
-      const exist = station.propAt(d.cur.tx, d.cur.ty);
-      const ep = exist && station.propById(exist);
+      const exist = keep.propAt(d.cur.tx, d.cur.ty);
+      const ep = exist && keep.propById(exist);
       if (ep) { onInspect(ep, ev); return; }
     }
-    const res = station.placeBeltRun(d.start, d.cur);
+    const res = keep.placeBeltRun(d.start, d.cur);
     if (res && res.ok && res.count) {
       pushFlash([beltRunBox(d.start, d.cur)], false);
       if (typeof Tutorial !== 'undefined' && Tutorial.onBeltPlaced) Tutorial.onBeltPlaced();   // first-touch coachmark: belts + ▸ PREVIEW
@@ -5557,18 +5557,18 @@ const Build = (() => {
     // splitter/merger dropped NEXT to a line snaps onto the nearest belt tile. Without this, a moved
     // filter one tile off its belt still compiled (ring-attached) while reading as misplaced — or, two
     // tiles off, went silently inert. If the snapped tile is blocked, fall back to the plain move.
-    const mp = station.propById(d.propId);
+    const mp = keep.propById(d.propId);
     let okMsg = 'relocated';
-    if (mp && (mp.t === 'filter' || mp.t === 'splitter' || mp.t === 'merger' || mp.t === 'joiner' || mp.t === 'loop') && !station.beltAt(mp.x + dx, mp.y + dy)) {
+    if (mp && (mp.t === 'filter' || mp.t === 'splitter' || mp.t === 'merger' || mp.t === 'joiner' || mp.t === 'loop') && !keep.beltAt(mp.x + dx, mp.y + dy)) {
       for (const [ox, oy] of [[1, 0], [-1, 0], [0, 1], [0, -1], [1, 1], [1, -1], [-1, 1], [-1, -1]]) {
-        if (station.beltAt(mp.x + dx + ox, mp.y + dy + oy) && station.canPlaceProp(mp.t, mp.x + dx + ox, mp.y + dy + oy, mp.w, mp.h, mp.id).ok) {
+        if (keep.beltAt(mp.x + dx + ox, mp.y + dy + oy) && keep.canPlaceProp(mp.t, mp.x + dx + ox, mp.y + dy + oy, mp.w, mp.h, mp.id).ok) {
           dx += ox; dy += oy; okMsg = 'snapped onto the line'; break;
         }
       }
     }
     // belts never ride along with a machine: say so at the drop (the ghost already warned amber)
     const left = mp ? beltsLeftBehind(mp, mp.x + dx, mp.y + dy) : 0;
-    const moved = station.moveProp(d.propId, dx, dy);
+    const moved = keep.moveProp(d.propId, dx, dy);
     feedback(moved, ev, moveMsg(moved, left, okMsg));
     if(moved && moved.ok){selectedPropId=d.propId;renderSelection();landProps([d.propId]);}
   }
@@ -5576,49 +5576,49 @@ const Build = (() => {
     // WALLS are a whole-room surface — there's no per-tile wall, so a drag means the same thing
     // as a click here rather than silently doing nothing.
     if (paintTarget === 'walls') {
-      feedback(station.setWalls(d.roomId, { style: wallStyle, mat: wallMat }), ev, 'walls clad');
+      feedback(keep.setWalls(d.roomId, { style: wallStyle, mat: wallMat }), ev, 'walls clad');
       return;
     }
     // the SHELL is a whole-room surface too — there is no per-tile exterior
     if (paintTarget === 'hull') {
-      feedback(station.setHull(d.roomId, { style: hullStyle, mat: hullMat }), ev, 'shell re-clad');
+      feedback(keep.setHull(d.roomId, { style: hullStyle, mat: hullMat }), ev, 'shell re-clad');
       return;
     }
     if (d.moved) {
       const tiles = [...d.cells].map(k => { const p = k.split(','); return [+p[0], +p[1]]; });
-      feedback(station.paintTiles(d.roomId, tiles, style), ev, 'painted');
+      feedback(keep.paintTiles(d.roomId, tiles, style), ev, 'painted');
     } else {
       // a plain click LAYS THE WHOLE DECK — material and hue together, in one undo slot, so
       // "undo" reverses the deck the Commander just saw laid rather than half of it.
-      feedback(station.setDeck(d.roomId, { style, mat }), ev, 'deck laid');
+      feedback(keep.setDeck(d.roomId, { style, mat }), ev, 'deck laid');
     }
   }
   function commitReclaim(d, ev) {   // DELETE (tool id stays `reclaim`)
     // DRAG across tiles → clear every BELT crossed in ONE undo slot. A drag never removes rooms or
     // props (only single clicks do), so you can wipe a lane without fear of nuking the room under it.
     if (d.moved && d.cells) {
-      const tiles = [...d.cells].map(k => { const p = k.split(','); return [+p[0], +p[1]]; }).filter(([x, y]) => station.beltAt(x, y));
+      const tiles = [...d.cells].map(k => { const p = k.split(','); return [+p[0], +p[1]]; }).filter(([x, y]) => keep.beltAt(x, y));
       if (!tiles.length) { flashTip(ev, 'drag along a belt to clear it'); sfx('bad'); return; }
-      const res = station.removeBelts(tiles);
+      const res = keep.removeBelts(tiles);
       if (res && res.ok) { pushFlash(tiles.map(([x, y]) => ({ x1: x, y1: y, x2: x, y2: y })), true); flashUndo(); flashTip(ev, res.count + (res.count === 1 ? ' belt' : ' belts') + ' removed — UNDO to restore', true); sfx('click'); }
       else { flashTip(ev, (res && res.msg) || 'blocked'); sfx('bad'); }
       return;
     }
-    const pid = station.propAt(d.cur.tx, d.cur.ty);   // props sit on top — reclaim them first
+    const pid = keep.propAt(d.cur.tx, d.cur.ty);   // props sit on top — reclaim them first
     if (pid) {
-      const p = station.propById(pid), was = p && Object.assign({}, p);
-      const res = station.removeProp(pid);
+      const p = keep.propById(pid), was = p && Object.assign({}, p);
+      const res = keep.removeProp(pid);
       if (res && res.ok) { if (p) pushFlash([{ x1: p.x, y1: p.y, x2: p.x + p.w - 1, y2: p.y + p.h - 1 }], true); vanishProp(was); flashUndo(); flashTip(ev, 'deleted — UNDO to restore', true); sfx('click'); }
       else { flashTip(ev, (res && res.msg) || 'blocked'); sfx('bad'); }
       return;
     }
-    if (station.beltAt(d.cur.tx, d.cur.ty)) {   // a belt tile sits on the floor, under props
-      const res = station.removeBelt(d.cur.tx, d.cur.ty);
+    if (keep.beltAt(d.cur.tx, d.cur.ty)) {   // a belt tile sits on the floor, under props
+      const res = keep.removeBelt(d.cur.tx, d.cur.ty);
       if (res && res.ok) { pushFlash([{ x1: d.cur.tx, y1: d.cur.ty, x2: d.cur.tx, y2: d.cur.ty }], true); flashUndo(); flashTip(ev, 'belt removed — UNDO to restore', true); sfx('click'); }
       else { flashTip(ev, (res && res.msg) || 'blocked'); sfx('bad'); }
       return;
     }
-    const id = station.roomAt(d.cur.tx, d.cur.ty);
+    const id = keep.roomAt(d.cur.tx, d.cur.ty);
     if (!id) return;
     doDeleteRoom(id, ev);   // ONE room-removal path, shared with the room card's DELETE
   }
@@ -5629,7 +5629,7 @@ const Build = (() => {
   function pickupDupe(w, ev, pickedId) {
     const pid = pickedId || propAtEvent(ev);
     if (pid) {
-      const p = station.propById(pid);
+      const p = keep.propById(pid);
       const s = propSpec(p.t);
       dupe = { type: 'prop', t: p.t, w: p.w || 1, h: p.h || 1, block: s.blocks !== false, cfg: {},
                rects: [{ x1: 0, y1: 0, x2: (p.w || 1) - 1, y2: (p.h || 1) - 1 }], label: (s.label || p.t).toUpperCase() };
@@ -5641,8 +5641,8 @@ const Build = (() => {
       if (p.def) dupe.cfg.def = p.def;
       if (p.door) dupe.cfg.door = p.door;   // (a merger's legacy bufferSize is NOT copied — it configures nothing)
     } else {
-      const rid = station.roomAt(w.tx, w.ty);
-      const rm = rid && station.roomById(rid);
+      const rid = keep.roomAt(w.tx, w.ty);
+      const rm = rid && keep.roomById(rid);
       if (!rm) { flashTip(ev, 'nothing to copy here — click a room or prop', false); sfx('bad'); return; }
       let mx = Infinity, my = Infinity;
       for (const r of rm.rects) { if (r.x1 < mx) mx = r.x1; if (r.y1 < my) my = r.y1; }
@@ -5658,18 +5658,18 @@ const Build = (() => {
   function stampDupe(w, ev) {
     if (dupe.type === 'prop') {
       const placement = Object.assign({ t: dupe.t, x: w.tx, y: w.ty, w: dupe.w, h: dupe.h, block: dupe.block }, dupe.cfg);
-      const res = station.addProp(placement);
+      const res = keep.addProp(placement);
       if (res && res.ok) {
         pushFlash(dupeRectsAt(w.tx, w.ty), false);
         landProps([res.id]);
-        if (typeof StationUI !== 'undefined' && StationUI.pokeQuests) { try { StationUI.pokeQuests(); } catch (_) {} }
+        if (typeof KeepUI !== 'undefined' && KeepUI.pokeQuests) { try { KeepUI.pokeQuests(); } catch (_) {} }
         const grant = (typeof WorldModel !== 'undefined' && WorldModel.grantLabelForProp) ? WorldModel.grantLabelForProp(dupe.t) : null;
         if (grant) sfx('chime');
         if (typeof Tutorial !== 'undefined' && Tutorial.onPropPlaced) Tutorial.onPropPlaced(dupe.t);
       }
       feedback(res, ev, 'copy placed — click again for another');
     } else {
-      const res = station.addRoom({ kind: dupe.roomKind, rects: dupeRectsAt(w.tx, w.ty), floorStyle: dupe.floorStyle });
+      const res = keep.addRoom({ kind: dupe.roomKind, rects: dupeRectsAt(w.tx, w.ty), floorStyle: dupe.floorStyle });
       if (res && res.ok) pushFlash(dupeRectsAt(w.tx, w.ty), false);
       feedback(res, ev, 'copy placed — click again for another');
     }
@@ -5678,8 +5678,8 @@ const Build = (() => {
   function dupeGhost(tx, ty) {
     const rects = dupeRectsAt(tx, ty);
     const v = dupe.type === 'prop'
-      ? station.canPlaceProp(dupe.t, tx, ty, dupe.w, dupe.h)
-      : (dupe.roomKind === 'corridor' ? station.canPlaceHallway(rects) : station.canPlaceRoom(rects, dupe.roomKind));
+      ? keep.canPlaceProp(dupe.t, tx, ty, dupe.w, dupe.h)
+      : (dupe.roomKind === 'corridor' ? keep.canPlaceHallway(rects) : keep.canPlaceRoom(rects, dupe.roomKind));
     return { rects, v, kind: 'dupe' };
   }
 
@@ -5717,9 +5717,9 @@ const Build = (() => {
   const zoomTo = z => zoomAboutCentre(z);
 
   /* The action deck's subtitle used to be a fixed sentence repeating what the dock already says.
-     It now carries the one thing nothing else on screen does: how big the station you are editing
+     It now carries the one thing nothing else on screen does: how big the keep you are editing
      actually IS. Every number is counted off the model on the frame it is shown — rooms and deck
-     tiles from the room rects, machines from the prop list — so it can never claim a station the
+     tiles from the room rects, machines from the prop list — so it can never claim a keep the
      save doesn't hold (truthful telemetry). */
   let statSig = '', zoomSig = '';
   function updateTopReadout() {
@@ -5731,7 +5731,7 @@ const Build = (() => {
       if (zl) zl.textContent = zt;
     }
     /* THE CENSUS ONLY MOVES WITH THE FLOOR. The zoom readout above is per-frame (the camera is not
-       geometry), but rooms/rects/props cannot change without a station.onChange — and the scan below
+       geometry), but rooms/rects/props cannot change without a keep.onChange — and the scan below
        walks every room AND every rect AND the whole prop list. The old throttle compared the finished
        signature, which skipped the DOM write but paid the full walk on every one of 60 frames a
        second. Gate the WALK on geoVer; the signature check still guards the DOM write. */
@@ -5739,13 +5739,13 @@ const Build = (() => {
     const sub = root.querySelector('#refit-sub');
     if (!sub) return;   // DOM not up yet — do NOT bank the version, or the readout never lands
     statVer = geoVer;
-    const list = station.rooms();
+    const list = keep.rooms();
     let tiles = 0, halls = 0, rooms = 0;
     for (const rm of list) {
       if (rm.kind === 'corridor') halls++; else rooms++;
       for (const r of rm.rects) tiles += (r.x2 - r.x1 + 1) * (r.y2 - r.y1 + 1);
     }
-    const machines = station.props().length;
+    const machines = keep.props().length;
     const sig = rooms + '/' + halls + '/' + tiles + '/' + machines;
     if (sig === statSig) return;   // the sub is re-read every frame; only touch the DOM when it moved
     const first = statSig === '';
@@ -5754,7 +5754,7 @@ const Build = (() => {
     if (halls) bits.push(halls + (halls === 1 ? ' HALL' : ' HALLS'));
     bits.push(tiles + ' TILES');
     if (machines) bits.push(machines + (machines === 1 ? ' OBJECT' : ' OBJECTS'));
-    /* THE STATION'S OWN NAME FOR ITS SIZE. A pure LABEL on a number already shown — no gauge, no
+    /* THE KEEP'S OWN NAME FOR ITS SIZE. A pure LABEL on a number already shown — no gauge, no
        gate, nothing unlocks at a threshold (sandbox law); crossing one is simply the floor earning
        a bigger word, which is the whole point of building. Announced once, when it happens. */
     const tier = tierFor(tiles);
@@ -5762,9 +5762,9 @@ const Build = (() => {
     lastTier = tier;
     sub.innerHTML = '<span class="refit-tier">' + esc(tier) + '</span>' + esc(' · ' + bits.join(' · '));
   }
-  // deck tiles → the station's size word. Thresholds are round numbers, not tuned: they exist to
+  // deck tiles → the keep's size word. Thresholds are round numbers, not tuned: they exist to
   // give a growing floor a few named landmarks, and every one is reachable from minute one.
-  const TIER_STEPS = [[3000, 'CITADEL'], [1200, 'COMPLEX'], [400, 'STATION'], [0, 'OUTPOST']];
+  const TIER_STEPS = [[3000, 'CITADEL'], [1200, 'COMPLEX'], [400, 'KEEP'], [0, 'OUTPOST']];
   const tierFor = tiles => (TIER_STEPS.find(s => tiles >= s[0]) || TIER_STEPS[TIER_STEPS.length - 1])[1];
   let lastTier = '';
   function announceTier(tier) {
@@ -5772,7 +5772,7 @@ const Build = (() => {
     const el = root.querySelector('.refit-tier');
     const el2 = root.querySelector('.refit-title');
     [el, el2].forEach(n => { if (!n) return; n.classList.remove('refit-levelup'); void n.offsetWidth; n.classList.add('refit-levelup'); });
-    // NO StationUI.notify (notification diet): the BUILD MODE title flash + the new tier word ARE the announcement.
+    // NO KeepUI.notify (notification diet): the BUILD MODE title flash + the new tier word ARE the announcement.
   }
 
   const ESC_EXIT_WINDOW_MS = 2500;
@@ -5818,10 +5818,10 @@ const Build = (() => {
     escExitArmedAt = 0;   // any other key disarms the pending exit
     if ((ev.ctrlKey || ev.metaKey) && (ev.key === 'z' || ev.key === 'Z')) {
       ev.preventDefault();
-      const r = ev.shiftKey ? station.redo() : station.undo();
+      const r = ev.shiftKey ? keep.redo() : keep.undo();
       sfx(r.ok ? 'click' : 'bad'); return;
     }
-    if ((ev.ctrlKey || ev.metaKey) && (ev.key === 'y' || ev.key === 'Y')) { ev.preventDefault(); sfx(station.redo().ok ? 'click' : 'bad'); return; }
+    if ((ev.ctrlKey || ev.metaKey) && (ev.key === 'y' || ev.key === 'Y')) { ev.preventDefault(); sfx(keep.redo().ok ? 'click' : 'bad'); return; }
     if (ev.key === '/') { ev.preventDefault(); buildGroup = 'props'; selectTool('select'); root.querySelector('#refit-propsearch-input')?.focus(); return; }
     if (ev.key === 'f' || ev.key === 'F') { fitCamera(); return; }
     // R/M belong to pending prop placement, or to hovered furniture while browsing.
@@ -5905,7 +5905,7 @@ const Build = (() => {
   function beltRunBox(a, b) { return beltRun(a, b).rect; }
 
   /* ---------- SNAP FLUSH (2026-08-10) ----------
-     Andrew's own station, read out of his save: EIGHT rooms, and not one pair of them touching —
+     Andrew's own keep, read out of his save: EIGHT rooms, and not one pair of them touching —
      r5/r6/r7/r8 sit ONE tile off r1, r3 two, r9 three. The seam classifier finds 0 open joins, so
      what reads as "the floors won't blend" is not a blend failure at all: it is eight separate
      hulls, each correctly drawing its own wall and shell across a gap of void. Close the gaps and
@@ -5922,7 +5922,7 @@ const Build = (() => {
        · a DRAG is sizing -> move the EDGE that is near a neighbour, so the room you are drawing
          grows to meet the one already there.
      A snap is only ever offered when the two footprints actually FACE each other (their spans
-     overlap on the other axis) — otherwise a room across the station would tug at a placement it can
+     overlap on the other axis) — otherwise a room across the keep would tug at a placement it can
      never touch. And every candidate is re-validated through the model's own validator before it is
      accepted, so a snap can never create the overlap the snap exists to avoid.
 
@@ -5932,14 +5932,14 @@ const Build = (() => {
   const spanHit = (a1, a2, b1, b2) => Math.max(a1, b1) <= Math.min(a2, b2);
   function snapFit(rect, opts) {
     const resize = !!(opts && opts.resize), ignoreId = opts && opts.ignoreId;
-    const list = (station.rooms && station.rooms()) || [];
+    const list = (keep.rooms && keep.rooms()) || [];
     if (!list.length) return rect;
     /* MOVE hands its own validator in. It has to: `tool` is 'move' and `kind` is whatever the ROOM
        palette happens to have selected, so validating a dragged corridor against the armed room kind
        would ask the model an unrelated question and take its answer. A multi-rect room also has to
        be validated as the whole set, not as its bounding box. */
     const legal = (opts && opts.validate) || ((r) => {
-      const v = (tool === 'hall') ? station.canPlaceHallway([r], ignoreId) : station.canPlaceRoom([r], kind, ignoreId);
+      const v = (tool === 'hall') ? keep.canPlaceHallway([r], ignoreId) : keep.canPlaceRoom([r], kind, ignoreId);
       return !!(v && v.ok);
     });
     if (!legal(rect)) return rect;   // already illegal — snapping would only hide why
@@ -5974,7 +5974,7 @@ const Build = (() => {
                         : { ...out, y1: out.y1 + d, y2: out.y2 + d });
         // a resize may not collapse the footprint under the model's own minimum
         const w = next.x2 - next.x1 + 1, h = next.y2 - next.y1 + 1;
-        const min = (tool === 'room') ? station.MIN_ROOM : 1;
+        const min = (tool === 'room') ? keep.MIN_ROOM : 1;
         if (w < min || h < min) continue;
         if (!legal(next)) continue;
         if (!best || Math.abs(d) < best.d) best = { d: Math.abs(d), next };
@@ -5995,7 +5995,7 @@ const Build = (() => {
     const shift = (ddx, ddy) => rm.rects.map(r => ({ x1: r.x1 + dx + ddx, y1: r.y1 + dy + ddy, x2: r.x2 + dx + ddx, y2: r.y2 + dy + ddy }));
     const validate = (r) => {
       const rects = shift(r.x1 - moved.x1, r.y1 - moved.y1);
-      const v = rm.kind === 'corridor' ? station.canPlaceHallway(rects, rm.id) : station.canPlaceRoom(rects, rm.kind, rm.id);
+      const v = rm.kind === 'corridor' ? keep.canPlaceHallway(rects, rm.id) : keep.canPlaceRoom(rects, rm.kind, rm.id);
       return !!(v && v.ok);
     };
     const s = snapFit(moved, { ignoreId: rm.id, validate });
@@ -6004,17 +6004,17 @@ const Build = (() => {
 
   let propHoverMemo = null;
   /* WILL IT CONNECT? (2026-09-23 playtest) — the ghost asks the model which EXISTING machines a placement would
-     hook (station.connectionPreview: the compiler's own ring rule), so a line stamped against another, or a
+     hook (keep.connectionPreview: the compiler's own ring rule), so a line stamped against another, or a
      machine dropped against a lane, turns the ghost AMBER and names what it joins before the click. Placement
      stays allowed (sandbox — never gate); the point is that no connection is ever made without being shown.
      Memoized per (floor edit, candidate) — the frame loop calls ghostInfo every frame. */
   let linkMemo = null;
   function ghostLinks(cand) {
-    if (!station || typeof station.connectionPreview !== 'function') return [];
+    if (!keep || typeof keep.connectionPreview !== 'function') return [];
     const key = geoVer + '|' + JSON.stringify(cand);
     if (linkMemo && linkMemo.key === key) return linkMemo.links;
     let links = [];
-    try { links = station.connectionPreview(cand) || []; } catch (_) { links = []; }
+    try { links = keep.connectionPreview(cand) || []; } catch (_) { links = []; }
     linkMemo = { key, links };
     return links;
   }
@@ -6033,9 +6033,9 @@ const Build = (() => {
   // a MOVE of a workflow machine: which of its belt hookups would it leave behind at the new spot? (a ring-rule floor
   // only — on a linked floor its belts come with it)
   function beltsLeftBehind(p, nx, ny) {
-    if (!p || !isWorkflowType(p.t) || typeof station.hookedBelts !== 'function' || linkedFloor()) return 0;
+    if (!p || !isWorkflowType(p.t) || typeof keep.hookedBelts !== 'function' || linkedFloor()) return 0;
     const w = p.w || 1, h = p.h || 1;
-    return station.hookedBelts(p.id).filter(b => !(b.x >= nx - 1 && b.x <= nx + w && b.y >= ny - 1 && b.y <= ny + h)).length;
+    return keep.hookedBelts(p.id).filter(b => !(b.x >= nx - 1 && b.x <= nx + w && b.y >= ny - 1 && b.y <= ny + h)).length;
   }
   // what a MOVE did, said as it happened: on a linked floor its belts came with it — or one found no route and stayed off
   function moveMsg(res, left, okMsg) {
@@ -6048,17 +6048,17 @@ const Build = (() => {
   function ghostInfo() {
     if (!drag) {
       if(tool==='move'&&movingPropId&&hoverTile){
-        const p=station.propById(movingPropId);if(!p)return null;
+        const p=keep.propById(movingPropId);if(!p)return null;
         const {tx,ty}=hoverTile;
         const links = isWorkflowType(p.t) ? ghostLinks({ props: [{ t: p.t, x: tx, y: ty, w: p.w, h: p.h }], ignoreId: p.id }) : [];
-        return {rects:[{x1:tx,y1:ty,x2:tx+p.w-1,y2:ty+p.h-1}],v:station.canPlaceProp(p.t,tx,ty,p.w,p.h,p.id),move:true,dx:tx-p.x,dy:ty-p.y,preview:{...p,x:tx,y:ty},links,leftBehind:beltsLeftBehind(p,tx,ty)};
+        return {rects:[{x1:tx,y1:ty,x2:tx+p.w-1,y2:ty+p.h-1}],v:keep.canPlaceProp(p.t,tx,ty,p.w,p.h,p.id),move:true,dx:tx-p.x,dy:ty-p.y,preview:{...p,x:tx,y:ty},links,leftBehind:beltsLeftBehind(p,tx,ty)};
       }
       // DUPE armed: the copy ghosts under the cursor with no drag — every click stamps
       if (tool === 'dupe' && dupe && hoverTile) return dupeGhost(hoverTile.tx, hoverTile.ty);
       // LINES armed: the whole blueprint ghosts under the cursor — click stamps, red stays red
       if (tool === 'line' && hoverTile) return lineGhost(hoverTile.tx, hoverTile.ty);
       // Show a prop's occupied footprint before the click. Validation is stable while the
-      // pointer, orientation and station stay put; avoid a model walk on every paint frame.
+      // pointer, orientation and keep stay put; avoid a model walk on every paint frame.
       if (tool === 'prop' && hoverTile) {
         const { tx, ty } = hoverTile, facing = propFacing(propType);
         const key = [geoVer, propType, facing, tx, ty].join('|');
@@ -6066,28 +6066,28 @@ const Build = (() => {
           const s = propBox(propType, facing);
           const rect = { x1: tx, y1: ty, x2: tx + s.w - 1, y2: ty + s.h - 1 };
           const links = isWorkflowType(propType) ? ghostLinks({ props: [{ t: propType, x: tx, y: ty, w: s.w, h: s.h }] }) : [];
-          propHoverMemo = { key, ghost: { rects: [rect], v: station.canPlaceProp(propType, tx, ty, s.w, s.h), kind: 'prop', stamp: true, links } };
+          propHoverMemo = { key, ghost: { rects: [rect], v: keep.canPlaceProp(propType, tx, ty, s.w, s.h), kind: 'prop', stamp: true, links } };
         }
         return propHoverMemo.ghost;
       }
       // ROOM / HALLWAY armed: the footprint a CLICK would stamp, previewed under the cursor and
       // validated live — so "what happens if I press here" is answered before you press. A drag
       // from the same tile takes over the moment you move (drag.mode 'draw' below).
-      if ((tool === 'room' || tool === 'hall') && hoverTile && !station.propAt(hoverTile.tx, hoverTile.ty)) {
+      if ((tool === 'room' || tool === 'hall') && hoverTile && !keep.propAt(hoverTile.tx, hoverTile.ty)) {
         const rect = snapFit(stampRectFor(hoverTile.tx, hoverTile.ty), {});
-        const v = tool === 'hall' ? station.canPlaceHallway([rect]) : station.canPlaceRoom([rect], kind);
+        const v = tool === 'hall' ? keep.canPlaceHallway([rect]) : keep.canPlaceRoom([rect], kind);
         return { rects: [rect], v, kind: tool, stamp: true };
       }
       return null;
     }
     if (drag.mode === 'draw') {
       const rect = snapFit((tool === 'hall') ? laneRect(drag.start, drag.cur) : norm(drag.start, drag.cur), { resize: true });
-      const v = (tool === 'hall') ? station.canPlaceHallway([rect]) : station.canPlaceRoom([rect], kind);
+      const v = (tool === 'hall') ? keep.canPlaceHallway([rect]) : keep.canPlaceRoom([rect], kind);
       return { rects: [rect], v, kind: tool };
     }
     if (drag.mode === 'beltrun') {
       const br = beltRun(drag.start, drag.cur);
-      return { rects: [br.rect], v: station.canPlaceBeltRun(drag.start, drag.cur), belt: true, dir: br.dir };
+      return { rects: [br.rect], v: keep.canPlaceBeltRun(drag.start, drag.cur), belt: true, dir: br.dir };
     }
     if (drag.mode === 'propstamp') {
       const row = rowSpots(drag);
@@ -6095,31 +6095,31 @@ const Build = (() => {
       const s = propBox(propType, propFacing(propType)), tx = drag.cur.tx, ty = drag.cur.ty;   // ghost shows the TURNED box
       const rect = { x1: tx, y1: ty, x2: tx + s.w - 1, y2: ty + s.h - 1 };
       const links = isWorkflowType(propType) ? ghostLinks({ props: [{ t: propType, x: tx, y: ty, w: s.w, h: s.h }] }) : [];
-      return { rects: [rect], v: station.canPlaceProp(propType, tx, ty, s.w, s.h), kind: 'prop', links };
+      return { rects: [rect], v: keep.canPlaceProp(propType, tx, ty, s.w, s.h), kind: 'prop', links };
     }
     if (drag.mode === 'propmove') {
-      const p = station.propById(drag.propId); if (!p) return null;
+      const p = keep.propById(drag.propId); if (!p) return null;
       const dx = drag.cur.tx - drag.start.tx, dy = drag.cur.ty - drag.start.ty;
       const nx = p.x + dx, ny = p.y + dy;
       const rect = { x1: nx, y1: ny, x2: nx + p.w - 1, y2: ny + p.h - 1 };
       const links = isWorkflowType(p.t) && (dx || dy) ? ghostLinks({ props: [{ t: p.t, x: nx, y: ny, w: p.w, h: p.h }], ignoreId: p.id }) : [];
-      return { rects: [rect], v: station.canPlaceProp(p.t, nx, ny, p.w, p.h, p.id), move: true, dx, dy, preview:{...p,x:nx,y:ny}, links, leftBehind: (dx || dy) ? beltsLeftBehind(p, nx, ny) : 0 };
+      return { rects: [rect], v: keep.canPlaceProp(p.t, nx, ny, p.w, p.h, p.id), move: true, dx, dy, preview:{...p,x:nx,y:ny}, links, leftBehind: (dx || dy) ? beltsLeftBehind(p, nx, ny) : 0 };
     }
     if (drag.mode === 'roomresize') {
-      const rm = station.roomById(drag.roomId), nr = rm && resizedRect(drag); if (!nr) return null;
+      const rm = keep.roomById(drag.roomId), nr = rm && resizedRect(drag); if (!nr) return null;
       return { rects: [nr], v: resizeCheck(rm, nr), kind: 'resize' };
     }
     if (drag.mode === 'groupmove') {
-      const ps = groupIds.map(id => station.propById(id)).filter(Boolean); if (!ps.length) return null;
+      const ps = groupIds.map(id => keep.propById(id)).filter(Boolean); if (!ps.length) return null;
       const dx = drag.cur.tx - drag.start.tx, dy = drag.cur.ty - drag.start.ty;
       return { rects: ps.map(p => propRect(p, dx, dy)), v: groupFit(ps, dx, dy), move: true, dx, dy, group: ps.map(p => ({ ...p, x: p.x + dx, y: p.y + dy })) };
     }
     if (drag.mode === 'move') {
-      const rm = station.roomById(drag.roomId); if (!rm) return null;
+      const rm = keep.roomById(drag.roomId); if (!rm) return null;
       const raw = { dx: drag.cur.tx - drag.start.tx, dy: drag.cur.ty - drag.start.ty };
       const { dx, dy } = snapMoveDelta(rm, raw.dx, raw.dy);
       const rects = rm.rects.map(r => ({ x1: r.x1 + dx, y1: r.y1 + dy, x2: r.x2 + dx, y2: r.y2 + dy }));
-      const v = rm.kind === 'corridor' ? station.canPlaceHallway(rects, rm.id) : station.canPlaceRoom(rects, rm.kind, rm.id);
+      const v = rm.kind === 'corridor' ? keep.canPlaceHallway(rects, rm.id) : keep.canPlaceRoom(rects, rm.kind, rm.id);
       return { rects, v, move: true, dx, dy };
     }
     return null;
@@ -6129,14 +6129,14 @@ const Build = (() => {
   function rebake() {
     // Prop-only edits still replace geometry: collision, mounts and capability
     // routing must see the new objects even when the environment pixels survive.
-    if (bakeDirty || !cache || projectionDirty) cacheGeo = station.projectGeometry();
+    if (bakeDirty || !cache || projectionDirty) cacheGeo = keep.projectGeometry();
     if (bakeDirty || !cache) {
       const visibleRect = visibleBakeRect(cacheGeo);
-      cache = StationBake.bakeIncremental
-        ? StationBake.bakeIncremental(cacheGeo, cache, bakeDirtyRects, { visibleRect, maxRetainedChunks: MAX_REFIT_CHUNKS, onlyMissingVisible: bakeVisibleOnly })
-        : StationBake.bake(cacheGeo);
+      cache = KeepBake.bakeIncremental
+        ? KeepBake.bakeIncremental(cacheGeo, cache, bakeDirtyRects, { visibleRect, maxRetainedChunks: MAX_REFIT_CHUNKS, onlyMissingVisible: bakeVisibleOnly })
+        : KeepBake.bake(cacheGeo);
     }
-    /* recompile the routing plan ONLY when the floor actually changed (planDirty — set by station.onChange
+    /* recompile the routing plan ONLY when the floor actually changed (planDirty — set by keep.onChange
        and open(), the two edit paths; world.js compileRouting is gated the same way via its geoDirty edit
        flag). rebake() ALSO runs on pure pans (frame() flips bakeDirty+bakeVisibleOnly when visible chunks
        are missing), and recompiling plan + liveTiles + the key-rebase on every pan was pure waste: the
@@ -6144,7 +6144,7 @@ const Build = (() => {
     if (planDirty || !valPlan) {
       valPlan = (typeof Pipeline !== 'undefined') ? Pipeline.compileRoutingPlan(cacheGeo) : null;   // cost-safety: recompute the routing plan on every floor edit
       // dead-vs-live belt render mirrors the live world. The plan is compiled in cacheGeo's LOCAL frame but
-      // drawConveyor draws station.belts() in WORLD tiles — rebase the live keys by the geo origin or every
+      // drawConveyor draws keep.belts() in WORLD tiles — rebase the live keys by the geo origin or every
       // BUILD MODE belt would look cold (frame-mismatch, not truth).
       valLive = null;
       if (valPlan && Pipeline.liveTiles) {
@@ -6175,7 +6175,7 @@ const Build = (() => {
   // the next requestAnimationFrame at the foot of this function and BUILD MODE remains a black overlay forever.
   // Closing and reopening appeared to "fix" it only because open() started a brand-new loop after the transient
   // startup condition (asset decode/layout/cache warm-up) had passed. Keep the loop host-owned: one bad frame is
-  // logged, its derived bake is discarded, and a bounded retry re-measures + re-fits from canonical station state.
+  // logged, its derived bake is discarded, and a bounded retry re-measures + re-fits from canonical keep state.
   function scheduleFrame(failed) {
     if (!running) return;
     if (!failed) { raf = requestAnimationFrame(frame); return; }
@@ -6199,7 +6199,7 @@ const Build = (() => {
     cache = null; cacheGeo = null;
     bakeDirty = true; bakeDirtyRects = null; bakeDirtyRectsGlobal = false; bakeVisibleOnly = false; planDirty = true;
     // A first desktop layout pass can change the backing size between open() and the first paint. Re-measure and
-    // frame the canonical bounds during recovery so a stale 0/small viewport cannot leave the station offscreen.
+    // frame the canonical bounds during recovery so a stale 0/small viewport cannot leave the keep offscreen.
     try { resize(); fitCamera(); } catch (_) {}
   }
 
@@ -6254,14 +6254,14 @@ const Build = (() => {
     insMemo = null;   // one layout measurement per frame at most (viewInsetsFrame)
     try {
     const visibleRect = cacheGeo ? visibleBakeRect(cacheGeo) : null;
-    if (visibleRect && cache && StationBake.missingVisibleChunks && StationBake.missingVisibleChunks(cache, visibleRect).length) {
+    if (visibleRect && cache && KeepBake.missingVisibleChunks && KeepBake.missingVisibleChunks(cache, visibleRect).length) {
       bakeDirty = true; bakeVisibleOnly = true;
     }
     if (bakeDirty || !cache || planDirty) rebake();
     // an armed first ride waits out the tutorial + the first-run card (.refit-firstrun, never .refit-guide)
     // ONE VOICE: the first ride waits while the presets dialog or a preset's setup guide is open (staffing in the guide is
     // what completes the line) — it narrates on the floor once that card closes, never over it
-    if (ridePending && !tutorialCoaching() && !(root && root.querySelector('.refit-firstrun, .refit-preset-example, .refit-station-builds'))) fireFirstRide();
+    if (ridePending && !tutorialCoaching() && !(root && root.querySelector('.refit-firstrun, .refit-preset-example, .refit-keep-builds'))) fireFirstRide();
     // finish-the-line card: slow re-derive (feed truth changes on the world's poll, not on edits) + per-frame pin
     if (finCardEl && now - finPollTs > 2000) { finPollTs = now; renderFinCard(); }
     // the authored prop art landed after the Workflow panel painted its tiles: repaint it once the loading settles, so a tile never
@@ -6273,14 +6273,14 @@ const Build = (() => {
     positionFinCard();
     if (perfAcc) perfAdd('~finCard', performance.now() - hT0);
     const rT0 = perfAcc ? performance.now() : 0;
-    updateTopReadout();   // station stats + the live zoom % (both self-throttle on an unchanged value)
+    updateTopReadout();   // keep stats + the live zoom % (both self-throttle on an unchanged value)
     if (perfAcc) perfAdd('~topReadout', performance.now() - rT0);
     const t = T();
     ctx.setTransform(1, 0, 0, 1, 0, 0);
     ctx.imageSmoothingEnabled = false;
     // The backdrop, shared with the live world (SpaceBG) so entering/exiting BUILD MODE doesn't jump the sky —
     // same selection, same camera contract (BUILD MODE's zoom is the world's `scale`), so the parallax matches too.
-    // A LANDED station has no sky: the ground layer below covers the frame, so skip the starfield entirely.
+    // A LANDED keep has no sky: the ground layer below covers the frame, so skip the starfield entirely.
     if (typeof Terrain !== 'undefined' && Terrain.active()) {
       ctx.fillStyle = Terrain.baseColor(); ctx.fillRect(0, 0, cv.width, cv.height);
     } else if (typeof SpaceBG !== 'undefined') SpaceBG.draw(ctx, cv.width, cv.height, now, { panX, panY, scale: zoom });
@@ -6292,13 +6292,13 @@ const Build = (() => {
     if (sceneRenderer) sceneRenderer.begin({ geo: cacheGeo, cache, now, scale: zoom,
       panX: panX + ox * zoom, panY: panY + oy * zoom, width: cv.width, height: cv.height,
       reducedMotion: typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches });
-    /* the ground, in world space under the bake — BUILD MODE blits the station at (ox,oy), so the
+    /* the ground, in world space under the bake — BUILD MODE blits the keep at (ox,oy), so the
        clearing must be placed there too, not at the origin like the live world.
 
        THE CLEARING'S SIZE COMES FROM THE GEOMETRY, NOT FROM THE BAKE CANVAS. `cache.baseCv` only
-       exists on the WHOLE-CANVAS bake; when StationBake.bakeIncremental is available the cache is
+       exists on the WHOLE-CANVAS bake; when KeepBake.bakeIncremental is available the cache is
        CHUNKED and has no baseCv at all, so reading `.width` off it threw a TypeError out of the
-       draw function before a single pixel of ground or station was painted — BUILD MODE went black.
+       draw function before a single pixel of ground or keep was painted — BUILD MODE went black.
        The line below it already knew this (it picks drawBase over drawImage(cache.baseCv) for
        exactly that reason); this call did not. cacheGeo carries COLS/ROWS in tiles on both paths. */
     if (typeof Terrain !== 'undefined' && Terrain.active()) {
@@ -6309,7 +6309,7 @@ const Build = (() => {
         { x: ox, y: oy, w: bw, h: bh });
     }
     const drawVisibleRect = visibleBakeRect(cacheGeo);
-    if (StationBake.drawBase) StationBake.drawBase(ctx, cache, ox, oy, drawVisibleRect);
+    if (KeepBake.drawBase) KeepBake.drawBase(ctx, cache, ox, oy, drawVisibleRect);
     else ctx.drawImage(cache.baseCv, ox, oy);
     voiceBegin();   // one-voice law: every text layer below REGISTERS; the arbiter paints at the end
     drawLayer('grid', () => drawGrid(t));
@@ -6320,11 +6320,11 @@ const Build = (() => {
     drawLayer('light', () => {
       if (sceneRenderer) {
         ctx.save(); ctx.translate(ox, oy);
-        try { nextLight = sceneRenderer.drawLight(ctx, framePropLights, { ambient: StationBake.LIGHT.ambient, emission: .9 }); }
+        try { nextLight = sceneRenderer.drawLight(ctx, framePropLights, { ambient: KeepBake.LIGHT.ambient, emission: .9 }); }
         finally { ctx.restore(); }
       }
       if (!nextLight) {
-        if (StationBake.drawLight) StationBake.drawLight(ctx, cache, ox, oy, drawVisibleRect);
+        if (KeepBake.drawLight) KeepBake.drawLight(ctx, cache, ox, oy, drawVisibleRect);
         else ctx.drawImage(cache.lightCv, ox, oy);
       }
     });
@@ -6347,9 +6347,9 @@ const Build = (() => {
     drawLayer('agentTag', () => drawAgentTag(t));   // hovering a PC or BAY names the agent it's bound to (or flags an unassigned PC)
     drawLayer('ghost', () => drawGhost(t, now));
     // every voice has registered — the arbiter now paints AT MOST one label per anchor region.
-    // overFloor: the pointer is on the station (or a gesture is live) → the projection stays quiet.
+    // overFloor: the pointer is on the keep (or a gesture is live) → the projection stays quiet.
     // guarded too: the registered labels PAINT here, so a throwing caption would otherwise take the frame
-    drawLayer('voices', () => voiceFlush(!!drag || !!(hoverRoomId || hoverPropId || (hoverTile && station.beltAt(hoverTile.tx, hoverTile.ty)))));
+    drawLayer('voices', () => voiceFlush(!!drag || !!(hoverRoomId || hoverPropId || (hoverTile && keep.beltAt(hoverTile.tx, hoverTile.ty)))));
     // animate the prop-palette preview gallery (~25fps is plenty + cheap). Runs LAST: it hijacks PropSprites'
     // ctx for the offscreen tiles, and the next frame re-points it at the main canvas in drawProps().
     if (tool === 'prop' && propThumbs.length && now - lastThumbTs >= 40) { paintThumbs(now); lastThumbTs = now; }
@@ -6375,7 +6375,7 @@ const Build = (() => {
      tiles. It is now three concentric readings of the same lattice:
 
        DECK   — the real footprint. Per-tile cells, brightest: this is floor that exists.
-       APRON  — GRID_APRON tiles of open space around the station bounds. Full minor grid: the
+       APRON  — GRID_APRON tiles of open space around the keep bounds. Full minor grid: the
                 ground you actually build on next, so a drag has something to snap against.
        VOID   — beyond that, MAJOR divisions only, faint. Open space, with a coarse ruler.
 
@@ -6383,8 +6383,8 @@ const Build = (() => {
      lines fade out entirely once a tile is only a few device px (below that they alias into a grey
      wash that reads as fog, not grid). The whole lattice steps UP while a placement tool is armed
      and back DOWN in SELECT — in SELECT you're reading the floor, not aligning to it. */
-  const GRID_MAJOR = 8;    // tiles per major division — one "bay" of station
-  const GRID_APRON = 16;   // tiles of full-resolution grid around the station bounds
+  const GRID_MAJOR = 8;    // tiles per major division — one "bay" of keep
+  const GRID_APRON = 16;   // tiles of full-resolution grid around the keep bounds
   // tools where alignment matters (the grid + crosshair come up for these; SELECT stays quiet)
   const PLACING = { room: 1, hall: 1, paint: 1, move: 1, reclaim: 1, prop: 1, belt: 1, dupe: 1, line: 1 };
 
@@ -6451,7 +6451,7 @@ const Build = (() => {
      next room will start on and what it lines up with across the floor. Muted during a drag: the
      ghost's own rulers take over there (drawGhost), and two sets of guides is a clusterfuck.
 
-     Drawn in the OVERLAY pass, not inside drawGrid. The grid is painted before StationBake.drawLight,
+     Drawn in the OVERLAY pass, not inside drawGrid. The grid is painted before KeepBake.drawLight,
      which is right for a lattice that should read as part of the floor and wrong for an instrument:
      the light canvas multiplied a .22 rule down to nothing over the very deck you aim at, so the
      crosshair was invisible in exactly the place it exists to serve. */
@@ -6508,7 +6508,7 @@ const Build = (() => {
 
   /* ---------- PLACEMENT JUICE (2026-08-07 round 3) ----------
      A placement used to answer with a flat colour wash that faded in half a second — the same mark
-     for building a room and for tearing one down, and nothing that felt like the station DID
+     for building a room and for tearing one down, and nothing that felt like the keep DID
      something. It now reads as fabrication: a phosphor SCAN sweeps the footprint (left→right as
      structure materializes, right→left as it is stripped), a RING pushes out past the edge and
      fades, and the body glow decays under both. Eerie, not cute — it is the same construction
@@ -6560,7 +6560,7 @@ const Build = (() => {
       ctx.fillRect(p.x * t - 1, cut, (p.w || 1) * t + 2, Math.max(1 / zoom, 1.2 / zoom)); ctx.restore();
     }
   }
-  // the feel's two sounds, made from the station's own synth (util.js SFX.voice / SFX.noise): a soft low THUNK as something lands,
+  // the feel's two sounds, made from the keep's own synth (util.js SFX.voice / SFX.noise): a soft low THUNK as something lands,
   // a falling hiss as it dematerializes — quiet, short, gated; the plain click stands in where the synth is not loaded
   let lastLandSfx = 0;
   function sfxLand() {
@@ -6611,7 +6611,7 @@ const Build = (() => {
 
   /* A MACHINE A LINE EDIT MOVED (TIDY LINE, a swap, a line laid afresh round a change): its outline GLIDES from the footprint it
      left to the one it now stands on — eased in and out, the old footprint fading, a dashed wake from where it was. The same
-     phosphor construction marks as the placement flash: the station shows the move, it does not animate the machine. */
+     phosphor construction marks as the placement flash: the keep shows the move, it does not animate the machine. */
   function drawMoves(fl, k, t) {
     const e = k < 0.5 ? 2 * k * k : 1 - Math.pow(-2 * k + 2, 2) / 2, a = 1 - k * 0.6, hue = '170,255,210';
     ctx.lineWidth = 2 / zoom;
@@ -6655,25 +6655,25 @@ const Build = (() => {
     frameBayLabels = [];
     framePropLights = [];
     if (typeof PropSprites === 'undefined') return;
-    const list = station.props();
+    const list = keep.props();
     if(PropSprites.setSurfaceLayout)PropSprites.setSurfaceLayout(list);
     if (!list.length) return;
     PropSprites.setCtx(ctx); PropSprites.setNow(now);
-    // MOUNT LIFT — resolved per frame through station.mountOf, the SAME seam world.js draws through.
+    // MOUNT LIFT — resolved per frame through keep.mountOf, the SAME seam world.js draws through.
     // BUILD MODE is where props are actually placed, so a table-top prop that only lifted in the live world
     // looked, in the one view you judge it from, like it had been dropped INSIDE the table.
     // Authored mounts sort after their whole host, including children on a deep table's far row.
     // …resolved ONCE PER EDIT, not per frame: mountOf is O(props) inside the model (a propById find
     // plus a surface-host scan), so asking it for every prop every frame was O(props²) at 60fps —
     // and the map+sort it fed allocated two arrays a frame for an order that cannot change without a
-    // station.onChange. The wrapper object for a MOUNTED prop is still built per frame (as before),
+    // keep.onChange. The wrapper object for a MOUNTED prop is still built per frame (as before),
     // so PropSprites keeps reading the live prop, never a snapshot of it.
     /* VIEWPORT CULL. Measured 2026-08-08: on a 337-prop floor the props layer was 28.8ms of a 32ms
        frame — PropSprites renders every prop procedurally, every frame, with no offscreen cache. A
        prop entirely off the glass paints nothing, so the frame owes it nothing; culling changes what
        is DRAWN by zero pixels. The pad is deliberately generous (prop art anchors to its footprint
        bottom and rises well above it — crowns, halos, the mount lift), so nothing can clip in at the
-       top edge as you pan. Zoomed all the way out to the whole station nothing is culled and the
+       top edge as you pan. Zoomed all the way out to the whole keep nothing is culled and the
        cost is unchanged — which is the honest worst case, and exactly what the bench reports. */
     const order = propDrawOrder(list);
     // The editor uses the same silhouette contact shadows as the live world.
@@ -6722,7 +6722,7 @@ const Build = (() => {
     const mounts = new Map();
     for (const p of list) {
       let m = null;
-      try { m = station.mountOf ? station.mountOf(p) : null; } catch (_) { m = null; }
+      try { m = keep.mountOf ? keep.mountOf(p) : null; } catch (_) { m = null; }
       if (m) mounts.set(p.id, m);
     }
     // Authored placement supplies host-relative pixel depth; this list sorts in tiles.
@@ -6876,19 +6876,19 @@ const Build = (() => {
   function brushedHookups() {
     if (brushVer === geoVer && brushMemo) return brushMemo;
     brushVer = geoVer; brushMemo = [];
-    if (!station) return brushMemo;
+    if (!keep) return brushMemo;
     const DV = { E: [1, 0], W: [-1, 0], S: [0, 1], N: [0, -1] };
-    const docks = station.props().filter(p => CONNECT_TYPES[p.t] && ((p.w || 1) > 1 || (p.h || 1) > 1));
+    const docks = keep.props().filter(p => CONNECT_TYPES[p.t] && ((p.w || 1) > 1 || (p.h || 1) > 1));
     const inFoot = (p, x, y) => x >= p.x && x < p.x + (p.w || 1) && y >= p.y && y < p.y + (p.h || 1);
     const owners = new Map();
     for (const p of docks)
       for (let y = p.y - 1; y <= p.y + (p.h || 1); y++) for (let x = p.x - 1; x <= p.x + (p.w || 1); x++) {
-        if (inFoot(p, x, y) || !station.beltAt(x, y)) continue;
+        if (inFoot(p, x, y) || !keep.beltAt(x, y)) continue;
         const k = x + ',' + y; if (!owners.has(k)) owners.set(k, []); owners.get(k).push(p);
       }
     for (const [k, ps] of owners) {
       if (ps.length < 2) continue;
-      const q = k.split(','), x = +q[0], y = +q[1], d = DV[station.beltAt(x, y)] || null;
+      const q = k.split(','), x = +q[0], y = +q[1], d = DV[keep.beltAt(x, y)] || null;
       // FACES = the belt visibly enters the machine (arrow into it) or leaves it (the tile behind is the machine)
       const faces = p => !!d && (inFoot(p, x + d[0], y + d[1]) || inFoot(p, x - d[0], y - d[1]));
       for (const p of ps) if (!faces(p)) brushMemo.push({ x, y, propId: p.id, p });
@@ -6955,7 +6955,7 @@ const Build = (() => {
      (worldmodel.swapJoinerMerger — same tile, same belts, one undo). Read on the once-crewed plan, so a freshly stamped
      line answers the same as a crewed one. A choice the floor cannot make says why instead of half-doing it. */
   function splitModeInfo(splitId) {
-    const p = station && station.propById(splitId);
+    const p = keep && keep.propById(splitId);
     if (!p || p.t !== 'splitter' || typeof Pipeline === 'undefined' || !Pipeline.rejoinOf) return null;
     const jt = junctionBeltTile(p), o = (cacheGeo && cacheGeo.origin) || { tx: 0, ty: 0 };
     const lk = jt ? (jt.x - o.tx) + ',' + (jt.y - o.ty) : null;
@@ -6963,7 +6963,7 @@ const Build = (() => {
     if (!lk || !plan || !plan.junctions || !plan.junctions[lk]) return null;
     const copies = !!fanoutOnceCrewed()[lk];
     const lanes = Pipeline.rejoinOf(plan, lk).lanes;
-    const propAt = k => { const q = String(k).split(','), x = +q[0] + o.tx, y = +q[1] + o.ty; const hit = station.props().find(r => (r.t === 'joiner' || r.t === 'merger') && r.x === x && r.y === y); return hit ? hit.id : null; };
+    const propAt = k => { const q = String(k).split(','), x = +q[0] + o.tx, y = +q[1] + o.ty; const hit = keep.props().find(r => (r.t === 'joiner' || r.t === 'merger') && r.x === x && r.y === y); return hit ? hit.id : null; };
     const meet = lanes.length > 1 && lanes.every(l => l.at && l.at === lanes[0].at) ? lanes[0] : null;
     const joins = [...new Set(lanes.filter(l => l.kind === 'join').map(l => propAt(l.at)).filter(Boolean))];
     const toTurns = copies
@@ -6982,8 +6982,8 @@ const Build = (() => {
     const step = mode === 'copy' ? info.toCopy : info.toTurns;
     if (step.already) return { ok: true, already: true };
     if (!step.ok) return { ok: false, msg: step.msg };
-    const res = step.swap.length === 1 ? station.swapJoinerMerger(step.swap[0])
-      : station.transact(() => { for (const id of step.swap) { const r = station.swapJoinerMerger(id); if (!r.ok) return r; } return { ok: true }; });
+    const res = step.swap.length === 1 ? keep.swapJoinerMerger(step.swap[0])
+      : keep.transact(() => { for (const id of step.swap) { const r = keep.swapJoinerMerger(id); if (!r.ok) return r; } return { ok: true }; });
     if (res && res.ok) { try { rebake(); } catch (e) { /* the frame loop recompiles */ } }
     return res && res.ok ? { ok: true, mode } : { ok: false, msg: (res && (res.msg || res.error)) || 'could not switch' };
   }
@@ -7089,7 +7089,7 @@ const Build = (() => {
     }
     // B5 cost-safety: a BOUND bay whose room has no dedicated PC can't run routed work — the compute gate
     // stays shut. Surface it (amber) so the Commander equips the bay while still IN build mode.
-    if (typeof station.bayObjects === 'function') {
+    if (typeof keep.bayObjects === 'function') {
       for (const p of (cacheGeo.props || [])) {
         if (p.t !== 'bay' || !p.agentId) continue;
         // memoized per (agentId, geoVer) and guarded — see bayObjectsMemoed. This ran BARE, per bay,
@@ -7101,7 +7101,7 @@ const Build = (() => {
     // a CONNECTOR PORTAL with no bound server grants nothing — surface it (amber) so the Commander binds one.
     for (const p of (cacheGeo.props || [])) {
       if (p.t !== 'connector_portal') continue;
-      const live = station.propById(p.id);
+      const live = keep.propById(p.id);
       if (live && live.connectorId) continue;
       mark({ x1: p.x, y1: p.y, x2: p.x + (p.w || 1) - 1, y2: p.y + (p.h || 1) - 1 }, '#ffbe3c', 'NO SERVER — CLICK TO BIND');
     }
@@ -7109,17 +7109,17 @@ const Build = (() => {
   /* BELT-TOOL ENDPOINT GLOW: while the BELT tool is armed, the legal endpoints announce themselves —
      INTAKE pulses green "FROM", bound BAYs and OUTBOX pulse cyan "TO" — so "what do I connect to what"
      is answered by the floor itself before the first tile is laid. Desks never glow: belts don't run to
-     workstations (the agent carries work the last leg). */
+     workkeeps (the agent carries work the last leg). */
   /* THE LANE BEFORE THE CLICK (conveyor-links phase B — the plan's "port marks"): mid-connect, the hovered destination
-     shows the very belt the click would lay (station.previewBelt runs the connect planner without laying), tile by tile
+     shows the very belt the click would lay (keep.previewBelt runs the connect planner without laying), tile by tile
      with its flow — or, when it cannot, why. Once per (edit, pair). */
   let beltPvKey = '', beltPvMemo = null;
   function beltPreview(from, to) {
-    if (!station || typeof station.previewBelt !== 'function') return null;
+    if (!keep || typeof keep.previewBelt !== 'function') return null;
     const k = geoVer + '|' + from + '|' + to;
     if (k === beltPvKey) return beltPvMemo;
     let r = null;
-    try { r = station.previewBelt(from, to); } catch (_) { r = null; }
+    try { r = keep.previewBelt(from, to); } catch (_) { r = null; }
     beltPvKey = k; beltPvMemo = r;
     return r;
   }
@@ -7142,16 +7142,16 @@ const Build = (() => {
     ctx.restore();
   }
   function drawBeltEndpointGlow(t, now) {
-    if (tool !== 'belt' || !station) return;
+    if (tool !== 'belt' || !keep) return;
     if (connectFrom && hoverPropId && hoverPropId !== connectFrom) {
-      const hp = station.propById(hoverPropId), pv = hp && CONNECT_TYPES[hp.t] ? beltPreview(connectFrom, hoverPropId) : null;
+      const hp = keep.propById(hoverPropId), pv = hp && CONNECT_TYPES[hp.t] ? beltPreview(connectFrom, hoverPropId) : null;
       if (pv && pv.ok) drawBeltPreview(t, pv, '#7ee2a8');
     }
     const pulse = 0.45 + 0.3 * Math.sin(now / 260);
     const placed = [];
     ctx.save();
     ctx.font = VAL_FONT();
-    for (const p of station.props()) {
+    for (const p of keep.props()) {
       if (!CONNECT_TYPES[p.t]) continue;
       const isFrom = connectFrom && p.id === connectFrom;
       // mid-connect the story flips: the armed machine burns gold, every other machine reads as a target
@@ -7192,7 +7192,7 @@ const Build = (() => {
   // amber "unassigned" to invite binding. (Belts/conveyors gain the same tag in Phase 2b once they carry agentId.)
   function drawAgentTag(t) {
     if (drag || !hoverPropId) return;
-    const p = station.propById(hoverPropId);
+    const p = keep.propById(hoverPropId);
     if (!p) return;
     const anchor = { x: p.x * t, y: p.y * t, w: (p.w || 1) * t, h: (p.h || 1) * t };
     /* ONE-VOICE LAW: while the DOM prop card (the Fallout-style hover panel) is up for THIS prop,
@@ -7253,7 +7253,7 @@ const Build = (() => {
   }
 
   function propSelectionRect(p,t) {
-    const mount=station.mountOf?station.mountOf(p):null;
+    const mount=keep.mountOf?keep.mountOf(p):null;
     return (PropSprites.selectionBounds&&PropSprites.selectionBounds(mount?{...p,mount}:p))
       || {x:p.x*t,y:p.y*t,width:p.w*t,height:p.h*t};
   }
@@ -7267,16 +7267,16 @@ const Build = (() => {
     ctx.lineWidth=1.5/zoom;ctx.strokeRect(b.x-pad,b.y-pad,b.width+pad*2,b.height+pad*2);ctx.restore();
   }
   function drawHover(t) {
-    const selected=selectedPropId&&station.propById(selectedPropId);
+    const selected=selectedPropId&&keep.propById(selectedPropId);
     if(selected){
       drawPropSelection(selected,t,'rgba(244,200,112,.9)');
     }
-    for(const id of groupIds){const gp=station.propById(id);if(gp)drawPropSelection(gp,t,'rgba(244,200,112,.9)',false);}
+    for(const id of groupIds){const gp=keep.propById(id);if(gp)drawPropSelection(gp,t,'rgba(244,200,112,.9)',false);}
     if (selectedRoomId && !(drag && drag.mode === 'roomresize')) drawRoomSelection(t);
     if (drag) return;
     // a hovered prop (select/move/reclaim) outlines on top of any room outline
     if ((tool === 'select' || tool === 'move' || tool === 'reclaim' || (tool === 'dupe' && !dupe)) && hoverPropId) {
-      const p = station.propById(hoverPropId);
+      const p = keep.propById(hoverPropId);
       if (p) {
         drawPropSelection(p,t,tool === 'reclaim' ? 'rgba(255,92,77,0.95)' : 'rgba(120,220,255,0.95)');
         return;
@@ -7284,7 +7284,7 @@ const Build = (() => {
     }
     // a belt is reclaimable/inspectable even though it sits ON a deck: highlight the BELT tile (not
     // the room under it) so the outline matches what a click actually targets (belt-before-room).
-    if ((tool === 'reclaim' || tool === 'select') && hoverTile && station.beltAt(hoverTile.tx, hoverTile.ty)) {
+    if ((tool === 'reclaim' || tool === 'select') && hoverTile && keep.beltAt(hoverTile.tx, hoverTile.ty)) {
       ctx.lineWidth = 1.5 / zoom;
       ctx.strokeStyle = tool === 'reclaim' ? 'rgba(255,92,77,0.95)' : 'rgba(120,220,255,0.95)';
       ctx.strokeRect(hoverTile.tx * t + 1, hoverTile.ty * t + 1, t - 2, t - 2);
@@ -7292,8 +7292,8 @@ const Build = (() => {
     }
     if (tool !== 'move' && tool !== 'reclaim' && tool !== 'paint' && !(tool === 'dupe' && !dupe)) return;
     if (!hoverRoomId) return;
-    const rm = station.roomById(hoverRoomId); if (!rm) return;
-    const protectedSpawn = tool === 'reclaim' && hoverRoomId === station.spawnRoomId();
+    const rm = keep.roomById(hoverRoomId); if (!rm) return;
+    const protectedSpawn = tool === 'reclaim' && hoverRoomId === keep.spawnRoomId();
     ctx.lineWidth = 1.5 / zoom;
     ctx.strokeStyle = protectedSpawn ? 'rgba(255,200,80,0.95)' : (tool === 'reclaim' ? 'rgba(255,92,77,0.95)' : 'rgba(120,220,255,0.95)');
     for (const r of rm.rects) ctx.strokeRect(r.x1 * t + 1, r.y1 * t + 1, (r.x2 - r.x1 + 1) * t - 2, (r.y2 - r.y1 + 1) * t - 2);
@@ -7406,7 +7406,7 @@ const Build = (() => {
      apron uses) so it reads as "buildable floor", never as a second ghost.
 
      It draws ABOVE the light layer with the crosshair: an instrument painted before
-     StationBake.drawLight is swallowed by the deck it is supposed to be describing. */
+     KeepBake.drawLight is swallowed by the deck it is supposed to be describing. */
   function drawLineField(t) {
     if (tool !== 'line') return;
     const f = lineField(lineType);
@@ -7476,7 +7476,7 @@ const Build = (() => {
       moveId: move ? drag.roomId : null, dx: g.dx || 0, dy: g.dy || 0 };
     const key = geoVer + '|' + JSON.stringify(candidate);
     if (!footprintMemo || footprintMemo.key !== key) {
-      footprintMemo = { key, plan: projectFootprint(WorldModel, station.doc(), candidate) };
+      footprintMemo = { key, plan: projectFootprint(WorldModel, keep.doc(), candidate) };
     }
     return footprintMemo.plan;
   }
@@ -7520,7 +7520,7 @@ const Build = (() => {
     if (code === 'NEEDS_SURFACE') return 'Place this on a table or counter';
     if (code === 'OVERLAP') {
       const ignore = drag && drag.mode === 'propmove' ? drag.propId : null;
-      const hit = station.props().find(p=>p.id!==ignore && !propSpec(p.t).flat && g.rects.some(r=>p.x<=r.x2 && p.x+p.w-1>=r.x1 && p.y<=r.y2 && p.y+p.h-1>=r.y1));
+      const hit = keep.props().find(p=>p.id!==ignore && !propSpec(p.t).flat && g.rects.some(r=>p.x<=r.x2 && p.x+p.w-1>=r.x1 && p.y<=r.y2 && p.y+p.h-1>=r.y1));
       if (hit) return 'Blocked by '+(propSpec(hit.t).label || hit.t)+' · choose a clear space';
       return 'Overlaps another room · move beside its edge';
     }
@@ -7529,7 +7529,7 @@ const Build = (() => {
   // the selection box (SELECT, a drag across empty floor): the tiles it covers, and a cyan outline on everything it will take
   function drawSelectBox(t) {
     const r = norm(drag.start, drag.cur), ids = propsInBox(r);
-    for (const id of ids) { const p = station.propById(id); if (p) drawPropSelection(p, t, 'rgba(120,220,255,0.95)', false); }
+    for (const id of ids) { const p = keep.propById(id); if (p) drawPropSelection(p, t, 'rgba(120,220,255,0.95)', false); }
     const X = r.x1 * t, Y = r.y1 * t, W = (r.x2 - r.x1 + 1) * t, H = (r.y2 - r.y1 + 1) * t;
     ctx.save();
     ctx.fillStyle = 'rgba(120,220,255,0.06)'; ctx.fillRect(X, Y, W, H);
@@ -7543,7 +7543,7 @@ const Build = (() => {
     const ok = !!(g.v && g.v.ok), line = ok ? 'rgba(120,255,170,0.95)' : 'rgba(255,120,110,0.95)', fill = ok ? 'rgba(80,255,140,0.12)' : 'rgba(255,90,80,0.16)';
     const ps = g.group.slice().sort((a, b) => (a.y + (a.h || 1)) - (b.y + (b.h || 1)));
     ctx.save(); ctx.globalAlpha = 0.65; PropSprites.setCtx(ctx); PropSprites.setNow(now);
-    try { for (const p of ps) { const mount = station.mountOf ? station.mountOf(p) : null; PropSprites.draw(mount ? { ...p, mount } : p, false); } } finally { ctx.restore(); }
+    try { for (const p of ps) { const mount = keep.mountOf ? keep.mountOf(p) : null; PropSprites.draw(mount ? { ...p, mount } : p, false); } } finally { ctx.restore(); }
     for (const p of ps) { const r = propRect(p); ctx.fillStyle = fill; ctx.fillRect(r.x1 * t, r.y1 * t, (r.x2 - r.x1 + 1) * t, (r.y2 - r.y1 + 1) * t); drawPropSelection(p, t, line, false); }
     let bb = g.rects[0];
     for (const r of g.rects) bb = { x1: Math.min(bb.x1, r.x1), y1: Math.min(bb.y1, r.y1), x2: Math.max(bb.x2, r.x2), y2: Math.max(bb.y2, r.y2) };
@@ -7554,10 +7554,10 @@ const Build = (() => {
   function drawGhost(t, now) {
     // paint brush: tint the crossed tiles with the chosen deck colour
     if (drag && drag.mode === 'paint' && drag.moved) {
-      const base = station.FLOOR_STYLES[style] ? station.FLOOR_STYLES[style].base : '#888';
+      const base = keep.FLOOR_STYLES[style] ? keep.FLOOR_STYLES[style].base : '#888';
       ctx.globalAlpha = 0.55; ctx.fillStyle = base;
       let n = 0;
-      for (const k of drag.cells) { const p = k.split(','); if (station.roomAt(+p[0], +p[1]) === drag.roomId) { ctx.fillRect(+p[0] * t, +p[1] * t, t, t); n++; } }
+      for (const k of drag.cells) { const p = k.split(','); if (keep.roomAt(+p[0], +p[1]) === drag.roomId) { ctx.fillRect(+p[0] * t, +p[1] * t, t, t); n++; } }
       ctx.globalAlpha = 1;
       const bb = cellsRect(drag.cells);
       if (bb) ghostBadge(t, [n + (n === 1 ? ' TILE' : ' TILES')], true, bb);
@@ -7567,7 +7567,7 @@ const Build = (() => {
     if (drag && drag.mode === 'reclaim' && drag.moved) {
       let n = 0;
       ctx.globalAlpha = 0.5; ctx.fillStyle = 'rgba(255,92,77,0.9)';
-      for (const k of drag.cells) { const p = k.split(','); if (station.beltAt(+p[0], +p[1])) { ctx.fillRect(+p[0] * t, +p[1] * t, t, t); n++; } }
+      for (const k of drag.cells) { const p = k.split(','); if (keep.beltAt(+p[0], +p[1])) { ctx.fillRect(+p[0] * t, +p[1] * t, t, t); n++; } }
       ctx.globalAlpha = 1;
       const bb = cellsRect(drag.cells);
       if (bb) ghostBadge(t, n ? [n + (n === 1 ? ' BELT' : ' BELTS'), 'RELEASE TO CLEAR'] : ['DRAG ALONG A BELT'], n > 0, bb);
@@ -7583,7 +7583,7 @@ const Build = (() => {
     const rr=g.rects[0];
     const preview=g.preview||(g.kind==='prop'?{t:propType,x:rr.x1,y:rr.y1,w:rr.x2-rr.x1+1,h:rr.y2-rr.y1+1,r:propFacing(propType),m:propFlipOn(propType)}:null);
     if(preview){
-      const mount=station.mountOf?station.mountOf(preview):null;
+      const mount=keep.mountOf?keep.mountOf(preview):null;
       ctx.save();ctx.globalAlpha=.65;PropSprites.setCtx(ctx);PropSprites.setNow(now);
       try{PropSprites.draw(mount?{...preview,mount}:preview,false);}finally{ctx.restore();}
     }
@@ -7596,7 +7596,7 @@ const Build = (() => {
     // a HOVER PREVIEW is quieter than a live gesture — it is showing you an option, not a commitment,
     // and at full strength it read as "you are already dragging" every time the pointer crossed the floor
     // ...and an INVALID preview is quieter still: with ROOM armed, every pass of the pointer over
-    // your own station would otherwise wash the whole floor red before you had asked for anything.
+    // your own keep would otherwise wash the whole floor red before you had asked for anything.
     // The outline and the badge carry the refusal; the fill does not need to shout it.
     const k = g.stamp ? (ok ? 0.6 : 0.3) : 1;
     const fill = warn ? 'rgba(255,190,60,' + (0.16 * k).toFixed(3) + ')' : ok ? 'rgba(80,255,140,' + (0.16 * k).toFixed(3) + ')' : 'rgba(255,90,80,' + (0.18 * k).toFixed(3) + ')';
@@ -7643,7 +7643,7 @@ const Build = (() => {
        between them share that tile — a belt there hooks BOTH, and the job goes nowhere. Said while the ghost is in hand,
        never refused (sandbox law): the Commander may still want them tight. */
     if (ok && g.kind === 'prop' && tool === 'prop' && RING_DOCK_T[propType] && !linkedFloor()) {
-      const near = station.props().find(p => RING_DOCK_T[p.t] && p.x - 1 <= r0.x2 + 1 && r0.x1 - 1 <= p.x + (p.w || 1) && p.y - 1 <= r0.y2 + 1 && r0.y1 - 1 <= p.y + (p.h || 1));
+      const near = keep.props().find(p => RING_DOCK_T[p.t] && p.x - 1 <= r0.x2 + 1 && r0.x1 - 1 <= p.x + (p.w || 1) && p.y - 1 <= r0.y2 + 1 && r0.y1 - 1 <= p.y + (p.h || 1));
       if (near) lines.push('CLOSE TO THE ' + String(propLabel(near.t)).toUpperCase() + ' — LEAVE 2 TILES OR THEIR BELTS TOUCH');
     }
     if (links) lines.push('WILL CONNECT TO ' + linkNames(links));
@@ -7697,9 +7697,9 @@ const Build = (() => {
       : c.stack ? ' · deck or table'
       : (c.surface ? ' · things can stand on it' : '');
     const foot = c.w + '×' + c.h + (c.blocks === false ? ' · walkable' : ' · solid') + mount;
-    const desc = c.desc || (fn ? '' : 'Decor — looks only. Sets the mood; no effect on how the station runs.');
+    const desc = c.desc || (fn ? '' : 'Decor — looks only. Sets the mood; no effect on how the keep runs.');
     let assign = '';
-    if (placed && WORKSTATION_TYPES[placed.t]) {
+    if (placed && WORKKEEP_TYPES[placed.t]) {
       assign = placed.agentId
         ? '<div class="pc-assign ok">▸ HOSTED BY ' + esc(agentLabel(placed.agentId)) + '</div>'
         : '<div class="pc-assign">UNASSIGNED — click to choose an agent</div>';
@@ -7801,16 +7801,16 @@ const Build = (() => {
 
   function sfx(n) { if (typeof SFX !== 'undefined' && SFX[n]) SFX[n](); }
 
-  // DEV-ONLY test hook (gated on window.__STARNET_DEV__) — lets the audit harness prove the
+  // DEV-ONLY test hook (gated on window.__EYEHOLD_DEV__) — lets the audit harness prove the
   // object=capability moat (place a dish → web cap appears) by placing through the REAL
-  // station.addProp path at a validated tile, instead of simulating fragile canvas-drag pixel
+  // keep.addProp path at a validated tile, instead of simulating fragile canvas-drag pixel
   // coordinates. Never attached in a shipped build (the dev flag is never set there).
   function findPlaceableTile(type, w, h) {
-    if (!station || !station.bounds || !station.canPlaceProp) return null;
-    const b = station.bounds();
+    if (!keep || !keep.bounds || !keep.canPlaceProp) return null;
+    const b = keep.bounds();
     for (let ty = b.minTy; ty <= b.maxTy; ty++)
       for (let tx = b.minTx; tx <= b.maxTx; tx++)
-        if ((station.canPlaceProp(type, tx, ty, w, h) || {}).ok) return { tx, ty };
+        if ((keep.canPlaceProp(type, tx, ty, w, h) || {}).ok) return { tx, ty };
     return null;
   }
   const __test__ = {
@@ -7823,15 +7823,15 @@ const Build = (() => {
     tool: () => tool,
     // the live WorldModel — for CDP verify scripts to lay a floor through the REAL validated
     // mutation API (setBelt/addProp/assignPropAgent), never by poking doc internals.
-    station: () => station || (opts && typeof opts.getStation === 'function' ? opts.getStation() : null),
+    keep: () => keep || (opts && typeof opts.getKeep === 'function' ? opts.getKeep() : null),
     placeCapProp: (type) => {
-      if (!running || !station) return { ok: false, reason: 'not-in-build' };
+      if (!running || !keep) return { ok: false, reason: 'not-in-build' };
       const t = type || 'workbench';   // a real cap-prop id (CAP_PROP_MAP): workbench→terminal, comms_dish→web
       const s = propSpec(t);
       const tile = findPlaceableTile(t, s.w, s.h);
       if (!tile) return { ok: false, reason: 'no-valid-tile' };
       propType = t; tool = 'prop';
-      const res = station.addProp({ t, x: tile.tx, y: tile.ty, w: s.w, h: s.h, block: s.blocks !== false });
+      const res = keep.addProp({ t, x: tile.tx, y: tile.ty, w: s.w, h: s.h, block: s.blocks !== false });
       return { ok: !!(res && res.ok), tile, type: t };
     },
     // client-pixel for a tile CENTER, inverting the live camera (screen = world*zoom + pan) so a
@@ -7845,27 +7845,27 @@ const Build = (() => {
     // drive a REAL reclaim gesture (onDown→onMove→onUp) across a tile list — proves the belt
     // drag-to-clear path end to end (accumulate cells → filter to belts → removeBelts → one undo).
     reclaimDrag: (tiles) => {
-      if (!running || !station || !cv || !tiles || !tiles.length) return { ok: false, reason: 'not-in-build' };
+      if (!running || !keep || !cv || !tiles || !tiles.length) return { ok: false, reason: 'not-in-build' };
       selectTool('reclaim');
-      const before = station.belts().length;
+      const before = keep.belts().length;
       onDown(__test__._tileEvent(tiles[0]));
       for (let i = 1; i < tiles.length; i++) onMove(__test__._tileEvent(tiles[i]));
       onUp(__test__._tileEvent(tiles[tiles.length - 1]));
-      return { ok: true, before, after: station.belts().length };
+      return { ok: true, before, after: keep.belts().length };
     },
     /* drive a REAL place gesture (onDown→onMove→onUp) with a tool armed, and hand back the room the
-       station actually gained. This is the seam the snap proof needs: asserting snapFit() directly
+       keep actually gained. This is the seam the snap proof needs: asserting snapFit() directly
        would prove the arithmetic and nothing about whether the GHOST and the COMMIT agree, which is
        the half that silently breaks (the ghost shows flush, the click lands one tile off). Drives
        the same three handlers a mouse does, so both go through it. `mode` is 'room' or 'hall'. */
     placeDrag: (mode, from, to) => {
-      if (!running || !station || !cv) return { ok: false, reason: 'not-in-build' };
+      if (!running || !keep || !cv) return { ok: false, reason: 'not-in-build' };
       selectTool(mode === 'hall' ? 'hall' : 'room');
-      const before = new Set(station.rooms().map(r => r.id));
+      const before = new Set(keep.rooms().map(r => r.id));
       onDown(__test__._tileEvent(from));
       onMove(__test__._tileEvent(to));
       onUp(__test__._tileEvent(to));
-      const made = station.rooms().find(r => !before.has(r.id));
+      const made = keep.rooms().find(r => !before.has(r.id));
       return { ok: !!made, requested: { from, to },
         rects: made ? made.rects.map(r => ({ ...r })) : null, kind: made ? made.kind : null };
     },
@@ -7883,7 +7883,7 @@ const Build = (() => {
         tip: b.getAttribute('title') || b.getAttribute('data-tip') || null,
       })),
     } : null),
-    finRegistry: () => finRead(station),
+    finRegistry: () => finRead(keep),
     /* TEST-RIDE readouts for CDP proof scripts (conveyor-audit 2026-08-10). rideMouth runs the
        REAL reach-aware picker (null agentId = the lineless ▸ PREVIEW pick, WORLD tiles); ride()
        reports the one-shot arming + the live preview crates and captions — where the ride
@@ -7926,27 +7926,27 @@ const Build = (() => {
       if (!running || !cv) return null;
       selectTool('reclaim');
       onMove(__test__._tileEvent(tile, 0));
-      return { hoverTile, onBelt: !!(hoverTile && station.beltAt(hoverTile.tx, hoverTile.ty)) };
+      return { hoverTile, onBelt: !!(hoverTile && keep.beltAt(hoverTile.tx, hoverTile.ty)) };
     },
   };
 
   // REQUISITION — place a prop programmatically through the SAME validated path as a hand placement
-  // (findPlaceableTile → station.addProp), firing the same flash/chime/first-touch hooks, so the tutorial's
+  // (findPlaceableTile → keep.addProp), firing the same flash/chime/first-touch hooks, so the tutorial's
   // "requisition the rest" is a REAL placement (object=capability stays honest — never a flag). Only while
   // BUILD MODE is open (the kit-out's context); editable/config props are refused (they'd open an editor
   // mid-ceremony). Returns { ok, tile? , reason? }.
   function requisition(t) {
-    if (!running || !station) return { ok: false, reason: 'not-in-build' };
+    if (!running || !keep) return { ok: false, reason: 'not-in-build' };
     if (!t || isEditableProp(t)) return { ok: false, reason: 'needs-config' };
     const s = propSpec(t);
     const tile = findPlaceableTile(t, s.w, s.h);
     if (!tile) return { ok: false, reason: 'no-valid-tile' };
-    const res = station.addProp({ t, x: tile.tx, y: tile.ty, w: s.w, h: s.h, block: s.blocks !== false });
+    const res = keep.addProp({ t, x: tile.tx, y: tile.ty, w: s.w, h: s.h, block: s.blocks !== false });
     if (!res || !res.ok) return { ok: false, reason: (res && res.reason) || 'rejected' };
     pushFlash([{ x1: tile.tx, y1: tile.ty, x2: tile.tx + s.w - 1, y2: tile.ty + s.h - 1 }], false);
     const grant = (typeof WorldModel !== 'undefined' && WorldModel.grantLabelForProp) ? WorldModel.grantLabelForProp(t) : null;
     if (grant) sfx('chime');   // a capability just came online — same brighter note as a hand placement
-    if (typeof StationUI !== 'undefined' && StationUI.pokeQuests) { try { StationUI.pokeQuests(); } catch (_) {} }   // resolve+fold now: a gap this requisition closes celebrates on its own edge
+    if (typeof KeepUI !== 'undefined' && KeepUI.pokeQuests) { try { KeepUI.pokeQuests(); } catch (_) {} }   // resolve+fold now: a gap this requisition closes celebrates on its own edge
     if (typeof Tutorial !== 'undefined' && Tutorial.onPropPlaced) Tutorial.onPropPlaced(t);
     return { ok: true, tile };
   }
@@ -7954,16 +7954,16 @@ const Build = (() => {
   // deep-link: open BUILD MODE straight into a placed prop's editor. The live world's "NO AGENT — CLICK"
   // bay nag lands here, so the fix is one click away from the callout instead of a hunt through modes.
   function openAssign(propId) {
-    if (!running) open();     // open() resolves `station` from opts.getStation() — MUST run before the guard
-    if (!station) return;     // (guard-first was a real shipped bug: the click-nag path no-opped on any session that had never opened BUILD MODE)
-    const p = station.propById(propId);
+    if (!running) open();     // open() resolves `keep` from opts.getKeep() — MUST run before the guard
+    if (!keep) return;     // (guard-first was a real shipped bug: the click-nag path no-opped on any session that had never opened BUILD MODE)
+    const p = keep.propById(propId);
     if (!p) return;
     openPropEditor(propId, p.t, { clientX: (window.innerWidth / 2) | 0, clientY: 120 });   // synthetic anchor for the action tip
   }
 
   /* lineOfAgentInfo(agentId) -> { lineId, name, docks, index, order:[agentId…] } or null (2026-08-22).
      WHICH LINE DOES THIS DOCK'S AGENT RUN, read the way the sidecar reads it: the SAME Pipeline compile of
-     the SAME station geometry (Pipeline.lineOf is what router.lineOfAgent quotes when a runsLine routine
+     the SAME keep geometry (Pipeline.lineOf is what router.lineOfAgent quotes when a runsLine routine
      fires), never a guess from prop adjacency. The ROUTINES rows use it to say "runs the <NAME> line from
      <dock> (N docks)" for a routine whose record carries runsLine — the line itself is looked up live, so a
      floor edit that drops the dock honestly returns null and the row falls back to "runs as". */
@@ -7972,7 +7972,7 @@ const Build = (() => {
      dock (a routine's job.dockId), else of the agent's ENTRY dock. */
   function lineOfAgentInfo(agentId, dockId) {
     try {
-      const st = station || (opts && typeof opts.getStation === 'function' ? opts.getStation() : null);
+      const st = keep || (opts && typeof opts.getKeep === 'function' ? opts.getKeep() : null);
       if (!st || !agentId || typeof Pipeline === 'undefined' || !Pipeline.lineComponents) return null;
       const geo = st.projectGeometry();
       const plan = Pipeline.compileRoutingPlan(geo);
@@ -7995,14 +7995,14 @@ const Build = (() => {
     } catch (e) { return null; }
   }
   // Optional authored skins arrive after the UI scripts. Refresh only the art
-  // preview and thumbnails; selection, orientation and station data stay intact.
+  // preview and thumbnails; selection, orientation and keep data stay intact.
   if (typeof window !== 'undefined' && window.addEventListener) {
     // a made prop joined (or its art arrived): repaint the catalog so MADE BY YOU and its tile appear
-    window.addEventListener('starnet:userprops-changed', () => {
+    window.addEventListener('eyehold:userprops-changed', () => {
       if (!root || !(tool === 'prop' || (tool === 'select' && buildGroup === 'props'))) return;
       renderPalette();
     });
-    window.addEventListener('starnet:prop-art-ready', () => {
+    window.addEventListener('eyehold:prop-art-ready', () => {
       mountOrder = null; // Loaded support geometry can change host-relative sorting without an edit.
       if (!root) return;
       const host = root.querySelector('#refit-selected-prop');
@@ -8017,7 +8017,7 @@ const Build = (() => {
   function openWorkflows() {
     pendingGroup = 'workflow'; writeLastGroup('workflow');
     if (!running) open(); else { buildGroup = 'workflow'; selectTool('select'); }
-    if (!running || !station) return;
+    if (!running || !keep) return;
     // the panel names the line from the compiled line groups (valComps): compile NOW, or it opens on a bare "single BAY"
     try { rebake(); } catch (e) { /* the frame loop compiles on its next tick; the panel repaints when it does */ }
     /* ONE DOOR TO SET UP A PRESET (2026-09-28): while a work preset's line still has a step nobody works, WORKFLOWS opens its
@@ -8025,7 +8025,7 @@ const Build = (() => {
        step is staffed it opens the Workflow panel as always. */
     const ex = currentPresetExample();
     if (ex && ex.roles.length && ex.roles.some(r => !r.agentId)) { openPresetExample(); return; }
-    const first = station.props().find(p => p.t === 'intake') || station.props().find(p => p.t === 'bay');
+    const first = keep.props().find(p => p.t === 'intake') || keep.props().find(p => p.t === 'bay');
     if (first && typeof WorkflowPanel !== 'undefined') { try { openFlowCard(first.id); } catch (e) {} }
     else if (!first) { try { selectTool('line'); } catch (e) {} }
   }
@@ -8034,7 +8034,7 @@ const Build = (() => {
   function editLine(propId) {
     pendingGroup = 'workflow'; writeLastGroup('workflow');
     if (!running) open(); else { buildGroup = 'workflow'; selectTool('select'); }
-    if (!running || !station || !station.propById(propId)) return false;
+    if (!running || !keep || !keep.propById(propId)) return false;
     try { rebake(); } catch (e) { /* the frame loop compiles on its next tick; the panel repaints when it does */ }
     try { openFlowCard(propId); } catch (e) { return false; }
     return true;
@@ -8042,8 +8042,8 @@ const Build = (() => {
   const api = { init, open, openWorkflows, editLine, testJobForProp, close, toggle, isOpen, requisition, refitNames: guideNames, openAssign, placeDeskFor, noteLineDelivered, lineOfAgentInfo, summonForRole, nagLabel: code => VAL_LABEL[code] || code,
     // the WORKFLOWS window speaks the shelf's own words and shows the shelf's own art (one name per line, never a second one)
     lineWords: () => ({ plain: LINE_PLAIN, purpose: LINE_PURPOSE }), lineSchematic: bp => lineSchematic(bp), machineStill: t => machineStill(t),
-    nagWhy: valWhy };   // nagLabel: the floor's own nag copy for a compiler code (ROUTINES RUN NOW refusal reads it); nagWhy: the full fix sentence the hover card + Workflow panel say (station.layout reads it)
-  if (typeof window !== 'undefined' && window.__STARNET_DEV__) api.__test__ = __test__;
+    nagWhy: valWhy };   // nagLabel: the floor's own nag copy for a compiler code (ROUTINES RUN NOW refusal reads it); nagWhy: the full fix sentence the hover card + Workflow panel say (keep.layout reads it)
+  if (typeof window !== 'undefined' && window.__EYEHOLD_DEV__) api.__test__ = __test__;
   return api;
 })();
 

@@ -103,7 +103,7 @@ member bubble stamps that run into recquality.
 
 1. Unaddressed message → **the lead** (predictable, one voice) vs router.js pick.
 2. Default `maxHops` = **6** per Commander message. 0 kills agent-to-agent.
-3. Team Lead fronts rooms? It is **hollow on a default station** (work-splitting skill needs the
+3. Team Lead fronts rooms? It is **hollow on a default keep** (work-splitting skill needs the
    `orchestrator` prop, KIT-OUT never places it — open bug in `class-catalog-expansion-lane`). Fix that first,
    or let any agent lead.
 

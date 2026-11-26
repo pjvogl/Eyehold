@@ -1,4 +1,4 @@
-/* BROWSER (2026-09-29/30) — frontend/app/outputbrowser.js. One docked window (StationUI 'browser', WIDE shell) that
+/* BROWSER (2026-09-29/30) — frontend/app/outputbrowser.js. One docked window (KeepUI 'browser', WIDE shell) that
    shows a page an agent made, the browser an agent is using, or an address you typed. The term system owns the
    glass chrome, the dock rise and the resize grip; this file lays out the body — address bar, source strip, the
    stage, a status line — and the COMMS door. Matte, glass recipes (--gd-*), theme tokens only. */
@@ -25,7 +25,7 @@
 .ob[data-state="missing"] .ob-lamp, .ob[data-state="ended"] .ob-lamp { background: var(--bad, #ff4a3d); }
 .ob-who { flex: none; font-size: 15px; letter-spacing: 1.2px; color: var(--ph-bright); padding-right: 7px; border-right: 1px solid var(--gd-edge, rgba(var(--ph-rgb),.24)); }
 .ob-who[hidden] { display: none; }
-/* (0,2,0) on purpose: the station's base field rule input[type=text] is (0,1,1) and would paint a console field */
+/* (0,2,0) on purpose: the keep's base field rule input[type=text] is (0,1,1) and would paint a console field */
 .ob .ob-url {
   flex: 1 1 auto; min-width: 0; width: auto; margin: 0; padding: 4px 0; font: 15px/1.2 'VT323', monospace; color: var(--text);
   text-shadow: none; background: transparent; border: 0; border-radius: 0; box-shadow: none; outline: none;
@@ -50,7 +50,7 @@
 .ob-dot.ask { background: var(--gold, #ffc24a); }
 
 /* the stage. A browser tab paints white under a page that sets no background, so the frame does too — otherwise
-   an unstyled page would render dark text on the station's dark glass. */
+   an unstyled page would render dark text on the keep's dark glass. */
 .ob-stage {
   position: relative; flex: 1 1 auto; min-height: 220px; overflow: hidden;
   border: 1px solid var(--gd-edge, rgba(var(--ph-rgb),.24)); border-radius: 4px; background: rgba(0,0,0,.25);
@@ -74,7 +74,7 @@
 
 /* THE COMMS DOOR — the twin of the + (add agents) button (glass-comms.css #gc-add-agents): two icon doors in the
    header's top right, + then the globe, whichever script mounts first. The lamp is drawn geometry on the corner,
-   lit only on station truth. */
+   lit only on keep truth. */
 #chat-panel #gc-add-agents { order: 1; }
 #chat-panel .comms-browser { order: 2; }
 #chat-panel .comms-browser {

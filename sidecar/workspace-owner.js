@@ -1,6 +1,6 @@
 /* sidecar/workspace-owner.js — fail-closed, process-wide ownership for one WORKSPACES root.
 
-   StarNet's durable stores are intentionally single-writer. Atomic individual-file writes prevent torn
+   Eyehold's durable stores are intentionally single-writer. Atomic individual-file writes prevent torn
    files, but they cannot prevent two sidecars from loading the same snapshot and then overwriting each
    other's later changes. This owner claim makes the existing "one sidecar per WORKSPACES" invariant real.
 
@@ -10,7 +10,7 @@
    dead no matter who owns that PID now). That second rule exists because of a real dead-end: PIDs restart at
    boot, so after a crash + reboot the stamped PID almost always belongs to some unrelated live process and
    the kill(0) probe alone reported "busy" forever — every sidecar spawn exited before listening and the
-   desktop sat on STATION DATA UNREACHABLE with no way out (2026-08-22 macOS report). A malformed lock (a
+   desktop sat on KEEP DATA UNREACHABLE with no way out (2026-08-22 macOS report). A malformed lock (a
    crash mid-write leaves an empty/torn file) is reclaimable by the same rule when its mtime predates boot.
    Within one boot, PID reuse can still cause a safe false-busy, never an unsafe double-writer.
 
@@ -80,7 +80,7 @@ function makeWorkspaceOwner(deps) {
     if (predatesBoot(holder.startedAt)) return true;
     return !pidAlive(holder.pid);
   }
-  const filename = String(d.filename || '.starnet-workspace-owner.json');
+  const filename = String(d.filename || '.eyehold-workspace-owner.json');
   if (!fs || typeof fs.openSync !== 'function' || typeof fs.renameSync !== 'function') {
     throw new Error('workspace-owner: an injected fs with openSync/renameSync is required');
   }

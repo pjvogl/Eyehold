@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// phase2.mjs - StarNet ref-replacement Phase 2 steering runner.
+// phase2.mjs - Eyehold ref-replacement Phase 2 steering runner.
 //
 // This is not a new product test suite. It is the control loop that turns the Phase 2
 // replacement plan into evidence: run the gates that can run on this machine, mark
@@ -21,11 +21,11 @@ const args = new Set(process.argv.slice(2));
 const WANT_LIVE = args.has('--live');
 const WANT_DESKTOP = args.has('--desktop');
 const STAMP = new Date().toISOString().replace(/[-:]/g, '').replace(/\..+$/, '').replace('T', '-');
-const OUT = resolve(process.env.STARNET_PHASE2_DIR || join(ROOT, '.dogfood', 'phase2-' + STAMP));
+const OUT = resolve(process.env.EYEHOLD_PHASE2_DIR || join(ROOT, '.dogfood', 'phase2-' + STAMP));
 const LATEST = join(ROOT, '.dogfood', 'phase2-latest');
 const npmCmd = process.platform === 'win32' ? 'npm.cmd' : 'npm';
 const nodeCmd = process.execPath;
-const STEP_TIMEOUT_MS = coerceTimeoutMs(process.env.STARNET_PHASE2_STEP_TIMEOUT_MS || 900000);
+const STEP_TIMEOUT_MS = coerceTimeoutMs(process.env.EYEHOLD_PHASE2_STEP_TIMEOUT_MS || 900000);
 
 function ensureDir(p) { mkdirSync(p, { recursive: true }); }
 function hasEnvKey() {
@@ -104,7 +104,7 @@ function writeSummary(results) {
   };
   writeFileSync(join(OUT, 'phase2-status.json'), JSON.stringify(json, null, 2));
 
-  let md = '# StarNet Phase 2 Evidence\n\n';
+  let md = '# Eyehold Phase 2 Evidence\n\n';
   md += '- Generated: `' + json.generatedAt + '`\n';
   md += '- Verdict: `' + json.verdict + '`\n';
   md += '- Live key present: `' + json.liveKeyPresent + '`\n';
@@ -139,17 +139,17 @@ function writeSummary(results) {
 async function main() {
   ensureDir(OUT);
   const nonLiveEnv = withoutLiveProviderEnv();
-  const noKeyReason = 'No live key found. Set SKYNET_OPENROUTER_KEY, STARNET_OPENROUTER_KEY, or OPENROUTER_API_KEY.';
+  const noKeyReason = 'No live key found. Set SKYNET_OPENROUTER_KEY, EYEHOLD_OPENROUTER_KEY, or OPENROUTER_API_KEY.';
   const liveSkippedReason = 'Run `npm run phase2:live` to execute paid provider proof.';
   const steps = [
     { id: 'test-fast', title: 'Core harness unit/integration gate', cmd: npmCmd, args: ['run', 'test:fast'], env: nonLiveEnv, required: true },
-    { id: 'test-http', title: 'Sidecar HTTP/e2e gate', cmd: npmCmd, args: ['run', 'test:http'], env: nonLiveEnv, required: true, timeoutMs: npmGateTimeoutMs('test:http', process.env.STARNET_PHASE2_STEP_TIMEOUT_MS) },
+    { id: 'test-http', title: 'Sidecar HTTP/e2e gate', cmd: npmCmd, args: ['run', 'test:http'], env: nonLiveEnv, required: true, timeoutMs: npmGateTimeoutMs('test:http', process.env.EYEHOLD_PHASE2_STEP_TIMEOUT_MS) },
     { id: 'audit-mock', title: 'Deterministic UI audit gate', cmd: npmCmd, args: ['run', 'audit'], env: nonLiveEnv, required: true },
     { id: 'golden', title: 'Reviewed UI golden gate', cmd: npmCmd, args: ['run', 'golden'], env: nonLiveEnv, required: true },
     // The 'validate-map' + 'test-world' steps were removed 2026-07-24 with the scripts they invoked:
     // both were Phase-0.0 wrappers around the ported v7 engine files frontend/js/map.js and
     // frontend/js/data.js, which no longer exist — so two REQUIRED steps here could never pass. The
-    // current engine is gated by worldmodel/crew-containment/station-authority inside test:fast above.
+    // current engine is gated by worldmodel/crew-containment/keep-authority inside test:fast above.
     {
       id: 'live-smoke',
       title: 'Paid provider smoke via /api/run',

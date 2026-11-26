@@ -4,7 +4,7 @@ Source repair: `9b2ce2d35804623e97fa0a081cc11ffddd33d534` (includes the initial 
 
 ## What changed
 
-StarNet now places reusable instructions before per-run metadata and gives the reusable system prefix its own explicit Claude cache boundary. The full system context receives a second boundary, preserving reuse within a run. The remaining two markers cover recent conversation content. Native Claude and Claude through OpenRouter implement the same layout; generic providers keep their normal string prompt and benefit where their provider supports matching prefixes. Extra leading memory-recall notes retain their text and system authority.
+Eyehold now places reusable instructions before per-run metadata and gives the reusable system prefix its own explicit Claude cache boundary. The full system context receives a second boundary, preserving reuse within a run. The remaining two markers cover recent conversation content. Native Claude and Claude through OpenRouter implement the same layout; generic providers keep their normal string prompt and benefit where their provider supports matching prefixes. Extra leading memory-recall notes retain their text and system authority.
 
 The repair keeps the complete task doctrine, manual, capability truth, skills, Task Brief instructions, memory, history, tool definitions and completion checks. No task step, approval check, reasoning effort, tool budget, retry budget or compaction step was removed or reduced. Runtime identity remains fresh on each request. The only prompt-content change is the order of the existing runtime block relative to reusable instructions. Old recovery checkpoints keep their existing provider-valid prompt shape.
 
@@ -31,7 +31,7 @@ Compared with public Hermes source pinned to `b9271bcb34e1a8b8fe0eeaef0ef4a6e1f9
 
 **Hermes still does context compression and provider recovery.** Those are necessary work, and can still take time. Its current compressor contains explicit handling for stalled, failed and truncated summaries, including cases that abort while preserving messages. I did not copy a policy that drops task context or declare Hermes universally faster. The downloaded source is newer/more precise than some prose documentation, so the comparison uses the pinned implementation. [Compressor source](https://github.com/NousResearch/hermes-agent/blob/b9271bcb34e1a8b8fe0eeaef0ef4a6e1f93ba543/agent/context_compressor.py).
 
-I did not establish that every Hermes fallback/authentication path is free of eager refresh waits; that separate StarNet repair is supported by StarNet's own code and regression tests.
+I did not establish that every Hermes fallback/authentication path is free of eager refresh waits; that separate Eyehold repair is supported by Eyehold's own code and regression tests.
 
 ## Remaining limitations
 

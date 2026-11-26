@@ -1,5 +1,5 @@
 
-> starnet-harness@0.12.4 desktop:build
+> eyehold-harness@0.12.4 desktop:build
 > node scripts/prepare-node.mjs && node scripts/stage-voice-deps.mjs && node scripts/stage-frontend-dist.mjs && tauri build --config .qa_tmp/release-0124/unsigned-build.json
 
 [prepare-node] C:\Users\andro\gen-trees\release-audit-0124-0920\src-tauri\binaries\node-x86_64-pc-windows-msvc.exe already present; skipping (set SKYNET_BUNDLE_FORCE=1 to re-fetch)
@@ -30,7 +30,7 @@ stage-frontend-dist: 13865 file(s) / 284.4 MB staged → C:\Users\andro\gen-tree
        Built application at: C:\Users\andro\gen-trees\release-audit-0124-0920\src-tauri\target\release\skynet-desktop.exe
         Info Patching C:\Users\andro\gen-trees\release-audit-0124-0920\src-tauri\target\release\skynet-desktop.exe with bundle type information: nsis
         Info Target: x64
-     Running makensis to produce C:\Users\andro\gen-trees\release-audit-0124-0920\src-tauri\target\release\bundle\nsis\StarNet_0.12.4_x64-setup.exe
+     Running makensis to produce C:\Users\andro\gen-trees\release-audit-0124-0920\src-tauri\target\release\bundle\nsis\Eyehold_0.12.4_x64-setup.exe
     Finished 1 bundle at:
-        C:\Users\andro\gen-trees\release-audit-0124-0920\src-tauri\target\release\bundle\nsis\StarNet_0.12.4_x64-setup.exe
+        C:\Users\andro\gen-trees\release-audit-0124-0920\src-tauri\target\release\bundle\nsis\Eyehold_0.12.4_x64-setup.exe
 

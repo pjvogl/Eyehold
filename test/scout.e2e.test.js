@@ -14,7 +14,7 @@
        a recipe draft is STAGED, and the ledger records both hops (interests folded + recipe staged).
 
    BOOT 2 — THE HONEST-FAILURE CHAIN (anti-silent-no-op; warm pre-seeded so the mint attempt fires):
-     · a well-formed recipe whose WHY cites NOTHING the station observed is rejected by the grounding
+     · a well-formed recipe whose WHY cites NOTHING the keep observed is rejected by the grounding
        guard: NO draft staged + a 'rejected' ledger note (visible failure, never a quiet nothing);
      · an extraction reply with INVENTED evidence folds to zero topics + an honest 'none' ledger note.
 
@@ -55,7 +55,7 @@ function startMock(replies) {
           };
           if (body.indexOf('intake analyst') >= 0) { calls.push('extraction'); text(replies.extraction); }        // interests.buildDirective's system marker
           else if (body.indexOf('recipe author') >= 0) { calls.push('recipe'); text(replies.recipe); }            // scout.buildRecipeDirective's system marker
-          else if (body.indexOf("station's recruiter") >= 0) { calls.push('recruiter'); text(replies.prospect || 'NONE'); }   // the LLM prospect authorship pass
+          else if (body.indexOf("keep's recruiter") >= 0) { calls.push('recruiter'); text(replies.prospect || 'NONE'); }   // the LLM prospect authorship pass
           else { calls.push('run'); text('ok, done.'); }                                                          // the main task run itself
         });
         return;
@@ -69,7 +69,7 @@ function startMock(replies) {
 
 function boot(port, env, attemptsLeft) {
   return new Promise((resolve, reject) => {
-    const child = spawn(process.execPath, [INDEX], { env: Object.assign({}, process.env, env, { SKYNET_PORT: String(port) }), stdio: ['ignore', 'pipe', 'pipe'] });
+    const child = spawn(process.execPath, [INDEX], { env: Object.assign({}, process.env, env, { EYEHOLD_PORT: String(port) }), stdio: ['ignore', 'pipe', 'pipe'] });
     let out = '', settled = false;
     const onData = d => {
       out += d.toString();
@@ -97,7 +97,7 @@ function seedScoutState(ws) {
 
 async function driveRun(B, token, agentId, text) {
   const r = await fetch(B + '/api/run', {
-    method: 'POST', headers: { 'Content-Type': 'application/json', 'X-StarNet-Token': token, Origin: B },
+    method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Eyehold-Token': token, Origin: B },
     body: JSON.stringify({ key: 'sk-or-v1-scout-fake', model: 'test/model', agentId, isTask: true, messages: [{ role: 'user', content: text }] })
   });
   const rd = r.body.getReader(); while (true) { const { done } = await rd.read(); if (done) break; }   // drain to run end
@@ -108,14 +108,14 @@ async function pollScout(B, token, pred, label, ms) {
   const until = Date.now() + (ms || 15000);
   let last = null;
   while (Date.now() < until) {
-    try { last = await (await fetch(B + '/api/scout', { headers: { 'X-StarNet-Token': token, Origin: B } })).json(); } catch (_) {}
+    try { last = await (await fetch(B + '/api/scout', { headers: { 'X-Eyehold-Token': token, Origin: B } })).json(); } catch (_) {}
     if (last && pred(last)) return last;
     await sleep(250);
   }
   throw new Error('timed out waiting for: ' + label + '\nlast /api/scout: ' + JSON.stringify(last));
 }
 
-const QUIET = { SKYNET_THREAD_MINE: '0', SKYNET_SKILL_REVIEW: '0', SKYNET_SKILL_CURATOR: '0' };
+const QUIET = { EYEHOLD_THREAD_MINE: '0', EYEHOLD_SKILL_REVIEW: '0', EYEHOLD_SKILL_CURATOR: '0' };
 
 (async () => {
   /* ================= BOOT 1 — the happy chain ================= */
@@ -138,14 +138,14 @@ const QUIET = { SKYNET_THREAD_MINE: '0', SKYNET_SKILL_REVIEW: '0', SKYNET_SKILL_
     });
     const ws = fs.mkdtempSync(path.join(os.tmpdir(), 'sk-scout-e2e-'));
     seedScoutState(ws);   // no interests file: the histogram starts COLD — warmth must be EARNED live
-    const { child, port } = await boot(8930 + (process.pid % 25), Object.assign({ SKYNET_WORKSPACES: ws, SKYNET_OPENROUTER_BASE: mock.base }, QUIET), 20);
+    const { child, port } = await boot(8930 + (process.pid % 25), Object.assign({ EYEHOLD_WORKSPACES: ws, EYEHOLD_OPENROUTER_BASE: mock.base }, QUIET), 20);
     const B = 'http://' + HOST + ':' + port;
     try {
       const token = await bootToken(B, B);
 
       // sanity: pre-run, the scout is honestly COLD (no interests -> warm:false, gate binds 'cold').
-      const cold = await (await fetch(B + '/api/scout', { headers: { 'X-StarNet-Token': token, Origin: B } })).json();
-      A.eq(cold.warm, false, 'pre-run the station is honestly cold (no interests yet)');
+      const cold = await (await fetch(B + '/api/scout', { headers: { 'X-Eyehold-Token': token, Origin: B } })).json();
+      A.eq(cold.warm, false, 'pre-run the keep is honestly cold (no interests yet)');
       A.eq(cold.gate.binding, 'cold', 'the gate reports the cold binding pre-run');
 
       // drive REAL task runs — the post-run hook is the ONLY trigger used (no state poked mid-flight).
@@ -158,7 +158,7 @@ const QUIET = { SKYNET_THREAD_MINE: '0', SKYNET_SKILL_REVIEW: '0', SKYNET_SKILL_
         p => p.staged && p.staged.some(it => it.kind === 'recipe'),
         'a recipe draft staged by the live scout cycle');
       A.ok(true, 'ORCHESTRATION: a real run chain staged a recipe draft end-to-end');
-      A.eq(s.warm, true, 'the station is WARM off live-extracted interests (never pre-seeded)');
+      A.eq(s.warm, true, 'the keep is WARM off live-extracted interests (never pre-seeded)');
       const topic = (s.interests || []).find(t => /nvidia/.test(t.topic));
       A.ok(topic, 'the extracted interest persisted and is served by GET /api/scout');
       A.ok(topic && topic.evidence.some(q => q.indexOf('nvidia earnings call') >= 0), 'the interest carries its verbatim evidence quote');
@@ -188,7 +188,7 @@ const QUIET = { SKYNET_THREAD_MINE: '0', SKYNET_SKILL_REVIEW: '0', SKYNET_SKILL_
     const mock = await startMock({
       // INVENTED evidence: quotes nothing in the real activity -> the extraction grounding guard must drop it.
       extraction: 'TOPIC: quantum basket weaving | EVIDENCE: an invented quote citing zero observed activity',
-      // a WELL-FORMED recipe whose WHY cites nothing the station observed -> the parseRecipe grounding
+      // a WELL-FORMED recipe whose WHY cites nothing the keep observed -> the parseRecipe grounding
       // guard must reject it (the new anti-invented-pitch arm), visibly, via the ledger.
       recipe: [
         'NAME: Fresh Dashboards',
@@ -210,7 +210,7 @@ const QUIET = { SKYNET_THREAD_MINE: '0', SKYNET_SKILL_REVIEW: '0', SKYNET_SKILL_
     fs.writeFileSync(path.join(ws, 'scout.interests.json'), JSON.stringify({
       v: 1, state: { v: 1, topics: { 'kubernetes-ops': { label: 'kubernetes ops', w: 5, n: 5, lastAt: Date.now(), ev: [{ q: 'kubernetes ops', at: Date.now() }] } }, lastPassAt: 0, runsSincePass: 0 }
     }));
-    const { child, port } = await boot(8960 + (process.pid % 25), Object.assign({ SKYNET_WORKSPACES: ws, SKYNET_OPENROUTER_BASE: mock.base }, QUIET), 20);
+    const { child, port } = await boot(8960 + (process.pid % 25), Object.assign({ EYEHOLD_WORKSPACES: ws, EYEHOLD_OPENROUTER_BASE: mock.base }, QUIET), 20);
     const B = 'http://' + HOST + ':' + port;
     try {
       const token = await bootToken(B, B);
@@ -261,7 +261,7 @@ const QUIET = { SKYNET_THREAD_MINE: '0', SKYNET_SKILL_REVIEW: '0', SKYNET_SKILL_
     fs.writeFileSync(path.join(ws, 'scout.interests.json'), JSON.stringify({
       v: 1, state: { v: 1, topics: { 'gpu-price-tracking': { label: 'gpu price tracking', w: 5, n: 5, lastAt: Date.now(), ev: [{ q: 'gpu price tracking', at: Date.now() }] } }, lastPassAt: Date.now(), runsSincePass: 0 }
     }));
-    const { child, port } = await boot(8890 + (process.pid % 25), Object.assign({ SKYNET_WORKSPACES: ws, SKYNET_OPENROUTER_BASE: mock.base }, QUIET), 20);
+    const { child, port } = await boot(8890 + (process.pid % 25), Object.assign({ EYEHOLD_WORKSPACES: ws, EYEHOLD_OPENROUTER_BASE: mock.base }, QUIET), 20);
     const B = 'http://' + HOST + ':' + port;
     try {
       const token = await bootToken(B, B);

@@ -11,7 +11,7 @@ const path = require('path');
 const A = require('./_assert.js');
 const { appendJsonlDurable, loadBounded } = require('../sidecar/logbound.js');
 
-const DIR = fs.mkdtempSync(path.join(os.tmpdir(), 'starnet-logbound-torn-'));
+const DIR = fs.mkdtempSync(path.join(os.tmpdir(), 'eyehold-logbound-torn-'));
 const FILE = path.join(DIR, 'runs.jsonl');
 // exactly index.js readBoundedJsonl: bounded tail, unparsable lines skipped
 const readRows = () => loadBounded({ fs }, FILE, 1 << 20).map(l => { try { return JSON.parse(l); } catch (_) { return null; } }).filter(Boolean);

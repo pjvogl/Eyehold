@@ -1,6 +1,6 @@
 /* node test/discovery.test.js — THE ENVIRONMENT DISCOVERY ENGINE (sidecar/discovery.js, pure half).
 
-   The product gap this lane closes: every proactive surface studied only what the Commander TYPED; the station
+   The product gap this lane closes: every proactive surface studied only what the Commander TYPED; the keep
    never looked at the projects it was blessed into. This suite locks the engine's laws:
      - evidence or silence BY CONSTRUCTION: a finding exists only where the scan produced a real line, and that
        line is carried verbatim as the citation; an empty/failed scan yields nothing

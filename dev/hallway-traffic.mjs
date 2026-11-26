@@ -1,5 +1,5 @@
 // Reproduce the old head-on jam (--before), or verify the repaired steppers and
-// normal animation loop on an isolated seeded station. No personal save is used.
+// normal animation loop on an isolated seeded keep. No personal save is used.
 import {execFileSync} from 'node:child_process';
 import {createHash} from 'node:crypto';
 import {readFileSync,writeFileSync} from 'node:fs';
@@ -11,9 +11,9 @@ const hook=`window.__hallwayProof = (width=2, natural=false) => {
   const st=WorldModel.create();
   st.addRoom({kind:'lab',rect:{x1:6,y1:20,x2:17,y2:32}});
   st.placeHallway({rect:{x1:10,y1:11,x2:9+width,y2:19}});
-  loadStation(st); activity='idle'; awakeFrozen=false;chatFocusId=null;
+  loadKeep(st); activity='idle'; awakeFrozen=false;chatFocusId=null;
   agent.skin='pikachu';
-  const a=agent,b=makeCrewBody('traffic-fixture','PASSER','#ffffff',0,0,'astronaut');
+  const a=agent,b=makeCrewBody('traffic-fixture','PASSER','#ffffff',0,0,'warden');
   crew.splice(0,crew.length,b);
   const local=(x,y)=>({x:x-geo.origin.tx,y:y-geo.origin.ty});
   const starts=[local(10,15),local(10,19)],ends=[local(10,23),local(10,7)];
@@ -52,7 +52,7 @@ try{
  await cdp.send('Page.enable');await cdp.send('Runtime.enable');
  const src=(process.argv.includes('--before')?execFileSync('git',['show','3ba5b8492:frontend/app/world.js'],{encoding:'utf8'}):readFileSync('frontend/app/world.js','utf8')).replace('  return {\n    init,', '  return {\n    init,');
  report.sourceSha256=createHash('sha256').update(src).digest('hex');
- const at=src.indexOf('    loadStation, spawn, spawnAgent');
+ const at=src.indexOf('    loadKeep, spawn, spawnAgent');
  const ret=src.lastIndexOf('  return {',at);
  if(ret<0)throw Error('hook seam missing');
  const injected=src.slice(0,ret)+hook+'\n'+src.slice(ret);

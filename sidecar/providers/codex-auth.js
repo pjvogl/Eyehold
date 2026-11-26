@@ -1,7 +1,7 @@
 /* sidecar/providers/codex-auth.js — the ONLY module that knows the OpenAI Codex OAuth wire.
 
    Replicates the device-code login OpenAI's own Codex CLI uses (faithful port of the reference
-   CLI's auth flow `_codex_device_code_login` / `refresh_codex_oauth_pure`), so a STARNET user can
+   CLI's auth flow `_codex_device_code_login` / `refresh_codex_oauth_pure`), so a EYEHOLD user can
    run agents off a personal ChatGPT subscription instead of paying per-token API. No client secret —
    the Codex CLI's PUBLIC client_id + a PKCE code_verifier minted server-side by the device-auth flow.
 
@@ -46,7 +46,7 @@
   // which leaves the fetch un-timed rather than erroring — the same graceful degrade the stream adapters use.
   function authTimeoutSignal() {
     try {
-      const v = (typeof process !== 'undefined' && process.env && process.env.SKYNET_PROVIDER_CONNECT_MS);
+      const v = (typeof process !== 'undefined' && process.env && (process.env.EYEHOLD_PROVIDER_CONNECT_MS != null ? process.env.EYEHOLD_PROVIDER_CONNECT_MS : process.env.SKYNET_PROVIDER_CONNECT_MS));
       const n = v != null && String(v).trim() !== '' ? parseInt(v, 10) : NaN;
       const ms = (isFinite(n) && n > 0) ? n : 30000;
       if (typeof AbortSignal !== 'undefined' && typeof AbortSignal.timeout === 'function') return AbortSignal.timeout(ms);
@@ -213,10 +213,10 @@
       } catch (e) { /* keep the status-based default */ }
       if (code === 'invalid_grant' || code === 'invalid_token' || code === 'invalid_request') relogin = true;
       if (code === 'refresh_token_reused') {
-        // #92: no Codex CLI needed — StarNet's own device-code sign-in mints fresh tokens. A copied station
+        // #92: no Codex CLI needed — Eyehold's own device-code sign-in mints fresh tokens. A copied keep
         // folder carries the single-use refresh token too, so name that cause alongside the CLI/editor.
         message = 'Codex refresh token was already consumed by another client (the Codex CLI, the VS Code extension, '
-          + 'or a copy of this station on another computer). Sign in with ChatGPT again: ⏼ RECONNECT on the ChatGPT card '
+          + 'or a copy of this keep on another computer). Sign in with ChatGPT again: ⏼ RECONNECT on the ChatGPT card '
           + 'in SETTINGS › AI & MODELS.';
         relogin = true;
       }

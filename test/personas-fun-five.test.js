@@ -64,12 +64,12 @@ const voice = read('frontend/app/voice-live.js');
 const instructions = voice.match(/function voiceInstructions\(\) \{[\s\S]*?\n  \}/)[0];
 const spokenAgent = { name: 'Test', personaId: 'unhinged', voiceTraits: { profanity: 0 }, customVoice: 'Use formal language.' };
 spokenAgent.systemPrompt = P.compose(spokenAgent.personaId, spokenAgent.voiceTraits, spokenAgent.customVoice);
-const spoken = new Function('Personas', 'stationContext', instructions + '; return voiceInstructions();')(P, () => ({ agent: spokenAgent, crew: [], streams: [], activeWs: null }));
+const spoken = new Function('Personas', 'keepContext', instructions + '; return voiceInstructions();')(P, () => ({ agent: spokenAgent, crew: [], streams: [], activeWs: null }));
 assert.equal(spoken.split('PERSONALITY —').length, 2, 'one resolved personality in live speech');
 assert.ok(spoken.includes('LANGUAGE: Do not use profanity.'));
 assert.ok(!spoken.includes('LANGUAGE: Natural, uncensored profanity'));
 spokenAgent.systemPrompt = '';
-const fallback = new Function('Personas', 'stationContext', instructions + '; return voiceInstructions();')(P, () => ({ agent: spokenAgent, crew: [], streams: [], activeWs: null }));
+const fallback = new Function('Personas', 'keepContext', instructions + '; return voiceInstructions();')(P, () => ({ agent: spokenAgent, crew: [], streams: [], activeWs: null }));
 assert.ok(fallback.includes('LANGUAGE: Do not use profanity.'), 'voice fallback honors tuning');
 const chat = read('frontend/app/chat.js');
 const rules = chat.match(/function voiceModeRules\(\) \{[\s\S]*?\n\}/)[0];
@@ -88,7 +88,7 @@ assert.equal(P.ambient('unhinged', {}, 'No banter.').length, 0, 'fixed ambient q
 
 // Execute the actual timer callback: a same-agent update must send once, then stay quiet.
 const tickSource = voice.match(/contextTimer = setInterval\(\(\) => \{([\s\S]*?)\n        \}, 2000\)/)[1];
-const timer = new Function('voiceContextFingerprint', 'stationContext', `
+const timer = new Function('voiceContextFingerprint', 'keepContext', `
   let active = true, realtime = true, lastContextFingerprint = '', updates = 0;
   function pushSessionContext() { updates++; }
   return { tick() { ${tickSource} }, updates: () => updates };

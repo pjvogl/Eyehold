@@ -29,7 +29,7 @@ Every row records the exact current user-facing locator, code or absence checks,
 | `comms-real-workflow` | work | **SHIPPED** / PROVEN | W1 | PENDING | Core seams exist; installed end-to-end proof remains required. |
 | `truthful-tools-cost-work` | work | **SHIPPED** / PROVEN | W6 | PENDING | Telemetry reducers are present; terminal proof still needs live reconciliation. |
 | `object-capability-grant` | capabilities | **SHIPPED** / PROVEN | W4 | PENDING | The object-to-tool projection exists; W4 live mode matrix must re-prove it. |
-| `room-capability-team` | capabilities | **PARTIAL** / NARROW | W4 | PENDING | Object grants are real, but most gear is explicitly station-shared rather than room-team scoped. |
+| `room-capability-team` | capabilities | **PARTIAL** / NARROW | W4 | PENDING | Object grants are real, but most gear is explicitly keep-shared rather than room-team scoped. |
 | `hallway-authorized-handoff` | capabilities | **REFUTED** / NARROW | W4 | PENDING | Hallways are geometry; no authorization implementation was found on trunk, branches, or worktrees. |
 | `layout-is-workflow` | capabilities | **PARTIAL** / NARROW | W4 | PENDING | Placed objects affect tools, while orchestration remains tool-driven rather than graph-edge driven. |
 | `one-click-mutation-approval` | security | **PARTIAL** / NARROW | W2 | PENDING | Full-access and unattended modes bypass interactive prompting by design; copy must state that qualification. |
@@ -51,8 +51,8 @@ Every row records the exact current user-facing locator, code or absence checks,
 | `no-analytics-telemetry` | privacy | **SHIPPED** / PROVEN | W2 | PENDING | Exact tracked shipped-source grep is clean for the named analytics/crash SDK endpoints. |
 | `no-phone-home` | privacy | **REFUTED** / NARROW | W2 | PENDING | Google Fonts and the boot-time OpenRouter catalog warm contradict the blanket claim. |
 | `secrets-keychain-never-render` | security | **PARTIAL** / FIX | W2 | PENDING | Provider keys and Telegram/Discord are covered; Codex/Spotify and three channels remain outside that blanket. |
-| `crash-safe-forward-corrupt-recovery` | recovery | **PARTIAL** / COMPLETE | W3 | PENDING | Protected sidecar stores are hardened, while browser station state still uses localStorage and full recovery proof is incomplete. |
-| `full-backup-export-restore` | recovery | **PARTIAL** / COMPLETE | W3 | PENDING | The full engine exists but Settings reaches only the smaller station backup surface. |
+| `crash-safe-forward-corrupt-recovery` | recovery | **PARTIAL** / COMPLETE | W3 | PENDING | Protected sidecar stores are hardened, while browser keep state still uses localStorage and full recovery proof is incomplete. |
+| `full-backup-export-restore` | recovery | **PARTIAL** / COMPLETE | W3 | PENDING | The full engine exists but Settings reaches only the smaller keep backup surface. |
 | `three-platform-release-pipeline` | release | **PARTIAL** / COMPLETE | W7 | PENDING | Pipeline configuration exists; clean installed proof for every artifact is absent. |
 | `self-update-verified` | release | **REFUTED** / NARROW | W7 | PENDING | Automatic checks default off and the blanket verified-live statement lacks installed evidence. |
 | `free-no-markup-budget-caps` | release | **SHIPPED** / PROVEN | W6 | PENDING | Budget enforcement exists; free/no-markup remains an owner business-policy claim. |
@@ -72,7 +72,7 @@ Every row records the exact current user-facing locator, code or absence checks,
 | `W2-channel-token-keychain` | **PARTIAL** / FIX | The shell keychain allowlist contains exactly Telegram and Discord. |
 | `W3-unified-work-ledger` | **PARTIAL** / COMPLETE | Workstreams and return cards exist separately; unified browse/search is absent. |
 | `W3-cold-boot-recap` | **SHIPPED** / PROVEN | Return and morning-report stores already hydrate and render recap paths. |
-| `W3-settings-full-export` | **PARTIAL** / COMPLETE | Backup.exportAll exists, but the Settings control is the smaller station backup. |
+| `W3-settings-full-export` | **PARTIAL** / COMPLETE | Backup.exportAll exists, but the Settings control is the smaller keep backup. |
 | `W3-settings-base-url` | **MISSING** / FIX | Harness.setBaseUrl exists only in onboarding paths. |
 | `W4-run-mode-capability-matrix` | **PARTIAL** / COMPLETE | Individual posture/capability engines exist; a complete enforced/not-enforced decision list is not yet authority. |
 | `W5-after-close-continuation` | **REFUTED** / NARROW | Single-process desktop ownership means close stops the sidecar; this is a copy-honesty fix. |

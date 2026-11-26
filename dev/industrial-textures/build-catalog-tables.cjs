@@ -1,6 +1,6 @@
 'use strict';
 const fs=require('node:fs'),sharp=require('sharp'),crypto=require('node:crypto');
-const dir='docs/station-remaster/catalog-tables',out='frontend/assets/industrial/catalog-tables',source=dir+'/sheet-source.png',structure=JSON.parse(fs.readFileSync('dev/industrial-textures/prop-structure-manifest.json'));
+const dir='docs/keep-remaster/catalog-tables',out='frontend/assets/industrial/catalog-tables',source=dir+'/sheet-source.png',structure=JSON.parse(fs.readFileSync('dev/industrial-textures/prop-structure-manifest.json'));
 const hash=b=>crypto.createHash('sha256').update(b).digest('hex');
 // ROIs and usable tabletop corners measured on the generated source, not guessed from cell order.
 const items=[

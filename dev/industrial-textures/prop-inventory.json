@@ -50,7 +50,7 @@
       "storage": 10,
       "decor": 61,
       "lounge": 21,
-      "workstation": 7,
+      "workkeep": 7,
       "workflow": 8,
       "capability": 13,
       "isolation": 1,
@@ -292,7 +292,7 @@
         "optionalSurfaceMount": false,
         "surfaceRisePixels": 8
       },
-      "assignedWorkstation": false,
+      "assignedWorkkeep": false,
       "leisureUse": null,
       "capabilityObjectType": null,
       "animatedCatalogFlag": false,
@@ -379,7 +379,7 @@
         "optionalSurfaceMount": false,
         "surfaceRisePixels": 8
       },
-      "assignedWorkstation": false,
+      "assignedWorkkeep": false,
       "leisureUse": null,
       "capabilityObjectType": null,
       "animatedCatalogFlag": false,
@@ -466,7 +466,7 @@
         "optionalSurfaceMount": false,
         "surfaceRisePixels": 8
       },
-      "assignedWorkstation": false,
+      "assignedWorkkeep": false,
       "leisureUse": null,
       "capabilityObjectType": null,
       "animatedCatalogFlag": false,
@@ -553,7 +553,7 @@
         "optionalSurfaceMount": true,
         "surfaceRisePixels": 8
       },
-      "assignedWorkstation": false,
+      "assignedWorkkeep": false,
       "leisureUse": null,
       "capabilityObjectType": null,
       "animatedCatalogFlag": false,
@@ -640,7 +640,7 @@
         "optionalSurfaceMount": false,
         "surfaceRisePixels": 8
       },
-      "assignedWorkstation": false,
+      "assignedWorkkeep": false,
       "leisureUse": null,
       "capabilityObjectType": null,
       "animatedCatalogFlag": false,
@@ -743,7 +743,7 @@
         "optionalSurfaceMount": false,
         "surfaceRisePixels": 8
       },
-      "assignedWorkstation": false,
+      "assignedWorkkeep": false,
       "leisureUse": null,
       "capabilityObjectType": null,
       "animatedCatalogFlag": false,
@@ -830,7 +830,7 @@
         "optionalSurfaceMount": false,
         "surfaceRisePixels": 8
       },
-      "assignedWorkstation": false,
+      "assignedWorkkeep": false,
       "leisureUse": {
         "kind": "couch",
         "sit": false,
@@ -921,7 +921,7 @@
         "optionalSurfaceMount": false,
         "surfaceRisePixels": 8
       },
-      "assignedWorkstation": false,
+      "assignedWorkkeep": false,
       "leisureUse": null,
       "capabilityObjectType": null,
       "animatedCatalogFlag": false,
@@ -1008,7 +1008,7 @@
         "optionalSurfaceMount": false,
         "surfaceRisePixels": 8
       },
-      "assignedWorkstation": false,
+      "assignedWorkkeep": false,
       "leisureUse": null,
       "capabilityObjectType": null,
       "animatedCatalogFlag": false,
@@ -1095,7 +1095,7 @@
         "optionalSurfaceMount": false,
         "surfaceRisePixels": 8
       },
-      "assignedWorkstation": false,
+      "assignedWorkkeep": false,
       "leisureUse": null,
       "capabilityObjectType": null,
       "animatedCatalogFlag": false,
@@ -1206,7 +1206,7 @@
         "optionalSurfaceMount": false,
         "surfaceRisePixels": 8
       },
-      "assignedWorkstation": false,
+      "assignedWorkkeep": false,
       "leisureUse": null,
       "capabilityObjectType": null,
       "animatedCatalogFlag": false,
@@ -1317,7 +1317,7 @@
         "optionalSurfaceMount": false,
         "surfaceRisePixels": 8
       },
-      "assignedWorkstation": false,
+      "assignedWorkkeep": false,
       "leisureUse": null,
       "capabilityObjectType": null,
       "animatedCatalogFlag": false,
@@ -1369,9 +1369,9 @@
     {
       "id": "desk",
       "label": "DESK",
-      "family": "workstation",
+      "family": "workkeep",
       "tier": "functional",
-      "oldConcept": "WORKSTATION — assign an agent here and it walks over and sits to work whenever it gets a task.",
+      "oldConcept": "WORKKEEP — assign an agent here and it walks over and sits to work whenever it gets a task.",
       "classicBox": {
         "w": 2,
         "h": 1
@@ -1425,7 +1425,7 @@
         "optionalSurfaceMount": false,
         "surfaceRisePixels": 8
       },
-      "assignedWorkstation": true,
+      "assignedWorkkeep": true,
       "leisureUse": null,
       "capabilityObjectType": "computer",
       "animatedCatalogFlag": true,
@@ -1470,17 +1470,17 @@
       "art": {
         "implementation": "authored-reference-raster",
         "assets": [
-          "frontend/assets/industrial/workstation.png",
-          "frontend/assets/industrial/workstation-compact.png",
-          "frontend/assets/industrial/remaster/workstation-e.png",
-          "frontend/assets/industrial/remaster/workstation-n.png",
-          "frontend/assets/industrial/remaster/workstation-compact-n.png"
+          "frontend/assets/industrial/workkeep.png",
+          "frontend/assets/industrial/workkeep-compact.png",
+          "frontend/assets/industrial/remaster/workkeep-e.png",
+          "frontend/assets/industrial/remaster/workkeep-n.png",
+          "frontend/assets/industrial/remaster/workkeep-compact-n.png"
         ],
         "detailStatus": "Reference-derived silhouette exists; exact dimensions, state masks and views still require final acceptance.",
         "completion": "baseline-audited; comprehensive prop pass not accepted"
       },
       "liveAnimationTriggers": [
-        "world.workstationLit: assigned hero.working or assigned crew.working with compute eligibility; real token/tool heat and only a published progress fraction. At this baseline this is work-state gating, not strict physical occupancy."
+        "world.workkeepLit: assigned hero.working or assigned crew.working with compute eligibility; real token/tool heat and only a published progress fraction. At this baseline this is work-state gating, not strict physical occupancy."
       ],
       "anchorContract": "deskSeat: adjacent walkable center-out approach; desk/desk2 respect remaster facing, others stay south. Fractional render center shifts at most half a tile; separate generated seatchair.",
       "directionalArtNeed": "Keep offered authored projections and mirror semantics. Verify contact, standing height, occlusion and seat/mount geometry in every offered facing.",
@@ -1494,9 +1494,9 @@
     {
       "id": "desk2",
       "label": "DESK ×2",
-      "family": "workstation",
+      "family": "workkeep",
       "tier": "functional",
-      "oldConcept": "WORKSTATION — assign an agent here and it walks over and sits to work whenever it gets a task.",
+      "oldConcept": "WORKKEEP — assign an agent here and it walks over and sits to work whenever it gets a task.",
       "classicBox": {
         "w": 2,
         "h": 1
@@ -1550,7 +1550,7 @@
         "optionalSurfaceMount": false,
         "surfaceRisePixels": 8
       },
-      "assignedWorkstation": true,
+      "assignedWorkkeep": true,
       "leisureUse": null,
       "capabilityObjectType": "computer",
       "animatedCatalogFlag": true,
@@ -1595,17 +1595,17 @@
       "art": {
         "implementation": "authored-reference-raster",
         "assets": [
-          "frontend/assets/industrial/workstation.png",
-          "frontend/assets/industrial/workstation-compact.png",
-          "frontend/assets/industrial/remaster/workstation-e.png",
-          "frontend/assets/industrial/remaster/workstation-n.png",
-          "frontend/assets/industrial/remaster/workstation-compact-n.png"
+          "frontend/assets/industrial/workkeep.png",
+          "frontend/assets/industrial/workkeep-compact.png",
+          "frontend/assets/industrial/remaster/workkeep-e.png",
+          "frontend/assets/industrial/remaster/workkeep-n.png",
+          "frontend/assets/industrial/remaster/workkeep-compact-n.png"
         ],
         "detailStatus": "Reference-derived silhouette exists; exact dimensions, state masks and views still require final acceptance.",
         "completion": "baseline-audited; comprehensive prop pass not accepted"
       },
       "liveAnimationTriggers": [
-        "world.workstationLit: assigned hero.working or assigned crew.working with compute eligibility; real token/tool heat and only a published progress fraction. At this baseline this is work-state gating, not strict physical occupancy."
+        "world.workkeepLit: assigned hero.working or assigned crew.working with compute eligibility; real token/tool heat and only a published progress fraction. At this baseline this is work-state gating, not strict physical occupancy."
       ],
       "anchorContract": "deskSeat: adjacent walkable center-out approach; desk/desk2 respect remaster facing, others stay south. Fractional render center shifts at most half a tile; separate generated seatchair.",
       "directionalArtNeed": "Keep offered authored projections and mirror semantics. Verify contact, standing height, occlusion and seat/mount geometry in every offered facing.",
@@ -1619,9 +1619,9 @@
     {
       "id": "console",
       "label": "CONSOLE",
-      "family": "workstation",
+      "family": "workkeep",
       "tier": "functional",
-      "oldConcept": "WORKSTATION — assign an agent here and it walks over and sits to work whenever it gets a task.",
+      "oldConcept": "WORKKEEP — assign an agent here and it walks over and sits to work whenever it gets a task.",
       "classicBox": {
         "w": 2,
         "h": 1
@@ -1654,7 +1654,7 @@
         "optionalSurfaceMount": false,
         "surfaceRisePixels": 8
       },
-      "assignedWorkstation": true,
+      "assignedWorkkeep": true,
       "leisureUse": null,
       "capabilityObjectType": "computer",
       "animatedCatalogFlag": true,
@@ -1703,7 +1703,7 @@
         "completion": "baseline-audited; comprehensive prop pass not accepted"
       },
       "liveAnimationTriggers": [
-        "world.workstationLit: assigned hero.working or assigned crew.working with compute eligibility; real token/tool heat and only a published progress fraction. At this baseline this is work-state gating, not strict physical occupancy.",
+        "world.workkeepLit: assigned hero.working or assigned crew.working with compute eligibility; real token/tool heat and only a published progress fraction. At this baseline this is work-state gating, not strict physical occupancy.",
         "Autonomous sprite clock animation is present in the sampled default state; cosmetic motion is not evidence of provider work, route decisions or external state."
       ],
       "anchorContract": "deskSeat: adjacent walkable center-out approach; desk/desk2 respect remaster facing, others stay south. Fractional render center shifts at most half a tile; separate generated seatchair.",
@@ -1718,9 +1718,9 @@
     {
       "id": "consoleL",
       "label": "CONSOLE L",
-      "family": "workstation",
+      "family": "workkeep",
       "tier": "functional",
-      "oldConcept": "WORKSTATION — assign an agent here and it walks over and sits to work whenever it gets a task.",
+      "oldConcept": "WORKKEEP — assign an agent here and it walks over and sits to work whenever it gets a task.",
       "classicBox": {
         "w": 3,
         "h": 1
@@ -1753,7 +1753,7 @@
         "optionalSurfaceMount": false,
         "surfaceRisePixels": 8
       },
-      "assignedWorkstation": true,
+      "assignedWorkkeep": true,
       "leisureUse": null,
       "capabilityObjectType": "computer",
       "animatedCatalogFlag": true,
@@ -1802,7 +1802,7 @@
         "completion": "baseline-audited; comprehensive prop pass not accepted"
       },
       "liveAnimationTriggers": [
-        "world.workstationLit: assigned hero.working or assigned crew.working with compute eligibility; real token/tool heat and only a published progress fraction. At this baseline this is work-state gating, not strict physical occupancy.",
+        "world.workkeepLit: assigned hero.working or assigned crew.working with compute eligibility; real token/tool heat and only a published progress fraction. At this baseline this is work-state gating, not strict physical occupancy.",
         "Autonomous sprite clock animation is present in the sampled default state; cosmetic motion is not evidence of provider work, route decisions or external state."
       ],
       "anchorContract": "deskSeat: adjacent walkable center-out approach; desk/desk2 respect remaster facing, others stay south. Fractional render center shifts at most half a tile; separate generated seatchair.",
@@ -1817,9 +1817,9 @@
     {
       "id": "pixelrig",
       "label": "PIXEL RIG",
-      "family": "workstation",
+      "family": "workkeep",
       "tier": "functional",
-      "oldConcept": "WORKSTATION — assign an agent here and it walks over and sits to work whenever it gets a task.",
+      "oldConcept": "WORKKEEP — assign an agent here and it walks over and sits to work whenever it gets a task.",
       "classicBox": {
         "w": 2,
         "h": 1
@@ -1852,7 +1852,7 @@
         "optionalSurfaceMount": false,
         "surfaceRisePixels": 8
       },
-      "assignedWorkstation": true,
+      "assignedWorkkeep": true,
       "leisureUse": null,
       "capabilityObjectType": "computer",
       "animatedCatalogFlag": true,
@@ -1901,7 +1901,7 @@
         "completion": "baseline-audited; comprehensive prop pass not accepted"
       },
       "liveAnimationTriggers": [
-        "world.workstationLit: assigned hero.working or assigned crew.working with compute eligibility; real token/tool heat and only a published progress fraction. At this baseline this is work-state gating, not strict physical occupancy."
+        "world.workkeepLit: assigned hero.working or assigned crew.working with compute eligibility; real token/tool heat and only a published progress fraction. At this baseline this is work-state gating, not strict physical occupancy."
       ],
       "anchorContract": "deskSeat: adjacent walkable center-out approach; desk/desk2 respect remaster facing, others stay south. Fractional render center shifts at most half a tile; separate generated seatchair.",
       "directionalArtNeed": "Author east and north views plus grounded mirrored west, then extend actual front approach and seat contracts before enabling rotation.",
@@ -1915,9 +1915,9 @@
     {
       "id": "bench",
       "label": "BENCH",
-      "family": "workstation",
+      "family": "workkeep",
       "tier": "functional",
-      "oldConcept": "WORKSTATION — assign an agent here and it walks over and sits to work whenever it gets a task.",
+      "oldConcept": "WORKKEEP — assign an agent here and it walks over and sits to work whenever it gets a task.",
       "classicBox": {
         "w": 4,
         "h": 1
@@ -1950,7 +1950,7 @@
         "optionalSurfaceMount": false,
         "surfaceRisePixels": 8
       },
-      "assignedWorkstation": true,
+      "assignedWorkkeep": true,
       "leisureUse": null,
       "capabilityObjectType": "computer",
       "animatedCatalogFlag": true,
@@ -1999,7 +1999,7 @@
         "completion": "baseline-audited; comprehensive prop pass not accepted"
       },
       "liveAnimationTriggers": [
-        "world.workstationLit: assigned hero.working or assigned crew.working with compute eligibility; real token/tool heat and only a published progress fraction. At this baseline this is work-state gating, not strict physical occupancy.",
+        "world.workkeepLit: assigned hero.working or assigned crew.working with compute eligibility; real token/tool heat and only a published progress fraction. At this baseline this is work-state gating, not strict physical occupancy.",
         "Autonomous sprite clock animation is present in the sampled default state; cosmetic motion is not evidence of provider work, route decisions or external state."
       ],
       "anchorContract": "deskSeat: adjacent walkable center-out approach; desk/desk2 respect remaster facing, others stay south. Fractional render center shifts at most half a tile; separate generated seatchair.",
@@ -2014,9 +2014,9 @@
     {
       "id": "workbench",
       "label": "WORKBENCH",
-      "family": "workstation",
+      "family": "workkeep",
       "tier": "functional",
-      "oldConcept": "WORKBENCH — grants the room's agent shell + verify, so it can run and test real code. Pair it with a workstation in the same room.",
+      "oldConcept": "WORKBENCH — grants the room's agent shell + verify, so it can run and test real code. Pair it with a workkeep in the same room.",
       "classicBox": {
         "w": 2,
         "h": 1
@@ -2049,7 +2049,7 @@
         "optionalSurfaceMount": false,
         "surfaceRisePixels": 8
       },
-      "assignedWorkstation": false,
+      "assignedWorkkeep": false,
       "leisureUse": null,
       "capabilityObjectType": "workbench",
       "animatedCatalogFlag": true,
@@ -2147,7 +2147,7 @@
         "optionalSurfaceMount": false,
         "surfaceRisePixels": 8
       },
-      "assignedWorkstation": false,
+      "assignedWorkkeep": false,
       "leisureUse": null,
       "capabilityObjectType": null,
       "animatedCatalogFlag": true,
@@ -2244,7 +2244,7 @@
         "optionalSurfaceMount": false,
         "surfaceRisePixels": 8
       },
-      "assignedWorkstation": false,
+      "assignedWorkkeep": false,
       "leisureUse": null,
       "capabilityObjectType": null,
       "animatedCatalogFlag": true,
@@ -2343,7 +2343,7 @@
         "optionalSurfaceMount": false,
         "surfaceRisePixels": 8
       },
-      "assignedWorkstation": false,
+      "assignedWorkkeep": false,
       "leisureUse": null,
       "capabilityObjectType": null,
       "animatedCatalogFlag": true,
@@ -2430,7 +2430,7 @@
         "optionalSurfaceMount": false,
         "surfaceRisePixels": 8
       },
-      "assignedWorkstation": false,
+      "assignedWorkkeep": false,
       "leisureUse": null,
       "capabilityObjectType": null,
       "animatedCatalogFlag": true,
@@ -2517,7 +2517,7 @@
         "optionalSurfaceMount": false,
         "surfaceRisePixels": 8
       },
-      "assignedWorkstation": false,
+      "assignedWorkkeep": false,
       "leisureUse": null,
       "capabilityObjectType": null,
       "animatedCatalogFlag": true,
@@ -2604,7 +2604,7 @@
         "optionalSurfaceMount": false,
         "surfaceRisePixels": 8
       },
-      "assignedWorkstation": false,
+      "assignedWorkkeep": false,
       "leisureUse": null,
       "capabilityObjectType": null,
       "animatedCatalogFlag": true,
@@ -2691,7 +2691,7 @@
         "optionalSurfaceMount": false,
         "surfaceRisePixels": 8
       },
-      "assignedWorkstation": false,
+      "assignedWorkkeep": false,
       "leisureUse": null,
       "capabilityObjectType": null,
       "animatedCatalogFlag": true,
@@ -2745,7 +2745,7 @@
       "label": "OUTBOX",
       "family": "workflow",
       "tier": "functional",
-      "oldConcept": "OUTBOX — the dispatch chute where an agent's finished reply leaves the station. Click it to read and rate every finished run waiting for you.",
+      "oldConcept": "OUTBOX — the dispatch chute where an agent's finished reply leaves the keep. Click it to read and rate every finished run waiting for you.",
       "classicBox": {
         "w": 2,
         "h": 2
@@ -2778,7 +2778,7 @@
         "optionalSurfaceMount": false,
         "surfaceRisePixels": 8
       },
-      "assignedWorkstation": false,
+      "assignedWorkkeep": false,
       "leisureUse": null,
       "capabilityObjectType": null,
       "animatedCatalogFlag": true,
@@ -2877,7 +2877,7 @@
         "optionalSurfaceMount": false,
         "surfaceRisePixels": 8
       },
-      "assignedWorkstation": false,
+      "assignedWorkkeep": false,
       "leisureUse": null,
       "capabilityObjectType": "connector",
       "animatedCatalogFlag": true,
@@ -2975,7 +2975,7 @@
         "optionalSurfaceMount": false,
         "surfaceRisePixels": 8
       },
-      "assignedWorkstation": false,
+      "assignedWorkkeep": false,
       "leisureUse": null,
       "capabilityObjectType": "dish",
       "animatedCatalogFlag": true,
@@ -3073,7 +3073,7 @@
         "optionalSurfaceMount": false,
         "surfaceRisePixels": 8
       },
-      "assignedWorkstation": false,
+      "assignedWorkkeep": false,
       "leisureUse": null,
       "capabilityObjectType": "dish",
       "animatedCatalogFlag": true,
@@ -3171,7 +3171,7 @@
         "optionalSurfaceMount": false,
         "surfaceRisePixels": 8
       },
-      "assignedWorkstation": false,
+      "assignedWorkkeep": false,
       "leisureUse": null,
       "capabilityObjectType": "dish",
       "animatedCatalogFlag": true,
@@ -3268,7 +3268,7 @@
         "optionalSurfaceMount": false,
         "surfaceRisePixels": 8
       },
-      "assignedWorkstation": false,
+      "assignedWorkkeep": false,
       "leisureUse": null,
       "capabilityObjectType": "cabinet",
       "animatedCatalogFlag": true,
@@ -3356,7 +3356,7 @@
         "optionalSurfaceMount": false,
         "surfaceRisePixels": 8
       },
-      "assignedWorkstation": false,
+      "assignedWorkkeep": false,
       "leisureUse": null,
       "capabilityObjectType": "cabinet",
       "animatedCatalogFlag": true,
@@ -3444,7 +3444,7 @@
         "optionalSurfaceMount": false,
         "surfaceRisePixels": 8
       },
-      "assignedWorkstation": false,
+      "assignedWorkkeep": false,
       "leisureUse": null,
       "capabilityObjectType": "cabinet",
       "animatedCatalogFlag": true,
@@ -3532,7 +3532,7 @@
         "optionalSurfaceMount": false,
         "surfaceRisePixels": 8
       },
-      "assignedWorkstation": false,
+      "assignedWorkkeep": false,
       "leisureUse": null,
       "capabilityObjectType": "cabinet",
       "animatedCatalogFlag": true,
@@ -3620,7 +3620,7 @@
         "optionalSurfaceMount": false,
         "surfaceRisePixels": 8
       },
-      "assignedWorkstation": false,
+      "assignedWorkkeep": false,
       "leisureUse": null,
       "capabilityObjectType": "cabinet",
       "animatedCatalogFlag": true,
@@ -3708,7 +3708,7 @@
         "optionalSurfaceMount": false,
         "surfaceRisePixels": 8
       },
-      "assignedWorkstation": false,
+      "assignedWorkkeep": false,
       "leisureUse": null,
       "capabilityObjectType": "notebook",
       "animatedCatalogFlag": true,
@@ -3805,7 +3805,7 @@
         "optionalSurfaceMount": false,
         "surfaceRisePixels": 8
       },
-      "assignedWorkstation": false,
+      "assignedWorkkeep": false,
       "leisureUse": null,
       "capabilityObjectType": "notebook",
       "animatedCatalogFlag": true,
@@ -3903,7 +3903,7 @@
         "optionalSurfaceMount": false,
         "surfaceRisePixels": 8
       },
-      "assignedWorkstation": false,
+      "assignedWorkkeep": false,
       "leisureUse": null,
       "capabilityObjectType": "notebook",
       "animatedCatalogFlag": true,
@@ -4001,7 +4001,7 @@
         "optionalSurfaceMount": false,
         "surfaceRisePixels": 8
       },
-      "assignedWorkstation": false,
+      "assignedWorkkeep": false,
       "leisureUse": null,
       "capabilityObjectType": "studio",
       "animatedCatalogFlag": true,
@@ -4098,7 +4098,7 @@
         "optionalSurfaceMount": false,
         "surfaceRisePixels": 8
       },
-      "assignedWorkstation": false,
+      "assignedWorkkeep": false,
       "leisureUse": null,
       "capabilityObjectType": null,
       "animatedCatalogFlag": true,
@@ -4196,7 +4196,7 @@
         "optionalSurfaceMount": false,
         "surfaceRisePixels": 8
       },
-      "assignedWorkstation": false,
+      "assignedWorkkeep": false,
       "leisureUse": null,
       "capabilityObjectType": null,
       "animatedCatalogFlag": true,
@@ -4244,7 +4244,7 @@
         "completion": "baseline-audited; comprehensive prop pass not accepted"
       },
       "liveAnimationTriggers": [
-        "Real open quest count, station-gap flag, routine jam flag and pending autojob proposal count drive pins and warnings.",
+        "Real open quest count, keep-gap flag, routine jam flag and pending autojob proposal count drive pins and warnings.",
         "Autonomous sprite clock animation is present in the sampled default state; cosmetic motion is not evidence of provider work, route decisions or external state."
       ],
       "anchorContract": "No leisure seat anchor. Footprint is the placement/pathfinding rectangle; upright visual rise is independent of the reserved box.",
@@ -4261,7 +4261,7 @@
       "label": "TROPHY CASE",
       "family": "command",
       "tier": "functional",
-      "oldConcept": "TROPHY CASE — the station's real achievements made permanent. Earned milestones, completed quests, and your living tools stand behind glass; click to open the case. It grants nothing — it remembers.",
+      "oldConcept": "TROPHY CASE — the keep's real achievements made permanent. Earned milestones, completed quests, and your living tools stand behind glass; click to open the case. It grants nothing — it remembers.",
       "classicBox": {
         "w": 2,
         "h": 2
@@ -4294,7 +4294,7 @@
         "optionalSurfaceMount": false,
         "surfaceRisePixels": 8
       },
-      "assignedWorkstation": false,
+      "assignedWorkkeep": false,
       "leisureUse": null,
       "capabilityObjectType": null,
       "animatedCatalogFlag": true,
@@ -4392,7 +4392,7 @@
         "optionalSurfaceMount": false,
         "surfaceRisePixels": 8
       },
-      "assignedWorkstation": false,
+      "assignedWorkkeep": false,
       "leisureUse": null,
       "capabilityObjectType": null,
       "animatedCatalogFlag": false,
@@ -4491,7 +4491,7 @@
         "optionalSurfaceMount": false,
         "surfaceRisePixels": 8
       },
-      "assignedWorkstation": false,
+      "assignedWorkkeep": false,
       "leisureUse": null,
       "capabilityObjectType": null,
       "animatedCatalogFlag": false,
@@ -4590,7 +4590,7 @@
         "optionalSurfaceMount": false,
         "surfaceRisePixels": 8
       },
-      "assignedWorkstation": false,
+      "assignedWorkkeep": false,
       "leisureUse": null,
       "capabilityObjectType": null,
       "animatedCatalogFlag": false,
@@ -4703,7 +4703,7 @@
         "optionalSurfaceMount": false,
         "surfaceRisePixels": 8
       },
-      "assignedWorkstation": false,
+      "assignedWorkkeep": false,
       "leisureUse": null,
       "capabilityObjectType": null,
       "animatedCatalogFlag": false,
@@ -4792,7 +4792,7 @@
         "optionalSurfaceMount": false,
         "surfaceRisePixels": 8
       },
-      "assignedWorkstation": false,
+      "assignedWorkkeep": false,
       "leisureUse": null,
       "capabilityObjectType": null,
       "animatedCatalogFlag": true,
@@ -4889,7 +4889,7 @@
         "optionalSurfaceMount": false,
         "surfaceRisePixels": 8
       },
-      "assignedWorkstation": false,
+      "assignedWorkkeep": false,
       "leisureUse": null,
       "capabilityObjectType": null,
       "animatedCatalogFlag": true,
@@ -4986,7 +4986,7 @@
         "optionalSurfaceMount": false,
         "surfaceRisePixels": 8
       },
-      "assignedWorkstation": false,
+      "assignedWorkkeep": false,
       "leisureUse": null,
       "capabilityObjectType": null,
       "animatedCatalogFlag": true,
@@ -5083,7 +5083,7 @@
         "optionalSurfaceMount": false,
         "surfaceRisePixels": 8
       },
-      "assignedWorkstation": false,
+      "assignedWorkkeep": false,
       "leisureUse": null,
       "capabilityObjectType": null,
       "animatedCatalogFlag": true,
@@ -5180,7 +5180,7 @@
         "optionalSurfaceMount": false,
         "surfaceRisePixels": 8
       },
-      "assignedWorkstation": false,
+      "assignedWorkkeep": false,
       "leisureUse": null,
       "capabilityObjectType": null,
       "animatedCatalogFlag": true,
@@ -5267,7 +5267,7 @@
         "optionalSurfaceMount": false,
         "surfaceRisePixels": 8
       },
-      "assignedWorkstation": false,
+      "assignedWorkkeep": false,
       "leisureUse": null,
       "capabilityObjectType": null,
       "animatedCatalogFlag": true,
@@ -5364,7 +5364,7 @@
         "optionalSurfaceMount": false,
         "surfaceRisePixels": 8
       },
-      "assignedWorkstation": false,
+      "assignedWorkkeep": false,
       "leisureUse": null,
       "capabilityObjectType": null,
       "animatedCatalogFlag": true,
@@ -5461,7 +5461,7 @@
         "optionalSurfaceMount": false,
         "surfaceRisePixels": 8
       },
-      "assignedWorkstation": false,
+      "assignedWorkkeep": false,
       "leisureUse": null,
       "capabilityObjectType": null,
       "animatedCatalogFlag": true,
@@ -5558,7 +5558,7 @@
         "optionalSurfaceMount": false,
         "surfaceRisePixels": 8
       },
-      "assignedWorkstation": false,
+      "assignedWorkkeep": false,
       "leisureUse": null,
       "capabilityObjectType": null,
       "animatedCatalogFlag": true,
@@ -5655,7 +5655,7 @@
         "optionalSurfaceMount": false,
         "surfaceRisePixels": 8
       },
-      "assignedWorkstation": false,
+      "assignedWorkkeep": false,
       "leisureUse": null,
       "capabilityObjectType": null,
       "animatedCatalogFlag": true,
@@ -5752,7 +5752,7 @@
         "optionalSurfaceMount": false,
         "surfaceRisePixels": 8
       },
-      "assignedWorkstation": false,
+      "assignedWorkkeep": false,
       "leisureUse": null,
       "capabilityObjectType": null,
       "animatedCatalogFlag": true,
@@ -5849,7 +5849,7 @@
         "optionalSurfaceMount": false,
         "surfaceRisePixels": 8
       },
-      "assignedWorkstation": false,
+      "assignedWorkkeep": false,
       "leisureUse": null,
       "capabilityObjectType": null,
       "animatedCatalogFlag": true,
@@ -5946,7 +5946,7 @@
         "optionalSurfaceMount": false,
         "surfaceRisePixels": 8
       },
-      "assignedWorkstation": false,
+      "assignedWorkkeep": false,
       "leisureUse": null,
       "capabilityObjectType": null,
       "animatedCatalogFlag": true,
@@ -6043,7 +6043,7 @@
         "optionalSurfaceMount": false,
         "surfaceRisePixels": 8
       },
-      "assignedWorkstation": false,
+      "assignedWorkkeep": false,
       "leisureUse": null,
       "capabilityObjectType": null,
       "animatedCatalogFlag": true,
@@ -6140,7 +6140,7 @@
         "optionalSurfaceMount": false,
         "surfaceRisePixels": 8
       },
-      "assignedWorkstation": false,
+      "assignedWorkkeep": false,
       "leisureUse": null,
       "capabilityObjectType": null,
       "animatedCatalogFlag": true,
@@ -6237,7 +6237,7 @@
         "optionalSurfaceMount": false,
         "surfaceRisePixels": 8
       },
-      "assignedWorkstation": false,
+      "assignedWorkkeep": false,
       "leisureUse": null,
       "capabilityObjectType": null,
       "animatedCatalogFlag": true,
@@ -6334,7 +6334,7 @@
         "optionalSurfaceMount": false,
         "surfaceRisePixels": 8
       },
-      "assignedWorkstation": false,
+      "assignedWorkkeep": false,
       "leisureUse": null,
       "capabilityObjectType": null,
       "animatedCatalogFlag": true,
@@ -6431,7 +6431,7 @@
         "optionalSurfaceMount": false,
         "surfaceRisePixels": 8
       },
-      "assignedWorkstation": false,
+      "assignedWorkkeep": false,
       "leisureUse": null,
       "capabilityObjectType": null,
       "animatedCatalogFlag": true,
@@ -6528,7 +6528,7 @@
         "optionalSurfaceMount": false,
         "surfaceRisePixels": 8
       },
-      "assignedWorkstation": false,
+      "assignedWorkkeep": false,
       "leisureUse": null,
       "capabilityObjectType": null,
       "animatedCatalogFlag": true,
@@ -6625,7 +6625,7 @@
         "optionalSurfaceMount": false,
         "surfaceRisePixels": 8
       },
-      "assignedWorkstation": false,
+      "assignedWorkkeep": false,
       "leisureUse": null,
       "capabilityObjectType": null,
       "animatedCatalogFlag": true,
@@ -6722,7 +6722,7 @@
         "optionalSurfaceMount": false,
         "surfaceRisePixels": 8
       },
-      "assignedWorkstation": false,
+      "assignedWorkkeep": false,
       "leisureUse": null,
       "capabilityObjectType": null,
       "animatedCatalogFlag": true,
@@ -6809,7 +6809,7 @@
         "optionalSurfaceMount": true,
         "surfaceRisePixels": 8
       },
-      "assignedWorkstation": false,
+      "assignedWorkkeep": false,
       "leisureUse": null,
       "capabilityObjectType": null,
       "animatedCatalogFlag": true,
@@ -6896,7 +6896,7 @@
         "optionalSurfaceMount": false,
         "surfaceRisePixels": 8
       },
-      "assignedWorkstation": false,
+      "assignedWorkkeep": false,
       "leisureUse": null,
       "capabilityObjectType": null,
       "animatedCatalogFlag": true,
@@ -6983,7 +6983,7 @@
         "optionalSurfaceMount": false,
         "surfaceRisePixels": 8
       },
-      "assignedWorkstation": false,
+      "assignedWorkkeep": false,
       "leisureUse": null,
       "capabilityObjectType": null,
       "animatedCatalogFlag": true,
@@ -7080,7 +7080,7 @@
         "optionalSurfaceMount": false,
         "surfaceRisePixels": 8
       },
-      "assignedWorkstation": false,
+      "assignedWorkkeep": false,
       "leisureUse": null,
       "capabilityObjectType": null,
       "animatedCatalogFlag": true,
@@ -7177,7 +7177,7 @@
         "optionalSurfaceMount": false,
         "surfaceRisePixels": 8
       },
-      "assignedWorkstation": false,
+      "assignedWorkkeep": false,
       "leisureUse": null,
       "capabilityObjectType": null,
       "animatedCatalogFlag": true,
@@ -7264,7 +7264,7 @@
         "optionalSurfaceMount": false,
         "surfaceRisePixels": 8
       },
-      "assignedWorkstation": false,
+      "assignedWorkkeep": false,
       "leisureUse": null,
       "capabilityObjectType": null,
       "animatedCatalogFlag": true,
@@ -7351,7 +7351,7 @@
         "optionalSurfaceMount": false,
         "surfaceRisePixels": 8
       },
-      "assignedWorkstation": false,
+      "assignedWorkkeep": false,
       "leisureUse": null,
       "capabilityObjectType": null,
       "animatedCatalogFlag": true,
@@ -7438,7 +7438,7 @@
         "optionalSurfaceMount": true,
         "surfaceRisePixels": 8
       },
-      "assignedWorkstation": false,
+      "assignedWorkkeep": false,
       "leisureUse": null,
       "capabilityObjectType": null,
       "animatedCatalogFlag": true,
@@ -7525,7 +7525,7 @@
         "optionalSurfaceMount": false,
         "surfaceRisePixels": 8
       },
-      "assignedWorkstation": false,
+      "assignedWorkkeep": false,
       "leisureUse": null,
       "capabilityObjectType": null,
       "animatedCatalogFlag": true,
@@ -7622,7 +7622,7 @@
         "optionalSurfaceMount": true,
         "surfaceRisePixels": 8
       },
-      "assignedWorkstation": false,
+      "assignedWorkkeep": false,
       "leisureUse": null,
       "capabilityObjectType": null,
       "animatedCatalogFlag": true,
@@ -7709,7 +7709,7 @@
         "optionalSurfaceMount": false,
         "surfaceRisePixels": 8
       },
-      "assignedWorkstation": false,
+      "assignedWorkkeep": false,
       "leisureUse": null,
       "capabilityObjectType": null,
       "animatedCatalogFlag": true,
@@ -7796,7 +7796,7 @@
         "optionalSurfaceMount": false,
         "surfaceRisePixels": 8
       },
-      "assignedWorkstation": false,
+      "assignedWorkkeep": false,
       "leisureUse": null,
       "capabilityObjectType": null,
       "animatedCatalogFlag": true,
@@ -7893,7 +7893,7 @@
         "optionalSurfaceMount": false,
         "surfaceRisePixels": 8
       },
-      "assignedWorkstation": false,
+      "assignedWorkkeep": false,
       "leisureUse": null,
       "capabilityObjectType": null,
       "animatedCatalogFlag": true,
@@ -7990,7 +7990,7 @@
         "optionalSurfaceMount": false,
         "surfaceRisePixels": 8
       },
-      "assignedWorkstation": false,
+      "assignedWorkkeep": false,
       "leisureUse": null,
       "capabilityObjectType": null,
       "animatedCatalogFlag": true,
@@ -8087,7 +8087,7 @@
         "optionalSurfaceMount": false,
         "surfaceRisePixels": 8
       },
-      "assignedWorkstation": false,
+      "assignedWorkkeep": false,
       "leisureUse": null,
       "capabilityObjectType": null,
       "animatedCatalogFlag": true,
@@ -8184,7 +8184,7 @@
         "optionalSurfaceMount": true,
         "surfaceRisePixels": 8
       },
-      "assignedWorkstation": false,
+      "assignedWorkkeep": false,
       "leisureUse": null,
       "capabilityObjectType": null,
       "animatedCatalogFlag": true,
@@ -8281,7 +8281,7 @@
         "optionalSurfaceMount": false,
         "surfaceRisePixels": 8
       },
-      "assignedWorkstation": false,
+      "assignedWorkkeep": false,
       "leisureUse": null,
       "capabilityObjectType": null,
       "animatedCatalogFlag": true,
@@ -8378,7 +8378,7 @@
         "optionalSurfaceMount": false,
         "surfaceRisePixels": 8
       },
-      "assignedWorkstation": false,
+      "assignedWorkkeep": false,
       "leisureUse": null,
       "capabilityObjectType": null,
       "animatedCatalogFlag": true,
@@ -8465,7 +8465,7 @@
         "optionalSurfaceMount": false,
         "surfaceRisePixels": 8
       },
-      "assignedWorkstation": false,
+      "assignedWorkkeep": false,
       "leisureUse": null,
       "capabilityObjectType": null,
       "animatedCatalogFlag": true,
@@ -8562,7 +8562,7 @@
         "optionalSurfaceMount": false,
         "surfaceRisePixels": 8
       },
-      "assignedWorkstation": false,
+      "assignedWorkkeep": false,
       "leisureUse": null,
       "capabilityObjectType": null,
       "animatedCatalogFlag": true,
@@ -8659,7 +8659,7 @@
         "optionalSurfaceMount": false,
         "surfaceRisePixels": 8
       },
-      "assignedWorkstation": false,
+      "assignedWorkkeep": false,
       "leisureUse": null,
       "capabilityObjectType": null,
       "animatedCatalogFlag": true,
@@ -8756,7 +8756,7 @@
         "optionalSurfaceMount": false,
         "surfaceRisePixels": 8
       },
-      "assignedWorkstation": false,
+      "assignedWorkkeep": false,
       "leisureUse": {
         "kind": "dj",
         "sit": false,
@@ -8857,7 +8857,7 @@
         "optionalSurfaceMount": true,
         "surfaceRisePixels": 8
       },
-      "assignedWorkstation": false,
+      "assignedWorkkeep": false,
       "leisureUse": null,
       "capabilityObjectType": null,
       "animatedCatalogFlag": true,
@@ -8954,7 +8954,7 @@
         "optionalSurfaceMount": false,
         "surfaceRisePixels": 8
       },
-      "assignedWorkstation": false,
+      "assignedWorkkeep": false,
       "leisureUse": {
         "kind": "bar",
         "sit": false,
@@ -9056,7 +9056,7 @@
         "optionalSurfaceMount": false,
         "surfaceRisePixels": 8
       },
-      "assignedWorkstation": false,
+      "assignedWorkkeep": false,
       "leisureUse": {
         "kind": "tv",
         "sit": false,
@@ -9158,7 +9158,7 @@
         "optionalSurfaceMount": false,
         "surfaceRisePixels": 8
       },
-      "assignedWorkstation": false,
+      "assignedWorkkeep": false,
       "leisureUse": {
         "kind": "couch",
         "sit": false,
@@ -9249,7 +9249,7 @@
         "optionalSurfaceMount": false,
         "surfaceRisePixels": 8
       },
-      "assignedWorkstation": false,
+      "assignedWorkkeep": false,
       "leisureUse": {
         "kind": "arcade",
         "sit": false,
@@ -9350,7 +9350,7 @@
         "optionalSurfaceMount": false,
         "surfaceRisePixels": 8
       },
-      "assignedWorkstation": false,
+      "assignedWorkkeep": false,
       "leisureUse": {
         "kind": "arcade",
         "sit": false,
@@ -9451,7 +9451,7 @@
         "optionalSurfaceMount": false,
         "surfaceRisePixels": 8
       },
-      "assignedWorkstation": false,
+      "assignedWorkkeep": false,
       "leisureUse": {
         "kind": "juke",
         "sit": false,
@@ -9554,7 +9554,7 @@
         "optionalSurfaceMount": false,
         "surfaceRisePixels": 8
       },
-      "assignedWorkstation": false,
+      "assignedWorkkeep": false,
       "leisureUse": {
         "kind": "bed",
         "sit": false,
@@ -9646,7 +9646,7 @@
         "optionalSurfaceMount": false,
         "surfaceRisePixels": 8
       },
-      "assignedWorkstation": false,
+      "assignedWorkkeep": false,
       "leisureUse": {
         "kind": "pool",
         "sit": false,
@@ -9738,7 +9738,7 @@
         "optionalSurfaceMount": false,
         "surfaceRisePixels": 8
       },
-      "assignedWorkstation": false,
+      "assignedWorkkeep": false,
       "leisureUse": {
         "kind": "vend",
         "sit": false,
@@ -9840,7 +9840,7 @@
         "optionalSurfaceMount": false,
         "surfaceRisePixels": 8
       },
-      "assignedWorkstation": false,
+      "assignedWorkkeep": false,
       "leisureUse": {
         "kind": "locker",
         "sit": false,
@@ -9931,7 +9931,7 @@
         "optionalSurfaceMount": false,
         "surfaceRisePixels": 8
       },
-      "assignedWorkstation": false,
+      "assignedWorkkeep": false,
       "leisureUse": {
         "kind": "fridge",
         "sit": false,
@@ -10023,7 +10023,7 @@
         "optionalSurfaceMount": true,
         "surfaceRisePixels": 8
       },
-      "assignedWorkstation": false,
+      "assignedWorkkeep": false,
       "leisureUse": {
         "kind": "coffee",
         "sit": false,
@@ -10115,7 +10115,7 @@
         "optionalSurfaceMount": true,
         "surfaceRisePixels": 8
       },
-      "assignedWorkstation": false,
+      "assignedWorkkeep": false,
       "leisureUse": null,
       "capabilityObjectType": null,
       "animatedCatalogFlag": true,
@@ -10226,7 +10226,7 @@
         "optionalSurfaceMount": false,
         "surfaceRisePixels": 8
       },
-      "assignedWorkstation": false,
+      "assignedWorkkeep": false,
       "leisureUse": null,
       "capabilityObjectType": null,
       "animatedCatalogFlag": true,
@@ -10337,7 +10337,7 @@
         "optionalSurfaceMount": false,
         "surfaceRisePixels": 8
       },
-      "assignedWorkstation": false,
+      "assignedWorkkeep": false,
       "leisureUse": null,
       "capabilityObjectType": null,
       "animatedCatalogFlag": true,
@@ -10448,7 +10448,7 @@
         "optionalSurfaceMount": false,
         "surfaceRisePixels": 8
       },
-      "assignedWorkstation": false,
+      "assignedWorkkeep": false,
       "leisureUse": null,
       "capabilityObjectType": null,
       "animatedCatalogFlag": true,
@@ -10535,7 +10535,7 @@
         "optionalSurfaceMount": false,
         "surfaceRisePixels": 8
       },
-      "assignedWorkstation": false,
+      "assignedWorkkeep": false,
       "leisureUse": null,
       "capabilityObjectType": null,
       "animatedCatalogFlag": true,
@@ -10632,7 +10632,7 @@
         "optionalSurfaceMount": false,
         "surfaceRisePixels": 8
       },
-      "assignedWorkstation": false,
+      "assignedWorkkeep": false,
       "leisureUse": null,
       "capabilityObjectType": null,
       "animatedCatalogFlag": true,
@@ -10729,7 +10729,7 @@
         "optionalSurfaceMount": false,
         "surfaceRisePixels": 8
       },
-      "assignedWorkstation": false,
+      "assignedWorkkeep": false,
       "leisureUse": null,
       "capabilityObjectType": null,
       "animatedCatalogFlag": true,
@@ -10816,7 +10816,7 @@
         "optionalSurfaceMount": false,
         "surfaceRisePixels": 8
       },
-      "assignedWorkstation": false,
+      "assignedWorkkeep": false,
       "leisureUse": {
         "kind": "seat",
         "sit": true,
@@ -10931,7 +10931,7 @@
         "optionalSurfaceMount": false,
         "surfaceRisePixels": 8
       },
-      "assignedWorkstation": false,
+      "assignedWorkkeep": false,
       "leisureUse": {
         "kind": "seat",
         "sit": true,
@@ -11026,7 +11026,7 @@
         "optionalSurfaceMount": false,
         "surfaceRisePixels": 8
       },
-      "assignedWorkstation": false,
+      "assignedWorkkeep": false,
       "leisureUse": null,
       "capabilityObjectType": null,
       "animatedCatalogFlag": false,
@@ -11121,7 +11121,7 @@
         "optionalSurfaceMount": false,
         "surfaceRisePixels": 8
       },
-      "assignedWorkstation": false,
+      "assignedWorkkeep": false,
       "leisureUse": null,
       "capabilityObjectType": null,
       "animatedCatalogFlag": false,
@@ -11216,7 +11216,7 @@
         "optionalSurfaceMount": false,
         "surfaceRisePixels": 8
       },
-      "assignedWorkstation": false,
+      "assignedWorkkeep": false,
       "leisureUse": null,
       "capabilityObjectType": null,
       "animatedCatalogFlag": false,
@@ -11311,7 +11311,7 @@
         "optionalSurfaceMount": false,
         "surfaceRisePixels": 8
       },
-      "assignedWorkstation": false,
+      "assignedWorkkeep": false,
       "leisureUse": null,
       "capabilityObjectType": null,
       "animatedCatalogFlag": false,
@@ -11398,7 +11398,7 @@
         "optionalSurfaceMount": false,
         "surfaceRisePixels": 8
       },
-      "assignedWorkstation": false,
+      "assignedWorkkeep": false,
       "leisureUse": null,
       "capabilityObjectType": null,
       "animatedCatalogFlag": false,
@@ -11501,7 +11501,7 @@
         "optionalSurfaceMount": false,
         "surfaceRisePixels": 8
       },
-      "assignedWorkstation": false,
+      "assignedWorkkeep": false,
       "leisureUse": {
         "kind": "couch",
         "sit": false,
@@ -11616,7 +11616,7 @@
         "optionalSurfaceMount": false,
         "surfaceRisePixels": 8
       },
-      "assignedWorkstation": false,
+      "assignedWorkkeep": false,
       "leisureUse": {
         "kind": "seat",
         "sit": true,
@@ -11731,7 +11731,7 @@
         "optionalSurfaceMount": false,
         "surfaceRisePixels": 8
       },
-      "assignedWorkstation": false,
+      "assignedWorkkeep": false,
       "leisureUse": {
         "kind": "seat",
         "sit": true,
@@ -11830,7 +11830,7 @@
         "optionalSurfaceMount": false,
         "surfaceRisePixels": 8
       },
-      "assignedWorkstation": false,
+      "assignedWorkkeep": false,
       "leisureUse": null,
       "capabilityObjectType": null,
       "animatedCatalogFlag": false,
@@ -11925,7 +11925,7 @@
         "optionalSurfaceMount": false,
         "surfaceRisePixels": 8
       },
-      "assignedWorkstation": false,
+      "assignedWorkkeep": false,
       "leisureUse": null,
       "capabilityObjectType": null,
       "animatedCatalogFlag": false,
@@ -12012,7 +12012,7 @@
         "optionalSurfaceMount": false,
         "surfaceRisePixels": 8
       },
-      "assignedWorkstation": false,
+      "assignedWorkkeep": false,
       "leisureUse": null,
       "capabilityObjectType": null,
       "animatedCatalogFlag": true,
@@ -12109,7 +12109,7 @@
         "optionalSurfaceMount": true,
         "surfaceRisePixels": 8
       },
-      "assignedWorkstation": false,
+      "assignedWorkkeep": false,
       "leisureUse": null,
       "capabilityObjectType": null,
       "animatedCatalogFlag": true,
@@ -12230,7 +12230,7 @@
         "optionalSurfaceMount": false,
         "surfaceRisePixels": 8
       },
-      "assignedWorkstation": false,
+      "assignedWorkkeep": false,
       "leisureUse": null,
       "capabilityObjectType": null,
       "animatedCatalogFlag": true,
@@ -12341,7 +12341,7 @@
         "optionalSurfaceMount": false,
         "surfaceRisePixels": 8
       },
-      "assignedWorkstation": false,
+      "assignedWorkkeep": false,
       "leisureUse": null,
       "capabilityObjectType": null,
       "animatedCatalogFlag": true,
@@ -12428,7 +12428,7 @@
         "optionalSurfaceMount": false,
         "surfaceRisePixels": 8
       },
-      "assignedWorkstation": false,
+      "assignedWorkkeep": false,
       "leisureUse": null,
       "capabilityObjectType": null,
       "animatedCatalogFlag": true,
@@ -12515,7 +12515,7 @@
         "optionalSurfaceMount": false,
         "surfaceRisePixels": 8
       },
-      "assignedWorkstation": false,
+      "assignedWorkkeep": false,
       "leisureUse": {
         "kind": "terra",
         "sit": false,
@@ -12617,7 +12617,7 @@
         "optionalSurfaceMount": false,
         "surfaceRisePixels": 8
       },
-      "assignedWorkstation": false,
+      "assignedWorkkeep": false,
       "leisureUse": {
         "kind": "pet",
         "sit": false,
@@ -12719,7 +12719,7 @@
         "optionalSurfaceMount": false,
         "surfaceRisePixels": 8
       },
-      "assignedWorkstation": false,
+      "assignedWorkkeep": false,
       "leisureUse": null,
       "capabilityObjectType": null,
       "animatedCatalogFlag": true,
@@ -12816,7 +12816,7 @@
         "optionalSurfaceMount": false,
         "surfaceRisePixels": 8
       },
-      "assignedWorkstation": false,
+      "assignedWorkkeep": false,
       "leisureUse": {
         "kind": "gacha",
         "sit": false,
@@ -12908,7 +12908,7 @@
         "optionalSurfaceMount": false,
         "surfaceRisePixels": 8
       },
-      "assignedWorkstation": false,
+      "assignedWorkkeep": false,
       "leisureUse": null,
       "capabilityObjectType": null,
       "animatedCatalogFlag": true,
@@ -12995,7 +12995,7 @@
         "optionalSurfaceMount": true,
         "surfaceRisePixels": 8
       },
-      "assignedWorkstation": false,
+      "assignedWorkkeep": false,
       "leisureUse": null,
       "capabilityObjectType": null,
       "animatedCatalogFlag": true,
@@ -13082,7 +13082,7 @@
         "optionalSurfaceMount": true,
         "surfaceRisePixels": 8
       },
-      "assignedWorkstation": false,
+      "assignedWorkkeep": false,
       "leisureUse": null,
       "capabilityObjectType": null,
       "animatedCatalogFlag": false,
@@ -13169,7 +13169,7 @@
         "optionalSurfaceMount": true,
         "surfaceRisePixels": 8
       },
-      "assignedWorkstation": false,
+      "assignedWorkkeep": false,
       "leisureUse": null,
       "capabilityObjectType": null,
       "animatedCatalogFlag": true,
@@ -13266,7 +13266,7 @@
         "optionalSurfaceMount": true,
         "surfaceRisePixels": 8
       },
-      "assignedWorkstation": false,
+      "assignedWorkkeep": false,
       "leisureUse": null,
       "capabilityObjectType": null,
       "animatedCatalogFlag": true,
@@ -13363,7 +13363,7 @@
         "optionalSurfaceMount": true,
         "surfaceRisePixels": 8
       },
-      "assignedWorkstation": false,
+      "assignedWorkkeep": false,
       "leisureUse": null,
       "capabilityObjectType": null,
       "animatedCatalogFlag": false,
@@ -13450,7 +13450,7 @@
         "optionalSurfaceMount": true,
         "surfaceRisePixels": 8
       },
-      "assignedWorkstation": false,
+      "assignedWorkkeep": false,
       "leisureUse": null,
       "capabilityObjectType": null,
       "animatedCatalogFlag": true,
@@ -13537,7 +13537,7 @@
         "optionalSurfaceMount": true,
         "surfaceRisePixels": 8
       },
-      "assignedWorkstation": false,
+      "assignedWorkkeep": false,
       "leisureUse": null,
       "capabilityObjectType": null,
       "animatedCatalogFlag": true,
@@ -13634,7 +13634,7 @@
         "optionalSurfaceMount": true,
         "surfaceRisePixels": 8
       },
-      "assignedWorkstation": false,
+      "assignedWorkkeep": false,
       "leisureUse": null,
       "capabilityObjectType": null,
       "animatedCatalogFlag": true,
@@ -13721,7 +13721,7 @@
         "optionalSurfaceMount": false,
         "surfaceRisePixels": 8
       },
-      "assignedWorkstation": false,
+      "assignedWorkkeep": false,
       "leisureUse": null,
       "capabilityObjectType": null,
       "animatedCatalogFlag": true,
@@ -13818,7 +13818,7 @@
         "optionalSurfaceMount": false,
         "surfaceRisePixels": 8
       },
-      "assignedWorkstation": false,
+      "assignedWorkkeep": false,
       "leisureUse": {
         "kind": "fish",
         "sit": false,
@@ -13920,7 +13920,7 @@
         "optionalSurfaceMount": false,
         "surfaceRisePixels": 8
       },
-      "assignedWorkstation": false,
+      "assignedWorkkeep": false,
       "leisureUse": {
         "kind": "poker",
         "sit": false,
@@ -14011,7 +14011,7 @@
         "optionalSurfaceMount": false,
         "surfaceRisePixels": 8
       },
-      "assignedWorkstation": false,
+      "assignedWorkkeep": false,
       "leisureUse": {
         "kind": "bookshelf",
         "sit": false,
@@ -14102,7 +14102,7 @@
         "optionalSurfaceMount": false,
         "surfaceRisePixels": 8
       },
-      "assignedWorkstation": false,
+      "assignedWorkkeep": false,
       "leisureUse": {
         "kind": "beanbag",
         "sit": false,
@@ -14193,7 +14193,7 @@
         "optionalSurfaceMount": false,
         "surfaceRisePixels": 8
       },
-      "assignedWorkstation": false,
+      "assignedWorkkeep": false,
       "leisureUse": {
         "kind": "pinball",
         "sit": false,
@@ -14295,7 +14295,7 @@
         "optionalSurfaceMount": false,
         "surfaceRisePixels": 8
       },
-      "assignedWorkstation": false,
+      "assignedWorkkeep": false,
       "leisureUse": null,
       "capabilityObjectType": null,
       "animatedCatalogFlag": true,
@@ -14392,7 +14392,7 @@
         "optionalSurfaceMount": false,
         "surfaceRisePixels": 8
       },
-      "assignedWorkstation": false,
+      "assignedWorkkeep": false,
       "leisureUse": null,
       "capabilityObjectType": null,
       "animatedCatalogFlag": true,
@@ -14489,7 +14489,7 @@
         "optionalSurfaceMount": false,
         "surfaceRisePixels": 8
       },
-      "assignedWorkstation": false,
+      "assignedWorkkeep": false,
       "leisureUse": null,
       "capabilityObjectType": null,
       "animatedCatalogFlag": true,
@@ -14576,7 +14576,7 @@
         "optionalSurfaceMount": false,
         "surfaceRisePixels": 8
       },
-      "assignedWorkstation": false,
+      "assignedWorkkeep": false,
       "leisureUse": null,
       "capabilityObjectType": null,
       "animatedCatalogFlag": true,
@@ -14663,7 +14663,7 @@
         "optionalSurfaceMount": false,
         "surfaceRisePixels": 8
       },
-      "assignedWorkstation": false,
+      "assignedWorkkeep": false,
       "leisureUse": null,
       "capabilityObjectType": null,
       "animatedCatalogFlag": true,
@@ -14750,7 +14750,7 @@
         "optionalSurfaceMount": false,
         "surfaceRisePixels": 8
       },
-      "assignedWorkstation": false,
+      "assignedWorkkeep": false,
       "leisureUse": null,
       "capabilityObjectType": null,
       "animatedCatalogFlag": true,
@@ -14837,7 +14837,7 @@
         "optionalSurfaceMount": false,
         "surfaceRisePixels": 8
       },
-      "assignedWorkstation": false,
+      "assignedWorkkeep": false,
       "leisureUse": null,
       "capabilityObjectType": null,
       "animatedCatalogFlag": true,
@@ -14924,7 +14924,7 @@
         "optionalSurfaceMount": false,
         "surfaceRisePixels": 8
       },
-      "assignedWorkstation": false,
+      "assignedWorkkeep": false,
       "leisureUse": null,
       "capabilityObjectType": null,
       "animatedCatalogFlag": true,
@@ -15011,7 +15011,7 @@
         "optionalSurfaceMount": false,
         "surfaceRisePixels": 8
       },
-      "assignedWorkstation": false,
+      "assignedWorkkeep": false,
       "leisureUse": {
         "kind": "bag",
         "sit": false,
@@ -15103,7 +15103,7 @@
         "optionalSurfaceMount": false,
         "surfaceRisePixels": 8
       },
-      "assignedWorkstation": false,
+      "assignedWorkkeep": false,
       "leisureUse": {
         "kind": "bag",
         "sit": false,
@@ -15195,7 +15195,7 @@
         "optionalSurfaceMount": false,
         "surfaceRisePixels": 8
       },
-      "assignedWorkstation": false,
+      "assignedWorkkeep": false,
       "leisureUse": {
         "kind": "bench",
         "sit": false,
@@ -15286,7 +15286,7 @@
         "optionalSurfaceMount": false,
         "surfaceRisePixels": 8
       },
-      "assignedWorkstation": false,
+      "assignedWorkkeep": false,
       "leisureUse": {
         "kind": "bench",
         "sit": false,
@@ -15377,7 +15377,7 @@
         "optionalSurfaceMount": false,
         "surfaceRisePixels": 8
       },
-      "assignedWorkstation": false,
+      "assignedWorkkeep": false,
       "leisureUse": {
         "kind": "couch",
         "sit": false,
@@ -15468,7 +15468,7 @@
         "optionalSurfaceMount": false,
         "surfaceRisePixels": 8
       },
-      "assignedWorkstation": false,
+      "assignedWorkkeep": false,
       "leisureUse": {
         "kind": "couch",
         "sit": false,

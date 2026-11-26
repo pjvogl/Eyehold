@@ -99,7 +99,7 @@ readyState = { ready: false, reasons: ['no-direction'] };
 A.eq(PitchStore._decide({ reason: 'done', agentId: 'agent' }), { go: false, reason: 'not-ready:no-direction' }, 'a shut readiness gate structurally blocks the pitch (with the honest reason)');
 const savedUS = global.UnderstandingStore;
 global.UnderstandingStore = undefined;
-A.eq(PitchStore._decide({ reason: 'done', agentId: 'agent' }).reason, 'not-ready:no-readiness-read', 'no readiness read = FAIL-CLOSED (a station that cannot prove readiness never advises)');
+A.eq(PitchStore._decide({ reason: 'done', agentId: 'agent' }).reason, 'not-ready:no-readiness-read', 'no readiness read = FAIL-CLOSED (a keep that cannot prove readiness never advises)');
 global.UnderstandingStore = savedUS;
 readyState = { ready: true, reasons: [] };
 
@@ -230,14 +230,14 @@ A.eq(PitchStore._decide({ reason: 'done', agentId: 'agent' }), { go: true, reaso
     hn.next = { text: 'PITCH: persist me\nBUILD: workflow' };
     dlg.nextChoice = { value: 'other' };
     await PitchStore._fire();
-    A.ok(mem['starnet.pitch.v1'] && JSON.parse(mem['starnet.pitch.v1']).pitched === true, 'a delivered pitch persists to its own localStorage key (no save.js)');
+    A.ok(mem['eyehold.pitch.v1'] && JSON.parse(mem['eyehold.pitch.v1']).pitched === true, 'a delivered pitch persists to its own localStorage key (no save.js)');
     PitchStore.init(deps);   // simulate a page reload
     A.eq(PitchStore._state().pitched, true, 'a fresh init hydrates the persisted fire-once flag (survives reload)');
     A.eq(PitchStore._decide({ reason: 'done', agentId: 'agent' }), { go: false, reason: 'already-pitched' }, 'the persisted flag blocks a re-pitch after reload');
 
     /* ---------- reset re-arms for a brand-new hero ---------- */
     PitchStore.reset();
-    A.eq(mem['starnet.pitch.v1'], undefined, 'reset() removes the persisted key');
+    A.eq(mem['eyehold.pitch.v1'], undefined, 'reset() removes the persisted key');
     PitchStore.init(deps);
     A.eq(PitchStore._state().pitched, false, 'after reset + reload the new hero re-earns the First Pitch');
 

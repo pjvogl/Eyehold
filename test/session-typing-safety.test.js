@@ -16,7 +16,7 @@ async function check(root) {
     localStorage: { removeItem() {} }, setTimeout() {}, clearTimeout() {},
     fetch: async () => ({ok:true, json:async () => ({pending})}),
     Chat: {isBusy:()=>false, isComposerEngaged:()=>engaged, workshopReturn:(m,o)=>cards.push(o.sessionId)},
-    StationUI: {notify:(text,kind,category,opts)=>notices.push({text,opts})},
+    KeepUI: {notify:(text,kind,category,opts)=>notices.push({text,opts})},
     App: {openWorkstream:id=>{selected=id;}, persist() {}, refreshRail() {}},
     Workstreams: {get:id=>streams.get(id), adopt:w=>{streams.set(w.id,w);return w;}, markUnread:id=>{streams.get(id).lastReadAt=0;}}
   };
@@ -49,7 +49,7 @@ async function check(root) {
   let saved=handoff, sends=0, opens=0, release, mode='up';
   const c={...composer,focusVersion:1,connectorContinuing:new Set(),
     Channels:{isBusy:()=>false}, Workstreams:{get:()=>ws,connectorHandoff:()=>saved,setConnectorHandoff:(id,h)=>{saved=h;}},
-    App:{openWorkstream:()=>opens++,persist(){}}, StationUI:{notify(){}},
+    App:{openWorkstream:()=>opens++,persist(){}}, KeepUI:{notify(){}},
     Harness:{api:{get:()=>new Promise(resolve=>{release=()=>resolve({connectors:[{id:'test',state:mode,enabled:true,tools:['read']}]});}),post:async()=>{mode='up';}}},
     send:async()=>{sends++;ws.runIds.push('continued');}
   };

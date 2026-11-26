@@ -6,7 +6,7 @@ Follow-up: see [the repair and Hermes comparison](AGENT_LATENCY_REPAIR_2026-09-1
 
 ## Verdict
 
-There are actionable StarNet performance and observability issues. Model, effort, provider load, tools and conversation length still matter, but the complaint should not be dismissed as model speed alone. The strongest engineering issue is a changing run ID inside the cacheable system prefix. No evidence identifies which issue affected the reporting customer: their version, settings and run trace were not supplied.
+There are actionable Eyehold performance and observability issues. Model, effort, provider load, tools and conversation length still matter, but the complaint should not be dismissed as model speed alone. The strongest engineering issue is a changing run ID inside the cacheable system prefix. No evidence identifies which issue affected the reporting customer: their version, settings and run trace were not supplied.
 
 This is an audit, not a repair or release. No product source or user settings changed.
 
@@ -28,7 +28,7 @@ Anthropic documents exact matching through the cache breakpoint: [Prompt caching
 
 **Live reproduced.**
 
-The local provider returned two HTTP 429 responses with `Retry-After: 1`, then streamed a successful answer. StarNet made requests at 18, 1,038 and 2,262 ms; the first answer token arrived at 2,372 ms. The live run stream contained start, answer, cost and end events, but no explanation of those two retries.
+The local provider returned two HTTP 429 responses with `Retry-After: 1`, then streamed a successful answer. Eyehold made requests at 18, 1,038 and 2,262 ms; the first answer token arrived at 2,372 ms. The live run stream contained start, answer, cost and end events, but no explanation of those two retries.
 
 Pre-stream retries occur inside the adapters. They do not invoke the loop's recovery recorder. `sidecar/providers/openai-compatible.js:377`, `openrouter.js:390` and `codex.js:407` honor provider waits up to 60 seconds per retry. Connect timeout defaults to 30 seconds; stream idle timeout is 300 seconds (`provider.js:79`). Separate loop recovery has up to 105.6 seconds of scheduled backoff (`loop.js:746`), excluding time spent on actual attempts. These limits protect recovery and are not delays added to every successful request. Exhausted pre-stream attempts are marked to avoid blindly multiplying the same retry budget.
 
@@ -50,7 +50,7 @@ Without an explicitly configured auxiliary tier, summaries use the active run mo
 
 **Live measured; performance penalty not benchmarked.**
 
-A short greeting with a 14-character supplied system instruction became a 26,506-character system prompt with no tools. Task mode became 40,594 system characters plus 88 tool definitions. These measurements came from the dev-seeded full-access station; other capability profiles differ. They are character counts, not measured model tokens.
+A short greeting with a 14-character supplied system instruction became a 26,506-character system prompt with no tools. Task mode became 40,594 system characters plus 88 tool definitions. These measurements came from the dev-seeded full-access keep; other capability profiles differ. They are character counts, not measured model tokens.
 
 `sidecar/index.js:16862` adds the interactive manual, and the final prompt assembly adds runtime, capability, skill and other context. This increases uncached input processing and amplifies finding 1.
 
@@ -68,7 +68,7 @@ A short greeting with a 14-character supplied system instruction became a 26,506
 
 - Normal foreground chat does not wait for an animation before posting (`frontend/app/harness.js:738`).
 - In the recorded normal runs, submission to provider request took 339 ms cold and 27–48 ms warm; provider text reached the HTTP client in 1–2 ms. This measures backend transport, not browser paint or installed WebView performance.
-- Explicit effort is resolved and passed into the adapters. Current StarNet defaults include low for Codex and medium for OpenRouter. No general forced-high bug was found. Unsupported model/effort combinations can still be normalized by adapters.
+- Explicit effort is resolved and passed into the adapters. Current Eyehold defaults include low for Codex and medium for OpenRouter. No general forced-high bug was found. Unsupported model/effort combinations can still be normalized by adapters.
 - Compatible read-only tool batches can execute concurrently. Pure chat does not wait for a same-agent workspace write lease; mutation paths may legitimately wait for other work.
 - Auxiliary reflection/skill work is started in the background. The fixture observed background calls; they were excluded from foreground retry and prompt measurements. They can still share provider rate limits with user work.
 - Run records retain model, effort, total duration and loop recovery attempts, but do not provide a full first-token/preflight/provider/retry/compaction latency breakdown.

@@ -2,7 +2,7 @@
 
    Reported 2026-08-07: the roster "cuts off" — the last agent rendered sliced in half. Cause: the
    window was a flat `max-height: 40%` of the column, and a percentage of a column is never a whole
-   number of rows. Measured on a 6-agent station that left 10px of a row hanging at 1440x900, 18px
+   number of rows. Measured on a 6-agent keep that left 10px of a row hanging at 1440x900, 18px
    at 780 and 25px at 660 — enough that the list reads as broken rather than as scrollable.
 
    The fix measures the window from real row geometry and rounds DOWN to a whole row. crewCap is
@@ -133,7 +133,7 @@ A.ok(/\.row-resizer\s*\{[^}]*height:\s*0/.test(appcss), '…and is layout-neutra
 A.ok(/\.row-resizer::before\s*\{[^}]*cursor:\s*row-resize/.test(appcss), 'the hit strip is a pseudo covering the gap, and it reads as a resize handle');
 A.ok(/body\.row-resizing\s*\{[^}]*cursor:\s*row-resize/.test(appcss), 'the whole document keeps the resize cursor mid-drag (the col-resizing vocabulary)');
 
-A.ok(/starnet\.crewrail\.rows/.test(js), 'the dragged split persists per machine');
+A.ok(/eyehold\.crewrail\.rows/.test(js), 'the dragged split persists per machine');
 A.ok(/String\(wantRows\)/.test(js), '…as a ROW COUNT, not a px height: rows change height and the roster changes depth');
 // 0 is a NOTCH, not an empty value. Every guard on the drag path must test for null, never for
 // truthiness, or the closed roster silently refuses to persist / to flush / to be restored.

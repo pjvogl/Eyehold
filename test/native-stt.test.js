@@ -18,7 +18,7 @@ const win = (stdout, env) => makeNativeStt({
   assert.match(WINDOWS_SCRIPT, /Confidence/);
   assert.match(WINDOWS_SCRIPT, /\[int\]\(\$x\.Confidence\*1000\)/);
   assert.equal(/N3/.test(WINDOWS_SCRIPT), false);
-  assert.match(WINDOWS_WAV_SCRIPT, /SetInputToWaveFile\(\$env:STARNET_NATIVE_STT_WAV\)/, 'captured takes use a sidecar-owned environment value, never command interpolation');
+  assert.match(WINDOWS_WAV_SCRIPT, /SetInputToWaveFile\(\$env:EYEHOLD_NATIVE_STT_WAV\)/, 'captured takes use a sidecar-owned environment value, never command interpolation');
 
   const unsupported = makeNativeStt({ platform: 'linux', execFile() {} });
   assert.equal(unsupported.status().available, false);
@@ -76,7 +76,7 @@ const win = (stdout, env) => makeNativeStt({
     assert.equal(writes.length, 1);
     assert.deepEqual(writes[0][1], wav, 'the captured WAV reaches the recognizer byte-for-byte');
     assert.ok(wavCall.args.includes(WINDOWS_WAV_SCRIPT));
-    assert.equal(wavCall.options.env.STARNET_NATIVE_STT_WAV, writes[0][0], 'the generated path is passed out-of-band from the static command');
+    assert.equal(wavCall.options.env.EYEHOLD_NATIVE_STT_WAV, writes[0][0], 'the generated path is passed out-of-band from the static command');
     assert.deepEqual(unlinks, [writes[0][0]], 'the temporary take is removed after recognition');
   }
 
@@ -102,8 +102,8 @@ const win = (stdout, env) => makeNativeStt({
   assert.equal(unsure.error, undefined);
 
   // the override is honoured, and a junk override must not disable the gate
-  assert.equal((await win('120|maybe words\r\n', { STARNET_NATIVE_STT_MIN_CONFIDENCE: '0.05' }).recognize()).text, 'maybe words');
-  assert.equal((await win('120|maybe words\r\n', { STARNET_NATIVE_STT_MIN_CONFIDENCE: 'nonsense' }).recognize()).text, '');
+  assert.equal((await win('120|maybe words\r\n', { EYEHOLD_NATIVE_STT_MIN_CONFIDENCE: '0.05' }).recognize()).text, 'maybe words');
+  assert.equal((await win('120|maybe words\r\n', { EYEHOLD_NATIVE_STT_MIN_CONFIDENCE: 'nonsense' }).recognize()).text, '');
 
   const failed = makeNativeStt({
     platform: 'win32',

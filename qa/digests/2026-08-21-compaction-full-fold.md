@@ -16,13 +16,13 @@ summarizer breaker (2 failures or 2 <10% folds) left `context_overflow` with no 
 | Slice | Where | What |
 | --- | --- | --- |
 | A1 | `sidecar/compaction-summarizer.js`, `sidecar/index.js` | summarizer extracted: `makeSummarizer({provider, model, cost, signal, emit, auxModelFor, auxEffortFor, summaryPrompt, transcriptDrain, memoryBlockFor, chunkChars, maxChunks})`; index.js is thin wiring; aux-tier retry-once floor, abort semantics, strict transcript drain and durable-memory prepend kept |
-| A2 | same | **chunked fold**: rendered slice partitioned at `STARNET_COMPACT_CHUNK_CHARS` (default 48000), never across a tool pair; chunk 1 merges prevSummary, chunk N merges chunk N-1's summary (existing MERGE prompt), sequential; usd/tokens/unpricedUsage summed; `STARNET_COMPACT_MAX_CHUNKS` (12) → remainder folded as one marked chunk, `truncatedChars` reported |
+| A2 | same | **chunked fold**: rendered slice partitioned at `EYEHOLD_COMPACT_CHUNK_CHARS` (default 48000), never across a tool pair; chunk 1 merges prevSummary, chunk N merges chunk N-1's summary (existing MERGE prompt), sequential; usd/tokens/unpricedUsage summed; `EYEHOLD_COMPACT_MAX_CHUNKS` (12) → remainder folded as one marked chunk, `truncatedChars` reported |
 | A3a | `sidecar/loop.js` | the directive (first non-system message) is pinned byte-identical in the prefix |
 | A3b | `sidecar/context.js` | `keepTailTurns` (assistant + its tool results = 1 turn; default 6 turns); legacy `keepTail` keeps message semantics for existing callers; `thresholdTokens()` |
-| A3c | `sidecar/loop.js` | **micro tier** before any paid fold: tool results older than the tail elided on a COPY; committed only if the PROVIDER's count scaled by the local shrink ratio clears the threshold (`agent.compact` reason `micro`, `elided`); each elision keeps the first 240 chars of the result; `STARNET_COMPACT_MICRO=0` turns it off |
+| A3c | `sidecar/loop.js` | **micro tier** before any paid fold: tool results older than the tail elided on a COPY; committed only if the PROVIDER's count scaled by the local shrink ratio clears the threshold (`agent.compact` reason `micro`, `elided`); each elision keeps the first 240 chars of the result; `EYEHOLD_COMPACT_MICRO=0` turns it off |
 | A3d | `sidecar/loop.js` | breaker tripped → deterministic bullet digest of the originals (no LLM), reason `fallback`, returns true so the overflow retry proceeds |
 | A4 | `sidecar/loop.js` | `agent.compact` additive fields `chunks`, `truncatedChars`, `elided`; `reason` now also `micro` / `fallback` |
-| proof | `sidecar/index.js`, `dev/compaction-live-proof.js` | `STARNET_CONTEXT_LIMIT_OVERRIDE` (test/soak only) + a real-model proof driver |
+| proof | `sidecar/index.js`, `dev/compaction-live-proof.js` | `EYEHOLD_CONTEXT_LIMIT_OVERRIDE` (test/soak only) + a real-model proof driver |
 | prompt | `sidecar/context.js` | `compactionSummaryPrompt`: collected results are NEVER obsolete — carried forward verbatim through the merge chain |
 
 ## What the live proof taught (each one changed the code)
@@ -67,4 +67,4 @@ run-test-list: OK — 78 step(s) green
   Request to the contract owner; additive.
 - Frontend: nothing renders `reason:'micro'|'fallback'` specially yet (events validate; display unchanged).
 - The micro tier is a fidelity trade: facts deeper than 240 chars into an old tool result are gone until
-  the tool is re-run. Off switch exists (`STARNET_COMPACT_MICRO=0`).
+  the tool is re-run. Off switch exists (`EYEHOLD_COMPACT_MICRO=0`).

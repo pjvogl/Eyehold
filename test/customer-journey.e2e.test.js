@@ -9,7 +9,7 @@ const path = require('node:path');
 const { SidecarFixture } = require('./helpers/sidecar-fixture.js');
 const Pipeline = require('../frontend/app/pipeline.js');
 const IPC = 'customer-journey-fixture-ipc-token-1234567890';
-const providers = ['starnet', 'openrouter', 'custom', 'gemini', 'codex'];
+const providers = ['eyehold', 'openrouter', 'custom', 'gemini', 'codex'];
 // Agent ids are NOT provider names: WORKSPACES/codex holds the ChatGPT tokens, so an agent id `codex` is reserved
 // (sidecar/workspace-reserved.js) and could never own a workspace.
 const aid = p => 'journey-' + p;
@@ -82,10 +82,10 @@ test('customer journey: connect, select, tool, output, restart and repeat on all
   });
   await new Promise(r => server.listen(0, '127.0.0.1', r));
   const base = 'http://127.0.0.1:' + server.address().port;
-  const env = { STARNET_IPC_TOKEN: IPC, STARNET_FULL_ACCESS: '1', STARNET_CREDITS_URL: '', STARNET_CLOUD_URL: base + '/starnet', STARNET_CREDITS_TOKEN: 'starnet-fixture', STARNET_DEFAULT_MODEL: '', SKYNET_DEFAULT_MODEL: '' };
+  const env = { EYEHOLD_IPC_TOKEN: IPC, EYEHOLD_FULL_ACCESS: '1', EYEHOLD_CREDITS_URL: '', EYEHOLD_CLOUD_URL: base + '/eyehold', EYEHOLD_CREDITS_TOKEN: 'eyehold-fixture', EYEHOLD_DEFAULT_MODEL: '', EYEHOLD_DEFAULT_MODEL: '' };
   // All ordinary credentials are delivered through the real desktop IPC route. Ambient keys cannot win.
   for (const name of ['OPENROUTER_KEY', 'OPENROUTER_API_KEY', 'OPENAI_API_KEY', 'GEMINI_API_KEY', 'GOOGLE_API_KEY', 'GOOGLE_AI_API_KEY', 'CUSTOM_OPENAI_KEY', 'CREDITS_API_KEY']) {
-    env[name] = ''; env['STARNET_' + name] = ''; env['SKYNET_' + name] = '';
+    env[name] = ''; env['EYEHOLD_' + name] = ''; env['EYEHOLD_' + name] = '';
   }
   const fixture = SidecarFixture.create({ prefix: 'customer-journey-', timeoutMs: 20000, env });
   try {
@@ -94,11 +94,11 @@ test('customer journey: connect, select, tool, output, restart and repeat on all
       fs.writeFileSync(path.join(fixture.workspace, aid(p), p + '-journey-proof.txt'), 'Fixture data, not a customer file.');
     }
     fs.mkdirSync(path.join(fixture.workspace, '.secrets'), { recursive: true });
-    fs.writeFileSync(path.join(fixture.workspace, '.secrets', 'credits.json'), JSON.stringify({ url: base + '/starnet', accountId: 'fixture', linkedAt: Date.now() }));
+    fs.writeFileSync(path.join(fixture.workspace, '.secrets', 'credits.json'), JSON.stringify({ url: base + '/eyehold', accountId: 'fixture', linkedAt: Date.now() }));
     fs.mkdirSync(path.join(fixture.workspace, 'codex'), { recursive: true });
     fs.writeFileSync(path.join(fixture.workspace, 'codex', 'tokens.json'), JSON.stringify({ access_token: jwt, refresh_token: 'fixture', token_type: 'Bearer' }));
     await fixture.start();
-    const agents = providers.map(provider => ({ agentId: aid(provider), name: provider, system: 'Inspect the station then answer.', provider, model: modelFor(provider) }));
+    const agents = providers.map(provider => ({ agentId: aid(provider), name: provider, system: 'Inspect the keep then answer.', provider, model: modelFor(provider) }));
     assert.equal((await fixture.json('POST', '/api/roster', { agents, updatedAt: Date.now() })).status, 200);
     await fixture.json('POST', '/api/cron/arm', { enabled: false });
     const jobs = {};
@@ -110,7 +110,7 @@ test('customer journey: connect, select, tool, output, restart and repeat on all
       if (boot) await fixture.restart();
       // The desktop keychain re-pushes runtime keys each launch. Codex OAuth loads from durable storage.
       for (const p of providers) {
-        const r = await fixture.request('/api/key', { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-StarNet-Token': IPC }, body: JSON.stringify({ provider: p, key: p === 'codex' ? '' : p + '-fixture', baseUrl: base + '/' + p }) });
+        const r = await fixture.request('/api/key', { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Eyehold-Token': IPC }, body: JSON.stringify({ provider: p, key: p === 'codex' ? '' : p + '-fixture', baseUrl: base + '/' + p }) });
         assert.equal(r.status, 200, await r.text());
       }
       const roster = JSON.parse(fs.readFileSync(path.join(fixture.workspace, 'agent.roster.json'), 'utf8'));

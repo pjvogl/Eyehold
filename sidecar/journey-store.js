@@ -4,24 +4,24 @@
    separate causal spine the game was missing:
 
      explicit goal -> verified quest/milestone/metric outcome -> domain mastery -> adaptation receipt ->
-     station evolution
+     keep evolution
 
    Every outcome carries its authority. Mechanical quest contracts are `harness-contract`; attest quests are
    `commander-confirmed`; goal milestones and metric updates are `commander-client` because their authoritative
    owners currently live in the webview. No bare run, tool count, spend, or model claim can enter this ledger.
 
-   Station evolution is expressive only. It never grants tools, capabilities, permission, or model access. */
+   Keep evolution is expressive only. It never grants tools, capabilities, permission, or model access. */
 'use strict';
 
 const { makeDurableJsonStore } = require('./durable-store.js');
 
-const STORE_KEY = 'station';
-const STORE_FILE = '_station.journey.json';
+const STORE_KEY = 'keep';
+const STORE_FILE = '_keep.journey.json';
 const DOMAINS = ['building', 'research', 'writing', 'growth', 'operations', 'creative', 'planning', 'support'];
 const DOMAIN_SET = new Set(DOMAINS);
 const OUTCOME_KINDS = new Set(['quest', 'milestone', 'metric', 'goal']);
 const TIER_STEPS = [[7, 'proven'], [3, 'practiced'], [1, 'tested']];
-const EVOLUTION_NAMES = ['DRIFT', 'VECTOR', 'ORBIT', 'CONSTELLATION', 'DEEP FIELD'];
+const EVOLUTION_NAMES = ['DRIFT', 'VECTOR', 'CIRCUIT', 'CONSTELLATION', 'DEEP FIELD'];
 const METRIC_CAP = 40, OUTCOME_CAP = 300, RECEIPT_CAP = 100, HISTORY_CAP = 24;
 const AGENT_RE = /^[A-Za-z0-9_-]{1,40}$/;
 
@@ -53,10 +53,10 @@ function evolutionName(n) {
 }
 
 /* `next` is ADDITIVE (2026-08-14) and exists so a surface can name what finishing the current goal
-   advances the station TO, without duplicating EVOLUTION_NAMES in the frontend — the names stay owned
+   advances the keep TO, without duplicating EVOLUTION_NAMES in the frontend — the names stay owned
    here, and the UI only ever renders what it is told. Reaching one more DISTINCT goal is exactly what
    moves the stage (see addGoalReached), so `next` is the honest answer to "what does this path lead to".
-   Station evolution remains EXPRESSIVE ONLY: naming the next stage is not an unlock claim. */
+   Keep evolution remains EXPRESSIVE ONLY: naming the next stage is not an unlock claim. */
 function evolutionFor(goalsReached) {
   const n = Array.isArray(goalsReached) ? goalsReached.length : 0;
   return { stage: n, name: evolutionName(n), next: evolutionName(n + 1), goalsReached: n };
@@ -193,7 +193,7 @@ function adaptationText(m, outcome) {
     : m.tier === 'practiced' ? 'prefer relevant repeated patterns while stating uncertainty'
       : 'consider the early pattern but verify it before relying on it';
   return 'Because ' + m.agentId + ' completed ' + m.count + ' verified ' + m.domain + ' outcome' + (m.count === 1 ? '' : 's')
-    + ' (latest: ' + title + '), StarNet will ' + posture + ' for this agent and surface uncertainty outside that track.';
+    + ' (latest: ' + title + '), Eyehold will ' + posture + ' for this agent and surface uncertainty outside that track.';
 }
 
 // Mutates a normalized record inside the durable store update. sourceId is the idempotency authority.
@@ -204,7 +204,7 @@ function foldOutcome(rec, input, now) {
   rec.outcomeKeys.push(d.sourceId);
   rec.outcomes.push(d);
   while (rec.outcomes.length > OUTCOME_CAP) rec.outcomes.shift();
-  // Work completion never proves a whole life goal. Only confirmGoal can evolve the station.
+  // Work completion never proves a whole life goal. Only confirmGoal can evolve the keep.
 
   let receipt = null;
   if (d.agentId && d.domain) {

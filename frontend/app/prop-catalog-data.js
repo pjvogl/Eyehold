@@ -8,8 +8,8 @@ const PropCatalogData = {
   "sourceSha256": "33b4b3030043946fc04d26a5334ab239e14d2a90c489fbaf023e516ab65a6774",
   "categories": [
     {
-      "id": "workstation",
-      "label": "WORKSTATIONS"
+      "id": "workkeep",
+      "label": "WORKKEEPS"
     },
     {
       "id": "workflow",
@@ -639,7 +639,7 @@ const PropCatalogData = {
       "face": "s",
       "r": 0,
       "label": "DESK",
-      "category": "workstation",
+      "category": "workkeep",
       "tier": "functional",
       "footprint": {
         "w": 3,
@@ -668,7 +668,7 @@ const PropCatalogData = {
       "face": "w",
       "r": 1,
       "label": "DESK",
-      "category": "workstation",
+      "category": "workkeep",
       "tier": "functional",
       "footprint": {
         "w": 1,
@@ -697,7 +697,7 @@ const PropCatalogData = {
       "face": "n",
       "r": 2,
       "label": "DESK",
-      "category": "workstation",
+      "category": "workkeep",
       "tier": "functional",
       "footprint": {
         "w": 3,
@@ -726,7 +726,7 @@ const PropCatalogData = {
       "face": "e",
       "r": 3,
       "label": "DESK",
-      "category": "workstation",
+      "category": "workkeep",
       "tier": "functional",
       "footprint": {
         "w": 1,
@@ -755,7 +755,7 @@ const PropCatalogData = {
       "face": "s",
       "r": 0,
       "label": "DESK ×2",
-      "category": "workstation",
+      "category": "workkeep",
       "tier": "functional",
       "footprint": {
         "w": 3,
@@ -784,7 +784,7 @@ const PropCatalogData = {
       "face": "w",
       "r": 1,
       "label": "DESK ×2",
-      "category": "workstation",
+      "category": "workkeep",
       "tier": "functional",
       "footprint": {
         "w": 1,
@@ -813,7 +813,7 @@ const PropCatalogData = {
       "face": "n",
       "r": 2,
       "label": "DESK ×2",
-      "category": "workstation",
+      "category": "workkeep",
       "tier": "functional",
       "footprint": {
         "w": 3,
@@ -842,7 +842,7 @@ const PropCatalogData = {
       "face": "e",
       "r": 3,
       "label": "DESK ×2",
-      "category": "workstation",
+      "category": "workkeep",
       "tier": "functional",
       "footprint": {
         "w": 1,
@@ -871,7 +871,7 @@ const PropCatalogData = {
       "face": "s",
       "r": 0,
       "label": "CONSOLE",
-      "category": "workstation",
+      "category": "workkeep",
       "tier": "functional",
       "footprint": {
         "w": 2,
@@ -900,7 +900,7 @@ const PropCatalogData = {
       "face": "s",
       "r": 0,
       "label": "CONSOLE L",
-      "category": "workstation",
+      "category": "workkeep",
       "tier": "functional",
       "footprint": {
         "w": 3,
@@ -929,7 +929,7 @@ const PropCatalogData = {
       "face": "s",
       "r": 0,
       "label": "PIXEL RIG",
-      "category": "workstation",
+      "category": "workkeep",
       "tier": "functional",
       "footprint": {
         "w": 2,
@@ -958,7 +958,7 @@ const PropCatalogData = {
       "face": "s",
       "r": 0,
       "label": "BENCH",
-      "category": "workstation",
+      "category": "workkeep",
       "tier": "functional",
       "footprint": {
         "w": 4,
@@ -987,7 +987,7 @@ const PropCatalogData = {
       "face": "s",
       "r": 0,
       "label": "WORKBENCH",
-      "category": "workstation",
+      "category": "workkeep",
       "tier": "functional",
       "footprint": {
         "w": 2,

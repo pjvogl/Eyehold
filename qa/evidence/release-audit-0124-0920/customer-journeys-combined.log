@@ -1,5 +1,5 @@
 
-> starnet-harness@0.12.4 qa:customer-journeys
+> eyehold-harness@0.12.4 qa:customer-journeys
 > node scripts/timeout.mjs --label qa:customer-journeys --timeout=900000 -- node scripts/run-test-list.mjs test/customer-journeys.list
 
 TAP version 13
@@ -48,7 +48,7 @@ channels.telegram.e2e.test: OK (82 assertions)
 cron.run-now.e2e.test: OK (35 assertions)
 cron.session-transcript.e2e.test: OK (10 assertions)
 routing.persist.e2e: OK (44 assertions)
-station-recovery.e2e.test: OK (23 assertions)
+keep-recovery.e2e.test: OK (23 assertions)
 TAP version 13
 # Subtest: unlink wins over an unfinished pairing response and survives restart
 ok 1 - unlink wins over an unfinished pairing response and survives restart
@@ -123,7 +123,7 @@ ok 2 - catalog failure preserves saved pins without claiming absence; successful
 # todo 0
 # duration_ms 9.9416
 model-provider-reconcile.test: OK (69 assertions)
-genesis-starnet-link.test.js OK - 47 assertions
+genesis-eyehold-link.test.js OK - 47 assertions
 friendlyerror.test: OK (229 assertions)
 errorclass.test: OK (215 assertions)
 connectors-ui: OK (149 assertions)
@@ -364,7 +364,7 @@ session-continuity (48 lifecycle sequences, both shipped trees): OK (48 assertio
   "history": [
     {
       "role": "user",
-      "content": "Remember the launch code: ORBIT-17"
+      "content": "Remember the launch code: CIRCUIT-17"
     },
     {
       "role": "assistant",
@@ -424,7 +424,7 @@ session-continuity (48 lifecycle sequences, both shipped trees): OK (48 assertio
     },
     {
       "role": "assistant",
-      "content": "⚠ The reply stream stopped before it finished — StarNet's local service answered a health check, so the app itself is running; this was the connection carrying the reply. Try again."
+      "content": "⚠ The reply stream stopped before it finished — Eyehold's local service answered a health check, so the app itself is running; this was the connection carrying the reply. Try again."
     }
   ],
   "draft": ""

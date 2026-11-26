@@ -796,8 +796,8 @@
     }
   },
   {
-    "id": "astronaut",
-    "set": "approved_astronaut",
+    "id": "warden",
+    "set": "approved_warden",
     "sourceHeight": 76,
     "frameCounts": {
       "rot.south": 1,
@@ -15124,8 +15124,8 @@
     }
   },
   {
-    "id": "station_minion",
-    "set": "approved_station_minion",
+    "id": "keep_minion",
+    "set": "approved_keep_minion",
     "sourceHeight": 76,
     "frameCounts": {
       "rot.south": 1,

@@ -7,7 +7,7 @@ historical/diagnostic counters live in an explicit Stats category; existing pins
 manageable. A pinned routine opens scheduling, and attention opens a current waiting
 conversation without answering or approving it. The full fast gate must pass.
 
-New stations pin NEEDS YOU instead of RUNS · 24H. Existing v1 layouts remain unchanged.
+New keeps pin NEEDS YOU instead of RUNS · 24H. Existing v1 layouts remain unchanged.
 CREW, ACTIVE COMMS, QUEUE, ROUTINES count, RUNS · 24H, and TOKENS move to Stats.
 NEEDS YOU covers both approval and answer prompts and reads `clear` when none are pending.
 NEXT ROUTINE shows its stopped/empty state instead of an unexplained dash.
@@ -57,7 +57,7 @@ The full fast gate must pass.
 
 ## Changes
 
-- Searchable library with All, Station, Agent feeds, and Pinned filters, live previews,
+- Searchable library with All, Keep, Agent feeds, and Pinned filters, live previews,
   source descriptions, and explicit Top / Bottom / Hide controls.
 - Eight built-in instruments: existing runs, queue, routines, and tokens plus crew count,
   confirmed active COMMS conversations, COMMS approval requests, and next scheduled routine.
@@ -85,7 +85,7 @@ Isolated seeded application at `http://127.0.0.1:9186`, launched with `node dev/
   The library's controls had zero white/native background matches. No browser warnings or
   errors were recorded during normal interaction before intentional outage testing.
 - A disposable feed was published through the production `widget.set` tool and durable
-  store in this worktree's scratch station, then loaded after restart. The live rail read
+  store in this worktree's scratch keep, then loaded after restart. The live rail read
   `RESEARCH DIGEST / NOVA / 12 sources`; its real four-point spark rendered, with no false
   zero-progress bar. This was a labelled verification fixture, not a real research result.
 - Stopping only this worktree's sidecar retained `12 sources`, added `offline` beside NOVA's

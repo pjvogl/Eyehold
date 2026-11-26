@@ -41,10 +41,10 @@ patterns). What Tier D builds on, all in `frontend/app/world.js`:
 - **G3. Containment holds.** No body ever leaves its zone for a Tier D behavior. Movement targets
   are zone-clamped; adjacent-zone social resolves to the border, never a crossing.
 - **G4. No deadlock / no cascade / no pileup.** Every beat is finite (hard `until`), per-pair and
-  per-station cooldowns, at most ONE social encounter and ONE cursor-chase live per station. A beat
+  per-keep cooldowns, at most ONE social encounter and ONE cursor-chase live per keep. A beat
   never triggers another beat.
-- **G5. Rarity budgeted PER STATION, not per body.** N crew × per-body rates = a busy cute mess.
-  Quirk/encounter/chase rolls draw from station-level budgets so a 6-agent floor stays as calm as a
+- **G5. Rarity budgeted PER KEEP, not per body.** N crew × per-body rates = a busy cute mess.
+  Quirk/encounter/chase rolls draw from keep-level budgets so a 6-agent floor stays as calm as a
   1-agent floor. Restraint is the aesthetic (Pass-7 law: stillness > motion).
 - **G6. Determinism lint green.** `U.chance`/`U.irnd`/`U.pick`/`U.hash` only; cursor position is a
   user INPUT (allowed), never sample `Math.random`/`Date.now`.
@@ -80,11 +80,11 @@ The hero has an inner life; the crew mostly wanders. Close the gap.
   pacer, the corner-starer, the one who sleeps). Persistence is what reads as personality.
 - **Keep hero-exclusive**: THE LONG STARE, deep-lock, FIRST LIGHT, mourning (the intimate
   Commander-relationship beats stay special to the hero).
-- **Retune under G5**: station-level quirk budget replaces per-body rates before this merges.
+- **Retune under G5**: keep-level quirk budget replaces per-body rates before this merges.
 
 ### D3 — SOCIAL ENCOUNTERS (Tier C grows legs — movement-based, still safe)
 Tier C proved perceive-across-zones/act-in-your-own with gaze. D3 adds bounded movement beats,
-same invariants, per-pair long cooldowns, ONE live encounter station-wide:
+same invariants, per-pair long cooldowns, ONE live encounter keep-wide:
 - **The huddle**: two idle same-zone bodies converge to adjacent tiles, face each other, hold a
   silent beat (with the existing habituation-style variance), break, drift apart. No speech — the
   silence IS the eerie.
@@ -107,7 +107,7 @@ Extends the existing Commander-presence stack; checks off the roadmap's "Mimic t
 - **Cursor-mimic (head-only)**: rare quirk-band beat — an idle body TRACKS the moving cursor with
   continuous facing updates for 3-6s (not one glance — a follow), then snaps away. Requires cursor
   freshness; ends immediately when the cursor goes stale.
-- **THE CHASE (the headline)**: very rare (station-level cooldown, minutes; idle-only; never during
+- **THE CHASE (the headline)**: very rare (keep-level cooldown, minutes; idle-only; never during
   chat focus; one chaser ever): an idle body breaks toward the cursor's world tile — zone-clamped —
   repathing at a low cadence (~1/s, so it lags you like a real pursuer), for 3-6 seconds. Then it
   just STOPS, stares at where the cursor was for a held beat, and walks away as if nothing
@@ -121,7 +121,7 @@ Extends the existing Commander-presence stack; checks off the roadmap's "Mimic t
   audit table into this doc; add the `setChatFocus` no-op plumbing (zero behavior change). Gate.
 - **D1 — chat-stare.** Gate: G2 (reply run seizes correctly, returns after), no suppression leak
   (chatFocus null always restores idle), blast radius (chat.js = one announce).
-- **D2 — crew parity + station-budget retune.** Gate: G5 crowd-calm hunt (max-crew floor soak),
+- **D2 — crew parity + keep-budget retune.** Gate: G5 crowd-calm hunt (max-crew floor soak),
   determinism, no hero-beat regression.
 - **D3 — social encounters.** Gate: G3/G4 hunts — containment leak, convergence pileup, deadlock
   (both released on any seize), per-pair cooldown actually per-pair.
@@ -216,7 +216,7 @@ Method: a beat is **SHARED** if its body-state reads/writes go through the modul
 **KEY D2 INSIGHT (for the future phase, not this lane):** the want-engine (`decideIdle` + most beats) is
 ALREADY shared via `self`. The real hero/crew gap is the **head-animation layer**: `maybeGlance` runs on
 `agent` only and is called only from the hero `tick()`. Crew get glances just at idle-decision moments (via
-`lookAround`/`ambientGazeDir`) and Tier C. So "kill aimless crew walking" is mostly a RETUNE (station budget,
+`lookAround`/`ambientGazeDir`) and Tier C. So "kill aimless crew walking" is mostly a RETUNE (keep budget,
 G5) + porting `maybeGlance`-class continuous facing to crew, NOT rebuilding the want-engine. The truly
 hero-exclusive beats to KEEP special (per plan): mourning, belt-yield, deep-lock, THE LOOK-UP, FIRST LIGHT,
 and (by intent) THE LONG STARE hold.
@@ -328,15 +328,15 @@ audit table is the map, the code is the truth) and disposed of as follows:
 
 **Net for Half 1:** zero new extensions were needed or safe — the safe set was already shared (D0's finding), and every
 remaining hero-only beat is either design-intent-exclusive, hero-coupled, or a non-mechanical rebuild. The crew liveliness
-gain in D2 therefore comes entirely from Half 2 (the retune that lets the already-shared beats run at a *calm* station rate).
+gain in D2 therefore comes entirely from Half 2 (the retune that lets the already-shared beats run at a *calm* keep rate).
 
-### Half 2 — G5 station-level rarity budget (the retune; landed, then RE-TUNED after adversarial review)
+### Half 2 — G5 keep-level rarity budget (the retune; landed, then RE-TUNED after adversarial review)
 - **Review finding (F1) that forced the retune:** the first cut (an 8s window with a x0.35 soft damp, mirroring the
   B3 quirk governor) was correct but **barely bound at scale** — the 8s damp shadow covers only ~5-18% of the 45-140s
   per-family cooldowns, so a Monte-Carlo of a 6-body floor showed only ~7% reduction (≈5.7x single-agent cadence,
   vs the G5 target). The claim "floors at ~1 agent's" was overstated and is retracted; the shipped design below is
   measured, and its honest worst case is **~2x single-agent**, not 1x.
-- **Shape (a station-wide SHARED cooldown for crew rolls):** one module-local `crewBeatGateUntil` + two helpers —
+- **Shape (a keep-wide SHARED cooldown for crew rolls):** one module-local `crewBeatGateUntil` + two helpers —
   `armBeat(now)` sets `crewBeatGateUntil = now + U.irnd(45000, 90000)` (a window drawn on the order of the per-family
   cooldowns — deliberately the same range as `quirkCd`, no new magic numbers), and `crewBeatDamp(now)` returns `0`
   for a CREW body while `now < crewBeatGateUntil`, else `1` — and **always `1` for the hero** (the `self === agent`
@@ -384,7 +384,7 @@ encounters …` (557dccb2) + the fall-through / one-sided-break fixes.
 
 ### The coordinator (assignment / stepping / release)
 - **The slot (G4):** ONE module-local `socialBeat = null | { kind, aId, bId, until }`. `until` = `now +
-  SOCIAL_HARD_MS` (25 s) is the whole-encounter HARD timeout. A **station-level sweep at the top of `tick()`**
+  SOCIAL_HARD_MS` (25 s) is the whole-encounter HARD timeout. A **keep-level sweep at the top of `tick()`**
   (`if (socialBeat && (now >= until || encounterBroken)) endEncounter`) frees the slot EVERY frame independent of
   any body's stepper — so even if BOTH participants get seized in the same tick (neither runs its own guard) the
   slot is never leaked. `socialPairCd` (Map, sorted `"idA|idB"` key) is the per-pair cooldown.
@@ -405,7 +405,7 @@ encounters …` (557dccb2) + the fall-through / one-sided-break fixes.
   (hoisted out of the `top < 28` content branch 2026-07-02 — see SELECTION HOIST below) (K4 — off
   `neighborsOf`, never off observing another encounter). Order of gates: reduceMotion → no walking beats (degrade to
   Tier C glances); slot free; self eligible (`socialEligible`: idle + placed + not chat-focused + not already in a
-  beat); **social LANE open** (`now >= socialGateUntil` — the dedicated 5-8min station cooldown, NOT the shared
+  beat); **social LANE open** (`now >= socialGateUntil` — the dedicated 5-8min keep cooldown, NOT the shared
   `crewBeatDamp` gate anymore — see the RATE RETUNE note below); **candidate exists** (a same-zone neighbor OR any
   other placed body) BEFORE the `U.chance(SOCIAL_SEL_ROLL)` roll — so a solo-hero floor never even rolls (N=1
   parity, hunt 6); then try watch→huddle→follow→border, first legal plan wins.
@@ -433,7 +433,7 @@ API as `_dbgSocialGeom` for the in-browser DEV harness.
 
 ### Final tuning constants
 `SOCIAL_SEL_ROLL = 0.08` (per idle re-decide, only when a candidate pair exists + the social LANE is open);
-`SOCIAL_STATION_CD_MIN/MAX = 300000/480000` ms (the dedicated social LANE, **5-8 min** — the rate governor);
+`SOCIAL_KEEP_CD_MIN/MAX = 300000/480000` ms (the dedicated social LANE, **5-8 min** — the rate governor);
 hold `U.irnd(3000, 7000)` ms; whole-encounter hard timeout `SOCIAL_HARD_MS = 25000` ms; per-pair cooldown
 `U.irnd(180000, 360000)` ms (3-6 min); candidate radius 5 tiles; half-follow `U.irnd(2,4)` tiles.
 
@@ -442,15 +442,15 @@ hold `U.irnd(3000, 7000)` ms; whole-encounter hard timeout `SOCIAL_HARD_MS = 250
   D2 quirk gate (`crewBeatDamp`). Two compounding causes at those constants: social's `0.02` per-re-decide roll
   competed against the quirk families' ~`0.085` effective for the SAME gate-open windows, AND every fired beat
   (usually a quirk, which rolls FIRST in `decideIdle`) re-armed the shared 45-90s gate — closing social's window.
-  Net: social won only ~6% of station beats → ~1 encounter per 20-30 min on a 3-6 body floor (two 5-9 min soaks
+  Net: social won only ~6% of keep beats → ~1 encounter per 20-30 min on a 3-6 body floor (two 5-9 min soaks
   saw ZERO). The D3 intent ("one every few minutes at most") was unmet.
-- **The lever chosen — a dedicated social station cooldown LANE** (mirrors THE CHASE's `chaseGateUntil`): social
+- **The lever chosen — a dedicated social keep cooldown LANE** (mirrors THE CHASE's `chaseGateUntil`): social
   selection no longer consults `crewBeatDamp`; instead it gates on `now >= socialGateUntil`, a lane drawn `U.irnd(
   300000, 480000)` (5-8 min) at each fire. This DECOUPLES the encounter rate from the fragile quirk race — the rate
   is now governed by the lane cooldown, so it's *predictable and tunable to a target* regardless of quirk dynamics
   or pair scarcity. **Crucially, a fired encounter STILL arms the shared gate** (`armBeat`, factored with the lane
   draw into one `armSocialBudget(now)` helper called at ALL three fire sites — `startEncounter` for huddle/border,
-  and the one-sided `planWatch`/`planFollow`), so quirks stay quiet in social's shadow and the **total** station
+  and the one-sided `planWatch`/`planFollow`), so quirks stay quiet in social's shadow and the **total** keep
   beat rate is preserved (we re-slice the pie, not grow it — G5 honored). `SOCIAL_SEL_ROLL` raised `0.02→0.08` only
   so that, once the lane opens, an eligible pair is selected within a few idle re-decides (organic, not clockwork).
 - **Validation — Monte-Carlo** (throwaway, not committed; the D2 pattern) with the real constants (2s idle
@@ -474,7 +474,7 @@ hold `U.irnd(3000, 7000)` ms; whole-encounter hard timeout `SOCIAL_HARD_MS = 250
   ~10.2 (Δ −5.7%). 5-8min chosen: mid-band with margin on both sides, symmetric with the per-pair 3-6min cooldown.
 - **Honest rate:** a 3-6 body idle floor now sees roughly **one encounter every ~6 minutes** (~9.5/hr) — the D3
   "one every few minutes" intent, met. Still RARE (the lane + one-slot G4 + per-pair 3-6min cooldown all hold); an
-  unattended / read-only / solo-hero floor sees ZERO (no pairs). Total station calm is unchanged (G5).
+  unattended / read-only / solo-hero floor sees ZERO (no pairs). Total keep calm is unchanged (G5).
 
 ### SELECTION HOIST (2026-07-02, live-soak fix) — the retune was gated behind a branch that almost never runs
 - **The bug (live differential probes + code):** ALL THREE Tier D selection hooks — `maybeChase`, `maybeSocial`,
@@ -492,13 +492,13 @@ hold `U.irnd(3000, 7000)` ms; whole-encounter hard timeout `SOCIAL_HARD_MS = 250
   want-engine — which is exactly the relative order a content pass already had; the block merely becomes reachable
   on need-driven passes too. The `top < 28` branch keeps its CONTENT=STILL character (mutual-glance, revisit,
   stand/look/wander) minus those three lines (single consult site — grep-verified no duplicate remains).
-- **Why all laws hold:** each `maybe*` is fully SELF-gated — the 8-15min chase station gate + cursor fresh+moving
+- **Why all laws hold:** each `maybe*` is fully SELF-gated — the 8-15min chase keep gate + cursor fresh+moving
   + one-chaser lock, the 5-8min social lane + single slot + per-pair cooldowns + candidate-existence, the mimic
-  per-body 45-90s cooldown + cursor freshness + D2 station budget, and `goal==null` eligibility via `bodyIsIdle`
+  per-body 45-90s cooldown + cursor freshness + D2 keep budget, and `goal==null` eligibility via `bodyIsIdle`
   (so a body holding ANY goal — including a cold `stare-chat` not yet re-decided — can never be grabbed). Hoisting
   only increases how often the hooks are *consulted*, never their *budgets*: the lanes/gates remain the rate
   governors, so the MC numbers (~9.5 enc/hr lane-bound; chase ceiling ~5.2/hr cooldown-bound; mimic quirk-band)
-  are now the accurate live model. Total station calm is untouched (every fire still arms the shared gate).
+  are now the accurate live model. Total keep calm is untouched (every fire still arms the shared gate).
 - **RNG draw-order trace:** all three hooks are strictly gates-before-rolls (`maybeChase` has NO roll at all —
   RNG only on fire; `maybeSocial` returns before `U.chance` unless lane open + eligible + candidate; `maybeMimic`
   returns before its roll unless eligible + off-cooldown + cursor-fresh). On the previously-reachable CONTENT
@@ -514,9 +514,9 @@ hold `U.irnd(3000, 7000)` ms; whole-encounter hard timeout `SOCIAL_HARD_MS = 250
    follow re-clamps each incremental step. Border bodies each target their OWN rect's edge tile (geometry test proves
    containment). CLEAR.
 2. **Rendezvous deadlock (partner summoned/despawned/chat-focused mid-beat)** — the survivor frees within one tick
-   via `encounterBroken` (checked both by the per-body guard AND the station-level sweep) → `endEncounter` frees the
+   via `encounterBroken` (checked both by the per-body guard AND the keep-level sweep) → `endEncounter` frees the
    slot AND clears the survivor's plan. The hard `until` is the final backstop. CLEAR.
-3. **Slot leaking / double-occupied** — the station sweep makes it un-leakable (frees even if both seize same tick);
+3. **Slot leaking / double-occupied** — the keep sweep makes it un-leakable (frees even if both seize same tick);
    `startEncounter` + both one-sided builders early-return on `socialBeat`, and bodies are stepped sequentially in a
    frame (crew then hero), so no two encounters arm in one tick. CLEAR.
 4. **An encounter starting during another** — every entry path guards `if (socialBeat) return false`; `maybeSocial`
@@ -556,23 +556,23 @@ tracker; the only new input signal is `cursorMoveT` (a real-displacement stamp f
 ### Beat 1 — crew cursor-drift (ambient, common)
 `ambientGazeDir(now)` split: hero keeps `0.32`, CREW get `0.15` (`self === agent ? 0.32 : 0.15`). This is the ONE
 spot crew ambient facing is randomized (via `lookAround`/`standStill`), so it never fights a held goal, a glance, a
-chat-stare, or work facing (none route through here). **Ambient texture → NOT gated by the D2 station budget (G5's
+chat-stare, or work facing (none route through here). **Ambient texture → NOT gated by the D2 keep budget (G5's
 ambient exemption).** N=1: `self` is only ever `agent` → `0.32`, byte-identical to pre-D4.
 
 ### Beat 2 — cursor-mimic (`maybeMimic`/`stepMimic`/`endMimic`, goal `mimic`)
 An idle body TRACKS the moving cursor with continuously-updated facing (a follow, not one glance). Rides the goal/hold
 machinery, not a new state family. Head-only — no movement. Gates: `cursorBeatEligible` (idle+placed+goal==null+not
 chat-focused+not social/chase); per-body `mimicCd` in the quirk band `U.irnd(45000,90000)`; cursor FRESH at start
-(`<8s`); `crewBeatDamp` (station budget) + `armBeat` on fire. `stepMimic` ends early if the cursor goes stale
+(`<8s`); `crewBeatDamp` (keep budget) + `armBeat` on fire. `stepMimic` ends early if the cursor goes stale
 mid-beat (snap-away only on a natural time-up). Duration `U.irnd(3000,6000)`. reduceMotion → degrade to a single
 glance toward you (still arms the cooldown + budget). Suppressed during chat-focus (D1) / any held goal (the
 `goal==null` gate) — a live social/chase body already has a goal so it's excluded.
 
 ### Beat 3 — THE CHASE (`maybeChase`/`stepChase`/`endChase`/`sweepChase`, goal `chase`) — the headline
-One chaser station-wide (`chaseId`, module-level like the D3 social slot), **mutually exclusive with a live social
+One chaser keep-wide (`chaseId`, module-level like the D3 social slot), **mutually exclusive with a live social
 beat** (`maybeChase` bails on `socialBeat`; `maybeSocial` bails on `chaseId` — the one-noticeable-thing-at-a-time
-discipline in both directions). Only ever CONSIDERED when: `now >= chaseGateUntil` (the LONG station cooldown), the
-D2 station gate is open (`crewBeatDamp`), body idle+`goal==null`, cursor FRESH **and actively MOVING**
+discipline in both directions). Only ever CONSIDERED when: `now >= chaseGateUntil` (the LONG keep cooldown), the
+D2 keep gate is open (`crewBeatDamp`), body idle+`goal==null`, cursor FRESH **and actively MOVING**
 (`cursorMoveT` within 1.5 s — recent real displacement, not mere presence). On fire it draws the next
 `chaseGateUntil = now + U.irnd(480000, 900000)` (8-15 min) immediately, so nothing re-rolls for minutes.
 **Mechanics:** `stepChase` repaths toward the cursor's CURRENT tile at a low cadence (`CHASE_REPATH_MS = 1000` → it
@@ -593,7 +593,7 @@ the single glance).
 `CURSOR_MOVING_MS = 1500`.
 
 ### RARITY HONESTY (computed at the shipped constants)
-- **THE CHASE.** Governed purely by the 8-15 min station cooldown (avg 11.5 min) — `maybeChase` has NO probability
+- **THE CHASE.** Governed purely by the 8-15 min keep cooldown (avg 11.5 min) — `maybeChase` has NO probability
   roll; it fires on the first eligible re-decide after the gate lapses. **Ceiling (user moves the mouse continuously
   the whole hour): ~5.2 chases/hour** (one per ~11.6 min). **Realistic:** the cursor is fresh+MOVING only a fraction
   of a session, and when the gate lapses during a quiet stretch the next chase WAITS for the cursor to next move —
@@ -602,7 +602,7 @@ the single glance).
 - **CURSOR-MIMIC.** Per body, gated by the 45-90 s quirk-band cooldown + a `p=0.03` roll per ~2 s idle re-decide
   while the cursor is fresh. **Ceiling (cursor fresh continuously): ~26 mimics/hour/body** (≈ once per 2.2 min).
   N=1 (hero only) = same. **Realistic** (cursor fresh ~20 % of a session): ~5/hour. N=6: the hero is undamped; the
-  CREW's collective mimic rate is bounded by the shared 45-90 s station beat gate (`armBeat`), NOT 6×, and shares
+  CREW's collective mimic rate is bounded by the shared 45-90 s keep beat gate (`armBeat`), NOT 6×, and shares
   that budget with quirks/social — so a 6-body floor stays calm (crew-count-invariant, same G5 property D2 measured).
 - **Selection cadence note (2026-07-02):** these rates were computed assuming the hooks are consulted at every
   idle re-decide — which only became TRUE with the SELECTION HOIST (see the D3 section): pre-hoist, chase/mimic
@@ -614,7 +614,7 @@ the single glance).
    `tileInZone` on EVERY repath; out-of-zone → clamp to the border via `nearestWalkableInZone` + stare-out. Stronger
    than the clamp-at-pick model the rest of the idle stack uses (which clamps once). CLEAR.
 2. **chase/social/chat-stare/mimic mutual exclusion.** Every hold-family entry gates on `goal==null` (via
-   `bodyIsIdle`/`cursorBeatEligible`/`socialEligible`) so no body is ever in two holds; the two STATION-level
+   `bodyIsIdle`/`cursorBeatEligible`/`socialEligible`) so no body is ever in two holds; the two KEEP-level
    "noticeable" slots are cross-guarded BOTH ways (`maybeChase`↔`socialBeat`, `maybeSocial`↔`chaseId`) so only one
    is ever live; bodies step sequentially (crew then hero) so no two arm in one tick; `chatStareHold` bails on any
    non-`stare-chat` goal (won't yank a chaser/mimicker), and `cursorBeatEligible` excludes the chat-focused body.
@@ -639,7 +639,7 @@ Read the full D3+D4 world.js diff hunting for two "one live thing" slots engagin
 exclusive hold families. **Findings + fixes:**
 - **F1 (fixed): social↔chase mutual exclusion was one-directional.** `maybeChase` bailed on a live `socialBeat`, but
   `maybeSocial` did NOT bail on a live `chaseId` — so a hero social beat could arm while a crew chase was live (two
-  station-level noticeable things at once, violating the one-at-a-time discipline). Added `if (chaseId != null)
+  keep-level noticeable things at once, violating the one-at-a-time discipline). Added `if (chaseId != null)
   return false` to `maybeSocial`. Now cross-guarded both ways.
 - **F2 (fixed): `maybeGlance` could hijack the mimic/chase facing.** During goal `mimic`/`chase` the hero's
   `maybeGlance` (which runs before the steppers each tick) fell through to its cargo-body-track branch and could set
@@ -663,14 +663,14 @@ way to SEE the beats — deferred to an attended check.
 
 ## D5 — THE OVERSEER OVERSEES (additive; hero-only role-shaped movement) — implementation notes (as built)
 
-> Andrew's ask: the main agent should read as the station's OVERSEER — role-shaped movement that makes the floor
+> Andrew's ask: the main agent should read as the keep's OVERSEER — role-shaped movement that makes the floor
 > feel like an organization, not a fish tank. Zero tokens (G1), deterministic (G6), work-always-wins (G2),
 > containment inviolable (G3). Single writer: `frontend/app/world.js` (+ this doc). No chat.js, no shared/*, no new
 > bus wire, no persistence. Commit `tier-d D5: THE OVERSEER OVERSEES …` (+ the hunt-3 hard-until hardening).
 
 ### What "the Overseer" resolved to (ground truth, grepped 2026-07-02)
 There is **no separate overseer concept in-world** — grep of `frontend/app/world.js` finds none. The OVERSEER is a
-UI/identity concept (app.js: "CREATE YOUR OVERSEER", the first agent runs the station and recruits the rest). In the
+UI/identity concept (app.js: "CREATE YOUR OVERSEER", the first agent runs the keep and recruits the rest). In the
 canvas, the **HERO body `agent` (its `agent.id` is the literal `'agent'`) IS the Overseer** — the Commander's main
 agent. So every D5 beat is on the HERO body only (gated `self === agent` where the shared want-engine could otherwise
 run it on crew), and rides existing hero machinery. **Zero crew behavior change.**
@@ -688,7 +688,7 @@ run it on crew), and rides existing hero machinery. **Zero crew behavior change.
   rather than being skipped (self-review hunt 4).
 - **`boardAnchorTile()`** — the MISSION BOARD's approach tile via the shared `PropAnchor` law (already used by the
   autojob pin beat). Beat 2 models its goal `'post'` directly on the existing `maybePinProposal`/goal `'pin'` beat.
-- **`armBeat`** (D2 station budget) — beat 2 ARMS it on fire (a noticeable beat: crew beats quiet in its 45-90 s
+- **`armBeat`** (D2 keep budget) — beat 2 ARMS it on fire (a noticeable beat: crew beats quiet in its 45-90 s
   shadow). It is **NOT itself budget-gated**: `crewBeatDamp` returns 1 for the hero unconditionally (the J1-parity
   short-circuit) and the board-post is hero-only, so a damp guard would be provably inert — the first cut carried
   one; the adversarial review flagged it and it was removed. Beat 2's rarity comes from its own 2-4 min `postCd`.
@@ -719,7 +719,7 @@ run it on crew), and rides existing hero machinery. **Zero crew behavior change.
    `0.3 → 0.45` (×1.5, never absolute) **only when `self === agent` AND the queue is non-empty**. The multiplier is
    derived from the cached `missionPinCounts` (NO RNG), so the `U.chance` DRAW COUNT is unchanged — a no-queue floor
    keeps the exact `0.3` (byte-identical) and crew always use `0.3`. Rounds visit desks/belts/props (the
-   work-adjacent points), so a busy station gets an overseer that hovers near the work — a WEIGHT shift, no new
+   work-adjacent points), so a busy keep gets an overseer that hovers near the work — a WEIGHT shift, no new
    movement machinery.
 
 ### Constants
@@ -731,7 +731,7 @@ Beat 1: supervisor stand ring `[2,3,1]` tiles + 4 cardinals (from `planWatch`); 
 Every beat is goal-keyed. Beat 2's goal `'post'` and beat 1's `'rounds'` require `goal == null` at entry (decideIdle
 only runs on a genuinely idle body) and are BELOW the summon-seize block, which overwrites `goal → 'summon'` and
 re-paths to the desk the moment `activity==='task'` arms — so **work always wins with no extra teardown** (same as
-the pre-existing `'rounds'`/`'pin'` beats). Beat 2 is single-body and not a station slot, so it needs no
+the pre-existing `'rounds'`/`'pin'` beats). Beat 2 is single-body and not a keep slot, so it needs no
 `socialBeat`/`chaseId` check beyond its own `goal == null`; it never runs under chat focus (D1's `chatStareHold`
 early-out in decideIdle) or during a live social/mimic/chase (those hold `goal != null`).
 

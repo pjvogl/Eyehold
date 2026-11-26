@@ -1,4 +1,4 @@
-/* Pure, disposable room construction. Never reads or writes a saved station. */
+/* Pure, disposable room construction. Never reads or writes a saved keep. */
 'use strict';
 const PropCatalogFixture = (() => {
   const PAGE_SIZE = 6;
@@ -58,14 +58,14 @@ const PropCatalogFixture = (() => {
     const anchors = [add('desk', 3, anchorY, 0, 'anchor-desk'), add('chair', 4, anchorY + 2, 0, 'anchor-chair'), add('crate', 12, anchorY, 0, 'anchor-crate')];
     doc.rooms = { [roomId]: { ...doc.rooms[roomId], name: 'CATALOG REVIEW', rects: [{ x1: 0, y1: 0, x2: width, y2: anchorY + 5 }] } };
     doc.order = [roomId]; doc.props = props; doc.belts = {}; doc._nid = 10000;
-    const station = M.deserialize(doc);
+    const keep = M.deserialize(doc);
     // Validate placement order: tables precede their children. Checking a table
     // against its already-mounted child would instead test moving it out from under the child.
     const violations = props.map((p, index) => {
       const before = M.deserialize({ ...doc, props: props.slice(0, index) });
       return { id: p.id, ...before.canPlaceProp(p.t, p.x, p.y, p.w, p.h) };
     }).filter(v => !v.ok);
-    return { doc, station, subjects, supports, anchors, violations,
+    return { doc, keep, subjects, supports, anchors, violations,
       crew: { x: 9, y: anchorY + 2 }, anchorY, roomId };
   }
   return Object.freeze({ PAGE_SIZE, select, page, create });

@@ -6,7 +6,7 @@ import { execFileSync } from 'node:child_process';
 import { mkdirSync, readFileSync, statSync, writeFileSync } from 'node:fs';
 import { evaluate, readJsonl, recordTrajectory, writeJsonl } from './core.mjs';
 import { compareHarnesses, evaluateFaultGauntlet, makeReceipt, validateComparisonContract, validateScenarioPack } from './comparison.mjs';
-import { bindHermes, bindStarNet, manifestEvidence, validateManifest } from './bind.mjs';
+import { bindHermes, bindEyehold, manifestEvidence, validateManifest } from './bind.mjs';
 import { generateReceiptKeyPair, signReceipt, verifyReceiptSignature } from './receipt-signing.mjs';
 import { applyIndependentParityGrades, validateParityFixtures } from './independent-grader.mjs';
 
@@ -56,7 +56,7 @@ function subjectMeta(opts) {
     executableInfo = { path: executable, bytes: st.size, sha256: sha256File(executable) };
   }
   return {
-    name: 'StarNet', version: pkg.version || '', commit: git(['rev-parse', 'HEAD']),
+    name: 'Eyehold', version: pkg.version || '', commit: git(['rev-parse', 'HEAD']),
     sourceTree: { algorithm: 'git-tree', value: git(['rev-parse', 'HEAD^{tree}']) },
     executable: executableInfo,
     platform: { platform: process.platform, arch: process.arch, node: process.version },
@@ -159,7 +159,7 @@ function fault(opts) {
 }
 
 function compare(opts) {
-  if (!opts.starnet || !opts.reference) throw new Error('compare requires --starnet <trajectory.jsonl> and --reference <trajectory.jsonl>');
+  if (!opts.eyehold || !opts.reference) throw new Error('compare requires --eyehold <trajectory.jsonl> and --reference <trajectory.jsonl>');
   const contract = readJson(opts.contract || DEFAULTS.contract);
   const contractResult = validateComparisonContract(contract, readJson(opts.claims || DEFAULTS.claims));
   if (!contractResult.ok) throw new Error('comparison contract is invalid: ' + contractResult.errors.join('; '));
@@ -172,16 +172,16 @@ function compare(opts) {
   const fixtureFile = resolve(opts.fixtures || DEFAULTS.parityFixtures), fixtures = readJsonl(fixtureFile);
   const fixtureCheck = validateParityFixtures(tasks, fixtures);
   if (!fixtureCheck.ok) throw new Error('parity fixtures are invalid: ' + fixtureCheck.errors.join('; '));
-  const starnetRows = applyIndependentParityGrades({ tasks, fixtures, rows: readJsonl(resolve(opts.starnet)) });
+  const eyeholdRows = applyIndependentParityGrades({ tasks, fixtures, rows: readJsonl(resolve(opts.eyehold)) });
   const referenceRows = applyIndependentParityGrades({ tasks, fixtures, rows: readJsonl(resolve(opts.reference)) });
-  const result = compareHarnesses({ tasks, starnetRows, referenceRows, contract });
+  const result = compareHarnesses({ tasks, eyeholdRows, referenceRows, contract });
   const evidence = { tasks: fileEvidence(opts.tasks || DEFAULTS.parityPack), fixtures: fileEvidence(fixtureFile),
-    independentGrader: fileEvidence(join(HERE, 'independent-grader.mjs')), starnet: fileEvidence(opts.starnet), reference: fileEvidence(opts.reference) };
+    independentGrader: fileEvidence(join(HERE, 'independent-grader.mjs')), eyehold: fileEvidence(opts.eyehold), reference: fileEvidence(opts.reference) };
   if (opts['subject-manifest']) evidence.subjectManifest = manifestEvidence(opts['subject-manifest']);
   if (opts['reference-manifest']) evidence.referenceManifest = manifestEvidence(opts['reference-manifest']);
   const receipt = makeReceipt({ kind: 'parity', contract, subject: subjectMeta(opts), reference: referenceMeta(opts, contract), result, evidence });
   writeSignedReceipt(opts.receipt || join('.dogfood', 'eval', 'parity-receipt.json'), receipt, opts);
-  console.log(`[agent-eval] PARITY ${result.pass ? 'PASS' : 'FAIL'} StarNet=${result.summary.starnetPassRatePct.toFixed(1)}% reference=${result.summary.referencePassRatePct.toFixed(1)}% gap=${result.summary.gapPoints.toFixed(1)}pt`);
+  console.log(`[agent-eval] PARITY ${result.pass ? 'PASS' : 'FAIL'} Eyehold=${result.summary.eyeholdPassRatePct.toFixed(1)}% reference=${result.summary.referencePassRatePct.toFixed(1)}% gap=${result.summary.gapPoints.toFixed(1)}pt`);
   return result.pass ? 0 : 1;
 }
 
@@ -206,14 +206,14 @@ function performanceProbe(opts) {
     pass: probe.pass === true,
     sameModel: probe.sameModel === true,
     measurements: {
-      starnetInstalledSidecarBootMs: probe.starnet && probe.starnet.bootMs,
-      starnetFirstTokenMs: probe.starnet && probe.starnet.firstTokenMs,
-      starnetTotalMs: probe.starnet && probe.starnet.totalMs,
+      eyeholdInstalledSidecarBootMs: probe.eyehold && probe.eyehold.bootMs,
+      eyeholdFirstTokenMs: probe.eyehold && probe.eyehold.firstTokenMs,
+      eyeholdTotalMs: probe.eyehold && probe.eyehold.totalMs,
       hermesFirstOutputMs: probe.hermes && probe.hermes.firstOutputMs,
       hermesTotalMs: probe.hermes && probe.hermes.totalMs
     },
     outcomes: {
-      starnet: { ok: !!(probe.starnet && probe.starnet.ok), status: probe.starnet && probe.starnet.status, tokens: probe.starnet && probe.starnet.usage && probe.starnet.usage.total_tokens },
+      eyehold: { ok: !!(probe.eyehold && probe.eyehold.ok), status: probe.eyehold && probe.eyehold.status, tokens: probe.eyehold && probe.eyehold.usage && probe.eyehold.usage.total_tokens },
       hermes: { ok: !!(probe.hermes && probe.hermes.ok), exitCode: probe.hermes && probe.hermes.exitCode, tokens: probe.hermes && probe.hermes.usage && probe.hermes.usage.total_tokens }
     }
   };
@@ -221,9 +221,9 @@ function performanceProbe(opts) {
   if (opts['subject-manifest']) evidence.subjectManifest = manifestEvidence(opts['subject-manifest']);
   if (opts['reference-manifest']) evidence.referenceManifest = manifestEvidence(opts['reference-manifest']);
   const receipt = makeReceipt({ kind: 'performance', contract, subject: subjectMeta(opts), reference: referenceMeta(opts, contract), result, evidence,
-    limitations: ['single preflight only; StarNet provider run failed before first token', 'desktop cold boot and 48-hour resource soak remain unmeasured'] });
+    limitations: ['single preflight only; Eyehold provider run failed before first token', 'desktop cold boot and 48-hour resource soak remain unmeasured'] });
   writeSignedReceipt(opts.receipt || join('.dogfood', 'eval', 'performance-probe-receipt.json'), receipt, opts);
-  console.log(`[agent-eval] PERFORMANCE PROBE ${result.pass ? 'PASS' : 'FAIL'} StarNetBoot=${Number(result.measurements.starnetInstalledSidecarBootMs || 0).toFixed(1)}ms`);
+  console.log(`[agent-eval] PERFORMANCE PROBE ${result.pass ? 'PASS' : 'FAIL'} EyeholdBoot=${Number(result.measurements.eyeholdInstalledSidecarBootMs || 0).toFixed(1)}ms`);
   return result.pass ? 0 : 1;
 }
 
@@ -248,7 +248,7 @@ function markUnavailable(opts) {
   const repeats = contract.gates.ordinaryRunsPerScenario;
   const rows = [];
   for (const task of tasks) for (let attempt = 1; attempt <= repeats; attempt++) rows.push({
-    schemaVersion: 'starnet.eval.trajectory.v1', taskId: task.id, attempt,
+    schemaVersion: 'eyehold.eval.trajectory.v1', taskId: task.id, attempt,
     runId: `unavailable-${opts.harness}-${task.id}-${attempt}`, events: [], artifacts: [], finalText: '',
     outcome: { passed: false, evidence: { status: 'not-executed', harness: opts.harness, reason: opts.reason } }
   });
@@ -272,9 +272,9 @@ function verifyReceipt(opts) {
 }
 
 async function bind(opts) {
-  if (!opts.profile || !opts.manifest) throw new Error('bind requires --profile <starnet|hermes> and --manifest <json>');
+  if (!opts.profile || !opts.manifest) throw new Error('bind requires --profile <eyehold|hermes> and --manifest <json>');
   let manifest;
-  if (opts.profile === 'starnet') manifest = await bindStarNet({
+  if (opts.profile === 'eyehold') manifest = await bindEyehold({
     sourceDir: opts['source-dir'], runtimeRoot: opts['runtime-root'], executable: opts.executable,
     runtimeNode: opts['runtime-node'], commit: opts.commit, tree: opts.tree, version: opts.version,
     describe: opts.describe, healthUrl: opts['health-url']
@@ -283,7 +283,7 @@ async function bind(opts) {
     const contract = readJson(opts.contract || DEFAULTS.contract), ref = contract.reference;
     manifest = bindHermes({ sourceDir: opts['source-dir'], executable: opts.executable, homeDir: opts['home-dir'],
       commit: ref.commit, tree: ref.sourceTree, version: ref.version, tag: ref.tag, tagObject: ref.tagObject });
-  } else throw new Error('bind --profile must be starnet or hermes');
+  } else throw new Error('bind --profile must be eyehold or hermes');
   ensureParent(opts.manifest);
   writeFileSync(resolve(opts.manifest), JSON.stringify(manifest, null, 2) + '\n', 'utf8');
   console.log(`[agent-eval] BIND PASS ${manifest.subject.name} ${manifest.subject.version} commit=${manifest.subject.commit} executable=${manifest.subject.executable.sha256}`);

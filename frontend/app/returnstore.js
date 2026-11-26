@@ -1,4 +1,4 @@
-/* STARNET — returnstore.js : the thin live wiring around the pure return-ritual engine (returns.js).
+/* EYEHOLD — returnstore.js : the thin live wiring around the pure return-ritual engine (returns.js).
 
    Owns what the pure engine can't: the durable lastSeenAt HEARTBEAT (localStorage, stamped every
    30s while the app runs + on unload — so "away" means the app was genuinely CLOSED, and a run that
@@ -9,7 +9,7 @@
    the same direct rate-the-work path every attended run uses (chat.js rateWork). */
 'use strict';
 const ReturnStore = (() => {
-  const KEY = 'starnet.return.v1';
+  const KEY = 'eyehold.return.v1';
   const HEARTBEAT_MS = 30000;
   const DIGEST_DELAY_MS = 1600;   // let the floor + COMMS settle before the session-open beat
   let state = null;
@@ -24,7 +24,7 @@ const ReturnStore = (() => {
 
   function beat() { if (!ready()) return; state = Returns.heartbeat(state, Date.now()); save(); }
 
-  // fetch this station's run history (ALL agents — cron routines run on crew too) + the routine
+  // fetch this keep's run history (ALL agents — cron routines run on crew too) + the routine
   // A failed or partial history read must reject: empty work and unread work are different states.
   async function composeRows(sinceMs, ranges, signal) {
     let runs = [];

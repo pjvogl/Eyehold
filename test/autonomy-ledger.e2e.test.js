@@ -48,7 +48,7 @@ function startMockOpenRouter() {
 function boot(port, env, attemptsLeft) {
   return new Promise((resolve, reject) => {
     const child = spawn(process.execPath, [INDEX], {
-      env: Object.assign({}, process.env, env, { SKYNET_PORT: String(port) }),
+      env: Object.assign({}, process.env, env, { EYEHOLD_PORT: String(port) }),
       stdio: ['ignore', 'pipe', 'pipe']
     });
     let out = '', settled = false;
@@ -72,22 +72,22 @@ async function drainNdjson(res) { await res.text(); }   // consume the Run Now s
   const mock = await startMockOpenRouter();
   const ws = fs.mkdtempSync(path.join(os.tmpdir(), 'sk-autonomy-ledger-'));
   const env = {
-    SKYNET_WORKSPACES: ws,
-    SKYNET_OPENROUTER_BASE: mock.base,
-    SKYNET_OPENROUTER_KEY: 'sk-or-v1-ledger-fake',
-    SKYNET_DEFAULT_MODEL: 'test/model'
+    EYEHOLD_WORKSPACES: ws,
+    EYEHOLD_OPENROUTER_BASE: mock.base,
+    EYEHOLD_OPENROUTER_KEY: 'sk-or-v1-ledger-fake',
+    EYEHOLD_DEFAULT_MODEL: 'test/model'
   };
   let child, port;
   try {
     ({ child, port } = await boot(8960 + (process.pid % 30), env, 20));
     const B = 'http://' + HOST + ':' + port;
     const token = await bootToken(B, B);
-    const headers = { 'Content-Type': 'application/json', 'X-StarNet-Token': token, Origin: B };
+    const headers = { 'Content-Type': 'application/json', 'X-Eyehold-Token': token, Origin: B };
 
     // an empty ledger is 200 {entries:[]} (a genuinely-empty log, not an error).
     const empty = await fetch(B + '/api/autonomy/ledger', { headers });
     A.eq(empty.status, 200, 'ledger route responds 200 before any decision');
-    A.eq((await empty.json()).entries.length, 0, 'a fresh station has an empty autonomy ledger');
+    A.eq((await empty.json()).entries.length, 0, 'a fresh keep has an empty autonomy ledger');
 
     const create = await fetch(B + '/api/cron', {
       method: 'POST', headers,
@@ -126,7 +126,7 @@ async function drainNdjson(res) { await res.text(); }   // consume the Run Now s
     ({ child, port } = await boot(port + 1, env, 20));
     const B2 = 'http://' + HOST + ':' + port;
     const token2 = await bootToken(B2, B2);
-    const restarted = await fetch(B2 + '/api/autonomy/ledger', { headers: { 'X-StarNet-Token': token2, Origin: B2 } });
+    const restarted = await fetch(B2 + '/api/autonomy/ledger', { headers: { 'X-Eyehold-Token': token2, Origin: B2 } });
     A.eq(restarted.status, 200, 'ledger route responds after restart');
     const survived = (await restarted.json()).entries;
     A.ok(survived.some(e => e.kind === 'fire' && e.jobId === job.id), 'the fire decision SURVIVED a sidecar restart (durable)');

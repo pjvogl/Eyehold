@@ -1,7 +1,7 @@
-/* sidecar/credits-link.js — device pairing client for StarNet Cloud + the durable link-config store.
+/* sidecar/credits-link.js — device pairing client for Eyehold Cloud + the durable link-config store.
 
    Slice 2 of the subscriptions plan: turn a static CREDITS_ACCOUNT env var into a real, user-driven LINK
-   STATION flow. This module owns two things and NOTHING else (no billing, no admission — that stays in
+   KEEP flow. This module owns two things and NOTHING else (no billing, no admission — that stays in
    credits.js / billing.js):
 
      1. The cloud device-linking HTTP dance (mirrors the codex device-code shape):
@@ -12,7 +12,7 @@
         or persisted. Only the sidecar polls the cloud with it.
 
      2. Durable link config at WORKSPACES/.secrets/credits.json (same posture as spotify.json — atomic
-        tmp+rename, 0600) so a linked station survives a sidecar restart. The record is
+        tmp+rename, 0600) so a linked keep survives a sidecar restart. The record is
           { url, deviceToken?, accountId, linkedAt }
         and is read back at boot (loadSavedSync) to construct the live credits adapter. deviceToken is a
         re-issuable bearer credential (relinking mints a new one), so unlink deleting the file is safe
@@ -22,7 +22,7 @@
         The device token is a bearer credential that SPENDS MONEY, so on the desktop it belongs in the OS
         keychain, not in a file. The desktop adopts it: Rust reads credits.json, stores the token under
         keychain account "credits:device", strips `deviceToken` from the file, and injects it back at every
-        sidecar spawn as STARNET_CREDITS_TOKEN. So `deviceToken` in the file is TRANSIENT on desktop —
+        sidecar spawn as EYEHOLD_CREDITS_TOKEN. So `deviceToken` in the file is TRANSIENT on desktop —
         present between the link and the adoption moments later, absent afterwards.
         Precedence in loadSavedSync: file token (fresh link, pre-adoption) -> this process's freshly linked
         session token -> injected env token (adopted at launch). The session token MUST beat envToken after a
@@ -30,7 +30,7 @@
         A bare/dev sidecar has no keychain and no injector, so the file keeps the token exactly as before —
         this is additive and never breaks a non-desktop deploy.
 
-   HONESTY LAW: when STARNET_CLOUD_URL is unset, configured() is false — start() refuses, the /api/credits/*
+   HONESTY LAW: when EYEHOLD_CLOUD_URL is unset, configured() is false — start() refuses, the /api/credits/*
    link routes 404, and the STORE shows no LINK card. Pure/injected IO (fetch, fs, fsp, path, clock) so the
    whole flow is unit-testable offline (see test/credits-link.test.js). */
 'use strict';
@@ -45,11 +45,11 @@
   function trimSlash(u) { return str(u).replace(/\/+$/, ''); }
 
   /* deps: {
-       cloudUrl,                 // STARNET_CLOUD_URL (empty => inert, everything 404s)
+       cloudUrl,                 // EYEHOLD_CLOUD_URL (empty => inert, everything 404s)
        fetch, fsp, fs, pathMod,  // injected IO
        dir,                      // WORKSPACES/.secrets — where credits.json lives
        now,                      // () => ms wall clock
-       envToken                  // STARNET_CREDITS_TOKEN — desktop-injected from the OS keychain (see header)
+       envToken                  // EYEHOLD_CREDITS_TOKEN — desktop-injected from the OS keychain (see header)
      } */
   function makeCreditsLink(deps) {
     deps = deps || {};
@@ -67,7 +67,7 @@
     // Unlink tombstone: written by clearSaved(), removed by persist() (a fresh link). It is what stops the
     // boot self-heal from resurrecting a link the Commander deliberately severed — the OS keychain can still
     // hold the old token after an unlink (the shell's clear is a separate call that can fail), and a heal
-    // that trusts the keychain alone would quietly re-link the station against their explicit choice.
+    // that trusts the keychain alone would quietly re-link the keep against their explicit choice.
     const tombstone = (P && DIR) ? P.join(DIR, 'credits.unlinked.json') : '';
     const requestTimeoutMs = (typeof deps.requestTimeoutMs === 'number' && isFinite(deps.requestTimeoutMs) && deps.requestTimeoutMs > 0)
       ? Math.floor(deps.requestTimeoutMs) : 8000;
@@ -80,7 +80,7 @@
     let lastTransition = null;
     let recovering = false;
     // Boot self-heal retry (issue #76, 2026-10-06): the heal used to be ONE-SHOT at boot, so a cloud that was slow
-    // or down at that moment left a paid, keychain-authorized station looking unlinked for the whole session —
+    // or down at that moment left a paid, keychain-authorized keep looking unlinked for the whole session —
     // hours — even after the cloud recovered. A TRANSIENT refusal (unreachable / 5xx / 429) now arms a retry the
     // host can take on the next credits read, at most once per healRetryMs. Definitive refusals never re-arm.
     const healRetryMs = (typeof deps.healRetryMs === 'number' && isFinite(deps.healRetryMs) && deps.healRetryMs >= 0)
@@ -130,7 +130,7 @@
       const ticket = ++generation;
       transition('pairing_started');
       pending.clear();
-      const payload = { deviceName: str(deviceName) || 'StarNet Station' };
+      const payload = { deviceName: str(deviceName) || 'Eyehold Keep' };
       let j;
       try { j = await postJson('/v1/link/start', payload); }
       catch (e) {
@@ -190,7 +190,7 @@
     // within seconds — it moves deviceToken into the OS keychain and STRIPS it from the file — but the
     // running sidecar was spawned BEFORE the link, so its envToken is empty. Without this memory the very
     // next request resolved no token and no base URL: model catalog "offline", WAKE refused, until a full
-    // app restart re-spawned the sidecar with STARNET_CREDITS_TOKEN (2026-08-22, the first-run reports).
+    // app restart re-spawned the sidecar with EYEHOLD_CREDITS_TOKEN (2026-08-22, the first-run reports).
     // Cleared by an unlink; replaced by a fresh link. The keychain copy is the durable home; this is only
     // the live process keeping what it already proved.
     let sessionToken = '';
@@ -210,7 +210,7 @@
     }); }
 
     // Unlink within this process must win over a token the desktop injected at spawn: process.env still
-    // holds it after the keychain entry is deleted, so without this the station would look linked until
+    // holds it after the keychain entry is deleted, so without this the keep would look linked until
     // the next restart. Set by clearSaved(), cleared by a fresh link.
     let unlinked = false;
 
@@ -298,7 +298,7 @@
 
     /* BOOT SELF-HEAL (2026-08-25 stranded-user incident). A reinstall (or workspace reset) deletes
        credits.json but the device token survives in the OS keychain and is injected back as envToken —
-       leaving a station that IS authorized but LOOKS unlinked: empty model catalog, refused runs, and a
+       leaving a keep that IS authorized but LOOKS unlinked: empty model catalog, refused runs, and a
        Commander with paid credit staring at "not linked". Rebuild the record from the one surviving half:
        ask the cloud /v1/whoami who this token belongs to, and persist the answer.
 
@@ -307,7 +307,7 @@
          · no saved record (a live link needs no heal) and no in-process unlink;
          · no unlink tombstone on disk (the Commander's explicit choice outranks the keychain);
          · the cloud ACCEPTS the token (a revoked/unknown token 401s and heals nothing).
-       Best-effort by contract: any failure returns { healed:false, reason } and the station simply stays
+       Best-effort by contract: any failure returns { healed:false, reason } and the keep simply stays
        honestly unlinked, exactly as before this existed. */
     async function healFromEnvInner() {
       if (!configured() || !doFetch) return { healed: false, reason: 'not_configured' };

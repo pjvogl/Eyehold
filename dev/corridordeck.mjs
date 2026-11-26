@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // dev/corridordeck.mjs — review CORRIDOR DECK candidates in a real bake.
 //
-// Same discipline as dev/wallprobe.mjs: bakes offscreen at 1:1 through the shipped StationBake so
+// Same discipline as dev/wallprobe.mjs: bakes offscreen at 1:1 through the shipped KeepBake so
 // nothing is judged at a fractional uiZoom, and composites over MAGENTA so anything painted outside
 // the hull shows up instead of hiding against a dark void fill.
 //
@@ -31,7 +31,7 @@ const PROBE = `((MATS) => {
   const T = geo0.TILE;
 
   const shot = () => {
-    const geo = st.projectGeometry(), bk = StationBake.bake(geo);
+    const geo = st.projectGeometry(), bk = KeepBake.bake(geo);
     const cv = document.createElement('canvas'); cv.width = bk.W; cv.height = bk.H;
     const g = cv.getContext('2d'); g.imageSmoothingEnabled = false;
     g.fillStyle = '#ff00ff'; g.fillRect(0, 0, bk.W, bk.H);

@@ -134,7 +134,7 @@ const text = v => JSON.stringify(v);
   // ---- 1. THE AUDIT PROBE: a run ended 'error' at the tool boundary; two runs later the call is mid-history ----
   {
     const history = [
-      { role: 'system', content: 'You are a station agent.' },
+      { role: 'system', content: 'You are a keep agent.' },
       { role: 'user', content: 'task one: read the config' },
       { role: 'assistant', content: '', tool_calls: [call('call_X', 'fs_read', { path: 'config.json' })] },
       // (the run ended 'error' here — no result was ever persisted)
@@ -266,7 +266,7 @@ const text = v => JSON.stringify(v);
     A.ok(provider.prepareWireMessages(undefined, 'chat') === undefined, 'a missing transcript passes through as it came');
   }
 
-  // ---- 6. StarNet bookkeeping keys never reach a Chat Completions body (user report 2026-10-05: Mistral 422
+  // ---- 6. Eyehold bookkeeping keys never reach a Chat Completions body (user report 2026-10-05: Mistral 422
   //      extra_forbidden on messages[1].user.streamId / agentId / ts — every run, even a new chat's first message) ----
   {
     const comms = [

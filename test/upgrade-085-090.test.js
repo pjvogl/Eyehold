@@ -21,7 +21,7 @@ const { makeMemoryStore } = require('../sidecar/memory-store.js');
 const { makeSaveStore } = require('../sidecar/savestore.js');
 const WorkspaceRecovery = require('../sidecar/workspace-recovery.js');
 
-const SAVE_KEY = 'starnet.save';
+const SAVE_KEY = 'eyehold.save';
 const RELEASE_SAVE_VERSION = 5;
 const CANDIDATE_SAVE_VERSION = 6;
 
@@ -48,7 +48,7 @@ function loadSave(storage, releasedCeiling) {
 
 function releasedSave() {
   return {
-    schema: 'starnet.save', version: RELEASE_SAVE_VERSION, updatedAt: 1700000000000,
+    schema: 'eyehold.save', version: RELEASE_SAVE_VERSION, updatedAt: 1700000000000,
     agent: {
       id: 'agent', name: 'NOVA', provider: 'openrouter', credentialRef: 'provider:openrouter',
       docs: { identity: 'You are NOVA.', purpose: 'Protect the migration.', manual: 'Be terse.' },
@@ -58,9 +58,9 @@ function releasedSave() {
       { id: 'agent', name: 'NOVA', provider: 'openrouter', model: 'anthropic/claude-sonnet-4.5' },
       { id: 'scout', name: 'SCOUT', provider: 'openrouter', model: 'openai/gpt-4o' }
     ],
-    station: { rooms: { command: { id: 'command', name: 'Command' } }, order: ['command'], props: [{ id: 'desk1', kind: 'desk', x: 3, y: 4, agentId: 'agent' }] },
+    keep: { rooms: { command: { id: 'command', name: 'Command' } }, order: ['command'], props: [{ id: 'desk1', kind: 'desk', x: 3, y: 4, agentId: 'agent' }] },
     usage: { tokens: 4200, cost: 0.0891, calls: 8 },
-    stationStats: { xp: 200, level: 4, lifetimeXp: 540, confidence: 58, samples: 12, counters: {}, milestones: [] },
+    keepStats: { xp: 200, level: 4, lifetimeXp: 540, confidence: 58, samples: 12, counters: {}, milestones: [] },
     profile: { v: 1, tags: { research: 3 }, seed: 'builder', enabled: true, total: 3 },
     worksignal: { v: 1, ewma: { web: 0.4 }, updatedAt: 1699500000000 },
     dossier: { v: 1, dims: { identity: ['builder'], stack: ['node'], goals: ['ship'], style: [], standing_orders: [], pain: [], ambition: [] }, seededFrom: {}, updatedAt: 1699000000000 },
@@ -89,7 +89,7 @@ A.eq(storage.getItem(SAVE_KEY), oldRaw, 'load-time migration leaves the released
 A.eq(storage.getItem(Save.PRE_MIGRATE_BACKUP_KEY), oldRaw, 'interrupted migration has an exact v0.8.5 recovery copy');
 A.eq(status.doc.agent, oldDoc.agent, 'agent identity, docs, model/provider and credential reference survive');
 A.eq(status.doc.agents, oldDoc.agents, 'the complete workspace roster survives');
-A.eq(status.doc.station, oldDoc.station, 'rooms and placed station objects survive');
+A.eq(status.doc.keep, oldDoc.keep, 'rooms and placed keep objects survive');
 A.eq(status.doc.workstreams[0].history, oldDoc.workstreams[0].history, 'conversation history survives');
 A.eq(status.doc.settings, oldDoc.settings, 'user settings survive');
 A.eq(status.doc.release085UnknownUserField, oldDoc.release085UnknownUserField, 'unknown v0.8.5 user state survives');
@@ -110,7 +110,7 @@ A.eq(rollbackStorage.getItem(SAVE_KEY), candidateRaw, 'rollback attempt leaves c
 A.eq(rollbackStorage.getItem(ReleasedSave.PRE_MIGRATE_BACKUP_KEY), null, 'rollback refusal does not overwrite the recovery backup');
 
 // 3. Sidecar workspace stores: v0.8.5 envelopes are still decoded, re-saved, restarted and recovered.
-const root = fs.mkdtempSync(path.join(os.tmpdir(), 'starnet-upgrade-085-090-'));
+const root = fs.mkdtempSync(path.join(os.tmpdir(), 'eyehold-upgrade-085-090-'));
 try {
   const saveStore = makeSaveStore({ fs, pathMod: path, root, clock: { now: () => 1700000000100 } });
   A.ok(saveStore.save('agent', oldDoc).ok, 'released workspace save fixture persists in a disposable root');
@@ -203,9 +203,9 @@ A.ok(/format!\("channel:\{channel\}"\)/.test(credentialsRs) && /read_channel_tok
 
 // 6. Intel macOS path split: a released v0.8.5 durable save under the manual-sidecar shelf self-heals into
 // the desktop bundle-id shelf before stores open, survives the candidate reader, and leaves the source intact.
-const intelHome = fs.mkdtempSync(path.join(os.tmpdir(), 'starnet-upgrade-085-intel-mac-'));
+const intelHome = fs.mkdtempSync(path.join(os.tmpdir(), 'eyehold-upgrade-085-intel-mac-'));
 try {
-  const legacyMac = path.join(intelHome, '.local', 'share', 'StarNet', 'workspaces');
+  const legacyMac = path.join(intelHome, '.local', 'share', 'Eyehold', 'workspaces');
   const desktopMac = path.join(intelHome, 'Library', 'Application Support', 'ai.skynet.harness', 'workspaces');
   fs.mkdirSync(legacyMac, { recursive: true });
   makeSaveStore({ fs, pathMod: path, root: legacyMac, clock: { now: () => 1700000000100 } }).save('agent', oldDoc);
@@ -215,9 +215,9 @@ try {
     candidateRoots: [legacyMac], auto: true, now: () => 1700000000200,
     scratchRoots: []   // this mkdtemp home STANDS IN for a real user home; the tmpdir auto-guard is exercised in workspace-recovery.test.js
   });
-  A.eq(recovered.applied, true, 'Intel macOS fixture automatically activates one v0.8.5 manual-sidecar station');
+  A.eq(recovered.applied, true, 'Intel macOS fixture automatically activates one v0.8.5 manual-sidecar keep');
   A.eq(makeSaveStore({ fs, pathMod: path, root: desktopMac, clock: { now: () => 1700000000300 } }).load('agent'), oldDoc,
-    'patched desktop store reads the recovered v0.8.5 station without field loss');
+    'patched desktop store reads the recovered v0.8.5 keep without field loss');
   A.eq(fs.readFileSync(path.join(legacyMac, 'agent.save.json')), sourceBytes,
     'Intel macOS recovery leaves the released source generation byte-exact');
   A.ok(fs.existsSync(path.join(desktopMac, '.migration-receipt.json')) && fs.existsSync(path.join(desktopMac, '.migrated')),

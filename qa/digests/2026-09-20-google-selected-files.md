@@ -13,8 +13,8 @@ uncommitted `docs/NEXT.md` and `qa/STATUS.md` edits were preserved.
   contracts were unchanged. Connector credential migration verifies durable
   read-back before removing legacy copies; failure coverage preserves originals.
 - Native production keychain/migration CI passed on Intel and Apple Silicon:
-  https://github.com/androoAGI/starnet/actions/runs/35481734937.
-- Real Google Picker consent connected 11 selected-file tools. Through StarNet's
+  https://github.com/Eyehold/eyehold/actions/runs/35481734937.
+- Real Google Picker consent connected 11 selected-file tools. Through Eyehold's
   actual run/MCP path, selected Doc/Sheet reads and new dedicated Doc/Sheet
   create/write/read-back passed. Windows native-keychain restart retained the
   connection. Both exact markers were read again on the combined source; a final

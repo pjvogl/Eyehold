@@ -24,7 +24,7 @@ Customer on Windows 0.10.13 remains E-STOP halted across restarts; clicking the 
 
 ## Repro
 
-1. Stop the station with POST /api/halt or the 0.10.13 button. 2. Restart using the same workspace. 3. Try the stop-only control again: all three durable halt flags remain engaged. Current source had removed the control without adding coordinated recovery.
+1. Stop the keep with POST /api/halt or the 0.10.13 button. 2. Restart using the same workspace. 3. Try the stop-only control again: all three durable halt flags remain engaged. Current source had removed the control without adding coordinated recovery.
 
 ## Evidence
 

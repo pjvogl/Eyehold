@@ -257,7 +257,7 @@ function staleHistory() {
       const reg = makeRegistry();
       reg.register({ name: 'fs_read', schema: { type: 'object', properties: { path: { type: 'string' } } }, run: async a => ({ content: 'file ' + a.path, summary: 'read' }) });
       const res = await runAgentLoop({
-        messages: [{ role: 'system', content: 'You are a station agent.' }, { role: 'user', content: 'read' }],
+        messages: [{ role: 'system', content: 'You are a keep agent.' }, { role: 'user', content: 'read' }],
         provider: makeAnthropicProvider({ fetch: up.fetch, key: 'k', reasoningEffort: 'high' }), emit: makeEmitter(A.makeBus(), () => {}),
         cost: makeCostEngine({ priceOf: () => ({ in: 1, out: 1 }) }), model: 'claude-opus-5', agentId: 'a', runId: 'r', tools: [fsTool],
         limits: { maxIters: 4 }, dispatch: (c, ctx) => reg.dispatch(c, ctx), capCtx: { canRun: () => true, canUse: () => ({ ok: true }), agentId: 'a', room: 'office' },
@@ -280,7 +280,7 @@ function staleHistory() {
       reg.register({ name: 'tool_search', schema: { type: 'object', properties: { query: { type: 'string' } } }, run: async () => ({ content: 'revealed web_fetch', summary: 'found', control: { revealTools: ['web_fetch'] } }) });
       const searchTool = { type: 'function', function: { name: 'tool_search', description: 'find tools', parameters: { type: 'object', properties: { query: { type: 'string' } } } } };
       const webFetch = { type: 'function', function: { name: 'web_fetch', description: 'fetch a url', parameters: { type: 'object', properties: { url: { type: 'string' } } } } };
-      const prefix = 'You are a station agent. '.repeat(20);
+      const prefix = 'You are a keep agent. '.repeat(20);
       const res = await runAgentLoop({
         messages: [{ role: 'system', content: prefix + '\n[RUNTIME] Run id: r1' }, { role: 'user', content: 'research this' }],
         provider: makeAnthropicProvider({ fetch: up.fetch, key: 'k', reasoningEffort: 'medium' }), emit: makeEmitter(A.makeBus(), () => {}),

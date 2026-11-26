@@ -1,4 +1,4 @@
-/* STARNET — prospectstore.js : the SCOUT CLIENT (was: the client-side prospect minter).
+/* EYEHOLD — prospectstore.js : the SCOUT CLIENT (was: the client-side prospect minter).
 
    HISTORY — this store used to OWN the prospect mint: localStorage state, one silent attempt per browser
    session, right after a qualifying run. In practice that funnel almost never fired and every rejection was
@@ -17,14 +17,14 @@
    is UNCHANGED, so marketplace.js's prospect shelf renders server drafts exactly as it rendered local ones.
    New reads: recipeDrafts() (the SUGGESTED shelf's scout cards), interests(), gate() (honest shelf copy).
 
-   LEGACY: the old 'starnet.prospects.v1' localStorage key is still hydrated READ-ONLY so a draft staged by a
+   LEGACY: the old 'eyehold.prospects.v1' localStorage key is still hydrated READ-ONLY so a draft staged by a
    pre-scout build keeps rendering and can be decided (decided locally; new mints are server-only).
 
    READ-ONLY on U.bus (frozen contract): subscribes to agent.run.end only to schedule a delayed re-read —
    the server cycle runs post-run, so the shelf refreshes itself right after a mint could have landed. */
 'use strict';
 const ProspectStore = (() => {
-  const KEY = 'starnet.prospects.v1';   // legacy client-mint store (read-only hydrate; no new writes beyond decides)
+  const KEY = 'eyehold.prospects.v1';   // legacy client-mint store (read-only hydrate; no new writes beyond decides)
   const REFRESH_DELAY_MS = 6000;        // post-run: give the server cycle time to extract/mint before re-reading
   let legacy = null;
   let cache = null;                     // the last GET /api/scout payload (server truth, re-read not mutated blind)
@@ -49,8 +49,8 @@ const ProspectStore = (() => {
      impression, and suppressing that would understate real exposure in the other direction. One day is the line:
      longer than any session or reload cycle, shorter than any honest re-surfacing.
      Own key, own hydrate — the legacy KEY store stays exactly as it is (read-only). */
-  const SHOWN_KEY = 'starnet.prospects.shown.v1';
-  const SHOWN_CAP = 200;                     // bounded: a long-lived station keeps the most recent impressions
+  const SHOWN_KEY = 'eyehold.prospects.shown.v1';
+  const SHOWN_CAP = 200;                     // bounded: a long-lived keep keeps the most recent impressions
   const SHOWN_TTL_MS = 24 * 60 * 60 * 1000;
   function loadShown() {
     try {
@@ -295,7 +295,7 @@ const ProspectStore = (() => {
   // the per-recipe launch counters ({id: {name, n, lastAt, rated?}}) — rankRecipes' engagement + outcome signal.
   function launches() { return (cache && cache.usage && cache.usage.launches) || {}; }
 
-  // a brand-new hero drops the browser-side state; the server store is the station's own memory (kept).
+  // a brand-new hero drops the browser-side state; the server store is the keep's own memory (kept).
   function reset() { legacy = hydrateLegacy(null); cache = null; recommendationIds = {}; try { localStorage.removeItem(KEY); localStorage.removeItem(SHOWN_KEY); } catch (_) {} }
 
   return { init, refresh, pushContext, list, recipeDrafts, get, interests, gate, warm, preferenceModel, ledger, dismiss, accept, reset,

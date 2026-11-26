@@ -1,4 +1,4 @@
-/* sidecar/dossierinject.js — fold the station-wide Commander Dossier into a SERVER-COMPOSED autonomous
+/* sidecar/dossierinject.js — fold the keep-wide Commander Dossier into a SERVER-COMPOSED autonomous
    persona (Commander Dossier, Phase C).
 
    Most runs already carry the dossier: the browser composes it into the system prompt (composeSystemPrompt),

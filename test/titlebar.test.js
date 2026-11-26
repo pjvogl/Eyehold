@@ -1,6 +1,6 @@
 /* node test/titlebar.test.js
    Locks the custom Windows window chrome (frontend/app/titlebar.js): it renders
-   ONLY when the desktop shell opts in via __STARNET_CUSTOM_CHROME__, its buttons
+   ONLY when the desktop shell opts in via __EYEHOLD_CUSTOM_CHROME__, its buttons
    drive the real Tauri window handle, and the maximize/fullscreen state maps to
    the honest chrome classes (is-max glyph, sn-fs bar hide). */
 'use strict';
@@ -22,7 +22,7 @@ function fakeClassList() {
   // --- opt-in gate: inert everywhere except the flagged desktop shell ---
   A.eq(Titlebar.shouldInstall(undefined), false, 'no window -> inert');
   A.eq(Titlebar.shouldInstall({}), false, 'browser preview (no flag) -> inert');
-  A.eq(Titlebar.shouldInstall({ __STARNET_CUSTOM_CHROME__: 1 }), true, 'shell flag -> installs');
+  A.eq(Titlebar.shouldInstall({ __EYEHOLD_CUSTOM_CHROME__: 1 }), true, 'shell flag -> installs');
 
   // --- window-handle resolution mirrors fullscreen.js's ladder ---
   const handle = { minimize() {}, toggleMaximize() {}, close() {} };

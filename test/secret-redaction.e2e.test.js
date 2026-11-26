@@ -1,4 +1,4 @@
-/* node test/secret-redaction.e2e.test.js — a SHAPELESS secret the station holds never reaches the run stream,
+/* node test/secret-redaction.e2e.test.js — a SHAPELESS secret the keep holds never reaches the run stream,
    the transcript or diagnostics, even when something prints it verbatim.
 
    Security audit 2026-09-25: redact() only knew vendor shapes (sk-…, xoxb-…, JWT …). A service key the model was
@@ -28,10 +28,10 @@ const PROVIDER_KEY = 'plainProviderKey77310Canary';
   });
   await new Promise(r => server.listen(0, '127.0.0.1', r));
   const base = 'http://127.0.0.1:' + server.address().port + '/v1';
-  const fixture = SidecarFixture.create({ prefix: 'starnet-redaction-', timeoutMs: 20000, env: {
-    SKYNET_OPENROUTER_KEY: PROVIDER_KEY, STARNET_OPENROUTER_KEY: PROVIDER_KEY,
-    SKYNET_OPENROUTER_BASE: base, STARNET_OPENROUTER_BASE: base,
-    SKYNET_DEFAULT_MODEL: 'redaction-fixture', STARNET_DEFAULT_MODEL: 'redaction-fixture'
+  const fixture = SidecarFixture.create({ prefix: 'eyehold-redaction-', timeoutMs: 20000, env: {
+    EYEHOLD_OPENROUTER_KEY: PROVIDER_KEY, EYEHOLD_OPENROUTER_KEY: PROVIDER_KEY,
+    EYEHOLD_OPENROUTER_BASE: base, EYEHOLD_OPENROUTER_BASE: base,
+    EYEHOLD_DEFAULT_MODEL: 'redaction-fixture', EYEHOLD_DEFAULT_MODEL: 'redaction-fixture'
   } });
   try {
     await fixture.start();

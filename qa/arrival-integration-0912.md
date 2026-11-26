@@ -6,8 +6,8 @@ The integration checkout had other active tracked edits when checked.
 
 ## Behavior
 
-The real station now expands to the viewport during the 24-second arrival. At first contact,
-the arriving agent's own name appears, then fades with the effects. The normal station layout
+The real keep now expands to the viewport during the 24-second arrival. At first contact,
+the arriving agent's own name appears, then fades with the effects. The normal keep layout
 returns before the interview. Skip and cancellation also restore the layout and cancel the
 camera tween. Reduced motion remains six seconds, without the camera push.
 
@@ -27,7 +27,7 @@ camera tween. Reduced motion remains six seconds, without the camera push.
 ## Live owner entry point
 
 http://127.0.0.1:8992 serves this lane's real frontend and sidecar. It uses a fresh onboarding
-workspace, with the previous station preserved in its original location and in the lane's
+workspace, with the previous keep preserved in its original location and in the lane's
 .dev-workspaces-8992-saved-preserved directory. The existing provider credential was copied
 into the new workspace and read-back verified without removing the source. The UI showed the
 existing ChatGPT connection, GPT-5.5, and NOVA. It was left at Wake Overseer for the owner.

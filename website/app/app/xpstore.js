@@ -1,20 +1,20 @@
-/* STARNET — xpstore.js : the live wiring that turns REAL harness events into agent + station growth.
+/* EYEHOLD — xpstore.js : the live wiring that turns REAL harness events into agent + keep growth.
 
    Subscribes (read-only) to the U.bus event spine — every harness event is already re-emitted there
    by harness.js — runs each outcome through the pure Xp engine, mutates the persisted agent.stats and
-   the station rollup, saves, and fires the in-world celebration (a gold level-up pulse + a dossier toast).
+   the keep rollup, saves, and fires the in-world celebration (a gold level-up pulse + a dossier toast).
 
    It NEVER emits a bus event: the frozen shared/events.js contract is owned elsewhere and stays untouched.
-   Celebration is a direct call into World + StationUI, so the lint-emits gate has nothing to catch. */
+   Celebration is a direct call into World + KeepUI, so the lint-emits gate has nothing to catch. */
 'use strict';
 const XpStore = (() => {
   let getAgent = () => null;
   let allAgents = null;          // S4: every agent whose trophy case needs reconciling at boot (optional)
-  let station = null;            // the station-wide rollup stats (same shape as an agent's .stats)
+  let keep = null;            // the keep-wide rollup stats (same shape as an agent's .stats)
   let persistFn = () => {};
   let credentialFn = () => {};   // S3: fired ONLY when an agent's coarse track record actually changes
   let wired = false;
-  let generation = 0;          // an async reply from a previous station must never credit its replacement
+  let generation = 0;          // an async reply from a previous keep must never credit its replacement
 
   // the real events that feed growth. Only explicit turn-in memory.feedback mints XP; operational events
   // update counters/milestones so the dossier still shows shipped work without leveling from chatter.
@@ -45,32 +45,32 @@ const XpStore = (() => {
 
   function pushToWorld(a) {
     if (typeof World === 'undefined' || !World.setXp || typeof Xp === 'undefined') return;
-    World.setXp(a && a.id ? a.id : 'agent', a && a.stats ? Xp.compute(a.stats) : null);   // station headline now rides the top-bar chip (pushTopbar)
+    World.setXp(a && a.id ? a.id : 'agent', a && a.stats ? Xp.compute(a.stats) : null);   // keep headline now rides the top-bar chip (pushTopbar)
   }
 
-  // the always-on STATION level chip in the top bar — the colony's headline number.
+  // the always-on KEEP level chip in the top bar — the colony's headline number.
   function pushTopbar() {
     // Agent feedback remains crew XP. Only the Journey read-model writes Commander level.
     try { if (typeof Topbar !== 'undefined' && Topbar._paintXp) Topbar._paintXp(); } catch (_) {}
   }
 
   // The canvas HUD and top-bar chip have direct setters, but the left crew manifest renders its "Lv N" text
-  // from the roster snapshot handed to StationUI. Refresh that snapshot only when the displayed level changes;
+  // from the roster snapshot handed to KeepUI. Refresh that snapshot only when the displayed level changes;
   // ordinary run/XP events stay cheap and do not rebuild the rail.
   function refreshCrewLevel() {
-    if (!allAgents || typeof StationUI === 'undefined' || !StationUI.setRoster) return;
+    if (!allAgents || typeof KeepUI === 'undefined' || !KeepUI.setRoster) return;
     try {
       const list = allAgents();
-      if (Array.isArray(list)) StationUI.setRoster(list);
+      if (Array.isArray(list)) KeepUI.setRoster(list);
     } catch (_) {}
   }
 
   function celebrateAgent(a, level) {
     if (typeof World !== 'undefined' && World.pulseLevelUp) World.pulseLevelUp(a && a.id ? a.id : 'agent', level);
     if (typeof SFX !== 'undefined' && SFX.level) { try { SFX.level(); } catch (_) {} }
-    // NO StationUI.notify (notification diet, 2026-08-18): a level-up is flavor the world already tells —
+    // NO KeepUI.notify (notification diet, 2026-08-18): a level-up is flavor the world already tells —
     // pulse + sting + the COMMS broadcast below. The NOTIFICATIONS bell is reserved for things that need you.
-    // COMMS: a terse ambient station broadcast — the codename tinted with the agent's suit colour (the one
+    // COMMS: a terse ambient keep broadcast — the codename tinted with the agent's suit colour (the one
     // established colour exception). Not a beat-slot card; coalesced + in-game-gated inside Chat.broadcast.
     if (typeof Chat !== 'undefined' && Chat.broadcast) {
       const nm = String((a && a.name) || 'AGENT').toUpperCase();
@@ -78,10 +78,10 @@ const XpStore = (() => {
     }
     if (typeof Tutorial !== 'undefined' && Tutorial.onLevelUp) Tutorial.onLevelUp(level);   // first-touch coachmark: what leveling means
   }
-  function celebrateStation(level) {
+  function celebrateKeep(level) {
     pushTopbar();
     // The Commander chip must not celebrate an agent-feedback level.
-    // NO StationUI.notify (notification diet): the gold chip pulse + the new level number ARE the announcement.
+    // NO KeepUI.notify (notification diet): the gold chip pulse + the new level number ARE the announcement.
   }
   // a milestone's short trophy title for the broadcast. Read from
   // the xp.js catalogue rather than a second hand-kept map: the labels ARE the trophy-case labels, so the badge
@@ -96,7 +96,7 @@ const XpStore = (() => {
   function announceMilestone(id) {
     // G3a: a milestone lands with its own sting — grander than a quest, smaller than a level-up (was mute).
     if (typeof SFX !== 'undefined' && SFX.milestone) { try { SFX.milestone(); } catch (_) {} }
-    // NO StationUI.notify (notification diet): the sting + trophy-case badge + COMMS broadcast carry it.
+    // NO KeepUI.notify (notification diet): the sting + trophy-case badge + COMMS broadcast carry it.
     // COMMS: the trophy broadcast — rarer than a level, so the brighter gold treatment.
     if (typeof Chat !== 'undefined' && Chat.broadcast) {
       const nm = milestoneLabel(id);
@@ -104,14 +104,14 @@ const XpStore = (() => {
     }
   }
 
-  // fold one real event into BOTH the agent's stats and the station rollup (same engine, same path).
+  // fold one real event into BOTH the agent's stats and the keep rollup (same engine, same path).
   function onEvent(name, payload, opts) {
     opts = opts || {};
     const agentId = eventAgentId(payload);
     const a = resolveAgent(agentId);
     if (!a || typeof Xp === 'undefined') return { applied: false, credentialChanged: false };
     if (!a.stats) a.stats = Xp.fresh();
-    if (!station) station = Xp.fresh();
+    if (!keep) keep = Xp.fresh();
     const ev = { name, payload: payload || {} };
 
     /* S3 — republish the roster ONLY when this agent's COARSE credential moves (a tier crossing or a band
@@ -120,7 +120,7 @@ const XpStore = (() => {
        a full /api/roster POST (every agent's whole composed system prompt) on every single run. */
     const credBefore = (Xp.credential && a.stats) ? Xp.credential(a.stats).key : '';
     const ra = Xp.applyEvent(a.stats, ev); a.stats = ra.stats;
-    const rs = Xp.applyEvent(station, ev); station = rs.stats;
+    const rs = Xp.applyEvent(keep, ev); keep = rs.stats;
     if (Xp.credential) {
       const credAfter = Xp.credential(a.stats).key;
       const credentialChanged = credAfter !== credBefore;
@@ -134,7 +134,7 @@ const XpStore = (() => {
 
       if (ra.awards.levelUp) { refreshCrewLevel(); celebrateAgent(a, ra.awards.levelTo); }
       for (const id of ra.awards.milestones) announceMilestone(id);   // agent-scoped milestones
-      if (rs.awards.levelUp) celebrateStation(rs.awards.levelTo);
+      if (rs.awards.levelUp) celebrateKeep(rs.awards.levelTo);
     }
 
     // persist at run end (captures counters) and on explicit user turn-in feedback/level-up/milestone. Feedback can
@@ -161,7 +161,7 @@ const XpStore = (() => {
     try { list = (allAgents ? allAgents() : null) || []; } catch (_) { list = []; }
     if (!list.length) { const hero = resolveAgent('agent'); if (hero) list = [hero]; }   // no roster hook → at least the hero
     for (const ag of list) { if (ag && ag.stats) { try { ag.stats = Xp.reconcile(ag.stats).stats; } catch (_) {} } }
-    if (station) { try { station = Xp.reconcile(station).stats; } catch (_) {} }
+    if (keep) { try { keep = Xp.reconcile(keep).stats; } catch (_) {} }
   }
 
   // Read a stable, paged snapshot of the durable sidecar run log. `through` freezes the first page's
@@ -220,11 +220,11 @@ const XpStore = (() => {
         stats.receipts.runs = stats.receipts.runs.filter(id => !checkpointed.has(String(id)));
       }
     };
-    compact(station);
+    compact(keep);
     let roster = [];
     try { roster = (allAgents ? allAgents() : null) || []; } catch (_) { roster = []; }
     for (const a of roster) compact(a && a.stats);
-    station.runSyncAt = snapshotAt;
+    keep.runSyncAt = snapshotAt;
     for (const id of touched) { const a = resolveAgent(id); if (a) pushToWorld(a); }
     pushTopbar();
     if (touched.size) refreshCrewLevel();
@@ -284,8 +284,8 @@ const XpStore = (() => {
       liveApplied = liveApplied || !!(opts && opts.liveRunId === rating.runId);
       levelChanged = levelChanged || result.levelChanged; touched.add(result.agentId);
     }
-    station.ratingSyncAt = snapshotAt;
-    station.ratingSyncVersion = 2;
+    keep.ratingSyncAt = snapshotAt;
+    keep.ratingSyncVersion = 2;
     for (const id of touched) { const a = resolveAgent(id); if (a) pushToWorld(a); }
     pushTopbar();
     if (levelChanged) refreshCrewLevel();
@@ -313,9 +313,9 @@ const XpStore = (() => {
       // Read rejected responses too. Keep UI copy actionable without exposing arbitrary storage paths.
       let error = 'Rating was not saved — try again.';
       if (!res) error = 'Cannot reach the rating service — try again.';
-      else if (reason === 'station generation changed; reload before rating') error = 'Station changed — reload the app before rating this work.';
+      else if (reason === 'keep generation changed; reload before rating') error = 'Keep changed — reload the app before rating this work.';
       else if (reason === 'rateable run not found') error = 'This task’s saved run history is unavailable. Restart and retry; if it still fails, include Settings diagnostics in a bug report.';
-      else if (reason === 'internal run cannot be rated') error = 'Internal station activity cannot be rated. No action is needed.';
+      else if (reason === 'internal run cannot be rated') error = 'Internal keep activity cannot be rated. No action is needed.';
       else if (reason === 'non-interactive run cannot be rated') error = 'This scheduled activity is not eligible for rating. New interactive replies can be rated separately.';
       else if (reason === 'run origin unavailable for rating') error = 'This older reply has no saved run origin, so its rating eligibility cannot be verified. It cannot be rated; new interactive replies can be rated separately.';
       else if (reason === 'run did not produce rateable agent work') error = 'This task did not finish with rateable work.';
@@ -324,13 +324,13 @@ const XpStore = (() => {
       else if (status >= 500) error = 'The rating service could not save this rating — try again.';
       return { ok: false, error, status };
     }
-    if (owner !== generation) return { ok: false, error: 'Station changed — reload the app before rating this work.' };
+    if (owner !== generation) return { ok: false, error: 'Keep changed — reload the app before rating this work.' };
     // Only a complete history snapshot can advance the checkpoint. An acknowledgement for this run
     // says nothing about earlier ratings from another window. Fold those in order before this verdict,
     // and celebrate only this click; historical catch-up remains quiet.
-    const since = Math.max(1, Number(station && station.ratingSyncAt) || 1);
+    const since = Math.max(1, Number(keep && keep.ratingSyncAt) || 1);
     const sync = await syncRatingHistory(since, floor => loadRatingHistory(floor, post), { liveRunId: body.rating.runId });
-    if (owner !== generation) return { ok: false, error: 'Station changed — reload the app before rating this work.' };
+    if (owner !== generation) return { ok: false, error: 'Keep changed — reload the app before rating this work.' };
     let applied = !!sync.liveApplied;
     for (const entry of body.rating.entries) {
       const result = onEvent('memory.feedback', entry, { noPersist: true });
@@ -350,8 +350,8 @@ const XpStore = (() => {
     if (opts.persist) persistFn = opts.persist;
     if (opts.onCredential) credentialFn = opts.onCredential;   // S3: app.js re-pushes the roster so the dispatch briefing stays true
     // resumed rollup from the save, else a fresh one. NB: fall back to fresh (not the prior in-memory
-    // station) so creating a NEW agent mid-session doesn't inherit the previous colony's XP.
-    station = (opts.station && typeof opts.station === 'object') ? opts.station : (typeof Xp !== 'undefined' ? Xp.fresh() : null);
+    // keep) so creating a NEW agent mid-session doesn't inherit the previous colony's XP.
+    keep = (opts.keep && typeof opts.keep === 'object') ? opts.keep : (typeof Xp !== 'undefined' ? Xp.fresh() : null);
     const a = resolveAgent('agent');
     if (a && !a.stats && typeof Xp !== 'undefined') a.stats = Xp.fresh();   // seed new OR migrated-but-empty agents
     reconcileTrophies();   // …then light whatever the record already earned, before anything renders it
@@ -368,11 +368,11 @@ const XpStore = (() => {
     // Repair checkpoints written by the old per-acknowledgement scheme. Replaying is safe while
     // every consumer retains its complete dedupe history. At the receipt cap, preserve the existing
     // floor: older evicted acknowledgements cannot be distinguished from missing credit safely.
-    const completeReceipts = [station].concat(Array.isArray(roster) ? roster.map(agent => agent && agent.stats) : [])
+    const completeReceipts = [keep].concat(Array.isArray(roster) ? roster.map(agent => agent && agent.stats) : [])
       .every(stats => !stats || !stats.receipts || !Array.isArray(stats.receipts.feedback) || stats.receipts.feedback.length < Xp.RECEIPT_CAP);
-    if (station && station.ratingSyncVersion !== 2 && completeReceipts && Number.isFinite(ratingSince) && ratingSince > 0) ratingSince = 1;
-    if (station && Number.isFinite(since) && since > 0 && !Number.isFinite(Number(station.runSyncAt))) station.runSyncAt = since;
-    if (station && Number.isFinite(ratingSince) && ratingSince > 0 && !Number.isFinite(Number(station.ratingSyncAt))) station.ratingSyncAt = ratingSince;
+    if (keep && keep.ratingSyncVersion !== 2 && completeReceipts && Number.isFinite(ratingSince) && ratingSince > 0) ratingSince = 1;
+    if (keep && Number.isFinite(since) && since > 0 && !Number.isFinite(Number(keep.runSyncAt))) keep.runSyncAt = since;
+    if (keep && Number.isFinite(ratingSince) && ratingSince > 0 && !Number.isFinite(Number(keep.ratingSyncAt))) keep.ratingSyncAt = ratingSince;
     const runSync = Number.isFinite(since) && since > 0 ? syncRunHistory(since, opts.loadRuns) : Promise.resolve({ applied: 0, skipped: true });
     return runSync.then(run => {
       if (owner !== generation) return { applied: 0, failed: true };
@@ -383,10 +383,10 @@ const XpStore = (() => {
     });
   }
 
-  // the station-wide rollup, included in the save envelope by App.persist()
-  function stationStats() { return station; }
+  // the keep-wide rollup, included in the save envelope by App.persist()
+  function keepStats() { return keep; }
 
-  return { init, stationStats, onEvent, loadRunHistory, syncRunHistory, loadRatingHistory, syncRatingHistory, recordWorkRating };
+  return { init, keepStats, onEvent, loadRunHistory, syncRunHistory, loadRatingHistory, syncRatingHistory, recordWorkRating };
 })();
 
 if (typeof module !== 'undefined' && module.exports) module.exports = { XpStore };

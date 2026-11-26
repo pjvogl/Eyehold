@@ -1,16 +1,16 @@
-// Real custom-station A/B. Source instrumentation and scene changes stay in this
+// Real custom-keep A/B. Source instrumentation and scene changes stay in this
 // disposable browser; the original save is never written by this probe.
 import assert from 'node:assert/strict';
 import {readFileSync, writeFileSync, mkdirSync} from 'node:fs';
 import {launchChrome, connectCDP, evalJS, sleep, capture} from '../scripts/lib/cdp.mjs';
 const out='.worldshots/command-room'; mkdirSync(out,{recursive:true});
-const original=JSON.parse(readFileSync(out+'/original-station.json','utf8'));
+const original=JSON.parse(readFileSync(out+'/original-keep.json','utf8'));
 const report={checks:[],exceptions:[]}; let proc,cdp;
 const hook=`_commandReview: {
   geometry:()=>geo,
-  apply:(doc)=>{station.setMaterial('r1','alloy');station.setHull('r1',{mat:'monocoque',style:'bone'});
-    station.paintTiles('r1',Object.keys(doc.rooms.r1.floorPaint).map(k=>k.split(',').map(Number)),'cobalt');
-    for(const p of doc.props){const old=station.serialize().props.find(o=>o.id===p.id);if(old&&(old.x!==p.x||old.y!==p.y))station.moveProp(p.id,p.x-old.x,p.y-old.y);}},
+  apply:(doc)=>{keep.setMaterial('r1','alloy');keep.setHull('r1',{mat:'monocoque',style:'bone'});
+    keep.paintTiles('r1',Object.keys(doc.rooms.r1.floorPaint).map(k=>k.split(',').map(Number)),'cobalt');
+    for(const p of doc.props){const old=keep.serialize().props.find(o=>o.id===p.id);if(old&&(old.x!==p.x||old.y!==p.y))keep.moveProp(p.id,p.x-old.x,p.y-old.y);}},
   frame:(zoom)=>{ const r=geo.allRects.find(r=>r.z==='r1');camAnim=null;camLock=null;camUserAt=performance.now();
     scale=zoom||Math.min(cv.width/cache.W,cv.height/cache.H);
     panX=zoom?cv.width/2-(r.x1+r.x2+1)*T/2*scale:(cv.width-cache.W*scale)/2;
@@ -46,13 +46,13 @@ try {
     return st.serialize();
   })()`);
   const proposed=typeof result==='string'?JSON.parse(result):result;
-  writeFileSync(out+'/proposed-station.json',JSON.stringify(proposed,null,2));
+  writeFileSync(out+'/proposed-keep.json',JSON.stringify(proposed,null,2));
   assert.deepEqual(proposed.order,original.order);
   for(const [id,r] of Object.entries(original.rooms))if(id!=='r1')assert.deepEqual(proposed.rooms[id],r);
   assert.deepEqual(proposed.props.map(p=>[p.id,p.t,p.agentId,p.w,p.h]),original.props.map(p=>[p.id,p.t,p.agentId,p.w,p.h]));
   assert.equal(Object.keys(proposed.rooms.r1.floorPaint).length,36,'Command inset contains all 36 intended tiles');
   report.checks.push('Only the command room finish and four equipment positions change','All equipment, assignments and footprints remain intact');
-  await evalJS(cdp,`World.loadStation(WorldModel.create(${JSON.stringify(original)}))`);await sleep(4500);
+  await evalJS(cdp,`World.loadKeep(WorldModel.create(${JSON.stringify(original)}))`);await sleep(4500);
   await evalJS(cdp,`window.__commandFrozen=true`);
   for(const label of (process.argv.includes('--pixels-only')?[]:['before','after'])){
     if(label==='after'){await evalJS(cdp,`World._commandReview.apply(${JSON.stringify(proposed)})`);await sleep(900);}
@@ -65,16 +65,16 @@ try {
   }
   const proof=await evalJS(cdp,`(()=>{
     const before=WorldModel.create(${JSON.stringify(original)}).projectGeometry(),after=WorldModel.create(${JSON.stringify(proposed)}).projectGeometry();
-    const a=StationBake.bake(before),b=StationBake.bake(after);
+    const a=KeepBake.bake(before),b=KeepBake.bake(after);
     const read=c=>c.getContext('2d').getImageData(0,0,c.width,c.height).data;
     const pa=read(a.baseCv),pb=read(b.baseCv);const r=after.allRects.find(r=>r.z==='r1');
     let changed=0,outside=0;for(let y=0;y<after.H;y++)for(let x=0;x<after.W;x++){const i=(y*after.W+x)*4;if(pa[i]===pb[i]&&pa[i+1]===pb[i+1]&&pa[i+2]===pb[i+2]&&pa[i+3]===pb[i+3])continue;changed++;if(x<r.x1*12-8||x>(r.x2+1)*12+8||y<r.y1*12-40||y>(r.y2+1)*12+40)outside++;}
     const la=read(a.lightCv),lb=read(b.lightCv);let lightingChanges=0;for(let i=0;i<la.length;i++)if(la[i]!==lb[i])lightingChanges++;
-    const chunks=StationBake.bakeIncremental(after,null,null),cv=document.createElement('canvas');cv.width=after.W;cv.height=after.H;
-    StationBake.drawBase(cv.getContext('2d'),chunks,0,0);const pc=read(cv);let chunkChanges=0;
+    const chunks=KeepBake.bakeIncremental(after,null,null),cv=document.createElement('canvas');cv.width=after.W;cv.height=after.H;
+    KeepBake.drawBase(cv.getContext('2d'),chunks,0,0);const pc=read(cv);let chunkChanges=0;
     const differences=[];
     for(let i=0;i<pb.length;i++)if(pb[i]!==pc[i]){chunkChanges++;if(differences.length<12)differences.push({x:Math.floor(i/4)%after.W,y:Math.floor(i/4/after.W),channel:i%4,full:pb[i],chunk:pc[i]});}
-    const oldChunks=StationBake.bakeIncremental(before,null,null);cv.getContext('2d').clearRect(0,0,cv.width,cv.height);StationBake.drawBase(cv.getContext('2d'),oldChunks,0,0);const po=read(cv);let baselineChunkChanges=0;for(let i=0;i<pa.length;i++)if(pa[i]!==po[i])baselineChunkChanges++;
+    const oldChunks=KeepBake.bakeIncremental(before,null,null);cv.getContext('2d').clearRect(0,0,cv.width,cv.height);KeepBake.drawBase(cv.getContext('2d'),oldChunks,0,0);const po=read(cv);let baselineChunkChanges=0;for(let i=0;i<pa.length;i++)if(pa[i]!==po[i])baselineChunkChanges++;
     let commandChunkChanges=0,newChunkChanges=0,commandMaxDifference=0;const introduced=[];
     for(let i=0;i<pb.length;i++){if(pb[i]===pc[i])continue;const x=Math.floor(i/4)%after.W,y=Math.floor(i/4/after.W);
       if(x>=r.x1*12-8&&x<=(r.x2+1)*12+8&&y>=r.y1*12-40&&y<=(r.y2+1)*12+40){commandChunkChanges++;commandMaxDifference=Math.max(commandMaxDifference,Math.abs(pb[i]-pc[i]));}

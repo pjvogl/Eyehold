@@ -359,7 +359,7 @@ export function validateClaimsLedger(ledger, _options = {}) {
   const errors = [];
   if (!ledger || typeof ledger !== 'object' || Array.isArray(ledger)) return { ok: false, errors: ['claims ledger must be an object'] };
   if (ledger.schemaVersion !== 1) errors.push('schemaVersion must be 1');
-  if (ledger.authority !== 'Eyehold development claims including inherited StarNet claims') errors.push('authority must identify the Eyehold development claims inventory');
+  if (ledger.authority !== 'Eyehold development claims including inherited Eyehold claims') errors.push('authority must identify the Eyehold development claims inventory');
   if (!/^[0-9a-f]{40}$/i.test(text(ledger.auditBaseSha))) errors.push('auditBaseSha must be an exact commit');
   if (!Array.isArray(ledger.requiredDomains) || JSON.stringify(ledger.requiredDomains) !== JSON.stringify(REQUIRED_DOMAINS)) {
     errors.push('requiredDomains must preserve the locked complete domain set');

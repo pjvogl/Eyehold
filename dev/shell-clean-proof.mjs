@@ -11,7 +11,7 @@ try {
   cdp = await connectCDP(9385);
   await cdp.send('Page.enable'); await cdp.send('Runtime.enable');
   await cdp.send('Page.navigate', { url });
-  if (!await waitDevReady(cdp, evalJS, { url })) throw Error('live station did not become ready');
+  if (!await waitDevReady(cdp, evalJS, { url })) throw Error('live keep did not become ready');
   const result = await evalJS(cdp, `(async () => {
     await IndustrialTextures.ready;
     const status = IndustrialTextures.status();
@@ -24,7 +24,7 @@ try {
       const row = document.createElement('canvas'); row.width = 240; row.height = 96;
       const r = row.getContext('2d');
       const hue = WorldModel.HULL_MATERIALS[id].suggest;
-      StationBake.sampleHull(r, id, WorldModel.FLOOR_STYLES[hue]?.base || null, 20, 96, 12);
+      KeepBake.sampleHull(r, id, WorldModel.FLOOR_STYLES[hue]?.base || null, 20, 96, 12);
       const pixels = r.getImageData(0,0,240,96).data;
       let nonempty = 0, sum = 0;
       for (let k=0;k<pixels.length;k+=4) { if(pixels[k+3]) nonempty++; sum += pixels[k]+pixels[k+1]+pixels[k+2]; }
@@ -52,10 +52,10 @@ try {
       if (!room.ok) throw Error('room creation '+JSON.stringify(room));
       st.setHull(room.id,{mat,style:WorldModel.HULL_MATERIALS[mat].suggest});
     });
-    const bake = StationBake.bake(st.projectGeometry());
+    const bake = KeepBake.bake(st.projectGeometry());
     const scene = document.createElement('canvas'); scene.width=bake.W*2; scene.height=bake.H*2;
     const sg=scene.getContext('2d'); sg.fillStyle='#080b10'; sg.fillRect(0,0,scene.width,scene.height);
-    sg.scale(2,2); StationBake.drawBase(sg,bake,0,0); StationBake.drawLight(sg,bake,0,0);
+    sg.scale(2,2); KeepBake.drawBase(sg,bake,0,0); KeepBake.drawLight(sg,bake,0,0);
     return {status, receipt, painted, roomCount:st.doc().order.length,
       samples:cv.toDataURL('image/png').split(',')[1], scene:scene.toDataURL('image/png').split(',')[1]};
   })()`);

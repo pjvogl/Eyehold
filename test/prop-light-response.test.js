@@ -188,7 +188,7 @@ test('optional readback/blit failure never poisons the authoritative prop contex
   assert.equal(props.lightResponseStats().failures, 2);
 });
 
-test('cached silhouette lighting leaves real workstation heat and progress content live on every draw', () => {
+test('cached silhouette lighting leaves real workkeep heat and progress content live on every draw', () => {
   const { props, env } = harness(), desk = f({ t: 'desk' });
   const frame = (time, heat, prog) => {
     const cv = new Canvas(env, 220, 180); props.setCtx(cv.ctx); props.setNow(time);

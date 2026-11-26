@@ -17,7 +17,7 @@ const nativeScript = fs.readFileSync(path.join(root, 'scripts', 'sign-macos-nati
 
 A.ok(/os: macos-15-intel[\s\S]{0,120}target: darwin-x64/.test(yml),
   'public Intel release runs on an actual x86_64 hosted runner');
-A.ok(/Verify v0\.8\.5 station recovery on Intel macOS[\s\S]{0,220}uname -m[\s\S]{0,120}upgrade-085-090\.test\.js/.test(yml),
+A.ok(/Verify v0\.8\.5 keep recovery on Intel macOS[\s\S]{0,220}uname -m[\s\S]{0,120}upgrade-085-090\.test\.js/.test(yml),
   'public Intel release proves the released workspace upgrade on x86_64 hardware');
 
 const requiredStep = yml.match(
@@ -106,7 +106,7 @@ A.ok(/notarize-macos:[\s\S]*?needs: build[\s\S]*?timeout-minutes: 350/.test(yml)
   'notarization finalization is an independent bounded job');
 A.ok(/intel-macos-installed-acceptance:[\s\S]*?needs: \[build, notarize-macos\][\s\S]*?runs-on: macos-15-intel/.test(yml),
   'shipping train runs installed-app acceptance on actual Intel hardware');
-A.ok(/STARNET_REQUIRE_NOTARIZED: "true"[\s\S]*?verify-macos-intel-installed\.sh/.test(yml),
+A.ok(/EYEHOLD_REQUIRE_NOTARIZED: "true"[\s\S]*?verify-macos-intel-installed\.sh/.test(yml),
   'shipping Intel acceptance requires the notarized Developer ID verdict');
 A.ok(/assemble:[\s\S]*?needs: \[build, notarize-macos, intel-macos-installed-acceptance\]/.test(yml),
   'release assembly waits for notarized Mac artifacts and installed Intel acceptance');

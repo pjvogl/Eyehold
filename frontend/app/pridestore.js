@@ -1,8 +1,8 @@
-/* STARNET — pridestore.js : the thin live wiring around the pure lifetime-record engine (pride.js).
+/* EYEHOLD — pridestore.js : the thin live wiring around the pure lifetime-record engine (pride.js).
 
-   Owns what the pure engine can't: the durable localStorage key (its OWN 'starnet.pride.*' key, riding the
+   Owns what the pure engine can't: the durable localStorage key (its OWN 'eyehold.pride.*' key, riding the
    backup prefix like returnstore/mintstore — no save.js change), the U.bus subscriptions that feed real
-   outcomes into the fold, and the injected wall-clock. The STATION RECORD surface (stationui.js) reads
+   outcomes into the fold, and the injected wall-clock. The KEEP RECORD surface (keepui.js) reads
    snapshot() at render time.
 
    Discipline (mirrors returnstore.js): NEVER emits on U.bus — it only .on()s (the frozen shared/events.js
@@ -10,7 +10,7 @@
    storm doesn't hammer localStorage. node-exportable for its test. */
 'use strict';
 const PrideStore = (() => {
-  const KEY = 'starnet.pride.v1';
+  const KEY = 'eyehold.pride.v1';
   const FEED = ['agent.run.start', 'agent.run.end', 'workitem.delivered', 'cron.fire'];
   let state = null;
   let wired = false;
@@ -41,10 +41,10 @@ const PrideStore = (() => {
     }
   }
 
-  // the STATION RECORD readout (stationui.js reads this at render). Honest "—" flags live in the snapshot.
+  // the KEEP RECORD readout (keepui.js reads this at render). Honest "—" flags live in the snapshot.
   function snapshot() { return ready() ? Pride.snapshot(state) : null; }
 
-  // S2/new-hero: a fresh Commander founds a brand-new station — no inherited lifetime record.
+  // S2/new-hero: a fresh Commander founds a brand-new keep — no inherited lifetime record.
   function reset() { state = (typeof Pride !== 'undefined') ? Pride.hydrate(null) : null; try { localStorage.removeItem(KEY); } catch (_) {} }
 
   return { init, snapshot, reset };

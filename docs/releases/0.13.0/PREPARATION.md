@@ -34,4 +34,4 @@ the bump commit.
   key, the Web Push RFC 8291 example auth secret and a fake redaction fixture. Reviewed as test vectors, added as exact
   fingerprints to `.gitleaksignore`.
 - Owed after Publish: `release:verify-host`, the public updater canary, the website deploy (the Skill Market catalog and
-  pages are served from starnetos.com) and the relay deploy if `relay/` changed since its last deploy.
+  pages are served from eyehold.com) and the relay deploy if `relay/` changed since its last deploy.

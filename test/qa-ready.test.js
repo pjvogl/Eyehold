@@ -43,7 +43,7 @@ function greenArtifacts() {
       buildKind: 'reproducible-source', provenanceKind: 'reproducible-source', officialEvidence: null,
       appVersion: '0.3.0',
       sidecarHarness: 'v0.3.0-1-gaaaaaaaa', mode: 'desktop', origin: 'http://tauri.localhost',
-      artifact: { path: 'StarNet.exe', sha256: EXECUTABLE_IDENTITY.sha256, size: EXECUTABLE_IDENTITY.size },
+      artifact: { path: 'Eyehold.exe', sha256: EXECUTABLE_IDENTITY.sha256, size: EXECUTABLE_IDENTITY.size },
       runtimeExecutable: EXECUTABLE_IDENTITY, artifactVerified: true,
       result: 'GREEN', evidence: [EVIDENCE_IDENTITY], evidenceVerified: true
     },
@@ -235,7 +235,7 @@ function greenCfg() {
   const officialEvidence = {
     schemaVersion: 1, candidateCommit: TRUNK, sourceTree: TREE,
     artifact: { sha256: installed.artifact.sha256, size: installed.artifact.size },
-    authority: 'release-attestation-verifier', verificationId: 'attestation-123'
+    authority: 'release-attekeep-verifier', verificationId: 'attekeep-123'
   };
   A.eq(checkInstalled(Object.assign({}, installed, { provenanceKind: 'official', officialEvidence, officialEvidenceVerified: true }), cfg).ok, true, 'host-reverified exact official evidence is accepted');
   A.eq(checkInstalled(Object.assign({}, installed, { buildKind: 'custom', provenanceKind: 'custom' }), cfg).ok, true, 'an exact clean custom open-source build is accepted as custom');
@@ -251,11 +251,11 @@ function greenCfg() {
 
 /* ---- F2. W0 can inspect installed identity without invoking the broad READY aggregate ---- */
 {
-  const repoRoot = path.resolve('C:/virtual-starnet');
+  const repoRoot = path.resolve('C:/virtual-eyehold');
   const receiptPath = path.join(repoRoot, 'qa', 'installed', 'last-smoke.json');
-  const artifactPath = path.join(repoRoot, 'StarNet.exe');
+  const artifactPath = path.join(repoRoot, 'Eyehold.exe');
   const evidencePath = path.join(repoRoot, EVIDENCE_IDENTITY.path);
-  const artifactBytes = Buffer.from('exact running StarNet executable', 'utf8');
+  const artifactBytes = Buffer.from('exact running Eyehold executable', 'utf8');
   const artifactIdentity = {
     path: artifactPath,
     sha256: crypto.createHash('sha256').update(artifactBytes).digest('hex'),
@@ -298,14 +298,14 @@ function greenCfg() {
     officialEvidence: {
       schemaVersion: 1, candidateCommit: TRUNK, sourceTree: TREE,
       artifact: { sha256: artifactIdentity.sha256, size: artifactIdentity.size },
-      authority: 'release-attestation-verifier', verificationId: 'attestation-123'
+      authority: 'release-attekeep-verifier', verificationId: 'attekeep-123'
     }
   });
   files.set(path.resolve(receiptPath), Buffer.from(JSON.stringify(officialReceipt), 'utf8'));
   A.eq(inspectInstalledIdentity(opts).ok, false, 'standalone inspector rejects official receipt without an external verifier');
   const externallyVerified = inspectInstalledIdentity(Object.assign({}, opts, {
     verifyOfficialEvidence: (_normalized, raw) => ({
-      ok: raw.verificationId === 'attestation-123',
+      ok: raw.verificationId === 'attekeep-123',
       authority: raw.authority,
       verificationId: raw.verificationId,
     })

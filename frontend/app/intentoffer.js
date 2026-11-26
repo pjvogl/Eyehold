@@ -1,9 +1,9 @@
-/* STARNET — intentoffer.js : the INTENT OFFER matcher.
+/* EYEHOLD — intentoffer.js : the INTENT OFFER matcher.
 
    The Recruitment Bay and the recipe library hold 38 preconfigured classes and 50 ready-made jobs, and
    both live two clicks deep inside a bottom-bar popover. A Commander who never opens those doors never
    learns they exist. This module closes that gap from the other side: when what they just TYPED is
-   plainly the job of a class or a recipe, the station says so, once, in COMMS — where they already are.
+   plainly the job of a class or a recipe, the keep says so, once, in COMMS — where they already are.
 
    The whole design problem is PRECISION. A discovery card that fires on a vague match is noise, and
    noise in the COMMS beat slot is worse than the undiscovered feature. So the match must be earned:
@@ -14,7 +14,7 @@
        This self-maintains: adding a class that also says "contract" automatically de-weights the term
        for everyone, instead of drifting away from a hand-written keyword list.
      • A CLEAR WINNER. The top candidate must beat the runner-up by a real margin. Two plausible matches
-       means the station does not actually know, and it stays silent rather than guessing.
+       means the keep does not actually know, and it stays silent rather than guessing.
      • A REAL SIGNAL. At least one matched term must clear the distinctiveness floor on its own — a pile
        of weak overlaps never adds up to an offer.
 
@@ -73,7 +73,7 @@
 
   /* ---------- tuning ----------
      Pinned by test/intent-offer.test.js against real phrasings (both the asks that MUST match and the
-     chatter that must NOT). Raise MIN_SCORE / MARGIN to make the station quieter; never lower them to
+     chatter that must NOT). Raise MIN_SCORE / MARGIN to make the keep quieter; never lower them to
      make a demo fire. */
   // NOTE this counts RAW words, not content terms. Counting content terms looked equivalent and was not:
   // "rewrite this so it sounds like me" carries exactly two content terms and is obviously an intent, while

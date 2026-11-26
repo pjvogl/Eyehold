@@ -7,32 +7,32 @@
 Andrew (commander): **"The only prop a specialized or secondary agent needs is its own desk; it's allowed to
 use other props with the overseer."**
 
-Capabilities are **STATION-level shared gear used under the overseer**; the **desk is the only per-agent
+Capabilities are **KEEP-level shared gear used under the overseer**; the **desk is the only per-agent
 object**. Per-agent prop issuance was wrong — it duplicated props and misread the model. So a class's `kit` is
-**NOT** requisitioned to the agent's workstation. It now names the **shared station gear the class draws on**:
+**NOT** requisitioned to the agent's workkeep. It now names the **shared keep gear the class draws on**:
 
-- **`kit` = informational + a gate, never a placement.** It is shown in the dossier as "DRAWS ON STATION GEAR"
-  with a live present/missing check against the ACTUAL station props (`World.stationCaps`), and it gates the
-  class's **skill availability** (skills are recipes; the gear they need is the station's shared gear).
+- **`kit` = informational + a gate, never a placement.** It is shown in the dossier as "DRAWS ON KEEP GEAR"
+  with a live present/missing check against the ACTUAL keep props (`World.keepCaps`), and it gates the
+  class's **skill availability** (skills are recipes; the gear they need is the keep's shared gear).
 - **Removed entirely:** `requisitionKit` / `setPendingKit` / `deliverPendingKit` / the `pendingKit` field /
   `Build.requisitionForAgent` / the `onAgentRoomAssigned` room-assign hook + summon-time placement + its toasts.
   No dead code (janitor law).
-- **Skill availability is now STATION-WIDE.** The interactive run gates a specialist's class skills on the
-  station's shared gear (`stationPlaced` = `World.stationCaps()`), not the agent's desk-only room — so a
-  specialist with just a desk still gets its class skills when the station has the required gear. **Tool** reach
+- **Skill availability is now KEEP-WIDE.** The interactive run gates a specialist's class skills on the
+  keep's shared gear (`keepPlaced` = `World.keepCaps()`), not the agent's desk-only room — so a
+  specialist with just a desk still gets its class skills when the keep has the required gear. **Tool** reach
   stays room-scoped (`resolveTools` untouched); the overseer/dispatch path grants the worker its office.
-- **Summon copy:** no "kit arrives when it gets a workstation." If the station lacks gear the class draws on, one
-  honest line ("station lacks … — add … in REFIT for its full toolkit"); otherwise nothing.
+- **Summon copy:** no "kit arrives when it gets a workkeep." If the keep lacks gear the class draws on, one
+  honest line ("keep lacks … — add … in REFIT for its full toolkit"); otherwise nothing.
 
 The "kit / STANDARD ISSUE KIT / requisition" design in the sections below is **superseded** by this note; it is
-kept for history. Read `kit` everywhere below as "shared station gear the class draws on."
+kept for history. Read `kit` everywhere below as "shared keep gear the class draws on."
 
 ## Why
 
 Today a "class" (specialty) is ~a paragraph: `purpose` + `manual` text injected into the
 system prompt, a persona hint, and an *advisory* model-tier pip. It does NOT:
 
-- kit the workstation (a Researcher can spawn with no dish → no `web_search` at all),
+- kit the workkeep (a Researcher can spawn with no dish → no `web_search` at all),
 - enable any skills (skill prefs are GLOBAL slug→bool, `sidecar/skills/prefs.js:20`),
 - actually apply its model tier (pips are cosmetic; roster model comes from elsewhere),
 - exist backend-side (`team.summon`'s class list is hardcoded prose, `sidecar/index.js:~3188`).
@@ -43,12 +43,12 @@ Recruitment Bay and the backend, so lead-summoned specialists are kitted too.
 
 ## Laws (do not violate)
 
-1. **Object = capability stays honest — SHARED at station level (corrected 2026-07-02).**
-   A class's `kit` is the **shared station gear it draws on under the overseer**, not per-agent
-   props. It is informational (dossier "DRAWS ON STATION GEAR" with a live present/missing
-   check) and gates the class's **skill availability** against the station's real gear
-   (`World.stationCaps`). The only per-agent object is the desk. Never a per-agent placement,
-   never a flag. (Superseded the original "REAL prop placement at the new agent's workstation".)
+1. **Object = capability stays honest — SHARED at keep level (corrected 2026-07-02).**
+   A class's `kit` is the **shared keep gear it draws on under the overseer**, not per-agent
+   props. It is informational (dossier "DRAWS ON KEEP GEAR" with a live present/missing
+   check) and gates the class's **skill availability** against the keep's real gear
+   (`World.keepCaps`). The only per-agent object is the desk. Never a per-agent placement,
+   never a flag. (Superseded the original "REAL prop placement at the new agent's workkeep".)
 2. **Defaults, never locks** (sandbox law). Summon *applies* class model/effort/skills
    to the agent record; the user can override everything afterward, per agent.
 3. **Additive only** in `shared/events.js` / `shared/schema.js` (owned contract —
@@ -98,7 +98,7 @@ so we never hardcode a model id in the catalog.
 ### Summon applies the loadout (frontend `summonAgent`)
 1. applySpecialty (purpose/manual) — as today.
 2. Resolve tier → concrete model + reasoningEffort → set on agent record → pushRoster.
-3. **Kit requisition:** place `spec.kit` objects at the new agent's workstation through
+3. **Kit requisition:** place `spec.kit` objects at the new agent's workkeep through
    the real validated placement path (generalize `Build.requisition` to target a given
    agent's room; skip objects already present; visible in-world).
 4. **Skill package:** per-agent skills recorded on the agent + pushed in roster.
@@ -122,7 +122,7 @@ concrete, tool-referential (name the actual tools the kit grants), with method
 (e.g. Researcher: multi-query sweep → cross-check ≥2 independent sources → lead with
 answer → cite; Reviewer: reproduce → localize → adversarial verify → severity-ranked),
 failure honesty, and output format. Keep each manual ≤ ~12 bullets; purpose 2-4 sentences.
-Voice: competent-professional, station-flavored, eerie-not-cute.
+Voice: competent-professional, keep-flavored, eerie-not-cute.
 
 ### New classes (variety — each must be kit-grounded)
 Add ~7: **broker** (deal/price scout: web+notebook+routines), **publicist**
@@ -158,7 +158,7 @@ builder (＋ tile) gets kit/skill pickers so user classes are loadouts too.
   copy. Headless boot smoke + screenshot check.
 
 ## Risks
-- Workstation may lack floor space for a kit → requisition must degrade gracefully
+- Workkeep may lack floor space for a kit → requisition must degrade gracefully
   (place what fits, surface what didn't as a quest/needs-chip, never crash).
 - Old saves: agents without `skills`/`reasoningEffort` fields must behave exactly as today.
 - Skill budget: class packages + global enables must respect the 12k compose cap

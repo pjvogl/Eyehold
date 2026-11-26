@@ -2,7 +2,7 @@
 /* dev/catshot.mjs — the WHOLE CATALOG on one in-situ contact sheet.
  *
  * Same doctrine as rotshot.mjs (the rotation lane's shooter): never judge prop art on a neutral
- * field. This bakes a REAL station through the shipped StationBake, draws every catalog prop over
+ * field. This bakes a REAL keep through the shipped KeepBake, draws every catalog prop over
  * the deck in world.js order (base -> props y-sorted -> light), and upscales by an INTEGER factor
  * with smoothing off. The grid is greedy-packed rows (prop widths run 1..8 tiles, so a fixed
  * column stride would waste most of the sheet), each cell labelled in the deck gap BELOW its prop.
@@ -72,7 +72,7 @@ const SHEET = `(() => {
   if (!first) return { error: 'nothing placed: ' + skipped.join('; ') };
 
   const geo = st.projectGeometry();
-  const bk = StationBake.bake(geo);
+  const bk = KeepBake.bake(geo);
   const T = geo.TILE;
   const ox = geo.props[0].x - first.x, oy = geo.props[0].y - first.y;
 
@@ -127,7 +127,7 @@ async function main() {
     await evalJS(cdp, `location.href = ${JSON.stringify(URL)}`);
     await waitDevReady(cdp, evalJS, { url: URL });
     for (let i = 0; i < 40; i++) {
-      if (await evalJS(cdp, `['PropSprites','WorldModel','StationBake'].every(k => { try { return typeof eval(k) === 'object'; } catch { return false; } })`)) break;
+      if (await evalJS(cdp, `['PropSprites','WorldModel','KeepBake'].every(k => { try { return typeof eval(k) === 'object'; } catch { return false; } })`)) break;
       await sleep(500);
     }
 

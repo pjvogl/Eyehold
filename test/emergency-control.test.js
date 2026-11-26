@@ -18,7 +18,7 @@ function snapshot(halted) { return { halted, subsystems: Object.fromEntries(['cr
     U: vm.runInNewContext(fs.readFileSync('frontend/js/util.js', 'utf8') + ';U', {
       AbortSignal: {}, AbortController, DOMException, setTimeout() {}
     }),
-    StationUI: { notify: m => notices.push(m) },
+    KeepUI: { notify: m => notices.push(m) },
     fetch: async (path, opts) => {
       calls.push([path, opts]);
       if (opts.method === 'GET') { if (failRead) throw new Error('offline'); return { ok: true, json: async () => current }; }

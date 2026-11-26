@@ -61,7 +61,7 @@ try {
   await until(() => evalJS(cdp, `!!Workstreams.connectorHandoff(${JSON.stringify(ws)}) && !Chat.isBusy()`), 'connector handoff');
   const initial = await evalJS(cdp, `({ handoff: Workstreams.connectorHandoff(${JSON.stringify(ws)}), chip: document.querySelector('#chat-log')?.textContent || document.body.textContent })`);
   assert.equal(initial.handoff.connectorId, 'gmail'); assert.match(initial.chip, /CONNECT GMAIL/);
-  await evalJS(cdp, "StationUI.openTerm('connectors','catalog')");
+  await evalJS(cdp, "KeepUI.openTerm('connectors','catalog')");
   await until(() => evalJS(cdp, "document.body.textContent.includes('waiting for connection.')"), 'pending task banner');
   await evalJS(cdp, `Harness.api.post('/api/connectors', {id:'gmail', label:'Local Gmail proof fixture',transport:'http',url:${JSON.stringify(base + '/mcp')}})`);
   await evalJS(cdp, 'App.persist()'); await sleep(1500);
@@ -69,11 +69,11 @@ try {
   await until(async () => (await fetch('http://127.0.0.1:' + port + '/api/health')).ok, 'restart');
   await evalJS(cdp, 'window.__platformBeforeReload = true');
   await cdp.send('Page.reload');
-  await until(() => evalJS(cdp, `!window.__platformBeforeReload && typeof StationUI !== 'undefined' && typeof App !== 'undefined' && typeof Workstreams !== 'undefined' && !!Workstreams.connectorHandoff(${JSON.stringify(ws)}) && document.querySelector('#screen-game')?.classList.contains('active')`), 'durable handoff after restart');
-  await evalJS(cdp, "StationUI.openTerm('connectors','catalog')");
+  await until(() => evalJS(cdp, `!window.__platformBeforeReload && typeof KeepUI !== 'undefined' && typeof App !== 'undefined' && typeof Workstreams !== 'undefined' && !!Workstreams.connectorHandoff(${JSON.stringify(ws)}) && document.querySelector('#screen-game')?.classList.contains('active')`), 'durable handoff after restart');
+  await evalJS(cdp, "KeepUI.openTerm('connectors','catalog')");
   await until(() => evalJS(cdp, "Array.from(document.querySelectorAll('button')).some(b => b.textContent === 'CONTINUE TASK')"), 'continue button');
   const paint = await evalJS(cdp, "getComputedStyle(Array.from(document.querySelectorAll('button')).find(b => b.textContent === 'CONTINUE TASK')).backgroundColor");
-  assert.ok(!['rgb(255, 255, 255)', 'rgb(239, 239, 239)'].includes(paint), 'continuation button uses station styling');
+  assert.ok(!['rgb(255, 255, 255)', 'rgb(239, 239, 239)'].includes(paint), 'continuation button uses keep styling');
   const runCount = await evalJS(cdp, `Workstreams.get(${JSON.stringify(ws)}).runIds.length`);
   await evalJS(cdp, "(() => { const b = Array.from(document.querySelectorAll('button')).find(b => b.textContent === 'CONTINUE TASK'); b.click(); b.click(); })()");
   await until(() => evalJS(cdp, `Workstreams.get(${JSON.stringify(ws)}).runIds.length > ${runCount} && !Chat.isBusy()`), 'continued run');

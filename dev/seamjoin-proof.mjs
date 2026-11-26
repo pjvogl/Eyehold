@@ -41,7 +41,7 @@ const PROBE = `(() => {
     const errs = [A, H, B, E].map(r => r.error || null).filter(Boolean);
     if (sd && sd.error) errs.push('setDeck: ' + sd.error);
     const geo = st.projectGeometry();
-    const bk = StationBake.bake(geo);
+    const bk = KeepBake.bake(geo);
     const lit = mk(bk.W, bk.H);
     lit.g.drawImage(bk.baseCv, 0, 0); lit.g.drawImage(bk.lightCv, 0, 0);
     return { st, geo, bk, lit, errs, ids: { A: A.id, H: H.id, B: B.id, E: E.id } };
@@ -94,7 +94,7 @@ const PROBE = `(() => {
         join: crop(jx - 40, jy1 * T - 20, 80, (jy2 - jy1 + 1) * T + 40, 5),
         mouthTop: crop(rH.x1 * T - 40, m1y - 40, (rH.x2 - rH.x1 + 1) * T + 80, 80, 5),
         mouthBot: crop(rH.x1 * T - 40, m2y - 40, (rH.x2 - rH.x1 + 1) * T + 80, 80, 5),
-        station: crop(0, 0, run.bk.W, run.bk.H, 1),
+        keep: crop(0, 0, run.bk.W, run.bk.H, 1),
       }
     };
   };

@@ -9,7 +9,7 @@ found: 2026-09-09
 lane: typing-focus-0916-c7a2
 fix: 86b33ace3
 origin: customer
-report: User-relayed report on 2026-09-09: StarNet randomly changes sessions and the next message goes to the wrong session
+report: User-relayed report on 2026-09-09: Eyehold randomly changes sessions and the next message goes to the wrong session
 affected: Reporter build/platform unknown; reproduced in seeded browser on source 41253b0bd, version 0.11.0
 family: session-focus
 installer: unverified
@@ -20,14 +20,14 @@ recovery: unconfirmed
 
 ## Symptom
 
-A user reports that StarNet changes the selected session while they are not looking, so their next message lands in another conversation. Their build, platform, voice usage, and run logs were not supplied.
+A user reports that Eyehold changes the selected session while they are not looking, so their next message lands in another conversation. Their build, platform, voice usage, and run logs were not supplied.
 
 ## Repro
 
 1. On source 41253b0bd (package version 0.11.0), launch an isolated worktree with SKYNET_DEFAULT_MODEL=replay, SKYNET_PORT=18949 and node dev/seed.js --keep. No provider credentials are needed to inspect frontend routing.
-2. Open the seeded station in Chrome and wait for initialization. Create two sessions through Workstreams.create with activate:false. Use App.openWorkstream to select the first.
+2. Open the seeded keep in Chrome and wait for initialization. Create two sessions through Workstreams.create with activate:false. Use App.openWorkstream to select the first.
 3. Type an unsent draft in #chat-input.
-4. Deliver the frontend handler the same verb used by the model's session.focus tool: await StationCommands.run('proof', 'station.switch_session', {session: secondSessionId}). This explicitly injects the trigger; it does not demonstrate an actual model choosing the tool unprompted.
+4. Deliver the frontend handler the same verb used by the model's session.focus tool: await KeepCommands.run('proof', 'keep.switch_session', {session: secondSessionId}). This explicitly injects the trigger; it does not demonstrate an actual model choosing the tool unprompted.
 5. Observe the active session becomes the second without a rail click. Type a follow-up intended for the original session and click #chat-send.
 6. Read both Workstreams records: the user turn appears in the second session. Return to the first: its earlier draft is preserved.
 
@@ -50,15 +50,15 @@ Real seeded app, Chrome headless via Playwright; DOM/state round-trip on 2026-09
 The test used a fresh browser context and only the scratch workspace. No real provider request was observed; this proves the selected session and frontend user-turn routing, not model execution or backend delivery. No customer data was accessed.
 
 Trace:
-- sidecar/tools/builtin/station.js:88: session.focus is model-callable. Its description says to use it only when asked, but its handler forwards only the session reference.
-- sidecar/station-bridge.js:57: emitted payload is id, verb, args. There is no originating stream or user-navigation generation for a stale/background-focus check.
-- frontend/app/stationcommands.js:261: station.switch_session unconditionally calls Workstreams.switch and Chat.load for a valid target. The listener passes no originating context to the handler.
-- frontend/app/stationcommands.js:240: station.new_session with focus:true is a sibling automatic focus path.
+- sidecar/tools/builtin/keep.js:88: session.focus is model-callable. Its description says to use it only when asked, but its handler forwards only the session reference.
+- sidecar/keep-bridge.js:57: emitted payload is id, verb, args. There is no originating stream or user-navigation generation for a stale/background-focus check.
+- frontend/app/keepcommands.js:261: keep.switch_session unconditionally calls Workstreams.switch and Chat.load for a valid target. The listener passes no originating context to the handler.
+- frontend/app/keepcommands.js:240: keep.new_session with focus:true is a sibling automatic focus path.
 - frontend/app/chat.js:1228: Chat.load repoints activeWs; Channels.setComposeTarget follows the displayed session.
 - frontend/app/group-chat.js:142: composerDrafts preserves each session's unsent text. The current defect is unexpected navigation and subsequent input routing, not old draft text being silently copied into another session.
 - frontend/app/voice-live.js:576: ensureBoundFocus switches the visible session back to the call's bound session before handleTranscript processes speech. Code-traced, not reproduced with a microphone. It may explain a voice-specific version of the report.
 
-Existing tests pass: node test/station-commands.test.js (128 assertions), node test/station-tools.test.js (63 assertions). They verify successful focus commands and default non-focusing creation, but do not establish that a focus request is still current user navigation intent.
+Existing tests pass: node test/keep-commands.test.js (128 assertions), node test/keep-tools.test.js (63 assertions). They verify successful focus commands and default non-focusing creation, but do not establish that a focus request is still current user navigation intent.
 
 ## Verdict
 
@@ -82,9 +82,9 @@ Independent before-fix attachment proof, executing the original submitComposer f
 
 After: scripts/qa/session-focus-live.cjs passes in the real seeded app with eight controls: delayed reply leaves selection/draft/binding intact; the subsequent Send records the message only in the selected session; current foreground request succeeds; background focus and focused creation refuse without partial creation; leaving and returning cannot revive old focus; current draft blocks focus; upload navigation sends to neither session and preserves the new draft. Zero browser page errors. Model transport and attachment upload completion are controlled; no paid model or real microphone/installer execution is claimed.
 
-Focused gates: session-focus-safety, station-commands (135 assertions), station-tools (67 assertions), voice-live-ui, and voice-flow passed. Full repair-candidate gates passed: npm run test:fast (734/734), npm run test:http (106/106), and npm run qa:customer-journeys (33/33). The original loop/git HTTP fixture had transient load-sensitive failures, then passed unchanged both alone and in the complete HTTP rerun. After syncing trunk 32a1e304e, live proof passed again and candidate 0d99faf75 passed the complete fast (734/734) and HTTP (107/107) gates. A later conflict-free sync of independent image-intent work was checked with its changed tests plus session-focus regressions; these incremental checks are separate from the full-gate receipt. Do not infer installer or customer recovery from source tests.
+Focused gates: session-focus-safety, keep-commands (135 assertions), keep-tools (67 assertions), voice-live-ui, and voice-flow passed. Full repair-candidate gates passed: npm run test:fast (734/734), npm run test:http (106/106), and npm run qa:customer-journeys (33/33). The original loop/git HTTP fixture had transient load-sensitive failures, then passed unchanged both alone and in the complete HTTP rerun. After syncing trunk 32a1e304e, live proof passed again and candidate 0d99faf75 passed the complete fast (734/734) and HTTP (107/107) gates. A later conflict-free sync of independent image-intent work was checked with its changed tests plus session-focus regressions; these incremental checks are separate from the full-gate receipt. Do not infer installer or customer recovery from source tests.
 
-Reproducible live runner: scripts/qa/session-focus-live.cjs. Run against an isolated dev/seed.js --keep instance only, using STARNET_PLAYWRIGHT_MODULE and STARNET_CHROME when the browser runtime is bundled externally. Captured output: qa/evidence/session-focus-0909.json.
+Reproducible live runner: scripts/qa/session-focus-live.cjs. Run against an isolated dev/seed.js --keep instance only, using EYEHOLD_PLAYWRIGHT_MODULE and EYEHOLD_CHROME when the browser runtime is bundled externally. Captured output: qa/evidence/session-focus-0909.json.
 
 ## Sibling coverage
 
@@ -93,7 +93,7 @@ Reproducible live runner: scripts/qa/session-focus-live.cjs. Run against an isol
     {
       "target": "shared model session tools across providers",
       "state": "covered",
-      "test": "test/station-tools.test.js",
+      "test": "test/keep-tools.test.js",
       "scenario": "execution context supplies focus and focused-create provenance; model arguments cannot forge it",
       "gate": "fast"
     },
@@ -114,7 +114,7 @@ Reproducible live runner: scripts/qa/session-focus-live.cjs. Run against an isol
     {
       "target": "session.focus and focus:true creation",
       "state": "covered",
-      "test": "test/station-commands.test.js",
+      "test": "test/keep-commands.test.js",
       "scenario": "stale requests refuse before navigation or partial creation; background creation remains available",
       "gate": "fast"
     },

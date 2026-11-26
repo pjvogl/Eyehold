@@ -1,11 +1,11 @@
-/* STARNET — recipe-catalog/money.js : MONEY persona recipes — the money admin a person actually has.
+/* EYEHOLD — recipe-catalog/money.js : MONEY persona recipes — the money admin a person actually has.
 
    Registered in index.js by the aggregator — this file only EXPORTS the array. Same UMD-light module
    pattern as its siblings: a `RecipeCatalogMoney` global in the browser, module.exports under node.
    NO logic here — pure data.
 
    Content contract: every record clears THE RECIPE BAR documented in core.js (earns its tap / drives
-   the station / lands somewhere / compounds when recurring), in the same imperative harness voice.
+   the keep / lands somewhere / compounds when recurring), in the same imperative harness voice.
 
    ══ THE MONEY LINE (this module's extra bar — do not cross it) ══
    These recipes do money ADMIN — sorting what was spent, assembling what an accountant needs, doing the

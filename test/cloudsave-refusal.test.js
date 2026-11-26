@@ -23,7 +23,7 @@ global.fetch = () => {
 };
 
 const CloudSave = require('../frontend/app/cloudsave.js');
-const doc = (updatedAt) => ({ schema: 'starnet.save', version: 3, updatedAt, agent: { id: 'agent', name: 'NOVA' } });
+const doc = (updatedAt) => ({ schema: 'eyehold.save', version: 3, updatedAt, agent: { id: 'agent', name: 'NOVA' } });
 
 (async () => {
   // An HTTP 200 is only transport success. An absent/malformed acknowledgement proves no save.
@@ -34,7 +34,7 @@ const doc = (updatedAt) => ({ schema: 'starnet.save', version: 3, updatedAt, age
     A.eq(CloudSave.health().lastPushOkAt, 0, 'unproven acknowledgement never claims durability');
   }
   // ---- 1. degraded refusal: HTTP 200 { ok:false, degraded:true } must NOT stamp health OK ----
-  responses.push({ status: 200, body: { ok: false, error: 'workspace written by newer StarNet', degraded: true } });
+  responses.push({ status: 200, body: { ok: false, error: 'workspace written by newer Eyehold', degraded: true } });
   CloudSave.push(doc(10));
   const landed1 = await CloudSave.flush({ force: true });
   A.eq(landed1, false, 'a 200 { ok:false, degraded:true } body is a FAILED push, not a success');

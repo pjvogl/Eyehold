@@ -10,7 +10,7 @@ const { desktopClient, RELEASE_DEFERRED, SELECTED_FILES_ENABLED } = require('../
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const target = path.join(root, 'sidecar/mcp/google-client.json');
 try {
-  const raw = process.env.STARNET_GOOGLE_DESKTOP_CLIENT_JSON;
+  const raw = process.env.EYEHOLD_GOOGLE_DESKTOP_CLIENT_JSON;
   if (RELEASE_DEFERRED && !SELECTED_FILES_ENABLED) {
     if (fs.existsSync(target)) fs.unlinkSync(target);
     console.log('Google Workspace deferred from this release; publisher registration omitted.');
@@ -19,21 +19,21 @@ try {
     if (fs.existsSync(target)) fs.unlinkSync(target);
     console.log('Google sign-in unavailable in this internal build; no publisher registration supplied.');
   } else {
-    if (!raw) throw new Error('STARNET_GOOGLE_DESKTOP_CLIENT_JSON must contain StarNet’s Google Desktop app registration');
+    if (!raw) throw new Error('EYEHOLD_GOOGLE_DESKTOP_CLIENT_JSON must contain Eyehold’s Google Desktop app registration');
     let parsed;
     try { parsed = JSON.parse(raw); } catch (_) { throw new Error('Google Desktop registration must be valid JSON'); }
     const client = desktopClient(parsed);
     // Strip unrelated project fields; only Google's installed client metadata ships.
     // EARLY ACCESS (opt-in internal builds only; release-train never sets it): open every Google service before
     // Google verification. Carried in the bundled registration so no user or env setting can flip it later.
-    const earlyAccess = process.env.STARNET_GOOGLE_EARLY_ACCESS === '1';
+    const earlyAccess = process.env.EYEHOLD_GOOGLE_EARLY_ACCESS === '1';
     const output = JSON.stringify(Object.assign({ installed: { client_id: client.clientId, client_secret: client.clientSecret } }, earlyAccess ? { earlyAccess: true } : {}));
     // Native client metadata is public. Bundled resources must remain readable
     // when an installer places the app under a different OS account.
     fs.writeFileSync(target, output + '\n', { mode: 0o644 });
     fs.chmodSync(target, 0o644);
     if (fs.readFileSync(target, 'utf8').trim() !== output) throw new Error('Google registration staging read-back failed');
-    console.log('StarNet Google Desktop registration staged and verified.' + (earlyAccess ? ' EARLY ACCESS: every Google service opens before verification.' : ''));
+    console.log('Eyehold Google Desktop registration staged and verified.' + (earlyAccess ? ' EARLY ACCESS: every Google service opens before verification.' : ''));
   }
 } catch (e) {
   console.error('Google sign-in release configuration failed: ' + e.message);

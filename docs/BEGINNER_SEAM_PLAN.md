@@ -1,7 +1,7 @@
 # Beginner seam plan — "connect my world" (2026-08-22)
 
 **Trigger:** Joshua G (Permaculture Kernow) — vision interview worked, then stalled at
-"integrating my emails, website, online course." Diagnosis: StarNet front-loads
+"integrating my emails, website, online course." Diagnosis: Eyehold front-loads
 capability breadth and makes *connection* a side-quest; a missing connector surfaces
 as a bare tool-error string the model narrates (`sidecar/mcp/manager.js:467`), and the
 tutorial ends on a generic nudge (`frontend/app/tutorial.js:662`), never on wiring.
@@ -19,7 +19,7 @@ read-back proves it (see connector read-back lane).
   `suggestFor(goalText)` so the lead can name the right connector when NO tool call
   happened yet (e.g. "send my newsletter" → gmail / resend).
 - **Frontend:** a COMMS chip in the post-run slot (chips are ONE layer — see memory law)
-  reading `⇄ CONNECT GMAIL — 2 clicks` → `StationUI.openTerm('connectors')` pre-routed
+  reading `⇄ CONNECT GMAIL — 2 clicks` → `KeepUI.openTerm('connectors')` pre-routed
   to that id via the existing router (`frontend/app/windows/connectors.js:247`). Reuse
   the friendlyerror `OPEN ABILITIES` button style; do not invent a new one.
 - **Tests:** `test/connector-required.test.js` (+ fast.list row) proving the event FIRES

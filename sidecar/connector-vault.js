@@ -3,9 +3,9 @@
 const crypto = require('node:crypto');
 const { writeFileDurable } = require('./durable-write.js');
 
-const FORMAT = 'starnet.connector-vault.v1';
+const FORMAT = 'eyehold.connector-vault.v1';
 const AAD = Buffer.from(FORMAT);
-const UNAVAILABLE = 'Connector credentials are locked. Restart StarNet with the original OS account and an unlocked credential store.';
+const UNAVAILABLE = 'Connector credentials are locked. Restart Eyehold with the original OS account and an unlocked credential store.';
 function validState(value) {
   const object = v => !!v && typeof v === 'object' && !Array.isArray(v);
   return object(value) && value.version === 2 && Array.isArray(value.configs) &&
@@ -19,7 +19,7 @@ function makeConnectorVault({ fs, path, keyHex = '', required = false, writeDura
   const key = keyHex ? Buffer.from(keyHex, 'hex') : null;
   let locked = required && !key;
   function decode(value) {
-    if (value && typeof value.format === 'string' && value.format.startsWith('starnet.connector-vault.') && value.format !== FORMAT) throw new Error(UNAVAILABLE);
+    if (value && typeof value.format === 'string' && value.format.startsWith('eyehold.connector-vault.') && value.format !== FORMAT) throw new Error(UNAVAILABLE);
     if (!value || value.format !== FORMAT) return value;
     if (!key) throw new Error(UNAVAILABLE);
     try {

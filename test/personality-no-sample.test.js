@@ -24,7 +24,7 @@ for (const f of fs.readdirSync(APP_DIR)) {
 
 // the two surfaces that used to show the quote stay quote-free
 const appSrc = fs.readFileSync(path.join(APP_DIR, 'app.js'), 'utf8');
-const stationSrc = fs.readFileSync(path.join(APP_DIR, 'stationui.js'), 'utf8');
+const keepSrc = fs.readFileSync(path.join(APP_DIR, 'keepui.js'), 'utf8');
 {
   const start = appSrc.indexOf('function renderVoicePreview');
   A.ok(start > 0, 'app.js still has renderVoicePreview (the tuned: readout for resumed agents)');
@@ -32,9 +32,9 @@ const stationSrc = fs.readFileSync(path.join(APP_DIR, 'stationui.js'), 'utf8');
   A.ok(!/vp-quote/.test(body), 'genesis voice preview renders no quote block');
 }
 {
-  const start = stationSrc.indexOf('function personaCard');
-  A.ok(start > 0, 'stationui.js still has the dossier personaCard');
-  const body = stationSrc.slice(start, start + 2000);
+  const start = keepSrc.indexOf('function personaCard');
+  A.ok(start > 0, 'keepui.js still has the dossier personaCard');
+  const body = keepSrc.slice(start, start + 2000);
   A.ok(!/vp-quote|ov-vpreview/.test(body), 'dossier PERSONALITY card renders no example preview');
 }
 

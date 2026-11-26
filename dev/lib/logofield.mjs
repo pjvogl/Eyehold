@@ -1,6 +1,6 @@
 // dev/lib/logofield.mjs — the shared image plumbing for the brand-mark trace lane.
 //
-// The STARNET master (frontend/assets/brand/starnet-logo.png) is NOT a filled wordmark: only ~4.5%
+// The EYEHOLD master (frontend/assets/brand/eyehold-logo.png) is NOT a filled wordmark: only ~4.5%
 // of its pixels clear alpha 96, and a mid-height scanline is a run of 2-8px strokes separated by
 // 50-200px voids — the letters are HOLLOW outlines drawn out of scattered ASCII digits (probe:
 // dev/probe-logo-alpha.mjs). So nothing here ever thresholds raw alpha. Everything works on the

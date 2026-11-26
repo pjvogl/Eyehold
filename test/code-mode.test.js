@@ -30,11 +30,11 @@ async function expectReject(p, pattern, label) {
 
   // The vm has no ambient Node authority and the fork gets a deliberately tiny environment.
   {
-    process.env.STARNET_CODE_SECRET_TEST = 'must-not-cross';
+    process.env.EYEHOLD_CODE_SECRET_TEST = 'must-not-cross';
     const t = Code.makeCodeTools({ limits: { timeoutMs: 3000 } }).codeTool;
-    const out = await t.run({ code: `return { process: typeof process, require: typeof require, secret: typeof STARNET_CODE_SECRET_TEST };` }, { composeDispatch: async () => '' });
+    const out = await t.run({ code: `return { process: typeof process, require: typeof require, secret: typeof EYEHOLD_CODE_SECRET_TEST };` }, { composeDispatch: async () => '' });
     A.eq(out.content, JSON.stringify({ process: 'undefined', require: 'undefined', secret: 'undefined' }), 'process, require, and parent env secrets are absent');
-    delete process.env.STARNET_CODE_SECRET_TEST;
+    delete process.env.EYEHOLD_CODE_SECRET_TEST;
     await expectReject(t.run({ code: `return ({}).constructor.constructor('return process')();` }, { composeDispatch: async () => '' }), /code generation.*disallowed/i, 'Function-constructor escape is blocked');
     // Everything the model can touch is CONTEXT-realm (2026-09-25): tool, print, console, the Promise tool() returns
     // and the value it resolves to. None of their constructor chains can compile code.
@@ -50,7 +50,7 @@ async function expectReject(p, pattern, label) {
       return out;` }, { composeDispatch: async () => ({ nested: { deep: [1] } }) });
     A.eq(reachable.content, JSON.stringify({ tool: 'blocked', print: 'blocked', log: 'blocked', promise: 'blocked', value: 'blocked', then: 'blocked' }),
       'no value reachable from model code leads to a Function that can compile code');
-    const bridgeGone = await t.run({ code: `return { bridge: typeof __starnetBridge, run: typeof __starnetRun, fn: typeof __starnetUserFn };` }, { composeDispatch: async () => '' });
+    const bridgeGone = await t.run({ code: `return { bridge: typeof __eyeholdBridge, run: typeof __eyeholdRun, fn: typeof __eyeholdUserFn };` }, { composeDispatch: async () => '' });
     A.eq(bridgeGone.content, JSON.stringify({ bridge: 'undefined', run: 'undefined', fn: 'undefined' }), 'the host bridge and runner are gone from the global before model code runs');
   }
 

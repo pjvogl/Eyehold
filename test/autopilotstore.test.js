@@ -28,7 +28,7 @@ AutopilotStore.init({
   idleMs: IDLE
 });
 
-/* ---------- a just-active station does nothing ---------- */
+/* ---------- a just-active keep does nothing ---------- */
 A.eq(AutopilotStore.tick().mode, 'none', 'fresh init starts ACTIVE → no fire (reason: not idle)');
 A.eq(offers, 0, 'no curiosity asked while the Commander is active');
 
@@ -46,7 +46,7 @@ A.eq(offers, 1, 'staying idle does NOT re-ask (one autopilot beat per idle episo
 /* ---------- interaction re-arms; a NEW idle episode earns again ---------- */
 AutopilotStore.noteActivity();
 A.eq(AutopilotStore._state().armed, false, 'activity re-arms the next idle beat');
-A.eq(AutopilotStore.tick().mode, 'none', 'right after activity the station is active again, not idle');
+A.eq(AutopilotStore.tick().mode, 'none', 'right after activity the keep is active again, not idle');
 nowMs += IDLE;
 AutopilotStore.tick();
 A.eq(offers, 2, 'a fresh idle episode earns once more');
@@ -111,9 +111,9 @@ A.ok(/value:\s*'undo'/.test(appSrc), 'B3: the undo action is wired into the welc
   A.ok(iPresent > 0 && iDigest > iPresent, 'present + digest hooks exist in order');
   const presentSeg = appSrc.slice(iPresent, iDigest);
   A.ok(/const canNudge = typeof Chat !== 'undefined' && Chat\.nudge;/.test(presentSeg), 'present() decides ONE surface up front (canNudge)');
-  A.ok(/if \(!canNudge && typeof StationUI[\s\S]{0,80}StationUI\.notify\)/.test(presentSeg), 'present(): the toast fires ONLY when the nudge cannot (fallback, not a duplicate)');
+  A.ok(/if \(!canNudge && typeof KeepUI[\s\S]{0,80}KeepUI\.notify\)/.test(presentSeg), 'present(): the toast fires ONLY when the nudge cannot (fallback, not a duplicate)');
   const digestSeg = appSrc.slice(iDigest, iDigest + 4500);
-  A.ok(/if \(\(typeof Chat === 'undefined' \|\| !Chat\.nudge\) && typeof StationUI/.test(digestSeg), 'digest(): the toast fires ONLY when the welcome-back nudge cannot (fallback, not a duplicate)');
+  A.ok(/if \(\(typeof Chat === 'undefined' \|\| !Chat\.nudge\) && typeof KeepUI/.test(digestSeg), 'digest(): the toast fires ONLY when the welcome-back nudge cannot (fallback, not a duplicate)');
   A.ok(/'cronDigest'[,)]/.test(presentSeg) && /'cronDigest'[,)]/.test(digestSeg), 'both fallback toasts stay tagged cronDigest (P1-8 category mute still works)');
 }
 
@@ -122,7 +122,7 @@ A.ok(/value:\s*'undo'/.test(appSrc), 'B3: the undo action is wired into the welc
   let presented = null;
   const hotDossier = { known: ['goals', 'stack', 'pain', 'identity'], blank: [], familiarity: 4 / 7 };
   const hotBeliefs = {
-    goals: [{ text: 'ship the StarNet beta to 100 users', updatedAt: nowMs }],
+    goals: [{ text: 'ship the Eyehold beta to 100 users', updatedAt: nowMs }],
     pain: [{ text: 'manual release notes eat my fridays', updatedAt: nowMs }],
     stack: [{ text: 'node and plain js', updatedAt: nowMs }],
     identity: [{ text: 'andro, solo builder', updatedAt: nowMs }]
@@ -140,7 +140,7 @@ A.ok(/value:\s*'undo'/.test(appSrc), 'B3: the undo action is wired into the welc
   // a good model: proposes one grounded high-confidence candidate, then produces a titled draft.
   const goodChat = async ({ messages }) => {
     const c = messages[0].content;
-    if (/Propose up to/.test(c)) return { text: 'JOB: Beta launch checklist\nKIND: advance-goal\nGROUNDS: ship the StarNet beta to 100 users\nCONFIDENCE: high\nSPEC: a pre-launch checklist' };
+    if (/Propose up to/.test(c)) return { text: 'JOB: Beta launch checklist\nKIND: advance-goal\nGROUNDS: ship the Eyehold beta to 100 users\nCONFIDENCE: high\nSPEC: a pre-launch checklist' };
     if (/Do this ONE job/.test(c)) return { text: 'TITLE: Beta launch checklist\n1. Freeze the build\n2. Tag the release\n3. Smoke test' };
     if (/SELF-REVIEW/.test(c)) return { text: 'VERDICT: ship\nNOTE: solid' };
     return { text: '' };
@@ -167,7 +167,7 @@ A.ok(/value:\s*'undo'/.test(appSrc), 'B3: the undo action is wired into the welc
   // CONFIDENCE GATE: all-low candidates → no act, no leash spent, nothing surfaced.
   presented = null;
   const lowChat = async ({ messages }) => /Propose up to/.test(messages[0].content)
-    ? { text: 'JOB: maybe tweak something\nKIND: advance-goal\nGROUNDS: ship the StarNet beta to 100 users\nCONFIDENCE: low\nSPEC: vague' }
+    ? { text: 'JOB: maybe tweak something\nKIND: advance-goal\nGROUNDS: ship the Eyehold beta to 100 users\nCONFIDENCE: low\nSPEC: vague' }
     : { text: 'TITLE: t\nbody' };
   AutopilotStore.init(baseDeps(lowChat));
   const r2 = await AutopilotStore.act();
@@ -186,7 +186,7 @@ A.ok(/value:\s*'undo'/.test(appSrc), 'B3: the undo action is wired into the welc
   // the agent can DROP its own draft on review (no delivery, no leash spent).
   const dropChat = async ({ messages }) => {
     const c = messages[0].content;
-    if (/Propose up to/.test(c)) return { text: 'JOB: x\nKIND: advance-goal\nGROUNDS: ship the StarNet beta to 100 users\nCONFIDENCE: high\nSPEC: s' };
+    if (/Propose up to/.test(c)) return { text: 'JOB: x\nKIND: advance-goal\nGROUNDS: ship the Eyehold beta to 100 users\nCONFIDENCE: high\nSPEC: s' };
     if (/Do this ONE job/.test(c)) return { text: 'TITLE: Draft\nbody' };
     if (/SELF-REVIEW/.test(c)) return { text: 'VERDICT: drop\nNOTE: padding, not worth their time' };
     return { text: '' };
@@ -200,7 +200,7 @@ A.ok(/value:\s*'undo'/.test(appSrc), 'B3: the undo action is wired into the welc
   presented = null;
   const reviseChat = async ({ messages }) => {
     const c = messages[0].content;
-    if (/Propose up to/.test(c)) return { text: 'JOB: x\nKIND: advance-goal\nGROUNDS: ship the StarNet beta to 100 users\nCONFIDENCE: high\nSPEC: s' };
+    if (/Propose up to/.test(c)) return { text: 'JOB: x\nKIND: advance-goal\nGROUNDS: ship the Eyehold beta to 100 users\nCONFIDENCE: high\nSPEC: s' };
     if (/Do this ONE job/.test(c)) return { text: 'TITLE: First draft\noriginal body' };
     if (/SELF-REVIEW/.test(c)) return { text: 'VERDICT: revise\nNOTE: tightened\nTITLE: Revised draft\nbetter body' };
     return { text: '' };
@@ -239,7 +239,7 @@ A.ok(/value:\s*'undo'/.test(appSrc), 'B3: the undo action is wired into the welc
   /* ---------- A3: the learn hook re-weights selection ---------- */
   const tieChat = async ({ messages }) => {
     const c = messages[0].content;
-    if (/Propose up to/.test(c)) return { text: 'JOB: advance\nKIND: advance-goal\nGROUNDS: ship the StarNet beta to 100 users\nCONFIDENCE: high\nSPEC: s\n\nJOB: pain\nKIND: kill-pain\nGROUNDS: manual release notes eat my fridays\nCONFIDENCE: high\nSPEC: s' };
+    if (/Propose up to/.test(c)) return { text: 'JOB: advance\nKIND: advance-goal\nGROUNDS: ship the Eyehold beta to 100 users\nCONFIDENCE: high\nSPEC: s\n\nJOB: pain\nKIND: kill-pain\nGROUNDS: manual release notes eat my fridays\nCONFIDENCE: high\nSPEC: s' };
     if (/Do this ONE job/.test(c)) return { text: 'TITLE: D\nbody' };
     if (/SELF-REVIEW/.test(c)) return { text: 'VERDICT: ship' };
     return { text: '' };

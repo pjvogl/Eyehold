@@ -1,4 +1,4 @@
-name: Eyehold - Build seven room station blueprint
+name: Eyehold - Build seven room keep blueprint
 
 on:
   workflow_dispatch:
@@ -7,7 +7,7 @@ permissions:
   contents: read
 
 jobs:
-  seven-room-station:
+  seven-room-keep:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
@@ -28,12 +28,12 @@ jobs:
       - name: Export opt-in room blueprint
         run: |
           mkdir -p eyehold-starter-layout
-          node -e "const fs=require('fs');const a=require('./scripts/eyehold-seven-room-starter.cjs').buildEyeholdStation();fs.writeFileSync('eyehold-starter-layout/seven-room-world.json',JSON.stringify(a.doc,null,2)+'\n');"
+          node -e "const fs=require('fs');const a=require('./scripts/eyehold-seven-room-starter.cjs').buildEyeholdKeep();fs.writeFileSync('eyehold-starter-layout/seven-room-world.json',JSON.stringify(a.doc,null,2)+'\n');"
           cat > eyehold-starter-layout/README.txt <<'EOF'
-          Seven-room WorldModel starter blueprint (new station only).
-          DO NOT overwrite an existing Eyehold station save.
+          Seven-room WorldModel starter blueprint (new keep only).
+          DO NOT overwrite an existing Eyehold keep save.
           This is a tested geometry/template asset, not a deployed game world.
-          Agent roster and workstations must be configured separately by the owner.
+          Agent roster and workkeeps must be configured separately by the owner.
           EOF
       - uses: actions/upload-artifact@v4
         with:
@@ -43,4 +43,4 @@ jobs:
       - name: Summary
         run: |
           echo '## Eyehold native seven-room template' >> "$GITHUB_STEP_SUMMARY"
-          echo 'Created a fresh station blueprint with seven department rooms and a common corridor using the canonical WorldModel. Existing saves unchanged. No API spending.' >> "$GITHUB_STEP_SUMMARY"
+          echo 'Created a fresh keep blueprint with seven department rooms and a common corridor using the canonical WorldModel. Existing saves unchanged. No API spending.' >> "$GITHUB_STEP_SUMMARY"

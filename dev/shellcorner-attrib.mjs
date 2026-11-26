@@ -1,13 +1,13 @@
 #!/usr/bin/env node
-// dev/shellcorner-attrib.mjs — WHAT is the dark wedge at a station's BOTTOM corners?
+// dev/shellcorner-attrib.mjs — WHAT is the dark wedge at a keep's BOTTOM corners?
 //
-// Andrew, circling the bottom-right corner of the starter station: "i cant stand how the edge of
+// Andrew, circling the bottom-right corner of the starter keep: "i cant stand how the edge of
 // the shell is showing on the bottom left and right sides. can we just remove the shell entirely
 // from interior so its only the exterior where its visible".
 //
 // The screenshot is the CRT'd, barrel-warped, chromatically-fringed screen, so it cannot say which
 // PASS paints that wedge. Same discipline as dev/hallcorner-attrib.mjs: bake offscreen at 1:1
-// through the shipped StationBake, BASE ONLY (the light pass would tint the attribution), over
+// through the shipped KeepBake, BASE ONLY (the light pass would tint the attribution), over
 // MAGENTA, and answer with crops AND a colour census whose entries are named against the tones the
 // bake actually computes (shell base/edge/rim vs the wall's face ramp vs the crown).
 //
@@ -23,7 +23,7 @@ const CDP_PORT = Number(process.env.SKYNET_CDP_PORT || 9363);
 const URL = `http://127.0.0.1:${PORT}/`;
 
 const PROBE = `(() => {
-  const SB = StationBake;
+  const SB = KeepBake;
   const mk = (w, h) => { const c = document.createElement('canvas'); c.width = w; c.height = h; const g = c.getContext('2d'); g.imageSmoothingEnabled = false; return { c, g }; };
   const st = WorldModel.create(WorldModel.defaultDoc());
 

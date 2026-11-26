@@ -44,7 +44,7 @@ The HTTP campaign then stopped at step 110 because the existing emergency-recove
 
 ## Limits
 
-The scripted provider proves harness behavior, not real-model delegation judgment, provider-specific voice/audio or packaged-desktop behavior. Existing station-wide QA findings are not closed by this lane. No trunk integration, push, installer build or publication was performed. User requested merge evaluation; integration remains a subsequent action against a freshly checked trunk and serialized merge window.
+The scripted provider proves harness behavior, not real-model delegation judgment, provider-specific voice/audio or packaged-desktop behavior. Existing keep-wide QA findings are not closed by this lane. No trunk integration, push, installer build or publication was performed. User requested merge evaluation; integration remains a subsequent action against a freshly checked trunk and serialized merge window.
 
 ## Completed gates
 

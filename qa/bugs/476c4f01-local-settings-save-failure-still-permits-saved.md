@@ -22,13 +22,13 @@ Local preference controls can report saved after storage rejected the write; the
 
 ## Repro
 
-Execute actual stationui save with localStorage.setItem throwing. It returns without an error; appearance and notification callers unconditionally flashSaved. Actual disk-full UI was not tested.
+Execute actual keepui save with localStorage.setItem throwing. It returns without an error; appearance and notification callers unconditionally flashSaved. Actual disk-full UI was not tested.
 
 See qa/seam-audit-0912/REPORT.md finding A8 for exact scope and repair criteria.
 
 ## Evidence
 
-Code anchor: frontend/app/stationui.js:180. Receipt: `settings-save-failure-swallowed` in qa/seam-audit-0912/probe-results.json or ui-observations.json. Source baseline 091d6e7f3; product files unchanged through fa85f521f. Repro code is qa/seam-audit-0912/probe.cjs and controlled UI fixture server is fault-proxy.cjs. Evidence class and coverage limits are explicit in the report; no installer proof claimed.
+Code anchor: frontend/app/keepui.js:180. Receipt: `settings-save-failure-swallowed` in qa/seam-audit-0912/probe-results.json or ui-observations.json. Source baseline 091d6e7f3; product files unchanged through fa85f521f. Repro code is qa/seam-audit-0912/probe.cjs and controlled UI fixture server is fault-proxy.cjs. Evidence class and coverage limits are explicit in the report; no installer proof claimed.
 
 ## Verdict
 

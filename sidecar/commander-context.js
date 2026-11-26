@@ -59,10 +59,10 @@ function compose(input) {
   if (prefs.length) evidence.push('VERDICT PATTERNS: ' + prefs.join(', '));
   const activity = Array.isArray(input.activity) ? input.activity.slice(0, 6) : [];
   for (const a of activity) if (a) evidence.push('RECENT ACTIVITY: ' + clip(a, 180));
-  // TRACK RECORD (outcome learning, 2026-08-30): what this station's runs actually produce — pre-composed by
+  // TRACK RECORD (outcome learning, 2026-08-30): what this keep's runs actually produce — pre-composed by
   // outcomes.js, every number a literal count of recent runs. Rides the same weak-evidence fence: it may steer
   // what to propose and how to shape work, never override the current request. Pushed LAST deliberately
-  // (consistency sweep, 2026-08-30): the block's 20-line cap truncates from the tail, and on a warm station
+  // (consistency sweep, 2026-08-30): the block's 20-line cap truncates from the tail, and on a warm keep
   // (6 topics + 5 threads + workflow + verdicts + 6 activity = 19) the original pre-activity position pushed
   // up to 3 RECENT ACTIVITY lines out — trading the freshest grounding for a statistic, the exact inversion
   // of the contextpack doctrine. Now the statistic is what truncates first.
@@ -88,7 +88,7 @@ function compose(input) {
   // Commander — creating nothing. Only present when the ask is about automation (see automationIntent()).
   if (input.automationAsk) {
     lines.push('<automation_request provenance="the current request asks for automation">');
-    lines.push('Turn this into StarNet routines now. Settle the Task Brief with brief_proceed (state your assumptions: focus, times) instead of asking, then call routine_create in the same turn. Do not interview the Commander.');
+    lines.push('Turn this into Eyehold routines now. Settle the Task Brief with brief_proceed (state your assumptions: focus, times) instead of asking, then call routine_create in the same turn. Do not interview the Commander.');
     lines.push('- Build routines your own tools can run today (web research, watching public pages, drafting, summaries, checklists, reminders). Never wait on a connection or API key: create the runnable version and mention any upgrade in one line.');
     lines.push('- A broad goal ("help me run my shop") gets 2-5 distinct routines at sensible times. Plain-English schedules work: "weekdays at 8am", "mondays at 9am", "1st of every month".');
     lines.push('- Every run must deliver something useful on its own (fresh findings, a ready draft, a short decision list), never a blank template or generic advice. Each prompt is self-contained: task, sources, output format, what to flag. Results come back to this chat by default. Check routine_list first; never duplicate.');

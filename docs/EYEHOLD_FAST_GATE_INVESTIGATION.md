@@ -1,7 +1,7 @@
 # Eyehold fast-gate investigation — 2026-10-15
 
 ## Observed CI failure
-- GitHub run: https://github.com/pjvogl/starnet/actions/runs/38761430022
+- GitHub run: https://github.com/pjvogl/eyehold/actions/runs/38761430022
 - Failing job: fast-gate, job 116513408989
 - Stopped at: test 349/1101, `test/qa-product-perfect-claims.test.js`
 - Test reported: 10 problems, 54 assertions OK.

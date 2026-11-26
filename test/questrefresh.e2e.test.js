@@ -9,15 +9,15 @@
      byte unchanged quest/refresh stores; an explicit manual refresh still launches and mints afterward.
 
    BOOT 1 — THE HAPPY CHAIN: a never-refreshed save with a dossier + active goal boots; the due cycle fires
-     off the boot look, the mock's grounded QUEST reply mints station-wide generated quests with real
+     off the boot look, the mock's grounded QUEST reply mints keep-wide generated quests with real
      contracts, the north star adopts the Commander's ACTIVE GOAL (user-set outranks inferred), and both
-     `_station.quests.json` and `_station.questrefresh.json` persist.
+     `_keep.quests.json` and `_keep.questrefresh.json` persist.
 
    BOOT 2 — THE HONEST-FAILURE CHAIN: a well-formed reply whose WHY cites nothing observed is rejected by
      the grounding guard — ZERO quests minted, a visible 'rejected' ledger note (never a silent no-mint),
      and the cycle still spends the cadence (no tick-hammering).
 
-   ZERO network, zero real key (SKYNET_OPENROUTER_KEY is a fake routed to the mock). Part of test:http. */
+   ZERO network, zero real key (EYEHOLD_OPENROUTER_KEY is a fake routed to the mock). Part of test:http. */
 'use strict';
 
 const A = require('./_assert.js');
@@ -64,7 +64,7 @@ function startMock(refreshReply) {
 
 function boot(port, env, attemptsLeft) {
   return new Promise((resolve, reject) => {
-    const child = spawn(process.execPath, [INDEX], { env: Object.assign({}, process.env, env, { SKYNET_PORT: String(port) }), stdio: ['ignore', 'pipe', 'pipe'] });
+    const child = spawn(process.execPath, [INDEX], { env: Object.assign({}, process.env, env, { EYEHOLD_PORT: String(port) }), stdio: ['ignore', 'pipe', 'pipe'] });
     let out = '', settled = false;
     const onData = d => {
       out += d.toString();
@@ -101,33 +101,33 @@ async function pollRefresh(B, token, pred, label, ms) {
   const until = Date.now() + (ms || 20000);
   let last = null;
   while (Date.now() < until) {
-    try { last = await (await fetch(B + '/api/quests/refresh', { headers: { 'X-StarNet-Token': token, Origin: B } })).json(); } catch (_) {}
+    try { last = await (await fetch(B + '/api/quests/refresh', { headers: { 'X-Eyehold-Token': token, Origin: B } })).json(); } catch (_) {}
     if (last && pred(last)) return last;
     await sleep(300);
   }
   throw new Error('timed out waiting for: ' + label + '\nlast /api/quests/refresh: ' + JSON.stringify(last));
 }
 
-const QUIET = { SKYNET_THREAD_MINE: '0', SKYNET_SKILL_REVIEW: '0', SKYNET_SKILL_CURATOR: '0', SKYNET_SCOUT: '0' };
+const QUIET = { EYEHOLD_THREAD_MINE: '0', EYEHOLD_SKILL_REVIEW: '0', EYEHOLD_SKILL_CURATOR: '0', EYEHOLD_SCOUT: '0' };
 // the cycle's standalone provider seam: env key + default model route the aux call to the mock.
-const CRED = { SKYNET_OPENROUTER_KEY: 'sk-or-v1-questrefresh-fake', SKYNET_DEFAULT_MODEL: 'test/model' };
+const CRED = { EYEHOLD_OPENROUTER_KEY: 'sk-or-v1-questrefresh-fake', EYEHOLD_DEFAULT_MODEL: 'test/model' };
 
 (async () => {
-  // Automatic and manual auxiliary work share the station's persisted spending pools.
+  // Automatic and manual auxiliary work share the keep's persisted spending pools.
   for (const scope of ['day', 'global', 'unknown']) {
     const mock = await startMock('NONE');
     const ws = fs.mkdtempSync(path.join(os.tmpdir(), 'sk-qrefresh-budget-'));
     seedEvidence(ws); seedAutonomy(ws, 'propose');
     fs.writeFileSync(path.join(ws, 'ledger.jsonl'), scope === 'unknown' ? 'not valid ledger JSON\n'
-      : JSON.stringify({ runId: 'spent', agentId: 'station', usd: 1.25, turns: 1, tokens: 10, model: 'fixture', ts: Date.now() }) + '\n');
+      : JSON.stringify({ runId: 'spent', agentId: 'keep', usd: 1.25, turns: 1, tokens: 10, model: 'fixture', ts: Date.now() }) + '\n');
     let child = null;
     try {
       const up = await boot(9280 + (process.pid % 10), Object.assign({}, CRED, QUIET, {
-        SKYNET_WORKSPACES: ws, SKYNET_OPENROUTER_BASE: mock.base,
-        SKYNET_BUDGET_PER_DAY: scope !== 'global' ? '1' : '0', SKYNET_BUDGET_GLOBAL: scope === 'global' ? '1' : '0'
+        EYEHOLD_WORKSPACES: ws, EYEHOLD_OPENROUTER_BASE: mock.base,
+        EYEHOLD_BUDGET_PER_DAY: scope !== 'global' ? '1' : '0', EYEHOLD_BUDGET_GLOBAL: scope === 'global' ? '1' : '0'
       }), 20); child = up.child;
       const base = 'http://' + HOST + ':' + up.port, token = await bootToken(base, base);
-      const headers = { Origin: base, 'X-StarNet-Token': token, 'Content-Type': 'application/json' };
+      const headers = { Origin: base, 'X-Eyehold-Token': token, 'Content-Type': 'application/json' };
       const post = async (route, body) => (await fetch(base + route, { method: 'POST', headers, body: JSON.stringify(body || {}) })).json();
       const first = await pollRefresh(base, token, s => !s.inFlight && s.ledger.length > 0, 'budget boot decision');
       A.eq(mock.calls.quest, 0, scope + ': boot refresh does not buy a request');
@@ -160,8 +160,8 @@ const CRED = { SKYNET_OPENROUTER_KEY: 'sk-or-v1-questrefresh-fake', SKYNET_DEFAU
     const ws = fs.mkdtempSync(path.join(os.tmpdir(), 'sk-qrefresh-wait-restart-'));
     seedEvidence(ws);
     seedAutonomy(ws, 'wait');
-    const questFile = path.join(ws, '_station.quests.json');
-    const refreshFile = path.join(ws, '_station.questrefresh.json');
+    const questFile = path.join(ws, '_keep.quests.json');
+    const refreshFile = path.join(ws, '_keep.questrefresh.json');
     const seededQuests = JSON.stringify({ v: 1, seq: 0, quests: [], deniedTitles: [] });
     const seededRefresh = JSON.stringify({ v: 1, state: { v: 1, lastCycleAt: 0, lastMintAt: 0, northStar: null, proposedNorthStar: null, pendingQuests: [], declinedNorthStars: [], ledger: [] } });
     fs.writeFileSync(questFile, seededQuests);
@@ -171,12 +171,12 @@ const CRED = { SKYNET_OPENROUTER_KEY: 'sk-or-v1-questrefresh-fake', SKYNET_DEFAU
     let token = '';
     try {
       for (let restart = 0; restart < 2; restart++) {
-        const up = await boot(8975 + (process.pid % 10), Object.assign({ SKYNET_WORKSPACES: ws, SKYNET_OPENROUTER_BASE: mock.base }, CRED, QUIET), 20);
+        const up = await boot(8975 + (process.pid % 10), Object.assign({ EYEHOLD_WORKSPACES: ws, EYEHOLD_OPENROUTER_BASE: mock.base }, CRED, QUIET), 20);
         child = up.child;
         B = 'http://' + HOST + ':' + up.port;
         token = await bootToken(B, B);
         await sleep(3800);   // cross the real three-second boot catch-up on both the original boot and restart
-        const posture = await (await fetch(B + '/api/autonomy/posture', { headers: { 'X-StarNet-Token': token, Origin: B } })).json();
+        const posture = await (await fetch(B + '/api/autonomy/posture', { headers: { 'X-Eyehold-Token': token, Origin: B } })).json();
         A.eq(posture.summary.initiative, 'wait', 'restart ' + (restart + 1) + ': the effective server posture is WAIT');
         A.eq(mock.calls.model, 0, 'restart ' + (restart + 1) + ': WAIT made zero background provider calls');
         A.eq(mock.calls.quest, 0, 'restart ' + (restart + 1) + ': WAIT made zero background quest-provider calls');
@@ -187,11 +187,11 @@ const CRED = { SKYNET_OPENROUTER_KEY: 'sk-or-v1-questrefresh-fake', SKYNET_DEFAU
         await sleep(200);
       }
 
-      const up = await boot(8975 + (process.pid % 10), Object.assign({ SKYNET_WORKSPACES: ws, SKYNET_OPENROUTER_BASE: mock.base }, CRED, QUIET), 20);
+      const up = await boot(8975 + (process.pid % 10), Object.assign({ EYEHOLD_WORKSPACES: ws, EYEHOLD_OPENROUTER_BASE: mock.base }, CRED, QUIET), 20);
       child = up.child;
       B = 'http://' + HOST + ':' + up.port;
       token = await bootToken(B, B);
-      const runRes = await (await fetch(B + '/api/quests/refresh/run', { method: 'POST', headers: { 'X-StarNet-Token': token, Origin: B } })).json();
+      const runRes = await (await fetch(B + '/api/quests/refresh/run', { method: 'POST', headers: { 'X-Eyehold-Token': token, Origin: B } })).json();
       A.ok(runRes.ok && runRes.started, 'WAIT preserves explicit manual REFRESH QUESTS authority');
       await pollRefresh(B, token, p => (p.ledger || []).some(e => e.outcome === 'minted'), 'the WAIT-posture manual refresh minting');
       A.eq(mock.calls.model, 1, 'manual refresh made exactly one provider call after two WAIT boots');
@@ -212,10 +212,10 @@ const CRED = { SKYNET_OPENROUTER_KEY: 'sk-or-v1-questrefresh-fake', SKYNET_DEFAU
     seedEvidence(ws); seedAutonomy(ws, 'wait');
     let child = null;
     try {
-      let up = await boot(9125 + (process.pid % 10), Object.assign({ SKYNET_WORKSPACES: ws }, CRED, QUIET), 20);
+      let up = await boot(9125 + (process.pid % 10), Object.assign({ EYEHOLD_WORKSPACES: ws }, CRED, QUIET), 20);
       child = up.child;
       let base = 'http://' + HOST + ':' + up.port, token = await bootToken(base, base);
-      const post = async (route, body) => (await fetch(base + route, { method: 'POST', headers: { Origin: base, 'X-StarNet-Token': token, 'Content-Type': 'application/json' }, body: JSON.stringify(body) })).json();
+      const post = async (route, body) => (await fetch(base + route, { method: 'POST', headers: { Origin: base, 'X-Eyehold-Token': token, 'Content-Type': 'application/json' }, body: JSON.stringify(body) })).json();
       const minted = await post('/api/quests/mint', { title: 'Attend a practice class', contract: { type: 'attest', key: '' }, domain: 'growth', executionMode: 'commander' });
       A.ok(minted.ok, 'real route creates a Commander action');
       const unauthorized = await fetch(base + '/api/quests/report', { method: 'POST', headers: { Origin: 'https://hostile.invalid', 'Content-Type': 'application/json' }, body: JSON.stringify({ id: minted.id, evidence: 'Unauthorized completion claim' }) });
@@ -223,19 +223,19 @@ const CRED = { SKYNET_OPENROUTER_KEY: 'sk-or-v1-questrefresh-fake', SKYNET_DEFAU
       const paused = await post('/api/quests/disposition', { id: minted.id, disposition: 'too_big', reason: 'Need a beginner class first' });
       A.ok(paused.ok && paused.quest.disposition.type === 'too_big', 'real route retains a too-big reason');
       child.kill(); await new Promise(resolve => child.once('exit', resolve)); child = null;
-      up = await boot(up.port, Object.assign({ SKYNET_WORKSPACES: ws }, CRED, QUIET), 20); child = up.child;
+      up = await boot(up.port, Object.assign({ EYEHOLD_WORKSPACES: ws }, CRED, QUIET), 20); child = up.child;
       base = 'http://' + HOST + ':' + up.port; token = await bootToken(base, base);
-      const persisted = await (await fetch(base + '/api/quests', { headers: { Origin: base, 'X-StarNet-Token': token } })).json();
+      const persisted = await (await fetch(base + '/api/quests', { headers: { Origin: base, 'X-Eyehold-Token': token } })).json();
       A.eq(persisted.quests.find(q => q.id === minted.id).disposition.reason, 'Need a beginner class first', 'pause survives sidecar restart');
       A.ok((await post('/api/quests/disposition', { id: minted.id, disposition: 'resume' })).ok, 'real route resumes the action');
       const report = await post('/api/quests/report', { id: minted.id, evidence: 'I attended the beginner class this morning' });
       A.ok(report.ok && report.quest.status === 'done' && report.quest.attest.source === 'commander', 'only Commander report completes real-world action with source');
-      const journey = await (await fetch(base + '/api/journey', { headers: { Origin: base, 'X-StarNet-Token': token } })).json();
+      const journey = await (await fetch(base + '/api/journey', { headers: { Origin: base, 'X-Eyehold-Token': token } })).json();
       A.ok(journey.journey.outcomes.some(o => o.questId === minted.id && o.verifiedBy === 'commander-confirmed'), 'life action folds into Journey with Commander-confirmed provenance');
       child.kill(); await new Promise(resolve => child.once('exit', resolve)); child = null;
-      up = await boot(up.port, Object.assign({ SKYNET_WORKSPACES: ws }, CRED, QUIET), 20); child = up.child;
+      up = await boot(up.port, Object.assign({ EYEHOLD_WORKSPACES: ws }, CRED, QUIET), 20); child = up.child;
       base = 'http://' + HOST + ':' + up.port; token = await bootToken(base, base);
-      const final = await (await fetch(base + '/api/quests', { headers: { Origin: base, 'X-StarNet-Token': token } })).json();
+      const final = await (await fetch(base + '/api/quests', { headers: { Origin: base, 'X-Eyehold-Token': token } })).json();
       const done = final.quests.find(q => q.id === minted.id);
       A.ok(done.status === 'done' && done.attest.confirmed && done.attest.evidence.includes('beginner class'), 'completion evidence survives second sidecar restart');
     } finally {
@@ -255,9 +255,9 @@ const CRED = { SKYNET_OPENROUTER_KEY: 'sk-or-v1-questrefresh-fake', SKYNET_DEFAU
     seedEvidence(ws); seedAutonomy(ws, 'wait');
     let child = null;
     try {
-      const up = await boot(9165 + (process.pid % 10), Object.assign({ SKYNET_WORKSPACES: ws, SKYNET_OPENROUTER_BASE: mock.base }, CRED, QUIET), 20); child = up.child;
+      const up = await boot(9165 + (process.pid % 10), Object.assign({ EYEHOLD_WORKSPACES: ws, EYEHOLD_OPENROUTER_BASE: mock.base }, CRED, QUIET), 20); child = up.child;
       const base = 'http://' + HOST + ':' + up.port, token = await bootToken(base, base);
-      const headers = { Origin: base, 'X-StarNet-Token': token, 'Content-Type': 'application/json' };
+      const headers = { Origin: base, 'X-Eyehold-Token': token, 'Content-Type': 'application/json' };
       const post = async (route, body) => (await fetch(base + route, { method: 'POST', headers, body: JSON.stringify(body || {}) })).json();
       const list = async () => (await (await fetch(base + '/api/quests', { headers })).json()).quests;
       for (let i = 0; i < 3; i++) A.ok((await post('/api/quests/mint', { title: 'Old focus episode ' + i, kind: 'generated', goalId: 'old', contract: { type: 'attest', key: '' } })).ok, 'old focused goal fills its slate');
@@ -314,9 +314,9 @@ const CRED = { SKYNET_OPENROUTER_KEY: 'sk-or-v1-questrefresh-fake', SKYNET_DEFAU
       'WHY: growing the youtube channel needs recurring guest research'
     ].join('\n'));
     const ws = fs.mkdtempSync(path.join(os.tmpdir(), 'sk-qrefresh-e2e-'));
-    seedEvidence(ws);   // NO _station.questrefresh.json: a never-cycled state is due at the boot look
+    seedEvidence(ws);   // NO _keep.questrefresh.json: a never-cycled state is due at the boot look
     seedAutonomy(ws);
-    const { child, port } = await boot(8985 + (process.pid % 10), Object.assign({ SKYNET_WORKSPACES: ws, SKYNET_OPENROUTER_BASE: mock.base }, CRED, QUIET), 20);
+    const { child, port } = await boot(8985 + (process.pid % 10), Object.assign({ EYEHOLD_WORKSPACES: ws, EYEHOLD_OPENROUTER_BASE: mock.base }, CRED, QUIET), 20);
     const B = 'http://' + HOST + ':' + port;
     try {
       const token = await bootToken(B, B);
@@ -331,33 +331,33 @@ const CRED = { SKYNET_OPENROUTER_KEY: 'sk-or-v1-questrefresh-fake', SKYNET_DEFAU
       A.ok(st.lastCycleAt > 0, 'the cycle spent the cadence (lastCycleAt stamped)');
       A.eq(st.ledger.filter(e => e.outcome === 'minted').length, 2, 'both grounded quests minted');
 
-      // the quests are REAL ledger quests (GET /api/quests), station-wide, contract-carrying.
-      const q = await (await fetch(B + '/api/quests', { headers: { 'X-StarNet-Token': token, Origin: B } })).json();
+      // the quests are REAL ledger quests (GET /api/quests), keep-wide, contract-carrying.
+      const q = await (await fetch(B + '/api/quests', { headers: { 'X-Eyehold-Token': token, Origin: B } })).json();
       const minted = (q.quests || []).filter(x => x.createdBy === 'system:quest-refresh');
       A.eq(minted.length, 2, 'GET /api/quests serves the two minted quests');
       const ep = minted.find(x => x.title === 'Publish episode 3');
-      A.ok(ep && ep.contract.type === 'attest' && ep.agentId === null && ep.kind === 'generated', 'attest quest: station-wide, kind generated');
+      A.ok(ep && ep.contract.type === 'attest' && ep.agentId === null && ep.kind === 'generated', 'attest quest: keep-wide, kind generated');
       A.eq(ep.steps.map(s => s.label), ['final cut', 'thumbnail', 'upload'], 'steps rode through the store');
       const dish = minted.find(x => x.title === 'Put guest research on tap');
       A.ok(dish && dish.contract.type === 'prop' && dish.contract.key === 'dish', 'prop quest carries the placeable contract key');
       A.ok(ep.groundedIn && ep.groundedIn.indexOf('episode 3') >= 0, 'groundedIn cites the real evidence');
 
       // durable truth on disk (restart-safety is the point of the harness-owned ledger).
-      const onDiskQuests = JSON.parse(fs.readFileSync(path.join(ws, '_station.quests.json'), 'utf8'));
-      A.ok(JSON.stringify(onDiskQuests).indexOf('Publish episode 3') >= 0, '_station.quests.json persisted the mint');
-      const onDiskState = JSON.parse(fs.readFileSync(path.join(ws, '_station.questrefresh.json'), 'utf8'));
-      A.ok(onDiskState.state && onDiskState.state.northStar && onDiskState.state.northStar.source === 'goal', '_station.questrefresh.json persisted the north star');
+      const onDiskQuests = JSON.parse(fs.readFileSync(path.join(ws, '_keep.quests.json'), 'utf8'));
+      A.ok(JSON.stringify(onDiskQuests).indexOf('Publish episode 3') >= 0, '_keep.quests.json persisted the mint');
+      const onDiskState = JSON.parse(fs.readFileSync(path.join(ws, '_keep.questrefresh.json'), 'utf8'));
+      A.ok(onDiskState.state && onDiskState.state.northStar && onDiskState.state.northStar.source === 'goal', '_keep.questrefresh.json persisted the north star');
 
       // MANUAL OVERRIDE: POST /refresh/run fires a real cycle NOW (gates bypassed). The mock replays the
       // same two quests — both titles are now OPEN, so the parse dedup drops them and the cycle records an
       // honest 'rejected' (proving the route ran a full real cycle, and dup-mint spam is impossible).
-      const runRes = await (await fetch(B + '/api/quests/refresh/run', { method: 'POST', headers: { 'X-StarNet-Token': token, Origin: B } })).json();
+      const runRes = await (await fetch(B + '/api/quests/refresh/run', { method: 'POST', headers: { 'X-Eyehold-Token': token, Origin: B } })).json();
       A.ok(runRes.ok && runRes.started, 'the manual refresh route launches a cycle');
       const st2 = await pollRefresh(B, token,
         p => (p.ledger || []).some(e => e.outcome === 'rejected'),
         'the manual cycle deduping the replayed quests');
       A.eq(st2.ledger.filter(e => e.outcome === 'minted').length, 2, 'the manual re-run minted NOTHING new (dedup held)');
-      const q2 = await (await fetch(B + '/api/quests', { headers: { 'X-StarNet-Token': token, Origin: B } })).json();
+      const q2 = await (await fetch(B + '/api/quests', { headers: { 'X-Eyehold-Token': token, Origin: B } })).json();
       A.eq((q2.quests || []).filter(x => x.createdBy === 'system:quest-refresh').length, 2, 'still exactly two quests on the ledger');
     } finally {
       try { child.kill(); } catch (_) {}
@@ -372,7 +372,7 @@ const CRED = { SKYNET_OPENROUTER_KEY: 'sk-or-v1-questrefresh-fake', SKYNET_DEFAU
     const mock = await startMock([
       'NORTH_STAR: Achieve maximum synergy',
       'QUEST: Embrace the grindset',
-      'DESC: A quest citing nothing the station observed.',
+      'DESC: A quest citing nothing the keep observed.',
       'REWARD: vibes',
       'CONTRACT: attest',
       'WHY: hustle culture demands relentless morning routines'   // ungroundable: cites nothing real
@@ -380,7 +380,7 @@ const CRED = { SKYNET_OPENROUTER_KEY: 'sk-or-v1-questrefresh-fake', SKYNET_DEFAU
     const ws = fs.mkdtempSync(path.join(os.tmpdir(), 'sk-qrefresh-e2e-'));
     seedEvidence(ws);
     seedAutonomy(ws);
-    const { child, port } = await boot(8995 + (process.pid % 10), Object.assign({ SKYNET_WORKSPACES: ws, SKYNET_OPENROUTER_BASE: mock.base }, CRED, QUIET), 20);
+    const { child, port } = await boot(8995 + (process.pid % 10), Object.assign({ EYEHOLD_WORKSPACES: ws, EYEHOLD_OPENROUTER_BASE: mock.base }, CRED, QUIET), 20);
     const B = 'http://' + HOST + ':' + port;
     try {
       const token = await bootToken(B, B);
@@ -390,7 +390,7 @@ const CRED = { SKYNET_OPENROUTER_KEY: 'sk-or-v1-questrefresh-fake', SKYNET_DEFAU
       A.ok(true, 'HONEST FAILURE: the ungrounded reply was rejected AND the ledger says so');
       A.ok(!(st.ledger || []).some(e => e.outcome === 'minted'), 'nothing minted from the invented pitch');
       A.ok(st.lastCycleAt > 0, 'the failed attempt still spent the cadence (no tick-hammering)');
-      const q = await (await fetch(B + '/api/quests', { headers: { 'X-StarNet-Token': token, Origin: B } })).json();
+      const q = await (await fetch(B + '/api/quests', { headers: { 'X-Eyehold-Token': token, Origin: B } })).json();
       A.eq((q.quests || []).filter(x => x.createdBy === 'system:quest-refresh').length, 0, 'the quest ledger stayed clean');
     } finally {
       try { child.kill(); } catch (_) {}
@@ -406,7 +406,7 @@ const CRED = { SKYNET_OPENROUTER_KEY: 'sk-or-v1-questrefresh-fake', SKYNET_DEFAU
     const ws = fs.mkdtempSync(path.join(os.tmpdir(), 'sk-qrefresh-e2e-'));
     // NO dossier, NO goal, NO activity: the due boot-look cycle must SKIP before spending the model call.
     seedAutonomy(ws);
-    const { child, port } = await boot(9005 + (process.pid % 10), Object.assign({ SKYNET_WORKSPACES: ws, SKYNET_OPENROUTER_BASE: mock.base }, CRED, QUIET), 20);
+    const { child, port } = await boot(9005 + (process.pid % 10), Object.assign({ EYEHOLD_WORKSPACES: ws, EYEHOLD_OPENROUTER_BASE: mock.base }, CRED, QUIET), 20);
     const B = 'http://' + HOST + ':' + port;
     try {
       const token = await bootToken(B, B);
@@ -431,12 +431,12 @@ const CRED = { SKYNET_OPENROUTER_KEY: 'sk-or-v1-questrefresh-fake', SKYNET_DEFAU
     const ws = fs.mkdtempSync(path.join(os.tmpdir(), 'sk-qrefresh-e2e-'));
     seedEvidence(ws);   // full evidence — proving the skip is the SLATE-FULL guard, not the cold-save guard
     seedAutonomy(ws);
-    // seed the store already at the cap: 3 OPEN station-wide (agentId:null) generated quests.
-    fs.writeFileSync(path.join(ws, '_station.quests.json'), JSON.stringify({ v: 1, seq: 3, quests: [1, 2, 3].map(i => ({
+    // seed the store already at the cap: 3 OPEN keep-wide (agentId:null) generated quests.
+    fs.writeFileSync(path.join(ws, '_keep.quests.json'), JSON.stringify({ v: 1, seq: 3, quests: [1, 2, 3].map(i => ({
       id: 'q:' + i, title: 'Seeded generated ' + i, kind: 'generated', agentId: null, createdBy: 'system:quest-refresh',
       contract: { type: 'attest', key: '' }, status: 'open', createdAt: 1
     })) }));
-    const { child, port } = await boot(9015 + (process.pid % 10), Object.assign({ SKYNET_WORKSPACES: ws, SKYNET_OPENROUTER_BASE: mock.base }, CRED, QUIET), 20);
+    const { child, port } = await boot(9015 + (process.pid % 10), Object.assign({ EYEHOLD_WORKSPACES: ws, EYEHOLD_OPENROUTER_BASE: mock.base }, CRED, QUIET), 20);
     const B = 'http://' + HOST + ':' + port;
     try {
       const token = await bootToken(B, B);
@@ -472,9 +472,9 @@ const CRED = { SKYNET_OPENROUTER_KEY: 'sk-or-v1-questrefresh-fake', SKYNET_DEFAU
     fs.writeFileSync(path.join(ws, '_commander.dossier.json'), JSON.stringify({
       block: 'COMMANDER DOSSIER\n- Goals: grow the youtube channel to sustainable income\n- Stack: davinci resolve, notion'
     }));
-    const { child, port } = await boot(9025 + (process.pid % 10), Object.assign({ SKYNET_WORKSPACES: ws, SKYNET_OPENROUTER_BASE: mock.base }, CRED, QUIET), 20);
+    const { child, port } = await boot(9025 + (process.pid % 10), Object.assign({ EYEHOLD_WORKSPACES: ws, EYEHOLD_OPENROUTER_BASE: mock.base }, CRED, QUIET), 20);
     const B = 'http://' + HOST + ':' + port;
-    const post = (body) => fetch(B + '/api/quests/refresh/northstar', { method: 'POST', headers: { 'X-StarNet-Token': token, Origin: B, 'Content-Type': 'application/json' }, body: JSON.stringify(body) }).then(r => r.json());
+    const post = (body) => fetch(B + '/api/quests/refresh/northstar', { method: 'POST', headers: { 'X-Eyehold-Token': token, Origin: B, 'Content-Type': 'application/json' }, body: JSON.stringify(body) }).then(r => r.json());
     let token;
     try {
       token = await bootToken(B, B);
@@ -489,10 +489,10 @@ const CRED = { SKYNET_OPENROUTER_KEY: 'sk-or-v1-questrefresh-fake', SKYNET_DEFAU
       // only the Commander's confirm may turn it into the open quest ledger.
       A.ok((st.ledger || []).some(e => e.outcome === 'staged'), 'quests inferred under the proposal remain staged');
       A.eq(st.pendingQuestCount, 1, 'status exposes the pending quest count without claiming an open quest');
-      const beforeQuests = await (await fetch(B + '/api/quests', { headers: { 'X-StarNet-Token': token, Origin: B } })).json();
+      const beforeQuests = await (await fetch(B + '/api/quests', { headers: { 'X-Eyehold-Token': token, Origin: B } })).json();
       A.eq((beforeQuests.quests || []).filter(x => x.createdBy === 'system:quest-refresh').length, 0, 'no quest mints before direction confirmation');
       // on-disk: the proposal is durable, the adopted star is still empty (nothing silently persisted as adopted).
-      const disk = JSON.parse(fs.readFileSync(path.join(ws, '_station.questrefresh.json'), 'utf8')).state;
+      const disk = JSON.parse(fs.readFileSync(path.join(ws, '_keep.questrefresh.json'), 'utf8')).state;
       A.ok(disk.proposedNorthStar && disk.proposedNorthStar.text === STAR, 'the proposal persisted to disk');
       A.ok(!disk.northStar, 'nothing was silently adopted');
 
@@ -501,18 +501,18 @@ const CRED = { SKYNET_OPENROUTER_KEY: 'sk-or-v1-questrefresh-fake', SKYNET_DEFAU
       A.ok(cRes.ok && cRes.applied, 'the confirm verdict applied');
       A.eq(cRes.minted, 1, 'confirm mints the staged quest batch');
       A.eq(cRes.northStarProposed, false, 'after confirm no proposal is pending');
-      const recs = await (await fetch(B + '/api/recommendations', { headers: { 'X-StarNet-Token': token, Origin: B } })).json();
+      const recs = await (await fetch(B + '/api/recommendations', { headers: { 'X-Eyehold-Token': token, Origin: B } })).json();
       const adoptedDirection = (recs.entries || []).find(e => e.surface === 'northstar' && e.title === STAR);
       A.ok(adoptedDirection && adoptedDirection.outcome.adopted === true, 'confirmed northstar records explicit adoption');
       A.eq(adoptedDirection && adoptedDirection.outcome.quality, 0, 'northstar confirmation does not invent satisfaction');
-      const after = await (await fetch(B + '/api/quests/refresh', { headers: { 'X-StarNet-Token': token, Origin: B } })).json();
+      const after = await (await fetch(B + '/api/quests/refresh', { headers: { 'X-Eyehold-Token': token, Origin: B } })).json();
       A.eq(after.northStar.status, 'adopted', 'the confirmed star reads adopted');
       A.eq(after.northStar.text, STAR, 'the adopted star is the one the Commander confirmed');
       A.eq(after.northStarProposed, false, 'no proposal pending after confirm');
       A.eq(after.pendingQuestCount, 0, 'the staged quest batch clears after confirm');
-      const afterQuests = await (await fetch(B + '/api/quests', { headers: { 'X-StarNet-Token': token, Origin: B } })).json();
+      const afterQuests = await (await fetch(B + '/api/quests', { headers: { 'X-Eyehold-Token': token, Origin: B } })).json();
       A.eq((afterQuests.quests || []).filter(x => x.createdBy === 'system:quest-refresh').length, 1, 'the quest becomes open only after confirmation');
-      const disk2 = JSON.parse(fs.readFileSync(path.join(ws, '_station.questrefresh.json'), 'utf8')).state;
+      const disk2 = JSON.parse(fs.readFileSync(path.join(ws, '_keep.questrefresh.json'), 'utf8')).state;
       A.ok(disk2.northStar && disk2.northStar.text === STAR && !disk2.proposedNorthStar, 'confirm persisted the adoption + cleared the proposal');
     } finally {
       try { child.kill(); } catch (_) {}
@@ -548,7 +548,7 @@ const CRED = { SKYNET_OPENROUTER_KEY: 'sk-or-v1-questrefresh-fake', SKYNET_DEFAU
       threads: [{ id: 't:1', title: 'Publish episode 3', spec: '', state: 'declined', declineReason: 'not now', createdAt: 1, updatedAt: 1 }],
       declined: []
     }));
-    const { child, port } = await boot(9035 + (process.pid % 10), Object.assign({ SKYNET_WORKSPACES: ws, SKYNET_OPENROUTER_BASE: mock.base }, CRED, QUIET), 20);
+    const { child, port } = await boot(9035 + (process.pid % 10), Object.assign({ EYEHOLD_WORKSPACES: ws, EYEHOLD_OPENROUTER_BASE: mock.base }, CRED, QUIET), 20);
     const B = 'http://' + HOST + ':' + port;
     try {
       const token = await bootToken(B, B);
@@ -559,7 +559,7 @@ const CRED = { SKYNET_OPENROUTER_KEY: 'sk-or-v1-questrefresh-fake', SKYNET_DEFAU
       A.ok((st.ledger || []).some(e => e.outcome === 'rejected' && /declined elsewhere/i.test(e.reason) && e.title === 'Publish episode 3'),
         "CROSS-WIRE: the quest whose title was declined as a thread is rejected 'declined elsewhere'");
       A.eq(st.ledger.filter(e => e.outcome === 'minted').length, 1, 'exactly one quest minted (the cross-engine decline suppressed the other)');
-      const q = await (await fetch(B + '/api/quests', { headers: { 'X-StarNet-Token': token, Origin: B } })).json();
+      const q = await (await fetch(B + '/api/quests', { headers: { 'X-Eyehold-Token': token, Origin: B } })).json();
       const minted = (q.quests || []).filter(x => x.createdBy === 'system:quest-refresh');
       A.eq(minted.length, 1, 'GET /api/quests serves only the non-declined quest');
       A.ok(minted.some(x => x.title === 'Put guest research on tap'), 'the non-declined quest minted');

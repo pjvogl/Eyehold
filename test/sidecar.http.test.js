@@ -1,5 +1,5 @@
 /* node test/sidecar.http.test.js — boot-level end-to-end test of the real Node host (sidecar/index.js).
-   Spawns the actual server as a child process against an ISOLATED temp workspace (SKYNET_WORKSPACES) on an
+   Spawns the actual server as a child process against an ISOLATED temp workspace (EYEHOLD_WORKSPACES) on an
    ephemeral port, then drives the cost-spine HTTP surface over real sockets:
      - GET  /api/health
      - GET  /api/budget/status        (reads a PRE-SEEDED ledger -> pools reflect persisted spend)
@@ -32,76 +32,76 @@ function boot(port, workspaces, attemptsLeft, extraEnv) {
   return new Promise((resolve, reject) => {
     const child = spawn(process.execPath, [INDEX], {
       env: Object.assign({}, process.env, {
-        SKYNET_PORT: String(port),
-        SKYNET_WORKSPACES: workspaces,
+        EYEHOLD_PORT: String(port),
+        EYEHOLD_WORKSPACES: workspaces,
         // keep the managed-credits path OFF for the default boot so /api/credits proves the unconfigured 404 path
         // deterministically (a dev machine with these set in the ambient env would otherwise flip the assertion).
-        STARNET_CREDITS_URL: '', SKYNET_CREDITS_URL: '',
-        STARNET_CREDITS_API_KEY: '', SKYNET_CREDITS_API_KEY: '',
-        STARNET_CREDITS_ACCOUNT: '', SKYNET_CREDITS_ACCOUNT: '',
-        SKYNET_IPC_TOKEN: IPC_TOKEN,
+        EYEHOLD_CREDITS_URL: '', EYEHOLD_CREDITS_URL: '',
+        EYEHOLD_CREDITS_API_KEY: '', EYEHOLD_CREDITS_API_KEY: '',
+        EYEHOLD_CREDITS_ACCOUNT: '', EYEHOLD_CREDITS_ACCOUNT: '',
+        EYEHOLD_IPC_TOKEN: IPC_TOKEN,
         // clear the OpenRouter key so the voice routes' no-key fallback path is deterministic (a dev machine
         // with the key in its ambient env would otherwise hit the network and flip the {text:''} assertions).
-        OPENROUTER_KEY: '', STARNET_OPENROUTER_KEY: '', SKYNET_OPENROUTER_KEY: '',
-        OPENROUTER_API_KEY: '', STARNET_OPENROUTER_API_KEY: '', SKYNET_OPENROUTER_API_KEY: '',
+        OPENROUTER_KEY: '', EYEHOLD_OPENROUTER_KEY: '', EYEHOLD_OPENROUTER_KEY: '',
+        OPENROUTER_API_KEY: '', EYEHOLD_OPENROUTER_API_KEY: '', EYEHOLD_OPENROUTER_API_KEY: '',
         ELEVENLABS_API_KEY: '',   // same determinism for the ElevenLabs TTS branch's no-key degrade
         // V-EDGE: disable the free Edge neural floor in the DEFAULT boot so the no-key TTS test degrades to
         // {fallback:true} deterministically without any network attempt. The dedicated edge-loopback boot below
-        // re-enables it (SKYNET_EDGE_TTS + host/port overrides) to prove the round-trip offline.
-        SKYNET_EDGE_TTS: '0', STARNET_EDGE_TTS: '0',
+        // re-enables it (EYEHOLD_EDGE_TTS + host/port overrides) to prove the round-trip offline.
+        EYEHOLD_EDGE_TTS: '0', EYEHOLD_EDGE_TTS: '0',
         // /api/tts now resolves a CHAIN of credentials (openrouter → gemini → openai) — clear the Gemini
         // keys too, or an ambient dev key would hit the network and flip the no-key degrade assertions.
-        GEMINI_API_KEY: '', STARNET_GEMINI_API_KEY: '', SKYNET_GEMINI_API_KEY: '',
-        GOOGLE_API_KEY: '', STARNET_GOOGLE_API_KEY: '', SKYNET_GOOGLE_API_KEY: '',
-        GOOGLE_AI_API_KEY: '', STARNET_GOOGLE_AI_API_KEY: '', SKYNET_GOOGLE_AI_API_KEY: '',
+        GEMINI_API_KEY: '', EYEHOLD_GEMINI_API_KEY: '', EYEHOLD_GEMINI_API_KEY: '',
+        GOOGLE_API_KEY: '', EYEHOLD_GOOGLE_API_KEY: '', EYEHOLD_GOOGLE_API_KEY: '',
+        GOOGLE_AI_API_KEY: '', EYEHOLD_GOOGLE_AI_API_KEY: '', EYEHOLD_GOOGLE_AI_API_KEY: '',
         OPENAI_API_KEY: '',
-        STARNET_OPENAI_API_KEY: '',
-        SKYNET_OPENAI_API_KEY: '',
+        EYEHOLD_OPENAI_API_KEY: '',
+        EYEHOLD_OPENAI_API_KEY: '',
         CUSTOM_OPENAI_KEY: '',
-        STARNET_CUSTOM_OPENAI_KEY: '',
-        SKYNET_CUSTOM_OPENAI_KEY: '',
+        EYEHOLD_CUSTOM_OPENAI_KEY: '',
+        EYEHOLD_CUSTOM_OPENAI_KEY: '',
         XAI_API_KEY: '',
-        STARNET_XAI_API_KEY: '',
-        SKYNET_XAI_API_KEY: '',
+        EYEHOLD_XAI_API_KEY: '',
+        EYEHOLD_XAI_API_KEY: '',
         X_AI_API_KEY: '',
-        STARNET_X_AI_API_KEY: '',
-        SKYNET_X_AI_API_KEY: '',
+        EYEHOLD_X_AI_API_KEY: '',
+        EYEHOLD_X_AI_API_KEY: '',
         GROQ_API_KEY: '',
-        STARNET_GROQ_API_KEY: '',
-        SKYNET_GROQ_API_KEY: '',
+        EYEHOLD_GROQ_API_KEY: '',
+        EYEHOLD_GROQ_API_KEY: '',
         MISTRAL_API_KEY: '',
-        STARNET_MISTRAL_API_KEY: '',
-        SKYNET_MISTRAL_API_KEY: '',
+        EYEHOLD_MISTRAL_API_KEY: '',
+        EYEHOLD_MISTRAL_API_KEY: '',
         DEEPSEEK_API_KEY: '',
-        STARNET_DEEPSEEK_API_KEY: '',
-        SKYNET_DEEPSEEK_API_KEY: '',
+        EYEHOLD_DEEPSEEK_API_KEY: '',
+        EYEHOLD_DEEPSEEK_API_KEY: '',
         TOGETHER_API_KEY: '',
-        STARNET_TOGETHER_API_KEY: '',
-        SKYNET_TOGETHER_API_KEY: '',
+        EYEHOLD_TOGETHER_API_KEY: '',
+        EYEHOLD_TOGETHER_API_KEY: '',
         FIREWORKS_API_KEY: '',
-        STARNET_FIREWORKS_API_KEY: '',
-        SKYNET_FIREWORKS_API_KEY: '',
+        EYEHOLD_FIREWORKS_API_KEY: '',
+        EYEHOLD_FIREWORKS_API_KEY: '',
         PERPLEXITY_API_KEY: '',
-        STARNET_PERPLEXITY_API_KEY: '',
-        SKYNET_PERPLEXITY_API_KEY: '',
+        EYEHOLD_PERPLEXITY_API_KEY: '',
+        EYEHOLD_PERPLEXITY_API_KEY: '',
         CEREBRAS_API_KEY: '',
-        STARNET_CEREBRAS_API_KEY: '',
-        SKYNET_CEREBRAS_API_KEY: '',
+        EYEHOLD_CEREBRAS_API_KEY: '',
+        EYEHOLD_CEREBRAS_API_KEY: '',
         CUSTOM_OPENAI_BASE_URL: '',
-        STARNET_CUSTOM_OPENAI_BASE_URL: '',
-        SKYNET_CUSTOM_OPENAI_BASE_URL: '',
-        // GROUND_UP_AUDIT P2: the packaged app injects its version via STARNET_APP_VERSION (src-tauri/ isn't a
+        EYEHOLD_CUSTOM_OPENAI_BASE_URL: '',
+        EYEHOLD_CUSTOM_OPENAI_BASE_URL: '',
+        // GROUND_UP_AUDIT P2: the packaged app injects its version via EYEHOLD_APP_VERSION (src-tauri/ isn't a
         // bundled resource, so /api/version's conf lookup returns blank there). Set it so /api/version proves the
         // Budget-legibility pass (2026-07-23): the SHIPPED defaults are now perRun $10 with every cross-run pool
         // UNGOVERNED (0). This suite's budget assertions prove ENFORCEMENT mechanics (status pools, one-click
         // resume), so pin the old governed caps via env — deterministic regardless of shipped defaults or a dev
-        // machine's ambient SKYNET_BUDGET_* values.
-        SKYNET_BUDGET_PER_RUN: '3', SKYNET_BUDGET_PER_AGENT: '5', SKYNET_BUDGET_PER_DAY: '40', SKYNET_BUDGET_GLOBAL: '100',
+        // machine's ambient EYEHOLD_BUDGET_* values.
+        EYEHOLD_BUDGET_PER_RUN: '3', EYEHOLD_BUDGET_PER_AGENT: '5', EYEHOLD_BUDGET_PER_DAY: '40', EYEHOLD_BUDGET_GLOBAL: '100',
         // env-first fallback + honest appSource='env' below.
-        STARNET_APP_VERSION: '9.9.9-http-test',
+        EYEHOLD_APP_VERSION: '9.9.9-http-test',
         // Clear any ambient build stamp so the DEFAULT boot deterministically exercises the harness git-describe
         // fallback (harnessSource='git'); a per-boot `extraEnv` (below) sets it to prove the env override wins.
-        STARNET_BUILD_DESCRIBE: '', SKYNET_BUILD_DESCRIBE: ''
+        EYEHOLD_BUILD_DESCRIBE: '', EYEHOLD_BUILD_DESCRIBE: ''
       }, extraEnv || {}),
       stdio: ['ignore', 'pipe', 'pipe']
     });
@@ -151,7 +151,7 @@ function boot(port, workspaces, attemptsLeft, extraEnv) {
   let apiToken = '';
   const j = async (m, p, body) => {
     const headers = { 'Content-Type': 'application/json' };
-    if (apiToken) headers['X-StarNet-Token'] = apiToken;   // hardened: GET data routes need the token too now
+    if (apiToken) headers['X-Eyehold-Token'] = apiToken;   // hardened: GET data routes need the token too now
     const r = await fetch(B + p, { method: m, headers, body: body ? JSON.stringify(body) : undefined });
     const t = await r.text(); let v; try { v = JSON.parse(t); } catch (_) { v = t; }
     return { status: r.status, body: v };
@@ -165,14 +165,14 @@ function boot(port, workspaces, attemptsLeft, extraEnv) {
 
     // the served page injects the token for browser mode (the primary delivery path)
     const injected = await (await fetch(B + '/')).text();
-    A.ok(/__STARNET_API_TOKEN__/.test(injected), 'served index.html bootstraps the API token for browser mode');
+    A.ok(/__EYEHOLD_API_TOKEN__/.test(injected), 'served index.html bootstraps the API token for browser mode');
     apiToken = await bootToken(B, B);
     A.ok(apiToken.length >= 32, 'served index.html carries a high-entropy API token');
-    const tok = { 'X-StarNet-Token': apiToken };
+    const tok = { 'X-Eyehold-Token': apiToken };
     const tauriOrigin = 'http://tauri.localhost';
 
     const sessNoToken = await fetch(B + '/api/session', { method: 'POST', headers: { Origin: B } });
-    A.eq(sessNoToken.status, 403, 'POST /api/session without X-StarNet-Token -> 403');
+    A.eq(sessNoToken.status, 403, 'POST /api/session without X-Eyehold-Token -> 403');
     const sess = await fetch(B + '/api/session', { method: 'POST', headers: Object.assign({ Origin: B }, tok) });
     A.eq(sess.status, 200, 'POST /api/session with token -> 200');
     const sessBody = await sess.json();
@@ -219,7 +219,7 @@ function boot(port, workspaces, attemptsLeft, extraEnv) {
     const desktopDiagResponse = await fetch(B + '/api/diagnostics', { headers: Object.assign({ Origin: tauriOrigin }, tok) });
     const desktopDiag = await desktopDiagResponse.json();
     A.eq(desktopDiag.report.mode, 'desktop', 'http://tauri.localhost is classified as the packaged desktop origin');
-    A.ok(/StarNet diagnostics/.test(diag.body.text), 'the block is clearly fenced');
+    A.ok(/Eyehold diagnostics/.test(diag.body.text), 'the block is clearly fenced');
     A.ok(/no keys, tokens, or message content/.test(diag.body.text), 'the block states it carries no secrets');
     A.eq(typeof diag.body.report.keyPresent, 'boolean', 'keyPresent is a boolean, never the key itself');
     // the pre-seeded discord channel carries a fake OpenRouter key (sk-or-v1-fake-discord) + a bot token — NEITHER
@@ -236,7 +236,7 @@ function boot(port, workspaces, attemptsLeft, extraEnv) {
     A.eq(doctorNoConsent.body.code, 'LIVE_DOCTOR_CONSENT_REQUIRED', 'live doctor refusal names the missing consent gate');
 
     // ---- managed credits: UNCONFIGURED boot exposes ZERO surface (honesty law — no dead STORE, no fake balance) ----
-    // This boot sets no STARNET_CREDITS_URL, so /api/credits must 404 with { configured: false } — the frontend
+    // This boot sets no EYEHOLD_CREDITS_URL, so /api/credits must 404 with { configured: false } — the frontend
     // reads that and renders no STORE card at all.
     const creditsNoTok = await fetch(B + '/api/credits');
     A.eq(creditsNoTok.status, 403, 'GET /api/credits WITHOUT a token -> 403 (gated like other data routes)');
@@ -245,10 +245,10 @@ function boot(port, workspaces, attemptsLeft, extraEnv) {
     A.eq(creditsUnconf.body.configured, false, 'the 404 body honestly reports configured:false');
 
     // ---- managed credits: ACCOUNT-SIDE UNLINK INVALIDATES THE LOCAL "LINKED" CLAIM -----------------
-    // Reproduce the 0.10.8 field escape over real sockets: the station first caches a valid $0, then the
+    // Reproduce the 0.10.8 field escape over real sockets: the keep first caches a valid $0, then the
     // account page removes its device and the same bearer starts returning 401. The customer actually has
-    // $22 on the account, but that money is deliberately unreachable until this station pairs to it again.
-    // The app must discard cached $0, stop claiming LINKED, and expose LINK STATION — no local UNLINK ritual.
+    // $22 on the account, but that money is deliberately unreachable until this keep pairs to it again.
+    // The app must discard cached $0, stop claiming LINKED, and expose LINK KEEP — no local UNLINK ritual.
     {
       let revoked = false;
       const cloud = http.createServer((rq, rs) => {
@@ -275,13 +275,13 @@ function boot(port, workspaces, attemptsLeft, extraEnv) {
         url: cloudUrl, accountId: 'acct_paid_22', linkedAt: now - 1000
       }));
       const rb = await boot(port + 120, revokedWs, 20, {
-        STARNET_CLOUD_URL: cloudUrl,
-        STARNET_CREDITS_TOKEN: 'snd_revoked_after_zero'
+        EYEHOLD_CLOUD_URL: cloudUrl,
+        EYEHOLD_CREDITS_TOKEN: 'snd_revoked_after_zero'
       });
       const RB = 'http://' + HOST + ':' + rb.port;
       try {
         const rtok = await bootToken(RB, RB);
-        const rh = { 'Content-Type': 'application/json', 'X-StarNet-Token': rtok, Origin: RB };
+        const rh = { 'Content-Type': 'application/json', 'X-Eyehold-Token': rtok, Origin: RB };
         const read = async p => {
           const rr = await fetch(RB + p, { headers: rh });
           return { status: rr.status, body: await rr.json() };
@@ -300,7 +300,7 @@ function boot(port, workspaces, attemptsLeft, extraEnv) {
         A.eq(after.body.reason, 'link_revoked', 'the route names the authoritative account-side revocation');
         A.eq(after.body.balanceUsd, undefined, 'the stale cached $0 is not emitted as the paid account balance');
         const linkable = await read('/api/credits/linkable');
-        A.eq(linkable.body.available, true, 'the revoked station can pair again without manually unlinking locally');
+        A.eq(linkable.body.available, true, 'the revoked keep can pair again without manually unlinking locally');
         A.eq(linkable.body.reason, 'link_revoked', 'the relink card receives the recovery reason');
       } finally {
         try { rb.child.kill(); } catch (_) {}
@@ -365,15 +365,15 @@ function boot(port, workspaces, attemptsLeft, extraEnv) {
         url: cloudUrl, accountId: 'acct_wrong_zero', linkedAt: now - 1000
       }));
       const pb = await boot(port + 121, paidWs, 20, {
-        STARNET_CLOUD_URL: cloudUrl,
-        STARNET_CREDITS_TOKEN: 'snd_old_zero',
-        STARNET_CREDITS_ACCOUNT: 'acct_env_stale',
-        STARNET_FULL_ACCESS: '1'
+        EYEHOLD_CLOUD_URL: cloudUrl,
+        EYEHOLD_CREDITS_TOKEN: 'snd_old_zero',
+        EYEHOLD_CREDITS_ACCOUNT: 'acct_env_stale',
+        EYEHOLD_FULL_ACCESS: '1'
       });
       const PB = 'http://' + HOST + ':' + pb.port;
       try {
         const ptok = await bootToken(PB, PB);
-        const ph = { 'Content-Type': 'application/json', 'X-StarNet-Token': ptok, Origin: PB };
+        const ph = { 'Content-Type': 'application/json', 'X-Eyehold-Token': ptok, Origin: PB };
         const request = async (method, p, value) => {
           const rr = await fetch(PB + p, { method, headers: ph, body: value == null ? undefined : JSON.stringify(value) });
           const text = await rr.text(); let parsed = null; try { parsed = JSON.parse(text); } catch (_) {}
@@ -385,7 +385,7 @@ function boot(port, workspaces, attemptsLeft, extraEnv) {
 
         const unlinked = await request('POST', '/api/credits/unlink', {});
         A.eq(unlinked.body.unlinked, true, 'genesis switch-account action clears the old sidecar link');
-        const start = await request('POST', '/api/credits/link/start', { deviceName: 'StarNet Station' });
+        const start = await request('POST', '/api/credits/link/start', { deviceName: 'Eyehold Keep' });
         A.eq(start.body.code, 'STAR-PAID', 'switch account starts the ordinary one-code pairing flow');
         const paired = await request('POST', '/api/credits/link/poll', { code: start.body.code });
         A.eq(paired.body.linked, true, 'newly confirmed paid account is accepted as linked');
@@ -398,14 +398,14 @@ function boot(port, workspaces, attemptsLeft, extraEnv) {
           url: cloudUrl, accountId: 'acct_paid_22', linkedAt: now
         }));
         const funded = await request('GET', '/api/credits?history=0');
-        A.eq(funded.body.balanceUsd, 22, 'after token adoption the running station still reads $22, never the old $0');
+        A.eq(funded.body.balanceUsd, 22, 'after token adoption the running keep still reads $22, never the old $0');
         A.eq(funded.body.accountId, 'acct_paid_22', 'after token adoption the paid account remains the active identity');
 
         const run = await request('POST', '/api/run', {
-          provider: 'starnet', model: 'test/model', agentId: 'paid-wake', internal: true,
+          provider: 'eyehold', model: 'test/model', agentId: 'paid-wake', internal: true,
           messages: [{ role: 'user', content: 'Reply with exactly: OK' }]
         });
-        A.eq(run.status, 200, 'funded StarNet WAKE enters the real streaming run route');
+        A.eq(run.status, 200, 'funded Eyehold WAKE enters the real streaming run route');
         A.ok(run.text.indexOf('agent.token') >= 0, 'funded WAKE reaches the managed model and streams its reply');
         A.ok(run.text.indexOf('Out of managed credit') < 0, 'funded WAKE is never denied as out of credits');
         const paidCalls = calls.filter(c => ['/v1/balance', '/v1/debit', '/v1/credit', '/v1/chat/completions'].includes(c.path) && c.account !== 'acct_wrong_zero');
@@ -420,10 +420,10 @@ function boot(port, workspaces, attemptsLeft, extraEnv) {
       }
     }
 
-    // ---- managed credits: LINKED-BUT-UNFUNDED STATION STILL WAKES ON ITS OWN KEY (issue #6) ------
-    // A station device-linked to a $0 StarNet account picks a BYOK provider (own Gemini/OpenAI/custom
+    // ---- managed credits: LINKED-BUT-UNFUNDED KEEP STILL WAKES ON ITS OWN KEY (issue #6) ------
+    // A keep device-linked to a $0 Eyehold account picks a BYOK provider (own Gemini/OpenAI/custom
     // key). That run spends the user's vendor money, not managed credit — admission must pass it
-    // through byok (no reservation, no debit/credit against the wallet) while a 'starnet' relay run
+    // through byok (no reservation, no debit/credit against the wallet) while a 'eyehold' relay run
     // on the same $0 wallet is still honestly refused. Before the fix, the BYOK wake looped forever
     // on "Out of managed credit" with a valid key in hand.
     {
@@ -465,29 +465,29 @@ function boot(port, workspaces, attemptsLeft, extraEnv) {
         url: cloudUrl, accountId: 'acct_zero', linkedAt: now - 1000
       }));
       const zb = await boot(port + 122, zeroWs, 20, {
-        STARNET_CLOUD_URL: cloudUrl,
-        STARNET_CREDITS_TOKEN: 'snd_zero',
-        STARNET_FULL_ACCESS: '1'
+        EYEHOLD_CLOUD_URL: cloudUrl,
+        EYEHOLD_CREDITS_TOKEN: 'snd_zero',
+        EYEHOLD_FULL_ACCESS: '1'
       });
       const ZB = 'http://' + HOST + ':' + zb.port;
       try {
         const ztok = await bootToken(ZB, ZB);
-        const zh = { 'Content-Type': 'application/json', 'X-StarNet-Token': ztok, Origin: ZB };
+        const zh = { 'Content-Type': 'application/json', 'X-Eyehold-Token': ztok, Origin: ZB };
         const request = async (method, p, value) => {
           const rr = await fetch(ZB + p, { method, headers: zh, body: value == null ? undefined : JSON.stringify(value) });
           const text = await rr.text(); let parsed = null; try { parsed = JSON.parse(text); } catch (_) {}
           return { status: rr.status, body: parsed, text };
         };
         const broke = await request('GET', '/api/credits?history=0');
-        A.eq(broke.body.balanceUsd, 0, 'precondition: the station is linked and the wallet is authoritatively $0');
+        A.eq(broke.body.balanceUsd, 0, 'precondition: the keep is linked and the wallet is authoritatively $0');
 
         const byok = await request('POST', '/api/run', {
           provider: 'custom', baseUrl: vendorUrl + '/v1', key: 'byok-own-key',
           model: 'local/proven-model', agentId: 'byok-wake', internal: true,
           messages: [{ role: 'user', content: 'Reply with exactly: OK' }]
         });
-        A.eq(byok.status, 200, 'BYOK WAKE on a linked $0 station enters the real streaming run route');
-        A.ok(byok.text.indexOf('Out of managed credit') < 0, 'BYOK run is never refused for an empty StarNet wallet (issue #6)');
+        A.eq(byok.status, 200, 'BYOK WAKE on a linked $0 keep enters the real streaming run route');
+        A.ok(byok.text.indexOf('Out of managed credit') < 0, 'BYOK run is never refused for an empty Eyehold wallet (issue #6)');
         A.ok(byok.text.indexOf('agent.token') >= 0, 'BYOK run reaches the user\'s own model endpoint and streams its reply');
         A.ok(vendorCalls.some(c => c.path === '/v1/chat/completions' && c.auth === 'Bearer byok-own-key'),
           'the BYOK run authenticated to the USER\'s endpoint with the user\'s key');
@@ -495,11 +495,11 @@ function boot(port, workspaces, attemptsLeft, extraEnv) {
           'a BYOK run never reserves or settles against the managed wallet (no debit/credit)');
 
         const relay = await request('POST', '/api/run', {
-          provider: 'starnet', model: 'test/model', agentId: 'relay-wake', internal: true,
+          provider: 'eyehold', model: 'test/model', agentId: 'relay-wake', internal: true,
           messages: [{ role: 'user', content: 'Reply with exactly: OK' }]
         });
         A.ok(relay.text.indexOf('Out of managed credit') >= 0,
-          'a starnet-relay run on the same $0 wallet is still honestly refused before any model call');
+          'a eyehold-relay run on the same $0 wallet is still honestly refused before any model call');
       } finally {
         try { zb.child.kill(); } catch (_) {}
         for (const srv of [cloud, vendor]) {
@@ -636,7 +636,7 @@ function boot(port, workspaces, attemptsLeft, extraEnv) {
     const channelsFile = path.join(ws, 'channels', 'secrets.json');
     const signalBeforeMalformed = fs.readFileSync(channelsFile, 'utf8');
     const signalBadJson = await fetch(B + '/api/channels/signal/disconnect', {
-      method: 'POST', headers: { 'Content-Type': 'application/json', 'X-StarNet-Token': apiToken }, body: '{bad'
+      method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Eyehold-Token': apiToken }, body: '{bad'
     });
     A.eq(signalBadJson.status, 400, 'Signal disconnect with malformed JSON -> 400');
     A.eq(fs.readFileSync(channelsFile, 'utf8'), signalBeforeMalformed, 'malformed Signal disconnect leaves durable configuration byte-identical');
@@ -678,10 +678,10 @@ function boot(port, workspaces, attemptsLeft, extraEnv) {
 
     // ---- GROUND_UP_AUDIT P2: /api/version env-first fallback is HONEST (never a silent blank) ----
     // src-tauri/tauri.conf.json isn't a bundled resource in the packaged app, so the desktop shell exports
-    // STARNET_APP_VERSION (set in the boot env above). /api/version must surface it with an honest appSource.
+    // EYEHOLD_APP_VERSION (set in the boot env above). /api/version must surface it with an honest appSource.
     const ver = await j('GET', '/api/version');
     A.eq(ver.status, 200, 'GET /api/version -> 200');
-    A.eq(ver.body.app, '9.9.9-http-test', '/api/version app comes from STARNET_APP_VERSION (env-first fallback)');
+    A.eq(ver.body.app, '9.9.9-http-test', '/api/version app comes from EYEHOLD_APP_VERSION (env-first fallback)');
     A.eq(ver.body.appSource, 'env', '/api/version reports appSource=env — honest about WHERE the version came from');
     A.ok(typeof ver.body.harness === 'string', '/api/version keeps the byte-compatible {harness} field');
     A.ok(typeof ver.body.node === 'string' && ver.body.node.length > 0, '/api/version keeps the node field');
@@ -691,19 +691,19 @@ function boot(port, workspaces, attemptsLeft, extraEnv) {
     A.ok(['env', 'git', 'pkg'].includes(ver.body.harnessSource), '/api/version reports an honest harnessSource (env|git|pkg)');
     A.eq(ver.body.harnessSource, 'git', "/api/version resolves harness via git-describe when no build stamp is set");
 
-    // LANE V: env override wins — a boot with STARNET_BUILD_DESCRIBE set reports that exact string + harnessSource='env'
+    // LANE V: env override wins — a boot with EYEHOLD_BUILD_DESCRIBE set reports that exact string + harnessSource='env'
     // (the release pipeline stamps the real build id this way). Dedicated second boot: the value is fixed at spawn time.
     {
       const bd = 'lane-v-build-2f3a9c1';
       const ws2 = fs.mkdtempSync(path.join(os.tmpdir(), 'sk-http-bd-'));
-      const b2 = await boot(port + 200, ws2, 20, { STARNET_BUILD_DESCRIBE: bd });
+      const b2 = await boot(port + 200, ws2, 20, { EYEHOLD_BUILD_DESCRIBE: bd });
       const B2 = 'http://' + HOST + ':' + b2.port;
       try {
         const tok2 = await bootToken(B2, B2);
-        const r2 = await fetch(B2 + '/api/version', { headers: { 'X-StarNet-Token': tok2, Origin: B2 } });
+        const r2 = await fetch(B2 + '/api/version', { headers: { 'X-Eyehold-Token': tok2, Origin: B2 } });
         const v2 = await r2.json();
         A.eq(r2.status, 200, 'GET /api/version (BUILD_DESCRIBE boot) -> 200');
-        A.eq(v2.harness, bd, '/api/version harness = STARNET_BUILD_DESCRIBE (env override wins over git/pkg)');
+        A.eq(v2.harness, bd, '/api/version harness = EYEHOLD_BUILD_DESCRIBE (env override wins over git/pkg)');
         A.eq(v2.harnessSource, 'env', '/api/version reports harnessSource=env when the build stamp is set');
         A.eq(v2.app, '9.9.9-http-test', '/api/version app still resolves independently of the harness stamp');
       } finally {
@@ -724,7 +724,7 @@ function boot(port, workspaces, attemptsLeft, extraEnv) {
     const ckOk = await j('GET', '/api/checkpoint?agent=agent');
     A.eq(ckOk.status, 200, 'GET /api/checkpoint happy path stays 200');
     A.ok(Array.isArray(ckOk.body.snapshots), '/api/checkpoint 200 body carries {snapshots:[...]}');
-    A.eq(ckOk.body.enabled, true, 'checkpoints are ON by default (no STARNET_/SKYNET_CHECKPOINTS set) — Lane C5');
+    A.eq(ckOk.body.enabled, true, 'checkpoints are ON by default (no EYEHOLD_/EYEHOLD_CHECKPOINTS set) — Lane C5');
     // the truthful-failure branch itself (structural: the catch now reports 500, never a masking 200-empty)
     const idxSrcHonesty = fs.readFileSync(INDEX, 'utf8');
     const serveRunsSrc = idxSrcHonesty.slice(idxSrcHonesty.indexOf('function serveRuns'), idxSrcHonesty.indexOf('function serveInsights'));
@@ -771,7 +771,7 @@ function boot(port, workspaces, attemptsLeft, extraEnv) {
     try { if (sseWithTok.body && sseWithTok.body.cancel) await sseWithTok.body.cancel(); } catch (_) {}
     const sseReplay = await fetch(B + '/api/channels/events?' + sseQ, { headers: { Origin: B } });
     A.eq(sseReplay.status, 403, 'the same SSE ticket presented again -> 403 (single-use)');
-    const sseHeader = await fetch(B + '/api/channels/events', { headers: { Origin: B, 'x-starnet-token': apiToken } });
+    const sseHeader = await fetch(B + '/api/channels/events', { headers: { Origin: B, 'x-eyehold-token': apiToken } });
     A.eq(sseHeader.status, 200, 'GET /api/channels/events with the header token -> 200 (MCP bridge / Node clients)');
     try { if (sseHeader.body && sseHeader.body.cancel) await sseHeader.body.cancel(); } catch (_) {}
 
@@ -838,7 +838,7 @@ function boot(port, workspaces, attemptsLeft, extraEnv) {
     A.eq(slashUnknown.status, 404, 'POST /api/slash/dispatch unknown -> 404');
 
     const noApiToken = await fetch(B + '/api/budget/resume', { method: 'POST', headers: { 'Content-Type': 'application/json', Origin: B }, body: JSON.stringify({ scope: 'day' }) });
-    A.eq(noApiToken.status, 403, 'privileged POST without X-StarNet-Token -> 403');
+    A.eq(noApiToken.status, 403, 'privileged POST without X-Eyehold-Token -> 403');
 
     // ---- budget status reflects the PRE-SEEDED ledger (persisted spend survived a fresh boot) ----
     const st = await j('GET', '/api/budget/status');
@@ -898,9 +898,9 @@ function boot(port, workspaces, attemptsLeft, extraEnv) {
     const grokOut = await j('POST', '/api/run', { model: 'grok-4.7', provider: 'grok' });
     A.eq(grokOut.status, 400, 'POST /api/run on a signed-out GROK OAUTH -> 400');
     A.ok(/^missing key\/model — sign in to GROK OAUTH first/.test(String(grokOut.body)), 'the signed-out grok refusal names the grok sign-in (got: ' + grokOut.body + ')');
-    const badJson = await fetch(B + '/api/run', { method: 'POST', headers: { 'X-StarNet-Token': apiToken }, body: '{not json' });
+    const badJson = await fetch(B + '/api/run', { method: 'POST', headers: { 'X-Eyehold-Token': apiToken }, body: '{not json' });
     A.eq(badJson.status, 400, 'POST /api/run with malformed JSON -> 400');
-    const cancelBadJson = await fetch(B + '/api/cancel', { method: 'POST', headers: { 'X-StarNet-Token': apiToken }, body: '{not json' });
+    const cancelBadJson = await fetch(B + '/api/cancel', { method: 'POST', headers: { 'X-Eyehold-Token': apiToken }, body: '{not json' });
     A.eq(cancelBadJson.status, 400, 'POST /api/cancel with malformed JSON -> 400');
 
     const spotifyStart = await j('POST', '/api/spotify/auth/start', { clientId: 'spotify-http-test-client' });
@@ -908,7 +908,7 @@ function boot(port, workspaces, attemptsLeft, extraEnv) {
     const spotifyFile = path.join(ws, '.secrets', 'spotify.json');
     const spotifyBeforeMalformed = fs.readFileSync(spotifyFile, 'utf8');
     const spotifyBadJson = await fetch(B + '/api/spotify/auth/start', {
-      method: 'POST', headers: { 'Content-Type': 'application/json', 'X-StarNet-Token': apiToken }, body: '{not json'
+      method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Eyehold-Token': apiToken }, body: '{not json'
     });
     A.eq(spotifyBadJson.status, 400, 'Spotify auth start with malformed JSON -> 400 even when a client id is already saved');
     A.eq(fs.readFileSync(spotifyFile, 'utf8'), spotifyBeforeMalformed, 'malformed Spotify auth start leaves durable OAuth configuration byte-identical');
@@ -992,7 +992,7 @@ function boot(port, workspaces, attemptsLeft, extraEnv) {
     //      no-op (the run already ended or auto-settled), exactly like /api/consent; malformed JSON 400s. ----
     const ackStale = await j('POST', '/api/summon/ack', { runId: 'nope', requestId: 'nope', agentId: 'researcher-2' });
     A.eq(ackStale.status, 200, 'POST /api/summon/ack with an unknown run -> 200 no-op');
-    const ackBadJson = await fetch(B + '/api/summon/ack', { method: 'POST', headers: { 'X-StarNet-Token': apiToken }, body: '{not json' });
+    const ackBadJson = await fetch(B + '/api/summon/ack', { method: 'POST', headers: { 'X-Eyehold-Token': apiToken }, body: '{not json' });
     A.eq(ackBadJson.status, 400, 'POST /api/summon/ack with malformed JSON -> 400');
 
     // ---- memory observability + new-hero reset: the declined reject-list GET, the undo-a-discard restore, and the
@@ -1060,7 +1060,7 @@ function boot(port, workspaces, attemptsLeft, extraEnv) {
     const pend = await j('GET', '/api/memory/pending?agent=agent');
     A.eq(pend.status, 200, 'GET /api/memory/pending -> 200');
     A.eq(pend.body.agentId, 'agent', 'the pending deck is reported per agent');
-    A.eq(pend.body.pending, [], 'a station with nothing awaiting a verdict reports an empty deck');
+    A.eq(pend.body.pending, [], 'a keep with nothing awaiting a verdict reports an empty deck');
     const pendBad = await j('GET', '/api/memory/pending?agent=..%2Fetc');
     A.eq(pendBad.status, 403, 'a bad agent id is refused, not path-joined');
 
@@ -1125,12 +1125,12 @@ function boot(port, workspaces, attemptsLeft, extraEnv) {
     A.eq(memBad.status, 400, 'an over-range cooldown -> 400');
     A.ok(fs.existsSync(path.join(ws, 'memory.config.json')), 'the memory config persisted to disk');
 
-    // ---- P1-7 STATION BACKUP: export excludes secrets; import round-trips + reset ----
+    // ---- P1-7 KEEP BACKUP: export excludes secrets; import round-trips + reset ----
     // first seed a real budget override so the export has something server-side to carry.
     await j('POST', '/api/budget/caps', { perRun: 7 });
     const exp = await j('POST', '/api/config/export', { sections: { settings: { theme: 'blue' }, autonomy: { initiative: 'wait', reach: 'sandbox' } } });
     A.eq(exp.status, 200, 'POST /api/config/export -> 200');
-    A.eq(exp.body.starnetExport, 1, 'the export carries the schema-version pivot');
+    A.eq(exp.body.eyeholdExport, 1, 'the export carries the schema-version pivot');
     A.eq(exp.body.sections.budget.perRun, 7, 'the export carries the saved budget override');
     A.eq(exp.body.sections.settings.theme, 'blue', 'the export carries the browser-owned settings slice');
     // SECURITY: the seeded Discord token / provider keys must NOT appear anywhere in the export.
@@ -1165,18 +1165,18 @@ function boot(port, workspaces, attemptsLeft, extraEnv) {
       headers: { 'Content-Type': 'application/json', 'X-Skynet-Token': IPC_TOKEN },
       body: JSON.stringify({ provider: 'openai', key: '' })
     });
-    const ttsNoKey = await j('POST', '/api/tts', { text: 'station check', voice: 'Umbriel', style: 'a low, detached transmission' });
+    const ttsNoKey = await j('POST', '/api/tts', { text: 'keep check', voice: 'Umbriel', style: 'a low, detached transmission' });
     A.eq(ttsNoKey.status, 200, 'POST /api/tts with no key -> 200 (never a hard error)');
     A.eq(ttsNoKey.body.fallback, true, 'no-key TTS returns the {fallback:true} envelope so the client uses speechSynthesis');
     A.ok(/no key/i.test(ttsNoKey.body.reason || ''), 'the TTS fallback names the no-key reason');
     const ttsNoText = await j('POST', '/api/tts', { text: '   ' });
     A.eq(ttsNoText.body.fallback, true, 'empty-text TTS also degrades cleanly');
     // ElevenLabs branch: same 200-degrade contract, its own key + validation (no network with the env cleared).
-    const elBadVoice = await j('POST', '/api/tts', { provider: 'elevenlabs', text: 'station check', voiceId: 'not/a/valid/id!' });
+    const elBadVoice = await j('POST', '/api/tts', { provider: 'elevenlabs', text: 'keep check', voiceId: 'not/a/valid/id!' });
     A.eq(elBadVoice.status, 200, 'POST /api/tts elevenlabs with a malformed voiceId -> 200');
     A.eq(elBadVoice.body.fallback, true, 'malformed voiceId degrades to the fallback envelope');
     A.ok(/bad voiceId/i.test(elBadVoice.body.reason || ''), 'the degrade names the bad-voiceId reason');
-    const elNoKey = await j('POST', '/api/tts', { provider: 'elevenlabs', text: 'station check', voiceId: 'AbCdEf012345678901234' });
+    const elNoKey = await j('POST', '/api/tts', { provider: 'elevenlabs', text: 'keep check', voiceId: 'AbCdEf012345678901234' });
     A.eq(elNoKey.status, 200, 'POST /api/tts elevenlabs with no key -> 200 (never a hard error)');
     A.eq(elNoKey.body.fallback, true, 'no-key ElevenLabs TTS returns the {fallback:true} envelope');
     A.ok(/no elevenlabs key/i.test(elNoKey.body.reason || ''), 'the degrade names the missing ElevenLabs key specifically');
@@ -1190,9 +1190,9 @@ function boot(port, workspaces, attemptsLeft, extraEnv) {
     A.eq(sttNoKey.status, 200, 'POST /api/stt with audio but no key -> 200');
     A.eq(sttNoKey.body.text, '', 'no-key STT returns an empty transcript');
     /* ⛔ "no key" IS ONLY THE TRUTH WHEN THERE IS ALSO NO KEYLESS ENGINE. The STT ladder gained a LOCAL floor
-       (tier 4) so a station whose brain is a ChatGPT/Codex or Anthropic subscription is not simply deaf — none
+       (tier 4) so a keep whose brain is a ChatGPT/Codex or Anthropic subscription is not simply deaf — none
        of those credentials is a transcription key. Where that floor is installed, answering "no key" would name
-       the wrong cause: the station HAS ears, this clip was just undecodable. So ask the station what it can
+       the wrong cause: the keep HAS ears, this clip was just undecodable. So ask the keep what it can
        actually do and hold it to the matching truth — asserting one fixed string would force a lie in whichever
        world it was not written for, and dropping to "some reason exists" would guard nothing. */
     const sttStatus = await j('GET', '/api/stt/status');
@@ -1204,12 +1204,12 @@ function boot(port, workspaces, attemptsLeft, extraEnv) {
     const canHearKeyless = !!(localVoice.body && localVoice.body.available);
     if (canHearKeyless) {
       A.ok(/local/i.test(sttNoKey.body.reason || ''), 'with a keyless local engine the degrade names THAT tier failing, not a missing key');
-      A.ok(!/no key/i.test(sttNoKey.body.reason || ''), 'and never blames a key on a station that can transcribe without one');
+      A.ok(!/no key/i.test(sttNoKey.body.reason || ''), 'and never blames a key on a keep that can transcribe without one');
     } else {
       A.ok(/no key/i.test(sttNoKey.body.reason || ''), 'with no engine and no key the STT degrade names the no-key reason');
     }
     // raw-bytes shape (the recorder-provider default): a webm content-type body, still no key -> clean degrade.
-    const sttRaw = await fetch(B + '/api/stt', { method: 'POST', headers: Object.assign({ 'Content-Type': 'audio/webm' }, apiToken ? { 'X-StarNet-Token': apiToken } : {}), body: Buffer.from('fake opus bytes') });
+    const sttRaw = await fetch(B + '/api/stt', { method: 'POST', headers: Object.assign({ 'Content-Type': 'audio/webm' }, apiToken ? { 'X-Eyehold-Token': apiToken } : {}), body: Buffer.from('fake opus bytes') });
     A.eq(sttRaw.status, 200, 'POST /api/stt raw audio bytes -> 200');
     const sttRawBody = await sttRaw.json();
     A.eq(sttRawBody.text, '', 'raw-bytes STT with no key returns an empty transcript');
@@ -1367,10 +1367,10 @@ function boot(port, workspaces, attemptsLeft, extraEnv) {
       // simple masked (client-style) round-trip: one text frame encodes and parses back unchanged
       const frames = [];
       const parse = edge.makeWsParser((op, payload) => frames.push({ op, text: payload.toString('utf8') }), () => {});
-      parse(edge.wsEncode(0x1, Buffer.from('hello station', 'utf8')));
+      parse(edge.wsEncode(0x1, Buffer.from('hello keep', 'utf8')));
       A.eq(frames.length, 1, 'one full masked frame parsed');
       A.eq(frames[0].op, 0x1, 'opcode preserved (text)');
-      A.eq(frames[0].text, 'hello station', 'masked payload decodes back to the original bytes');
+      A.eq(frames[0].text, 'hello keep', 'masked payload decodes back to the original bytes');
     }
     {
       // a fragmented message (fin=0 first frame + final continuation) with an interleaved ping, fed ONE byte at
@@ -1416,13 +1416,13 @@ function boot(port, workspaces, attemptsLeft, extraEnv) {
       const edgeWs = fs.mkdtempSync(path.join(os.tmpdir(), 'sk-edge-'));
       const eb = await boot(port + 300, edgeWs, 20, {
         // re-enable the Edge floor (the base env disabled it) and aim it at our loopback WS server over plain http
-        SKYNET_EDGE_TTS: '1', STARNET_EDGE_TTS: '1',
-        SKYNET_EDGE_TTS_HOST: '127.0.0.1', SKYNET_EDGE_TTS_PORT: String(wsPort), SKYNET_EDGE_TTS_INSECURE: '1'
+        EYEHOLD_EDGE_TTS: '1', EYEHOLD_EDGE_TTS: '1',
+        EYEHOLD_EDGE_TTS_HOST: '127.0.0.1', EYEHOLD_EDGE_TTS_PORT: String(wsPort), EYEHOLD_EDGE_TTS_INSECURE: '1'
       });
       const EB = 'http://' + HOST + ':' + eb.port;
       try {
         const etok = await bootToken(EB, EB);
-        const post = (t) => fetch(EB + '/api/tts', { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-StarNet-Token': etok, Origin: EB }, body: JSON.stringify({ text: t }) });
+        const post = (t) => fetch(EB + '/api/tts', { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Eyehold-Token': etok, Origin: EB }, body: JSON.stringify({ text: t }) });
         const r1 = await post('edge floor round trip');
         A.eq(r1.status, 200, 'edge-floor /api/tts (no key) -> 200');
         A.eq(r1.headers.get('x-voice-cache'), 'miss', 'first edge synth is a cache miss');
@@ -1437,7 +1437,7 @@ function boot(port, workspaces, attemptsLeft, extraEnv) {
         A.ok(/^edge:/.test(r2.headers.get('x-voice-provider') || ''), 'the serving tier names itself (X-Voice-Provider: edge:…)');
 
         /* ---- THE DEGRADED SHAPE: local:true where the staged offline engine cannot load (a damaged/custom
-           build, reproduced here with the STARNET_LOCAL_VOICE=0 kill-switch).
+           build, reproduced here with the EYEHOLD_LOCAL_VOICE=0 kill-switch).
            ⛔ THE BUG THIS LOCKS OUT (2026-07-30, found by ear): this request used to fall through into the
            KEYED provider chain, so live voice silently spoke with a different provider's identity and the
            voice picker adjusted an engine that was not there. Now the picked voice maps onto the nearest
@@ -1447,14 +1447,14 @@ function boot(port, workspaces, attemptsLeft, extraEnv) {
         {
           const shipWs = fs.mkdtempSync(path.join(os.tmpdir(), 'sk-ship-'));
           const sb = await boot(port + 350, shipWs, 20, {
-            STARNET_LOCAL_VOICE: '0', SKYNET_LOCAL_VOICE: '0',
-            SKYNET_EDGE_TTS: '1', STARNET_EDGE_TTS: '1',
-            SKYNET_EDGE_TTS_HOST: '127.0.0.1', SKYNET_EDGE_TTS_PORT: String(wsPort), SKYNET_EDGE_TTS_INSECURE: '1'
+            EYEHOLD_LOCAL_VOICE: '0', EYEHOLD_LOCAL_VOICE: '0',
+            EYEHOLD_EDGE_TTS: '1', EYEHOLD_EDGE_TTS: '1',
+            EYEHOLD_EDGE_TTS_HOST: '127.0.0.1', EYEHOLD_EDGE_TTS_PORT: String(wsPort), EYEHOLD_EDGE_TTS_INSECURE: '1'
           });
           const SB = 'http://' + HOST + ':' + sb.port;
           try {
             const stok = await bootToken(SB, SB);
-            const H = { 'Content-Type': 'application/json', 'X-StarNet-Token': stok, Origin: SB };
+            const H = { 'Content-Type': 'application/json', 'X-Eyehold-Token': stok, Origin: SB };
             const lvs = await (await fetch(SB + '/api/local-voice/status', { headers: H })).json();
             A.eq(lvs.available, false, 'the kill-switch presents the installed-build truth through the route');
             const postLocal = (t, v) => fetch(SB + '/api/tts', { method: 'POST', headers: H, body: JSON.stringify({ text: t, local: true, localVoice: v }) });
@@ -1493,21 +1493,21 @@ function boot(port, workspaces, attemptsLeft, extraEnv) {
         rq.on('end', () => {
           seenBody = Buffer.concat(chunks); seenCt = String(rq.headers['content-type'] || '');
           rs.writeHead(200, { 'Content-Type': 'application/json' });
-          rs.end(JSON.stringify({ text: 'station systems nominal' }));
+          rs.end(JSON.stringify({ text: 'keep systems nominal' }));
         });
       });
       await new Promise(r => groqMock.listen(0, '127.0.0.1', r));
       const groqPort = groqMock.address().port;
       const gWs = fs.mkdtempSync(path.join(os.tmpdir(), 'sk-groq-'));
-      const gb = await boot(port + 400, gWs, 20, { GROQ_API_KEY: 'test', SKYNET_GROQ_BASE: 'http://127.0.0.1:' + groqPort });
+      const gb = await boot(port + 400, gWs, 20, { GROQ_API_KEY: 'test', EYEHOLD_GROQ_BASE: 'http://127.0.0.1:' + groqPort });
       const GB = 'http://' + HOST + ':' + gb.port;
       try {
         const gtok = await bootToken(GB, GB);
         const audioBytes = Buffer.from('OPUSFAKEAUDIO-abc123');
-        const r = await fetch(GB + '/api/stt', { method: 'POST', headers: { 'Content-Type': 'audio/webm', 'X-StarNet-Token': gtok, Origin: GB }, body: audioBytes });
+        const r = await fetch(GB + '/api/stt', { method: 'POST', headers: { 'Content-Type': 'audio/webm', 'X-Eyehold-Token': gtok, Origin: GB }, body: audioBytes });
         A.eq(r.status, 200, 'groq-keyed /api/stt -> 200');
         const body = await r.json();
-        A.eq(body.text, 'station systems nominal', 'the transcript comes from the dedicated Groq Whisper branch');
+        A.eq(body.text, 'keep systems nominal', 'the transcript comes from the dedicated Groq Whisper branch');
         A.ok(/multipart\/form-data/.test(seenCt), 'the sidecar sent a multipart/form-data body to Groq');
         A.ok(seenBody && seenBody.includes('whisper-large-v3-turbo'), 'the multipart body carries model=whisper-large-v3-turbo');
         A.ok(seenBody && seenBody.includes('name="file"'), 'the multipart body has a file part named "file"');

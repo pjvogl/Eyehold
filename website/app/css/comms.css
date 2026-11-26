@@ -1,4 +1,4 @@
-/* STARNET — comms.css : the PREMIUM COMMS layer (the right-hand chat panel).
+/* EYEHOLD — comms.css : the PREMIUM COMMS layer (the right-hand chat panel).
    Loads AFTER app.css (index.html), so every rule here overrides the base chat styling by cascade
    order — this is the ONE place COMMS polish lives (chat.js owns the markup; app.css/style.css/motion.css
    are owned by other lanes and untouched).
@@ -115,7 +115,7 @@ body.glass-demo :is(#chat-log, #gc-log) .cmsg.user  + .cmsg.user  > .cmsg-head {
 .cmsg.user > .cmsg-head { padding-left: 24px; }
 
 /* SYSTEM register — command/client output (/help, /whoami, unknown-command, …). Dim, no lit chip, never a
-   card: the station's own words, clearly NOT the agent's speech. A quiet "SYSTEM" tag on the first of a run;
+   card: the keep's own words, clearly NOT the agent's speech. A quiet "SYSTEM" tag on the first of a run;
    consecutive system lines group under it. Theme tokens only. */
 .cmsg.system { font-size: 13.5px; padding-left: 11px; border-left: 1px dashed var(--ph-faint); }
 .cmsg.system .who {
@@ -461,7 +461,7 @@ body.glass-demo :is(#chat-log, #gc-log) .cmsg.user  + .cmsg.user  > .cmsg-head {
 }
 
 /* ============================================================
-   6 · CELEBRATION — the terse station BROADCAST line (level-up /
+   6 · CELEBRATION — the terse keep BROADCAST line (level-up /
    quest-complete / trophy). NOT a transmission card: it's an
    ambient system line — dim, letter-spaced, centered, with a
    hairline rule to either side of the text. The eerie register:
@@ -476,7 +476,7 @@ body.glass-demo :is(#chat-log, #gc-log) .cmsg.user  + .cmsg.user  > .cmsg-head {
   gap: 10px; margin: 6px 0; padding: 3px 4px;
   background: none !important; box-shadow: none !important; border: 0 !important;
 }
-/* COALESCED STACK — consecutive station lines share one block: a centered column of lines between the
+/* COALESCED STACK — consecutive keep lines share one block: a centered column of lines between the
    same flanking hairlines, so a burst of trophies/quests reads as ONE quiet moment. */
 .cmsg.broadcast .bc-stack {
   flex: 0 1 auto; min-width: 0;
@@ -532,7 +532,7 @@ body.glass-demo :is(#chat-log, #gc-log) .cmsg.user  + .cmsg.user  > .cmsg-head {
 
 /* ============================================================
    6b · BEAT HIERARCHY — the gold-inset beat family stays gold
-   (the "station is asking" voice, per the COMMS beat rules) but
+   (the "keep is asking" voice, per the COMMS beat rules) but
    only a BLOCKING prompt (.cmsg.consent — the run is paused on
    the Commander) carries the full lit chrome. Passive turn-ins
    (rate-the-work, receipts, digests, study, trust, thread) drop
@@ -854,7 +854,7 @@ body.glass-demo :is(#chat-log, #gc-log) .cmsg.user  + .cmsg.user  > .cmsg-head {
 .gc-attachment-image:hover, .gc-attachment-image:focus-visible { border-color: var(--ph); outline-color: var(--ph); }
 .gc-file-image { display: block; max-width: 100%; max-height: 50vh; object-fit: contain; margin: 10px auto; }
 
-/* Semantic report structure stays inside the station's phosphor theme. */
+/* Semantic report structure stays inside the keep's phosphor theme. */
 .cmsg .body .md-p { display: block; white-space: pre-wrap; margin: .5em 0; }
 .cmsg .body .md-h { display: block; margin: .65em 0 .3em; }
 .cmsg .body .md-list { white-space: normal; margin: .4em 0; padding-left: 1.8em; }

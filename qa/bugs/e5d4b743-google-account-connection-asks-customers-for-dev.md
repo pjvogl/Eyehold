@@ -45,7 +45,7 @@ source-fixed. This does not certify public Google activation, all lifecycle path
 or the replacement installer: those remain separate future-release acceptance work.
 The earlier paragraphs below describe the former activation-in-0.11.0 scope.
 
-Source implementation committed at cb8385c56. The StarNet Desktop OAuth registration, five Workspace APIs, declared scopes and build secret are configured and included in the signed bd65c7737 installer. Native installed Windows inspection showed Gmail → SIGN IN WITH GOOGLE, with no application-client credential form. Real consent and bounded operations now pass for all five services on installed Windows. The corrected privacy disclosure is published; Google confirmed domain ownership, verified the branding, and published it. Data-access verification remains unsubmitted pending its required demo and review material. Real-account refresh/removal/revocation/restart and physical Mac acceptance remain outstanding. An additional in-app disclosure before consent is verified in the seeded UI and requires a rebuilt installer. This record stays open until the requested customer flow can be activated for distribution.
+Source implementation committed at cb8385c56. The Eyehold Desktop OAuth registration, five Workspace APIs, declared scopes and build secret are configured and included in the signed bd65c7737 installer. Native installed Windows inspection showed Gmail → SIGN IN WITH GOOGLE, with no application-client credential form. Real consent and bounded operations now pass for all five services on installed Windows. The corrected privacy disclosure is published; Google confirmed domain ownership, verified the branding, and published it. Data-access verification remains unsubmitted pending its required demo and review material. Real-account refresh/removal/revocation/restart and physical Mac acceptance remain outstanding. An additional in-app disclosure before consent is verified in the seeded UI and requires a rebuilt installer. This record stays open until the requested customer flow can be activated for distribution.
 
 ## Regression
 
@@ -64,15 +64,15 @@ remain outstanding. The project has two OAuth clients (Desktop and Account web),
 which must be covered by the verification material. No demo video has been submitted.
 
 2026-09-06 release follow-through: published the audited Google disclosure to
-https://starnetos.com/legal/privacy from a website branch based on the currently live
+https://eyehold.com/legal/privacy from a website branch based on the currently live
 46b944c source, with only the privacy page changed among 3,944 staged files. Verified the
 served HTML after accounting for Cloudflare's email obfuscation. Added the one-time Google
 ownership TXT record through Cloudflare Domain Connect; Search Console confirmed ownership.
-Google branding verification then passed and the verified StarNet branding was published.
+Google branding verification then passed and the verified Eyehold branding was published.
 Data-access review is still unsubmitted: Google requires intended-use selections and a real
 OAuth/demo video covering this project's clients. Productivity categories were reviewed but
 cannot be saved without the required video. No video URL, public data-access approval,
-Limited Use attestation, or real-account lifecycle receipt has been fabricated. See
+Limited Use attekeep, or real-account lifecycle receipt has been fabricated. See
 `docs/RELEASE_FOLLOWTHROUGH_2026-09-06.md`.
 
 Before: fresh Gmail card required client ID and client secret input. After: the seeded UI at 127.0.0.1:8946 showed SIGN IN WITH GOOGLE and zero application-credential inputs. With a synthetic provider, callback completion changed the card to MANAGE SERVICE and displayed six Gmail tools plus a verified synthetic account identity. After restarting the seeded sidecar with --keep and opening a fresh browser tab, the connected Gmail account and all six tools were restored in the live UI. `test/google-connector.test.js` exercises all 23 native MCP operations and the package configuration guard; `test/google-signin.e2e.test.js` drives the real sidecar across consent, cancellation, persistence failures, restart, refresh, revocation and removal. These tests do not prove Google public approval.
@@ -144,7 +144,7 @@ Before: fresh Gmail card required client ID and client secret input. After: the 
     {
       "target": "real installed Google consent on Windows and macOS",
       "state": "blocked",
-      "reason": "StarNet Desktop registration is bundled in the signed candidate, but real-account consent/lifecycle acceptance and Google verification remain incomplete."
+      "reason": "Eyehold Desktop registration is bundled in the signed candidate, but real-account consent/lifecycle acceptance and Google verification remain incomplete."
     }
   ],
   "lifecycle": [

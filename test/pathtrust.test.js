@@ -10,7 +10,7 @@ const path = require('path');
 const os = require('os');
 const { makePathTrust } = require('../sidecar/pathtrust.js');
 
-const ROOT = path.join(os.tmpdir(), 'starnet-pathtrust-' + process.pid);
+const ROOT = path.join(os.tmpdir(), 'eyehold-pathtrust-' + process.pid);
 
 async function rejects(promise, msg) { try { await promise; A.ok(false, msg + ' — did NOT reject'); } catch (e) { A.ok(true, msg); } }
 
@@ -67,7 +67,7 @@ function scriptPrompt(decision) {
     }
   }
 
-  // ---- PRIVATE WORKSPACE FLOOR: station-global grants and Full Access cannot cross agent jails ----
+  // ---- PRIVATE WORKSPACE FLOOR: keep-global grants and Full Access cannot cross agent jails ----
   {
     const workspaces = path.join(ROOT, 'workspaces');
     const alpha = path.join(workspaces, 'alpha');
@@ -78,7 +78,7 @@ function scriptPrompt(decision) {
     await fsp.writeFile(alphaPrivate, 'alpha only\n');
     const pt = makePathTrust({ fsp, pathMod: path, workspaceRoot: workspaces, roots: () => [alpha] });
     await rejects(pt.guard(alphaPrivate, { scope: 'read', surface: 'interactive', agentId: 'beta', fullAccess: true }),
-      'beta cannot read alpha even when alpha has a station-global grant and Full Access is live');
+      'beta cannot read alpha even when alpha has a keep-global grant and Full Access is live');
     const own = await pt.guard(alphaPrivate, { scope: 'read', surface: 'autonomous', agentId: 'alpha' });
     A.ok(path.resolve(own.base).toLowerCase() === path.resolve(alpha).toLowerCase(),
       'alpha may still use an absolute path inside its own workspace');

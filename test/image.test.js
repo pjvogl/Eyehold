@@ -16,7 +16,7 @@ const { makeImageTools } = require('../sidecar/tools/builtin/image.js');
 // on the same directory. Worse, the saved file is CONTENT-ADDRESSED, so both runs wrote the same
 // path: one process read the file while the other was truncating it and the PNG-magic assertion
 // failed with nothing wrong in the product. A phantom RED on merge night. Keep this unique.
-const ROOT = path.join(os.tmpdir(), 'starnet-image-test-' + process.pid);
+const ROOT = path.join(os.tmpdir(), 'eyehold-image-test-' + process.pid);
 
 // a 1x1 transparent PNG (real bytes), as base64 — used as the model's "generated" image
 const PNG_B64 = 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==';
@@ -214,7 +214,7 @@ const imageReply = png => jsonResp({ choices: [{ message: { images: [{ image_url
     A.ok(threw && rlFetch.calls.length === 1, 'a non-model error (429) propagates untouched — no blind fallback');
   }
 
-  // ---- H. deps.imageModel (the STARNET_IMAGE_MODEL knob) overrides the default; args.model still wins ----
+  // ---- H. deps.imageModel (the EYEHOLD_IMAGE_MODEL knob) overrides the default; args.model still wins ----
   {
     const kFetch = stubFetch(() => jsonResp({ choices: [{ message: { images: [{ image_url: { url: DATA_URL } }] } }] }));
     const TK = makeImageTools({ openrouter: { apiKey: 'k' }, fsp, pathMod: path, root: ROOT, fetchImpl: kFetch, imageModel: 'openai/gpt-5-image' });

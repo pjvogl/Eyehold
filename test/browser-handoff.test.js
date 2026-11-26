@@ -3,7 +3,7 @@
    Pins the laws the handoff host owns: its own id and wait (not the consent channel), waiting → taken →
    returned / cancelled / expired / aborted, taking the wheel restarts the 30-minute clock, the run's own signal
    ends it, frames and input exist ONLY while the Commander holds the wheel, the input vocabulary is closed,
-   and every state change is published as a browser.handoff event the station can render truthfully. */
+   and every state change is published as a browser.handoff event the keep can render truthfully. */
 'use strict';
 const A = require('./_assert.js');
 const H = require('../sidecar/browser-handoff.js');

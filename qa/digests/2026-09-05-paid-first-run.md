@@ -30,8 +30,8 @@ Registered in HTTP and customer campaigns.
 Focused unit results: credits 113 assertions; link 95; diagnostics 47; compatible provider 83.
 The customer campaign now explicitly includes credit/link unit regressions as well.
 
-Live browser: the source station opened at :18857 via `node dev/seed.js --keep`; the failure
-action copied the expanded report. On the separate :18859 mock-provider station, SETTINGS
+Live browser: the source keep opened at :18857 via `node dev/seed.js --keep`; the failure
+action copied the expanded report. On the separate :18859 mock-provider keep, SETTINGS
 -> RUNTIME -> COPY DIAGNOSTICS confirmed copy and included `app screen: screen-game`.
 LIVE DOCTOR at 2026-09-05T23:04:24Z reported two round-trip-proven rows: selected local mock
 provider (21ms), effective local execution sentinel (97ms), zero failed. Its six unconfigured
@@ -63,7 +63,7 @@ logging-only correction**. At failure, this shared host had ~1.4 GB free physica
 and ~3 GB remaining virtual commit. No other agent's process or system memory setting was
 changed. This candidate is **not** a bundled installer, signing, installed launch or
 customer verification.
-The two task-owned dev stations were stopped; their scratch evidence was retained.
+The two task-owned dev keeps were stopped; their scratch evidence was retained.
 
 `qa:ready` returned **NOT READY**: six open customer P1s plus missing Guardian, journey-corps,
 Beginner and installed-exe smoke stamps in this fresh worktree. No status was promoted.

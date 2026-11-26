@@ -161,7 +161,7 @@
         "height": 12
       },
       "status": "rebuild",
-      "reason": "Front-facing backrest dominates; expose more seat plane from the station camera."
+      "reason": "Front-facing backrest dominates; expose more seat plane from the keep camera."
     },
     {
       "id": "industrial_roundtable",
@@ -2252,7 +2252,7 @@
         "height": 19
       },
       "status": "rebuild",
-      "reason": "Front-facing backrest dominates; expose more seat plane from the station camera."
+      "reason": "Front-facing backrest dominates; expose more seat plane from the keep camera."
     },
     {
       "id": "booth",

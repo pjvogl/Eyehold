@@ -1,8 +1,8 @@
 /* node test/class-loadouts.test.js — Class Loadouts (the shared-gear model).
 
-   A class = model tier + reasoning effort + skill package + the SHARED STATION GEAR it draws on. Andrew's rule
+   A class = model tier + reasoning effort + skill package + the SHARED KEEP GEAR it draws on. Andrew's rule
    (2026-07-02): "the only prop a specialized or secondary agent needs is its own desk; it's allowed to use other
-   props with the overseer." So a class's `kit` is NOT issued per-agent — it names shared station gear used under
+   props with the overseer." So a class's `kit` is NOT issued per-agent — it names shared keep gear used under
    the overseer (informational in the dossier, and the gate for the class's skill availability). Two halves,
    matching kitout.test.js's discipline:
      1. GROUNDED-CATALOG unit tests (real assertions on pure modules): the shared catalog is well-formed and
@@ -10,7 +10,7 @@
         every skill's `requires` is satisfied by its class's declared gear (Law 4: grounded classes only).
      2. UNIT tests for the wiring the backend depends on: catalog.compose(agentSkills) is an ADD-only union that
         respects the budget with the package first; the sidecar roster passes skills/effort through; and a
-        specialist's skills gate on STATION-WIDE gear (not its desk-room) so a desk-only specialist still gets them.
+        specialist's skills gate on KEEP-WIDE gear (not its desk-room) so a desk-only specialist still gets them.
      3. SOURCE-LEVEL invariants for the browser-only summon path (app.js / build.js are IIFEs over live DOM, so —
         like kitout.test.js — we lock the honesty-critical wiring by reading the source): NO per-agent placement. */
 'use strict';
@@ -382,7 +382,7 @@ const app = fs.readFileSync(path.join(__dirname, '../frontend/app/app.js'), 'utf
 const build = fs.readFileSync(path.join(__dirname, '../frontend/app/build.js'), 'utf8');
 
 // summonAgent applies the loadout onto the record (model/effort/skills). Under the shared-gear model it does NOT
-// place any per-agent props — the class's `kit` is shared station gear it draws on under the overseer.
+// place any per-agent props — the class's `kit` is shared keep gear it draws on under the overseer.
 A.ok(/applyLoadout\(a, spec, pin\)/.test(app), 'summon applies the class loadout (applyLoadout) with the explicit bay pin');
 // applyLoadout resolves the tier via the seam, sets effort + per-agent skills
 const loadoutSeg = app.slice(app.indexOf('function applyLoadout('), app.indexOf('function allocAgentId('));
@@ -395,21 +395,21 @@ A.ok(/spec\.reasoningEffort\s*&&\s*!\(pin\s*&&\s*pin\.effort\)/.test(loadoutSeg)
 A.ok(/a\.skills\s*=\s*out/.test(loadoutSeg), 'applyLoadout records the per-agent skill package');
 
 // SHARED-GEAR MODEL (Andrew's rule): the per-agent placement machinery is GONE — no kit is issued to an agent.
-// The only per-agent object is its desk; capabilities are station-level shared gear used under the overseer.
+// The only per-agent object is its desk; capabilities are keep-level shared gear used under the overseer.
 A.ok(!/requisitionKit/.test(app), 'app.js no longer requisitions a per-agent kit (shared-gear model)');
 A.ok(!/deliverPendingKit/.test(app), 'app.js no longer defers/delivers a per-agent kit (shared-gear model)');
 A.ok(!/pendingKit/.test(app), 'the pendingKit field is gone from serialize/rehydrate/exports (no per-agent kit state)');
 A.ok(!/requisitionForAgent/.test(build), 'build.js no longer exposes per-agent prop placement (Build.requisitionForAgent removed)');
 A.ok(!/onAgentRoomAssigned/.test(build), 'build.js no longer fires a room-assign kit-delivery hook (dead code removed)');
 
-// the summon loadout beat is honest about shared gear: it names the STATION GEAR the class draws on that is
-// MISSING (add it in REFIT), and never claims a kit "arrives" at a per-agent workstation.
+// the summon loadout beat is honest about shared gear: it names the KEEP GEAR the class draws on that is
+// MISSING (add it in REFIT), and never claims a kit "arrives" at a per-agent workkeep.
 const summarySeg = app.slice(app.indexOf('function loadoutSummary('), app.indexOf('function loadoutSummary(') + 900);
-A.ok(/stationGearTypes\(\)/.test(summarySeg), 'loadoutSummary checks the class gear against the STATION (station-wide), not the agent room');
-A.ok(/add .* in BUILD MODE/.test(summarySeg), 'loadoutSummary tells the Commander to add missing station gear in BUILD MODE');
-A.ok(!/arrives when it gets a workstation/.test(app), 'the summon copy no longer promises a kit arrives at a workstation');
-// stationGearTypes reads the station-wide caps (the shared source the run\'s skill availability uses)
-A.ok(/function stationGearTypes\(\)[\s\S]{0,200}World\.stationCaps/.test(app), 'stationGearTypes reads World.stationCaps (station-wide shared gear)');
+A.ok(/keepGearTypes\(\)/.test(summarySeg), 'loadoutSummary checks the class gear against the KEEP (keep-wide), not the agent room');
+A.ok(/add .* in BUILD MODE/.test(summarySeg), 'loadoutSummary tells the Commander to add missing keep gear in BUILD MODE');
+A.ok(!/arrives when it gets a workkeep/.test(app), 'the summon copy no longer promises a kit arrives at a workkeep');
+// keepGearTypes reads the keep-wide caps (the shared source the run\'s skill availability uses)
+A.ok(/function keepGearTypes\(\)[\s\S]{0,200}World\.keepCaps/.test(app), 'keepGearTypes reads World.keepCaps (keep-wide shared gear)');
 
 // pushRoster + serialize carry the additive fields to the backend + to disk (skills + effort survive the rework)
 A.ok(/skills:\s*Array\.isArray\(a\.skills\)\s*\?\s*a\.skills\s*:\s*\[\][\s\S]{0,80}reasoningEffort:\s*a\.reasoningEffort/.test(app),
@@ -423,38 +423,38 @@ A.ok(/classes:\s*SPECIALIST_CLASSES/.test(idx), 'the shared class list is inject
 
 /* ---------- 4. SHARED-GEAR SKILL AVAILABILITY: a desk-only specialist still gets its class skills ---------- */
 // THE POINT of the rework: a specialist owns only a desk, but its SKILL PACKAGE (recipes) must reach its runs when
-// the STATION has the required shared gear. So the interactive run gates skills on STATION-WIDE gear, not the
+// the KEEP has the required shared gear. So the interactive run gates skills on KEEP-WIDE gear, not the
 // agent's own (desk-only) room — while TOOL reach stays room-scoped (resolveTools untouched).
-// 4a. the browser sends a station-wide gear list (World.stationCaps) alongside the room-scoped `placed`.
-A.ok(/stationCaps:/.test(fs.readFileSync(path.join(__dirname, '../frontend/app/world.js'), 'utf8')),
-  'World exposes stationCaps() — every capability placed anywhere on the station (station-wide shared gear)');
+// 4a. the browser sends a keep-wide gear list (World.keepCaps) alongside the room-scoped `placed`.
+A.ok(/keepCaps:/.test(fs.readFileSync(path.join(__dirname, '../frontend/app/world.js'), 'utf8')),
+  'World exposes keepCaps() — every capability placed anywhere on the keep (keep-wide shared gear)');
 const chat = fs.readFileSync(path.join(__dirname, '../frontend/app/chat.js'), 'utf8');
-A.ok(/stationPlaced:\s*\(typeof World[\s\S]{0,80}World\.stationCaps\(\)/.test(chat),
-  'the run sends stationPlaced = World.stationCaps() for SKILL availability (tools stay `placed`/room-scoped)');
+A.ok(/keepPlaced:\s*\(typeof World[\s\S]{0,80}World\.keepCaps\(\)/.test(chat),
+  'the run sends keepPlaced = World.keepCaps() for SKILL availability (tools stay `placed`/room-scoped)');
 const harness = fs.readFileSync(path.join(__dirname, '../frontend/app/harness.js'), 'utf8');
-A.ok(/reqBody\.stationPlaced = stationPlaced/.test(harness), 'harness.chat forwards stationPlaced to /api/run');
-// 4b. the sidecar parses stationPlaced, threads it as stationObjects, and unions it into the skill placedTypes ONLY.
-A.ok(/const stationObjects = \(body && Array\.isArray\(body\.stationPlaced\)\)/.test(idx), 'the sidecar parses body.stationPlaced into stationObjects');
-A.ok(/stationObjects,\s*\/\/ Class Loadouts/.test(idx), 'stationObjects is threaded into runOnce');
-const composeSeg = idx.slice(idx.indexOf('const sRoom = station.rooms'), idx.indexOf('const sRoom = station.rooms') + 2000);
-A.ok(/o\.stationObjects[\s\S]{0,120}roomTypes\.concat\(o\.stationObjects\)/.test(composeSeg),
-  'skill availability unions the room objects with the STATION-WIDE gear (a desk-only specialist still gets its class skills)');
+A.ok(/reqBody\.keepPlaced = keepPlaced/.test(harness), 'harness.chat forwards keepPlaced to /api/run');
+// 4b. the sidecar parses keepPlaced, threads it as keepObjects, and unions it into the skill placedTypes ONLY.
+A.ok(/const keepObjects = \(body && Array\.isArray\(body\.keepPlaced\)\)/.test(idx), 'the sidecar parses body.keepPlaced into keepObjects');
+A.ok(/keepObjects,\s*\/\/ Class Loadouts/.test(idx), 'keepObjects is threaded into runOnce');
+const composeSeg = idx.slice(idx.indexOf('const sRoom = keep.rooms'), idx.indexOf('const sRoom = keep.rooms') + 2000);
+A.ok(/o\.keepObjects[\s\S]{0,120}roomTypes\.concat\(o\.keepObjects\)/.test(composeSeg),
+  'skill availability unions the room objects with the KEEP-WIDE gear (a desk-only specialist still gets its class skills)');
 A.ok(/placedTypes: skillPlacedTypes/.test(composeSeg), 'skillsCatalog.compose gates on the shared-gear placedTypes');
-// and TOOL reach is still resolved from the room only (NOT widened by stationObjects) — the guard the task requires.
-A.ok(/let resolved = enforceSyntheticOnly\(resolveTools\(agentId, station,/.test(idx)
+// and TOOL reach is still resolved from the room only (NOT widened by keepObjects) — the guard the task requires.
+A.ok(/let resolved = enforceSyntheticOnly\(resolveTools\(agentId, keep,/.test(idx)
   && /resolved = enforceRunAuthority\(resolved, registry, userControlAuthority\)/.test(idx),
   'room-scoped tool projection is preserved, then the host removes unauthorized user-control effects');
-A.ok(!/resolveTools\([^)]*stationObjects/.test(idx), 'stationObjects is NOT fed into the tool projection (only skills widen to shared gear)');
+A.ok(!/resolveTools\([^)]*keepObjects/.test(idx), 'keepObjects is NOT fed into the tool projection (only skills widen to shared gear)');
 // 4c. FUNCTIONAL: catalog.compose availability with the shared-gear union — a package skill that requires cabinet
-// composes when the STATION has a cabinet even though the agent's own room is desk (compute) only.
+// composes when the KEEP has a cabinet even though the agent's own room is desk (compute) only.
 {
   const SKlib = [{ slug: 'deskskill', name: 'DeskSkill', description: '', category: 'A', requires: ['cabinet'], default: false, body: 'D' }];
   // agent room desk-only (no cabinet) -> the class package alone can't force the skill in (still availability-gated)
   A.eq(catalog.compose(SKlib, { placedTypes: [], agentSkills: ['deskskill'] }).indexOf('DeskSkill'), -1,
     'a class skill stays gated: no cabinet anywhere -> the recipe is not offered');
-  // union the STATION\'s cabinet in (what the sidecar does) -> the desk-only specialist now gets its class skill
+  // union the KEEP\'s cabinet in (what the sidecar does) -> the desk-only specialist now gets its class skill
   A.ok(catalog.compose(SKlib, { placedTypes: ['cabinet'], agentSkills: ['deskskill'] }).indexOf('DeskSkill') >= 0,
-    'once the STATION has the gear, the desk-only specialist\'s class skill composes (the whole point)');
+    'once the KEEP has the gear, the desk-only specialist\'s class skill composes (the whole point)');
 }
 
 /* ---------- 5. EFFORT PRECEDENCE: a dispatched worker runs at its OWN class effort, not the lead's ---------- */
@@ -486,7 +486,7 @@ for (const c of [{ name: 'Legacy', purpose: 'x' }]) {
    loadout into the saved spec, and resolveTierModel consults the persisted tier->model map.
    ============================================================================================ */
 const mkt = fs.readFileSync(path.join(__dirname, '../frontend/app/marketplace.js'), 'utf8');
-const sui = fs.readFileSync(path.join(__dirname, '../frontend/app/stationui.js'), 'utf8');
+const sui = fs.readFileSync(path.join(__dirname, '../frontend/app/keepui.js'), 'utf8');
 
 /* ---------- S3a'. SPECIALIST ARCHIVE: the bay keeps the deep cuts one click away (never gated) ---------- */
 A.ok(/function archiveSectionHTML\(/.test(mkt), 'the bay has a SPECIALIST ARCHIVE section');
@@ -500,19 +500,19 @@ A.ok(/archiveSectionHTML\(filtering\)/.test(mkt), 'search/lane filters include t
    class DOES, not on an inventory) — the loadout still applies at summon, which S1/S2 above already lock. The
    live-source resolvers those blocks introduced are still owned here and still shipped, now by the RECIPE
    dossier's gear block, so the no-hardcoded-labels law is asserted against ITS renderer. */
-A.ok(!/function kitBlockHTML\(/.test(mkt), 'the class dossier no longer renders a DRAWS ON STATION GEAR manifest');
+A.ok(!/function kitBlockHTML\(/.test(mkt), 'the class dossier no longer renders a DRAWS ON KEEP GEAR manifest');
 A.ok(!/function skillPackageHTML\(/.test(mkt), 'the class dossier no longer renders a SKILL PACKAGE manifest');
-A.ok(!/STANDARD ISSUE KIT/.test(mkt), 'nothing calls station gear a per-agent "STANDARD ISSUE KIT"');
-A.ok(!/requisitioned at its workstation/.test(mkt), 'nothing claims the gear is requisitioned at a per-agent workstation');
+A.ok(!/STANDARD ISSUE KIT/.test(mkt), 'nothing calls keep gear a per-agent "STANDARD ISSUE KIT"');
+A.ok(!/requisitioned at its workkeep/.test(mkt), 'nothing claims the gear is requisitioned at a per-agent workkeep');
 A.ok(/function kitPropLabel\(objType\)/.test(mkt), 'gear labels resolve through kitPropLabel (from the live catalog)');
 const kpl = mkt.slice(mkt.indexOf('function kitPropLabel('), mkt.indexOf('function kitPropLabel(') + 900);
 A.ok(/PropSprites\.CATALOG/.test(kpl), 'kitPropLabel reads the LIVE PropSprites catalog for the prop label (never hardcoded)');
 A.ok(/CAP_PROP_MAP/.test(kpl), 'kitPropLabel maps the objectType through WorldModel.CAP_PROP_MAP (the owned source)');
 A.ok(/WorldModel/.test(mkt) && /CAP_LABEL/.test(mkt), 'capability grants resolve from WorldModel.CAP_LABEL (the owned power-word source)');
-// PRESENT/MISSING: the recipe gear block checks each objectType against the ACTUAL station props (World.stationCaps).
+// PRESENT/MISSING: the recipe gear block checks each objectType against the ACTUAL keep props (World.keepCaps).
 const rgh = mkt.slice(mkt.indexOf('function recipeGearHTML('), mkt.indexOf('function recipeGearHTML(') + 1200);
-A.ok(/stationGearSet\(\)/.test(rgh), 'the gear block checks present/missing against the live station');
-A.ok(/function stationGearSet\(\)[\s\S]{0,200}World\.stationCaps/.test(mkt), 'stationGearSet reads World.stationCaps (the ACTUAL station props)');
+A.ok(/keepGearSet\(\)/.test(rgh), 'the gear block checks present/missing against the live keep');
+A.ok(/function keepGearSet\(\)[\s\S]{0,200}World\.keepCaps/.test(mkt), 'keepGearSet reads World.keepCaps (the ACTUAL keep props)');
 A.ok(/mkt-kit-missing/.test(rgh), 'missing gear is dimmed via the mkt-kit-missing state');
 A.ok(/readCollection\('\/api\/skills', 'skills'\)/.test(A.fnBody(mkt, 'function loadSkillCatalog(')) &&
   /Harness\.api\.get\(url\)/.test(A.fnBody(mkt, 'function readCollection(')),
@@ -520,7 +520,7 @@ A.ok(/readCollection\('\/api\/skills', 'skills'\)/.test(A.fnBody(mkt, 'function 
 A.ok(/function hydrateSkillRows\(\)/.test(mkt) && /hydrateSkillRows\(\)/.test(mkt.slice(mkt.indexOf('function renderDossier'))),
   'the dossier hydrates real skill names async once the catalog resolves');
 // CLEARANCE/EFFORT honesty moved onto the control that resolves them (modelHelpHTML), replacing a spec-grid row
-// whose value was the words "station default". The claim must still be advisory, never a promise summon can't keep.
+// whose value was the words "keep default". The claim must still be advisory, never a promise summon can't keep.
 const mhh = mkt.slice(mkt.indexOf('function modelHelpHTML('), mkt.indexOf('function modelHelpHTML(') + 1200);
 A.ok(/orchestrator/.test(mhh) && /tuned for/.test(mhh),
   'the MODEL helper is honest — an unpinned model INHERITS the orchestrator, the class tier is only a tuning note');
@@ -529,9 +529,9 @@ A.ok(/applied at summon/.test(mkt), 'the builder still labels reasoning effort a
 
 /* ---------- S3b. CUSTOM BUILDER: tools + skills are BUILT IN; a carried loadout still round-trips ----------
    Andrew 2026-10-04: the builder's tool/skill/model/effort pickers were "very confusing" — and they never decided
-   an agent's reach (tools resolve per turn from the station + power settings, skills are ADD-only over the enabled
+   an agent's reach (tools resolve per turn from the keep + power settings, skills are ADD-only over the enabled
    set, model + effort are picked on the recruit card). The builder is now one page that says so. Lock BOTH halves:
-   no picker comes back, and a loadout carried in from a station draft / an edited class still survives the save. */
+   no picker comes back, and a loadout carried in from a keep draft / an edited class still survives the save. */
 const bfhAll = A.fnBody(mkt, 'function buildFormHTML(');
 const wbfAll = A.fnBody(mkt, 'function wireBuildForm(');
 A.ok(/let buildKit = \[\], buildSkills = \[\], buildEffort = null/.test(mkt), 'the custom builder still carries a draft/edited loadout (kit/skills/effort)');
@@ -607,13 +607,13 @@ A.ok(/Object\.assign\(\{\}, editing \|\| \{\}/.test(createSeg), 'editing starts 
 
 /* ---------- S3c. TIER->MODEL: settings persist the map + resolveTierModel consults it ---------- */
 // the seam is now filled: resolveTierModel reads a persisted tier->model map (a pinned tier wins; else base model).
-A.ok(/TIER_MODELS_KEY = 'starnet\.tierModels\.v1'/.test(app), 'app.js defines the tier->model store key');
+A.ok(/TIER_MODELS_KEY = 'eyehold\.tierModels\.v1'/.test(app), 'app.js defines the tier->model store key');
 const rtm = app.slice(app.indexOf('function resolveTierModel('), app.indexOf('function resolveTierModel(') + 400);
 A.ok(/tierModelMap\(\)\[tier\]/.test(rtm), 'resolveTierModel consults the persisted tier->model map (the S1 seam is filled)');
-A.ok(/return baseModel \|\|/.test(rtm), 'an unpinned tier still falls back to the base/station-default model (default unchanged)');
+A.ok(/return baseModel \|\|/.test(rtm), 'an unpinned tier still falls back to the base/keep-default model (default unchanged)');
 // the SETTINGS MODELS section adds the CLASS TIER MODELS mapping + wires it to the SAME localStorage key.
 A.ok(/CLASS TIER MODELS/.test(sui), 'SETTINGS surfaces a CLASS TIER MODELS mapping');
-A.ok(/TIER_MODELS_KEY = 'starnet\.tierModels\.v1'/.test(sui), 'the settings writer uses the SAME key app.js reads (no new plumbing)');
+A.ok(/TIER_MODELS_KEY = 'eyehold\.tierModels\.v1'/.test(sui), 'the settings writer uses the SAME key app.js reads (no new plumbing)');
 A.ok(/function wireTierModels\(body\)/.test(sui) && /wireTierModels\(host\)/.test(sui), 'the tier-model picker is wired into buildSettings');
 // Tier choices follow the active provider. The fallback chain retains its OpenRouter accessor.
 A.ok(/Harness\.api\.get\('\/api\/models\/' \+ encodeURIComponent\(provider\)/.test(sui.slice(sui.indexOf('function wireTierModels'))), 'the tier-model selects use the active provider catalog');

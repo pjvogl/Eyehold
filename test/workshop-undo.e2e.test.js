@@ -76,7 +76,7 @@ function startMockOpenRouter() {
 
 function boot(port, env, attemptsLeft) {
   return new Promise((resolve, reject) => {
-    const child = spawn(process.execPath, [INDEX], { env: Object.assign({}, process.env, env, { SKYNET_PORT: String(port) }), stdio: ['ignore', 'pipe', 'pipe'] });
+    const child = spawn(process.execPath, [INDEX], { env: Object.assign({}, process.env, env, { EYEHOLD_PORT: String(port) }), stdio: ['ignore', 'pipe', 'pipe'] });
     let out = '', settled = false;
     const onData = d => {
       out += d.toString();
@@ -100,15 +100,15 @@ async function readNdjson(res) {
 (async () => {
   const mock = await startMockOpenRouter();
   const ws = fs.mkdtempSync(path.join(os.tmpdir(), 'sk-workshop-undo-e2e-'));
-  const env = { SKYNET_WORKSPACES: ws, SKYNET_DEV: '1', SKYNET_OPENROUTER_BASE: mock.base, SKYNET_OPENROUTER_KEY: 'sk-or-v1-workshop-fake', SKYNET_DEFAULT_MODEL: 'test/model' };
+  const env = { EYEHOLD_WORKSPACES: ws, EYEHOLD_DEV: '1', EYEHOLD_OPENROUTER_BASE: mock.base, EYEHOLD_OPENROUTER_KEY: 'sk-or-v1-workshop-fake', EYEHOLD_DEFAULT_MODEL: 'test/model' };
   const firstBoot = await boot(8930 + (process.pid % 30), env, 20);
   let child = firstBoot.child;
   const B = 'http://' + HOST + ':' + firstBoot.port;
-  const keepDir = path.join(os.tmpdir(), 'starnet-undo-keep-' + process.pid + '-' + Date.now());
+  const keepDir = path.join(os.tmpdir(), 'eyehold-undo-keep-' + process.pid + '-' + Date.now());
   try {
     const token = await bootToken(B, B);
     A.ok(token.length >= 32, 'got a session API token');
-    const headers = { 'Content-Type': 'application/json', 'X-StarNet-Token': token, Origin: B };
+    const headers = { 'Content-Type': 'application/json', 'X-Eyehold-Token': token, Origin: B };
 
     // 1. grant + queue + build a real deliverable (two files, one in a subdir).
     await fetch(B + '/api/workshop/grant', { method: 'POST', headers, body: JSON.stringify({ agentId: 'builder', on: true }) });

@@ -136,8 +136,8 @@
       extraHeaders: {
         'X-Msh-Platform': 'kimi_cli',
         'X-Msh-Version': '1.0.0',
-        'X-Msh-Device-Name': 'starnet',
-        'X-Msh-Device-Model': 'starnet'
+        'X-Msh-Device-Name': 'eyehold',
+        'X-Msh-Device-Model': 'eyehold'
       },
       staticModels: [
         { id: 'kimi-for-coding', name: 'Kimi for Coding', context_length: 256000, supportsTools: true, supportsReasoning: false },
@@ -147,25 +147,25 @@
       order: 12
     },
     {
-      id: 'starnet',
-      aliases: ['starnet-cloud', 'managed'],
-      name: 'StarNet Managed',
-      label: 'STARNET',
+      id: 'eyehold',
+      aliases: ['eyehold-cloud', 'managed'],
+      name: 'Eyehold Managed',
+      label: 'EYEHOLD',
       endpoint: 'managed inference (credits)',
-      blurb: 'run on credits, no API key — link a station',
+      blurb: 'run on credits, no API key — link a keep',
       live: true,
       adapter: 'openai-compatible',
       apiMode: 'chat_completions',
       // Auth is the linked device token (bearer). It is resolved from the credits-link store at request time
-      // (index.js providerRuntimeKey), NOT from an env key the user pastes — a linked station needs zero env.
+      // (index.js providerRuntimeKey), NOT from an env key the user pastes — a linked keep needs zero env.
       authType: 'api_key',
       keyRequired: true,
       // baseUrl is DYNAMIC: the linked cloud URL + '/v1' (index.js providerRuntimeBaseUrl). Static default empty.
       // requiresBaseUrl is TRUE even though the LINK flow supplies it (not the user, unlike 'custom'): an
-      // unlinked station resolves an empty baseUrl, and before 2026-08-25 that fell through to the adapter's
-      // api.openai.com default — a starnet run silently left for OpenAI's API and died with that vendor's
+      // unlinked keep resolves an empty baseUrl, and before 2026-08-25 that fell through to the adapter's
+      // api.openai.com default — a eyehold run silently left for OpenAI's API and died with that vendor's
       // "invalid model ID" (the stranded-user incident). With the flag set, hasCredential/listModels/run
-      // admission all read an unresolved link as NOT CONFIGURED and say "link this station" instead.
+      // admission all read an unresolved link as NOT CONFIGURED and say "link this keep" instead.
       baseUrl: '',
       requiresBaseUrl: true,
       modelsRequireAuth: true,
@@ -180,7 +180,7 @@
       wireReasoningEffort: true,
       // Our own proxy records which harness run spent each debit (POST /v1/chat/completions reads this header).
       // ONLY this profile names one: a run id is never sent to a third-party provider.
-      runIdHeader: 'x-starnet-run-id',
+      runIdHeader: 'x-eyehold-run-id',
       order: 15
     },
     {
@@ -217,9 +217,9 @@
       reasoningModels: [
         { match: '^gpt-6(?:[.-]|$)', efforts: ['low', 'medium', 'high', 'xhigh'] },
         // Chat Completions cannot combine gpt-5.6 reasoning with function tools ("set reasoning_effort to 'none'"),
-        // and every StarNet agent run sends tools — so on this wire the model only runs with reasoning off.
+        // and every Eyehold agent run sends tools — so on this wire the model only runs with reasoning off.
         { match: '^gpt-5\\.6(?:[.-]|$)', efforts: ['none'], supportsReasoning: false,
-          note: "OpenAI's Chat Completions API can't combine this model's reasoning with tools, so StarNet runs it with reasoning off." },
+          note: "OpenAI's Chat Completions API can't combine this model's reasoning with tools, so Eyehold runs it with reasoning off." },
         { match: '^gpt-5\\.5(?:-\\d{4}-\\d{2}-\\d{2})?$', efforts: ['none', 'low', 'medium', 'high', 'xhigh'], default: 'medium' },
         { match: '^gpt-5\\.4(?:-mini|-nano)?(?:-\\d{4}-\\d{2}-\\d{2})?$', efforts: ['none', 'low', 'medium', 'high', 'xhigh'] },
         { match: '^gpt-5\\.2(?:-\\d{4}-\\d{2}-\\d{2})?$', efforts: ['none', 'low', 'medium', 'high'] },
@@ -519,7 +519,7 @@
     {
       // CLAUDE CLI — the locally installed Claude Code CLI (`claude`) as the brain, signed in with the user's own
       // Claude account or key. No key is stored here: providers/claude-cli.js spawns `claude -p` per turn with
-      // every CLI tool disabled, so StarNet's own capability gate still owns tool use. NOT unmetered: a
+      // every CLI tool disabled, so Eyehold's own capability gate still owns tool use. NOT unmetered: a
       // subscription login books $0 per turn, an API-key login books the CLI's own reported cost.
       id: 'claude-cli',
       aliases: ['claude-code', 'claude-code-cli'],
@@ -567,19 +567,19 @@
       connectTimeoutMs: 300000,
       // Ollama's OpenAI-compatible wire has no output ceiling of its own: with max_tokens unset a small local
       // model runs to end-of-sequence (issue #17: a 3B model typed for ten minutes). 4096 is generous for a
-      // reply or a tool step; SKYNET_OLLAMA_MAX_TOKENS overrides it for stations that want more.
+      // reply or a tool step; SKYNET_OLLAMA_MAX_TOKENS overrides it for keeps that want more.
       maxOutputTokens: 4096,
-      maxOutputTokensEnv: 'SKYNET_OLLAMA_MAX_TOKENS',
+      maxOutputTokensEnv: 'EYEHOLD_OLLAMA_MAX_TOKENS',
       // A greeting gets a smaller ceiling; task and auxiliary requests keep the full allowance.
       maxChatOutputTokens: 512,
-      maxChatOutputTokensEnv: 'SKYNET_OLLAMA_MAX_CHAT_TOKENS',
+      maxChatOutputTokensEnv: 'EYEHOLD_OLLAMA_MAX_CHAT_TOKENS',
       // Chat rides Ollama's own /api/chat (ollama-native.js): /v1 runs every model at the server's default window
       // (4k under 24 GB VRAM), ignores any request for more, and silently cuts a ~21k-token task prompt to its tail.
       // The window is sized per request on a ladder up to min(the model's trained max, maxCtx).
       nativeOllama: true,
       maxCtx: 65536,
-      maxCtxEnv: 'SKYNET_OLLAMA_MAX_CTX',
-      numCtxEnv: 'SKYNET_OLLAMA_NUM_CTX',   // pins one exact window (no ladder)
+      maxCtxEnv: 'EYEHOLD_OLLAMA_MAX_CTX',
+      numCtxEnv: 'EYEHOLD_OLLAMA_NUM_CTX',   // pins one exact window (no ladder)
       order: 60
     },
     {

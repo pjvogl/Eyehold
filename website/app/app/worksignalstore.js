@@ -1,10 +1,10 @@
-/* STARNET — worksignalstore.js : the live wiring that folds REAL tool activity into the capability-usage
+/* EYEHOLD — worksignalstore.js : the live wiring that folds REAL tool activity into the capability-usage
    histogram (pure engine in worksignal.js).
 
-   The browser half of the workflow-signal system, modelled on profilestore.js + stationqueststore.js:
+   The browser half of the workflow-signal system, modelled on profilestore.js + keepqueststore.js:
      • the SIGNAL — subscribes to `agent.tool_call` on U.bus (harness re-emits every hero tool step; the SSE tee
        re-broadcasts routed-run tool calls name-only — the SAME event that drives the G0 per-tool prop pulse and
-       the G1b station-quest generator). Every real HERO tool fire maps NAME -> capability LANE and folds a
+       the G1b keep-quest generator). Every real HERO tool fire maps NAME -> capability LANE and folds a
        decayed weight into that lane, plus the run's interest tag into the lane's per-tag task tally.
      • the tool->capability MAP is NOT hand-rolled: it reuses ToolProps.toolPropType (the render-side mirror of
        the sidecar CAP_REGISTRY) for the cap-prop lanes (dish/cabinet/notebook/studio/jukebox), and adds the
@@ -48,7 +48,7 @@ const WorkSignalStore = (() => {
   // fold one real tool fire into its capability lane (+ the run's interest tag into that lane's tally).
   // ALL agents count (scout moderate-loosening, 2026-07-08): delegated/specialist tool work is still the
   // Commander's workflow — the old hero-only gate starved the histogram whenever work was routed, which was
-  // a big reason the adaptive shelves never warmed up. The work the STATION does is the signal, whoever did it.
+  // a big reason the adaptive shelves never warmed up. The work the KEEP does is the signal, whoever did it.
   function onToolCall(p) {
     if (!ready() || !learningOn()) return;
     if (!p) return;

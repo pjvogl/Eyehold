@@ -39,7 +39,7 @@ const WINDOWS_WAV_SCRIPT = [
   "[Console]::OutputEncoding=[Text.Encoding]::UTF8",
   '$r=New-Object System.Speech.Recognition.SpeechRecognitionEngine',
   '$r.LoadGrammar((New-Object System.Speech.Recognition.DictationGrammar))',
-  '$r.SetInputToWaveFile($env:STARNET_NATIVE_STT_WAV)',
+  '$r.SetInputToWaveFile($env:EYEHOLD_NATIVE_STT_WAV)',
   // ONE Recognize() returns ONE phrase (it ends at a pause), so a two-click take "Open the report. Then
   // summarize it." kept only its first sentence. Read phrase after phrase until Recognize() returns null — at the
   // end of the file, or (System.Speech's own rule) on a stretch it rejects outright; measured with 1.5s of white
@@ -57,7 +57,7 @@ const NOISE_TOKENS = /^(?:m+|h+m+|m+h+m*|u+h+|u+m+|a+h+|o+h+|e+r+|h+u+h|h+a+)[.,
 const DEFAULT_MIN_CONFIDENCE = 0.4;
 
 function minConfidence(env) {
-  const raw = (env || process.env).STARNET_NATIVE_STT_MIN_CONFIDENCE;
+  const raw = (env || process.env).EYEHOLD_NATIVE_STT_MIN_CONFIDENCE;
   const n = Number(raw);
   // An unset or unparseable override must not silently disable the gate.
   return Number.isFinite(n) && n >= 0 && n <= 1 ? n : DEFAULT_MIN_CONFIDENCE;
@@ -117,7 +117,7 @@ function makeNativeStt(opts) {
         encoding: 'utf8'
       };
       if (signal) options.signal = signal;
-      if (audioPath) options.env = Object.assign({}, processEnv, { STARNET_NATIVE_STT_WAV: audioPath });
+      if (audioPath) options.env = Object.assign({}, processEnv, { EYEHOLD_NATIVE_STT_WAV: audioPath });
       execFile('powershell.exe', ['-NoProfile', '-NonInteractive', '-Command', script], options, (error, stdout) => {
         // Each phrase is gated on its own: a cough between two real sentences must not cost either of them.
         const phrases = String(stdout || '').split(/\r?\n/).filter(line => line.trim()).map(parseRecognition);
@@ -144,7 +144,7 @@ function makeNativeStt(opts) {
     if (!status().available) return { ok: false, text: '', error: 'native speech is unavailable on this platform' };
     const wav = params.audioWav;
     if (!wav || !wav.length) return runRecognition(WINDOWS_SCRIPT, params.signal);
-    const tempPath = path.join(tempDir, 'starnet-stt-' + randomUUID() + '.wav');
+    const tempPath = path.join(tempDir, 'eyehold-stt-' + randomUUID() + '.wav');
     try {
       await fsp.writeFile(tempPath, wav);
       // 16 kHz mono PCM16 (float32PcmToWav) → 32 bytes per millisecond after the 44-byte header.

@@ -173,7 +173,7 @@ let T = 0; const clock = () => (T += 10);
     A.ok(!!lineId, 'the compiled plan names the line this dock belongs to');
     const res = await c.advance({ agentId: 'researcher', text: 'findings', originalText: 'brief me', lineId: lineId });
     A.eq(res.agentId, 'writer', 'the BELTS decided that the writer runs second — nothing else was configured');
-    A.eq(res.text, 'FINAL COPY', "and the writer's output is what leaves the station");
+    A.eq(res.text, 'FINAL COPY', "and the writer's output is what leaves the keep");
     A.eq(res.stopped, null, 'the line ran to the OUTBOX');
     A.eq(log.length, 1, 'exactly one downstream run was bought');
 
@@ -198,7 +198,7 @@ let T = 0; const clock = () => (T += 10);
   }
 
   /* ---- TWO INDEPENDENT LINES ON ONE FLOOR NEVER ADVANCE EACH OTHER ----
-     Two separate belt networks in one station: A(entry)->A2 and B(entry)->B2. Work that came in through
+     Two separate belt networks in one keep: A(entry)->A2 and B(entry)->B2. Work that came in through
      line A's INBOX must run A's stages and NOTHING on line B, and vice versa — the exact "spending money on
      later docks the user never intended" failure this lane exists to close. */
   {
@@ -304,7 +304,7 @@ let T = 0; const clock = () => (T += 10);
     const p1 = P.compileRoutingPlan({ props, belts });
     const p2 = P.compileRoutingPlan({ props: props.slice().reverse(), belts: belts.slice().reverse() });
     A.eq(P.lineOf(p2, 'researcher'), P.lineOf(p1, 'researcher'), 'the same floor compiles to the same line id, whatever order it is read in');
-    // line identity rides OUTSIDE the dispatch-topology hash, so no station needlessly re-arms on upgrade
+    // line identity rides OUTSIDE the dispatch-topology hash, so no keep needlessly re-arms on upgrade
     A.eq(p1.hash, P._internals.hashStr(JSON.stringify({ sources: p1.sources, bays: p1.bays, junctions: p1.junctions, belts: p1.belts })),
       'the plan hash still covers exactly the dispatch topology — line identity did not enter it');
     A.ok(p1.bays.every(b => b.lineId === undefined), 'and the hashed bay records are untouched (the id rides dockBays + the lookup maps)');

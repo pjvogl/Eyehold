@@ -32,7 +32,7 @@ const beat = src.slice(src.indexOf('function beatConnect('), src.indexOf('functi
 A.ok(/Chat\.choices\(/.test(beat), 'the beat is COMMS chips — the tour’s existing vocabulary, no new window');
 A.ok(/skip: true/.test(beat), 'the beat is skippable');
 A.ok(/state\.connectOffered = true/.test(beat), 'the beat is one-shot');
-A.ok(/StationUI\.connectorJump\(item\.value\)/.test(beat), 'a pick routes into the EXISTING ABILITIES catalog card');
+A.ok(/KeepUI\.connectorJump\(item\.value\)/.test(beat), 'a pick routes into the EXISTING ABILITIES catalog card');
 A.ok(!/tickBrief\(/.test(beat), 'the pick itself NEVER ticks the connector step');
 const watch = src.slice(src.indexOf('function watchConnectors('), src.indexOf('function seen('));
 A.ok(/connectorUp\(j && j\.connectors\)/.test(watch) && /tickBrief\('platform'\)/.test(watch), 'the work-app step ticks only from the /api/connectors read-back');
@@ -40,7 +40,7 @@ const portal = src.slice(src.indexOf('function onConnectorPlaced('), src.indexOf
 A.ok(!/tickBrief\('(?:connector|platform)'\)/.test(portal), 'placing a portal cannot complete an account connection');
 A.ok(/k: 'platform'.*Connect a work app/.test(src), 'old portal progress is not reinterpreted as a verified connection');
 const cx = fs.readFileSync(path.join(__dirname, '../frontend/app/windows/connectors.js'), 'utf8');
-A.ok(/StationUI\.connectorJump = function/.test(cx) && /openTerm\('connectors', 'catalog'\)/.test(cx), 'connectorJump opens ABILITIES on the CATALOG rail');
+A.ok(/KeepUI\.connectorJump = function/.test(cx) && /openTerm\('connectors', 'catalog'\)/.test(cx), 'connectorJump opens ABILITIES on the CATALOG rail');
 A.ok(!/connectorJump[\s\S]{0,600}oauth\/start/.test(cx.slice(0, cx.indexOf('function ccSignIn'))), 'the jump never starts OAuth itself — the card’s own SIGN IN stays the only door');
 const tourStart = src.indexOf('function beatShowAround(');
 const tourEnd = src.indexOf('function beatKitInvite(', tourStart);

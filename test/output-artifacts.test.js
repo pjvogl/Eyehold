@@ -9,7 +9,7 @@ const crypto = require('node:crypto');
 const { makeOutputArtifacts } = require('../sidecar/output-artifacts.js');
 
 (async () => {
-  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'starnet-output-artifacts-'));
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'eyehold-output-artifacts-'));
   try {
     const store = makeOutputArtifacts({ fsp, fs, pathMod: path, root, crypto });
     const full = 'head\n' + 'λ'.repeat(5000) + '\ntail';

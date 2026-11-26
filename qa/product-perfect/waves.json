@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "campaign": "StarNet product perfection",
+  "campaign": "Eyehold product perfection",
   "terminalVerdict": "PRODUCT PERFECT",
   "policy": {
     "serialization": "first-non-pass",
@@ -56,7 +56,7 @@
       "conditions": [
         "Child environments, browser and web egress, recursive filesystem access, channel pairing, scoped Workshop reads, delegation consent, secret custody, and boot egress pass their W0-identified negative tests.",
         "Slack and Matrix token persistence uses the desktop keychain with read-back before deleting any prior copy; Signal is not assigned a token requirement it does not have.",
-        "Every run mode uses persisted effective station authority or fails closed to its proven subset; no execution-mode shortcut silently grants full office capability.",
+        "Every run mode uses persisted effective keep authority or fails closed to its proven subset; no execution-mode shortcut silently grants full office capability.",
         "Known shipped contracts remain intact, including durable E-STOP, consent visibility, leash pre-spend, truthful /api/version, and HTTP 200 degraded-workspace refusal."
       ],
       "verifier": {
@@ -109,7 +109,7 @@
       "goal": "Unify adaptation without inventing background hosting or another user-understanding silo.",
       "maxReceiptAgeMs": 86400000,
       "conditions": [
-        "All while-closed copy says while StarNet is running unless background hosting is independently proven on that platform.",
+        "All while-closed copy says while Eyehold is running unless background hosting is independently proven on that platform.",
         "Night Shift, routines, and interactive work use one server-owned Commander context composer rather than parallel understanding stores.",
         "Keep and decline reasons extend the unified composer, and declined ideas remain suppressed across restart.",
         "Learning claims are measurable, inspectable, interruptible, budget-bounded, and permission-gated."
@@ -129,7 +129,7 @@
       "conditions": [
         "Each advertised provider, channel, MCP connector, OAuth flow, and remote service has attended connect, success, failure, restart, revoke, and secret-removal proof or a visible experimental label.",
         "The claims ledger is terminal on this candidate: every advertised promise is proven or visibly experimental at its point of use.",
-        "The Station Atlas is fresh on the candidate and reports perfected-fresh equal to total, with zero unmapped, mapped-only, audited-only, stale, or missing entries.",
+        "The Keep Atlas is fresh on the candidate and reports perfected-fresh equal to total, with zero unmapped, mapped-only, audited-only, stale, or missing entries.",
         "Backend-only tools, persistence boundaries, desktop commands, integrations, and lifecycle promises not represented by the Atlas have explicit machine/live proof.",
         "Fast, HTTP/E2E, journey, recovery, restart, long-lived, visual, and installed-desktop suites all pass on the same candidate.",
         "The product-facing ledger has zero open P0, P1, or P2 findings; accepted limitations are explicit non-product release exclusions, not hidden debt."

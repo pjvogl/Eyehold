@@ -1,14 +1,14 @@
-/* STARNET — outputbrowser.js : the BROWSER window.
+/* EYEHOLD — outputbrowser.js : the BROWSER window.
 
    Andrew, 2026-09-29/30: "a built in browser … when creating output" → "a browser button integrated cleanly in comms,
    so users can easily open it up to see what the agent is doing … should also allow the user to type a URL in" →
    (after trying a version where each run had a private browser) "the agent is not using the built in browser or
    controlling it at all, and cant see anything".
 
-   So: ONE browser. The station owns a single built-in browser (sidecar/browser-view.js) that you and your agents
+   So: ONE browser. The keep owns a single built-in browser (sidecar/browser-view.js) that you and your agents
    SHARE. It is a real Chrome window on your screen (you use it natively: typing, sign-in popups, full speed), and
-   this station window is its live mirror and remote: the picture, an address bar, SHOW WINDOW to raise it.
-     · LIVE   the station browser. When an agent uses its browser tools in a COMMS run it drives THIS browser and
+   this keep window is its live mirror and remote: the picture, an address bar, SHOW WINDOW to raise it.
+     · LIVE   the keep browser. When an agent uses its browser tools in a COMMS run it drives THIS browser and
               you watch it happen; when the run ends the page stays. When no agent is driving it is yours — type an
               address, click, type; the next agent sees exactly the page you left. While an agent drives you watch
               (input is refused); if it needs you it says so and the STEP IN door appears.
@@ -17,33 +17,33 @@
      · WATCH  a PRIVATE browser — an unattended run's, or a second agent's while the shared one is busy. View only.
 
    The COMMS header carries the door (#comms-browser, the globe beside the +): one click opens this window on the
-   browser. Its lamp is lit only while the station confirms the agent on the line is driving a browser.
+   browser. Its lamp is lit only while the keep confirms the agent on the line is driving a browser.
 
    FOLLOW (off by default, remembered per viewer): when on, this window opens by itself when an agent starts
    browsing or makes a new page. With the window already open it always switches to the browser when an agent
    starts driving — an open window is somebody asking to see. Independent of FOLLOW, the PAGE on screen reloads when
    its file (or a web asset in its folder) is rewritten: the real bytes on disk, never a guess.
 
-   Truthful telemetry: PAGE says "loaded" only after the station confirmed the file exists and the frame fired load;
-   LIVE/WATCH show only frames the station sent; the address and the driver named are the ones the station reports. */
+   Truthful telemetry: PAGE says "loaded" only after the keep confirmed the file exists and the frame fired load;
+   LIVE/WATCH show only frames the keep sent; the address and the driver named are the ones the keep reports. */
 'use strict';
 (function (root) {
-  const FOLLOW_KEY = 'starnet.outputBrowser.follow';
+  const FOLLOW_KEY = 'eyehold.outputBrowser.follow';
   const RECENT_MAX = 8;
   const RELOAD_DEBOUNCE_MS = 400;
   const LIVE_DEBOUNCE_MS = 500;
   const HTML_RE = /\.html?$/i;
   const ASSET_RE = /\.(html?|css|m?js|json|svg|png|jpe?g|gif|webp|avif|ico|woff2?|ttf|otf|mp3|wav|ogg|mp4|webm)$/i;
-  const NO_STATION = { available: true, open: false, driver: null, handoff: false, remembered: false };
+  const NO_KEEP = { available: true, open: false, driver: null, handoff: false, remembered: false };
 
   const state = {
     mode: 'empty',       // 'empty' | 'page' | 'live' | 'watch'
     target: null,        // PAGE: { agentId, path, runId?, source: 'workspace'|'workshop' }
     watch: null,         // WATCH: { agentId, runId, target }
     recent: [],          // pages made this session, newest first
-    live: { agents: [], station: NO_STATION },   // station truth (GET /api/browser/view)
+    live: { agents: [], keep: NO_KEEP },   // keep truth (GET /api/browser/view)
     liveLoaded: false,
-    driver: null,        // LIVE: who the station says is driving right now { agentId, runId } | null
+    driver: null,        // LIVE: who the keep says is driving right now { agentId, runId } | null
     page: null,          // LIVE/WATCH: the address the browser itself reports { url, title }
     follow: false,
     ui: null,
@@ -68,15 +68,15 @@
   function agentLabel(id) {
     if (typeof App !== 'undefined' && App && typeof App.agentName === 'function') { try { return App.agentName(id) || id; } catch (_) { /* fall through to the id */ } }
     try {
-      const list = (typeof StationUI !== 'undefined' && StationUI.h) ? StationUI.h.present : [];
+      const list = (typeof KeepUI !== 'undefined' && KeepUI.h) ? KeepUI.h.present : [];
       const a = (list || []).find(x => x && x.id === id);
       if (a && a.name) return String(a.name);
     } catch (_) { /* fall through to the id */ }
     return String(id || 'agent');
   }
-  const apiBase = () => String(root.__STARNET_API__ || '');
+  const apiBase = () => String(root.__EYEHOLD_API__ || '');
   function tauriCore() { return (root.__TAURI__ && root.__TAURI__.core) ? root.__TAURI__.core : null; }
-  function notify(msg, tone) { if (typeof StationUI !== 'undefined' && StationUI.notify) StationUI.notify(msg, tone || 'warn'); }
+  function notify(msg, tone) { if (typeof KeepUI !== 'undefined' && KeepUI.notify) KeepUI.notify(msg, tone || 'warn'); }
   function getJson(path, signal) {
     return fetch(apiBase() + path, { cache: 'no-store', signal }).then(async r => { let j = null; try { j = await r.json(); } catch (_) { j = null; } return { status: r.status, body: j || {} }; });
   }
@@ -85,7 +85,7 @@
       .then(async r => { let j = null; try { j = await r.json(); } catch (_) { j = null; } return { status: r.status, body: j || {} }; });
   }
 
-  // The jail-relative path the station's own /api/file route knows this file by (a workshop file lives under
+  // The jail-relative path the keep's own /api/file route knows this file by (a workshop file lives under
   // workshop/<runId>/ — the same rel the deliverable library builds).
   function jailRel(t) { return t.source === 'workshop' ? 'workshop/' + t.runId + '/' + norm(t.path) : norm(t.path); }
   function pageUrl(t) {
@@ -101,7 +101,7 @@
     const k = keyOf(t);
     state.recent = [t].concat(state.recent.filter(x => keyOf(x) !== k)).slice(0, RECENT_MAX);
   }
-  const station = () => state.live.station || NO_STATION;
+  const keep = () => state.live.keep || NO_KEEP;
   function privateRun(agentId) { return (state.live.agents || []).find(a => a && a.agentId === agentId) || null; }
 
   // ---------- icons (drawn, never a glyph: symbol characters fall back to the OS font) ----------
@@ -146,11 +146,11 @@
         poll: (seq, signal) => getJson('/api/browser/view/frame?target=' + encodeURIComponent(state.watch ? state.watch.target : '') + '&after=' + seq, signal) });
       ui.liveStream = BrowserStream.create({ vp: ui.vp, img: ui.img, onPage, onEnd: ended('live'),
         // every picture says who is driving: that is what the address bar and the status line report
-        poll: (seq, signal) => getJson('/api/browser/view/frame?target=station&after=' + seq, signal).then(r => {
+        poll: (seq, signal) => getJson('/api/browser/view/frame?target=keep&after=' + seq, signal).then(r => {
           if (r.status === 200 && r.body && r.body.ok) setDriver(r.body.driver || null);
           return r;
         }),
-        // the station refuses input while an agent drives (409): the picture is then simply view-only
+        // the keep refuses input while an agent drives (409): the picture is then simply view-only
         send: events => postJson('/api/browser/view/input', { events }),
         canType: () => true,   // the Commander's hands are never refused (sidecar/browser-view.js driving)
         onLeave: () => { try { ui.url.focus(); } catch (_) { /* focus is best-effort */ } } });
@@ -164,7 +164,7 @@
     ui.fwd.onclick = () => liveNav('forward');
     ui.follow.onclick = () => setFollow(!state.follow);
     ui.out.onclick = openOutside;
-    ui.front.onclick = () => { postJson('/api/browser/view/front', {}).then(r => { if (r.status !== 200) setNote('Could not raise the browser window: ' + ((r.body && r.body.error) || 'the station did not answer') + '.'); }).catch(() => setNote('Could not raise the browser window.')); };
+    ui.front.onclick = () => { postJson('/api/browser/view/front', {}).then(r => { if (r.status !== 200) setNote('Could not raise the browser window: ' + ((r.body && r.body.error) || 'the keep did not answer') + '.'); }).catch(() => setNote('Could not raise the browser window.')); };
     ui.recent.addEventListener('click', ev => {
       const b = ev.target && ev.target.closest ? ev.target.closest('button[data-k]') : null;
       if (!b) return;
@@ -185,8 +185,8 @@
     });
     paintBar();
     render('opened');
-    // start the station browser now, in the background, so it is ready by the time an address is typed
-    refreshLive().then(() => { if (!station().open && station().available !== false) postJson('/api/browser/view/warm', {}).catch(() => { /* it starts on first use anyway */ }); });
+    // start the keep browser now, in the background, so it is ready by the time an address is typed
+    refreshLive().then(() => { if (!keep().open && keep().available !== false) postJson('/api/browser/view/warm', {}).catch(() => { /* it starts on first use anyway */ }); });
   }
   function mounted() { return !!(state.ui && state.ui.body && state.ui.body.isConnected); }
   function setNote(text) { state.note = String(text || ''); if (mounted() && state.ui.note.textContent !== state.note) state.ui.note.textContent = state.note; }
@@ -199,17 +199,17 @@
   }
   function liveNote() {
     const d = state.driver;
-    const su = station().setup;
+    const su = keep().setup;
     if (su && (su.state === 'downloading' || su.state === 'unpacking')) {
       const mb = n => Math.round(n / 1048576);
       return 'Setting up the browser for the first time (this computer has no Chrome, Edge or Chromium): '
         + (su.state === 'unpacking' ? 'unpacking…' : 'downloading Chromium' + (su.total ? ', ' + mb(su.received) + ' of ' + mb(su.total) + ' MB' : '') + '…');
     }
-    if (su && su.state === 'failed' && !station().open) return 'Could not set up a browser on this computer: ' + su.error;
-    const win = station().visible ? ' It is open in its own window too (SHOW WINDOW).' : '';
+    if (su && su.state === 'failed' && !keep().open) return 'Could not set up a browser on this computer: ' + su.error;
+    const win = keep().visible ? ' It is open in its own window too (SHOW WINDOW).' : '';
     if (d && d.signIn) return 'Sign in here: click the page and type. The agent is waiting and never sees what you type. Click Done in COMMS when you have finished.';
     if (d) return agentLabel(d.agentId) + ' is using the browser. You can click and type in it too.' + win;
-    return 'The station browser, shared by you and your agents.' + (station().visible ? ' Use it in its own window, or click this live view to type in it.' : ' Click the page to type in it.') + (station().remembered ? ' Sign-ins are saved.' : '');
+    return 'The keep browser, shared by you and your agents.' + (keep().visible ? ' Use it in its own window, or click this live view to type in it.' : ' Click the page to type in it.') + (keep().remembered ? ' Sign-ins are saved.' : '');
   }
   function setDriver(d) {
     const was = state.driver ? state.driver.runId + (state.driver.signIn ? '+' : '') : '', is = d ? d.runId + (d.signIn ? '+' : '') : '';
@@ -234,7 +234,7 @@
     }
     ui.url.title = m === 'page' && t ? t.path + (t.source === 'workshop' ? ' (workshop)' : '') : (state.page && state.page.title) || '';
     const yours = m === 'live';   // the shared browser always takes your hands, agent or not
-    ui.front.hidden = !(m === 'live' && station().visible);
+    ui.front.hidden = !(m === 'live' && keep().visible);
     ui.back.disabled = ui.fwd.disabled = !yours || state.busy;
     ui.reload.disabled = !(m === 'page' || yours) || state.busy;
     ui.out.disabled = !((m === 'page' && t) || ((m === 'watch' || m === 'live') && state.page && /^https?:/i.test(state.page.url || '')));
@@ -248,10 +248,10 @@
   }
   function paintStrip() {
     if (!mounted()) return;
-    const ui = state.ui, parts = [], st = station();
+    const ui = state.ui, parts = [], st = keep();
     if (st.open || st.driver) {
       const d = st.driver;
-      parts.push('<button type="button" class="ob-chip ob-livechip' + (state.mode === 'live' ? ' on' : '') + '" data-k="live" title="' + esc(d ? agentLabel(d.agentId) + ' is driving the station browser' : 'The station browser') + '">'
+      parts.push('<button type="button" class="ob-chip ob-livechip' + (state.mode === 'live' ? ' on' : '') + '" data-k="live" title="' + esc(d ? agentLabel(d.agentId) + ' is driving the keep browser' : 'The keep browser') + '">'
         + (d ? '<span class="ob-dot' + (st.handoff ? ' ask' : '') + '" aria-hidden="true"></span>' + esc(agentLabel(d.agentId).toUpperCase()) + (st.handoff ? ' · NEEDS YOU' : ' · DRIVING') : 'BROWSER') + '</button>');
     }
     (state.live.agents || []).forEach((a, i) => {
@@ -278,13 +278,13 @@
     stopStreams(); stage('empty');
     state.ui.root.dataset.state = closedWhy ? 'ended' : 'empty';
     state.ui.empty.innerHTML = (closedWhy ? '<p>' + esc(closedWhy) + '</p>' : '<p>Type an address above to open the browser.</p>')
-      + '<p class="ob-dim">This is the station\'s browser. When an agent browses, it drives this one and you watch it here. When no agent is using it, it\'s yours.</p>';
+      + '<p class="ob-dim">This is the keep\'s browser. When an agent browses, it drives this one and you watch it here. When no agent is using it, it\'s yours.</p>';
     setNote('');
     paintBar(true);
   }
 
   // Confirm the file is really there before claiming a page (the frame's load event fires on a 404 too, and a
-  // cross-origin frame can't be asked). HEAD on the station's own jailed file route answers for both sources.
+  // cross-origin frame can't be asked). HEAD on the keep's own jailed file route answers for both sources.
   async function exists(t) {
     try {
       const r = await fetch('/api/file?agent=' + encodeURIComponent(t.agentId) + '&path=' + encodeURIComponent(jailRel(t)), { method: 'HEAD', cache: 'no-store' });
@@ -310,7 +310,7 @@
     const url = pageUrl(t);
     if (!url) {
       stage('empty');
-      ui.empty.innerHTML = '<p>The station isn\'t reachable, so this page can\'t be shown right now.</p>';
+      ui.empty.innerHTML = '<p>The keep isn\'t reachable, so this page can\'t be shown right now.</p>';
       ui.root.dataset.state = 'missing'; setNote('');
       return;
     }
@@ -323,7 +323,7 @@
   }
 
   function startLive() {
-    const ui = state.ui, st = station();
+    const ui = state.ui, st = keep();
     if (ui.watchStream) ui.watchStream.stop();
     if (st.handoff && st.driver) return showHandoff(st.driver.agentId);
     state.driver = st.driver || state.driver;
@@ -374,15 +374,15 @@
       return;
     }
     if (state.mode === 'live') {
-      if (code === 'handoff') { refreshLive(); return showHandoff(state.driver ? state.driver.agentId : (station().driver || {}).agentId); }
+      if (code === 'handoff') { refreshLive(); return showHandoff(state.driver ? state.driver.agentId : (keep().driver || {}).agentId); }
       // "closed" may be stale: the window was closed and has already been started again (by you or an agent). Ask the
-      // station before giving up the picture — only a browser the station says is closed shows as closed.
+      // keep before giving up the picture — only a browser the keep says is closed shows as closed.
       const why = code === 'closed' ? 'The browser is closed.' : ((b && b.error) || 'The picture stopped.');
       refreshLive().then(() => {
         if (!mounted() || state.mode !== 'live') return;
         const now = Date.now();
         state.liveRestarts = (state.liveRestarts || []).filter(t => now - t < 10000);
-        if (station().open && state.liveRestarts.length < 3) { state.liveRestarts.push(now); startLive(); return; }
+        if (keep().open && state.liveRestarts.length < 3) { state.liveRestarts.push(now); startLive(); return; }
         state.driver = null;
         showEmpty(why);
       });
@@ -402,12 +402,12 @@
     setNote('Opening…');
     /* A SLOW START SHOWS ITS PICTURE (measured 2026-10-01 at ~90% CPU: switching to a Chrome window, the old browser
        took 10+ s to exit and the open answered after ~30 s — the window sat on a blank "Opening…"). While the open is
-       in flight, ask the station each second, and as soon as it says the browser is up, show the live picture (the
+       in flight, ask the keep each second, and as soon as it says the browser is up, show the live picture (the
        page loading in it); the note keeps saying "Opening…" until the open answers. */
     const early = setInterval(() => {
       if (op !== state.opSeq || !mounted()) { clearInterval(early); return; }
       refreshLive().then(() => {
-        if (op === state.opSeq && mounted() && state.busy && station().open && state.mode !== 'live') {
+        if (op === state.opSeq && mounted() && state.busy && keep().open && state.mode !== 'live') {
           clearInterval(early);
           state.mode = 'live'; state.watch = null;
           startLive(); setNote('Opening…');
@@ -426,13 +426,13 @@
         try { ui.url.blur(); } catch (_) { /* focus is best-effort */ }
         refreshLive().then(() => { if (!mounted()) return; if (state.mode !== 'live') showLive(); paintBar(true); setNote(why); });
         setNote(why);
-      } else setNote('Could not open that: ' + ((r.body && r.body.error) || 'the station did not answer') + '.');
+      } else setNote('Could not open that: ' + ((r.body && r.body.error) || 'the keep did not answer') + '.');
       paintBar();
       return;
     }
     state.mode = 'live'; state.watch = null; state.driver = null;
     state.page = { url: r.body.url || '', title: '' };
-    state.live.station = Object.assign({}, station(), { open: true, driver: null, handoff: false, remembered: !!r.body.remembered, visible: !!r.body.visible });
+    state.live.keep = Object.assign({}, keep(), { open: true, driver: null, handoff: false, remembered: !!r.body.remembered, visible: !!r.body.visible });
     try { ui.url.blur(); } catch (_) { /* focus is best-effort */ }
     startLive();
     try { ui.vp.focus(); } catch (_) { /* focus is best-effort */ }
@@ -445,7 +445,7 @@
     const r = await postJson('/api/browser/view/nav', { action }).catch(() => ({ status: 0, body: {} }));
     if (op !== state.opSeq) return;
     state.busy = false;
-    if (r.status !== 200) setNote('Could not go ' + action + ': ' + ((r.body && r.body.error) || 'the station did not answer') + '.');
+    if (r.status !== 200) setNote('Could not go ' + action + ': ' + ((r.body && r.body.error) || 'the keep did not answer') + '.');
     paintBar();
   }
   function reload() {
@@ -456,12 +456,12 @@
     let url = '';
     if (state.mode === 'page' && state.target) url = pageUrl(state.target);
     else if ((state.mode === 'watch' || state.mode === 'live') && state.page && /^https?:/i.test(state.page.url || '')) url = state.page.url;
-    if (!url) { notify('could not open that — the station may be unreachable'); return; }
+    if (!url) { notify('could not open that — the keep may be unreachable'); return; }
     const core = tauriCore();
     if (core && core.invoke) { Promise.resolve(core.invoke('open_external_url', { url })).catch(() => notify('could not open your browser')); return; }
     let win = null;
     try { win = root.open(url, '_blank', 'noopener'); } catch (_) { win = null; }
-    if (!win) notify('your browser blocked the new tab — allow popups for the station, then try again');
+    if (!win) notify('your browser blocked the new tab — allow popups for the keep, then try again');
   }
 
   function setFollow(on) {
@@ -470,14 +470,14 @@
     paintBar();
   }
 
-  // ---------- station truth: is the browser open, and who is driving ----------
+  // ---------- keep truth: is the browser open, and who is driving ----------
   function refreshLive() {
     return getJson('/api/browser/view').then(r => {
       if (r.status !== 200 || !r.body || !r.body.ok) return;
-      const wasRun = station().driver ? station().driver.runId : '';
-      state.live = { agents: Array.isArray(r.body.agents) ? r.body.agents : [], station: r.body.station || NO_STATION };
+      const wasRun = keep().driver ? keep().driver.runId : '';
+      state.live = { agents: Array.isArray(r.body.agents) ? r.body.agents : [], keep: r.body.keep || NO_KEEP };
       const first = !state.liveLoaded; state.liveLoaded = true;
-      const st = station();
+      const st = keep();
       const started = !!(st.driver && st.driver.runId !== wasRun);   // an agent just took the browser
       if (st.driver && st.driver.signIn) {
         stopSignInWatch();
@@ -509,7 +509,7 @@
       } else if (state.follow && started && !first) {
         showLive(true);   // FOLLOW: the window opens by itself when an agent starts browsing (your typing stays put)
       }
-    }).catch(() => { /* the station is unreachable: the door simply shows no lamp */ });
+    }).catch(() => { /* the keep is unreachable: the door simply shows no lamp */ });
   }
   function scheduleLive() {
     clearTimeout(state.liveTimer);
@@ -517,11 +517,11 @@
   }
 
   /* MINIMIZED is not closed (release review 2026-09-30): a minimized BROWSER window stays mounted, so the "show" paths
-     used to do nothing visible — and its picture kept streaming, which also kept the station browser from idling out.
+     used to do nothing visible — and its picture kept streaming, which also kept the keep browser from idling out.
      Any show now restores it, and while it is minimized nothing streams. */
   function termEl() { return state.ui && state.ui.root && state.ui.root.closest ? state.ui.root.closest('.term') : null; }
   function isMinimized() { const w = termEl(); return !!(w && w.classList.contains('term-min-hidden')); }
-  function restoreIfMinimized() { if (isMinimized() && typeof StationUI !== 'undefined' && StationUI.openTerm) StationUI.openTerm('browser'); }
+  function restoreIfMinimized() { if (isMinimized() && typeof KeepUI !== 'undefined' && KeepUI.openTerm) KeepUI.openTerm('browser'); }
   function watchMinimize() {
     const w = termEl();
     if (!w || typeof MutationObserver === 'undefined' || state.ui.minObs) return;
@@ -538,11 +538,11 @@
   /* keepFocus: an open the Commander did not ask for (FOLLOW, an agent starting to browse) must not take the keyboard
      from wherever they are typing — COMMS above all. */
   function showWindow(keepFocus) {
-    if (typeof StationUI === 'undefined' || !StationUI.openTerm) return false;
+    if (typeof KeepUI === 'undefined' || !KeepUI.openTerm) return false;
     if (mounted()) { restoreIfMinimized(); return true; }
     const doc = root.document;
     const prev = keepFocus && doc ? doc.activeElement : null;
-    StationUI.openTerm('browser');
+    KeepUI.openTerm('browser');
     if (prev && doc && prev !== doc.body && prev.isConnected && typeof prev.focus === 'function') { try { prev.focus({ preventScroll: true }); } catch (_) { /* focus is best-effort */ } }
     return mounted();
   }
@@ -575,7 +575,7 @@
   async function openFor(agentId) {
     const aid = String(agentId || 'agent');
     await refreshLive();
-    const st = station();
+    const st = keep();
     if (st.open || st.driver) return showLive();
     const a = privateRun(aid);
     if (a) return showWatch(a);
@@ -614,7 +614,7 @@
   function paintDoor() {
     const b = root.document && root.document.getElementById('comms-browser');
     if (!b) return;
-    const aid = lineAgent(), name = agentLabel(aid), st = station(), a = privateRun(aid);
+    const aid = lineAgent(), name = agentLabel(aid), st = keep(), a = privateRun(aid);
     const mine = !!(st.driver && st.driver.agentId === aid);
     const ask = (mine && st.handoff) || !!(a && a.handoff);
     b.classList.toggle('live', (mine || !!a) && !ask);
@@ -640,12 +640,12 @@
   }
 
   /* ---------- Settings → BROWSER ----------
-     Where the station browser lives. Same button idiom as AUTONOMY (.set-themes / .set-theme / .sel), so no new
-     chrome. The live line under it says what is RUNNING now, from the station — never just what was clicked. */
+     Where the keep browser lives. Same button idiom as AUTONOMY (.set-themes / .set-theme / .sel), so no new
+     chrome. The live line under it says what is RUNNING now, from the keep — never just what was clicked. */
   const MODE_TEXT = {
     window: 'A real Chrome window on your desktop that you and your agents share. Sign in, type and paste in it like any browser; the BROWSER window follows it.',
-    builtin: 'Hidden inside StarNet: nothing opens on your desktop. The BROWSER window shows the page.',
-    chrome: 'Your own Chrome, with your logins. Agents ask before acting on each site. Needs the StarNet extension in your Chrome.'
+    builtin: 'Hidden inside Eyehold: nothing opens on your desktop. The BROWSER window shows the page.',
+    chrome: 'Your own Chrome, with your logins. Agents ask before acting on each site. Needs the Eyehold extension in your Chrome.'
   };
   function mountSettings(el, arrange) {
     el.innerHTML = '<p class="set-about" id="brw-desc">' + esc(MODE_TEXT.window) + '</p>'
@@ -653,7 +653,7 @@
       + '<div class="set-themes" id="brw-mode">'
       + '<button type="button" class="set-theme" data-mode="window" title="' + esc(MODE_TEXT.window) + '">CHROME WINDOW</button>'
       + '<button type="button" class="set-theme" data-mode="builtin" title="' + esc(MODE_TEXT.builtin) + '">BUILT-IN</button>'
-      // YOUR CHROME (your own Chrome via the StarNet extension) is not offered until that extension exists (release review)
+      // YOUR CHROME (your own Chrome via the Eyehold extension) is not offered until that extension exists (release review)
       + '</div>'
       + '<p class="set-about dim" id="brw-state" role="status"></p>';
     if (typeof arrange === 'function') { try { arrange(el); } catch (_) { /* plain layout is fine */ } }
@@ -665,21 +665,21 @@
       desc.textContent = MODE_TEXT[(s && s.mode) || 'window'];
       const lines = [];
       const fallback = s && s.effective === 'window' ? 'uses a Chrome window' : 'browses built-in';
-      if (s && s.mode === 'chrome' && !s.chromeAvailable) lines.push('The StarNet extension is not paired with your Chrome yet, so the station ' + fallback + ' until it is.');
-      if (s && s.mode === 'window' && s.effective === 'builtin') lines.push('No Chrome window can open here (no screen, or no Chrome, Edge or Chromium installed), so the station browses built-in.');
+      if (s && s.mode === 'chrome' && !s.chromeAvailable) lines.push('The Eyehold extension is not paired with your Chrome yet, so the keep ' + fallback + ' until it is.');
+      if (s && s.mode === 'window' && s.effective === 'builtin') lines.push('No Chrome window can open here (no screen, or no Chrome, Edge or Chromium installed), so the keep browses built-in.');
       if (s && s.running && s.running !== s.effective) lines.push('The browser that is open now keeps its old mode until an agent finishes with it; it switches after that.');
       else if (s && s.running) lines.push('Running now: ' + (s.running === 'window' ? 'a Chrome window' : 'built-in') + '.');
       stateLine.textContent = lines.join(' ');
     };
-    getJson('/api/browser/settings').then(r => { if (r.status === 200 && r.body && r.body.ok) paint(r.body); else stateLine.textContent = 'Could not read the browser setting from the station.'; }).catch(() => { stateLine.textContent = 'Could not read the browser setting from the station.'; });
+    getJson('/api/browser/settings').then(r => { if (r.status === 200 && r.body && r.body.ok) paint(r.body); else stateLine.textContent = 'Could not read the browser setting from the keep.'; }).catch(() => { stateLine.textContent = 'Could not read the browser setting from the keep.'; });
     wrap.addEventListener('click', ev => {
       const b = ev.target && ev.target.closest ? ev.target.closest('[data-mode]') : null;
       if (!b || (current && current.mode === b.dataset.mode)) return;
       stateLine.textContent = 'Saving…';
       postJson('/api/browser/settings', { mode: b.dataset.mode }).then(r => {
         if (r.status === 200 && r.body && r.body.ok) { paint(r.body); refreshLive(); }
-        else stateLine.textContent = 'Could not save: ' + ((r.body && r.body.error) || 'the station did not answer') + '.';
-      }).catch(() => { stateLine.textContent = 'Could not save: the station did not answer.'; });
+        else stateLine.textContent = 'Could not save: ' + ((r.body && r.body.error) || 'the keep did not answer') + '.';
+      }).catch(() => { stateLine.textContent = 'Could not save: the keep did not answer.'; });
     });
   }
 
@@ -692,23 +692,23 @@
 
   let busWired = false;
   function init() {
-    if (typeof StationUI !== 'undefined' && StationUI.registerWindow) {
+    if (typeof KeepUI !== 'undefined' && KeepUI.registerWindow) {
       // Closing the window does NOT close the browser: it is the agents' too, and it closes itself when nobody has
       // driven or watched it for ten minutes.
-      StationUI.registerWindow('browser', 'BROWSER', build, { wide: true, className: 'browser-win', onClose: () => { stopStreams(); if (state.ui && state.ui.minObs) state.ui.minObs.disconnect(); state.minimized = false; state.ui = null; } });
+      KeepUI.registerWindow('browser', 'BROWSER', build, { wide: true, className: 'browser-win', onClose: () => { stopStreams(); if (state.ui && state.ui.minObs) state.ui.minObs.disconnect(); state.minimized = false; state.ui = null; } });
     }
     if (!busWired && typeof U !== 'undefined' && U.bus && U.bus.on) {
       busWired = true;
       U.bus.on('deliverable', p => { try { noteOutput(p); } catch (_) { /* a bad event never breaks the bus */ } });   // background (channel/routine) runs
       // who is driving changes when a run starts or ends, when an agent uses a browser tool, and around a handoff —
-      // ask the station then (never poll, never guess from the event itself)
+      // ask the keep then (never poll, never guess from the event itself)
       U.bus.on('agent.tool_call', p => {
         if (!p || !/^browser[._]/.test(String(p.name || ''))) return;
         scheduleLive();
         /* a sign-in is for YOU: the browser shows itself when the sign-in actually starts on the shared browser —
            AFTER you approved it in COMMS (release review 2026-09-30: opening on the tool call popped the window before
            the question was answered, took the keyboard from COMMS, and stayed open on "driving" if you declined).
-           Ask the station until the sign-in begins or the tool returns. */
+           Ask the keep until the sign-in begins or the tool returns. */
         if (/^browser[._]login$/.test(String(p.name))) watchSignIn();
       });
       U.bus.on('agent.tool_result', p => {

@@ -7,14 +7,14 @@ const path = require('node:path');
 const vm = require('node:vm');
 let journey = null, stale = true, label = { textContent: '—' };
 const ctx = vm.createContext({
-  window: { __STARNET_DEV__: true }, console: { log() {} }, setTimeout() {},
-  document: { getElementById: id => id === 'gt-station' ? label : null },
+  window: { __EYEHOLD_DEV__: true }, console: { log() {} }, setTimeout() {},
+  document: { getElementById: id => id === 'gt-keep' ? label : null },
   U: { bus: { emit() {} } },
   JourneyStore: { status: () => journey, state: () => ({ stale }) },
   Xp: { fresh: () => ({}), compute: () => ({ level: 77 }) }
 });
 vm.runInContext(fs.readFileSync(path.join(__dirname, '../frontend/app/testapi.js'), 'utf8'), ctx);
-const probe = ctx.window.__SKYNET_TEST__;
+const probe = ctx.window.__EYEHOLD_TEST__;
 assert.equal(probe.hud().allOk, true, 'unknown Commander level is honestly shown as a dash');
 label.textContent = 'Lv 1';
 assert.equal(probe.hud().allOk, false, 'no fabricated initial level before backend data');

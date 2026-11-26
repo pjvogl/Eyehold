@@ -308,7 +308,7 @@ async function opensWithin(t, ms) {
   A.ok(!/cb\.onInterim\([\s\S]{0,100}repeat\(/.test(SRC), 'recorder progress never writes fake dot or bullet text into the composer');
 
   // Final recognition and live previews are independent: having a cloud credential must not disable
-  // the installed local preview engine. Windows-only stations preview their captured PCM as well.
+  // the installed local preview engine. Windows-only keeps preview their captured PCM as well.
   for (const preferred of ['cloud', 'native']) {
     const t = boot({ desktop: true, fetch: (url) => {
       if (url === '/api/stt/status') return Promise.resolve({ ok: true, json: async () => ({
@@ -432,7 +432,7 @@ async function opensWithin(t, ms) {
     t.sandbox.__busy = true;
     await until(() => t.Voice.isListening(), 1000);
     A.ok(t.Voice.isListening(), 'live re-arm: the mic re-opens while the run thinks (steering)');
-    t.Voice.speakChunk('Clear skies over the station tonight.', 'agent', { replyToken: token });
+    t.Voice.speakChunk('Clear skies over the keep tonight.', 'agent', { replyToken: token });
     await until(() => requests.length > 0, 1000);
     A.eq(requests.length, 1, 'live re-arm: the re-armed mic did NOT cancel the reply — it is synthesized');
     await until(() => !t.Voice.isListening(), 1000);
@@ -790,12 +790,12 @@ async function opensWithin(t, ms) {
     };
     const t = boot({ audio: true, Audio: AutoEndAudio, fetch: stableVoiceFetch });
     const timings=[];t.Voice.attachCoordinator({onTiming:value=>timings.push(value)});
-    t.sandbox.localStorage.setItem('starnet.liveVoice.localVoice.v1', 'am_onyx');
+    t.sandbox.localStorage.setItem('eyehold.liveVoice.localVoice.v1', 'am_onyx');
     t.Voice.setSpeakReplies(true);
     t.Voice.setLocalTts(true);
     t.Voice.speak('First sentence establishes the speaker.', 'agent');
     await until(() => requests.length >= 1 && !t.Voice.isSpeaking(), 1000);
-    t.sandbox.localStorage.setItem('starnet.liveVoice.localVoice.v1', 'af_nova');
+    t.sandbox.localStorage.setItem('eyehold.liveVoice.localVoice.v1', 'af_nova');
     t.Voice.speak('Second sentence must keep that same speaker.', 'agent');
     await until(() => requests.length >= 2, 1000);
     A.eq(requests[0].localVoice, 'am_onyx', 'Local Live snapshots the selected voice when the session begins');
@@ -843,7 +843,7 @@ async function opensWithin(t, ms) {
     A.eq((await say('scout', 'SCOUT')).localVoice, 'af_heart', 'new live call adopts the saved change');
     t.Voice.setLocalTts(false);
     t.Voice.setVoiceChoice('', 'scout');
-    A.eq(t.Voice.localVoiceId('scout'), 'am_onyx', 'clearing an assignment restores station inheritance');
+    A.eq(t.Voice.localVoiceId('scout'), 'am_onyx', 'clearing an assignment restores keep inheritance');
     t.sandbox.Workstreams = {active:()=>({agentId:'builder'}),get:()=>({agentId:'scout'})};
     A.eq(t.Voice.currentAgentId(), 'builder', 'ordinary voice follows the active session agent');
     t.sandbox.VoiceLive = {boundSessionId:()=> 'bound'};
@@ -879,18 +879,18 @@ async function opensWithin(t, ms) {
     A.ok(!/real voice/i.test(String(t.nodes['voice-toggle'].title || '')), 'retry: a blip that the retry rescued does NOT pin an outage banner on the toggle');
   }
 
-  // --- a KEYLESS station: an Edge blip is a BLIP, not a missing credential -----------------------
+  // --- a KEYLESS keep: an Edge blip is a BLIP, not a missing credential -----------------------
   // The sidecar prefixes 'no key' structurally whenever the keyed tier has no credential, so on the exact
-  // station the free keyless Edge floor exists for, every transient Edge failure arrived as
+  // keep the free keyless Edge floor exists for, every transient Edge failure arrived as
   // 'no key; edge: <transient>'. The client tested the terminal class FIRST, so: no retry, a 60s
   // dead-voice cold-off instead of 4s, and a tooltip telling the user to buy an API key to fix a network
-  // hiccup. The whole transient-failure path was unreachable code on a keyless station.
+  // hiccup. The whole transient-failure path was unreachable code on a keyless keep.
   {
     const state = { tts: 0 };
     let now = Date.now();
     const t = boot({ now: () => now, fetch: countingFetch(state, 'no key; edge: edge timeout') });
     t.Voice.setSpeakReplies(true);
-    t.Voice.speak('first line on a keyless station', 'agent'); await tick(40);
+    t.Voice.speak('first line on a keyless keep', 'agent'); await tick(40);
     A.eq(state.tts, 3, 'keyless + edge blip: two bounded retries retain the chunk');
     A.ok(!/needs an OpenRouter, Gemini, or OpenAI credential/.test(String(t.nodes['voice-toggle'].title || '')),
       'keyless + edge blip: the tooltip does NOT demand a credential for a network blip');
@@ -900,7 +900,7 @@ async function opensWithin(t, ms) {
     t.Voice.speak('second line while still cold', 'agent'); await tick(40);
     A.ok(state.tts > afterFirst, 'keyless + edge blip: a transient cool-off never silences the next reply before it asks');
   }
-  // ...while a station that genuinely holds no credential AND no floor still gets the honest terminal copy.
+  // ...while a keep that genuinely holds no credential AND no floor still gets the honest terminal copy.
   {
     const state = { tts: 0 };
     const t = boot({ fetch: countingFetch(state, 'no key') });
@@ -933,7 +933,7 @@ async function opensWithin(t, ms) {
 
   // --- the pinned degrade reason survives Voice.init (agent focus / persona / dossier apply) -----
   // init() calls reflectToggle() without clearing fbNotified, and reflectToggle wrote the plain on/off copy
-  // over the pinned reason. noteFallback then early-returns for the rest of the outage class, so the station
+  // over the pinned reason. noteFallback then early-returns for the rest of the outage class, so the keep
   // sat silent asserting 'agent voice: ON' with no way to find out why — the 2026-07-07 escape exactly.
   {
     const t = boot({ ttsKey: true, audio: true, fetch: ttsFailFetch('openrouter 402 — insufficient credits') });

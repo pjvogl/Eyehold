@@ -5,7 +5,7 @@
    (a) show a percentage it has not earned, and (b) quietly shrink its own denominator — a run excluded from
    the ratio has to be NAMED on screen, or "100%" is a lie of omission.
 
-   agGrowth is isolated from stationui.js the same way dossier-skin-accessibility.test.js isolates agCommand
+   agGrowth is isolated from keepui.js the same way dossier-skin-accessibility.test.js isolates agCommand
    (the file is DOM/flow code, not node-loadable), but fed the REAL Xp engine so the rendered numbers are the
    engine's, not a fixture's. */
 'use strict';
@@ -16,14 +16,14 @@ const vm = require('node:vm');
 const A = require('./_assert.js');
 const Xp = require('../frontend/app/xp.js');
 
-const source = fs.readFileSync(path.join(__dirname, '..', 'frontend', 'app', 'stationui.js'), 'utf8');
+const source = fs.readFileSync(path.join(__dirname, '..', 'frontend', 'app', 'keepui.js'), 'utf8');
 const start = source.indexOf('  function agGrowth(a) {');
 const end = source.indexOf('\n  function agSkills(agentId) {', start);
-A.ok(start >= 0 && end > start, 'the growth dossier renderer can be isolated from stationui.js');
+A.ok(start >= 0 && end > start, 'the growth dossier renderer can be isolated from keepui.js');
 
 const render = vm.runInNewContext(source.slice(start, end) + '\n  agGrowth;', {
   Xp,
-  XpStore: { stationStats: () => null },
+  XpStore: { keepStats: () => null },
   present: [{ id: 'agent' }],
   esc: value => String(value),
 });
@@ -69,8 +69,8 @@ A.ok(!/set aside/.test(cleanTail), 'an agent with nothing excluded shows no set-
 
 /* ---- 4. the two meters stay legibly DISTINCT (they measure different things and may disagree) ---- */
 A.ok(/Satisfaction/.test(clean) && /Reliability/.test(clean), 'Satisfaction and Reliability are separate sections');
-A.ok(clean.indexOf('Satisfaction') < clean.indexOf('Reliability'), 'Reliability sits under Satisfaction (what you said, then what the station saw)');
-A.ok(/what the station observed — Satisfaction above is what you said/.test(clean), 'the dossier states the difference between the two meters');
+A.ok(clean.indexOf('Satisfaction') < clean.indexOf('Reliability'), 'Reliability sits under Satisfaction (what you said, then what the keep saw)');
+A.ok(/what the keep observed — Satisfaction above is what you said/.test(clean), 'the dossier states the difference between the two meters');
 // the disagreement case is the whole point: a rated-well agent that keeps failing must show both truths
 let mixed = statsFrom(['done', 'max_iters', 'max_iters']);
 mixed = Xp.applyEvent(mixed, { name: 'memory.feedback', payload: { agentId: 'a', id: 'm1', delta: 2, reason: 'work_great' } }).stats;

@@ -1,6 +1,6 @@
 'use strict';
 
-/* The station should feel warm and comfortable without solving brightness by flattening the
+/* The keep should feel warm and comfortable without solving brightness by flattening the
    light model. Lock the color temperature separately from the existing intensity controls so a
    future polish pass cannot drift the pools back toward white or silently reduce readability. */
 
@@ -9,7 +9,7 @@ const path = require('path');
 const A = require('./_assert.js');
 
 const read = name => fs.readFileSync(path.join(__dirname, '..', 'frontend', 'app', name), 'utf8');
-const bake = read('stationbake.js');
+const bake = read('keepbake.js');
 const world = read('world.js');
 const build = read('build.js');
 const lab = read('crtlab.js');
@@ -18,10 +18,10 @@ const lab = read('crtlab.js');
 const appCss = fs.readFileSync(path.join(__dirname, '..', 'frontend/css/app.css'), 'utf8');
 const stageRule = appCss.match(/#stage\s*\{([^}]+)\}/)[1];
 A.ok(/filter:\s*saturate\(1\.14\) contrast\(1\.08\) brightness\(0\.94\)/.test(stageRule),
-  'station preserves the approved grade independently of theme saturation and hue');
-A.ok(!stageRule.includes('--cam-grade'), 'custom UI grade cannot desaturate the live station');
+  'keep preserves the approved grade independently of theme saturation and hue');
+A.ok(!stageRule.includes('--cam-grade'), 'custom UI grade cannot desaturate the live keep');
 A.eq(appCss, fs.readFileSync(path.join(__dirname, '..', 'website/app/css/app.css'), 'utf8'),
-  'website and packaged station use the same colour treatment');
+  'website and packaged keep use the same colour treatment');
 
 const srgb = v => {
   v /= 255;
@@ -96,7 +96,7 @@ for (const [name, source, end] of [['world', world, '  /* ---- PROP LIGHT'], ['b
 
 const props = read('propsprites.js');
 const start = props.indexOf('  function lightOf('), stop = props.indexOf('\n  }',start)+4;
-// These probes cover the classic light model; authored workstation emitters have
+// These probes cover the classic light model; authored workkeep emitters have
 // their own real-asset and remaster contract tests. Supply the extracted closure.
 const surfaceLiftCode = props.match(/  function surfaceLift\(f\)\{[^\n]+\}/)?.[0];
 A.ok(!!surfaceLiftCode, 'the light-model probe includes the actual surface-mount helper');
@@ -111,7 +111,7 @@ for(const [mode,limit] of [['screen',.031],['pulse',.041],['fire',.101],['steady
   A.eq(light(100,f,false,false),null,mode+' working source still obeys real activity');
   A.eq(light(100,f,true,true).a,1,mode+' reduced motion stays steady');
 }
-for(const file of ['world.js','build.js','propsprites.js','stationbake.js','crtlab.js']) {
+for(const file of ['world.js','build.js','propsprites.js','keepbake.js','crtlab.js']) {
   A.eq(read(file),fs.readFileSync(path.join(__dirname,'..','website','app','app',file),'utf8'),file+' website parity');
 }
 A.report('simulation-lighting');

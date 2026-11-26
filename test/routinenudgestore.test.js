@@ -43,7 +43,7 @@ launchCounts = { 'morning-brief': { n: R.LAUNCH_FLOOR - 1, lastAt: 1 } };
 A.eq(R.willPropose(), false, 'below the launch floor → no offer');
 
 /* A RECIPE WITH NO AUTHORED CADENCE STILL EARNS THE OFFER (2026-08-05). The old gate required `r.cadence` — the
-   CATALOG AUTHOR's suggestion — which quietly excluded every recipe the station itself mints: seedstore →
+   CATALOG AUTHOR's suggestion — which quietly excluded every recipe the keep itself mints: seedstore →
    Recipes.draft stamps `cadence: null`, so an agent-authored recipe the Commander launched nine times by hand
    could never earn "want it on a schedule?". The evidence was always the launch count, and that is all the
    nudge cites; the cadence is chosen by the Commander in the SCHEDULE IT form the accept opens. */

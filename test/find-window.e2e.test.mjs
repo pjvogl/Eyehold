@@ -1,13 +1,13 @@
 /* node test/find-window.e2e.test.mjs — FIND (Ctrl+K) END TO END, in real Chromium (2026-10-05, self-driving lane 4:
    "WAAY easier to use and navigate").
 
-   A real seeded station page: Ctrl+K opens FIND as a docked station window with the cursor in its field; typing filters
+   A real seeded keep page: Ctrl+K opens FIND as a docked keep window with the cursor in its field; typing filters
    every place / crew tab / conversation; Enter opens the result through Places.open — the SAME opener the agent's
-   station.show uses — and FIND steps aside; a query that matches nothing still has a way forward (ASK THE CREW types it
+   keep.show uses — and FIND steps aside; a query that matches nothing still has a way forward (ASK THE CREW types it
    into COMMS, never sends it). It also holds the window to the glass recipe (8px field, 10px rows, nothing under 14px)
-   and writes screenshots for a human look (SKYNET_SHOT_DIR, default the OS temp dir).
+   and writes screenshots for a human look (EYEHOLD_SHOT_DIR, default the OS temp dir).
 
-   Isolated like station-show.e2e: fresh seeded workspace, APPDATA/LOCALAPPDATA/USERPROFILE/HOME/HERMES_HOME in scratch,
+   Isolated like keep-show.e2e: fresh seeded workspace, APPDATA/LOCALAPPDATA/USERPROFILE/HOME/HERMES_HOME in scratch,
    a fresh Chrome profile, OS-picked ports. No model calls. Skips LOUDLY with no Chromium. In test:http. */
 import { spawn } from 'node:child_process';
 import { mkdtempSync, mkdirSync, rmSync, writeFileSync } from 'node:fs';
@@ -45,15 +45,15 @@ const TYPE = q => `(() => { const f = document.querySelector('.find-win .fnd-fie
 const KEY = k => `(() => { const f = document.querySelector('.find-win .fnd-field'); if (!f) return false; f.dispatchEvent(new KeyboardEvent('keydown', { key: ${JSON.stringify(k)}, bubbles: true, cancelable: true })); return true; })()`;
 const ROWS = `(() => [...document.querySelectorAll('.find-win .fnd-row')].map(r => ({ name: (r.querySelector('.fnd-n') || {}).textContent, on: r.classList.contains('on') })))()`;
 
-const shotDir = process.env.SKYNET_SHOT_DIR || tmpdir();
-const root = mkdtempSync(join(tmpdir(), 'starnet-find-e2e-'));
+const shotDir = process.env.EYEHOLD_SHOT_DIR || tmpdir();
+const root = mkdtempSync(join(tmpdir(), 'eyehold-find-e2e-'));
 const iso = {};
 for (const [k, d] of [['APPDATA', 'appdata'], ['LOCALAPPDATA', 'localappdata'], ['USERPROFILE', 'home'], ['HOME', 'home'], ['HERMES_HOME', 'hermes']]) { iso[k] = join(root, 'iso', d); mkdirSync(iso[k], { recursive: true }); }
 const workspace = join(root, 'workspace'), profile = join(root, 'profile');
 const appPort = await freePort(), cdpPort = await freePort();
 const base = 'http://127.0.0.1:' + appPort;
 materializeSeedWorkspace(workspace, 'test/model');
-const sidecar = bootSeededSidecar({ port: appPort, scratchDir: workspace, model: 'test/model', key: 'sk-or-v1-fake', env: Object.assign({ SKYNET_OPENROUTER_BASE: 'http://127.0.0.1:9/api/v1' }, iso) });
+const sidecar = bootSeededSidecar({ port: appPort, scratchDir: workspace, model: 'test/model', key: 'sk-or-v1-fake', env: Object.assign({ EYEHOLD_OPENROUTER_BASE: 'http://127.0.0.1:9/api/v1' }, iso) });
 const chrome = spawn(chromePath, ['--headless=new', '--disable-gpu', '--no-first-run', '--no-default-browser-check', '--no-proxy-server', '--hide-scrollbars', '--mute-audio',
   '--remote-debugging-port=' + cdpPort, '--window-size=1440,900', '--user-data-dir=' + profile, 'about:blank'], { stdio: 'ignore' });
 
@@ -69,14 +69,14 @@ try {
   const diagnostics = collectDiagnostics(cdp);
   await cdp.send('Page.addScriptToEvaluateOnNewDocument', { source: 'window.requestAnimationFrame = cb => setTimeout(() => cb(performance.now()), 60); window.cancelAnimationFrame = id => clearTimeout(id);' });
   await cdp.send('Page.navigate', { url: base + '/' });
-  check('the real page reaches the live station', await waitDevReady(cdp, evalJS, { url: base + '/', tries: 60 }));
+  check('the real page reaches the live keep', await waitDevReady(cdp, evalJS, { url: base + '/', tries: 60 }));
   const hero = await evalJS(cdp, `(() => { const h = App.agents().find(a => a.id === 'agent'); return h && h.name; })()`);
   check('the dock offers SYSTEM › FIND', await evalJS(cdp, `!!document.querySelector('#bottombar .bb[data-term="find"]')`));
 
   // ---- Ctrl+K: FIND opens, docked, the cursor in its field ----
   await evalJS(cdp, CTRL_K); await sleep(400);
   let screen = await evalJS(cdp, SCREEN);
-  check('Ctrl+K opens FIND as a station window', (screen || []).some(w => w.title === 'FIND'), JSON.stringify(screen));
+  check('Ctrl+K opens FIND as a keep window', (screen || []).some(w => w.title === 'FIND'), JSON.stringify(screen));
   check('the cursor is in the FIND field', await evalJS(cdp, `document.activeElement === document.querySelector('.find-win .fnd-field')`));
   let rows = await evalJS(cdp, ROWS);
   check('an empty field lists the places (and each crew member)', rows.length >= 40 && rows.some(r => r.name === 'MY WORK › DELIVERABLES') && rows.some(r => r.name === String(hero).toUpperCase() + ' › BRIEF'), rows.length + ' rows');

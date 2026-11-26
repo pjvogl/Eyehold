@@ -19,19 +19,19 @@ the chat.js single-agent refactor that everything per-agent depends on. **Slices
 ### Slice 2 — switching streams mid-run actually works end-to-end
 - **Lifted the "can't switch while busy" guards** so you can switch/open/assign streams during a run:
   - `frontend/app/app.js` — `switchWorkstream()` and `newWorkstream()` (removed `if (Chat.isBusy()) return`).
-  - `frontend/app/stationui.js` — `openStream()` and `assignTask()` (same).
+  - `frontend/app/keepui.js` — `openStream()` and `assignTask()` (same).
 - **Live token re-bind on switch** — `chat.js` now keeps a module-level `activeLiveRow` (the streaming row
   for the DISPLAYED stream) that `replayChannel()` **rebinds** when you switch *to* a still-running stream,
   so new tokens flow into the re-rendered row. Every DOM/World write in the run is gated by **`isActiveWs(ws)`**
   so a backgrounded run never writes into the displayed stream's log or moves the world view.
 
-> ⚠ **Cross-file note for frontend-hud:** slice 2 edited `app.js` + `stationui.js` (the switch guards) here on
+> ⚠ **Cross-file note for frontend-hud:** slice 2 edited `app.js` + `keepui.js` (the switch guards) here on
 > `agent/comms-channels`, because lifting them is the gate's defining behavior. They are tiny, surgical removals —
-> **rebase onto this branch, don't re-do them.** The conflict matrix still holds for all OTHER `app.js`/`stationui.js` work.
+> **rebase onto this branch, don't re-do them.** The conflict matrix still holds for all OTHER `app.js`/`keepui.js` work.
 
 ## Verified
 - `node test/channels.test.js` → 37 assertions OK; **full `npm run test:fast` green** (incl. lint-emits, lint-determinism).
-- `node --check` on chat.js / app.js / stationui.js; **browser boot clean** (no console errors).
+- `node --check` on chat.js / app.js / keepui.js; **browser boot clean** (no console errors).
 - **Browser model-free smoke (slice 1):** two workstreams hold concurrent isolated run-state (separate acc/runId/pending; ending one leaves the other busy).
 - **Browser DOM smoke (slice 2):** displaying a mid-run stream re-renders history + tool line + partial reply **with a live caret** + pending approval **with all 4 consent buttons**; compose target set to the displayed stream.
 - No `shared/events.js` change — the gate is additive (model + DOM only).

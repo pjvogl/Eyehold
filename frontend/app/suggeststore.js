@@ -1,7 +1,7 @@
-/* STARNET — suggeststore.js : the browser wiring for ONGOING SUGGESTIONS (the recurring counterpart to the
+/* EYEHOLD — suggeststore.js : the browser wiring for ONGOING SUGGESTIONS (the recurring counterpart to the
    one-time First Pitch). Slice 3 of "the agent that points you."
 
-   Where pitchstore.js fires ONCE (the graduation beat), this keeps the reverse value-flow alive: as the station
+   Where pitchstore.js fires ONCE (the graduation beat), this keeps the reverse value-flow alive: as the keep
    keeps learning about its Commander (the dossier grows via curiosity/the interview), the agent occasionally
    offers ONE fresh, tailored, buildable idea — gently. It reuses the pure pitch engine for content
    (Pitch.buildDirective / parsePitch) and the same reason-only model path (Harness.chat, placed:[]) so the idea
@@ -17,7 +17,7 @@
    NEVER emits), self-persists its own key (no save.js change), node-exportable for its test. */
 'use strict';
 const SuggestStore = (() => {
-  const KEY = 'starnet.suggest.v1';
+  const KEY = 'eyehold.suggest.v1';
   const RECENT_CAP = 8;    // remember the last N pitched-idea fingerprints so the agent never re-pitches the same idea
   const DECLINED_TITLE_CAP = 24;  // …and the readable titles behind them, for the directive's exclusion list
   const TITLE_CHARS = 90;         // one clause each — the directive stays bounded no matter how long a title got
@@ -74,12 +74,12 @@ const SuggestStore = (() => {
      groundQuote(raw) → the quote the nudge may SPEAK, or '' .
 
      A model asked for the Commander's own words will supply something whether or not it has them. So the quote
-     is checked against the station's real belief pool with the SAME token-overlap veto autojobs applies to its
+     is checked against the keep's real belief pool with the SAME token-overlap veto autojobs applies to its
      GROUNDS line (Autopilot.grounded / flattenBeliefs — resolved lazily, exactly as autojobs.js does it,
      because script order is not guaranteed). Two deliberate refusals, both fail-CLOSED:
        · no engine and no pool → no quote. A check that could not run has not passed.
        · no overlap → no quote. The nudge then says precisely what it said before this contract existed.
-     This is the strictest gate in the lane and it should be: this is the one string the station would speak
+     This is the strictest gate in the lane and it should be: this is the one string the keep would speak
      back as «because you said "…"», and that sentence must never be something they did not say. */
   function groundQuote(raw) {
     const q = String(raw == null ? '' : raw).trim();
@@ -150,7 +150,7 @@ const SuggestStore = (() => {
   }
   function onRunStart(p) { if (acceptedRecommendation && !acceptedRunId && p && (p.agentId || 'agent') === 'agent') { acceptedRunId = String(p.runId || ''); if (acceptedRunId) ledgerPost({ id: acceptedRecommendation, state: 'started', reason: 'accepted' }); } }
 
-  // G1c QUEST CHAINING: a station quest just closed a capability gap (a prop landed → a real capability is live).
+  // G1c QUEST CHAINING: a keep quest just closed a capability gap (a prop landed → a real capability is live).
   // Arm a ONE-SHOT follow-up so the NEXT natural suggestion (which already rides the cooldown + session cap) is
   // grounded in that fresh capability — "the dish is live, want NOVA to build the price-watcher?". This never
   // FORCES a beat: it only flavors the next due suggestion. If the gate never opens, it drops silently on the
@@ -251,7 +251,7 @@ const SuggestStore = (() => {
       /* THE STALENESS GUARD ON THE PROBE (quality loop Q3, wired here in W2). The probe aims this idea at a
          belief whose confidence has SAGGED — and the directive tells the model to build for that belief while
          never mentioning it. That is fine for a merely under-corroborated belief, and wrong for a genuinely
-         STALE one: aiming a pitch at something the station itself cannot stand behind is the confident bad
+         STALE one: aiming a pitch at something the keep itself cannot stand behind is the confident bad
          recommendation Q3 exists to prevent, and the arc lane already refuses it (it asks "still true?"
          instead). So a stale probe target is DROPPED and this idea goes out un-aimed rather than aimed at a
          memory we would not assert. Fail-open: no engine / nothing to read → the probe rides as before. */
@@ -266,7 +266,7 @@ const SuggestStore = (() => {
       }
       const directive = Pitch.buildDirective({ recipes, capabilities: caps, recentTask: deps.getRecentTask ? deps.getRecentTask() : '', unlockedCapability: chain || '', probe: probe, exclude: excludeTitles(), wantEvidence: true, nextMilestone: nextMilestone() });
       const system = deps.getSystem ? deps.getSystem() : '';
-      // evidence:true (W2): the ongoing suggestion is the station guessing what would help next; the learned
+      // evidence:true (W2): the ongoing suggestion is the keep guessing what would help next; the learned
       // topics (with their verbatim quotes) and open threads are the grounding it was being denied.
       const res = await Harness.chat({ system, messages: [{ role: 'user', content: directive }], agentId: 'agent', isTask: false, placed: [], internal: true, evidence: true });
       const parsed = (res && !res.error) ? Pitch.parsePitch(res.text) : null;
@@ -280,7 +280,7 @@ const SuggestStore = (() => {
 
       /* THE GROUNDING VETO ON THE QUOTE (rec perfection W2). The model was asked for the Commander's OWN words
          this pitch stands on. A model that cannot find them will invent them — so the quote is kept ONLY when it
-         shares real significant-token overlap with what the station actually knows (autopilot.js grounded(), the
+         shares real significant-token overlap with what the keep actually knows (autopilot.js grounded(), the
          same veto autojobs uses on its GROUNDS line, over the same {dim:[text]} belief pool). No overlap → the
          quote is DROPPED and the nudge speaks exactly as it did before this contract existed: the model's own
          WHY line, never framed as the Commander's speech. Fail-CLOSED on a missing engine or an empty pool: a

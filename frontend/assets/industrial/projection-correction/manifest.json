@@ -1,7 +1,7 @@
 {
   "version": 1,
   "artSet": "projection-correction-candidate",
-  "source": "../complete-sheet/starnet-props-full-sheet.png",
+  "source": "../complete-sheet/eyehold-props-full-sheet.png",
   "props": {
     "industrial_locker": {
       "views": {

@@ -4,10 +4,10 @@
 
 ## The idea
 
-When the orchestrator delegates a swarm (fans out sub-agents at once), the station
+When the orchestrator delegates a swarm (fans out sub-agents at once), the keep
 *materializes* a crowd of ephemeral worker-sprites — Mr. Meeseeks from Rick and Morty.
 They blink into existence, frantically do their one task, and **pop out of existence the
-instant that task completes**. They are stuck in the station, existing, until done.
+instant that task completes**. They are stuck in the keep, existing, until done.
 
 This is NOT a cosmetic flourish. It is a **live, honest dashboard of the orchestrator's
 fan-out, dressed as Meeseeks.**
@@ -55,8 +55,8 @@ by design, for cost safety. Could become a config knob later.
 1. **Spawn** — overseer calls `team.spawn` → N ephemeral clones start → N `task{kind:'subagent'}`
    + `agent.run.start` events. N Meeseeks blink into existence (poof, blue, "POOF").
    Materialized, not pre-placed — which reads as eerie.
-2. **Disperse** — each runs to a workstation or clusters at the task site. Reuses
-   zone-containment + walk-to-desk. They are *contained* — cannot leave the station until
+2. **Disperse** — each runs to a workkeep or clusters at the task site. Reuses
+   zone-containment + walk-to-desk. They are *contained* — cannot leave the keep until
    done. That containment IS the "stuck existing" beat, already built.
 3. **Frantic work** — animation tracks REAL signal (`agent.cost` / tool activity), NOT a loop
    timer. A loop-timer frenzy would lie about progress.

@@ -1,6 +1,6 @@
-/* STARNET — seedreusestore.js : the thin live wiring around the pure seed-reuse AGGREGATE engine (seedreuse.js).
+/* EYEHOLD — seedreusestore.js : the thin live wiring around the pure seed-reuse AGGREGATE engine (seedreuse.js).
 
-   Owns what the pure engine can't: the durable localStorage key (its OWN 'starnet.seedreuse.*' key, riding the
+   Owns what the pure engine can't: the durable localStorage key (its OWN 'eyehold.seedreuse.*' key, riding the
    backup prefix like pridestore/returnstore — no save.js change), the fire-once-per-window callout through the
    existing GENTLE-NUDGE family (Chat.nudge, the same quiet register curiosity/suggestion/seed asks use), and the
    read surface the TROPHY CASE's living-tools shelf renders from.
@@ -14,7 +14,7 @@
    owned elsewhere; the callout is a direct Chat.nudge call, so lint-emits stays green. node-exportable for its test. */
 'use strict';
 const SeedReuseStore = (() => {
-  const KEY = 'starnet.seedreuse.v1';
+  const KEY = 'eyehold.seedreuse.v1';
   let state = null;
 
   function load() { try { const raw = localStorage.getItem(KEY); return raw ? JSON.parse(raw) : null; } catch (_) { return null; } }

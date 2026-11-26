@@ -1,4 +1,4 @@
-// StarNet — native desktop shell (Tauri v2).
+// Eyehold — native desktop shell (Tauri v2).
 //
 // Wraps the existing browser app: spawns the zero-dependency Node sidecar on a
 // private loopback port, waits for it to listen, then opens that URL in a native
@@ -76,7 +76,7 @@ struct AppState {
     // respawning the sidecar during an intentional quit.
     shutting_down: AtomicBool,
     // Crash-loop memory for the guardian (see spawn_guardian): consecutive unexpected sidecar exits,
-    // the backoff in force, and the HALTED verdict the frontend reads via starnet_sidecar_status.
+    // the backoff in force, and the HALTED verdict the frontend reads via eyehold_sidecar_status.
     guardian: Mutex<GuardianStatus>,
     // WebView2 crash recovery (webview_recovery.rs): true while a dead main window is being
     // destroyed and rebuilt, so the momentary zero-window state is not taken as an app exit.
@@ -88,7 +88,7 @@ struct AppState {
 }
 
 /// What the guardian knows about the sidecar's exit history. Serialized verbatim to the frontend
-/// (STATION DATA UNREACHABLE screen) so a halted crash loop is shown as such, never as a generic
+/// (KEEP DATA UNREACHABLE screen) so a halted crash loop is shown as such, never as a generic
 /// "not answering".
 #[derive(Clone, Default, Serialize)]
 #[serde(rename_all = "camelCase")]
@@ -195,7 +195,7 @@ mod guardian_cap_tests {
 
 /// Serializes user-driven recovery commands and keeps the guardian paused until every return path
 /// (including errors) has finished. Tauri commands may run concurrently, so a plain load/store can
-/// let Restart and Start Fresh kill/spawn/move the same station at the same time.
+/// let Restart and Start Fresh kill/spawn/move the same keep at the same time.
 struct RecoveryOperation<'a> {
     flag: &'a AtomicBool,
 }
@@ -210,7 +210,7 @@ fn begin_recovery(state: &AppState) -> Result<RecoveryOperation<'_>, String> {
     state
         .recovery_in_progress
         .compare_exchange(false, true, Ordering::SeqCst, Ordering::SeqCst)
-        .map_err(|_| "another station recovery is already running".to_string())?;
+        .map_err(|_| "another keep recovery is already running".to_string())?;
     Ok(RecoveryOperation {
         flag: &state.recovery_in_progress,
     })
@@ -318,7 +318,7 @@ impl KeepAwakeHandle {
         };
 
         let mut reason: Vec<u16> =
-            "StarNet scheduled tasks are allowed to run while the app is open"
+            "Eyehold scheduled tasks are allowed to run while the app is open"
                 .encode_utf16()
                 .chain(std::iter::once(0))
                 .collect();
@@ -547,7 +547,7 @@ fn legacy_workspace_paths(root: &Path, current: &Path) -> Vec<PathBuf> {
         .collect::<Vec<_>>();
     if let Some(home) = std::env::var_os("HOME").map(PathBuf::from) {
         // Tauri's live macOS root is ~/Library/Application Support/<bundle-id>, while old/manual Node
-        // sidecars used ~/.local/share/{StarNet,Skynet}. Both are migration sources; the current root is
+        // sidecars used ~/.local/share/{Eyehold,Skynet}. Both are migration sources; the current root is
         // filtered below. Linux receives the same POSIX fallback that sidecar/workspace-safety.js protects.
         if cfg!(target_os = "macos") {
             appdata_bases.push(home.join("Library").join("Application Support"));
@@ -555,7 +555,7 @@ fn legacy_workspace_paths(root: &Path, current: &Path) -> Vec<PathBuf> {
         appdata_bases.push(home.join(".local").join("share"));
     }
     for base in appdata_bases {
-        push_unique_path(&mut out, base.join("StarNet").join("workspaces"));
+        push_unique_path(&mut out, base.join("Eyehold").join("workspaces"));
         push_unique_path(&mut out, base.join("Skynet").join("workspaces"));
         push_unique_path(&mut out, base.join("ai.skynet.harness").join("workspaces"));
     }
@@ -659,10 +659,10 @@ fn hash_file(path: &Path) -> std::io::Result<(u64, String)> {
     Ok((bytes, format!("{:x}", hasher.finalize())))
 }
 
-/// A legacy root becomes an automatic station source only when its canonical save is readable and proves the
-/// StarNet save contract. This is intentionally stronger than "some JSON object": migration may carry other
-/// durable stores, but it must never choose between two different stations by directory enumeration order.
-fn valid_station_save_hash(root: &Path) -> Option<String> {
+/// A legacy root becomes an automatic keep source only when its canonical save is readable and proves the
+/// Eyehold save contract. This is intentionally stronger than "some JSON object": migration may carry other
+/// durable stores, but it must never choose between two different keeps by directory enumeration order.
+fn valid_keep_save_hash(root: &Path) -> Option<String> {
     for name in ["agent.save.json", "agent.save.json.bak"] {
         let file = root.join(name);
         let Ok(bytes) = std::fs::read(&file) else {
@@ -672,7 +672,7 @@ fn valid_station_save_hash(root: &Path) -> Option<String> {
             continue;
         };
         let doc = value.get("doc").unwrap_or(&value);
-        if doc.get("schema").and_then(|v| v.as_str()) != Some("starnet.save")
+        if doc.get("schema").and_then(|v| v.as_str()) != Some("eyehold.save")
             || !doc.get("agent").map(|v| v.is_object()).unwrap_or(false)
         {
             continue;
@@ -808,7 +808,7 @@ fn workspace_has_content(current: &Path) -> bool {
 /// One-time import of data from legacy workspace roots into the live one. THIS RUNS ONCE, EVER.
 ///
 /// Bug it fixes (audit 0.1): running unconditionally every boot means `copy_missing_dir` re-copies
-/// any file present in a stale legacy root (e.g. %LOCALAPPDATA%\StarNet\workspaces) but absent in
+/// any file present in a stale legacy root (e.g. %LOCALAPPDATA%\Eyehold\workspaces) but absent in
 /// the live root — so agents/prospects/sessions the user DELETED silently reappear on the next
 /// launch. Guard rails, checked before any copy:
 ///   1. If the `.migrated` marker exists in the live root, skip entirely (the definitive signal).
@@ -887,12 +887,12 @@ fn migrate_workspace_data(
         }
     }
 
-    // One valid legacy station is safe to self-heal. Two different valid saves are a product decision, not a
+    // One valid legacy keep is safe to self-heal. Two different valid saves are a product decision, not a
     // filesystem merge: leave both byte-untouched and let Recovery Mode's candidate picker choose explicitly.
     let valid_legacy = legacy_roots
         .iter()
         .filter(|root| root.is_dir())
-        .filter_map(|root| valid_station_save_hash(root).map(|digest| (root.clone(), digest)))
+        .filter_map(|root| valid_keep_save_hash(root).map(|digest| (root.clone(), digest)))
         .collect::<Vec<_>>();
     let distinct_saves = valid_legacy
         .iter()
@@ -902,7 +902,7 @@ fn migrate_workspace_data(
         log_startup(
             startup_log,
             format!(
-                "workspace-migration: CONFLICT — {} different valid legacy stations found; awaiting explicit Recovery Mode selection",
+                "workspace-migration: CONFLICT — {} different valid legacy keeps found; awaiting explicit Recovery Mode selection",
                 distinct_saves.len()
             ),
         );
@@ -1071,7 +1071,7 @@ mod workspace_migration_tests {
 
     fn temp_dir(name: &str) -> PathBuf {
         std::env::temp_dir().join(format!(
-            "starnet-workspace-migration-{}-{}-{name}",
+            "eyehold-workspace-migration-{}-{}-{name}",
             std::process::id(),
             std::time::SystemTime::now()
                 .duration_since(std::time::UNIX_EPOCH)
@@ -1197,11 +1197,11 @@ mod workspace_migration_tests {
         let _ = std::fs::remove_dir_all(base);
     }
 
-    fn station_save(name: &str, updated_at: u64) -> Vec<u8> {
+    fn keep_save(name: &str, updated_at: u64) -> Vec<u8> {
         serde_json::to_vec(&serde_json::json!({
             "version": 1,
             "doc": {
-                "schema": "starnet.save",
+                "schema": "eyehold.save",
                 "version": 5,
                 "updatedAt": updated_at,
                 "agent": { "id": "agent", "name": name }
@@ -1211,16 +1211,16 @@ mod workspace_migration_tests {
     }
 
     #[test]
-    fn distinct_valid_legacy_stations_wait_for_explicit_selection() {
-        let base = temp_dir("station-conflict");
+    fn distinct_valid_legacy_keeps_wait_for_explicit_selection() {
+        let base = temp_dir("keep-conflict");
         let first = base.join("first");
         let second = base.join("second");
         let current = base.join("current");
         let startup_log = base.join("startup.log");
         std::fs::create_dir_all(&first).unwrap();
         std::fs::create_dir_all(&second).unwrap();
-        std::fs::write(first.join("agent.save.json"), station_save("NOVA", 1)).unwrap();
-        std::fs::write(second.join("agent.save.json"), station_save("ORION", 2)).unwrap();
+        std::fs::write(first.join("agent.save.json"), keep_save("NOVA", 1)).unwrap();
+        std::fs::write(second.join("agent.save.json"), keep_save("ORION", 2)).unwrap();
 
         let migrated = migrate_workspace_data(
             &current,
@@ -1230,7 +1230,7 @@ mod workspace_migration_tests {
         assert!(migrated.is_empty());
         assert!(
             !current.exists(),
-            "conflicting stations never create an active generation"
+            "conflicting keeps never create an active generation"
         );
         assert!(first.join("agent.save.json").exists());
         assert!(second.join("agent.save.json").exists());
@@ -1242,18 +1242,18 @@ mod workspace_migration_tests {
     }
 
     #[test]
-    fn one_valid_legacy_station_is_selected_without_merging_noise() {
-        let base = temp_dir("single-station");
-        let station = base.join("station");
+    fn one_valid_legacy_keep_is_selected_without_merging_noise() {
+        let base = temp_dir("single-keep");
+        let keep = base.join("keep");
         let unrelated = base.join("unrelated");
         let current = base.join("current");
-        std::fs::create_dir_all(&station).unwrap();
+        std::fs::create_dir_all(&keep).unwrap();
         std::fs::create_dir_all(&unrelated).unwrap();
-        std::fs::write(station.join("agent.save.json"), station_save("NOVA", 1)).unwrap();
-        std::fs::write(unrelated.join("unrelated.cache"), b"not station state").unwrap();
+        std::fs::write(keep.join("agent.save.json"), keep_save("NOVA", 1)).unwrap();
+        std::fs::write(unrelated.join("unrelated.cache"), b"not keep state").unwrap();
 
-        let migrated = migrate_workspace_data(&current, &[station.clone(), unrelated], &None);
-        assert_eq!(migrated, vec![station]);
+        let migrated = migrate_workspace_data(&current, &[keep.clone(), unrelated], &None);
+        assert_eq!(migrated, vec![keep]);
         assert!(current.join("agent.save.json").exists());
         assert!(!current.join("unrelated.cache").exists());
 
@@ -1284,7 +1284,7 @@ fn log_startup(path: &Option<PathBuf>, message: impl AsRef<str>) {
 // candidates are routinely rebuilt and reinstalled under the same semver, which left the old
 // voice controller running after the fixed 0.8.0 installer was installed. Key the marker to the
 // exact executable bytes and purge on every packaged-build change while PRESERVING user state
-// (Local Storage holds the world save under `starnet.save`).
+// (Local Storage holds the world save under `eyehold.save`).
 
 /// Pure decision: given the previously-recorded marker (if any) and the running build identity,
 /// should we purge the stale webview caches? Purge on first run (no marker) or on any change.
@@ -1306,9 +1306,9 @@ fn webview_build_identity(current_version: &str) -> String {
     } else {
         format!(
             "source:{}:{}:{}",
-            env!("STARNET_BUILD_SHA"),
-            env!("STARNET_BUILD_TREE"),
-            env!("STARNET_BUILD_DESCRIBE")
+            env!("EYEHOLD_BUILD_SHA"),
+            env!("EYEHOLD_BUILD_TREE"),
+            env!("EYEHOLD_BUILD_DESCRIBE")
         )
     };
     format!("{}|{}", current_version.trim(), artifact)
@@ -1868,27 +1868,29 @@ fn reap_orphan_sidecars(node: &Path, startup_log: &Option<PathBuf>) -> usize {
     0
 }
 
-/// The sidecar accepts both the canonical STARNET_* names and legacy SKYNET_* aliases. Replace both
+/// The sidecar accepts both the canonical EYEHOLD_* names and legacy SKYNET_* aliases. Replace both
 /// spellings for every shell-owned value so an inherited stale variable cannot split the WebView from
 /// its sidecar or override a per-launch credential.
-fn set_sidecar_branded_env<V: AsRef<OsStr>>(cmd: &mut Command, legacy_name: &str, value: V) {
+fn set_sidecar_branded_env<V: AsRef<OsStr>>(cmd: &mut Command, name: &str, value: V) {
     let value = value.as_ref();
-    cmd.env(legacy_name, value);
-    if let Some(suffix) = legacy_name.strip_prefix("SKYNET_") {
-        cmd.env(format!("STARNET_{suffix}"), value);
-    } else if let Some(suffix) = legacy_name.strip_prefix("STARNET_") {
-        cmd.env(format!("SKYNET_{suffix}"), value);
-    }
+    // Replace both spellings. A stale inherited EYEHOLD_* or SKYNET_* must not split the
+    // desktop from the sidecar or override a per-launch credential.
+    let suffix = name
+        .strip_prefix("EYEHOLD_")
+        .or_else(|| name.strip_prefix("SKYNET_"))
+        .unwrap_or(name);
+    cmd.env(format!("EYEHOLD_{suffix}"), value);
+    cmd.env(format!("SKYNET_{suffix}"), value);
 }
 
 fn sidecar_command(state: &AppState, entry: &Path, node: &Path) -> Command {
     let mut cmd = Command::new(node);
     // Clear inherited material: only this OS account's verified keychain entry
     // may unlock connector credentials. Missing/locked keychain fails closed.
-    cmd.env_remove("STARNET_CONNECTOR_ENCRYPTION_KEY");
+    cmd.env_remove("EYEHOLD_CONNECTOR_ENCRYPTION_KEY");
     match credentials::connector_encryption_key() {
         Ok(key) => {
-            cmd.env("STARNET_CONNECTOR_ENCRYPTION_KEY", key);
+            cmd.env("EYEHOLD_CONNECTOR_ENCRYPTION_KEY", key);
         }
         Err(error) => {
             eprintln!("[connectors] {error}");
@@ -1898,40 +1900,40 @@ fn sidecar_command(state: &AppState, entry: &Path, node: &Path) -> Command {
         // The sidecar can load the native Windows desktop driver, but that alone grants nothing:
         // only a locally paired Telegram owner receives the per-run remote-owner lease. Ordinary
         // agent runs remain synthetic/headless by policy in the sidecar.
-        .env("STARNET_DESKTOP_SHELL", "1")
-        .env("STARNET_COMPUTER_DRIVER", "1")
-        // Do NOT pin STARNET_BROWSER_HEADLESS on the whole sidecar. runOnce gives ordinary
+        .env("EYEHOLD_DESKTOP_SHELL", "1")
+        .env("EYEHOLD_COMPUTER_DRIVER", "1")
+        // Do NOT pin EYEHOLD_BROWSER_HEADLESS on the whole sidecar. runOnce gives ordinary
         // model-driven browsing forceHeadless + syntheticInputOnly directly, while the watched
         // browser.login tool is a separately consented, human-driven headed exception. A process-
         // wide env pin disables that exception before its consent flow can run and leaves users
         // with the unsafe/hostile "start Chrome with a debugging port" workaround.
-        .env("STARNET_USER_CONTROL_MODE", "preserve")
-        .env("STARNET_MCP_STDIO", "0")
+        .env("EYEHOLD_USER_CONTROL_MODE", "preserve")
+        .env("EYEHOLD_MCP_STDIO", "0")
         // The packaged build's true version — computeVersionSurface() reads this first, so
         // /api/diagnostics reports the real build instead of "unknown" (the bundled sidecar
         // has no src-tauri/tauri.conf.json to fall back to). Use the same resolved
         // package version as BuildInfo and the updater, including canary overlays.
-        .env("STARNET_APP_VERSION", &state.app_version)
+        .env("EYEHOLD_APP_VERSION", &state.app_version)
         // The exact source this desktop was compiled from (build.rs → `git describe --always --dirty --tags`,
         // e.g. "v0.4.1" clean or "v0.4.1-32-g8b5aae04-dirty"). Exported so the bundled sidecar can surface the
         // real build provenance at /api/version — a packaged app has no .git to derive it from at runtime.
-        .env("STARNET_BUILD_DESCRIBE", env!("STARNET_BUILD_DESCRIBE"))
+        .env("EYEHOLD_BUILD_DESCRIBE", env!("EYEHOLD_BUILD_DESCRIBE"))
         // Full immutable source identity for installed-smoke/release receipts. Keep this separate from the
-        // short human-facing commit exposed by starnet_build_info.
-        .env("STARNET_BUILD_SHA", env!("STARNET_BUILD_SHA"))
-        .env("STARNET_BUILD_TREE", env!("STARNET_BUILD_TREE"))
+        // short human-facing commit exposed by eyehold_build_info.
+        .env("EYEHOLD_BUILD_SHA", env!("EYEHOLD_BUILD_SHA"))
+        .env("EYEHOLD_BUILD_TREE", env!("EYEHOLD_BUILD_TREE"))
         .env(
-            "STARNET_BUILD_PROVENANCE_KIND",
-            env!("STARNET_BUILD_PROVENANCE_KIND"),
+            "EYEHOLD_BUILD_PROVENANCE_KIND",
+            env!("EYEHOLD_BUILD_PROVENANCE_KIND"),
         )
-        .env("STARNET_BUILD_DIRTY", env!("STARNET_BUILD_DIRTY"))
+        .env("EYEHOLD_BUILD_DIRTY", env!("EYEHOLD_BUILD_DIRTY"))
         .current_dir(&state.root);
-    set_sidecar_branded_env(&mut cmd, "SKYNET_PORT", state.port.to_string());
-    set_sidecar_branded_env(&mut cmd, "SKYNET_IPC_TOKEN", &state.ipc_token);
-    set_sidecar_branded_env(&mut cmd, "SKYNET_API_TOKEN", &state.api_token);
-    set_sidecar_branded_env(&mut cmd, "SKYNET_WORKSPACES", state.workspaces.as_os_str());
+    set_sidecar_branded_env(&mut cmd, "EYEHOLD_PORT", state.port.to_string());
+    set_sidecar_branded_env(&mut cmd, "EYEHOLD_IPC_TOKEN", &state.ipc_token);
+    set_sidecar_branded_env(&mut cmd, "EYEHOLD_API_TOKEN", &state.api_token);
+    set_sidecar_branded_env(&mut cmd, "EYEHOLD_WORKSPACES", state.workspaces.as_os_str());
     if let Some(key) = read_key() {
-        set_sidecar_branded_env(&mut cmd, "SKYNET_OPENROUTER_KEY", key);
+        set_sidecar_branded_env(&mut cmd, "EYEHOLD_OPENROUTER_KEY", key);
     }
     for (provider, env_name) in SIDECAR_PROVIDER_KEY_ENVS {
         if let Some(key) = read_key_for(provider) {
@@ -1942,7 +1944,7 @@ fn sidecar_command(state: &AppState, entry: &Path, node: &Path) -> Command {
         let pool = read_key_pool_for(provider);
         if !pool.is_empty() {
             let env_name = format!(
-                "SKYNET_KEY_POOL_{}",
+                "EYEHOLD_KEY_POOL_{}",
                 provider.to_ascii_uppercase().replace('-', "_")
             );
             set_sidecar_branded_env(&mut cmd, &env_name, pool.join(","));
@@ -1957,14 +1959,14 @@ fn sidecar_command(state: &AppState, entry: &Path, node: &Path) -> Command {
     let telegram_bot_tokens = read_telegram_bot_tokens(&state.workspaces);
     if !telegram_bot_tokens.is_empty() {
         if let Ok(encoded) = serde_json::to_string(&telegram_bot_tokens) {
-            set_sidecar_branded_env(&mut cmd, "SKYNET_TELEGRAM_BOT_TOKENS", encoded);
+            set_sidecar_branded_env(&mut cmd, "EYEHOLD_TELEGRAM_BOT_TOKENS", encoded);
         }
     }
-    // StarNet Cloud device token, same path. Because EVERY sidecar spawn goes through this builder,
+    // Eyehold Cloud device token, same path. Because EVERY sidecar spawn goes through this builder,
     // a sidecar restarted after adoption still comes up linked even though the token is no longer
     // in credits.json — the file keeps the non-secret fields and this supplies the secret.
     if let Some(token) = read_credits_token() {
-        cmd.env("STARNET_CREDITS_TOKEN", token);
+        cmd.env("EYEHOLD_CREDITS_TOKEN", token);
     }
     #[cfg(windows)]
     {
@@ -2025,7 +2027,7 @@ fn spawn_sidecar(state: &AppState) -> bool {
             }
             Err(e) => {
                 log_startup(&state.startup_log, format!("spawn_sidecar failed: {e}"));
-                eprintln!("[starnet] failed to spawn node sidecar: {e}");
+                eprintln!("[eyehold] failed to spawn node sidecar: {e}");
                 return false;
             }
         }
@@ -2058,15 +2060,15 @@ fn show_startup_failure_dialog(_app: &AppHandle, startup_log: &Option<PathBuf>) 
         None => "No startup log path was available.".to_string(),
     };
     let body = format!(
-        "StarNet could not start its local engine.\n\n\
+        "Eyehold could not start its local engine.\n\n\
          The engine exited or did not become ready. Possible causes include unavailable workspace \
          files, a blocked Node runtime, or a port that could not be opened.\n\n\
          {log_line}\n\n\
-         Click Retry to try starting the engine again, or Cancel to close StarNet."
+         Click Retry to try starting the engine again, or Cancel to close Eyehold."
     );
     let to_wide = |s: &str| -> Vec<u16> { s.encode_utf16().chain(std::iter::once(0)).collect() };
     let text = to_wide(&body);
-    let caption = to_wide("StarNet — startup failed");
+    let caption = to_wide("Eyehold — startup failed");
     // SYSTEMMODAL + SETFOREGROUND so the box is seen even though the main window isn't up yet.
     let result = unsafe {
         MessageBoxW(
@@ -2088,13 +2090,13 @@ fn show_startup_failure_dialog(app: &AppHandle, startup_log: &Option<PathBuf>) -
         startup_log,
         "startup failed: sidecar did not come up; showing a non-blocking notice",
     );
-    eprintln!("[starnet] startup failed: sidecar did not come up (see startup.log)");
+    eprintln!("[eyehold] startup failed: sidecar did not come up (see startup.log)");
     show_nonblocking_startup_notice(
         app,
-        "StarNet — local engine not ready",
+        "Eyehold — local engine not ready",
         format!(
-            "StarNet could not start its local engine yet. It will keep retrying in the background, \
-             but the station may stay unreachable until it does.\n\n{}",
+            "Eyehold could not start its local engine yet. It will keep retrying in the background, \
+             but the keep may stay unreachable until it does.\n\n{}",
             startup_log_line(startup_log)
         ),
         || {},
@@ -2146,8 +2148,8 @@ fn report_window_startup_failure(
             .unwrap_or_else(|| "unavailable".into());
         show_nonblocking_startup_notice(
             app,
-            "StarNet — window startup",
-            format!("StarNet's window could not finish starting.\n\n{detail}\n\nQuit StarNet and reopen it. If this persists, include startup.log in your bug report:\n{path}"),
+            "Eyehold — window startup",
+            format!("Eyehold's window could not finish starting.\n\n{detail}\n\nQuit Eyehold and reopen it. If this persists, include startup.log in your bug report:\n{path}"),
             on_dismiss,
         );
     }
@@ -2160,9 +2162,9 @@ fn report_window_startup_failure(
             .as_ref()
             .map(|p| p.display().to_string())
             .unwrap_or_else(|| "unavailable".into());
-        let text: Vec<u16> = format!("StarNet's window could not finish starting.\n\n{detail}\n\nQuit StarNet from its tray icon and reopen it. If this persists, include startup.log in your bug report:\n{path}")
+        let text: Vec<u16> = format!("Eyehold's window could not finish starting.\n\n{detail}\n\nQuit Eyehold from its tray icon and reopen it. If this persists, include startup.log in your bug report:\n{path}")
             .encode_utf16().chain(std::iter::once(0)).collect();
-        let title: Vec<u16> = "StarNet — window startup"
+        let title: Vec<u16> = "Eyehold — window startup"
             .encode_utf16()
             .chain(std::iter::once(0))
             .collect();
@@ -2234,9 +2236,9 @@ fn spawn_guardian(app: AppHandle) {
         // window only ever said "unreachable". Now each UNEXPECTED exit inside GUARDIAN_CRASH_WINDOW is
         // counted, respawns back off exponentially (1s,2s,4s,…,30s), and after
         // GUARDIAN_MAX_CONSECUTIVE_CRASHES the guardian HALTS: it stops respawning, writes one clear line
-        // to startup.log and records the verdict in AppState.guardian (read by starnet_sidecar_status)
+        // to startup.log and records the verdict in AppState.guardian (read by eyehold_sidecar_status)
         // so the frontend can say so. Intentional exits (0 graceful, 75 recovery/START FRESH) never count.
-        // A user RESTART (starnet_restart_sidecar) clears the halt. The sidecar's own breaker
+        // A user RESTART (eyehold_restart_sidecar) clears the halt. The sidecar's own breaker
         // (sidecar/crash-ledger.js) normally trips first — at the 3rd fault in 10m it holds itself
         // alive DEGRADED — so this cap is the backstop for exits the sidecar cannot ledger (a throw
         // before its handler is installed, a bad node binary).
@@ -2312,7 +2314,7 @@ fn spawn_guardian(app: AppHandle) {
                 }
                 // (a) classify the exit exactly once per child.
                 if let Some((pid, code)) = exited {
-                    // A user restart (starnet_restart_sidecar) clears the shared halt/count; mirror that
+                    // A user restart (eyehold_restart_sidecar) clears the shared halt/count; mirror that
                     // into the thread-local crash window so the next crash starts a fresh count.
                     let (halted, shared_count) = st
                         .guardian
@@ -2351,14 +2353,14 @@ fn spawn_guardian(app: AppHandle) {
                             count = count.saturating_add(1);
                             if count >= GUARDIAN_MAX_CONSECUTIVE_CRASHES {
                                 let reason = format!(
-                                    "crash-loop: the station service exited {count} times in {} minutes (last exit code {code:?}); the guardian stopped restarting it. Use RESTART STATION SERVICE to try again, or quit StarNet fully and reopen it.",
+                                    "crash-loop: the keep service exited {count} times in {} minutes (last exit code {code:?}); the guardian stopped restarting it. Use RESTART KEEP SERVICE to try again, or quit Eyehold fully and reopen it.",
                                     GUARDIAN_CRASH_WINDOW.as_secs() / 60
                                 );
                                 log_startup(
                                     &st.startup_log,
                                     format!("watchdog: HALTED — {reason} (see the sidecar lines above for the fault)"),
                                 );
-                                eprintln!("[starnet] watchdog halted: {reason}");
+                                eprintln!("[eyehold] watchdog halted: {reason}");
                                 if let Ok(mut g) = st.guardian.lock() {
                                     g.halted = true;
                                     g.consecutive_crashes = count;
@@ -2386,7 +2388,7 @@ fn spawn_guardian(app: AppHandle) {
                                 g.last_exit_at_ms = Some(now_ms());
                                 g.next_respawn_in_ms = Some(backoff.as_millis() as u64);
                                 g.reason = Some(format!(
-                                    "station service exited unexpectedly (code {code:?}) — restart {count} of {GUARDIAN_MAX_CONSECUTIVE_CRASHES} in {}s",
+                                    "keep service exited unexpectedly (code {code:?}) — restart {count} of {GUARDIAN_MAX_CONSECUTIVE_CRASHES} in {}s",
                                     backoff.as_secs()
                                 ));
                             }
@@ -2596,7 +2598,7 @@ fn push_channel_token(state: &AppState, channel: &str, token: &str) {
 
 // ---- Lane 4D: supervised background lifecycle (tray + close-to-tray + bounded drain) ----
 //
-// The tray owns the ONE sidecar's visibility contract: closing the window keeps the station running ONLY when
+// The tray owns the ONE sidecar's visibility contract: closing the window keeps the keep running ONLY when
 // the sidecar proves armed work exists (GET /api/lifecycle/armed), and that state is explicit in the tray. If
 // nothing is armed, window-close = full quit (drain + kill + app.exit) — no hidden daemon. Every decision reads
 // LIVE sidecar truth; a poll failure degrades to "not armed" (a dead sidecar can't be doing background work, so
@@ -2683,7 +2685,7 @@ fn parse_lifecycle_response(text: &str) -> Option<LifecycleArmed> {
 }
 
 /// Blocking poll of GET /api/lifecycle/armed, classified per LifecycleProbe. Uses the per-launch API token as
-/// the X-StarNet-Token header (the same gate the frontend fetches use); no Origin header (absent Origin is
+/// the X-Eyehold-Token header (the same gate the frontend fetches use); no Origin header (absent Origin is
 /// allowed for loopback callers).
 fn probe_lifecycle_armed(port: u16, api_token: &str, timeout: Duration) -> LifecycleProbe {
     use std::io::{Read, Write};
@@ -2693,7 +2695,7 @@ fn probe_lifecycle_armed(port: u16, api_token: &str, timeout: Duration) -> Lifec
     let _ = stream.set_read_timeout(Some(timeout));
     let _ = stream.set_write_timeout(Some(timeout));
     let head = format!(
-        "GET /api/lifecycle/armed HTTP/1.1\r\nHost: 127.0.0.1\r\nX-StarNet-Token: {api_token}\r\nConnection: close\r\n\r\n"
+        "GET /api/lifecycle/armed HTTP/1.1\r\nHost: 127.0.0.1\r\nX-Eyehold-Token: {api_token}\r\nConnection: close\r\n\r\n"
     );
     if stream.write_all(head.as_bytes()).is_err() || stream.flush().is_err() {
         return LifecycleProbe::Ambiguous; // connected, then failed — alive but unwell
@@ -2723,7 +2725,7 @@ fn post_sidecar_halt(state: &AppState, timeout: Duration) {
     use std::io::{Read, Write};
     let body = "{}";
     let head = format!(
-        "POST /api/halt HTTP/1.1\r\nHost: 127.0.0.1\r\nX-StarNet-Token: {}\r\nContent-Type: application/json\r\nContent-Length: {}\r\nConnection: close\r\n\r\n",
+        "POST /api/halt HTTP/1.1\r\nHost: 127.0.0.1\r\nX-Eyehold-Token: {}\r\nContent-Type: application/json\r\nContent-Length: {}\r\nConnection: close\r\n\r\n",
         state.api_token,
         body.len()
     );
@@ -2739,14 +2741,14 @@ fn post_sidecar_halt(state: &AppState, timeout: Duration) {
 }
 
 /// POST /api/lifecycle/quit: ask the sidecar to run its own graceful shutdown. On Windows `kill_sidecar` ends the
-/// child with TerminateProcess, which no handler in the sidecar can see — so the STATION browser (a real Chrome
+/// child with TerminateProcess, which no handler in the sidecar can see — so the KEEP browser (a real Chrome
 /// window the sidecar started) was left running with its network proxy dead, still holding the durable profile
 /// (2026-09-30 release review). Best-effort and bounded like the halt: a dead sidecar is simply already gone.
 fn post_sidecar_quit(state: &AppState, timeout: Duration) {
     use std::io::{Read, Write};
     let body = "{}";
     let head = format!(
-        "POST /api/lifecycle/quit HTTP/1.1\r\nHost: 127.0.0.1\r\nX-StarNet-Token: {}\r\nContent-Type: application/json\r\nContent-Length: {}\r\nConnection: close\r\n\r\n",
+        "POST /api/lifecycle/quit HTTP/1.1\r\nHost: 127.0.0.1\r\nX-Eyehold-Token: {}\r\nContent-Type: application/json\r\nContent-Length: {}\r\nConnection: close\r\n\r\n",
         state.api_token,
         body.len()
     );
@@ -2761,7 +2763,7 @@ fn post_sidecar_quit(state: &AppState, timeout: Duration) {
     }
 }
 
-/// Ask the sidecar to shut down cleanly (it closes the station browser, flushing its sign-ins, and exits), wait a
+/// Ask the sidecar to shut down cleanly (it closes the keep browser, flushing its sign-ins, and exits), wait a
 /// bounded moment for it to leave, then `kill_sidecar` ends whatever is left. The kill still guarantees no orphan.
 fn stop_sidecar_gracefully(state: &AppState) {
     post_sidecar_quit(state, Duration::from_secs(2));
@@ -2829,13 +2831,13 @@ fn webview_init_script(port: u16, api_token: &str) -> String {
     // a page that ever loads in this window (a dropped link, a stray navigation) never receives
     // it. The on_navigation guard in build_main_window is the primary control; this is the second layer.
     let init = format!(
-        "if(location.protocol==='tauri:'||location.hostname==='tauri.localhost'){{window.__STARNET_API__='http://127.0.0.1:{port}';window.__STARNET_API_TOKEN__='{api_token}';var _sf=window.fetch;window.fetch=function(u,o){{if(typeof u==='string'&&u.indexOf('/api/')===0)u=window.__STARNET_API__+u;return _sf(u,o)}};}}"
+        "if(location.protocol==='tauri:'||location.hostname==='tauri.localhost'){{window.__EYEHOLD_API__='http://127.0.0.1:{port}';window.__EYEHOLD_API_TOKEN__='{api_token}';var _sf=window.fetch;window.fetch=function(u,o){{if(typeof u==='string'&&u.indexOf('/api/')===0)u=window.__EYEHOLD_API__+u;return _sf(u,o)}};}}"
     );
     // Windows runs WITHOUT native decorations (see the window builder below): this flag
     // tells the frontend (app/titlebar.js) to render its own themed titlebar with
     // MIN/MAX/CLOSE riding the Commander's phosphor theme. macOS/browser never set it.
     #[cfg(windows)]
-    let init = format!("{init}window.__STARNET_CUSTOM_CHROME__=1;");
+    let init = format!("{init}window.__EYEHOLD_CUSTOM_CHROME__=1;");
     init
 }
 
@@ -2869,7 +2871,7 @@ fn build_main_window(
         // Let HTML5 file drops reach COMMS and the existing attachment uploader.
         // Tauri's native handler otherwise intercepts them on Windows.
         .disable_drag_drop_handler()
-        .title("StarNet")
+        .title("Eyehold")
         .inner_size(1280.0, 832.0)
         .min_inner_size(960.0, 600.0)
         .initialization_script(&init)
@@ -2907,7 +2909,7 @@ fn build_main_window(
             }
         });
     // Windows: drop the stock titlebar/border — the frontend draws its own themed
-    // chrome (titlebar.js, gated on __STARNET_CUSTOM_CHROME__ above). shadow(true)
+    // chrome (titlebar.js, gated on __EYEHOLD_CUSTOM_CHROME__ above). shadow(true)
     // keeps the DWM drop shadow, and Tauri's undecorated-resize handling keeps the
     // edge-drag resize grips working. macOS keeps native decorations until a mac
     // pass is designed (unverified there — do not blind-apply).
@@ -3119,7 +3121,7 @@ fn on_webview_process_failed(
     if !state.webview_recovery.try_spend(Instant::now()) {
         log_startup(
             &log,
-            format!("webview-recovery: {name}; recovery budget spent (3 in 10 min), leaving the window as-is; restart StarNet to recover"),
+            format!("webview-recovery: {name}; recovery budget spent (3 in 10 min), leaving the window as-is; restart Eyehold to recover"),
         );
         return;
     }
@@ -3324,7 +3326,7 @@ fn update_lifecycle_preferences(
 /// a multi-second drain there would freeze the app (review m1).
 fn on_tray_menu(app: &AppHandle, id: &str) {
     match id {
-        // Open StarNet means the full station: a HUD that is up hands the window back first.
+        // Open Eyehold means the full keep: a HUD that is up hands the window back first.
         "lifecycle_open" => {
             hud_mode::request(app, false);
             show_main_window(app);
@@ -3379,30 +3381,30 @@ fn spawn_tray_updater(app: AppHandle) {
                         l.reasons.join(", ")
                     };
                     (
-                        format!("StarNet — {summary}"),
+                        format!("Eyehold — {summary}"),
                         format!("Background: {summary}"),
                     )
                 }
                 LifecycleProbe::Armed(_) if close_to_tray => (
-                    "StarNet — idle in tray".to_string(),
-                    "Background: idle — close keeps StarNet running".to_string(),
+                    "Eyehold — idle in tray".to_string(),
+                    "Background: idle — close keeps Eyehold running".to_string(),
                 ),
                 LifecycleProbe::NotRunning if close_to_tray => (
-                    "StarNet — engine offline (kept in tray)".to_string(),
-                    "Background: engine offline — close keeps StarNet running".to_string(),
+                    "Eyehold — engine offline (kept in tray)".to_string(),
+                    "Background: engine offline — close keeps Eyehold running".to_string(),
                 ),
                 LifecycleProbe::Armed(_) | LifecycleProbe::NotRunning => (
                     // Nothing armed (or no engine at all): closing quits — the same rule the close path applies.
-                    "StarNet — idle (closing quits)".to_string(),
+                    "Eyehold — idle (closing quits)".to_string(),
                     "Background: idle — closing quits".to_string(),
                 ),
                 LifecycleProbe::Ambiguous => (
                     // Alive but the poll failed — honest "unknown", mirroring the close path's fail-open.
-                    "StarNet — status unavailable (close keeps it running)".to_string(),
+                    "Eyehold — status unavailable (close keeps it running)".to_string(),
                     "Background: status unavailable — close keeps it running".to_string(),
                 ),
             };
-            if let Some(tray) = app.tray_by_id("starnet-tray") {
+            if let Some(tray) = app.tray_by_id("eyehold-tray") {
                 let _ = tray.set_tooltip(Some(tooltip.as_str()));
             }
             if let Some(handles) = app.try_state::<TrayHandles>() {
@@ -3574,7 +3576,7 @@ fn harness_clear_key(state: State<AppState>) -> Result<(), String> {
     harness_store_key(String::new(), state)
 }
 
-/// Adopt a freshly linked station's device token into the OS keychain and strip it from
+/// Adopt a freshly linked keep's device token into the OS keychain and strip it from
 /// `.secrets/credits.json`. Called by the UI right after a successful link.
 ///
 /// **The token never enters the WebView.** The UI only says "a link just happened"; Rust reads the
@@ -3728,14 +3730,14 @@ fn resolve_artifact_path(
         root.join(supplied)
     };
     if artifact_path_hits_hard_floor(&candidate) {
-        return Err("protected station paths cannot be opened".to_string());
+        return Err("protected keep paths cannot be opened".to_string());
     }
 
     let canonical = std::fs::canonicalize(&candidate)
         .map(|path| strip_verbatim(&path))
         .map_err(|_| "the saved artifact no longer exists".to_string())?;
     if artifact_path_hits_hard_floor(&canonical) {
-        return Err("protected station paths cannot be opened".to_string());
+        return Err("protected keep paths cannot be opened".to_string());
     }
 
     let mut allowed = false;
@@ -3754,7 +3756,7 @@ fn resolve_artifact_path(
         }
     }
     if !allowed {
-        return Err("artifact is outside the station workspace and trusted folders".to_string());
+        return Err("artifact is outside the keep workspace and trusted folders".to_string());
     }
     Ok(canonical)
 }
@@ -3842,7 +3844,7 @@ fn confirm_host_launch(app: &tauri::AppHandle, title: &str, body: &str, verb: &s
 /// path — renderer clicks are not host gestures, and the answer is never cached.
 /// `async` so the blocking dialog runs on the async runtime, not the main thread.
 #[tauri::command]
-async fn starnet_open_artifact(
+async fn eyehold_open_artifact(
     path: String,
     agent_id: Option<String>,
     app: tauri::AppHandle,
@@ -3853,13 +3855,13 @@ async fn starnet_open_artifact(
         return Err("that artifact is not a file".to_string());
     }
     if !safe_native_artifact_extension(&artifact) {
-        return Err("that file type stays in the station preview for safety".to_string());
+        return Err("that file type stays in the keep preview for safety".to_string());
     }
     let body = format!(
         "Open this file with its system default app?\n\n{}",
         artifact.display()
     );
-    if !confirm_host_launch(&app, "StarNet — open file", &body, "Open") {
+    if !confirm_host_launch(&app, "Eyehold — open file", &body, "Open") {
         return Err(format!("open {HOST_GESTURE_DECLINED}"));
     }
 
@@ -3887,10 +3889,10 @@ async fn starnet_open_artifact(
 
 /// Reveal a proven deliverable in Explorer/Finder (or open its containing directory on
 /// Linux). Directories are opened directly so the existing Workshop "open folder" action
-/// uses the same constrained command. Same host-gesture gate as `starnet_open_artifact`:
+/// uses the same constrained command. Same host-gesture gate as `eyehold_open_artifact`:
 /// a blocking native dialog names the exact resolved path before anything spawns.
 #[tauri::command]
-async fn starnet_reveal_path(
+async fn eyehold_reveal_path(
     path: String,
     agent_id: Option<String>,
     app: tauri::AppHandle,
@@ -3907,7 +3909,7 @@ async fn starnet_reveal_path(
         },
         artifact.display()
     );
-    if !confirm_host_launch(&app, "StarNet — reveal in folder", &body, "Reveal") {
+    if !confirm_host_launch(&app, "Eyehold — reveal in folder", &body, "Reveal") {
         return Err(format!("reveal {HOST_GESTURE_DECLINED}"));
     }
 
@@ -3959,7 +3961,7 @@ mod artifact_open_tests {
 
     fn temp_root() -> std::path::PathBuf {
         std::env::temp_dir().join(format!(
-            "starnet-artifact-open-{}-{}",
+            "eyehold-artifact-open-{}-{}",
             std::process::id(),
             std::time::SystemTime::now()
                 .duration_since(std::time::UNIX_EPOCH)
@@ -4176,7 +4178,7 @@ fn open_external_url(state: State<AppState>, url: String) -> Result<(), String> 
         return Err("Only http(s) URLs can be opened externally".to_string());
     }
     if url_carries_api_token(trimmed, &state.api_token) {
-        return Err("Refusing to hand the station's API token to the system browser".to_string());
+        return Err("Refusing to hand the keep's API token to the system browser".to_string());
     }
 
     #[cfg(windows)]
@@ -4212,9 +4214,9 @@ fn open_external_url(state: State<AppState>, url: String) -> Result<(), String> 
 /// exit restores it.
 static FS_RESTORE_MAXIMIZE: AtomicBool = AtomicBool::new(false);
 
-/// Toggle the main StarNet desktop window between windowed and fullscreen mode.
+/// Toggle the main Eyehold desktop window between windowed and fullscreen mode.
 #[tauri::command]
-fn starnet_toggle_fullscreen(app: AppHandle) -> Result<bool, String> {
+fn eyehold_toggle_fullscreen(app: AppHandle) -> Result<bool, String> {
     // HUD mode owns the window as a pinned corner panel; F11 there would blow the HUD up over the
     // game it floats above. The window is not fullscreen, so that is the honest answer.
     if hud_mode::is_active(&app) {
@@ -4238,10 +4240,10 @@ fn starnet_toggle_fullscreen(app: AppHandle) -> Result<bool, String> {
     Ok(next)
 }
 
-/// Prevent idle system sleep while StarNet is open. This does not force the
+/// Prevent idle system sleep while Eyehold is open. This does not force the
 /// display to stay on; it only keeps scheduled tasks from being paused by OS sleep.
 #[tauri::command]
-fn starnet_set_keep_awake(
+fn eyehold_set_keep_awake(
     enabled: bool,
     state: State<AppState>,
 ) -> Result<KeepAwakeStatus, String> {
@@ -4254,7 +4256,7 @@ fn starnet_set_keep_awake(
 
 /// Read the current native keep-awake state without changing the OS assertion.
 #[tauri::command]
-fn starnet_keep_awake_status(state: State<AppState>) -> Result<KeepAwakeStatus, String> {
+fn eyehold_keep_awake_status(state: State<AppState>) -> Result<KeepAwakeStatus, String> {
     Ok(state
         .keep_awake
         .lock()
@@ -4265,7 +4267,7 @@ fn starnet_keep_awake_status(state: State<AppState>) -> Result<KeepAwakeStatus, 
 /// Desktop updater status without hitting the network. The frontend uses this to
 /// render the Update Center immediately and decide whether native updates exist.
 #[tauri::command]
-fn starnet_update_status(
+fn eyehold_update_status(
     app: AppHandle,
     pending_update: State<PendingUpdate>,
 ) -> Result<UpdateStatus, String> {
@@ -4286,7 +4288,7 @@ fn starnet_update_status(
 /// Check the signed release manifest and cache the verified update object if a
 /// newer build exists. No install happens until the user asks for it.
 #[tauri::command]
-async fn starnet_update_check(
+async fn eyehold_update_check(
     app: AppHandle,
     pending_update: State<'_, PendingUpdate>,
 ) -> Result<UpdateCheck, String> {
@@ -4330,7 +4332,7 @@ async fn starnet_update_check(
 /// the app as the installer starts; on other desktop platforms we restart after a
 /// successful install so the user lands on the new version.
 #[tauri::command]
-async fn starnet_update_install(
+async fn eyehold_update_install(
     app: AppHandle,
     pending_update: State<'_, PendingUpdate>,
     on_event: Channel<UpdateInstallEvent>,
@@ -4437,7 +4439,7 @@ mod executable_identity_tests {
 
     fn temp_file(name: &str) -> std::path::PathBuf {
         std::env::temp_dir().join(format!(
-            "starnet-executable-identity-{}-{}-{name}",
+            "eyehold-executable-identity-{}-{}-{name}",
             std::process::id(),
             std::time::SystemTime::now()
                 .duration_since(std::time::UNIX_EPOCH)
@@ -4474,16 +4476,16 @@ mod executable_identity_tests {
 }
 
 #[tauri::command]
-fn starnet_build_info(app: AppHandle) -> BuildInfo {
+fn eyehold_build_info(app: AppHandle) -> BuildInfo {
     let (executable_sha256, executable_size) = runtime_executable_identity();
     BuildInfo {
         version: app.package_info().version.to_string(),
-        commit: env!("STARNET_BUILD_COMMIT").to_string(),
-        sha: env!("STARNET_BUILD_SHA").to_string(),
-        source_tree: env!("STARNET_BUILD_TREE").to_string(),
-        provenance_kind: env!("STARNET_BUILD_PROVENANCE_KIND").to_string(),
-        describe: env!("STARNET_BUILD_DESCRIBE").to_string(),
-        dirty: env!("STARNET_BUILD_DIRTY") == "1",
+        commit: env!("EYEHOLD_BUILD_COMMIT").to_string(),
+        sha: env!("EYEHOLD_BUILD_SHA").to_string(),
+        source_tree: env!("EYEHOLD_BUILD_TREE").to_string(),
+        provenance_kind: env!("EYEHOLD_BUILD_PROVENANCE_KIND").to_string(),
+        describe: env!("EYEHOLD_BUILD_DESCRIBE").to_string(),
+        dirty: env!("EYEHOLD_BUILD_DIRTY") == "1",
         executable_sha256,
         executable_size,
     }
@@ -4492,7 +4494,7 @@ fn starnet_build_info(app: AppHandle) -> BuildInfo {
 /// Lane 4D: is launch-at-login currently registered? OPT-IN, default OFF — this only reports the real OS state
 /// (Windows Run key / macOS LaunchAgent / Linux autostart .desktop) so the Settings toggle never lies.
 #[tauri::command]
-fn starnet_autostart_status(app: AppHandle) -> Result<AutostartStatus, String> {
+fn eyehold_autostart_status(app: AppHandle) -> Result<AutostartStatus, String> {
     use tauri_plugin_autostart::ManagerExt;
     let enabled = app.autolaunch().is_enabled().map_err(|e| e.to_string())?;
     Ok(AutostartStatus {
@@ -4504,7 +4506,7 @@ fn starnet_autostart_status(app: AppHandle) -> Result<AutostartStatus, String> {
 /// Enable/disable launch-at-login and report the resulting REAL state (read back, not assumed). The single-
 /// instance plugin guarantees a login launch focuses the running app rather than starting a 2nd sidecar.
 #[tauri::command]
-fn starnet_set_autostart(app: AppHandle, enabled: bool) -> Result<AutostartStatus, String> {
+fn eyehold_set_autostart(app: AppHandle, enabled: bool) -> Result<AutostartStatus, String> {
     use tauri_plugin_autostart::ManagerExt;
     let manager = app.autolaunch();
     if enabled {
@@ -4532,21 +4534,21 @@ struct LifecycleView {
     close_to_tray: bool,
 }
 
-/// User-driven restart of the local station service from the STATION DATA UNREACHABLE screen.
+/// User-driven restart of the local keep service from the KEEP DATA UNREACHABLE screen.
 /// The guardian only heals a child that has EXITED; a sidecar that is alive but not answering (hung
 /// event loop, wedged listener) or one that exits before listening every time it is spawned (a workspace
 /// claim refusal) leaves the page polling a dead port forever. This kills whatever child exists, spawns a
 /// fresh one on the same port, and reports truthfully whether it came up listening. Never touches user data.
 #[tauri::command]
-fn starnet_restart_sidecar(state: State<AppState>) -> Result<bool, String> {
+fn eyehold_restart_sidecar(state: State<AppState>) -> Result<bool, String> {
     let st: &AppState = state.inner();
     if st.shutting_down.load(Ordering::SeqCst) {
-        return Err("StarNet is shutting down".to_string());
+        return Err("Eyehold is shutting down".to_string());
     }
     let _recovery = begin_recovery(st)?;
     log_startup(
         &st.startup_log,
-        "restart: user requested a station service restart",
+        "restart: user requested a keep service restart",
     );
     // A user restart is an explicit "try again": clear the guardian's crash-loop halt and count so a
     // fresh window starts. If the sidecar keeps dying, the cap simply re-arms.
@@ -4588,19 +4590,19 @@ struct FreshStartView {
     browser_data_cleared: bool,
 }
 
-/// Last-resort recovery for a station service that cannot answer HTTP at all. The sidecar-backed
+/// Last-resort recovery for a keep service that cannot answer HTTP at all. The sidecar-backed
 /// START FRESH route cannot help in that state, so the desktop shell stops its own child, moves the
 /// entire workspace generation to a reversible quarantine, seals a clean generation against legacy
 /// re-migration, and respawns with the same OS-keychain credentials. Purchased credits therefore
 /// remain account-bound and are re-injected into the clean sidecar; this command never clears them.
 #[tauri::command]
-fn starnet_start_fresh(
+fn eyehold_start_fresh(
     window: tauri::WebviewWindow,
     state: State<AppState>,
 ) -> Result<FreshStartView, String> {
     let st: &AppState = state.inner();
     if st.shutting_down.load(Ordering::SeqCst) {
-        return Err("StarNet is shutting down".to_string());
+        return Err("Eyehold is shutting down".to_string());
     }
     let _recovery = begin_recovery(st)?;
     log_startup(
@@ -4627,16 +4629,16 @@ fn starnet_start_fresh(
             let listening = spawn_sidecar(st);
             log_startup(
                 &st.startup_log,
-                format!("fresh-start: refused ({error}); original station respawn listening={listening}"),
+                format!("fresh-start: refused ({error}); original keep respawn listening={listening}"),
             );
             return Err(error);
         }
     };
 
-    // The reset deliberately preserves only the protected StarNet credit-account link record.
+    // The reset deliberately preserves only the protected Eyehold credit-account link record.
     // Adopt a transient plaintext token into the OS keychain before the new sidecar starts, matching boot.
     migrate_credits_token_from_plaintext(&st.workspaces);
-    // The packaged origin belongs only to StarNet. Clearing it natively removes localStorage,
+    // The packaged origin belongs only to Eyehold. Clearing it natively removes localStorage,
     // IndexedDB, cookies, service workers and caches on both WebView2 and WKWebView. JS repeats the
     // namespaced localStorage clear as a fallback, and will refuse to reload if neither layer proves it.
     let browser_data_cleared = match window.clear_all_browsing_data() {
@@ -4695,32 +4697,32 @@ fn local_voice_model_cache() -> Option<PathBuf> {
     if cfg!(windows) {
         std::env::var_os("LOCALAPPDATA")
             .map(PathBuf::from)
-            .map(|base| base.join("StarNet").join("models"))
+            .map(|base| base.join("Eyehold").join("models"))
     } else if cfg!(target_os = "macos") {
         std::env::var_os("HOME").map(PathBuf::from).map(|home| {
             home.join("Library")
                 .join("Application Support")
-                .join("StarNet")
+                .join("Eyehold")
                 .join("models")
         })
     } else {
         std::env::var_os("XDG_CACHE_HOME")
             .map(PathBuf::from)
             .or_else(|| std::env::var_os("HOME").map(|h| PathBuf::from(h).join(".cache")))
-            .map(|base| base.join("starnet").join("models"))
+            .map(|base| base.join("eyehold").join("models"))
     }
 }
 
 /// #65 ERASE EVERYTHING (Settings > APP & BACKUP). The full "start over from scratch": stop every run and the
-/// sidecar (its graceful quit closes the station browser and reaps its children), swap in a sealed empty station
-/// (fresh_start::set_aside_for_erase; a failed move changes NOTHING), then DELETE the old station, every other entry
-/// of the app-data folder, older StarNet data roots and the voice-model cache (erase_all.rs: StarNet-owned paths
+/// sidecar (its graceful quit closes the keep browser and reaps its children), swap in a sealed empty keep
+/// (fresh_start::set_aside_for_erase; a failed move changes NOTHING), then DELETE the old keep, every other entry
+/// of the app-data folder, older Eyehold data roots and the voice-model cache (erase_all.rs: Eyehold-owned paths
 /// only, links never followed), remove every keychain credential this shell can have created, turn launch-at-login
 /// off, clear the WebView's own storage, and start a clean sidecar. The receipt lists what was removed and what
 /// could not be, so the UI never claims an erase that did not happen. Project folders the user trusted are
-/// recorded by path and are never inside the station data; they are not touched.
+/// recorded by path and are never inside the keep data; they are not touched.
 #[tauri::command]
-fn starnet_erase_everything(
+fn eyehold_erase_everything(
     app: AppHandle,
     window: tauri::WebviewWindow,
     state: State<AppState>,
@@ -4731,7 +4733,7 @@ fn starnet_erase_everything(
     }
     let st: &AppState = state.inner();
     if st.shutting_down.load(Ordering::SeqCst) {
-        return Err("StarNet is shutting down - nothing was erased".to_string());
+        return Err("Eyehold is shutting down - nothing was erased".to_string());
     }
     let _recovery = begin_recovery(st)?;
     log_startup(
@@ -4739,11 +4741,11 @@ fn starnet_erase_everything(
         "erase: ERASE EVERYTHING confirmed by the user",
     );
 
-    // Read what only the station files can tell us (agent-bound bot ids) before they go.
+    // Read what only the keep files can tell us (agent-bound bot ids) before they go.
     let bot_ids = erase_all::telegram_bot_ids(&st.workspaces);
 
-    // Stop all work, then the sidecar: its graceful quit closes the station browser (which holds files in the
-    // station profile) and reaps backgrounded children; the bounded kill guarantees it is gone.
+    // Stop all work, then the sidecar: its graceful quit closes the keep browser (which holds files in the
+    // keep profile) and reaps backgrounded children; the bounded kill guarantees it is gone.
     post_sidecar_halt(st, Duration::from_secs(3));
     let stopped_pid = st
         .sidecar
@@ -4767,10 +4769,10 @@ fn starnet_erase_everything(
             let listening = spawn_sidecar(st);
             log_startup(
                 &st.startup_log,
-                format!("erase: refused before any deletion ({error}); station respawn listening={listening}"),
+                format!("erase: refused before any deletion ({error}); keep respawn listening={listening}"),
             );
             return Err(format!(
-                "nothing was erased - {error}. Close any other StarNet window or browser and try again."
+                "nothing was erased - {error}. Close any other Eyehold window or browser and try again."
             ));
         }
     };
@@ -4865,11 +4867,11 @@ fn starnet_erase_everything(
     })
 }
 
-/// What the crash guardian knows about the sidecar (read by the STATION DATA UNREACHABLE screen).
+/// What the crash guardian knows about the sidecar (read by the KEEP DATA UNREACHABLE screen).
 /// Pure read of AppState.guardian — no probe, no side effect — so a HALTED crash loop is shown as
 /// exactly that instead of a generic "not answering".
 #[tauri::command]
-fn starnet_sidecar_status(state: State<AppState>) -> GuardianStatus {
+fn eyehold_sidecar_status(state: State<AppState>) -> GuardianStatus {
     state
         .inner()
         .guardian
@@ -4879,7 +4881,7 @@ fn starnet_sidecar_status(state: State<AppState>) -> GuardianStatus {
 }
 
 #[tauri::command]
-fn starnet_lifecycle_status(state: State<AppState>) -> LifecycleView {
+fn eyehold_lifecycle_status(state: State<AppState>) -> LifecycleView {
     let preferences = lifecycle_preferences_snapshot(state.inner());
     match query_lifecycle_armed(state.port, &state.api_token, Duration::from_millis(1500)) {
         Some(l) => LifecycleView {
@@ -4900,7 +4902,7 @@ fn starnet_lifecycle_status(state: State<AppState>) -> LifecycleView {
 }
 
 #[tauri::command]
-fn starnet_set_start_minimized(
+fn eyehold_set_start_minimized(
     state: State<AppState>,
     enabled: bool,
 ) -> Result<LifecyclePreferences, String> {
@@ -4908,7 +4910,7 @@ fn starnet_set_start_minimized(
 }
 
 #[tauri::command]
-fn starnet_set_close_to_tray(
+fn eyehold_set_close_to_tray(
     state: State<AppState>,
     enabled: bool,
 ) -> Result<LifecyclePreferences, String> {
@@ -4946,7 +4948,7 @@ fn main() {
                 let _ = win.set_focus();
             } else if action == webview_recovery::SecondLaunch::Wait {
                 // Starting up (a slow boot under memory pressure) or rebuilding after a WebView2
-                // crash: NOT a zombie. Quitting here killed a still-booting StarNet on 2026-09-23.
+                // crash: NOT a zombie. Quitting here killed a still-booting Eyehold on 2026-09-23.
                 log_startup(
                     &startup_log_path(app),
                     "second-launch: main window not built yet (starting or rebuilding); leaving this instance running",
@@ -4992,29 +4994,29 @@ fn main() {
             harness_adopt_credits_token,
             harness_has_credits_token,
             harness_clear_credits_token,
-            starnet_open_artifact,
-            starnet_reveal_path,
+            eyehold_open_artifact,
+            eyehold_reveal_path,
             open_external_url,
-            starnet_toggle_fullscreen,
-            starnet_set_keep_awake,
-            starnet_keep_awake_status,
-            starnet_update_status,
-            starnet_update_check,
-            starnet_update_install,
-            starnet_build_info,
-            starnet_autostart_status,
-            starnet_set_autostart,
-            starnet_lifecycle_status,
-            starnet_sidecar_status,
-            starnet_restart_sidecar,
-            starnet_start_fresh,
-            starnet_erase_everything,
-            starnet_set_start_minimized,
-            starnet_set_close_to_tray,
-            hud_mode::starnet_hud_status,
-            hud_mode::starnet_hud_set,
-            hud_mode::starnet_hud_pin,
-            hud_mode::starnet_hud_fold
+            eyehold_toggle_fullscreen,
+            eyehold_set_keep_awake,
+            eyehold_keep_awake_status,
+            eyehold_update_status,
+            eyehold_update_check,
+            eyehold_update_install,
+            eyehold_build_info,
+            eyehold_autostart_status,
+            eyehold_set_autostart,
+            eyehold_lifecycle_status,
+            eyehold_sidecar_status,
+            eyehold_restart_sidecar,
+            eyehold_start_fresh,
+            eyehold_erase_everything,
+            eyehold_set_start_minimized,
+            eyehold_set_close_to_tray,
+            hud_mode::eyehold_hud_status,
+            hud_mode::eyehold_hud_set,
+            hud_mode::eyehold_hud_pin,
+            hud_mode::eyehold_hud_fold
         ])
         .setup(move |app| {
             let root = project_root(app.handle());
@@ -5051,7 +5053,7 @@ fn main() {
             // BEFORE spawning the sidecar so the injected SKYNET_<ID>_TOKEN env reflects the migrated tokens.
             migrate_channel_tokens_from_plaintext(&workspaces);
             // Same one-time sweep for the cloud device token — this is what upgrades an already
-            // linked station from a plaintext token to a keychain one, with no user action.
+            // linked keep from a plaintext token to a keychain one, with no user action.
             migrate_credits_token_from_plaintext(&workspaces);
             let state = AppState {
                 port,
@@ -5104,7 +5106,7 @@ fn main() {
             // the E-STOP (reaches background work even with the window closed); Quit drains + kills the sidecar
             // and exits. Built here so it exists before the window, so a close-to-tray has somewhere to live.
             {
-                let open_item = MenuItem::with_id(app, "lifecycle_open", "Open StarNet", true, None::<&str>)?;
+                let open_item = MenuItem::with_id(app, "lifecycle_open", "Open Eyehold", true, None::<&str>)?;
                 let hud_item = MenuItem::with_id(app, "lifecycle_hud", "HUD Mode", true, None::<&str>)?;
                 let status_item = MenuItem::with_id(
                     app,
@@ -5116,11 +5118,11 @@ fn main() {
                     None::<&str>,
                 )?;
                 let pause_item = MenuItem::with_id(app, "lifecycle_pause", "Pause Automation (E-STOP)", true, None::<&str>)?;
-                let quit_item = MenuItem::with_id(app, "lifecycle_quit", "Quit StarNet", true, None::<&str>)?;
+                let quit_item = MenuItem::with_id(app, "lifecycle_quit", "Quit Eyehold", true, None::<&str>)?;
                 let sep = PredefinedMenuItem::separator(app)?;
                 let menu = Menu::with_items(app, &[&open_item, &hud_item, &status_item, &sep, &pause_item, &quit_item])?;
-                let mut tray_builder = TrayIconBuilder::with_id("starnet-tray")
-                    .tooltip("StarNet")
+                let mut tray_builder = TrayIconBuilder::with_id("eyehold-tray")
+                    .tooltip("Eyehold")
                     .menu(&menu)
                     .show_menu_on_left_click(false)
                     .on_menu_event(|app, event| on_tray_menu(app, event.id.as_ref()))
@@ -5182,7 +5184,7 @@ fn main() {
                 // (0xC0000409). The sidecar is already stopped; tell the user, then exit(1).
                 // Windows blocks in the native box, then exits. Elsewhere the notice is
                 // non-blocking, so setup returns Ok and the process exits when it is dismissed.
-                let _ = app.remove_tray_by_id("starnet-tray");
+                let _ = app.remove_tray_by_id("eyehold-tray");
                 report_window_startup_failure(
                     app.handle(),
                     &startup_log_path(app.handle()),
@@ -5198,7 +5200,7 @@ fn main() {
             Ok(())
         })
         .build(context)
-        .expect("failed to build the StarNet desktop shell")
+        .expect("failed to build the Eyehold desktop shell")
         .run(|app, event| {
             if let RunEvent::ExitRequested { api, code, .. } = event {
                 // WebView2 crash recovery destroys the dead main window before building its
@@ -5248,25 +5250,25 @@ mod sidecar_reap_tests {
         }
 
         let mut command = Command::new("node");
-        command.env("STARNET_PORT", "poisoned-parent-value");
+        command.env("EYEHOLD_PORT", "poisoned-parent-value");
         set_sidecar_branded_env(&mut command, "SKYNET_PORT", "60874");
         assert_eq!(
             explicit_env(&command, "SKYNET_PORT").as_deref(),
             Some("60874")
         );
         assert_eq!(
-            explicit_env(&command, "STARNET_PORT").as_deref(),
+            explicit_env(&command, "EYEHOLD_PORT").as_deref(),
             Some("60874")
         );
 
         command.env("SKYNET_API_TOKEN", "stale-legacy-value");
-        set_sidecar_branded_env(&mut command, "STARNET_API_TOKEN", "fresh-launch-token");
+        set_sidecar_branded_env(&mut command, "EYEHOLD_API_TOKEN", "fresh-launch-token");
         assert_eq!(
             explicit_env(&command, "SKYNET_API_TOKEN").as_deref(),
             Some("fresh-launch-token")
         );
         assert_eq!(
-            explicit_env(&command, "STARNET_API_TOKEN").as_deref(),
+            explicit_env(&command, "EYEHOLD_API_TOKEN").as_deref(),
             Some("fresh-launch-token")
         );
     }
@@ -5284,14 +5286,14 @@ mod sidecar_reap_tests {
     #[test]
     fn bundled_absolute_path_is_reapable() {
         assert!(is_reapable_node_path(Path::new(
-            r"C:\Program Files\StarNet\node.exe"
+            r"C:\Program Files\Eyehold\node.exe"
         )));
     }
 
     #[cfg(not(windows))]
     #[test]
     fn bundled_absolute_path_is_reapable() {
-        assert!(is_reapable_node_path(Path::new("/opt/starnet/node")));
+        assert!(is_reapable_node_path(Path::new("/opt/eyehold/node")));
     }
 
     /// Ambient end-to-end proof (spawns and terminates REAL processes) — excluded from the
@@ -5312,7 +5314,7 @@ mod sidecar_reap_tests {
             return;
         };
         let dir = std::env::temp_dir().join(format!(
-            "starnet-reap-test-{}-{}",
+            "eyehold-reap-test-{}-{}",
             std::process::id(),
             std::time::SystemTime::now()
                 .duration_since(std::time::UNIX_EPOCH)
@@ -5356,12 +5358,12 @@ mod sidecar_reap_tests {
         // QueryFullProcessImageNameW may report different casing than our resolved path;
         // same_path must still match — while a DIFFERENT node install must not.
         assert!(same_path(
-            Path::new(r"C:\PROGRAM FILES\StarNet\NODE.EXE"),
-            Path::new(r"C:\Program Files\StarNet\node.exe"),
+            Path::new(r"C:\PROGRAM FILES\Eyehold\NODE.EXE"),
+            Path::new(r"C:\Program Files\Eyehold\node.exe"),
         ));
         assert!(!same_path(
             Path::new(r"C:\Program Files\nodejs\node.exe"),
-            Path::new(r"C:\Program Files\StarNet\node.exe"),
+            Path::new(r"C:\Program Files\Eyehold\node.exe"),
         ));
     }
 }
@@ -5600,7 +5602,7 @@ mod webview_cache_purge_tests {
 
         // Build a fake EBWebView\Default tree in a unique temp dir.
         let base = std::env::temp_dir().join(format!(
-            "starnet-wvpurge-test-{}-{}",
+            "eyehold-wvpurge-test-{}-{}",
             std::process::id(),
             std::time::SystemTime::now()
                 .duration_since(std::time::UNIX_EPOCH)
@@ -5623,7 +5625,7 @@ mod webview_cache_purge_tests {
             let d = default_dir.join(name);
             std::fs::create_dir_all(&d).unwrap();
             let mut f = std::fs::File::create(d.join("keep.bin")).unwrap();
-            f.write_all(b"starnet.save").unwrap();
+            f.write_all(b"eyehold.save").unwrap();
         }
         let cookies = default_dir.join("Cookies");
         std::fs::write(&cookies, b"cookie-jar").unwrap();
@@ -5656,7 +5658,7 @@ mod webview_cache_purge_tests {
     fn purge_is_soft_when_default_dir_absent() {
         // Missing user-data dir must not panic and must remove nothing.
         let base = std::env::temp_dir().join(format!(
-            "starnet-wvpurge-absent-{}-{}",
+            "eyehold-wvpurge-absent-{}-{}",
             std::process::id(),
             std::time::SystemTime::now()
                 .duration_since(std::time::UNIX_EPOCH)

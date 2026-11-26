@@ -2,7 +2,7 @@
 // dev/shellstep.mjs — THE ONE-TILE STEP between two side-by-side rooms.
 //
 // (2026-08-16, Andrew, a tight crop of one junction: "i am only talking about circumstances like
-// this".) His saved station has r114 (x6..17, y11..16) sitting beside r129 (x18..35, y-1..17):
+// this".) His saved keep has r114 (x6..17, y11..16) sitting beside r129 (x18..35, y-1..17):
 // their south edges differ by ONE TILE, so the hull steps down there. The left run's skirt stops at
 // a hard vertical cut, a dark shaft opens beside it, and the lower run restarts with its own
 // coursing — two slabs shoved together instead of one wall taking a step.
@@ -25,16 +25,16 @@ const URL = `http://127.0.0.1:${PORT}/`;
 const PROBE = `(() => {
   const mk = (w, h) => { const c = document.createElement('canvas'); c.width = w; c.height = h; const g = c.getContext('2d'); g.imageSmoothingEnabled = false; return { c, g }; };
   const build = (dropChamfers) => {
-    // the DEFAULT station is A; B is flush against its east face but reaches ONE TILE further
+    // the DEFAULT keep is A; B is flush against its east face but reaches ONE TILE further
     // south — the r114|r129 relationship in Andrew's save, which is the whole point of this repro
     const st = WorldModel.create(WorldModel.defaultDoc());
     const d = st.doc(), a = d.order.map(i => d.rooms[i]).filter(Boolean).flatMap(r => r.rects || [])[0];
     const B = st.addRoom({ kind: 'hab', rects: [{ x1: a.x2 + 1, y1: a.y1, x2: a.x2 + 14, y2: a.y2 + 1 }] });
     const geo = st.projectGeometry();
     if (dropChamfers) geo.chamfers = [];
-    const bk = StationBake.bake(geo);
+    const bk = KeepBake.bake(geo);
     const o = mk(bk.W, bk.H); o.g.fillStyle = '#ff00ff'; o.g.fillRect(0, 0, bk.W, bk.H);
-    StationBake.drawBase(o.g, bk, 0, 0); StationBake.drawLight(o.g, bk, 0, 0);
+    KeepBake.drawBase(o.g, bk, 0, 0); KeepBake.drawLight(o.g, bk, 0, 0);
     return { c: o.c, geo, bk, B };
   };
   const shot = (r, Z) => {

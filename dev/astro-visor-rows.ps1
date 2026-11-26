@@ -2,7 +2,7 @@
 # defective frames, to size the transplant band: it must cover the visor's last
 # row but stop above the shoulders.
 Add-Type -AssemblyName System.Drawing
-$dir = Join-Path $PSScriptRoot "..\frontend\assets\sprites\astronaut"
+$dir = Join-Path $PSScriptRoot "..\frontend\assets\sprites\warden"
 foreach ($f in @('walk_north_0.png','walk_north-west_0.png','walk_north-west_5.png','rot_north.png')) {
   $bmp = New-Object System.Drawing.Bitmap((Join-Path $dir $f))
   $top = -1

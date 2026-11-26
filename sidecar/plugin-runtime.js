@@ -1,7 +1,7 @@
-/* sidecar/plugin-runtime.js — the station side of plugin processes (plugin extensions phase 2, 2026-09-29).
+/* sidecar/plugin-runtime.js — the keep side of plugin processes (plugin extensions phase 2, 2026-09-29).
 
    Each approved plugin with code runs in its own child process (sidecar/plugin-worker.js). This module starts it,
-   speaks its IPC, answers its requests (its private store), and keeps the station alive when it misbehaves:
+   speaks its IPC, answers its requests (its private store), and keeps the keep alive when it misbehaves:
      · every call has a deadline — a hung plugin costs its caller a timeout, never a stuck run;
      · a crash rejects everything in flight, marks the plugin crashed, and the NEXT use restarts it — at most
        MAX_RESTARTS times per RESTART_WINDOW_MS, after which it stays down until it is reloaded (re-approve, restart);
@@ -49,7 +49,7 @@ function makePluginRuntime(deps) {
      Asked before every tool/window call, before any restart, and on a timer for plugins with background jobs — an
      edit must never keep running (or be restarted from disk) without the Commander approving it again. */
   const verify = typeof deps.verify === 'function' ? deps.verify : null;
-  // LOG BUDGET: a plugin printing in a loop must not flood the station log. 120 lines a minute, then one notice.
+  // LOG BUDGET: a plugin printing in a loop must not flood the keep log. 120 lines a minute, then one notice.
   const LOG_PER_MIN = 120;
   const logBudget = new Map();   // id -> { windowAt, n, muted }
   function onLog(id, line) {
@@ -115,7 +115,7 @@ function makePluginRuntime(deps) {
   async function answerRequest(rec, m) {
     const reply = (ok, v, err) => { try { rec.child && rec.child.send({ t: 'ans', id: m.id, ok, v, err }); } catch (e) { note('plugins.runtime.answer-send', e); } };
     if (m.op === 'store') {
-      if (!store) return reply(false, null, 'this station has no plugin store');
+      if (!store) return reply(false, null, 'this keep has no plugin store');
       const a = m.args || {};
       try {
         const r = await store.op(rec.id, String(a.op || ''), a.key, a.value);

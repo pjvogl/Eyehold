@@ -1,5 +1,5 @@
 // Candidate-bound graphics and responsiveness proof against the real installed WebView.
-// Passive observation only: never opens panels, steals focus, or alters the station.
+// Passive observation only: never opens panels, steals focus, or alters the keep.
 // node scripts/qa/installed-graphics.mjs <port> <full-head> <exe> <out-dir> [minutes=10]
 import fs from 'node:fs';
 import path from 'node:path';
@@ -26,8 +26,8 @@ try {
   await c.send('Page.enable');
   const identity = await evalJS(c, `(async()=>{
     await IndustrialTextures.ready; await PropRemaster.ready;
-    const shell = await window.__TAURI__.core.invoke('starnet_build_info');
-    const v = await fetch('/api/version',{headers:{'X-StarNet-Token':window.__STARNET_API_TOKEN__}}).then(r=>r.json());
+    const shell = await window.__TAURI__.core.invoke('eyehold_build_info');
+    const v = await fetch('/api/version',{headers:{'X-Eyehold-Token':window.__EYEHOLD_API_TOKEN__}}).then(r=>r.json());
     return { origin:location.origin, shell, sidecar:v, textures:IndustrialTextures.status(),
       props:PropRemaster.status(), enabledProp:PropRemaster.enabled('desk','s'),
       revision:document.documentElement.dataset.textureRevision,
@@ -77,7 +77,7 @@ try {
     await sleep(5000);
     const sample = await evalJS(c, `(async()=>{
       const p=window.__releaseGraphics, t=performance.now();
-      const r=await fetch('/api/health',{cache:'no-store',headers:{'X-StarNet-Token':window.__STARNET_API_TOKEN__}});
+      const r=await fetch('/api/health',{cache:'no-store',headers:{'X-Eyehold-Token':window.__EYEHOLD_API_TOKEN__}});
       return {frames:p.frames.splice(0),longTasks:p.longTasks.splice(0),errors:p.errors.slice(),
         hidden:document.hidden,heap:performance.memory?.usedJSHeapSize??null,
         healthStatus:r.status,healthMs:performance.now()-t,cache:World._dbgCanvasLoss()};
@@ -101,7 +101,7 @@ try {
   const receipt = { at:new Date().toISOString(), head, artifact, identity, minutes,
     actualSeconds:(Date.now()-started)/1000, frames, longTasks, health, checks,
     pass:Object.values(checks).every(Boolean),
-    scope:'Passive observation of the installed Windows WebView on this machine and populated station. Frame timing and engine health; does not exercise panels or Refit and makes no provider workload or cross-hardware performance claim.' };
+    scope:'Passive observation of the installed Windows WebView on this machine and populated keep. Frame timing and engine health; does not exercise panels or Refit and makes no provider workload or cross-hardware performance claim.' };
   fs.writeFileSync(path.join(out, 'receipt.json'), JSON.stringify(receipt,null,2));
   fs.writeFileSync(path.join(out, 'samples.json'), JSON.stringify(samples));
   console.log(JSON.stringify(receipt,null,2));

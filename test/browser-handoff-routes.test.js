@@ -90,7 +90,7 @@ function surface() {
   // forget
   busy = true;
   res = fakeRes(); await api.forget(fakeReq('/api/browser/signins/forget', {}), res);
-  A.eq(res.code, 409, 'FORGET refuses while a run holds the station browser profile');
+  A.eq(res.code, 409, 'FORGET refuses while a run holds the keep browser profile');
   busy = false;
   res = fakeRes(); await api.forget(fakeReq('/api/browser/signins/forget', {}), res);
   A.ok(res.code === 200 && res.body.ok, 'FORGET wipes the profile when nothing is using it');
@@ -98,7 +98,7 @@ function surface() {
   A.eq([res.body.profile, res.body.sites], [false, []], 'and the view says so');
 
   const line = R.nudgeLine({ agentId: 'nova', reason: '2fa', where: 'github.com/sessions/two-factor', note: 'Enter the code' }, 'Nova');
-  A.ok(/^NOVA is waiting for you to enter a sign-in code at github\.com\/sessions\/two-factor\. Open StarNet > STEP-IN/.test(line), 'the channel nudge is one plain line: ' + line);
+  A.ok(/^NOVA is waiting for you to enter a sign-in code at github\.com\/sessions\/two-factor\. Open Eyehold > STEP-IN/.test(line), 'the channel nudge is one plain line: ' + line);
 
   fs.rmSync(tmp, { recursive: true, force: true });
   A.report('browser-handoff-routes.test');

@@ -1,17 +1,17 @@
 /* sidecar/plugin-worker.js — ONE plugin's code, in its OWN process (plugin extensions phase 2, 2026-09-29).
 
-   Forked by sidecar/plugin-runtime.js with the station-secret-free environment. Why a process per plugin: NOT a
+   Forked by sidecar/plugin-runtime.js with the keep-secret-free environment. Why a process per plugin: NOT a
    security boundary (an approved plugin runs with the Commander's full computer permissions, and the approval card
    says so), but a FAILURE boundary — a plugin that throws, leaks, spins forever or calls process.exit() takes down
-   itself, never the station. Before this, plugin code ran inside the sidecar, so one bad folder could stop every run.
+   itself, never the keep. Before this, plugin code ran inside the sidecar, so one bad folder could stop every run.
 
-   The plugin's main exports register(api). The api is the plugin's whole reach into the station, over IPC:
+   The plugin's main exports register(api). The api is the plugin's whole reach into the keep, over IPC:
      api.on(event, fn)                 hook the run (pre_tool_call may return { decision: 'block', reason })
      api.tool({ name, description, parameters, readOnly, run(args, ctx) })   a tool the crew can call
-     api.handle(name, fn(args))        answer the plugin's own windows: starnet.backend.call(name, args)
+     api.handle(name, fn(args))        answer the plugin's own windows: eyehold.backend.call(name, args)
      api.every(ms, fn)                 a background job (min 10 s)
      api.store.get/set/delete/keys     the SAME private store the plugin's windows use
-     api.log(...)                      a line in the station log, prefixed with the plugin id
+     api.log(...)                      a line in the keep log, prefixed with the plugin id
    Everything registered must be registered during register() (sync, or the promise it returns). */
 'use strict';
 const { note } = require('./failopen.js');   // the worker's own IPC failures are noted, never silently dropped
@@ -52,13 +52,13 @@ function log() {
   const line = Array.prototype.slice.call(arguments).map((a) => (typeof a === 'string' ? a : (() => { try { return JSON.stringify(a); } catch (_) { return String(a); } })())).join(' ');
   send({ t: 'log', line: line.slice(0, 4000) });
 }
-// Keep the plugin's own console output flowing to the station log (stdout may be a closed pipe on some hosts).
+// Keep the plugin's own console output flowing to the keep log (stdout may be a closed pipe on some hosts).
 console.log = log; console.info = log; console.warn = log; console.error = log;
 
 function request(op, args) {
   const id = ++seq;
   return new Promise((resolve, reject) => {
-    const timer = setTimeout(() => { if (pending.has(id)) { pending.delete(id); reject(new Error('the station did not answer ' + op)); } }, 15000);
+    const timer = setTimeout(() => { if (pending.has(id)) { pending.delete(id); reject(new Error('the keep did not answer ' + op)); } }, 15000);
     pending.set(id, { resolve, reject, timer });
     send({ t: 'req', id, op, args });
   });
@@ -145,7 +145,7 @@ async function onInit(m) {
   try { await register(makeApi()); }
   catch (e) { registering = false; return send({ t: 'ready', ok: false, error: 'register() threw — ' + errText(e) }); }
   registering = false;
-  // E-STOP pauses background jobs (the station sends jobsPaused at init and { t: 'jobs' } later); hooks keep answering
+  // E-STOP pauses background jobs (the keep sends jobsPaused at init and { t: 'jobs' } later); hooks keep answering
   jobsPaused = m.jobsPaused === true;
   if (!jobsPaused) startJobs();
   send({
@@ -158,7 +158,7 @@ async function onInit(m) {
   });
 }
 
-const toolAborts = new Map();   // tool call id -> AbortController (the station's { t:'cancel', ref })
+const toolAborts = new Map();   // tool call id -> AbortController (the keep's { t:'cancel', ref })
 async function answer(m, fn) {
   try { send({ t: 'res', id: m.id, ok: true, v: plain(await fn()) }); }
   catch (e) { send({ t: 'res', id: m.id, ok: false, err: errText(e) }); }
@@ -167,7 +167,7 @@ async function answer(m, fn) {
 process.on('message', (m) => {
   if (!m || typeof m !== 'object') return;
   if (m.t === 'init') return void onInit(m);
-  if (m.t === 'ans') {   // the station answering one of OUR requests
+  if (m.t === 'ans') {   // the keep answering one of OUR requests
     const p = pending.get(m.id); if (!p) return;
     pending.delete(m.id); clearTimeout(p.timer);
     return m.ok ? p.resolve(m.v) : p.reject(new Error(String(m.err || 'refused')));
@@ -203,6 +203,6 @@ process.on('message', (m) => {
 
 process.on('disconnect', () => { try { process.exit(0); } catch (e) { note('plugins.worker.disconnect-exit', e); } });
 // An uncaught throw leaves the plugin's state unknowable: say why, then die. The runtime marks it crashed and
-// restarts it on its next use (bounded), so the station never keeps talking to a half-broken plugin.
+// restarts it on its next use (bounded), so the keep never keeps talking to a half-broken plugin.
 process.on('uncaughtException', (e) => { log('[uncaught] ' + errText(e)); setTimeout(() => process.exit(1), 50); });
 process.on('unhandledRejection', (e) => { log('[unhandled] ' + errText(e)); });

@@ -1,4 +1,4 @@
-/* STARNET — loop-templates.js : the LOOP SHAPES a beginner picks instead of writing a loop from scratch.
+/* EYEHOLD — loop-templates.js : the LOOP SHAPES a beginner picks instead of writing a loop from scratch.
 
    THE PROBLEM THIS SOLVES. A blank "what should it keep doing?" box is the reason loops are confusing: it
    asks someone who has never run one to invent the cycle, the stopping condition, and the guard rails all at
@@ -11,7 +11,7 @@
    actually is (`rigor`).
 
    RIGOR IS NOT DECORATION. Only a loop whose exit condition is a real process exit code has a HARD guarantee:
-   the station runs the project's own check and reads the code. Everything else — "keep sweeping until you stop
+   the keep runs the project's own check and reads the code. Everything else — "keep sweeping until you stop
    finding things", "research until nothing new turns up" — rests on the model honestly reporting an empty
    digest each pass, which is a convention, not a proof. Both are useful; presenting them as equally rigorous
    would be a truthful-telemetry violation, so `rigor` rides on the record and the UI must show it.
@@ -55,7 +55,7 @@
       name: 'Build · Test · Verify',
       emoji: '⊹',
       tagline: 'Work until the project\'s own check passes',
-      blurb: 'Each pass makes a change, then the station runs YOUR check command and reads the real exit code. ' +
+      blurb: 'Each pass makes a change, then the keep runs YOUR check command and reads the real exit code. ' +
         'A red check is fed straight back into the next pass with its output. The loop ends when the check ' +
         'genuinely passes — and it can prove the tests were not edited to get there.',
       shape: ['MAKE A CHANGE', 'RUN YOUR CHECK', 'GREEN → REVIEW'],
@@ -67,7 +67,7 @@
       ],
       objective:
         'Work in this project until its check passes.\n\nGOAL: {goal}\n\n' +
-        'The station runs the check itself after every pass and tells you the real result — you do not run it, ' +
+        'The keep runs the check itself after every pass and tells you the real result — you do not run it, ' +
         'and you cannot see or change the command. Work in SMALL steps: one coherent change per pass, then stop ' +
         'and let the check speak. If the check comes back red you will be given its output; fix that before ' +
         'anything else.',
@@ -168,7 +168,7 @@
     t = typeof t === 'string' ? get(t) : t;
     if (!t) return '';
     return t.rigor === 'hard'
-      ? 'Ends on a real result: the station runs your check and reads its exit code. It will not call itself finished on a check it cannot verify.'
+      ? 'Ends on a real result: the keep runs your check and reads its exit code. It will not call itself finished on a check it cannot verify.'
       : 'Ends on the agent\'s own report: three passes in a row finding nothing new. That is a convention, not a proof — read what it produced before trusting it.';
   }
 
@@ -213,7 +213,7 @@
     const lines = [];
     const where = extra.workdir ? ('in ' + String(extra.workdir).split(/[\/]/).pop()) : 'for you';
     if (t.id === 'build-test-verify') {
-      lines.push({ k: 'What it does', v: 'Works ' + where + ', one change at a time, and after every pass the station runs ' + (spec.checkCmd || 'your check') + ' itself.' });
+      lines.push({ k: 'What it does', v: 'Works ' + where + ', one change at a time, and after every pass the keep runs ' + (spec.checkCmd || 'your check') + ' itself.' });
       lines.push({ k: 'When it stops', v: 'When that check genuinely passes — and it will not accept a pass that was reached by editing the tests.' });
     } else if (t.id === 'sweep-and-fix') {
       lines.push({ k: 'What it does', v: 'Hunts ' + where + ' for one thing at a time, fixes it, and reports what it found.' });

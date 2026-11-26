@@ -24,7 +24,7 @@ Run the saved partial SSE provider probe in qa/audits/hermes-stress-2026-09-10/p
 
 ## Evidence
 
-qa/audits/hermes-stress-2026-09-10/starnet-partial.json records three repetitions per surface. sidecar/openai-compat.js mapped errors with text to stop. The fix uses host terminal events and preserves output plus usage across all outcomes.
+qa/audits/hermes-stress-2026-09-10/eyehold-partial.json records three repetitions per surface. sidecar/openai-compat.js mapped errors with text to stop. The fix uses host terminal events and preserves output plus usage across all outcomes.
 
 ## Verdict
 

@@ -21,7 +21,7 @@ const { makeRunJournal, DISPATCH_BOUNDARY_MODEL } = require('../sidecar/run-jour
 const RunRecovery = require('../sidecar/run-recovery.js');
 const { makeRunTranscript, recoveryBase } = require('../sidecar/transcript-run.js');
 
-const DIR = fs.mkdtempSync(path.join(os.tmpdir(), 'starnet-per-turn-'));
+const DIR = fs.mkdtempSync(path.join(os.tmpdir(), 'eyehold-per-turn-'));
 const TX = path.join(DIR, 'transcript-history-v2');
 const JR = path.join(DIR, '.run-journal');
 let tick = 1000;

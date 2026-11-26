@@ -18,7 +18,7 @@ A.ok(Object.isFrozen(signing.TRUSTED_KEYS), 'the trusted key list cannot be chan
 
 const pair = signing.generateKeyPair();
 const keys = [{ id: 'test-market', publicKey: pair.publicKey }];
-const bytes = Buffer.from('{"format":"starnet-skill-registry/v1","serial":7}\n');
+const bytes = Buffer.from('{"format":"eyehold-skill-registry/v1","serial":7}\n');
 const sig = signing.sign(bytes, pair.privateKeyPem, keys);
 A.eq(JSON.parse(sig).keyId, 'test-market', 'a signature names the key that made it');
 A.eq(signing.verify(bytes, sig, keys), 'test-market', 'it verifies over the exact bytes');
@@ -26,12 +26,12 @@ A.throws(() => signing.verify(Buffer.from(bytes.toString().replace('7', '8')), s
 A.throws(() => signing.verify(Buffer.concat([bytes, Buffer.from(' ')]), sig, keys), /does not match/, 'appended bytes fail');
 A.throws(() => signing.verify(bytes, sig), /does not trust/, 'a signature from a key the app does not ship fails');
 A.throws(() => signing.verify(bytes, '', keys), /missing or unreadable/, 'no signature fails');
-A.throws(() => signing.verify(bytes, JSON.stringify({ format: 'starnet-signature/v1', alg: 'rsa', keyId: 'test-market', sig: 'x' }), keys), /missing or unreadable/, 'another algorithm is not accepted');
-A.throws(() => signing.sign(bytes, signing.generateKeyPair().privateKeyPem, keys), /not one the app trusts/, 'the build refuses to sign with a key no station would trust');
+A.throws(() => signing.verify(bytes, JSON.stringify({ format: 'eyehold-signature/v1', alg: 'rsa', keyId: 'test-market', sig: 'x' }), keys), /missing or unreadable/, 'another algorithm is not accepted');
+A.throws(() => signing.sign(bytes, signing.generateKeyPair().privateKeyPem, keys), /not one the app trusts/, 'the build refuses to sign with a key no keep would trust');
 const rsa = crypto.generateKeyPairSync('rsa', { modulusLength: 2048 }).privateKey.export({ format: 'pem', type: 'pkcs8' });
 A.throws(() => signing.sign(bytes, rsa, keys), /must be Ed25519/, 'only Ed25519 keys sign');
 
-A.eq(signing.sigUrl('https://starnetos.com/.well-known/starnet-skills.json'), 'https://starnetos.com/.well-known/starnet-skills.json.sig', 'the signature sits next to its document');
+A.eq(signing.sigUrl('https://eyehold.babelbook.net/.well-known/eyehold-skills.json'), 'https://eyehold.babelbook.net/.well-known/eyehold-skills.json.sig', 'the signature sits next to its document');
 const extra = signing.keysFromEnv(JSON.stringify([{ id: 'my-market', publicKey: pair.publicKey }, { id: 'Bad Id', publicKey: pair.publicKey }, { id: 'junk', publicKey: 'AAAA' }]));
 A.eq(extra.map(k => k.id), ['my-market'], 'STARNET_SKILL_MARKET_KEYS adds well-formed Ed25519 keys and ignores the rest');
 A.eq(signing.keysFromEnv('not json'), [], 'an unreadable value adds nothing');

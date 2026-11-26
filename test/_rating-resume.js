@@ -6,8 +6,8 @@ const vm = require('node:vm');
 const A = require('./_assert.js');
 module.exports = function resumeRatingFixture(saved) {
   const source = fs.readFileSync(path.join(__dirname, '../frontend/app/app.js'), 'utf8');
-  // resumeInto calls savedStationProv since the #24 station-default fix; lift it too (as genesis-wake-credential does)
-  const body = A.fnBody(source, 'function savedStationProv(') + '\n' + A.fnBody(source, 'function resumeInto(');
+  // resumeInto calls savedKeepProv since the #24 keep-default fix; lift it too (as genesis-wake-credential does)
+  const body = A.fnBody(source, 'function savedKeepProv(') + '\n' + A.fnBody(source, 'function resumeInto(');
   const agents = new Map();
   const noop = () => {};
   const context = {
@@ -17,7 +17,7 @@ module.exports = function resumeRatingFixture(saved) {
     rehydrateRoster: rows => { for (const a of rows || []) if (a.id !== 'agent') agents.set(a.id, a); },
     recomposeOrchestrators: noop, Harness: {setProv:noop,setReasoningEffort:noop,setModel:noop,getModel:()=> 'test/model',setTotals:noop},
     Workstreams: {init:noop}, enterGame:noop,persist:noop,
-    pendingStationDoc:null,pendingStationStats:null,pendingGrowthSyncAt:0,pendingRatingSyncAt:0,
+    pendingKeepDoc:null,pendingKeepStats:null,pendingGrowthSyncAt:0,pendingRatingSyncAt:0,
     pendingProfile:null,pendingWorkSignal:null,pendingDossier:null
   };
   vm.runInNewContext(body + '; resumeInto(saved);', context);

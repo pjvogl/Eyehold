@@ -1,6 +1,6 @@
 /* live-preview.js — sizes the embedded-app clip. The preview is the REAL app
    (website/app, a verbatim frontend copy booted from a seeded save) rendered in an
-   iframe with a dedicated 960x660 camera viewport. The .app-clip window shows the station
+   iframe with a dedicated 960x660 camera viewport. The .app-clip window shows the keep
    camera panel. The panel's live DOM rectangle is the crop authority so application
    layout changes cannot silently leave the public preview showing an old slice. */
 (function(){

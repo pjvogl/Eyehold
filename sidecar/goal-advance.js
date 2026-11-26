@@ -7,7 +7,7 @@
    again, and the progress bar never moved. This module closes that loop with two pure reads:
 
      · slateFinished(goal, quests) — every quest planned for the CURRENT step is resolved (none open) and at
-       least one of them was actually completed by its contract. That is the step's evidence: the station
+       least one of them was actually completed by its contract. That is the step's evidence: the keep
        planned the step as a set of verifiable quests and every one of them is settled. A slate that was only
        dismissed proves nothing and never advances.
      · overlay(goal, doneKeys) — fold the durable journey's recorded milestone completions onto the mirrored
@@ -60,7 +60,7 @@ function slateFinished(goal, quests) {
   const done = slate.filter(q => q.status === 'done');
   if (!done.length) return null;   // an all-dismissed slate is a rejected plan, not a finished step
   // WHO settled it, honestly: a slate completed only by quests the Commander reported (attest) is their word, not
-  // a harness proof — the journey renders that as "You confirmed", a mechanical contract as "StarNet recorded".
+  // a harness proof — the journey renders that as "You confirmed", a mechanical contract as "Eyehold recorded".
   const byCommander = done.every(q => q.contract && q.contract.type === 'attest');
   return {
     goalId: goal.id, milestoneId: step.id, milestoneText: step.text,

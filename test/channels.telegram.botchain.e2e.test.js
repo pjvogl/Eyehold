@@ -1,9 +1,9 @@
 /* node test/channels.telegram.botchain.e2e.test.js - a PER-AGENT Telegram bot advances the work line.
 
    Surface-parity proof (2026-08-04): the same drawn floor must do the same work whichever surface carries
-   the message. The station bot, cron and COMMS all ran the belts drawn past a dock, but the per-agent bot
+   the message. The keep bot, cron and COMMS all ran the belts drawn past a dock, but the per-agent bot
    hub shipped without the chain seam — a DM to a dedicated agent bot ran ONE stage while the identical
-   message through the station bot ran the whole line. This boots the real sidecar with a token-aware fake
+   message through the keep bot ran the whole line. This boots the real sidecar with a token-aware fake
    Bot API + fake OpenRouter (multibot e2e pattern), adds one agent-bound bot, deploys a two-stage floor
    (research-agent -> writer-agent), DMs the bot, and proves the downstream stage really ran: two provider
    calls, the handoff prompt carried the upstream output, the reply delivered is the LAST stage's, and the
@@ -120,7 +120,7 @@ function startMockTelegramMulti(bots) {
 function boot(port, env, attemptsLeft) {
   return new Promise((resolve, reject) => {
     const child = spawn(process.execPath, [INDEX], {
-      env: Object.assign({}, process.env, env, { SKYNET_PORT: String(port), STARNET_PORT: String(port) }),
+      env: Object.assign({}, process.env, env, { EYEHOLD_PORT: String(port), EYEHOLD_PORT: String(port) }),
       stdio: ['ignore', 'pipe', 'pipe']
     });
     let out = '', settled = false;
@@ -149,29 +149,29 @@ async function waitUntil(fn, ms, label) {
   throw new Error('timed out waiting for ' + label);
 }
 
-const STATION = 'STATIONTOKEN', TOK_A = 'TOKCHAIN';
+const KEEP = 'KEEPTOKEN', TOK_A = 'TOKCHAIN';
 
 (async () => {
   const llm = await startMockOpenRouter();
   const tg = await startMockTelegramMulti({
-    [STATION]: { id: 100, username: 'StationBot' },
+    [KEEP]: { id: 100, username: 'KeepBot' },
     [TOK_A]: { id: 333, username: 'ResearchBot' }
   });
   const ws = fs.mkdtempSync(path.join(os.tmpdir(), 'sk-tg-botchain-e2e-'));
   const env = {
-    SKYNET_WORKSPACES: ws, STARNET_WORKSPACES: ws,
-    SKYNET_OPENROUTER_BASE: llm.base, STARNET_OPENROUTER_BASE: llm.base,
-    SKYNET_OPENROUTER_KEY: 'sk-or-v1-botchain-fake', STARNET_OPENROUTER_KEY: 'sk-or-v1-botchain-fake',
-    SKYNET_DEFAULT_MODEL: 'test/model', STARNET_DEFAULT_MODEL: 'test/model',
-    SKYNET_TELEGRAM_TOKEN: STATION, STARNET_TELEGRAM_TOKEN: STATION,
-    SKYNET_TELEGRAM_API_BASE: tg.base, STARNET_TELEGRAM_API_BASE: tg.base
+    EYEHOLD_WORKSPACES: ws, EYEHOLD_WORKSPACES: ws,
+    EYEHOLD_OPENROUTER_BASE: llm.base, EYEHOLD_OPENROUTER_BASE: llm.base,
+    EYEHOLD_OPENROUTER_KEY: 'sk-or-v1-botchain-fake', EYEHOLD_OPENROUTER_KEY: 'sk-or-v1-botchain-fake',
+    EYEHOLD_DEFAULT_MODEL: 'test/model', EYEHOLD_DEFAULT_MODEL: 'test/model',
+    EYEHOLD_TELEGRAM_TOKEN: KEEP, EYEHOLD_TELEGRAM_TOKEN: KEEP,
+    EYEHOLD_TELEGRAM_API_BASE: tg.base, EYEHOLD_TELEGRAM_API_BASE: tg.base
   };
   const { child, port } = await boot(9170 + (process.pid % 50), env, 20);
   const B = 'http://' + HOST + ':' + port;
   try {
     const token = await bootToken(B, B);
     const api = (method, url, body) => fetch(B + url, {
-      method, headers: { 'Content-Type': 'application/json', 'X-StarNet-Token': token, Origin: B },
+      method, headers: { 'Content-Type': 'application/json', 'X-Eyehold-Token': token, Origin: B },
       body: body === undefined ? undefined : JSON.stringify(body)
     }).then(async r => ({ status: r.status, j: await r.json().catch(() => ({})) }));
 

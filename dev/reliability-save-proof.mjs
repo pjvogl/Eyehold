@@ -57,14 +57,14 @@ try {
     window.fetch=original; return rows;
   })()`);
   result.staleAdoption = await evalJS(cdp, `(async()=>{
-    const prior=localStorage.getItem('starnet.save'); const remote=await CloudSave.pull();
+    const prior=localStorage.getItem('eyehold.save'); const remote=await CloudSave.pull();
     const stale={...remote,updatedAt:1,_saveRevision:Math.max(0,(remote._saveRevision||1)-1)};
-    localStorage.setItem('starnet.save',JSON.stringify(stale));
+    localStorage.setItem('eyehold.save',JSON.stringify(stale));
     const original=Storage.prototype.setItem;
-    Storage.prototype.setItem=function(k,v){if(k==='starnet.save')throw new DOMException('quota','QuotaExceededError');return original.call(this,k,v);};
+    Storage.prototype.setItem=function(k,v){if(k==='eyehold.save')throw new DOMException('quota','QuotaExceededError');return original.call(this,k,v);};
     let result;
     try { await CloudSave.reconcile(stale); result={expected:stale._saveRevision,actual:CloudSave.revision()}; }
-    finally {Storage.prototype.setItem=original;localStorage.setItem('starnet.save',prior);}
+    finally {Storage.prototype.setItem=original;localStorage.setItem('eyehold.save',prior);}
     await CloudSave.reconcile(Save.load());return result;
   })()`);
   const main = path.join(fixture.workspace, 'agent.save.json');
@@ -76,7 +76,7 @@ try {
   result.primary = { status: result.primary.status, unreadable: result.primary.body.unreadable, empty: result.primary.body.save === null };
   result.browser = await evalJS(cdp, `(async()=>{const r=await CloudSave.reconcile(null);return {unknown:CloudSave.isUnknownSentinel(r),empty:r===null,outcome:CloudSave.pullOutcome()};})()`);
   if (fixed) {
-    await evalJS(cdp, "localStorage.removeItem('starnet.save')");
+    await evalJS(cdp, "localStorage.removeItem('eyehold.save')");
     await cdp.send('Page.reload');
     for (let i = 0; i < 30; i++) {
       result.recoveryScreen = await evalJS(cdp, `({active:document.getElementById('screen-unreachable')?.classList.contains('active'),text:document.getElementById('unreachable-code')?.textContent})`).catch(() => ({}));
@@ -89,23 +89,23 @@ try {
   fs.unlinkSync(control);
   if (fixed) {
     await evalJS(cdp, "document.getElementById('btn-unreachable-retry').click()");
-    result.retryResumedStation = await waitDevReady(cdp, evalJS, { url: fixture.baseUrl });
-    assert.equal(result.retryResumedStation, true);
+    result.retryResumedKeep = await waitDevReady(cdp, evalJS, { url: fixture.baseUrl });
+    assert.equal(result.retryResumedKeep, true);
     // A readable remote cannot be adopted if the cache write itself fails. Keep a truthful
     // recovery state and preserve the actual browser cache (prototype injection, restored).
     result.cacheAdoption = await evalJS(cdp, `(async()=>{
-      const read=localStorage.getItem('starnet.save'); const original=Storage.prototype.setItem;
-      Storage.prototype.setItem=function(k,v){if(k==='starnet.save')throw new DOMException('quota','QuotaExceededError');return original.call(this,k,v);};
+      const read=localStorage.getItem('eyehold.save'); const original=Storage.prototype.setItem;
+      Storage.prototype.setItem=function(k,v){if(k==='eyehold.save')throw new DOMException('quota','QuotaExceededError');return original.call(this,k,v);};
       // Make Save.load fail too: an existing valid cache would otherwise mask failed adoption.
       const load=Save.load; Save.load=()=>null;
-      try {const r=await CloudSave.reconcile(null);return {unknown:CloudSave.isUnknownSentinel(r),cacheUnchanged:localStorage.getItem('starnet.save')===read};}
+      try {const r=await CloudSave.reconcile(null);return {unknown:CloudSave.isUnknownSentinel(r),cacheUnchanged:localStorage.getItem('eyehold.save')===read};}
       finally {Storage.prototype.setItem=original;Save.load=load;}
     })()`);
     assert.equal(result.cacheAdoption.unknown, true); assert.equal(result.cacheAdoption.cacheUnchanged, true);
     const injection = await cdp.send('Page.addScriptToEvaluateOnNewDocument', { source: `
       const read=Storage.prototype.getItem, write=Storage.prototype.setItem;
-      Storage.prototype.getItem=function(k){return k==='starnet.save'?null:read.call(this,k);};
-      Storage.prototype.setItem=function(k,v){if(k==='starnet.save')throw new DOMException('quota','QuotaExceededError');return write.call(this,k,v);};
+      Storage.prototype.getItem=function(k){return k==='eyehold.save'?null:read.call(this,k);};
+      Storage.prototype.setItem=function(k,v){if(k==='eyehold.save')throw new DOMException('quota','QuotaExceededError');return write.call(this,k,v);};
     ` });
     await cdp.send('Page.reload');
     for (let i = 0; i < 30; i++) {
@@ -120,7 +120,7 @@ try {
   }
   result.primaryRecovered = (await fixture.json('GET', '/api/save')).body.save.agent.name;
   // A different record avoids any browser autosave interference during the backup-only case.
-  const doc = { schema: 'starnet.save', version: 5, updatedAt: 100, agent: { id: 'audit', name: 'RETAIN ME' } };
+  const doc = { schema: 'eyehold.save', version: 5, updatedAt: 100, agent: { id: 'audit', name: 'RETAIN ME' } };
   await fixture.json('POST', '/api/save', doc);
   const audit = path.join(fixture.workspace, 'audit.save.json');
   fs.renameSync(audit, audit + '.bak');

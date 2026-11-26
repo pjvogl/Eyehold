@@ -50,10 +50,10 @@ The look-back direction is latched when the pause starts; waypoint transitions c
       "gate": "fast"
     },
     {
-      "target": "workstation crew",
+      "target": "workkeep crew",
       "state": "covered",
       "test": "test/world-movement-continuity.test.js",
-      "scenario": "workstation route advances through waypoint without an idle frame or leisure pause",
+      "scenario": "workkeep route advances through waypoint without an idle frame or leisure pause",
       "gate": "fast"
     }
   ],

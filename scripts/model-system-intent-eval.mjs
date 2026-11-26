@@ -1,29 +1,29 @@
 #!/usr/bin/env node
-/* Fixed, real-provider intent evaluation for StarNet's model-facing system controls.
+/* Fixed, real-provider intent evaluation for Eyehold's model-facing system controls.
 
-   This never executes a tool and never touches a StarNet workspace. It sends the ACTUAL shipped tool names,
+   This never executes a tool and never touches a Eyehold workspace. It sends the ACTUAL shipped tool names,
    descriptions, and schemas to one pinned model, then requires the first streamed call to select the expected
    durable system. Functional/restart/UI mutation proof lives in the ordinary isolated test + live-app suites. */
 import { createRequire } from 'node:module';
 const require = createRequire(import.meta.url);
 const { makeOpenRouterProvider } = require('../sidecar/providers/openrouter.js');
-const { makeStationTools } = require('../sidecar/tools/builtin/station.js');
+const { makeKeepTools } = require('../sidecar/tools/builtin/keep.js');
 const { makeRoutineTools } = require('../sidecar/tools/builtin/routines.js');
 const { makeLoopTools } = require('../sidecar/tools/builtin/loops.js');
 
 const MODEL = 'openai/gpt-4o-mini';
 const TIMEOUT_MS = 90000;
-const key = String(process.env.STARNET_INTENT_EVAL_KEY || process.env.SKYNET_OPENROUTER_KEY || process.env.STARNET_OPENROUTER_KEY || process.env.OPENROUTER_API_KEY || '').trim();
+const key = String(process.env.EYEHOLD_INTENT_EVAL_KEY || process.env.SKYNET_OPENROUTER_KEY || process.env.EYEHOLD_OPENROUTER_KEY || process.env.OPENROUTER_API_KEY || '').trim();
 if (!key) {
-  console.error('[model-system-intent-eval] REFUSED: no isolated provider key in STARNET_INTENT_EVAL_KEY (or the documented OpenRouter env vars). No installed credential was read.');
+  console.error('[model-system-intent-eval] REFUSED: no isolated provider key in EYEHOLD_INTENT_EVAL_KEY (or the documented OpenRouter env vars). No installed credential was read.');
   process.exit(2);
 }
 
-const station = makeStationTools({});
+const keep = makeKeepTools({});
 const routines = makeRoutineTools({ providerIds: () => ['openrouter'] });
 const loops = makeLoopTools({});
 const actual = [
-  station.taskListTool, station.taskCreateTool, station.taskManageTool,
+  keep.taskListTool, keep.taskCreateTool, keep.taskManageTool,
   loops.listTool, loops.createTool, loops.manageTool,
   routines.listTool, routines.createTool, routines.manageTool
 ];
@@ -52,7 +52,7 @@ async function choose(text) {
       signal: controller.signal,
       tools,
       messages: [
-        { role: 'system', content: 'You operate StarNet. The requested target does not already exist. Choose exactly one appropriate mutation tool now. Do not answer in prose and do not list first.' },
+        { role: 'system', content: 'You operate Eyehold. The requested target does not already exist. Choose exactly one appropriate mutation tool now. Do not answer in prose and do not list first.' },
         { role: 'user', content: text }
       ]
     })) {

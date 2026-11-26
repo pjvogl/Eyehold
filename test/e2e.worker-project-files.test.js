@@ -84,10 +84,10 @@ function toolResultFor(requests, callId) {
   const project = fs.mkdtempSync(path.join(os.tmpdir(), 'YoutubeService-'));
   const projectRoot = path.resolve(project);
   const fixture = SidecarFixture.create({ prefix: 'issue77-worker-files-', timeoutMs: 20000, env: {
-    STARNET_OPENROUTER_KEY: '', SKYNET_OPENROUTER_KEY: '', OPENROUTER_KEY: '', OPENROUTER_API_KEY: '',
-    STARNET_CREDITS_URL: '', SKYNET_CREDITS_URL: '', STARNET_CREDITS_TOKEN: '', SKYNET_CREDITS_TOKEN: '', STARNET_CLOUD_URL: '',
-    STARNET_IMAGE_MODEL: '', SKYNET_IMAGE_MODEL: '', SKYNET_FULL_ACCESS: '', SKYNET_AUX_BUDGET: '0',
-    STARNET_OPENROUTER_BASE: provider.baseUrl, SKYNET_OPENROUTER_BASE: provider.baseUrl
+    EYEHOLD_OPENROUTER_KEY: '', EYEHOLD_OPENROUTER_KEY: '', OPENROUTER_KEY: '', OPENROUTER_API_KEY: '',
+    EYEHOLD_CREDITS_URL: '', EYEHOLD_CREDITS_URL: '', EYEHOLD_CREDITS_TOKEN: '', EYEHOLD_CREDITS_TOKEN: '', EYEHOLD_CLOUD_URL: '',
+    EYEHOLD_IMAGE_MODEL: '', EYEHOLD_IMAGE_MODEL: '', EYEHOLD_FULL_ACCESS: '', EYEHOLD_AUX_BUDGET: '0',
+    EYEHOLD_OPENROUTER_BASE: provider.baseUrl, EYEHOLD_OPENROUTER_BASE: provider.baseUrl
   } });
   try {
     // the trusted project ("My Project Folders") + the Commander's standing ASK-mode grants for the two consent
@@ -123,7 +123,7 @@ function toolResultFor(requests, callId) {
     A.ok(toolNames.indexOf('image_generate') >= 0 && toolNames.indexOf('tool_search') >= 0, 'image_generate and tool_search are advertised');
     const sys = systemOf(first);
     A.ok(/DELEGATED worker run for supervisor/.test(sys), 'its capability note says DELEGATED for the Supervisor, not an unattended routine');
-    A.ok(/Do NOT report that the station has no shell/.test(sys) && /result for supervisor/.test(sys), 'and names the route: hand the command back to the Supervisor');
+    A.ok(/Do NOT report that the keep has no shell/.test(sys) && /result for supervisor/.test(sys), 'and names the route: hand the command back to the Supervisor');
     A.ok(!/per-routine grant/.test(sys), 'it is never sent to a per-routine grant');
 
     // ---- discovery + the withheld call: truthful and actionable ----

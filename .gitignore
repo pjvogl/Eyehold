@@ -23,6 +23,8 @@ sidecar/workspaces.*/
 
 # dev seed launcher: local secrets + the throwaway seeded workspace it materializes
 dev/.env.dev
+.dev.vars
+**/.dev.vars
 dev/.scratch-workspace/
 dev/.google-review-workspace/
 # mock-cron dev sidecar runtime state (roster/goals/cron json + .bak churn; never committed)
@@ -163,7 +165,7 @@ src-tauri/frontend-dist/
 __pycache__/
 *.pyc
 
-# the exact upload for starnetos.com, rebuilt by scripts/stage-website-deploy.mjs each deploy
+# the exact upload for eyehold.com, rebuilt by scripts/stage-website-deploy.mjs each deploy
 website-deploy/
 
 # ABILITIES lane visual-proof screenshots (headless capture output; never committed)

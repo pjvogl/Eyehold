@@ -18,7 +18,7 @@ function argValue(name, fallback = '') {
   return idx >= 0 && rawArgs[idx + 1] ? rawArgs[idx + 1] : fallback;
 }
 
-const evidenceRoot = resolve(argValue('--dir', process.env.STARNET_PHASE4_EVIDENCE_ROOT || join(ROOT, '.dogfood')));
+const evidenceRoot = resolve(argValue('--dir', process.env.EYEHOLD_PHASE4_EVIDENCE_ROOT || join(ROOT, '.dogfood')));
 const attendedFile = join(evidenceRoot, 'phase4-attended-evidence.json');
 const decisionFile = join(evidenceRoot, 'phase4-decision.json');
 const shouldInitDecision = argSet.has('--decision') || command === 'init-decision';
@@ -56,7 +56,7 @@ function attendedTemplate() {
       ledgerPreserved: false,
       artifactsPreserved: false,
       memoryPreserved: false,
-      stationStatePreserved: false,
+      keepStatePreserved: false,
       notes: ''
     },
     failureRecovery: {
@@ -105,7 +105,7 @@ function validateAttended() {
   addMissing(missing, 'sameWorkTrial.ledgerRows[]', hasItems(s.ledgerRows));
 
   const soak = doc.soak || {};
-  for (const key of ['freshPass', 'restartPass', 'transcriptPreserved', 'ledgerPreserved', 'artifactsPreserved', 'memoryPreserved', 'stationStatePreserved']) {
+  for (const key of ['freshPass', 'restartPass', 'transcriptPreserved', 'ledgerPreserved', 'artifactsPreserved', 'memoryPreserved', 'keepStatePreserved']) {
     addMissing(missing, 'soak.' + key, boolTrue(soak[key]));
   }
 

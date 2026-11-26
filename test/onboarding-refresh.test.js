@@ -51,7 +51,7 @@ async function quickRun(answers, stopAt, wake = false, mind = null, receipts = [
   assert.equal(result.done, 1); assert.equal(result.taught, 1);
   assert(result.stages.some(([,detail]) => detail.startsWith('1 of 2')));
   assert(result.stages.some(([,detail]) => detail.startsWith('2 of 2')));
-  assert(result.storage.has('starnet.interview.deferred.v1'), 'deeper profile stays available later');
+  assert(result.storage.has('eyehold.interview.deferred.v1'), 'deeper profile stays available later');
   const retried = await quickRun([{value:'quick'}, {value:'Help me build software.'}, {value:'wait'}, {value:'wait'}], null, false, null, [{ok:false,error:'Save refused'}, {ok:true}]);
   assert.equal(retried.prompts.length, 4, 'a refused posture save repeats the question before completing setup');
   assert.deepEqual(retried.postures, ['wait', 'wait'], 'retry uses the confirmed writer again');
@@ -76,14 +76,14 @@ async function quickRun(answers, stopAt, wake = false, mind = null, receipts = [
       : '' });
   const live = await quickRun([
     {value:'loose'}, {value:'I want help deciding what to build.'},
-    {value:'My station onboarding.'}, {value:'yes'}, {value:'wait'}
+    {value:'My keep onboarding.'}, {value:'yes'}, {value:'wait'}
   ], null, false, mind);
   assert.equal(live.prompts[1].lines[0].text, 'what made you want to set up an agent?');
   assert.equal(live.prompts[1].customFirst, true, 'typing is available immediately');
   assert.equal(live.prompts[2].lines[0].text, 'which project would you like to make progress on?');
   assert.equal(live.prompts.filter(p => p.lines[0].text === 'which project would you like to make progress on?').length, 1, 'short path enforces budget even if model keeps asking');
-  assert(live.writes.some(w => w.context && w.context.includes('My station onboarding.')), 'exact follow-up survives in context');
-  assert(live.calls.some(c => c.includes('My station onboarding.')), 'next model turn sees prior answers');
+  assert(live.writes.some(w => w.context && w.context.includes('My keep onboarding.')), 'exact follow-up survives in context');
+  assert(live.calls.some(c => c.includes('My keep onboarding.')), 'next model turn sees prior answers');
   assert(!live.beliefs.some(([dim]) => dim === 'pain'), 'reason for creating an agent is not filed as pain');
   assert.equal(live.taught, 1);
   const explore = await quickRun([{value:'loose'}, {help:true}, {value:'I want to learn animation.'}, {value:'yes'}, {value:'wait'}], null, false, mind);
@@ -115,7 +115,7 @@ async function quickRun(answers, stopAt, wake = false, mind = null, receipts = [
         declineDecomposition: b => declined.push(b.id)
       }
     };
-    const r = await quickRun([{value:'loose'}, {value:'I want help deciding what to build.'}, {value:'My station onboarding.'}].concat(readAnswers || [{value:'yes'}], [{value:'suggest'}, pathAnswer]), null, false, mind, [], extra);
+    const r = await quickRun([{value:'loose'}, {value:'I want help deciding what to build.'}, {value:'My keep onboarding.'}].concat(readAnswers || [{value:'yes'}], [{value:'suggest'}, pathAnswer]), null, false, mind, [], extra);
     return Object.assign(r, { confirmed, declined, proposedFor, goals });
   };
   const yes = await pathRun({ value: 'confirm' }, true);
@@ -136,7 +136,7 @@ async function quickRun(answers, stopAt, wake = false, mind = null, receipts = [
   const long = await pathRun({ value: 'confirm' }, true, [{ value: 'adjust' }, { value: longMission }]);
   assert.ok(longMission.length > 280, 'precondition: the mission is longer than a belief can hold');
   assert.equal(long.confirmed.length, 1, 'a mission longer than 280 chars (the dossier caps it) still gets its path offered and saved');
-  const noGoalStore = await quickRun([{value:'loose'}, {value:'I want help deciding what to build.'}, {value:'My station onboarding.'}, {value:'yes'}, {value:'wait'}], null, false, mind);
+  const noGoalStore = await quickRun([{value:'loose'}, {value:'I want help deciding what to build.'}, {value:'My keep onboarding.'}, {value:'yes'}, {value:'wait'}], null, false, mind);
   assert.ok(!noGoalStore.prompts.some(p => p.customLabel === '✎ edit the steps'), 'without a goal store the meeting is unchanged');
   console.log('onboarding-refresh: OK (quick setup, exact answers, posture, deferred profile, cancellation, first path)');
 })().catch(error => { console.error(error); process.exitCode = 1; });

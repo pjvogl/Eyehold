@@ -2,9 +2,9 @@
 /* dev/brightness-shots.mjs — live proof shots for the BRIGHTNESS-knob lane.
  *
  * Boots a seeded sidecar from THIS worktree, drives the REAL app over CDP (the established
- * headless pattern — see catshot.mjs / scripts/lib/cdp.mjs), and captures the amber station at
+ * headless pattern — see catshot.mjs / scripts/lib/cdp.mjs), and captures the amber keep at
  * BRIGHTNESS 0 (the shipped control) / 50 / 100, plus green at 100 — proving the panels lift in
- * the phosphor's own light while the page and the station feed stay dark.
+ * the phosphor's own light while the page and the keep feed stay dark.
  *
  *   node dev/brightness-shots.mjs        (ports: SKYNET_SHOT_PORT / SKYNET_CDP_PORT)
  */
@@ -48,14 +48,14 @@ async function main() {
     mkdirSync(OUT, { recursive: true });
 
     // per shot: open Settings, drag the real slider, CLOSE the window (scrim and all) so the
-    // captured frame is the station itself, not the station behind a modal scrim.
+    // captured frame is the keep itself, not the keep behind a modal scrim.
     for (const [name, pct, theme] of [['amber-b0', 0, 'amber'], ['amber-b50', 50, 'amber'], ['amber-b100', 100, 'amber'], ['green-b100', 100, 'green']]) {
-      await evalJS(cdp, `StationUI.openTerm('settings', 'appearance')`);
+      await evalJS(cdp, `KeepUI.openTerm('settings', 'appearance')`);
       await sleep(700);
-      await evalJS(cdp, `StationUI.setTheme(${JSON.stringify(theme)})`);
+      await evalJS(cdp, `KeepUI.setTheme(${JSON.stringify(theme)})`);
       const dragged = await evalJS(cdp, dragBright(pct));
       console.log(name, 'slider ->', dragged);
-      await evalJS(cdp, `StationUI.toggleTerm('settings')`);
+      await evalJS(cdp, `KeepUI.toggleTerm('settings')`);
       await sleep(700);
       const probe = await evalJS(cdp, `(() => { const cs = getComputedStyle(document.body); return {
         panel: cs.getPropertyValue('--panel').trim(), bg: cs.getPropertyValue('--bg').trim(),

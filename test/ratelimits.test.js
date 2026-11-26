@@ -3,7 +3,7 @@
    Quota used to be learned only by hitting it: errorClass.js reads retry-after / x-ratelimit-*reset* off a 429
    and nothing else was kept. Every adapter's success path is `if (res.ok && res.body) return res`, so the
    *-remaining counters of ordinary successful calls — the ones that say how close the NEXT call is to failing —
-   were dropped five times over. A station whose promise is truthful telemetry could only report a wall it had
+   were dropped five times over. A keep whose promise is truthful telemetry could only report a wall it had
    already walked into.
 
    The traps pinned here are the ones that make a quota readout quietly WRONG rather than absent: three live

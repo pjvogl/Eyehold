@@ -3,7 +3,7 @@
    match (a run-contract key is fixed at mint, before any runId exists, and bindRun had ZERO callers) — so
    ONLY attest quests could ever complete. These tests drive each matcher against a REAL questStore (in-memory
    fs, injected clock) end-to-end through completeByContract, proving: each contract type minted → its real
-   seam fires → the quest completes; a NON-matching key never completes; and scoping (own vs station-wide vs
+   seam fires → the quest completes; a NON-matching key never completes; and scoping (own vs keep-wide vs
    another agent's) holds at every seam. */
 'use strict';
 const A = require('./_assert.js');
@@ -39,34 +39,34 @@ const fresh = () => makeQuestStore({ fs: memFs(), path, workspaces: '/ws', write
   {
     const s = fresh();
     const byObj = await s.mint({ title: 'place a dish', contract: { type: 'prop', key: 'dish' }, agentId: 'hero' }, 1);
-    const byCap = await s.mint({ title: 'web goes live', contract: { type: 'prop', key: 'Web' } }, 2);                 // station-wide, case-insensitive
+    const byCap = await s.mint({ title: 'web goes live', contract: { type: 'prop', key: 'Web' } }, 2);                 // keep-wide, case-insensitive
     const byTool = await s.mint({ title: 'shell goes live', contract: { type: 'prop', key: 'shell.exec' } }, 3);
     const unmet = await s.mint({ title: 'workbench someday', contract: { type: 'prop', key: 'workbench' }, agentId: 'hero' }, 4);
     const theirs = await s.mint({ title: 'their dish', contract: { type: 'prop', key: 'dish' }, agentId: 'other' }, 5);
 
-    const station = { agents: { hero: { id: 'hero', room: 'office' } }, rooms: { office: { id: 'office', objects: [{ instanceId: 'i1', objectType: 'computer' }, { instanceId: 'i2', objectType: 'dish' }] } } };
+    const keep = { agents: { hero: { id: 'hero', room: 'office' } }, rooms: { office: { id: 'office', objects: [{ instanceId: 'i1', objectType: 'computer' }, { instanceId: 'i2', objectType: 'dish' }] } } };
     const resolved = { hasCompute: true, grants: [{ capId: 'web', tool: 'web_search' }], tools: ['web_search', 'shell.exec'] };
 
-    const keys = livePropKeys(s.openForAgent('hero'), 'hero', station, resolved);
+    const keys = livePropKeys(s.openForAgent('hero'), 'hero', keep, resolved);
     A.eq(keys.slice().sort(), ['Web', 'dish', 'shell.exec'].sort(), 'objectType, capId (case-insensitive) and tool-name prop keys all match; an unplaced capability does not');
     for (const k of keys) await s.completeByContract('prop', k, 200);
     A.eq(s.get(byObj.id).status, 'done', 'a prop quest keyed to a placed objectType completes');
-    A.eq(s.get(byCap.id).status, 'done', 'a station-wide prop quest keyed to a live capId completes (original key preserved through normalization)');
+    A.eq(s.get(byCap.id).status, 'done', 'a keep-wide prop quest keyed to a live capId completes (original key preserved through normalization)');
     A.eq(s.get(byTool.id).status, 'done', 'a prop quest keyed to a live tool name completes');
     A.eq(s.get(unmet.id).status, 'open', 'a prop quest for a capability that is NOT live stays open');
-    // NB: 'theirs' shares the live key 'dish' — completeByContract is a station-wide exact-key sweep by design
-    // (the capability going live on the station satisfies every quest waiting on it), so it completes too.
-    A.eq(s.get(theirs.id).status, 'done', 'the same proven key completes every quest waiting on it (station-level truth)');
+    // NB: 'theirs' shares the live key 'dish' — completeByContract is a keep-wide exact-key sweep by design
+    // (the capability going live on the keep satisfies every quest waiting on it), so it completes too.
+    A.eq(s.get(theirs.id).status, 'done', 'the same proven key completes every quest waiting on it (keep-level truth)');
 
     // junk inputs prove nothing
-    A.eq(livePropKeys(s.openForAgent('hero'), 'hero', null, null), [], 'no station/resolved proves nothing');
+    A.eq(livePropKeys(s.openForAgent('hero'), 'hero', null, null), [], 'no keep/resolved proves nothing');
   }
 
   // ---- 3. FACT: a committed memory record proves a fact key (id / exact / verbatim-substring, bounded) ----
   {
     const s = fresh();
     const exact = await s.mint({ title: 'tz', contract: { type: 'fact', key: 'Commander works in CET' }, agentId: 'hero' }, 1);
-    const sub = await s.mint({ title: 'csv', contract: { type: 'fact', key: 'csv exports' } }, 2);                    // station-wide
+    const sub = await s.mint({ title: 'csv', contract: { type: 'fact', key: 'csv exports' } }, 2);                    // keep-wide
     const byId = await s.mint({ title: 'by id', contract: { type: 'fact', key: 'm7' }, agentId: 'hero' }, 3);
     const miss = await s.mint({ title: 'never', contract: { type: 'fact', key: 'loves yaml' }, agentId: 'hero' }, 4);
     const tiny = await s.mint({ title: 'tiny', contract: { type: 'fact', key: 'a b' }, agentId: 'hero' }, 5);          // < MIN_FACT_KEY after norm — substring can never fire
@@ -76,7 +76,7 @@ const fresh = () => makeQuestStore({ fs: memFs(), path, workspaces: '/ws', write
     A.eq(keys.slice().sort(), ['Commander works in CET', 'csv exports', 'm7'].sort(), 'exact-content, normalized-substring and record-id fact keys match; unrelated + too-short keys do not');
     for (const k of keys) await s.completeByContract('fact', k, 300);
     A.eq(s.get(exact.id).status, 'done', 'a fact quest completes when the committed memory states it');
-    A.eq(s.get(sub.id).status, 'done', 'a station-wide fact key appearing verbatim (normalized) in the record completes');
+    A.eq(s.get(sub.id).status, 'done', 'a keep-wide fact key appearing verbatim (normalized) in the record completes');
     A.eq(s.get(byId.id).status, 'done', 'a fact quest keyed to the committed record id completes');
     A.eq(s.get(miss.id).status, 'open', 'a fact the record does not cover stays open');
     A.eq(s.get(tiny.id).status, 'open', 'a below-minimum key never substring-matches (anti trivial-match)');
@@ -91,7 +91,7 @@ const fresh = () => makeQuestStore({ fs: memFs(), path, workspaces: '/ws', write
     const theirs = await s.mint({ title: 'their file', contract: { type: 'artifact', key: 'secret.txt' }, agentId: 'other' }, 3);
 
     const cands = artifactQuestKeys(s.openForAgent('hero'), 'hero');
-    A.eq(cands.map(c => c.key).sort(), ['notes.md', 'workshop/r1/index.html'].sort(), 'artifact candidates = the agent\'s own + station-wide open artifact quests (never another agent\'s)');
+    A.eq(cands.map(c => c.key).sort(), ['notes.md', 'workshop/r1/index.html'].sort(), 'artifact candidates = the agent\'s own + keep-wide open artifact quests (never another agent\'s)');
 
     // simulate the composition root: only the key whose file EXISTS in the jail completes (truthful telemetry)
     const existsOnDisk = k => k === 'workshop/r1/index.html';

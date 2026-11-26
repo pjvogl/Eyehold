@@ -24,7 +24,7 @@ Projects stays at loading projects after adding even a tiny folder; Diagnostics 
 
 ## Repro
 
-1. Boot an isolated seeded station.
+1. Boot an isolated seeded keep.
 2. Add an existing folder through Projects > ADD.
 3. Observe GET /api/projects return a nonempty projects array while the rail stays loading.
 

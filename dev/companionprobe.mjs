@@ -1,4 +1,4 @@
-/* dev/companionprobe.mjs — prove COMPANIONS by watching the REAL engine choose, in a ticking station.
+/* dev/companionprobe.mjs — prove COMPANIONS by watching the REAL engine choose, in a ticking keep.
 
    WHY THIS EXISTS. The bias was provable two weaker ways: unit tests over the extracted
    BOND-WEIGHT-PURE block, and World._dbgAffinity sampling pickByBond in a browser. Neither watches
@@ -11,7 +11,7 @@
      2. AN IMPORTED REAL SAVE IS NOT A USABLE FLOOR. Driving this against a copied production
         workspace refused 24/24 arms: planHuddle was entered every time (the `planned` counter rose)
         but no legal in-zone tile pair could be resolved for that save's crowded geometry. That is
-        the station's zones, not the feature — dev/trioprobe.mjs passes on the same build. So this
+        the keep's zones, not the feature — dev/trioprobe.mjs passes on the same build. So this
         uses the SAME seeded fixture floor trioprobe does, and spawns its own crew onto it.
 
    THE EXPERIMENT IS RIGGED, DELIBERATELY. On the real log all four crew are mutually bonded, so the

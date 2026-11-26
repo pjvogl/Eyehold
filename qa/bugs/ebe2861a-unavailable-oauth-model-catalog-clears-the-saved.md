@@ -15,7 +15,7 @@ origin: audit
 
 ## Symptom
 
-After restarting the installed 0.12.1 candidate, the commander's saved Codex model was blank. The agent roster, conversations, histories, station and other compared settings remained intact.
+After restarting the installed 0.12.1 candidate, the commander's saved Codex model was blank. The agent roster, conversations, histories, keep and other compared settings remained intact.
 
 ## Repro
 

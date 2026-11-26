@@ -27,8 +27,8 @@ const killedBy = (p) => p.then(r => { throw new Error('expected a killed command
 
   try {
     // ---- 1. echo: exit 0 + the output comes back, and runs in the jail cwd ----
-    const r1 = await tool.run({ cmd: 'echo starnet-shell-ok' }, ctx());
-    A.ok(/starnet-shell-ok/.test(r1.content), 'stdout returned');
+    const r1 = await tool.run({ cmd: 'echo eyehold-shell-ok' }, ctx());
+    A.ok(/eyehold-shell-ok/.test(r1.content), 'stdout returned');
     A.ok(/\[exit 0/.test(r1.content), 'exit 0 noted in the content');
     A.ok(/exit 0/.test(r1.summary), 'summary names the exit code');
 

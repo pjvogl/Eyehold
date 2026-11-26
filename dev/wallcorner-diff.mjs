@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// dev/wallcorner-diff.mjs — pixel diff of two station bakes, reported in TILE coordinates so a
+// dev/wallcorner-diff.mjs — pixel diff of two keep bakes, reported in TILE coordinates so a
 // change can be attributed to a corner instead of a pixel blob.
 //   node dev/wallcorner-diff.mjs before.png after.png [tileSize]
 import { readFileSync } from 'node:fs';

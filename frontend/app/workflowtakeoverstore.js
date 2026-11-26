@@ -28,7 +28,7 @@ const WorkflowTakeoverStore = (() => {
     return rows.find(c => c.agentId === (agentId || 'agent')) || null;
   }
   function notify(message) {
-    if (typeof StationUI !== 'undefined' && StationUI.notify) StationUI.notify(message, 'warn');
+    if (typeof KeepUI !== 'undefined' && KeepUI.notify) KeepUI.notify(message, 'warn');
   }
   function propose(c) {
     if (!c || offered || !enabled() || typeof Chat === 'undefined' || !Chat.nudge) return;

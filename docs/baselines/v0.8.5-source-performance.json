@@ -1,14 +1,14 @@
 {
-  "schemaVersion": "starnet.eval.receipt.v1",
+  "schemaVersion": "eyehold.eval.receipt.v1",
   "kind": "performance",
   "generatedAt": "2026-08-03T04:16:16.488Z",
   "contract": {
     "release": "0.9.0",
-    "schemaVersion": "starnet.eval.comparison-contract.v1",
+    "schemaVersion": "eyehold.eval.comparison-contract.v1",
     "sha256": "916196fc2d5fa46a76ecf2332870fc6451df5c43f6f25be3c9e727674fa4b15f"
   },
   "subject": {
-    "name": "StarNet",
+    "name": "Eyehold",
     "version": "0.8.5",
     "commit": "fc7f594c60fb4d59a32daf844b858116d7e47575",
     "sourceTree": {
@@ -26,7 +26,7 @@
   "reference": null,
   "candidateBound": false,
   "result": {
-    "schemaVersion": "starnet.eval.performance-baseline.v1",
+    "schemaVersion": "eyehold.eval.performance-baseline.v1",
     "pass": true,
     "scope": "dependency-free source harness",
     "samples": 15,
@@ -117,7 +117,7 @@
       "medianIncreasePct": 10
     },
     "pendingInstalledMeasurements": [
-      "cold boot to interactive station",
+      "cold boot to interactive keep",
       "send to first visible token",
       "send to first tool activity",
       "send to verified useful artifact",

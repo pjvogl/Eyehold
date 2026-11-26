@@ -18,7 +18,7 @@ function argValue(name, fallback = '') {
   return idx >= 0 && rawArgs[idx + 1] ? rawArgs[idx + 1] : fallback;
 }
 
-const evidenceRoot = resolve(argValue('--dir', process.env.STARNET_PHASE5_EVIDENCE_ROOT || join(ROOT, '.dogfood')));
+const evidenceRoot = resolve(argValue('--dir', process.env.EYEHOLD_PHASE5_EVIDENCE_ROOT || join(ROOT, '.dogfood')));
 const evidenceFile = join(evidenceRoot, 'phase5-evidence.json');
 const decisionFile = join(evidenceRoot, 'phase5-decision.json');
 const shouldInitDecision = argSet.has('--decision') || command === 'init-decision';

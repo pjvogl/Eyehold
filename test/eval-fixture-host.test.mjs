@@ -8,7 +8,7 @@ import { gradeParityTrajectory } from '../scripts/eval/independent-grader.mjs';
 let assertions = 0;
 const check = (value, message) => { assertions++; assert.ok(value, message); };
 
-const root = mkdtempSync(join(tmpdir(), 'starnet-fixture-host-'));
+const root = mkdtempSync(join(tmpdir(), 'eyehold-fixture-host-'));
 const server = await startFixtureMcpServer();
 let rpcId = 0;
 async function call(name, args = {}) {

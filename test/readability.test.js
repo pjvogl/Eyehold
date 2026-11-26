@@ -19,7 +19,7 @@ A.ok(html.indexOf('css/readability.css') > html.indexOf('css/refit-kit.css'), 'l
 for (const role of ['.crew-status','.ws-meta','#ws-kind-filter','.comms-agent-model','.model-dock-row-name','.con-rail-label','.cf-desc','.win-note','.refit-proptile-lbl','.set-bd-name']) {
   A.ok(css.includes(role), 'reading scale covers ' + role);
 }
-const station = fs.readFileSync(path.join(root, 'frontend/app/stationui.js'), 'utf8');
-A.ok(/textScale:\s*0/.test(station), 'fresh users keep the existing automatic text-size preference');
-A.ok(/document\.body\.style\.zoom\s*=\s*String\(tz\s*\/\s*100\)/.test(station), 'explicit saved text-size choices keep their existing meaning');
+const keep = fs.readFileSync(path.join(root, 'frontend/app/keepui.js'), 'utf8');
+A.ok(/textScale:\s*0/.test(keep), 'fresh users keep the existing automatic text-size preference');
+A.ok(/document\.body\.style\.zoom\s*=\s*String\(tz\s*\/\s*100\)/.test(keep), 'explicit saved text-size choices keep their existing meaning');
 A.report('readability.test');

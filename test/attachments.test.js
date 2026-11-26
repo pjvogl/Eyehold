@@ -10,7 +10,7 @@ const os = require('os');
 const crypto = require('node:crypto');
 const { makeFsTools } = require('../sidecar/tools/builtin/fs.js');
 
-const ROOT = path.join(os.tmpdir(), 'starnet-attach-test-' + crypto.randomUUID());
+const ROOT = path.join(os.tmpdir(), 'eyehold-attach-test-' + crypto.randomUUID());
 const fsJail = makeFsTools({ fsp, pathMod: path, root: ROOT })._internals;
 const attachments = require('../sidecar/attachments.js')({ fsp, path, crypto, resolveInside: (aid, rel) => fsJail.resolveInside(aid, rel) });
 

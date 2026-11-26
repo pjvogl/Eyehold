@@ -18,9 +18,9 @@ try {
   console.log('Live app ready');
   await evalJS(cdp, `(() => {
     document.body.classList.add('no-flicker');
-    StationUI.openTerm('settings');
+    KeepUI.openTerm('settings');
     document.querySelector('[data-ts="100"]').click();
-    StationUI.closeTerm('settings');
+    KeepUI.closeTerm('settings');
     const toast=document.getElementById('toast-stack'); if(toast)toast.remove();
     const log=document.getElementById('chat-log'); log.replaceChildren();
     const row=document.createElement('div'); row.className='cmsg agent nudge';
@@ -34,7 +34,7 @@ try {
   for (const [w,h] of [[1366,768],[1280,720],[1024,600],[800,600],[390,844]]) {
     await cdp.send('Emulation.setDeviceMetricsOverride',{width:w,height:h,deviceScaleFactor:1,mobile:false});
     for (const zoom of [1,1.45]) {
-      await evalJS(cdp, `StationUI.openTerm('settings');document.querySelector('[data-ts="${Math.round(zoom*100)}"]').click();StationUI.closeTerm('settings');`);
+      await evalJS(cdp, `KeepUI.openTerm('settings');document.querySelector('[data-ts="${Math.round(zoom*100)}"]').click();KeepUI.closeTerm('settings');`);
       for (const expanded of [false,true]) {
         await evalJS(cdp, `if(document.getElementById('comms-expand').getAttribute('aria-pressed')!=='${expanded}') document.getElementById('comms-expand').click();`);
         await sleep(180);
@@ -54,7 +54,7 @@ try {
   }
   // Same live form and viewport, with only this pass's sheet disabled, gives the baseline.
   await cdp.send('Emulation.setDeviceMetricsOverride',{width:1280,height:720,deviceScaleFactor:1,mobile:false});
-  await evalJS(cdp, `StationUI.openTerm('settings');document.querySelector('[data-ts="100"]').click();StationUI.closeTerm('settings');if(document.getElementById('comms-expand').getAttribute('aria-pressed')==='true')document.getElementById('comms-expand').click();document.querySelector('link[href="css/comms-layout.css"]').disabled=true;document.getElementById('comms-expand').hidden=true;window.dispatchEvent(new Event('resize'));`);
+  await evalJS(cdp, `KeepUI.openTerm('settings');document.querySelector('[data-ts="100"]').click();KeepUI.closeTerm('settings');if(document.getElementById('comms-expand').getAttribute('aria-pressed')==='true')document.getElementById('comms-expand').click();document.querySelector('link[href="css/comms-layout.css"]').disabled=true;document.getElementById('comms-expand').hidden=true;window.dispatchEvent(new Event('resize'));`);
   await sleep(250); await capture(cdp,out,'before-1280');
   const baseline=await evalJS(cdp, `({width:document.getElementById('chat-panel').getBoundingClientRect().width,cardHeight:document.querySelector('.task-conversation').getBoundingClientRect().height})`);
   await evalJS(cdp, `document.querySelector('link[href="css/comms-layout.css"]').disabled=false;document.getElementById('comms-expand').hidden=false;`);

@@ -1,6 +1,6 @@
 # Skill-creation parity plan — 7/10 → 9/10
 
-## STATUS 2026-07-28 — BUILT AND PROVEN (P0 1-4 + P1 5-6), branch `claude/starnet-hermesagent-comparison-e1a29b`
+## STATUS 2026-07-28 — BUILT AND PROVEN (P0 1-4 + P1 5-6), branch `claude/eyehold-hermesagent-comparison-e1a29b`
 
 Commits: `237f8762` (enforcement) · `0f87fb9d` (claims re-lock) · `4040fb27` (dead-preload fix +
 live proofs). NOT pushed, NOT merged — Andrew pushes.
@@ -41,7 +41,7 @@ here depends on it.
 Reference side: `C:\Users\andro\hermes-ref\tools\skill_manager_tool.py` (1559 LOC),
 `agent/background_review.py`, `tools/skills_guard.py`.
 
-Grading rule used below: the gap to 9 is **enforcement**, not features. StarNet already has the
+Grading rule used below: the gap to 9 is **enforcement**, not features. Eyehold already has the
 action set, package dirs, secret redaction on write, `requires`/`platforms` gating, per-agent
 caps, and archive-instead-of-delete. What it lacks is code that says *no*.
 
@@ -133,8 +133,8 @@ with a live target → stamped, and `restore` still works.
 
 7. **User-authored create in the SKILLS panel.** `POST /api/agent-skills/manage` already accepts
    `action:'create'`; the panel only offers *edit* on an existing card
-   (`stationui.js:2581 editAgentSkill`). Add a "New skill" composer (name / summary / category /
-   body). Costs a **claims re-lock** because `frontend/app/stationui.js` is a release-surface
+   (`keepui.js:2581 editAgentSkill`). Add a "New skill" composer (name / summary / category /
+   body). Costs a **claims re-lock** because `frontend/app/keepui.js` is a release-surface
    file — budget that, don't discover it at the gate.
 
 ---

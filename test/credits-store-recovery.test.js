@@ -4,7 +4,7 @@ const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const vm = require('node:vm');
 const ArmConfirm = require('../frontend/app/armconfirm.js');
-const source = fs.readFileSync(require.resolve('../frontend/app/stationui.js'), 'utf8');
+const source = fs.readFileSync(require.resolve('../frontend/app/keepui.js'), 'utf8');
 const start = source.indexOf('  let _creditsLinkPoll =');
 const end = source.indexOf('  // BUDGET panel', start);
 assert.ok(start >= 0 && end > start);
@@ -96,8 +96,8 @@ function fixture({ native, get, post } = {}) {
     get: async route => route === '/api/credits' ? (unlinked ? { configured: false } : linked) : { available: true, cloud: true },
     post: async () => { unlinked = true; return { ok: true, j: { ok: true, unlinked: true } }; }
   });
-  await success.read(); await success.unlink(); assert.match(success.host.innerHTML, /Unlinking this station/);
-  await success.read(); assert.match(success.host.innerHTML, /Unlinking this station/, 'repaint preserves pending status');
+  await success.read(); await success.unlink(); assert.match(success.host.innerHTML, /Unlinking this keep/);
+  await success.read(); assert.match(success.host.innerHTML, /Unlinking this keep/, 'repaint preserves pending status');
   resolveNative(); await flush(); assert.ok(success.host.querySelector('#credits-link'));
   assert.ok(success.calls.includes('refresh') && success.calls.includes('provider'));
 
@@ -106,7 +106,7 @@ function fixture({ native, get, post } = {}) {
 
   // The first-run switch-account button must honor the same unlink acknowledgment as STORE.
   const app = fs.readFileSync(require.resolve('../frontend/app/app.js'), 'utf8');
-  const switchStart = app.indexOf('  async function switchStarnetAccount()');
+  const switchStart = app.indexOf('  async function switchEyeholdAccount()');
   const switchEnd = app.indexOf('  // Mint a pairing code', switchStart);
   assert.ok(switchStart >= 0 && switchEnd > switchStart);
   for (const nativeFailure of [false, true]) {
@@ -114,12 +114,12 @@ function fixture({ native, get, post } = {}) {
       { ok: true, j: { ok: true, unlinked: false } }, { ok: true, j: { ok: true, unlinked: true } }]) {
       let starts = 0;
       const status = { textContent: '' }; const button = { disabled: false, classList: { add() {} } };
-      const context = vm.createContext({ SFX: { click() {} }, stopStarnetLinkPoll() {}, stopStarnetBalancePoll() {},
-        _starnetStatusSeq: 0, el: id => id === 'starnet-status' ? status : button,
+      const context = vm.createContext({ SFX: { click() {} }, stopEyeholdLinkPoll() {}, stopEyeholdBalancePoll() {},
+        _eyeholdStatusSeq: 0, el: id => id === 'eyehold-status' ? status : button,
         window: { __TAURI__: { core: { invoke: async () => { if (nativeFailure) throw new Error('keychain'); } } } },
         Harness: { api: { post: async () => response }, refreshCreditsConfigured: async () => {} },
-        startStarnetLink: () => { starts++; } });
-      vm.runInContext(app.slice(switchStart, switchEnd) + '\nthis.switchAccount = switchStarnetAccount;', context);
+        startEyeholdLink: () => { starts++; } });
+      vm.runInContext(app.slice(switchStart, switchEnd) + '\nthis.switchAccount = switchEyeholdAccount;', context);
       await context.switchAccount();
       const success = !nativeFailure && response.ok && response.j.ok === true && response.j.unlinked === true;
       assert.equal(starts, success ? 1 : 0, 'pairing starts only after proven unlink');

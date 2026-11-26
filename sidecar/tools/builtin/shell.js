@@ -338,10 +338,10 @@
   // A headless browser can still acquire native pointer/keyboard lock. Agent UI and
   // game verification therefore runs only through browser.test_* where those APIs are
   // emulated before navigation and input is dispatched synthetically over owned CDP.
-  const INPUT_CAPTURE_RE = /requestPointerLock|webkitRequestPointerLock|PointerLockControls|\bcontrols\s*\.\s*lock\s*\(|keyboard\s*\.\s*lock\s*\(|requestFullscreen|webkitRequestFullscreen|mozRequestFullScreen|ClipCursor|SetCursorPos|SendInput|BlockInput|SetCapture|SetWindowsHookEx|RegisterHotKey|RegisterRawInputDevices|SetForegroundWindow|SwitchToThisWindow|AttachThreadInput|HWND_TOPMOST|SetSystemCursor|ChangeDisplaySettings|SetDisplayConfig|SetMonitorBrightness|LockWorkStation|ExitWindowsEx|InitiateSystemShutdown|CGEventPost|CGAssociateMouseAndMouseCursorPosition|XTestFake|XGrabPointer|XGrabKeyboard|XWarpPointer|SDL_SetRelativeMouseMode|GLFW_CURSOR_DISABLED/i;
+  const INPUT_CAPTURE_RE = /requestPointerLock|webkitRequestPointerLock|PointerLockControls|\bcontrols\s*\.\s*lock\s*\(|keyboard\s*\.\s*lock\s*\(|requestFullscreen|webkitRequestFullscreen|mozRequestFullScreen|ClipCursor|SetCursorPos|SendInput|BlockInput|SetCapture|SetWindowsHookEx|RegisterHotKey|RegisterRawInputDevices|SetForegroundWindow|SwitchToThisWindow|AttachThreadInput|HWND_TOPMOST|SetSystemCursor|ChangeDisplaySettings|SetDisplayConfig|SetMonitorBrightness|LockWorkKeep|ExitWindowsEx|InitiateSystemShutdown|CGEventPost|CGAssociateMouseAndMouseCursorPosition|XTestFake|XGrabPointer|XGrabKeyboard|XWarpPointer|SDL_SetRelativeMouseMode|GLFW_CURSOR_DISABLED/i;
   const BROWSER_AUTOMATION_RE = /\b(?:puppeteer(?:-core)?|playwright|selenium|webdriver|chromedriver|geckodriver|chrome-remote-interface)\b|webSocketDebuggerUrl|Input\.dispatch(?:Mouse|Key)|--remote-debugging-port\b/i;
   const NATIVE_INPUT_RE = /\b(?:SetCursorPos|mouse_event|SendInput|keybd_event|ClipCursor|BlockInput|SetCapture|SetWindowsHookEx|RegisterHotKey|RegisterRawInputDevices|SetForegroundWindow|SwitchToThisWindow|AttachThreadInput|SetWindowPos|SetSystemCursor|SendKeys(?:\.SendWait)?|pyautogui|pynput|robotjs|nut\.js|xdotool|ydotool|xte|evemu|uinput|CGEventPost|CGWarpMouseCursorPosition|XTestFake|XGrabPointer|XGrabKeyboard|XWarpPointer)\b|\/dev\/uinput/i;
-  const USER_SESSION_RE = /\b(?:LockWorkStation|ExitWindowsEx|InitiateSystemShutdown|SetSuspendState|ChangeDisplaySettings|SetDisplayConfig|SetMonitorBrightness|WmiMonitorBrightnessMethods|SystemParametersInfo|SetClipboardData|OpenClipboard|Set-Clipboard|pbcopy|xclip|xsel|DisplaySwitch|xrandr|xinput|xset|chvt|loginctl|ddcutil|pactl|amixer|osascript)\b/i;
+  const USER_SESSION_RE = /\b(?:LockWorkKeep|ExitWindowsEx|InitiateSystemShutdown|SetSuspendState|ChangeDisplaySettings|SetDisplayConfig|SetMonitorBrightness|WmiMonitorBrightnessMethods|SystemParametersInfo|SetClipboardData|OpenClipboard|Set-Clipboard|pbcopy|xclip|xsel|DisplaySwitch|xrandr|xinput|xset|chvt|loginctl|ddcutil|pactl|amixer|osascript)\b/i;
   const OPAQUE_LAUNCH_RE = /\b(?:Invoke-Expression|iex|Invoke-Command|DownloadString|FromBase64String|Reflection\.Assembly|ShellExecute|os\.startfile|Process\.Start)\b/i;
   // GUI/native runtimes are judged as PROGRAMS, never as words (issue #50: a `// ...before each write` comment and
   // `process.stdout.write()` both used to refuse a plain Node script). `write`/`calc` are also ordinary English and
@@ -505,7 +505,7 @@
     const c = String(cmd == null ? '' : cmd), dialect = opts.dialect;
     const heads = commandHeads(c, dialect);
     if (heads.some(h => BROWSER_NAMES.has(exeName((headTokens(h)[0] || {}).value)))) {
-      return 'launches a browser outside StarNet\'s synthetic-input CDP sandbox — use browser.test_navigate/browser.test_input';
+      return 'launches a browser outside Eyehold\'s synthetic-input CDP sandbox — use browser.test_navigate/browser.test_input';
     }
     const entries = commandSourceEntries(c, opts);
     const sources = entries.map(e => e.text);
@@ -518,7 +518,7 @@
       return 'can inject/capture input, launch opaque code, or alter the user\'s interactive session';
     }
     if (sources.some(s => /(?:^|\s)--open(?:[=\s]|$)/i.test(s))) return 'opens a framework/browser window on the user\'s screen — keep dev servers headless';
-    if (BROWSER_AUTOMATION_RE.test(expanded)) return 'runs browser automation outside StarNet\'s owned pointer-lock emulator — use browser.test_*';
+    if (BROWSER_AUTOMATION_RE.test(expanded)) return 'runs browser automation outside Eyehold\'s owned pointer-lock emulator — use browser.test_*';
     if (entries.some(e => e.kind === 'code' ? guiRuntimeInCode(e.text) : guiRuntimeInCommand(e.text, e.dialect)) || heads.some(h => LOCAL_PROGRAM_RE.test(h && h.text != null ? h.text : String(h || '')))) return 'launches a GUI/native runtime on the user\'s interactive desktop';
     return null;
   }
@@ -532,7 +532,7 @@
   const MACHINE_HEAD_RULES = [
     { re: /^(?:shutdown|logoff|reboot|halt|poweroff|tsdiscon|rwinsta)(?:\.(?:exe|com))?(?=\s|$)/i, why: 'shuts down, reboots, disconnects, or logs the user out of their machine' },
     { re: /^(?:taskkill|tskill|pskill|kill|pkill|killall)(?:\.(?:exe|com))?(?=\s|$)/i, why: 'kills processes the agent does not own — stop your OWN background processes with shell.bg.kill' },
-    { re: /^schtasks(?:\.(?:exe|com))?(?=\s|$)[\s\S]*?\s\/(?:create|change|delete|run)\b/i, why: 'creates or changes a Windows scheduled task (machine persistence that outlives StarNet)' },
+    { re: /^schtasks(?:\.(?:exe|com))?(?=\s|$)[\s\S]*?\s\/(?:create|change|delete|run)\b/i, why: 'creates or changes a Windows scheduled task (machine persistence that outlives Eyehold)' },
     { re: /^reg(?:\.exe)?\s+(?:add|delete|import|load|unload|copy)\b/i, why: 'writes the Windows registry' },
     { re: /^regedit(?:\.(?:exe|com))?(?=\s|$)/i, why: 'opens or imports into the Windows registry' },
     { re: /^sc(?:\.exe)?\s+(?:create|config|delete|start|stop|failure|sdset)\b/i, why: 'creates or changes Windows services' },
@@ -548,7 +548,7 @@
   const MACHINE_GLOBAL_RULES = [
     { re: /\bHKEY_|(?:^|[\s"'`=(\\])HK(?:LM|CU|CR|U|CC)[:\\]/i, why: 'references a Windows registry hive' },
     { re: /\bdefaults\s+write\b/i, why: 'changes macOS system preferences' },
-    { re: /(?:^|[\s"'`=(])shell:startup\b|Start\s?Menu[\\/]+Programs[\\/]+Startup/i, why: 'writes to the Startup folder (machine persistence that outlives StarNet)' }
+    { re: /(?:^|[\s"'`=(])shell:startup\b|Start\s?Menu[\\/]+Programs[\\/]+Startup/i, why: 'writes to the Startup folder (machine persistence that outlives Eyehold)' }
   ];
   function breaksMachineState(cmd, dialect) {
     const c = String(cmd == null ? '' : cmd);
@@ -662,7 +662,7 @@
     const abs = P.isAbsolute(raw) || /^[A-Za-z]:[\\/]/.test(raw) ? P.resolve(raw) : P.resolve(current, raw);
     if (!withinJail(P, abs, jailRoot) && !allowExternal) throw new Error('cwd must stay inside your workspace');
     if (!allowProtected && !withinJail(P, abs, jailRoot) && root && pathInside(P, abs, root))
-      throw new Error('cwd cannot point at another agent or protected StarNet workspace sibling');
+      throw new Error('cwd cannot point at another agent or protected Eyehold workspace sibling');
     if (fs && fs.existsSync && !fs.existsSync(abs)) throw new Error('cwd does not exist: ' + raw);
     if (fs && fs.statSync) {
       try { if (!fs.statSync(abs).isDirectory()) throw new Error('cwd is not a directory: ' + raw); }
@@ -714,7 +714,7 @@
   }
 
   /* ANSI/VT control sequences, stripped before any shell output reaches the model (ref-parity: the reference
-     harness has an ansi_strip; StarNet had nothing, so escapes arrived raw). npm, git, cargo, pytest and friends emit colour
+     harness has an ansi_strip; Eyehold had nothing, so escapes arrived raw). npm, git, cargo, pytest and friends emit colour
      whenever they believe a TTY is attached, and the model reads the control bytes as TOKENS — '[32m'
      is billed content that means "green" to nobody, and on a long build log it is a large fraction of the
      output. Three shapes are handled: OSC strings (window titles, hyperlinks — ESC ] … BEL or ST), CSI
@@ -891,7 +891,7 @@
           ? environment.workspaceRoot(aid) : cwd;
         const shellDialect = environment && environmentBackendId !== 'local' ? 'posix' : (isWin ? 'cmd' : 'posix');
         const safetyDeny = remoteOwner ? null : commandSafetyRisk(cmd, { cwd: hostCwd, fs: fs, pathMod: P, dialect: shellDialect, isWin });
-        if (safetyDeny) throw new Error('refused [' + safetyDeny.kind + ']: this command ' + safetyDeny.reason + '. StarNet task processes preserve the user\'s control of their computer; use browser.test_* for local UI/game verification.');
+        if (safetyDeny) throw new Error('refused [' + safetyDeny.kind + ']: this command ' + safetyDeny.reason + '. Eyehold task processes preserve the user\'s control of their computer; use browser.test_* for local UI/game verification.');
         if (!environment) { try { fs.mkdirSync(cwd, { recursive: true }); } catch (_) {} }
         const checkpoint = typeof ctx.checkpointMutation === 'function'
           ? Promise.resolve().then(function () { return ctx.checkpointMutation(hostCwd, 'shell.exec', { always: true }); }).catch(function () { return null; })
@@ -1163,7 +1163,7 @@
            exactly that instead of "Killed". Remote backends that report plain ok keep their old wording. */
         if (r && r.incomplete) {
           const err = new Error('Kill INCOMPLETE for background process ' + id + ': ' + (r.error || 'processes are still running')
-            + '. Surviving PID(s): ' + (r.survivors || []).join(', ') + '. Its receipt is kept so the next StarNet start reaps them.');
+            + '. Surviving PID(s): ' + (r.survivors || []).join(', ') + '. Its receipt is kept so the next Eyehold start reaps them.');
           err.toolSummary = 'kill incomplete';
           throw err;
         }

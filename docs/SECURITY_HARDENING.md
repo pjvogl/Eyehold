@@ -1,4 +1,4 @@
-# StarNet security hardening
+# Eyehold security hardening
 
 Tracks the systemic-security fixes on the `agent/harness-security` lane. Each section states the threat
 model so "fixed" is a decidable bar, not a vibe.
@@ -34,7 +34,7 @@ model so "fixed" is a decidable bar, not a vibe.
   shell). A header-less caller gets `{ok:true}` and no token. Primary delivery is page injection.
 - **Desktop (Tauri):** the bundled webview never fetched the token before. Now `main.rs` generates a
   per-launch `api_token`, passes it to the sidecar via `SKYNET_API_TOKEN` (read by `ENV('API_TOKEN')`), and
-  injects `window.__STARNET_API_TOKEN__` in the init script — so desktop never calls `/api/session`.
+  injects `window.__EYEHOLD_API_TOKEN__` in the init script — so desktop never calls `/api/session`.
 - **SSE:** `frontend/app/world.js` opens the stream with `?token=…` and the sidecar base prefix (also fixes
   a latent desktop bug where the EventSource URL never reached the sidecar). Route match now compares path
   (query-tolerant). Server validates the query token in `handleChannelEvents`.

@@ -1,12 +1,12 @@
 # OpenRouter delegation investigation — 2026-09-20
 
-Reported build: desktop v0.12.4, Windows x64, source f00aa04df. The sanitized report describes direct OpenRouter BYOK succeeding while delegated specialists fail immediately against an empty StarNet managed wallet.
+Reported build: desktop v0.12.4, Windows x64, source f00aa04df. The sanitized report describes direct OpenRouter BYOK succeeding while delegated specialists fail immediately against an empty Eyehold managed wallet.
 
-Source repair: `13a83534b`. Verified candidate: `379b013f3`. Isolated branch: `agent/openrouter-delegation-0920`. Owner-requested integration: `09100d151f1fda3b0851b86650849968e05d5236`. No installer rebuild, publication, or customer-station mutation.
+Source repair: `13a83534b`. Verified candidate: `379b013f3`. Isolated branch: `agent/openrouter-delegation-0920`. Owner-requested integration: `09100d151f1fda3b0851b86650849968e05d5236`. No installer rebuild, publication, or customer-keep mutation.
 
 ## Cause and matching reproduction
 
-The dossier dropdown returns an empty model/provider for Follow station default. SAVE MODEL then falls back to advanced input fields, which are prefilled with the specialist's old pin even while collapsed. Selecting inheritance therefore silently saves the old managed model/provider. Delegation resolves that persisted identity and correctly reaches managed admission, where the zero wallet rejects it before a provider call. Direct COMMS keeps using the selected BYOK provider.
+The dossier dropdown returns an empty model/provider for Follow keep default. SAVE MODEL then falls back to advanced input fields, which are prefilled with the specialist's old pin even while collapsed. Selecting inheritance therefore silently saves the old managed model/provider. Delegation resolves that persisted identity and correctly reaches managed admission, where the zero wallet rejects it before a provider call. Direct COMMS keeps using the selected BYOK provider.
 
 An independent lifecycle defect was reproduced: after the dedicated clear button successfully removed a pin, `rehydrateRoster` replaced empty values with the lead's current model/provider on restart. Inheritance became a fixed pin again.
 
@@ -19,7 +19,7 @@ The reporter's saved roster was not inspected. These are live-reproduced defects
 - Apply the same changes to the desktop frontend and website mirror.
 - Keep intentional explicit model pins and billing admission unchanged.
 
-Existing pins are not automatically deleted. The user must select inheritance again on the corrected build. On the affected source, the separate FOLLOW STATION DEFAULT button successfully restored BYOK delegation for the current session; baseline restart then reproduced the unwanted fixed pin.
+Existing pins are not automatically deleted. The user must select inheritance again on the corrected build. On the affected source, the separate FOLLOW KEEP DEFAULT button successfully restored BYOK delegation for the current session; baseline restart then reproduced the unwanted fixed pin.
 
 ## Evidence
 
@@ -45,7 +45,7 @@ Final candidate verification:
 
 Earlier development gate attempts were stopped while incorporating the newly reproduced restart repair and refreshing the source-fingerprint record. The final full run above supersedes them. Claims fingerprint updates change source hashes only, not verdicts or release-readiness claims.
 
-Actual OpenRouter service billing, a rebuilt installed Windows artifact, and reporter recovery remain unverified. Source-fixed does not mean shipped or customer-recovered. Durable bug: `qa/bugs/0e3d3914-follow-station-default-retains-managed-model-pin.md`.
+Actual OpenRouter service billing, a rebuilt installed Windows artifact, and reporter recovery remain unverified. Source-fixed does not mean shipped or customer-recovered. Durable bug: `qa/bugs/0e3d3914-follow-keep-default-retains-managed-model-pin.md`.
 
 ## Integration receipt
 

@@ -12,11 +12,11 @@
      - CRON E-STOP HALT IS DURABLE (M1): POST /api/halt with an armed recurring routine -> GET /api/cron says
        enabled:true + halted:true, lifecycle armed:false, no further ticks; RESTART the host -> still halted
        (armed intent kept, timer down); explicit POST /api/cron/arm {enabled:true} lifts the halt and re-arms.
-     - TOKEN GUARD: GET without the X-StarNet-Token header is rejected 403 (GET data routes are token-gated).
+     - TOKEN GUARD: GET without the X-Eyehold-Token header is rejected 403 (GET data routes are token-gated).
 
    NOT covered (honest): a channels-connected reason — connecting a real channel needs a live platform endpoint
    or a bespoke mock; channel connectivity is covered by channels.telegram.e2e.test.js, and the snapshot reads
-   the same channelStatusPayload those tests prove. Short tick (SKYNET_CRON_TICK_MS=300). NOT in test:fast
+   the same channelStatusPayload those tests prove. Short tick (EYEHOLD_CRON_TICK_MS=300). NOT in test:fast
    (child-process boot). Run via `npm run test:http`. Mirrors cron.arm.test.js. */
 'use strict';
 const A = require('./_assert.js');
@@ -33,7 +33,7 @@ function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
 function boot(port, workspaces, attemptsLeft, extraEnv) {
   return new Promise((resolve, reject) => {
     const child = spawn(process.execPath, [INDEX], {
-      env: Object.assign({}, process.env, { SKYNET_PORT: String(port), SKYNET_WORKSPACES: workspaces }, extraEnv || {}),
+      env: Object.assign({}, process.env, { EYEHOLD_PORT: String(port), EYEHOLD_WORKSPACES: workspaces }, extraEnv || {}),
       stdio: ['ignore', 'pipe', 'pipe']
     });
     let out = '', settled = false;
@@ -56,13 +56,13 @@ function boot(port, workspaces, attemptsLeft, extraEnv) {
   const ws = fs.mkdtempSync(path.join(os.tmpdir(), 'sk-lifecycle-'));
   const HALT_FILE = path.join(ws, 'cron.halt.json');
   const LOOPS_HALT_FILE = path.join(ws, 'loops.halt.json');
-  let booted = await boot(8990 + (process.pid % 40), ws, 20, { SKYNET_CRON_TICK_MS: '300' });
+  let booted = await boot(8990 + (process.pid % 40), ws, 20, { EYEHOLD_CRON_TICK_MS: '300' });
   let child = booted.child; let port = booted.port; let getOut = booted.out;
   const B = () => 'http://' + HOST + ':' + port;
   let apiToken = await bootToken(B(), B());
   const j = async (m, p, body) => {
     const headers = { 'Content-Type': 'application/json', Origin: B() };
-    if (apiToken) headers['X-StarNet-Token'] = apiToken;
+    if (apiToken) headers['X-Eyehold-Token'] = apiToken;
     const r = await fetch(B() + p, { method: m, headers, body: body ? JSON.stringify(body) : undefined });
     const t = await r.text(); let v; try { v = JSON.parse(t); } catch (_) { v = t; }
     return { status: r.status, body: v };
@@ -89,7 +89,7 @@ function boot(port, workspaces, attemptsLeft, extraEnv) {
       const raw = await new Promise((resolve, reject) => {
         const chunks = [];
         const s = net.connect(port, HOST, () => {
-          s.write('GET /api/lifecycle/armed HTTP/1.1\r\nHost: ' + HOST + '\r\nX-StarNet-Token: ' + apiToken + '\r\nConnection: close\r\n\r\n');
+          s.write('GET /api/lifecycle/armed HTTP/1.1\r\nHost: ' + HOST + '\r\nX-Eyehold-Token: ' + apiToken + '\r\nConnection: close\r\n\r\n');
         });
         s.on('data', d => chunks.push(d));
         s.on('end', () => resolve(Buffer.concat(chunks).toString('utf8')));
@@ -111,7 +111,7 @@ function boot(port, workspaces, attemptsLeft, extraEnv) {
 
     // ---- TOKEN GUARD ----
     const noTok = await jNoToken('GET', '/api/lifecycle/armed');
-    A.eq(noTok.status, 403, 'GET /api/lifecycle/armed without X-StarNet-Token -> 403 (token-gated)');
+    A.eq(noTok.status, 403, 'GET /api/lifecycle/armed without X-Eyehold-Token -> 403 (token-gated)');
 
     // ---- ARMING A ROUTINE FLIPS IT TRUE (recurring, so ticks never consume it) ----
     const create = await j('POST', '/api/cron', { name: 'Daily digest', prompt: 'summarize', schedule: '0 9 * * *', agentId: 'lc_test' });
@@ -135,10 +135,10 @@ function boot(port, workspaces, attemptsLeft, extraEnv) {
     A.eq(pausedLife.body.armed, false, 'only a paused routine does not keep the desktop resident');
     A.eq(pausedLife.body.reasons, [], 'paused routine leaves no misleading tray reason');
     try { child.kill(); } catch (_) {} await sleep(250);
-    booted = await boot(port + 100, ws, 20, { SKYNET_CRON_TICK_MS: '300' });
+    booted = await boot(port + 100, ws, 20, { EYEHOLD_CRON_TICK_MS: '300' });
     child = booted.child; port = booted.port; getOut = booted.out;
     apiToken = await bootToken(B(), B());
-    A.eq((await j('GET', '/api/lifecycle/armed')).body.armed, false, 'paused-only station stays idle after restart');
+    A.eq((await j('GET', '/api/lifecycle/armed')).body.armed, false, 'paused-only keep stays idle after restart');
     A.eq((await j('POST', '/api/cron/update', { id: routineId, patch: { enabled: true } })).status, 200, 'resume the routine');
     A.eq((await j('GET', '/api/lifecycle/armed')).body.categories.routines.count, 1, 'resumed routine is counted again');
     const otherRoutine = await j('POST', '/api/cron', { name: 'Paused digest', prompt: 'summarize', schedule: '0 10 * * *', agentId: 'lc_test' });
@@ -180,14 +180,14 @@ function boot(port, workspaces, attemptsLeft, extraEnv) {
 
     // ---- RESTART: the halt is durable (armed intent kept, timer stays down) ----
     try { child.kill(); } catch (_) {} await sleep(250);
-    booted = await boot(port + 100, ws, 20, { SKYNET_CRON_TICK_MS: '300' });
+    booted = await boot(port + 100, ws, 20, { EYEHOLD_CRON_TICK_MS: '300' });
     child = booted.child; port = booted.port; getOut = booted.out;
     apiToken = await bootToken(B(), B());
     const rebootCron = await j('GET', '/api/cron');
     A.eq(rebootCron.body.enabled, true, 'REBOOT: arm intent persisted (enabled:true)');
     A.eq(rebootCron.body.halted, true, 'REBOOT: still halted (cron.halt.json read at boot)');
     const rebootLife = await j('GET', '/api/lifecycle/armed');
-    A.eq(rebootLife.body.armed, false, 'REBOOT: aggregate still armed:false — a halted station never holds the tray open');
+    A.eq(rebootLife.body.armed, false, 'REBOOT: aggregate still armed:false — a halted keep never holds the tray open');
     A.ok(getOut().indexOf('cron tick armed') < 0, 'REBOOT: the timer did NOT arm at boot while halted');
 
     // The dossier mirrors beliefs through the posture route during normal page load. That background write is
@@ -241,7 +241,7 @@ function boot(port, workspaces, attemptsLeft, extraEnv) {
     try { child.kill(); } catch (_) {} await sleep(250);
     fs.rmdirSync(HALT_FILE); fs.writeFileSync(HALT_FILE, cronBeforeFault);
     fs.rmdirSync(LOOPS_HALT_FILE); fs.writeFileSync(LOOPS_HALT_FILE, loopsBeforeFault);
-    booted = await boot(port + 100, ws, 20, { SKYNET_CRON_TICK_MS: '300' });
+    booted = await boot(port + 100, ws, 20, { EYEHOLD_CRON_TICK_MS: '300' });
     child = booted.child; port = booted.port; getOut = booted.out;
     apiToken = await bootToken(B(), B());
     const failedRebootCron = await j('GET', '/api/cron');
@@ -280,7 +280,7 @@ function boot(port, workspaces, attemptsLeft, extraEnv) {
       schedule: { kind: 'once', runAt: new Date().toISOString() },
       finalization: { runId: 'completed-run', state: 'pending', deliver: 'local', nextAttemptAt: new Date(Date.now() + 3600000).toISOString() }
     }] }));
-    booted = await boot(port + 100, ws, 20, { SKYNET_CRON_TICK_MS: '300' });
+    booted = await boot(port + 100, ws, 20, { EYEHOLD_CRON_TICK_MS: '300' });
     child = booted.child; port = booted.port; getOut = booted.out;
     apiToken = await bootToken(B(), B());
     const pendingLife = await j('GET', '/api/lifecycle/armed');

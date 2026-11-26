@@ -5,7 +5,7 @@
      - the plugin's register(api) surface arrives: hooks, tools, window handlers, jobs;
      - a hook's decision comes back across the process line (a block still blocks);
      - a tool and a window handler run in the plugin and return JSON;
-     - the plugin's store requests land in the station's store for THAT plugin;
+     - the plugin's store requests land in the keep's store for THAT plugin;
      - a crash rejects in-flight work, the next call restarts it, and a plugin that keeps crashing stays down;
      - a hung call times out instead of hanging the caller; stop() ends the process;
      - the plugin tool defs carry the connector trust contract (capability, consent, fence). */
@@ -18,7 +18,7 @@ const cp = require('child_process');
 const { makePluginRuntime } = require('../sidecar/plugin-runtime.js');
 const { makePluginToolDefs, pluginToolName } = require('../sidecar/plugin-tools.js');
 
-const DIR = path.join(os.tmpdir(), 'starnet-plugin-runtime-' + process.pid);
+const DIR = path.join(os.tmpdir(), 'eyehold-plugin-runtime-' + process.pid);
 const WORKER = path.resolve(__dirname, '..', 'sidecar', 'plugin-worker.js');
 
 async function plugin(id, source) {
@@ -71,7 +71,7 @@ async function plugin(id, source) {
     A.ok(/no handler named "nope"/.test(e1), 'an unknown handler is refused with a reason');
     let e2 = ''; try { await rt.callHandler('good', 'hang', {}); } catch (e) { e2 = e.message; }
     A.ok(/did not answer within/.test(e2), 'a hung handler times out instead of hanging the caller');
-    A.ok(logs.some(l => /good hello from inside/.test(l)), 'the plugin\'s console reaches the station log, prefixed');
+    A.ok(logs.some(l => /good hello from inside/.test(l)), 'the plugin\'s console reaches the keep log, prefixed');
 
     // ---- 2. a crash is contained, and the next call restarts it ----
     await rt.callHandler('good', 'boom', {});
@@ -94,7 +94,7 @@ async function plugin(id, source) {
     let revived = ''; try { await rt.callHandler('flaky', 'die', {}); } catch (e) { revived = e.message; }
     A.ok(!/is stopped/.test(revived), 'the window slides: after 5 quiet minutes it may restart again');
 
-    // ---- 4. broken plugins fail to start with the reason, never taking the station down ----
+    // ---- 4. broken plugins fail to start with the reason, never taking the keep down ----
     const throws = await plugin('throws', `module.exports = { register() { throw new Error('bad config'); } };`);
     const t = await rt.start(throws);
     A.ok(!t.ok && /register\(\) threw — bad config/.test(t.error), 'a throwing register() is reported');
@@ -132,7 +132,7 @@ async function plugin(id, source) {
         requireModule: () => { requires++; return {}; }, hash: (s) => crypto.createHash('sha256').update(String(s)).digest('hex'),
         clock: { now: () => 1 }, onError: () => {}, runtime: rt2 });
       const res = await loader.load(spine, { accept: true });
-      A.eq(requires, 0, 'process mode never require()s plugin code into the station');
+      A.eq(requires, 0, 'process mode never require()s plugin code into the keep');
       const g = res.loaded.find(p => p.id === 'guard');
       A.ok(g && g.process === true, 'the plugin is live in its own process');
       A.eq(g && g.tools, ['ping'], 'its registered tools are reported by the loader');
@@ -176,7 +176,7 @@ async function plugin(id, source) {
     }
 
     // ---- 5a. E-STOP pauses plugin JOBS, not guards (sweep 2026-10-02) ----
-    // A halted station keeps plugin processes answering hooks (a pre_tool_call veto keeps guarding) but runs no
+    // A halted keep keeps plugin processes answering hooks (a pre_tool_call veto keeps guarding) but runs no
     // api.every job; a process started while halted starts paused; resume unpauses every running process.
     {
       const EventEmitter = require('events');
@@ -193,7 +193,7 @@ async function plugin(id, source) {
       };
       const rt5 = makePluginRuntime({ fork: fakeFork, workerPath: 'x', now: () => Date.now(), onLog: () => {}, jobsPaused: true });
       await rt5.start({ id: 'guard', name: 'guard', main: 'x', digest: 'd' });
-      A.eq(kids[0].sent[0].jobsPaused, true, 'a plugin started on a halted station starts with its jobs paused');
+      A.eq(kids[0].sent[0].jobsPaused, true, 'a plugin started on a halted keep starts with its jobs paused');
       A.eq(await rt5.hook('guard', 'pre_tool_call', {}), { block: true, reason: 'guard' }, 'its pre_tool_call guard still answers while halted');
       rt5.setJobsPaused(false);
       A.eq(kids[0].sent.filter(m => m.t === 'jobs').pop(), { t: 'jobs', paused: false }, 'resume unpauses the running process\'s jobs');
@@ -215,7 +215,7 @@ async function plugin(id, source) {
       const slow = await plugin('slow', `
         module.exports = { register(api) {
           api.tool({ name: 'wait_forever', description: 'Waits until stopped', readOnly: true, parameters: { type: 'object', properties: {} },
-            run: (args, ctx) => new Promise((resolve) => { ctx.signal.addEventListener('abort', () => { api.store.set('saw', 'aborted').then(() => resolve('stopped by the station')); }); }) });
+            run: (args, ctx) => new Promise((resolve) => { ctx.signal.addEventListener('abort', () => { api.store.set('saw', 'aborted').then(() => resolve('stopped by the keep')); }); }) });
         } };`);
       A.ok((await rt.start(slow)).ok, 'a plugin with a long tool starts');
       const ac = new AbortController();
@@ -289,7 +289,7 @@ async function plugin(id, source) {
     A.eq(d.capability, 'plugin:pr-radar', 'granted by the plugin capability only');
     A.eq(d.impact, 'external-unknown', 'unknown external effects: fail closed like a connector');
     A.ok(d.requiresConsent === true && d.network === true, 'consent-gated and network-classified');
-    A.ok(/^\[PR Radar plugin tool; written by that plugin, not by StarNet\]/.test(d.description), 'the description says who wrote it first');
+    A.ok(/^\[PR Radar plugin tool; written by that plugin, not by Eyehold\]/.test(d.description), 'the description says who wrote it first');
     const r = await d.run({}, { agentId: 'nova', runId: 'r1' });
     A.ok(/BEGIN EXTERNAL|EXTERNAL/.test(r.content) && /ignore previous instructions/.test(r.content), 'the result is fenced as external content');
     const bad = makePluginToolDefs({ pluginId: 'p', pluginName: 'P', tools: [{ name: 'fail' }], call: async () => { throw new Error('nope <script>'); } })[0];

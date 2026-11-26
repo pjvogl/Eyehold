@@ -17,7 +17,7 @@
 
    THE SECTIONS (each newest-first, each independently capped; the pack composes only the ones with substance):
      · WORKED RECENTLY — user-initiated run TITLES from the last ~7 days (literally "what the Commander is working
-       on"). Internal runs (night-shift / cron / workshop) are EXCLUDED by streamId prefix — they are the station's
+       on"). Internal runs (night-shift / cron / workshop) are EXCLUDED by streamId prefix — they are the keep's
        own noise, not the Commander's work. This is the highest-signal grounding evidence.
      · ASKED RECENTLY  — recent user chat messages (first-line only, bounded), the topics on his mind. Internal
        streams excluded. Content is redacted again on the way in (defense in depth; the transcript store already
@@ -53,7 +53,7 @@
   const LINE_MAX = 140;                   // per activity line (a title/first-line is a label, not a document)
   const ACTIVITY_POOL_MAX = 24;           // the veto evidence pool is bounded too (matches beliefs' order of size)
 
-  // the internal streamId prefixes whose runs/chats are the STATION's own noise, never the Commander's work.
+  // the internal streamId prefixes whose runs/chats are the KEEP's own noise, never the Commander's work.
   // A run/chat on one of these streams is excluded from "what they worked on / asked". Kept as a prefix list so a
   // new internal surface (a future 'foo-'+runId) is one entry away from being excluded, not a scattered edit.
   const INTERNAL_STREAM_PREFIXES = ['nightshift-', 'nightshift-act-', 'cron-', 'workshop-'];
@@ -66,7 +66,7 @@
     const m = num(max) || LINE_MAX;
     return t.length > m ? (t.slice(0, m - 1).trimEnd() + '…') : t;
   }
-  // is this streamId one of the station's own internal surfaces? (prefix match, case-sensitive — streamIds are
+  // is this streamId one of the keep's own internal surfaces? (prefix match, case-sensitive — streamIds are
   // machine-generated, never user text). An empty/absent streamId is the DEFAULT global browser workstream = a
   // real user run, so it is NOT internal.
   function isInternalStream(streamId) {
@@ -112,10 +112,10 @@
     const maxChars = num(opts.maxChars) || DEFAULT_MAX_CHARS;
     const redact = (typeof inputs.redact === 'function') ? inputs.redact : (s) => s;
     const withinWindow = (ts) => { const t = num(ts); return !now || !t || (now - t) <= windowMs; };
-    /* THE STATION'S OWN SELF-TALK IS NOT THE COMMANDER'S ACTIVITY (USER-STUDY LOOP, 2026-09-28). A reason-only
+    /* THE KEEP'S OWN SELF-TALK IS NOT THE COMMANDER'S ACTIVITY (USER-STUDY LOOP, 2026-09-28). A reason-only
        internal call (goal decomposition, the first-meeting prompts, session recommendations…) is recorded as a run
        flagged `internal`, AND its directive lands in the transcript as a 'user' row on the Commander's own stream —
-       so it read as "what they asked recently" and the planners studied the station instead of the person. The run
+       so it read as "what they asked recently" and the planners studied the keep instead of the person. The run
        flag is the authority: its directive head identifies the matching transcript row. */
     const headOf = s => oneLine(s, 400).replace(/…$/, '').slice(0, 48).toLowerCase();
     const internalHeads = (Array.isArray(inputs.runs) ? inputs.runs : [])
@@ -245,7 +245,7 @@
       }
     }
 
-    // ── TRACK RECORD (outcome learning, 2026-08-30) — what this station's runs actually PRODUCE, folded by
+    // ── TRACK RECORD (outcome learning, 2026-08-30) — what this keep's runs actually PRODUCE, folded by
     //    outcomes.js from the run history (literal window counts, support-gated). The night shift should build
     //    with the shapes that finish and treat the ones that keep failing as evidence AGAINST proposing more of
     //    the same. Lines arrive pre-composed (every number in them is a countable run) — this section only

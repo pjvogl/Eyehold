@@ -87,7 +87,7 @@ function packageOnDisk(name) {
   /* ---- THE SHIPPED FALLBACK IDENTITY: every catalogue voice maps to a real Edge neural ------------------
      An installed build carries no node_modules, so the Kokoro engine can never load there. Before this
      mapping, /api/tts silently fell through to the KEYED provider voice — the picker was inert and the
-     station spoke with a different identity than the one chosen (found by ear, 2026-07-30). The mapping
+     keep spoke with a different identity than the one chosen (found by ear, 2026-07-30). The mapping
      lives ON the catalogue row precisely so this test can refuse any future voice added without one. */
   {
     const voices = localVoice.voices();
@@ -110,18 +110,18 @@ function packageOnDisk(name) {
     assert.equal(localVoice.edgeVoiceFor('not-a-voice'), def, 'an unknown pick maps through the default voice');
   }
 
-  /* ---- the kill-switch: STARNET_LOCAL_VOICE=0 forces the installed-build shape on a dev checkout --------
+  /* ---- the kill-switch: EYEHOLD_LOCAL_VOICE=0 forces the installed-build shape on a dev checkout --------
      This is how tests (and users opting out of on-disk models) reproduce the environment the keyed-
      fallthrough bug only showed on. Dynamic, so a spawned server's env always wins. */
   {
-    const before = process.env.STARNET_LOCAL_VOICE;
-    process.env.STARNET_LOCAL_VOICE = '0';
+    const before = process.env.EYEHOLD_LOCAL_VOICE;
+    process.env.EYEHOLD_LOCAL_VOICE = '0';
     try {
       const off = localVoice.status();
-      assert.equal(off.available, false, 'STARNET_LOCAL_VOICE=0 forces the engine unavailable');
+      assert.equal(off.available, false, 'EYEHOLD_LOCAL_VOICE=0 forces the engine unavailable');
       await assert.rejects(() => localVoice.synthesize('hello'), error => error && error.unavailable === true, 'synthesis refuses under the kill-switch');
     } finally {
-      if (before === undefined) delete process.env.STARNET_LOCAL_VOICE; else process.env.STARNET_LOCAL_VOICE = before;
+      if (before === undefined) delete process.env.EYEHOLD_LOCAL_VOICE; else process.env.EYEHOLD_LOCAL_VOICE = before;
     }
     assert.equal(localVoice.status().available, expected, 'clearing the switch restores the probed truth');
   }

@@ -53,7 +53,7 @@ function routeReply(text, explicit) {
 }
 
 // Per-question field rules, shared by the single and batched paths. `call` carries call-level
-// attestations (discoverable) so a batch attests once, not per item.
+// attekeeps (discoverable) so a batch attests once, not per item.
 function validateQuestionFields(c, call) {
   const dimension = clean(c.dimension, 24).toLowerCase();
   const question = clean(c.question || c.text, 240);

@@ -10,7 +10,7 @@
      4. the BUILD menu's tooltip never outlives opening REFIT;
      5. THE FEEL: a placed thing drops into its own shadow and settles with a low thunk (a whole line drops machine by machine), a
         deleted thing dissolves behind a sweeping cut line with a falling hiss, a hovered prop lifts a hair — drawn only (the model
-        has already changed), from the station's own synth, no particles;
+        has already changed), from the keep's own synth, no particles;
      6. MANY AT ONCE: a drag across empty floor in SELECT draws a box and selects everything it touches (Shift adds), Shift+click
         adds / drops one, Ctrl+A takes the floor; the group moves (drag any member, the arrows), duplicates (Ctrl+D) or goes (Delete)
         as ONE edit — one UNDO, all-or-nothing; a plain click on empty floor lets go, and with nothing selected opens the room;
@@ -20,7 +20,7 @@
         (taken spots skipped, shown red first); machines and capability gear still place one at a time; a jitter is a click;
      9. ROOMS ARE EASY (phase 2): a room is selected like a prop — gold outline + edge handles on the floor, its card docked above
         the library (never a mid-screen sheet): rename in place, MOVE / RESIZE (drag a handle; resizeRoom, one undo) / FLOOR /
-        FURNISH (a whole furnished room in one click — the station builder's own refurnish, one undo) / CLEAR / DELETE (twice);
+        FURNISH (a whole furnished room in one click — the keep builder's own refurnish, one undo) / CLEAR / DELETE (twice);
         a furnish or clear that would take EQUIPMENT out names it and asks once more (object = capability). */
 'use strict';
 const A = require('./_assert.js');
@@ -72,11 +72,11 @@ const dup = fn('duplicateSelected');
 A.ok(/const spec = copySpecOf\(p\), at = freeSpotNear\(spec, p\.x, p\.y\);/.test(dup) && /if \(res\.id\) \{ selectedPropId = res\.id; renderSelection\(\); \}/.test(dup), 'a duplicate lands in the nearest clear spot and becomes the selection (Ctrl+D again makes a row)');
 A.ok(!/agentId/.test(fn('copySpecOf')), '…a copy never carries an agent binding (the COPY tool\'s own rule)');
 A.ok(/if \(res && res\.ok\) \{ selectedPropId = null;/.test(fn('deleteSelected')), 'a delete that was refused keeps the selection');
-A.ok(/station\.propById\(hoverPropId \|\| selectedPropId\)/.test(build), 'R / M turn and flip the selected object (a hovered one still wins)');
+A.ok(/keep\.propById\(hoverPropId \|\| selectedPropId\)/.test(build), 'R / M turn and flip the selected object (a hovered one still wins)');
 A.ok(/if \(id !== 'select' && !\(o && o\.keepGroup\)\) buildGroup =/.test(build), 'Ctrl+C from the Props tab keeps the Props tab up');
 
 /* ---------- 4. no stuck tooltip ---------- */
-A.ok(/raf = requestAnimationFrame\(frame\);\n[^\n]*\n[^\n]*\n    try \{ document\.dispatchEvent\(new Event\('scroll'\)\); \} catch \(_\) \{\}/.test(build), 'opening REFIT sends the station tooltip its hide signal');
+A.ok(/raf = requestAnimationFrame\(frame\);\n[^\n]*\n[^\n]*\n    try \{ document\.dispatchEvent\(new Event\('scroll'\)\); \} catch \(_\) \{\}/.test(build), 'opening REFIT sends the keep tooltip its hide signal');
 A.ok(/<link rel="stylesheet" href="css\/refit-easy\.css">/.test(html) && html.indexOf('css/refit-easy.css') > html.indexOf('css/refit-polish.css'), 'the stylesheet loads after the REFIT glass it refines');
 A.ok(/\.refit-library-tabs \.bb:hover::before, \.refit-overlay \.refit-library-tabs \.bb:hover::after/.test(easy), 'the library tabs never wear the old [ ] hover brackets');
 
@@ -92,7 +92,7 @@ for (const [where, rx] of [
   ['the prop tool\'s stamp', /pushFlash\(\[\{ x1: px, y1: py, x2: px \+ s\.w - 1, y2: py \+ s\.h - 1 \}\], false\);\n\s*landProps\(\[res\.id\]\);/],
   ['COPY\'s stamp', /pushFlash\(dupeRectsAt\(w\.tx, w\.ty\), false\);\n\s*landProps\(\[res\.id\]\);/],
   ['Ctrl+D', /pushFlash\(\[\{ x1: at\.x, y1: at\.y, x2: at\.x \+ spec\.w - 1, y2: at\.y \+ spec\.h - 1 \}\], false\);\n\s*landProps\(\[res\.id\]\);/],
-  ['a whole line (machine by machine, left to right)', /landProps\(\(res\.ids \|\| \[\]\)\.map\(id => station\.propById\(id\)\)\.filter\(Boolean\)\.sort\(\(a, b\) => a\.x - b\.x \|\| a\.y - b\.y\)\.map\(p => p\.id\), 70\);/],
+  ['a whole line (machine by machine, left to right)', /landProps\(\(res\.ids \|\| \[\]\)\.map\(id => keep\.propById\(id\)\)\.filter\(Boolean\)\.sort\(\(a, b\) => a\.x - b\.x \|\| a\.y - b\.y\)\.map\(p => p\.id\), 70\);/],
   ['a dragged move', /if\(moved && moved\.ok\)\{selectedPropId=d\.propId;renderSelection\(\);landProps\(\[d\.propId\]\);\}/],
 ]) A.ok(rx.test(build), 'lands: ' + where);
 A.ok(/vanishProp\(was\); flashUndo\(\);/.test(build) && /vanishProp\(was\); \}/.test(fn('deleteSelected')), 'the DELETE tool and Delete on a selection dissolve what they remove');
@@ -101,7 +101,7 @@ A.ok(/cut = top \+ \(bot - top\) \* k;/.test(dv) && /ctx\.clip\(\);/.test(dv) &&
   '…a cut line sweeps down through it and it fades behind the cut, then is gone');
 A.ok(/drawVanishing\(now\);\n  \}/.test(build), '…drawn after the floor\'s props, every frame it lasts');
 A.ok(/SFX\.voice\(\{ freq: 140, glide: 62,/.test(fn('sfxLand')) && /SFX\.noise\(\{ dur: 0\.26,/.test(fn('sfxVanish')) && /!SFX\.ctx\) return;/.test(fn('sfxLand')) && /!SFX\.ctx\) return;/.test(fn('sfxVanish')),
-  'a low thunk to land, a falling hiss to dissolve — the station\'s own synth, silent until audio is unlocked');
+  'a low thunk to land, a falling hiss to dissolve — the keep\'s own synth, silent until audio is unlocked');
 const feelBlock = build.slice(build.indexOf('THINGS LAND, THINGS DISSOLVE'), build.indexOf('function drawFlashes('));
 A.ok(feelBlock.length > 0 && !/confetti|particle|sparkle/i.test(feelBlock.replace(/no particles, no confetti/, '')), 'eerie, not cute: no particles, no confetti');
 A.ok(/feel: \(\) => \(\{ landing: \[\.\.\.landings\.keys\(\)\], vanishing: vanishing\.length, selected: selectedPropId \}\)/.test(build), 'CDP proof can read what is landing / dissolving mid-animation');
@@ -111,7 +111,7 @@ const down = fn('onDown');
 A.ok(/if \(p && groupIds\.includes\(p\.id\)\) \{ drag=\{mode:'grouppress',propId:p\.id,start:w,cur:w,moved:false,add:ev\.shiftKey\};return; \}/.test(down)
   && /if \(p\) \{ drag=\{mode:'selectpress',propId:p\.id,start:w,cur:w,moved:false,add:ev\.shiftKey\};return; \}/.test(down),
   'pressing a member of the group grabs the group; pressing anything else grabs just it (Shift remembered)');
-A.ok(/drag = \{ mode: 'boxpress', start: w, cur: w, moved: false, add: ev\.shiftKey, roomId: station\.roomAt\(w\.tx, w\.ty\) \};/.test(down) && !/openRoomCard\(/.test(down),
+A.ok(/drag = \{ mode: 'boxpress', start: w, cur: w, moved: false, add: ev\.shiftKey, roomId: keep\.roomAt\(w\.tx, w\.ty\) \};/.test(down) && !/openRoomCard\(/.test(down),
   'a press on empty floor can become a box — the room card waits for the release, never opens on the press');
 A.ok(/if\(drag\.mode==='grouppress'&&drag\.moved\)drag\.mode='groupmove';/.test(build) && /if\(drag\.mode==='boxpress'&&drag\.moved\)drag\.mode='box';/.test(build), '…a press that moves becomes a group drag or a box');
 const up = fn('onUp');
@@ -127,18 +127,18 @@ A.ok(/groupIds = live\.length > 1 \? live : \[\];/.test(fn('setSelection')) && /
 A.ok(/groupIds=\[\];selectedRoomId=null;selectedPropId=p\.id;renderSelection\(\);/.test(fn('onInspect')) && /movingPropId=null;selectedPropId=null;groupIds=\[\];selectedRoomId=null;renderSelection\(\);/.test(build),
   'inspecting one thing, or arming any tool, lets go of the group');
 const mg = fn('moveGroupBy');
-A.ok(/return station\.transact\(\(\) => \{/.test(mg) && /sort\(\(a, b\) => \(b\.x \* dx \+ b\.y \* dy\) - \(a\.x \* dx \+ a\.y \* dy\)\)/.test(mg)
+A.ok(/return keep\.transact\(\(\) => \{/.test(mg) && /sort\(\(a, b\) => \(b\.x \* dx \+ b\.y \* dy\) - \(a\.x \* dx \+ a\.y \* dy\)\)/.test(mg)
   && /if \(next\.length === pending\.length\) return last/.test(mg) && /error: 'LINK_LOST'/.test(mg),
   'a group moves as ONE transact: front-first, members wait for each other, and a stuck member or a lost belt link puts it all back');
 A.ok(/!ids\.has\(q\.id\) && !propSpec\(q\.t\)\.flat && rectsMeet\(propRect\(q\), to\)/.test(fn('groupFit')), 'the drag ghost counts only things OUTSIDE the group as in the way');
 A.ok(/const fit = groupFit\(/.test(fn('refusalOf')) && /refusalOf\(res, ids, dx, dy\)/.test(fn('commitGroupMove')) && /refusalOf\(res, ids, dx, dy\)\.msg/.test(fn('nudgeGroup')),
   'a refused group move names what is in the way, as the ghost did');
 const dg = fn('deleteGroup');
-A.ok(/station\.transact\(\(\) => \{ for \(const p of was\) \{ const r = station\.removeProp\(p\.id\);/.test(dg) && /was\.forEach\(p => vanishProp\(p\)\)/.test(dg),
+A.ok(/keep\.transact\(\(\) => \{ for \(const p of was\) \{ const r = keep\.removeProp\(p\.id\);/.test(dg) && /was\.forEach\(p => vanishProp\(p\)\)/.test(dg),
   'Delete removes the whole group in one transact (one UNDO), and every member dissolves');
 A.ok(/if \(n - lastVanishSfx < 80\) return;/.test(fn('sfxVanish')), '…on one hiss, not a hiss per member');
 const dup2 = fn('duplicateGroup');
-A.ok(/tries\.push\(\[W \+ gap, 0\], \[0, H \+ gap\], \[-\(W \+ gap\), 0\], \[0, -\(H \+ gap\)\]\)/.test(dup2) && /const res = station\.transact\(/.test(dup2)
+A.ok(/tries\.push\(\[W \+ gap, 0\], \[0, H \+ gap\], \[-\(W \+ gap\), 0\], \[0, -\(H \+ gap\)\]\)/.test(dup2) && /const res = keep\.transact\(/.test(dup2)
   && /sort\(\(a, b\) => onTable\(a\) - onTable\(b\)\)/.test(dup2) && /setSelection\(made\);/.test(dup2) && /copySpecOf\(p\)/.test(dup2),
   'Ctrl+D lays the whole arrangement again beside itself (one transact, tables before what stands on them), and the copies become the selection');
 for (const fname of ['deleteSelected', 'duplicateSelected', 'nudgeSelected']) A.ok(/if \(groupIds\.length\) return /.test(fn(fname)), fname + ' speaks for the group when there is one');
@@ -148,7 +148,7 @@ A.ok(/key\('MOVE', 'drag'/.test(gc) && /key\('DUPLICATE', 'Ctrl\+D'/.test(gc) &&
   'the group card: up to three of them in the art well, then MOVE / DUPLICATE / DELETE wearing their keys');
 A.ok(/\(ev\.key === 'a' \|\| ev\.key === 'A'\) && tool === 'select'\) \{ ev\.preventDefault\(\); selectAllProps/.test(key), 'Ctrl+A takes the whole floor');
 A.ok(/if \(selectedPropId \|\| movingPropId \|\| groupIds\.length \|\| selectedRoomId\) \{ selectTool\('select'\); return; \}/.test(key), 'Esc lets go of a group (or a room)');
-A.ok(/for\(const id of groupIds\)\{const gp=station\.propById\(id\);if\(gp\)drawPropSelection\(gp,t,'rgba\(244,200,112,\.9\)',false\);\}/.test(fn('drawHover')), 'every member wears the selection gold');
+A.ok(/for\(const id of groupIds\)\{const gp=keep\.propById\(id\);if\(gp\)drawPropSelection\(gp,t,'rgba\(244,200,112,\.9\)',false\);\}/.test(fn('drawHover')), 'every member wears the selection gold');
 A.ok(/if \(drag && drag\.mode === 'box'\) \{ drawSelectBox\(t\); return; \}/.test(build) && /if \(g\.group\) \{ drawGroupGhost\(t, now, g\); return; \}/.test(build), 'the box and a group drag each draw their own ghost');
 A.ok(/RELEASE TO SELECT/.test(fn('drawSelectBox')) && /' THINGS'\]/.test(fn('drawGroupGhost')), '…the box says how many it will take; the group ghost says how far and how many');
 A.ok(/groupmove: 1, roomresize: 1 \}/.test(build), 'a group drag and a room resize tick tile by tile like any move');
@@ -177,13 +177,13 @@ A.ok(/!isWorkflowType\(t\) && t !== 'airlock'/.test(rowable) && /\.tier !== 'fun
 const rs = fn('rowSpots');
 A.ok(/if \(Math\.hypot\(lastClient\.x - d\.cx, lastClient\.y - d\.cy\) < 12\) return null;/.test(rs), 'a jitter across a tile edge is a click, not a row');
 A.ok(/const step = across \? s\.w : s\.h/.test(rs) && /Math\.min\(40, Math\.floor\(Math\.abs\(across \? dx : dy\) \/ step\) \+ 1\)/.test(rs) && /if \(n >= 2\)/.test(rs)
-  && /v: station\.canPlaceProp\(propType, x, y, s\.w, s\.h\)/.test(rs),
+  && /v: keep\.canPlaceProp\(propType, x, y, s\.w, s\.h\)/.test(rs),
   'a row runs along the longer axis, one copy every footprint (40 at most), each spot asked of the floor');
 A.ok(/drag = \{ mode: 'propstamp', start: w, cur: w, moved: false, cx: ev\.clientX, cy: ev\.clientY \};/.test(build), '…the press remembers where the pointer was');
 const cps = fn('commitPropStamp');
 A.ok(/const row = rowSpots\(d\);\n    if \(row\) return commitRow\(row, ev\);/.test(cps) && cps.indexOf('rowSpots(d)') > cps.indexOf('if (!d.moved)'), 'a drag lays the row; a click still places one (or inspects what it hit)');
 const cr = fn('commitRow');
-A.ok(/const res = station\.transact\(/.test(cr) && /landProps\(made, 45\)/.test(cr) && /taken spot/.test(cr) && /one Undo takes the row back/.test(cr),
+A.ok(/const res = keep\.transact\(/.test(cr) && /landProps\(made, 45\)/.test(cr) && /taken spot/.test(cr) && /one Undo takes the row back/.test(cr),
   'the whole row is ONE transact (one UNDO), its copies drop in down the row, and a skipped spot is said');
 A.ok(/'ROW OF ' \+ g\.row\.length/.test(fn('drawRowGhost')) && /RELEASE TO LAY ALL /.test(fn('drawRowGhost')) && /if \(g\.row\) \{ drawRowGhost\(t, now, g\); return; \}/.test(build),
   'the row ghost shows every spot (taken ones red) and how many the release will lay');
@@ -194,7 +194,7 @@ A.ok(/if \(!ids\.length\) \{ if \(!d\.add\) setSelection\(\[\]\); return; \}/.te
 /* ---------- 9. rooms are easy ---------- */
 const orc = fn('openRoomCard');
 A.ok(/cardCloseAll\(\);\n    selectRoom\(roomId\);/.test(orc) && !/class(Name)? ?= ?['"]refit-guide/.test(orc), 'a room click selects the room — no mid-screen sheet any more');
-A.ok(/if\(selectedRoomId\)\{\n      const rm=station&&station\.roomById\(selectedRoomId\);\n      if\(rm\)\{host\.hidden=false;root\.classList\.add\('has-selection'\);return renderRoomCard\(host,rm\);\}/.test(build),
+A.ok(/if\(selectedRoomId\)\{\n      const rm=keep&&keep\.roomById\(selectedRoomId\);\n      if\(rm\)\{host\.hidden=false;root\.classList\.add\('has-selection'\);return renderRoomCard\(host,rm\);\}/.test(build),
   'the selected room\'s card docks where a prop\'s does, above the library');
 const rc = fn('renderRoomCard');
 A.ok(/class="refit-room-name"/.test(rc) && /nameEl\.onblur = saveName;/.test(rc) && /if \(e\.key === 'Enter'\) \{ e\.preventDefault\(\); nameEl\.blur\(\); \}/.test(rc) && /e\.key === 'Escape'\) \{ e\.preventDefault\(\); nameEl\.value = saved;/.test(rc),
@@ -207,18 +207,18 @@ A.ok(/if \(!rm \|\| rm\.rects\.length !== 1 \|\| !cv\) return null;/.test(rha) &
   'handles: eight on a plain rectangle (corners + edge middles), or anywhere along an edge');
 A.ok(/const hd = selectedRoomId \? roomHandleAt\(ev\) : null;\n      if \(hd\) \{ drag = \{ mode: 'roomresize', roomId: selectedRoomId, edge: hd\.e, start: w, cur: w, moved: false \}; return; \}/.test(fn('onDown')),
   'a press on the selected room\'s handle starts a resize before anything else is hit');
-A.ok(/r\.x1 = Math\.min\(r0\.x1 \+ dx, r0\.x2 - min \+ 1\)/.test(fn('resizedRect')) && /station\.MIN_ROOM \|\| 3/.test(fn('resizedRect')), 'a grabbed edge follows by whole tiles, never past the room minimum');
+A.ok(/r\.x1 = Math\.min\(r0\.x1 \+ dx, r0\.x2 - min \+ 1\)/.test(fn('resizedRect')) && /keep\.MIN_ROOM \|\| 3/.test(fn('resizedRect')), 'a grabbed edge follows by whole tiles, never past the room minimum');
 const rk = fn('resizeCheck');
-A.ok(/station\.canPlaceRoom\(\[nr\], rm\.kind, rm\.id\)/.test(rk) && /it would be left off the deck/.test(rk) && /A belt would be left off the deck/.test(rk),
+A.ok(/keep\.canPlaceRoom\(\[nr\], rm\.kind, rm\.id\)/.test(rk) && /it would be left off the deck/.test(rk) && /A belt would be left off the deck/.test(rk),
   'the ghost asks resizeRoom\'s own two questions, naming what is in the way');
-A.ok(/const res = pre && pre\.ok \? keepsHalls\(\(\) => station\.resizeRoom\(rm\.id, nr\)\) : pre;/.test(fn('commitRoomResize')), 'the release resizes through WorldModel.resizeRoom (one undo), keeping every hallway joined');
+A.ok(/const res = pre && pre\.ok \? keepsHalls\(\(\) => keep\.resizeRoom\(rm\.id, nr\)\) : pre;/.test(fn('commitRoomResize')), 'the release resizes through WorldModel.resizeRoom (one undo), keeping every hallway joined');
 A.ok(/if \(g\.kind === 'resize'\) return/.test(fn('placementReason')), 'a resize refusal says the room\'s own reason (never "Blocked by" a prop inside it)');
-A.ok(/station\.moveRoom\(rm\.id, dx, dy\)/.test(fn('nudgeRoom')) && /deleteSelectedRoom\(orientEv\(\)\)/.test(key) && /nudgeRoom\(RA\[0\] \* n, RA\[1\] \* n, orientEv\(\)\)/.test(key),
+A.ok(/keep\.moveRoom\(rm\.id, dx, dy\)/.test(fn('nudgeRoom')) && /deleteSelectedRoom\(orientEv\(\)\)/.test(key) && /nudgeRoom\(RA\[0\] \* n, RA\[1\] \* n, orientEv\(\)\)/.test(key),
   'with a room selected the arrows nudge it (its contents ride) and Delete deletes it');
 A.ok(/press Delete again to delete/.test(fn('deleteSelectedRoom')) && /now - roomDelArmedAt > 2500/.test(fn('deleteSelectedRoom')), '…on the SECOND press (a room takes everything on it)');
 A.ok(/on\.forEach\(p => vanishProp\(p\)\)/.test(fn('doDeleteRoom')), 'a deleted room\'s contents dissolve');
 const re = fn('runRoomEdit');
-A.ok(/StationBuilder\.planEdit\(station\.serialize\(\), req, env\)/.test(re) && /StationBuilder\.apply\(station, r\.plan, env\)/.test(re), 'FURNISH / CLEAR are the station builder\'s own planned edit, applied as planned (one undo)');
+A.ok(/KeepBuilder\.planEdit\(keep\.serialize\(\), req, env\)/.test(re) && /KeepBuilder\.apply\(keep, r\.plan, env\)/.test(re), 'FURNISH / CLEAR are the keep builder\'s own planned edit, applied as planned (one undo)');
 A.ok(/if \(gear\.length && !confirmed\) \{ roomAsk = /.test(re) && /WorldModel\.capForProp/.test(fn('gearLost')) && /back\.has\(p\.t\)/.test(fn('gearLost')),
   'a plan that takes EQUIPMENT out (and does not bring the same piece back) is not applied on the first click');
 A.ok(/FURNISH ANYWAY/.test(rc) && /KEEP IT/.test(rc) && /agents here lose what/.test(rc), '…the card names what goes, and the two ways on');

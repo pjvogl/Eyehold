@@ -4,7 +4,7 @@
 //! Opens EVERY Google Workspace service (dev/google-review-release.cjs) against real Google endpoints in an
 //! isolated review workspace, so the data-access verification demo can be recorded. See
 //! docs/GOOGLE_REVIEW_BUILD.md. --with-model keeps the model/key from dev/.env.dev (or your shell) so an
-//! agent can actually drive the Google tools on camera; without it the station runs the offline replay model.
+//! agent can actually drive the Google tools on camera; without it the keep runs the offline replay model.
 #[allow(dead_code)]
 #[path = "../src/credentials.rs"]
 mod credentials;
@@ -38,7 +38,7 @@ fn main() -> Result<(), String> {
         .parent()
         .ok_or("Missing repository root")?;
     let key = credentials::connector_encryption_key()?;
-    let node = std::env::var_os("STARNET_REVIEW_NODE").unwrap_or_else(|| "node".into());
+    let node = std::env::var_os("EYEHOLD_REVIEW_NODE").unwrap_or_else(|| "node".into());
     // Dedicated, kept review workspace: the recording demonstrates restart continuity, and it never
     // shares state with the general dev seed. dev/ is gitignored scratch, never bundled.
     let workspace = root.join("dev/.google-review-workspace");
@@ -66,19 +66,19 @@ fn main() -> Result<(), String> {
         .arg("--keep")
         // Only the review launcher's own preload rides NODE_OPTIONS; anything inherited is dropped.
         .env("NODE_OPTIONS", format!("--require={preload}"))
-        .env("STARNET_GOOGLE_REVIEW", "1")
-        .env("STARNET_CONNECTOR_ENCRYPTION_KEY", key)
-        .env("STARNET_DESKTOP_SHELL", "1")
-        .env("STARNET_GOOGLE_DESKTOP_CLIENT_JSON", client)
+        .env("EYEHOLD_GOOGLE_REVIEW", "1")
+        .env("EYEHOLD_CONNECTOR_ENCRYPTION_KEY", key)
+        .env("EYEHOLD_DESKTOP_SHELL", "1")
+        .env("EYEHOLD_GOOGLE_DESKTOP_CLIENT_JSON", client)
         .env("SKYNET_WORKSPACES", &workspace)
-        .env("STARNET_WORKSPACES", &workspace)
+        .env("EYEHOLD_WORKSPACES", &workspace)
         .env("SKYNET_PORT", port.to_string())
-        .env("STARNET_PORT", port.to_string());
+        .env("EYEHOLD_PORT", port.to_string());
     if !with_model {
         cmd.env("SKYNET_OPENROUTER_KEY", "")
-            .env("STARNET_OPENROUTER_KEY", "")
+            .env("EYEHOLD_OPENROUTER_KEY", "")
             .env("SKYNET_DEFAULT_MODEL", "replay")
-            .env("STARNET_DEFAULT_MODEL", "replay");
+            .env("EYEHOLD_DEFAULT_MODEL", "replay");
     }
     let status = cmd
         .status()

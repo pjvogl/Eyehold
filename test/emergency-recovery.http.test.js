@@ -5,7 +5,7 @@ const path = require('node:path');
 const { SidecarFixture } = require('./helpers/sidecar-fixture');
 
 (async () => {
-  const host = SidecarFixture.create({ env: { SKYNET_DEV: '1', SKYNET_CRON_TICK_MS: '300' } });
+  const host = SidecarFixture.create({ env: { EYEHOLD_DEV: '1', EYEHOLD_CRON_TICK_MS: '300' } });
   const json = (m, p, b) => host.json(m, p, b);
   const read = name => fs.existsSync(path.join(host.workspace, name)) ? fs.readFileSync(path.join(host.workspace, name), 'utf8') : null;
   const permissions = () => Object.fromEntries(['_commander.autonomy.json', 'cron.armed.json', 'cron.jobs.json', 'loops.json', ...fs.readdirSync(host.workspace).filter(n => n.endsWith('.workshop.json'))].map(n => [n, read(n)]));
@@ -19,7 +19,7 @@ const { SidecarFixture } = require('./helpers/sidecar-fixture');
   };
   try {
     await host.start();
-    assert.equal((await host.request('/api/halt', { headers: { 'X-StarNet-Token': '' } })).status, 403);
+    assert.equal((await host.request('/api/halt', { headers: { 'X-Eyehold-Token': '' } })).status, 403);
     assert.equal((await json('POST', '/api/halt/resume', {})).status, 400);
     // Deliberately leave scheduling OFF: resume must not silently arm it.
     await json('POST', '/api/cron/arm', { enabled: false });

@@ -1,7 +1,7 @@
 'use strict';
 const assert = require('node:assert/strict');
 const { SidecarFixture } = require('./helpers/sidecar-fixture.js');
-const fixture = SidecarFixture.create({ prefix: 'starnet-replay-', env: { SKYNET_DEV: '1', SKYNET_QUEST_REFRESH: '0' } });
+const fixture = SidecarFixture.create({ prefix: 'eyehold-replay-', env: { EYEHOLD_DEV: '1', EYEHOLD_QUEST_REFRESH: '0' } });
 async function open(cursor) {
   const abort = new AbortController();
   const response = await fixture.request('/api/channels/events?' + require('./_httpToken.js').sseQuery(fixture.token) + '&cursor=' + encodeURIComponent(cursor || ''), { signal: abort.signal });

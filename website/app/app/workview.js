@@ -56,14 +56,14 @@
       last: job.lastRunAt ? (job.lastStatus === 'ok' ? 'Last run completed' : 'Last run: ' + (text(job.lastReason) || 'failed')) : 'Has not run yet',
       agentId: job.agentId, recipeId: job.meta && job.meta.recipeId || null };
   }
-  function stationView(journey) {
-    if (!journey || !journey.evolution) return { known: false, name: 'YOUR STATION', reason: 'Waiting for verified progress', outcomes: [], receipts: [] };
+  function keepView(journey) {
+    if (!journey || !journey.evolution) return { known: false, name: 'YOUR KEEP', reason: 'Waiting for verified progress', outcomes: [], receipts: [] };
     const outcomes = rows(journey.outcomes).filter(o => o && o.sourceId && o.evidence && o.verifiedBy);
     const latest = outcomes.slice().sort((a, b) => b.at - a.at)[0];
-    return { known: true, name: text(journey.evolution.name) || 'YOUR STATION',
+    return { known: true, name: text(journey.evolution.name) || 'YOUR KEEP',
       goalsReached: Number(journey.evolution.goalsReached) || 0,
       reason: latest ? text(latest.title) : 'Real outcomes will leave their mark here',
       outcomes: outcomes.slice().reverse(), receipts: rows(journey.receipts).filter(r => r && !r.dismissedAt) };
   }
-  return { project, routineView, stationView };
+  return { project, routineView, keepView };
 });

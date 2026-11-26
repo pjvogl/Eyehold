@@ -1,0 +1,28 @@
+'use strict';
+const assert = require('node:assert/strict');
+const fs = require('node:fs');
+const os = require('node:os');
+const path = require('node:path');
+const { createMarket } = require('../sidecar/eyehold-market.js');
+const { publishQueued } = require('../sidecar/eyehold-market-publish.js');
+const root = fs.mkdtempSync(path.join(os.tmpdir(), 'eyehold-publish-'));
+const market = createMarket({ file: path.join(root, 'market.json'), now: () => 't' });
+const made = market.propose({ agentId: 'forge', title: 'Sprite sheet', description: 'Sixteen original keep props.', priceCents: 800, channel: 'stripe-payment-link', deliverableRef: 'delivery:sheet', computeCents: 12 });
+let calls = 0;
+const adapter = { id: 'stripe-payment-link', async publish() { calls += 1; return { url: 'https://buy.stripe.test/a', productId: 'prod_test', priceId: 'price_test', livemode: false }; } };
+(async () => {
+  const held = await publishQueued(market, made.action.id, { confirmed: false, adapter });
+  assert.equal(held.ok, false);
+  assert.equal(calls, 0);
+  assert.equal(market.queue().length, 1);
+  const published = await publishQueued(market, made.action.id, { confirmed: true, adapter, secret: 'rk_test_x', fetchImpl: () => { throw new Error('unused'); } });
+  assert.equal(published.ok, true);
+  assert.equal(calls, 1);
+  assert.equal(published.listing.status, 'published');
+  assert.equal(market.queue().length, 0);
+  const second = await publishQueued(market, made.action.id, { confirmed: true, adapter });
+  assert.equal(second.ok, false);
+  assert.equal(calls, 1);
+  fs.rmSync(root, { recursive: true, force: true });
+  console.log('Market publish waits for an explicit owner confirmation');
+})().catch(error => { console.error(error); process.exit(1); });

@@ -5,9 +5,9 @@ global.IndustrialTextures={isRemaster:()=>true,enabled:()=>true,ready:Promise.re
 const P=require('../frontend/app/propsprites.js');
 const m=require('../frontend/assets/industrial/projection-correction/manifest.json');
 const save=JSON.parse(fs.readFileSync('dev/.scratch-workspace/prop-layout-demo/agent.save.json'));
-const station=(typeof save.doc==='string'?JSON.parse(save.doc):save.doc).station;
+const keep=(typeof save.doc==='string'?JSON.parse(save.doc):save.doc).keep;
 const mismatches=[],unsupportedRotations=[];
-for(const p of station.props){
+for(const p of keep.props){
  const r=(p.r||0)&3,view=P.viewAt(p.t,r);let face='s';
  if(r&&!view)unsupportedRotations.push({id:p.id,type:p.t,rotation:r});
  if(view&&!view.turned&&r){face=['s','w','n','e'][r];if(!P.hasView(p.t,face))face=r===1?'e':r===3?'w':'s';}
@@ -15,5 +15,5 @@ for(const p of station.props){
  if(view?.turned&&(r&1))[w,h]=[h,w];
  if(asset&&(asset.footprint.w!==w||asset.footprint.h!==h))mismatches.push({id:p.id,type:p.t,face,saved:[p.w,p.h],required:[asset.footprint.w,asset.footprint.h]});
 }
-const seen=new Set(station.props.map(p=>p.t));
-console.log(JSON.stringify({instances:station.props.length,distinctTypes:seen.size,totalCatalogTypes:Object.keys(m.props).length,missingTypes:Object.keys(m.props).filter(id=>!seen.has(id)),sizeFallbacks:mismatches.length,sizeFallbacksByType:mismatches.reduce((a,p)=>(a[p.type]=(a[p.type]||0)+1,a),{}),mismatches,unsupportedRotations},null,2));
+const seen=new Set(keep.props.map(p=>p.t));
+console.log(JSON.stringify({instances:keep.props.length,distinctTypes:seen.size,totalCatalogTypes:Object.keys(m.props).length,missingTypes:Object.keys(m.props).filter(id=>!seen.has(id)),sizeFallbacks:mismatches.length,sizeFallbacksByType:mismatches.reduce((a,p)=>(a[p.type]=(a[p.type]||0)+1,a),{}),mismatches,unsupportedRotations},null,2));

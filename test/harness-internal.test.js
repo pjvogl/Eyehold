@@ -48,16 +48,16 @@ A.ok(src.includes("invoke('harness_store_provider_key'"), 'desktop Harness pushe
 A.ok(src.includes('getKey(provider)') || /const\s+getKey\s*=\s*provider\s*=>/.test(src), 'Harness.getKey accepts a provider argument');
 /* ---------- BOOTFIX regression guard: the seeded DEV / resume floor must NEVER wait on the model catalog ----------
    listModels() proxies a LIVE external OpenRouter /models fetch; awaiting it inline on the auto-resume path
-   strands boot on #screen-connect forever when that upstream is slow/blocked (the seeded SKYNET_DEV shoot
+   strands boot on #screen-connect forever when that upstream is slow/blocked (the seeded EYEHOLD_DEV shoot
    regression). The catalog is cosmetic for resume, so the auto-resume branch must fire it in the BACKGROUND
-   (fire-and-forget) and enter the station immediately — and every catalog fetch must be timeout-bounded so
+   (fire-and-forget) and enter the keep immediately — and every catalog fetch must be timeout-bounded so
    listModels() always settles. If a future refactor re-introduces an inline `await Harness.listModels()` on
    the enter-the-game path, these assertions fail. */
 
 // (a) the auto-resume branch decides eligibility, then enters WITHOUT awaiting the catalog — listModels() is
 //     kicked in the background (not `await`ed) right before resumeInto(). This is the exact shape of the fix.
 A.ok(/const\s+canResume\s*=[\s\S]{0,400}if\s*\(\s*canResume\s*\)\s*\{[\s\S]{0,260}Harness\.listModels\(\)[\s\S]{0,200}resumeInto\(saved\)/.test(app),
-  'auto-resume enters the station and warms the catalog in the background (no inline await before the floor)');
+  'auto-resume enters the keep and warms the catalog in the background (no inline await before the floor)');
 // the background warm must NOT be awaited (that would re-introduce the hang). Assert the resume branch has no
 // `await Harness.listModels()` — the awaited call only survives on the RESUME-connect recovery path below it.
 {
@@ -97,8 +97,8 @@ A.ok(/VERIFY it took effect with a read-back tool/.test(sidecar), 'task doctrine
 A.ok(/never a description, a plan, or a promise of future action/.test(sidecar), 'task doctrine defines the deliverable as a proven outcome');
 A.ok(/\+ taskDoctrineNote/.test(sidecar), 'the task doctrine is actually wired into the composed [HARNESS] prompt');
 
-/* ---------- EGRESS/TOKEN SAFETY (audit 0.6): X-StarNet-Token is SAME-ORIGIN ONLY ----------
-   The fetch monkey-patch attaches the PRIVATE local X-StarNet-Token to every request isApiUrl() accepts.
+/* ---------- EGRESS/TOKEN SAFETY (audit 0.6): X-Eyehold-Token is SAME-ORIGIN ONLY ----------
+   The fetch monkey-patch attaches the PRIVATE local X-Eyehold-Token to every request isApiUrl() accepts.
    A naive substring match on '/api/' would attach it to third-party URLs that merely contain '/api/' — most
    critically the OpenRouter fallback catalog (OR + '/models' = https://openrouter.ai/api/v1/models), leaking the
    local credential cross-origin AND forcing a CORS preflight OpenRouter rejects (so the fallback fails exactly
@@ -127,7 +127,7 @@ A.ok(/\+ taskDoctrineNote/.test(sidecar), 'the task doctrine is actually wired i
   // the tauri app origin hitting its OWN sidecar /api must still count (desktop build)
   const isApiUrlTauri = factory(
     { origin: 'https://tauri.localhost', href: 'https://tauri.localhost/' }, URL,
-    { __STARNET_API__: 'http://127.0.0.1:8964' }
+    { __EYEHOLD_API__: 'http://127.0.0.1:8964' }
   );
   A.ok(isApiUrlTauri('/api/run') === true, 'tauri app origin: its own /api/ is an API URL');
   A.ok(isApiUrlTauri('http://127.0.0.1:8964/api/routing') === true,
@@ -139,7 +139,7 @@ A.ok(/\+ taskDoctrineNote/.test(sidecar), 'the task doctrine is actually wired i
   A.ok(isApiUrlTauri('https://openrouter.ai/api/v1/models') === false, 'tauri app origin: OpenRouter is still NOT an API URL');
   const hostileConfig = factory(
     { origin: 'https://tauri.localhost', href: 'https://tauri.localhost/' }, URL,
-    { __STARNET_API__: 'https://evil.example' }
+    { __EYEHOLD_API__: 'https://evil.example' }
   );
   A.ok(hostileConfig('https://evil.example/api/steal') === false,
     'a configured non-loopback origin cannot opt itself into receiving the launch token');
@@ -187,7 +187,7 @@ A.ok(/\+ taskDoctrineNote/.test(sidecar), 'the task doctrine is actually wired i
   // the legacy wrapper still returns a plain array, so every existing caller is untouched.
   A.ok(/async function agentSkills\(agentId, opts\) \{\s*return \(await agentSkillsRead\(agentId, opts\)\)\.skills;/.test(src), 'agentSkills() still returns a bare array, delegating to the read');
   // and the counter surface reads through the outcome-preserving one.
-  const ui = fs.readFileSync(path.join(__dirname, '../frontend/app/stationui.js'), 'utf8');
+  const ui = fs.readFileSync(path.join(__dirname, '../frontend/app/keepui.js'), 'utf8');
   A.ok(/Harness\.agentSkillsRead\(agentId/.test(ui), 'the PRACTICE meter reads through agentSkillsRead');
   A.ok(/if \(!r \|\| !r\.ok\) return fail\('could not read the skillbase'\)/.test(ui), 'a failed read renders UNREAD, never a 0');
   A.ok(/if \(!now \|\| now\.id !== agentId\) return;/.test(ui), 'a late read never paints a different agent’s dossier');

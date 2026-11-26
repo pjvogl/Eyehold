@@ -30,10 +30,10 @@ async function main() {
     await evalJS(cdp, `location.href = ${JSON.stringify(URL)}`);
     await waitDevReady(cdp, evalJS, { url: URL });
     for (let i = 0; i < 40; i++) {
-      if (await evalJS(cdp, `typeof Build === 'object' && !!(Build.__test__ && Build.__test__.station())`)) break;
+      if (await evalJS(cdp, `typeof Build === 'object' && !!(Build.__test__ && Build.__test__.keep())`)) break;
       await sleep(500);
     }
-    out.dev = await evalJS(cdp, `!!(window.__STARNET_DEV__ && Build.__test__)`);
+    out.dev = await evalJS(cdp, `!!(window.__EYEHOLD_DEV__ && Build.__test__)`);
     if (!out.dev) throw new Error('dev hooks absent — the probe needs ?dev=1');
 
     await evalJS(cdp, `Build.open()`);
@@ -85,7 +85,7 @@ async function main() {
 
     // stamp it with a REAL pointer gesture on the REAL canvas
     out.stamp = await evalJS(cdp, `(() => {
-      const st = Build.__test__.station();
+      const st = Build.__test__.keep();
       const rid = st.rooms()[0].id, rect = st.roomById(rid).rects[0];
       const tile = [rect.x1 + 1, rect.y1 + 1];
       const cv = document.querySelector('.refit-canvas');
@@ -97,7 +97,7 @@ async function main() {
 
     // now press R with the cursor HOVERING the placed prop — the other half of the affordance
     out.hoverTurn = await evalJS(cdp, `(() => {
-      const st = Build.__test__.station();
+      const st = Build.__test__.keep();
       const p = st.props().find(q => q.t === 'chair'); if (!p) return { skipped: 'no chair' };
       const cv = document.querySelector('.refit-canvas');
       const ev = Build.__test__._tileEvent([p.x, p.y]);
@@ -115,7 +115,7 @@ async function main() {
 
     // a TABLE turn must RE-TILE in the live doc, and the blocked tiles must follow it
     out.table = await evalJS(cdp, `(() => {
-      const st = Build.__test__.station();
+      const st = Build.__test__.keep();
       const rid = st.rooms()[0].id, rect = st.roomById(rid).rects[0];
       const res = st.addProp({ t: 'longtable', x: rect.x1 + 3, y: rect.y1 + 2, w: 3, h: 1, block: true });
       if (!res.ok) return { placed: false, code: res.code };

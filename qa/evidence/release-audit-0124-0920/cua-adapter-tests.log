@@ -17,8 +17,8 @@ ok 3 - logical MCP errors are not converted to successful actions
   duration_ms: 0.1576
   type: 'test'
   ...
-# Subtest: the existing StarNet context gate still blocks restricted runs
-ok 4 - the existing StarNet context gate still blocks restricted runs
+# Subtest: the existing Eyehold context gate still blocks restricted runs
+ok 4 - the existing Eyehold context gate still blocks restricted runs
   ---
   duration_ms: 0.4599
   type: 'test'

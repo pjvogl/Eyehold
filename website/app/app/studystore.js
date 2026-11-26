@@ -1,7 +1,7 @@
-/* STARNET — studystore.js : the live wiring around the pure STUDY ENGINE (study.js) — the dossier's Phase B.
+/* EYEHOLD — studystore.js : the live wiring around the pure STUDY ENGINE (study.js) — the dossier's Phase B.
 
    Where dossierstore.js only folds the Commander's OWN onboarding docs + panel edits (Phase A), this is the
-   glue that lets the station LEARN from actual work: after a salient run the sidecar studies the transcript and
+   glue that lets the keep LEARN from actual work: after a salient run the sidecar studies the transcript and
    stashes belief-update proposals; this store fetches them, gates them (session cap + anti-nag), and applies the
    Commander's Keep / Edit / Discard verdict to the DOSSIER (Keep → DossierStore.upsert source:'study'; Discard →
    a PERMANENT studyDeclined denylist; ignore 2× → stop proposing that belief). It also owns the RATINGS→TASTE
@@ -23,7 +23,7 @@
    this store for the gate + the consent side-effects. */
 'use strict';
 const StudyStore = (() => {
-  const KEY = 'starnet.study.v1';
+  const KEY = 'eyehold.study.v1';
   const SESSION_CAP = 1;        // at most ONE study proposal SHOWN per session (beat-fat trim 2026-07-03: was 3 —
                                 // a belief-update card every few runs read as "the system guessing about me")
   const IGNORE_LIMIT = 2;       // ignore a proposed belief this many times → stop proposing it (stop-forever)

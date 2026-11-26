@@ -32,5 +32,5 @@ const crewNextWaypoint=b=>{b.target=b.pathPts[b.pathIdx++]},stepGait=(b,dx,dy,d,
  const gaitMove=(b,dx,dy,d,s)=>{b.px+=dx/d*s;b.py+=dy/d*s};
 ${seatFn};return stepCrewToSeat;`)();
 const worker={px:0,py:0,target:{x:1,y:0},pathPts:[{x:1,y:0},{x:30,y:0}],pathIdx:1,pauseUntil:9999};seatStep(worker,{},16,1000);
-A.ok(worker.px>0,'workstation route advances through waypoint without an idle frame or leisure pause');
+A.ok(worker.px>0,'workkeep route advances through waypoint without an idle frame or leisure pause');
 A.report('world-movement-continuity');

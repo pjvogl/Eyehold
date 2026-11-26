@@ -2,7 +2,7 @@
 
 Executes the target design from docs/UPDATE_PIPELINE_AUDIT_2026-07-06.md. Five parallel lanes,
 each built by an Opus agent in its own worktree (`gen-trees\new-agent-tree.ps1 <name>`), merged
-to trunk by the orchestrator via starnet-merge-ritual, then verified front-to-back.
+to trunk by the orchestrator via eyehold-merge-ritual, then verified front-to-back.
 
 ## Pinned contracts (all lanes build against these — do not drift)
 
@@ -16,14 +16,14 @@ node scripts/release-bump.mjs <version> [--dry-run] [--no-tag]
   lockfile pins it (edit lockfile entry directly or `cargo update -p` — must not require
   network beyond the crates already vendored; if cargo is unavailable, patch the lockfile
   entry textually and say so in output).
-- Scaffolds `RELEASE_NOTES.md` (overwrite) with a `# StarNet v<version>` header + TODO bullet.
+- Scaffolds `RELEASE_NOTES.md` (overwrite) with a `# Eyehold v<version>` header + TODO bullet.
 - Commits `release: v<version>` with pathspecs (ONLY the 4 files above), creates tag `v<version>`
   unless `--no-tag`. NEVER pushes.
 - `--dry-run` prints every change and does nothing.
 - npm scripts: `"release:bump": "node scripts/release-bump.mjs"`.
 
 ### C2. `scripts/release-assemble-manifest.mjs` (lane MANIFEST)
-Replaces stale single-platform `scripts/starnet-release-manifest.mjs` (delete it, migrate its
+Replaces stale single-platform `scripts/eyehold-release-manifest.mjs` (delete it, migrate its
 SemVer/https/signature validations).
 ```
 node scripts/release-assemble-manifest.mjs --dist <dir> --version <X.Y.Z> \
@@ -63,10 +63,10 @@ Jobs:
    fall back to `createUpdaterArtifacts:false` here. Verify each leg produced its updater
    artifact + `.sig` and fail the leg if not. Upload per-target artifacts.
 3. `assemble` (needs build, ubuntu): download all artifacts → `release-assemble-manifest.mjs
-   --dist dist --version $V --repo nonfungiblefunyuns-ship-it/starnet-releases --tag v$V`
+   --dist dist --version $V --repo nonfungiblefunyuns-ship-it/eyehold-releases --tag v$V`
    → `verify-update-host.mjs --manifest release/latest.json` → upload `release/` artifact.
 4. `stage-draft` (needs assemble): `gh release create v$V --draft --repo
-   nonfungiblefunyuns-ship-it/starnet-releases --title "StarNet $V" --notes-file RELEASE_NOTES.md`
+   nonfungiblefunyuns-ship-it/eyehold-releases --title "Eyehold $V" --notes-file RELEASE_NOTES.md`
    with ALL installers + sigs + latest.json attached (`gh release upload` for idempotent re-runs:
    if the draft already exists, `--clobber` assets instead of failing). Print a go/no-go summary:
    "DRAFT staged — nothing is live until you click Publish on GitHub."
@@ -84,10 +84,10 @@ Sections, concrete commands throughout:
    `--clobber`), tag exists (delete draft + re-run vs bump a patch).
 3. Emergency rollback: delete the bad release → `releases/latest` reverts to prior (prior
    release carries its own latest.json); updated clients are fix-forward only; template comms.
-4. Key management: the updater key at `~/.tauri/starnet-updater.key` is unrecoverable —
+4. Key management: the updater key at `~/.tauri/eyehold-updater.key` is unrecoverable —
    loss = no installed app can ever update. Backup instructions (2+ offline copies), GitHub
    secret refresh, rotation plan (ship interim version signed w/ old key containing new pubkey).
-5. Rules: only the train attaches latest.json; anything else on starnet-releases must be a
+5. Rules: only the train attaches latest.json; anything else on eyehold-releases must be a
    prerelease; robocopy hot-patch is dev-only; verify green on all platforms before Publish.
 
 ## Lane → agent map
@@ -95,7 +95,7 @@ Sections, concrete commands throughout:
 | Lane     | Worktree name    | Files owned                                                        |
 | -------- | ---------------- | ------------------------------------------------------------------ |
 | BUMP     | release-bump     | scripts/release-bump.mjs, package.json (script line), test file    |
-| MANIFEST | release-manifest | scripts/release-assemble-manifest.mjs, delete starnet-release-manifest.mjs, test file |
+| MANIFEST | release-manifest | scripts/release-assemble-manifest.mjs, delete eyehold-release-manifest.mjs, test file |
 | VERIFY   | verify-host      | scripts/verify-update-host.mjs, test file                          |
 | TRAIN    | release-train    | .github/workflows/release-train.yml, release.yml header comment    |
 | RUNBOOK  | runbook          | docs/RELEASE_RUNBOOK.md                                            |

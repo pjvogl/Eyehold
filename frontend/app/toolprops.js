@@ -1,4 +1,4 @@
-/* STARNET — toolprops.js : PURE tool-name -> capability-prop mapper (G0.1).
+/* EYEHOLD — toolprops.js : PURE tool-name -> capability-prop mapper (G0.1).
 
    The single source for "which placed prop does a firing tool light up?" — the render-side
    mirror of the sidecar's CAP_REGISTRY (sidecar/capability/registry.js), keyed the same way
@@ -29,7 +29,7 @@ const ToolProps = (() => {
     web_search: 'dish',
     web_fetch: 'dish',
     web_request: 'dish',   // calling a third-party API is a WEB reach — the dish is the prop that projects it
-    // connectors.list reads which integrations the station HAS and which it could add. It rides the same dish
+    // connectors.list reads which integrations the keep HAS and which it could add. It rides the same dish
     // grant as web_request, so it lights the same antenna: the agent is looking outward, at reach, even though
     // this particular read never leaves the machine.
     'connectors.list': 'dish',
@@ -41,7 +41,7 @@ const ToolProps = (() => {
     // object (the 'quest' freebie capId), and the compute gate has no cap-prop pulse (model.chat is null for the same
     // reason). So updating a quest lights no placed-cap prop — correct: it rides compute, not a placeable object.
     // TASK PLAN (2026-08-17): `todo` is absent for the same reason — it moved to the `computer` object (the
-    // 'taskplan' freebie capId) so a station without a placed notebook still has a task list. Same rule as quest.
+    // 'taskplan' freebie capId) so a keep without a placed notebook still has a task list. Same rule as quest.
   };
   // family prefix -> prop type (checked after EXACT; first match wins)
   const PREFIX = [

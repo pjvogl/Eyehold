@@ -16,7 +16,7 @@ test('missing launcher authority cannot start a daemon', async () => {
 test('logical MCP errors are not converted to successful actions', () => {
   assert.throws(() => unwrap({ isError: true, content: [{ type: 'text', text: 'stale target' }] }), /stale target/);
 });
-test('the existing StarNet context gate still blocks restricted runs', async () => {
+test('the existing Eyehold context gate still blocks restricted runs', async () => {
   let calls = 0;
   const driver = makeDriver({ data: async () => { calls++; } }, target);
   const tool = makeComputerTools({ driver, allowPhysicalInput: true }).useTool;

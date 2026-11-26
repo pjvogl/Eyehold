@@ -39,8 +39,8 @@
       "result": "opened:QUESTS:refresh-fixture-settled"
     },
     {
-      "name": "build-station",
-      "result": "opened:REFIT STATION"
+      "name": "build-keep",
+      "result": "opened:REFIT KEEP"
     },
     {
       "name": "build-connectors",

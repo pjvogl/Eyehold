@@ -1,4 +1,4 @@
-/* STARNET — seedstore.js : the browser wiring for the SELF-GROWING SEED SHELF (pure engine: seeds.js).
+/* EYEHOLD — seedstore.js : the browser wiring for the SELF-GROWING SEED SHELF (pure engine: seeds.js).
 
    When the mint detector (mintstore.js) has watched the Commander ask for the same shape of task enough times,
    the agent gently offers to AUTHOR it as a one-tap seed — a custom recipe whose {input} becomes a REQUIRED gap
@@ -80,7 +80,7 @@ const SeedStore = (() => {
       Recipes.saveCustom(draft);
       if (typeof MintStore !== 'undefined' && MintStore.markMinted) MintStore.markMinted(s.key);
       if (typeof SFX !== 'undefined' && SFX.seed) { try { SFX.seed(); } catch (_) {} }   // G3a: saving a seed gets its planting chime (was mute)
-      // NO StationUI.notify (notification diet): the chime is the moment; the seed is findable under RECIPES.
+      // NO KeepUI.notify (notification diet): the chime is the moment; the seed is findable under RECIPES.
     } catch (_) {}
   }
 

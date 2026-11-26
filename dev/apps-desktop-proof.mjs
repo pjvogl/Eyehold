@@ -1,6 +1,6 @@
 // APPS on the DESKTOP APP (2026-09-30): the real Tauri/WebView2 build, not a browser.
 //   DESK_EXE=<path to a debug skynet-desktop.exe> node dev/apps-desktop-proof.mjs
-// Build an ISOLATED one first (its own identifier, so it never touches an installed StarNet):
+// Build an ISOLATED one first (its own identifier, so it never touches an installed Eyehold):
 //   node scripts/prepare-node.mjs && node scripts/stage-voice-deps.mjs && node scripts/stage-frontend-dist.mjs
 //   CARGO_TARGET_DIR=…/.cargo-targets/<lane> npx tauri build --debug --no-bundle --config <{"identifier":"ai.skynet.harness.appstest"}>
 // Launched with its own HOME/APPDATA/LOCALAPPDATA and WebView2 data folder, driven over WebView2's CDP port. On the
@@ -19,7 +19,7 @@ if (!DESK_EXE) throw new Error('set DESK_EXE');
 const REPO = new URL('..', import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, '$1');
 const out = '.worldshots/apps-desktop';
 mkdirSync(out, { recursive: true });
-const home = mkdtempSync(join(tmpdir(), 'starnet-apps-desk-'));
+const home = mkdtempSync(join(tmpdir(), 'eyehold-apps-desk-'));
 const appdata = join(home, 'appdata'), localappdata = join(home, 'localappdata');
 const deskWs = join(localappdata, 'ai.skynet.harness', 'workspaces');
 mkdirSync(deskWs, { recursive: true });
@@ -69,11 +69,11 @@ const APP_PAGE = `<!doctype html><html><head><meta charset="utf-8"><title>Desk T
 <a id="out" href="https://example.com/apps-desktop-proof">an outside link</a>
 </div></div>
 <script>
-starnet.store.get('note').then((v) => { if (v) document.getElementById('shown').textContent = 'saved: ' + v; });
+eyehold.store.get('note').then((v) => { if (v) document.getElementById('shown').textContent = 'saved: ' + v; });
 document.getElementById('save').addEventListener('click', async () => {
   const v = document.getElementById('t').value;
-  await starnet.store.set('note', v);
-  document.getElementById('shown').textContent = 'saved: ' + (await starnet.store.get('note'));
+  await eyehold.store.set('note', v);
+  document.getElementById('shown').textContent = 'saved: ' + (await eyehold.store.get('note'));
 });
 </script></body></html>`;
 
@@ -91,7 +91,7 @@ try {
   await cdp.send('Page.enable'); await cdp.send('Runtime.enable');
   const url = await until(`/tauri\\.localhost|127\\.0\\.0\\.1/.test(location.href) && location.href`, 60000);
   console.log('desktop page:', url);
-  check('the station loads in the desktop window', !!(await until(`!!document.querySelector('#screen-game.active') && typeof AppsUI === 'object' && typeof PluginHost === 'object'`, 120000)));
+  check('the keep loads in the desktop window', !!(await until(`!!document.querySelector('#screen-game.active') && typeof AppsUI === 'object' && typeof PluginHost === 'object'`, 120000)));
   await run(`(() => { const c = document.getElementById('nav-coach'); if (c) c.hidden = true; return true; })()`);
   // Tauri's opener is recorded, never actually launched (a test must not open the machine's browser)
   // __TAURI__.core is FROZEN (invoke is non-writable): swap the whole __TAURI__ object, and only click links if it took
@@ -99,18 +99,18 @@ try {
   check('the desktop opener is recorded for this test (never launched)', stub === 'ok', stub);
   // ---- the dock ----
   const loaded = await run(`AppsUI.load()`);
-  check('the page reaches the station API for apps (GET /api/apps from tauri.localhost)', loaded === true);
+  check('the page reaches the keep API for apps (GET /api/apps from tauri.localhost)', loaded === true);
   check('no apps yet → the APPS dock is not displayed', await run(`(() => { const g = document.querySelector('#bottombar .bb-group[data-group="apps"]'); return !!g && g.getClientRects().length === 0; })()`));
   check('BUILD → NEW APP is there', await run(`!!document.getElementById('bb-newapp-build')`));
   // ---- an app: created through the page's own API path, its page written on disk (no model needed) ----
   const made = await run(`fetch('/api/apps', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name: 'Desk Test', description: 'desktop proof' }) }).then((r) => r.json())`);
   check('POST /api/apps from the desktop page creates the app', !!(made && made.ok && made.app), JSON.stringify(made).slice(0, 120));
   const id = made.app.id;
-  // where this desktop build keeps its station: find the app's own folder under the isolated home
+  // where this desktop build keeps its keep: find the app's own folder under the isolated home
   const appDir = findAppDir(home, id);
-  check('the app folder is on disk under the isolated station: ' + (appDir || '?').replace(home, '~'), !!appDir);
+  check('the app folder is on disk under the isolated keep: ' + (appDir || '?').replace(home, '~'), !!appDir);
   writeFileSync(join(appDir, 'index.html'), APP_PAGE);
-  await sleep(2000);   // the station caches an app's version for 1.5 s; the crew's own write (app.write) clears it at once
+  await sleep(2000);   // the keep caches an app's version for 1.5 s; the crew's own write (app.write) clears it at once
   await run(`AppsUI.onReload(${JSON.stringify(id)}).then(() => true)`);
   check('the APPS dock appeared with the first app', !!(await until(`(() => { const g = document.querySelector('#bottombar .bb-group[data-group="apps"]'); return !!g && g.getClientRects().length > 0; })()`, 10000)));
   await run(`PluginHost.openApp(AppsUI.list().find((a) => a.id === ${JSON.stringify(id)})), true`);
@@ -119,12 +119,12 @@ try {
   let txt = null;
   for (let i = 0; i < 30 && !(txt && txt.indexOf && txt.indexOf('Desk Test') >= 0); i++) { txt = await inApp(`document.body ? document.body.innerText : ''`).catch(() => null); if (!(txt && txt.indexOf && txt.indexOf('Desk Test') >= 0)) await sleep(1000); }
   check('the app page renders inside the desktop window', typeof txt === 'string' && txt.indexOf('Desk Test') >= 0, String(txt && txt.slice ? txt.slice(0, 60) : JSON.stringify(txt)));
-  const kit = await inApp(`(() => { const p = document.querySelector('.sn-panel'); const cs = p && getComputedStyle(p); return !!(window.starnet && window.starnet.__kit) && !!cs && cs.borderTopStyle === 'solid'; })()`);
-  check('the station kit is injected (starnet bridge + glass classes)', kit === true);
+  const kit = await inApp(`(() => { const p = document.querySelector('.sn-panel'); const cs = p && getComputedStyle(p); return !!(window.eyehold && window.eyehold.__kit) && !!cs && cs.borderTopStyle === 'solid'; })()`);
+  check('the keep kit is injected (eyehold bridge + glass classes)', kit === true);
   const saved = await inApp(`(async () => { document.getElementById('t').value = 'hello from the desktop'; document.getElementById('save').click(); await new Promise((r) => setTimeout(r, 1500)); return document.getElementById('shown').textContent; })()`);
-  check('the bridge works: the page saves and reads back through the station store', saved === 'saved: hello from the desktop', JSON.stringify(saved));
+  check('the bridge works: the page saves and reads back through the keep store', saved === 'saved: hello from the desktop', JSON.stringify(saved));
   const back = await run(`fetch('/api/apps/store', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: ${JSON.stringify(id)}, op: 'get', key: 'note' }) }).then((r) => r.json())`);
-  check('…and it is really on the station (store read from the page host)', back && back.value === 'hello from the desktop', JSON.stringify(back));
+  check('…and it is really on the keep (store read from the page host)', back && back.value === 'hello from the desktop', JSON.stringify(back));
   // ---- the bar ----
   check('the bar under the window: change box, AUTO-UPDATE, honest status', await run(`(() => { const b = document.querySelector('.term.plugin-app-win .app-bar'); return !!b && !!b.querySelector('.app-change') && !!b.querySelector('.app-auto-toggle') && /Built|Updated|Not built/.test(b.querySelector('.app-status').textContent); })()`));
   await capture(cdp, out, '01-desktop-app-window');

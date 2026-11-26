@@ -1,4 +1,4 @@
-// Live UI proof on a disposable station; the custom demo save and scheduler are never changed.
+// Live UI proof on a disposable keep; the custom demo save and scheduler are never changed.
 import assert from 'node:assert/strict';
 import {mkdirSync,writeFileSync} from 'node:fs';
 import {spawn} from 'node:child_process';
@@ -27,7 +27,7 @@ try{
     prop('loop','loop',44,6);prop('joiner','joiner',60,12);prop('merger','merger',61,12);prop('splitter','splitter',62,12);
     prop('filter','filter',64,16);for(let x=62;x<=69;x++)ok(s.setBelt(x,16,'E'));ok(s.setBelt(64,17,'S'));ok(s.setBelt(64,18,'S'));ok(s.setBelt(64,19,'S'));
     prop('filterBay','bay',64,20,{agentId:names[2].id});prop('filterOut','outbox',70,14);
-    Build.init({getStation:()=>s,persist:()=>{},world:World,agents:()=>App.agents()});Build.open();document.querySelector('#refit-guide-go')?.click();document.querySelector('.fl-x')?.click();document.querySelector('#refit-fit').click();
+    Build.init({getKeep:()=>s,persist:()=>{},world:World,agents:()=>App.agents()});Build.open();document.querySelector('#refit-guide-go')?.click();document.querySelector('.fl-x')?.click();document.querySelector('#refit-fit').click();
   })()`);
   await sleep(700);
   await open('bay');
@@ -47,7 +47,7 @@ try{
   await check('Closing the Bay saves the instruction draft',`!document.querySelector('.refit-step-card')&&window.__fixture.propById(window.__ids.bay).brief.startsWith('Check the draft')`);
   await open('bay');
   await run(`document.querySelector('#step-pc')?.click()`);
-  await check('Add workstation still places a real desk assigned to the selected agent',`window.__fixture.props().some(p=>p.t==='desk'&&p.agentId===App.agents()[1].id)&&document.querySelector('#step-compute').textContent.includes('has a workstation')`);
+  await check('Add workkeep still places a real desk assigned to the selected agent',`window.__fixture.props().some(p=>p.t==='desk'&&p.agentId===App.agents()[1].id)&&document.querySelector('#step-compute').textContent.includes('has a workkeep')`);
   await check('Placement coaching cannot cover an open workflow editor',`[...document.querySelectorAll('.tut-coach:not(.kit)')].every(e=>getComputedStyle(e).visibility==='hidden')`);
   await run(`window.__fixture.assignPropAgent(window.__ids.bay,App.agents()[0].id)`);
   await sleep(250);await open('inbox');
@@ -59,7 +59,7 @@ try{
   await until(`document.querySelector('#trg-preview').textContent.includes('next:')`);
   await check('Schedule uses the existing picker and server-confirmed next run',`document.querySelector('#trg-sched').value&&document.querySelector('#trg-preview').textContent.includes('next:')&&document.querySelector('#trg-create').textContent.includes('SAVE SCHEDULE')`);
   await check('The selected schedule choice stays visible above its form',`document.querySelector('#trg-new').classList.contains('active')&&document.querySelector('#trg-new').getBoundingClientRect().height>0`);
-  await check('Workflow name saves to the existing station model',`window.__fixture.propById(window.__ids.inbox).label==='Weekly news summary'`);
+  await check('Workflow name saves to the existing keep model',`window.__fixture.propById(window.__ids.inbox).label==='Weekly news summary'`);
   await shot('03-schedule');
   await run(`document.querySelector('#trg-cancel').click()`);
   await check('Cancelling the schedule form returns to the two start choices',`getComputedStyle(document.querySelector('#trg-form')).display==='none'&&getComputedStyle(document.querySelector('#trg-new')).display!=='none'`);
@@ -93,7 +93,7 @@ try{
   await run(`document.body.style.zoom='1.45';document.body.style.setProperty('--sn-unzoom',String(1/1.45))`);await open('inbox');
   await check('Enlarged text keeps setup inside the screen and stacks its columns',`(()=>{const c=document.querySelector('.refit-workflow-editor .refit-guide-card').getBoundingClientRect(),a=document.querySelector('.workflow-aside').getBoundingClientRect(),m=document.querySelector('.workflow-main').getBoundingClientRect();return c.width<=961&&c.bottom<=innerHeight&&a.top>=m.bottom-1})()`);
   await run(`document.body.style.zoom='';document.body.style.removeProperty('--sn-unzoom')`);await open('bay');
-  await check('Controls use station styling without native white paint',`[...document.querySelectorAll('.refit-workflow-editor button,.refit-workflow-editor input,.refit-workflow-editor textarea')].every(e=>!['rgb(255, 255, 255)','rgb(239, 239, 239)'].includes(getComputedStyle(e).backgroundColor))`);
+  await check('Controls use keep styling without native white paint',`[...document.querySelectorAll('.refit-workflow-editor button,.refit-workflow-editor input,.refit-workflow-editor textarea')].every(e=>!['rgb(255, 255, 255)','rgb(239, 239, 239)'].includes(getComputedStyle(e).backgroundColor))`);
   await cdp.send('Input.dispatchKeyEvent',{type:'keyDown',key:'Escape',code:'Escape',windowsVirtualKeyCode:27});await cdp.send('Input.dispatchKeyEvent',{type:'keyUp',key:'Escape',code:'Escape',windowsVirtualKeyCode:27});
   await check('Escape closes setup while leaving Build mode open',`!document.querySelector('.refit-workflow-editor')&&Build.isOpen()`);
   assert.equal(report.exceptions.length,0,JSON.stringify(report.exceptions));writeFileSync(out+'/report.json',JSON.stringify(report,null,2));console.log(JSON.stringify(report,null,2));

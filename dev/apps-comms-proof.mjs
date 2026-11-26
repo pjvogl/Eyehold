@@ -1,5 +1,5 @@
-// APPS — asking for an app in plain COMMS builds a real StarNet app (2026-10-02).
-//   node dev/apps-comms-proof.mjs [port] ["what to ask"]     against a RUNNING station with a real model
+// APPS — asking for an app in plain COMMS builds a real Eyehold app (2026-10-02).
+//   node dev/apps-comms-proof.mjs [port] ["what to ask"]     against a RUNNING keep with a real model
 // No NEW APP button, no tool names: a fresh COMMS session is sent the Commander's plain words, and the proof waits
 // for a NEW app in /api/apps whose page the crew actually wrote (builtAt). Leaves the app in place for a look.
 import { mkdtempSync, rmSync } from 'node:fs';
@@ -12,7 +12,7 @@ const PORT = Number(process.argv[2] || 8871);
 const ASK = process.argv[3] || 'build me a tip calculator app';
 let failed = 0;
 const check = (name, ok) => { console.log((ok ? 'PASS ' : 'FAIL ') + name); if (!ok) failed++; };
-const dir = mkdtempSync(join(tmpdir(), 'starnet-apps-comms-'));
+const dir = mkdtempSync(join(tmpdir(), 'eyehold-apps-comms-'));
 const chrome = spawn(findChrome(), ['--headless=new', '--no-first-run', '--remote-debugging-port=9493', '--user-data-dir=' + join(dir, 'c'), 'about:blank'], { stdio: 'ignore', windowsHide: true });
 try {
   const cdp = await connectCDP(9493);
@@ -31,7 +31,7 @@ try {
     made = (await apps()).find((a) => !before.has(a.id) && a.builtAt);
     if (made) break;
   }
-  check('the crew made a new StarNet app and wrote its page' + (made ? ': ' + made.id + ' "' + made.name + '" (' + Math.round((Date.now() - t0) / 1000) + 's)' : ''), !!made);
+  check('the crew made a new Eyehold app and wrote its page' + (made ? ': ' + made.id + ' "' + made.name + '" (' + Math.round((Date.now() - t0) / 1000) + 's)' : ''), !!made);
   if (made) {
     await sleep(20000);   // let the run finish its check
     const page = await run(`fetch('/api/apps').then(r => r.json()).then(j => j.apps.find(a => a.id === ${JSON.stringify(made.id)}))`);

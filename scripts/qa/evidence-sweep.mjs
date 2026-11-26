@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-/* scripts/qa/evidence-sweep.mjs — the Self-Testing Station's EVIDENCE RETENTION sweep (lane GB-27).
+/* scripts/qa/evidence-sweep.mjs — the Self-Testing Keep's EVIDENCE RETENTION sweep (lane GB-27).
  *
  * WHY THIS EXISTS: `.bugloops/` is the crew's evidence dir — every guardian/beginner/journeys
  * cycle drops a timestamped bundle there and NOTHING ever cleans it up. It crossed 1 GB / 6,111

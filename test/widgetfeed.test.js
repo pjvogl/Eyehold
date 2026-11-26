@@ -90,7 +90,7 @@ const rejects = async (p, label) => { try { await p; A.ok(false, label + ' (did 
   {
     const { t } = make();
     for (let i = 0; i < MAX_WIDGETS; i++) await run(t, { id: 'w' + i, value: String(i) });
-    A.eq(t.list().length, MAX_WIDGETS, 'the station holds the cap');
+    A.eq(t.list().length, MAX_WIDGETS, 'the keep holds the cap');
     await rejects(run(t, { id: 'overflow', value: 'x' }), 'a NEW id beyond the cap throws');
     const r = await run(t, { id: 'w0', value: 'updated' });
     A.ok(r.content.indexOf('Updated') === 0, 'updating an existing id at the cap still works');
@@ -166,7 +166,7 @@ const rejects = async (p, label) => { try { await p; A.ok(false, label + ' (did 
     await rejects(t.getTool.run({ id: w.id }), 'scheduled update stops on a deleted definition');
   }
   {
-    const { t } = make(); const source = { kind: 'agent', id: 'starnet', label: 'StarNet' };
+    const { t } = make(); const source = { kind: 'agent', id: 'eyehold', label: 'Eyehold' };
     for (const display of ['list', 'trend', 'progress']) {
       await t.configure({ id: display, label: display, request: 'real data', display }, source);
       await rejects(run(t, { id: display, version: 1, value: '9' }), display + ' refuses an invented/missing shape');

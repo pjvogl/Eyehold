@@ -29,12 +29,12 @@ const { makeDurableJsonStore } = require('../sidecar/durable-store.js');
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const rawArgs = process.argv.slice(2);
 const LOOP_ARG = rawArgs.find(a => /^--loop(=|$)/.test(a));
-const LOOP_MAX = LOOP_ARG ? Math.max(1, Number(LOOP_ARG.split('=')[1] || process.env.STARNET_T2_LOOPS || 3) || 3) : 1;
+const LOOP_MAX = LOOP_ARG ? Math.max(1, Number(LOOP_ARG.split('=')[1] || process.env.EYEHOLD_T2_LOOPS || 3) || 3) : 1;
 const STAMP = new Date().toISOString().replace(/[-:]/g, '').replace('T', '-').replace('.', '-').replace(/Z$/, '') + '-' + process.pid;
-const OUT = resolve(process.env.STARNET_T2_STATE_SAFETY_DIR || join(ROOT, '.dogfood', 't2-state-safety-' + STAMP));
-const LATEST = resolve(process.env.STARNET_T2_STATE_SAFETY_LATEST_DIR || join(ROOT, '.dogfood', 't2-state-safety-latest'));
-const SAVE_KEY = 'starnet.save';
-const PRE_MIGRATE_BACKUP_KEY = 'starnet.save.pre-migrate.backup';
+const OUT = resolve(process.env.EYEHOLD_T2_STATE_SAFETY_DIR || join(ROOT, '.dogfood', 't2-state-safety-' + STAMP));
+const LATEST = resolve(process.env.EYEHOLD_T2_STATE_SAFETY_LATEST_DIR || join(ROOT, '.dogfood', 't2-state-safety-latest'));
+const SAVE_KEY = 'eyehold.save';
+const PRE_MIGRATE_BACKUP_KEY = 'eyehold.save.pre-migrate.backup';
 
 function ensureDir(p) { mkdirSync(p, { recursive: true }); }
 function nowIso() { return new Date().toISOString(); }
@@ -115,7 +115,7 @@ function loadSaveApi(storage, workstreams) {
 
 function v1Save(overrides = {}) {
   return Object.assign({
-    schema: 'starnet.save',
+    schema: 'eyehold.save',
     version: 1,
     updatedAt: 101,
     agent: { id: 'agent', name: 'NOVA' },
@@ -126,7 +126,7 @@ function v1Save(overrides = {}) {
 
 function currentSave(overrides = {}) {
   return Object.assign({
-    schema: 'starnet.save',
+    schema: 'eyehold.save',
     version: 5,
     updatedAt: 5000,
     agent: { id: 'agent', name: 'NOVA', stats: { xp: 42, level: 3 } },
@@ -134,7 +134,7 @@ function currentSave(overrides = {}) {
     workstreams: [{ id: 'general', title: 'General', messages: [{ role: 'user', content: 'still here' }] }],
     activeId: 'general',
     generalId: 'general',
-    stationStats: { xp: 42, level: 3 },
+    keepStats: { xp: 42, level: 3 },
     profile: { v: 1, tags: {}, seed: null, enabled: true, total: 0 },
     dossier: { v: 1, dims: { identity: [], stack: [], goals: [], style: [], standing_orders: [], pain: [], ambition: [] }, seededFrom: {}, updatedAt: 0 }
   }, overrides);
@@ -159,22 +159,22 @@ function workstreamsMigrator() {
 function legacyCopyForwardStep() {
   const legacySave = JSON.stringify({ schema: 'skynet.save', agent: { id: 'old' } });
   const currentSaveRaw = JSON.stringify(currentSave({ agent: { id: 'agent', name: 'CURRENT' } }));
-  const stationRaw = JSON.stringify({ slots: ['alpha'] });
+  const keepRaw = JSON.stringify({ slots: ['alpha'] });
   const storage = new MemoryStorage({
     'skynet.save': legacySave,
-    'skynet.station.v1': stationRaw,
-    'starnet.save': currentSaveRaw
+    'skynet.keep.v1': keepRaw,
+    'eyehold.save': currentSaveRaw
   });
   const copied = LegacyMigrate.run(storage);
-  assert(copied === 1, 'legacy migration should copy only missing starnet targets');
-  assert(storage.getItem('starnet.save') === currentSaveRaw, 'existing starnet.save must not be clobbered');
-  assert(storage.getItem('starnet.station.v1') === stationRaw, 'missing starnet station key should be copied forward');
-  assert(storage.getItem('skynet.station.v1') === stationRaw, 'legacy key should remain for rollback');
+  assert(copied === 1, 'legacy migration should copy only missing eyehold targets');
+  assert(storage.getItem('eyehold.save') === currentSaveRaw, 'existing eyehold.save must not be clobbered');
+  assert(storage.getItem('eyehold.keep.v1') === keepRaw, 'missing eyehold keep key should be copied forward');
+  assert(storage.getItem('skynet.keep.v1') === keepRaw, 'legacy key should remain for rollback');
   return {
     copied,
-    protectedKeys: ['starnet.save'],
-    rollbackKeysLeftInPlace: ['skynet.station.v1'],
-    reason: 'Skynet localStorage keys copy forward without clobbering StarNet keys.'
+    protectedKeys: ['eyehold.save'],
+    rollbackKeysLeftInPlace: ['skynet.keep.v1'],
+    reason: 'Skynet localStorage keys copy forward without clobbering Eyehold keys.'
   };
 }
 
@@ -332,7 +332,7 @@ async function main() {
   }
   const pass = latest.every(r => r.status === 'pass');
   const status = {
-    schema: 'starnet.t2-state-safety-status.v1',
+    schema: 'eyehold.t2-state-safety-status.v1',
     generatedAt: nowIso(),
     verdict: pass ? 'green' : 'red',
     stateSafetyReady: pass,

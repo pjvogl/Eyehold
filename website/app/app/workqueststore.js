@@ -1,4 +1,4 @@
-/* STARNET — workqueststore.js : the live wiring around the pure WorkQuests engine (G1c).
+/* EYEHOLD — workqueststore.js : the live wiring around the pure WorkQuests engine (G1c).
 
    Turns an ACCEPTED idea into a trackable multi-step build. It owns what the pure engine can't:
      • the MINT — pitchstore/suggeststore call WorkQuestStore.accept(parsed, ctx) the instant the Commander hits
@@ -12,13 +12,13 @@
        completes the final step → the quest goes DONE, riding QuestState's gold celebration. Honest completion:
        the build actually ran — no claim button.
 
-   Self-persists to its own localStorage key (rides the backup prefix, like stationqueststore — no save.js
+   Self-persists to its own localStorage key (rides the backup prefix, like keepqueststore — no save.js
    change). The projection (quests()) is joined into QuestStore.view. NOTHING MINTS XP (the xp.js law): the
    payout is the real build + the shared celebration; XP still flows only from rating the finished work. NEVER
    emits on U.bus (subscription only). */
 'use strict';
 const WorkQuestStore = (() => {
-  const KEY = 'starnet.workquests.v1';
+  const KEY = 'eyehold.workquests.v1';
   const ARM_MS = 8000;   // after an accept, the next hero run.start within this window IS the build's run
   let state = null;
   let bound = false;
@@ -46,7 +46,7 @@ const WorkQuestStore = (() => {
     return null;
   }
   const nowMs = () => (typeof Date !== 'undefined' ? Date.now() : 0);
-  function poke() { try { if (typeof StationUI !== 'undefined' && StationUI.rerender) StationUI.rerender('quests', false); } catch (_) {} }
+  function poke() { try { if (typeof KeepUI !== 'undefined' && KeepUI.rerender) KeepUI.rerender('quests', false); } catch (_) {} }
 
   /* ---------- the MINT: an accepted idea → a trackable build ----------
      parsed = the Pitch.parsePitch object ({ title, build:{ kind, recipeId } , gap }). ctx (optional) = {}. The
@@ -106,7 +106,7 @@ const WorkQuestStore = (() => {
   // build stalled. 'cancelled' is a deliberate human stop — resolve it too, but quietly (never nag).
   const STALL_REASONS = { error: 1, budget: 1, max_iters: 1, refusal: 1 };
   // a bound build run's own error text (agent.run.error lands before its run.end), so the stalled beat can name a KNOWN
-  // cause — a refused StarNet link, an empty wallet, a model the key can't use — instead of "send it again, report it".
+  // cause — a refused Eyehold link, an empty wallet, a model the key can't use — instead of "send it again, report it".
   const runErrText = new Map();   // runId -> message; only for runs a build is bound to, read (and dropped) at that run's end
   function onRunError(p) {
     if (!ready() || !p || !p.runId || !WorkQuests.questForRun(state, p.runId)) return;
@@ -139,7 +139,7 @@ const WorkQuestStore = (() => {
   }
 
   // the one honest, player-facing beat for a stalled build — reuses SlagLog's real post-mortem copy (title +
-  // fix), routed through the SHARED StationUI.notify toast in the neutral WARN family (no gold, no new toast
+  // fix), routed through the SHARED KeepUI.notify toast in the neutral WARN family (no gold, no new toast
   // system). Falls back to a plain reason line if SlagLog isn't loaded. An errored run's own message is classified
   // exactly as world.js classifies it for the SLAG post-mortem (Friendly kind + message), so both say the same door.
   function stallBeat(reason, title, errText) {
@@ -153,7 +153,7 @@ const WorkQuestStore = (() => {
       if (d) msg = 'build “' + (title || 'a build') + '” ' + d.title + ' — ' + d.fix;
     } catch (_) {}
     if (!msg) msg = 'build “' + (title || 'a build') + '” stopped (' + reason + ') — adjust and re-run.';
-    try { if (typeof StationUI !== 'undefined' && StationUI.notify) StationUI.notify(msg, 'warn'); } catch (_) {}
+    try { if (typeof KeepUI !== 'undefined' && KeepUI.notify) KeepUI.notify(msg, 'warn'); } catch (_) {}
   }
 
   // sync() is a no-op resolver (work quests advance on the run bus events, not a re-read) — kept for the shared

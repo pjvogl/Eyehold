@@ -70,7 +70,7 @@
       }
     },
     {
-      "id": "astronaut",
+      "id": "warden",
       "scale": 0.18947368421052632,
       "views": {
         "south": {
@@ -1090,7 +1090,7 @@
       }
     },
     {
-      "id": "station_minion",
+      "id": "keep_minion",
       "scale": 0.20224719101123595,
       "views": {
         "south": {

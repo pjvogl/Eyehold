@@ -56,13 +56,13 @@ async function main() {
   const child = spawn(node, ['sidecar/index.js'], {
     cwd: runtimeRoot, windowsHide: true, stdio: ['ignore', 'pipe', 'pipe'],
     env: Object.assign({}, process.env, {
-      STARNET_WORKSPACES: workspace, STARNET_PORT: String(port), STARNET_BUILD_DESCRIBE: String(opts.describe),
-      STARNET_DEFAULT_MODEL: 'fixture/offline', STARNET_CRON_ARMED: '0', SKYNET_CRON_ARMED: '0'
+      EYEHOLD_WORKSPACES: workspace, EYEHOLD_PORT: String(port), EYEHOLD_BUILD_DESCRIBE: String(opts.describe),
+      EYEHOLD_DEFAULT_MODEL: 'fixture/offline', EYEHOLD_CRON_ARMED: '0', SKYNET_CRON_ARMED: '0'
     })
   });
   child.stdout.pipe(out); child.stderr.pipe(err);
   const report = {
-    schemaVersion: 'starnet.eval.soak.v1', mode: 'provider-free-control-plane', qualifiesRelease: false,
+    schemaVersion: 'eyehold.eval.soak.v1', mode: 'provider-free-control-plane', qualifiesRelease: false,
     startedAt: iso(startedAt), plannedEndAt: iso(deadline), durationHours, intervalSeconds, pid: child.pid,
     runtime: { root: runtimeRoot, node, workspace, describe: String(opts.describe), port },
     samples: [], summary: { pass: false, completed: false, healthChecks: 0, healthFailures: 0, unexpectedExits: 0 },

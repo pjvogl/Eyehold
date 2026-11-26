@@ -27,7 +27,7 @@ A.eq(/clip\.clientWidth\s*\/\s*666/.test(js), false,
 A.ok(/live-preview\.js\?v=20260921/.test(html),
   'the homepage cache-busts the corrected preview controller');
 A.ok(/app\/embed\.htm\?v=20260922-current-starter-v6/.test(html),
-  'the homepage uses the cache-busted dashboard-upload-safe station document');
+  'the homepage uses the cache-busted dashboard-upload-safe keep document');
 A.ok(/app\/assets\/sprites\/blank\/rot_south\.png/.test(html) && /fetchpriority="high"/.test(html),
   'the marketing page starts the embedded default-skin request before the iframe boot');
 
@@ -46,30 +46,30 @@ function bootDemo(initial) {
   return rows;
 }
 
-const upgraded = bootDemo({ 'starnet.save': '{"retired":"station"}' });
-const upgradedSave = JSON.parse(upgraded['starnet.save']);
-const upgradedRoom = upgradedSave.station.rooms.r1;
+const upgraded = bootDemo({ 'eyehold.save': '{"retired":"keep"}' });
+const upgradedSave = JSON.parse(upgraded['eyehold.save']);
+const upgradedRoom = upgradedSave.keep.rooms.r1;
 const starter = require('../frontend/app/worldmodel.js').starterDoc();
 starter.meta.createdAt = 0;
 const starterRevision = 'starter-' + require('crypto').createHash('sha256')
   .update(JSON.stringify(starter)).digest('hex').slice(0, 16);
 starter.props.find(p => p.t === 'desk').agentId = upgradedSave.agent.id;
-A.eq(upgradedSave.station, starter,
+A.eq(upgradedSave.keep, starter,
   'the complete website layout comes from the current product starter factory, including materials and all eight props');
 A.eq(upgradedRoom.floorStyle, 'hull', 'the website demo uses the standard starter floor style');
 A.eq(upgradedRoom.floorMat, 'resin', 'the website demo uses the actual starter floor material');
 A.eq(upgradedRoom.wallMat, 'panelled', 'the website demo uses the actual starter wall material');
 A.eq(upgradedRoom.hullStyle, 'bone', 'the website demo uses the actual starter hull style');
-A.eq(upgradedRoom.hullMat, null, 'the website demo uses the standard station hull material');
-A.eq(upgraded['starnet.website.demo.rev'], starterRevision,
+A.eq(upgradedRoom.hullMat, null, 'the website demo uses the standard keep hull material');
+A.eq(upgraded['eyehold.website.demo.rev'], starterRevision,
   'a layout-derived revision moves returning visitors off obsolete starter saves automatically');
 
-const currentRev = upgraded['starnet.website.demo.rev'];
+const currentRev = upgraded['eyehold.website.demo.rev'];
 const alreadyCurrent = bootDemo({
-  'starnet.website.demo.rev': currentRev,
-  'starnet.save': '{"preserved":true}'
+  'eyehold.website.demo.rev': currentRev,
+  'eyehold.save': '{"preserved":true}'
 });
-A.eq(alreadyCurrent['starnet.save'], '{"preserved":true}',
+A.eq(alreadyCurrent['eyehold.save'], '{"preserved":true}',
   'the demo revision migrates once instead of overwriting storage on every page load');
 
 A.report('website-live-preview.test');

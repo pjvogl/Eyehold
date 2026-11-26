@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "starnet.wave-a.executable-verdict.v1",
+  "schemaVersion": "eyehold.wave-a.executable-verdict.v1",
   "capturedAt": "2026-08-03",
   "release": "0.9.0",
   "verdict": "gates-not-met",
@@ -8,7 +8,7 @@
     "keyId": "29275039d8cc21d3488ee397bdfd9dcbc7ffed7f2de4b559303bb076f7ed081d"
   },
   "candidate": {
-    "name": "StarNet",
+    "name": "Eyehold",
     "version": "0.8.5",
     "commit": "865d87fbb9c2f91e5e47ca0368a90c7bee2552ec",
     "sourceTree": "a2f58d289ba282088d294a3a3089bf0cce4cbe6f",
@@ -60,7 +60,7 @@
     "probeSha256": "6f187767baaf4919b13ca4a3c476cb5568c8298c976f6c8949484cca801f4bbb",
     "performanceReceiptSha256": "003750224da55126cc1f1e9a11b8f8b5ef268960a30b1f8a034bbe5a943a85f3",
     "signatureVerified": true,
-    "starNet": {
+    "eyehold": {
       "installedSidecarBootMs": 4712.8685,
       "providerRunOk": false,
       "httpStatus": 200,
@@ -78,7 +78,7 @@
     "baselineUsable": false,
     "limitations": [
       "single preflight only",
-      "StarNet failed before first token",
+      "Eyehold failed before first token",
       "desktop cold boot and useful-artifact latency unmeasured",
       "48-hour resource soak unmeasured"
     ]
@@ -90,7 +90,7 @@
     "referenceBound": true,
     "rowsPerHarness": 96,
     "status": "not-executed",
-    "displayedStarNetPassRatePct": 0,
+    "displayedEyeholdPassRatePct": 0,
     "displayedReferencePassRatePct": 0,
     "displayedGapPoints": 0,
     "displayedValuesAreAvailabilitySentinels": true,
@@ -107,6 +107,6 @@
     "isolatedCredentialCopiesDeleted": true,
     "isolatedCredentialCopyAbsenceVerified": true,
     "originalCredentialStoresModified": false,
-    "requiredUserAction": "Revoke and re-authenticate the StarNet ChatGPT connection before another provider run."
+    "requiredUserAction": "Revoke and re-authenticate the Eyehold ChatGPT connection before another provider run."
   }
 }

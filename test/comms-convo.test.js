@@ -69,7 +69,7 @@ A.ok(/\.rate-inline \.work-rate-reference \{ display: none; \}/.test(css), 'the 
 /* ---------- 6. no text boxes (Andrew 10-03: "idk if im a fan of the text boxes … terminal ASCII aesthetic") ---------- */
 A.ok(/\.cmsg\.user > \.body \{[^}]*border: 0; border-right: 2px solid/.test(css), 'the Commander turn is a rail + prompt, not an outlined plate');
 A.ok(/\.cmsg\.user > \.body::before \{ content: '> '/.test(css), 'the Commander turn opens with a > prompt');
-A.ok(/\.cmsg\.broadcast \.bc-line \{[^}]*border: 0;[^}]*background: none;/.test(css), 'station lines are ruled ASCII lines, not boxed tags');
+A.ok(/\.cmsg\.broadcast \.bc-line \{[^}]*border: 0;[^}]*background: none;/.test(css), 'keep lines are ruled ASCII lines, not boxed tags');
 A.ok(/\.choice-row \.choice::before \{ content: '\[ '/.test(css), 'choices are [ bracketed ] terminal keys');
 
 /* ---------- 7. the agent's line mirrors the Commander's: name as is, no portrait (Andrew 10-03: "without the pfp") ---------- */

@@ -87,14 +87,14 @@ async function collect(provider, req) { const out = []; for await (const e of pr
         captured = JSON.parse(init.body);
         return new Response([line({ type: 'message_stop' }), ''].join('\n'), { status: 200, headers: { 'Content-Type': 'text/event-stream' } });
       };
-      const prev = process.env.SKYNET_ANTHROPIC_CACHE;
-      if (patch !== undefined) process.env.SKYNET_ANTHROPIC_CACHE = patch;
+      const prev = process.env.EYEHOLD_ANTHROPIC_CACHE;
+      if (patch !== undefined) process.env.EYEHOLD_ANTHROPIC_CACHE = patch;
       // the flag is resolved at module load, so re-require through a cache bust to observe the OFF path.
       const mod = patch === undefined ? { makeAnthropicProvider }
         : (delete require.cache[require.resolve('../sidecar/providers/anthropic.js')], require('../sidecar/providers/anthropic.js'));
       await collect(mod.makeAnthropicProvider({ fetch: fetchImpl, key: 'k' }), req);
       if (patch !== undefined) {
-        if (prev === undefined) delete process.env.SKYNET_ANTHROPIC_CACHE; else process.env.SKYNET_ANTHROPIC_CACHE = prev;
+        if (prev === undefined) delete process.env.EYEHOLD_ANTHROPIC_CACHE; else process.env.EYEHOLD_ANTHROPIC_CACHE = prev;
         delete require.cache[require.resolve('../sidecar/providers/anthropic.js')];
       }
       return captured;
@@ -136,15 +136,15 @@ async function collect(provider, req) { const out = []; for await (const e of pr
 
     // Kill switch: billing-affecting behaviour must be disableable without a code change.
     const off = await cap({ model: 'm', messages: [{ role: 'system', content: 's' }, { role: 'user', content: 'u' }], tools: TOOLS }, '0');
-    A.ok(!off.system[0].cache_control, 'SKYNET_ANTHROPIC_CACHE=0 drops the system breakpoint');
-    A.ok(!off.tools[0].cache_control, 'SKYNET_ANTHROPIC_CACHE=0 drops every breakpoint');
+    A.ok(!off.system[0].cache_control, 'EYEHOLD_ANTHROPIC_CACHE=0 drops the system breakpoint');
+    A.ok(!off.tools[0].cache_control, 'EYEHOLD_ANTHROPIC_CACHE=0 drops every breakpoint');
     A.eq(off.system[0].text, 's', 'system content survives with caching off');
 
-    // 1-HOUR TTL (2026-07-31): SKYNET_ANTHROPIC_CACHE_TTL=1h rides every breakpoint. Opt-in because a 1h
+    // 1-HOUR TTL (2026-07-31): EYEHOLD_ANTHROPIC_CACHE_TTL=1h rides every breakpoint. Opt-in because a 1h
     // write bills 2.0x (vs 1.25x) — the right trade only for human-paced conversations with >5min gaps.
     {
-      const prevTtl = process.env.SKYNET_ANTHROPIC_CACHE_TTL;
-      process.env.SKYNET_ANTHROPIC_CACHE_TTL = '1h';
+      const prevTtl = process.env.EYEHOLD_ANTHROPIC_CACHE_TTL;
+      process.env.EYEHOLD_ANTHROPIC_CACHE_TTL = '1h';
       delete require.cache[require.resolve('../sidecar/providers/anthropic.js')];
       const mod = require('../sidecar/providers/anthropic.js');
       let got = null;
@@ -156,7 +156,7 @@ async function collect(provider, req) { const out = []; for await (const e of pr
         { model: 'm', messages: [{ role: 'system', content: 's' }, { role: 'user', content: 'u' }] });
       A.eq(got.system[0].cache_control, { type: 'ephemeral', ttl: '1h' }, 'the 1h TTL rides the static-prefix anchor');
       A.eq(got.messages[0].content[0].cache_control, { type: 'ephemeral', ttl: '1h' }, 'and the tail anchors');
-      if (prevTtl === undefined) delete process.env.SKYNET_ANTHROPIC_CACHE_TTL; else process.env.SKYNET_ANTHROPIC_CACHE_TTL = prevTtl;
+      if (prevTtl === undefined) delete process.env.EYEHOLD_ANTHROPIC_CACHE_TTL; else process.env.EYEHOLD_ANTHROPIC_CACHE_TTL = prevTtl;
       delete require.cache[require.resolve('../sidecar/providers/anthropic.js')];
     }
   }

@@ -112,7 +112,7 @@ async function skillRow(fixture, agentId, name) {
   const mock = await startMock();
   const fixture = SidecarFixture.create({
     prefix: 'sk-learning-',
-    env: { SKYNET_OPENROUTER_BASE: mock.base, SKYNET_AUX_BUDGET: '2', SKYNET_SKILL_REVIEW_EVERY: '5', SKYNET_QUEST_REFRESH: '0', STARNET_DEBUG_CHANNELS: '1' },
+    env: { EYEHOLD_OPENROUTER_BASE: mock.base, EYEHOLD_AUX_BUDGET: '2', EYEHOLD_SKILL_REVIEW_EVERY: '5', EYEHOLD_QUEST_REFRESH: '0', EYEHOLD_DEBUG_CHANNELS: '1' },
     timeoutMs: 20000
   });
   // seed ONE clean saved skill for the "use = loaded" agent, through the REAL store (guard + digest stamps)

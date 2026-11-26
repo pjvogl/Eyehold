@@ -5,7 +5,7 @@ import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
-const binary = process.env.STARNET_GITLEAKS_BIN || 'gitleaks';
+const binary = process.env.EYEHOLD_GITLEAKS_BIN || 'gitleaks';
 const result = spawnSync(binary, ['git', '.', '--no-banner', '--redact'], {
   cwd: ROOT,
   encoding: 'utf8',
@@ -14,7 +14,7 @@ const result = spawnSync(binary, ['git', '.', '--no-banner', '--redact'], {
 
 if (result.error) {
   const detail = result.error.code === 'ENOENT'
-    ? 'Gitleaks is not installed. Install it from https://github.com/gitleaks/gitleaks/releases or set STARNET_GITLEAKS_BIN.'
+    ? 'Gitleaks is not installed. Install it from https://github.com/gitleaks/gitleaks/releases or set EYEHOLD_GITLEAKS_BIN.'
     : 'Could not run Gitleaks: ' + result.error.message;
   console.error('[security:secrets] ' + detail);
   process.exit(2);

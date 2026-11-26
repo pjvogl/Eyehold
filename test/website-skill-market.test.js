@@ -1,6 +1,6 @@
 /* node test/website-skill-market.test.js — the public Skill Market page on starnetos.com (2026-09-30).
 
-   website/market.html lists the same signed catalog every station installs from. This pins what keeps it honest
+   website/market.html lists the same signed catalog every keep installs from. This pins what keeps it honest
    and safe on a strict-CSP static site:
      - it is a shell-stamped top page: Skills sits in the nav and footer of every page, and the sitemap lists it
      - no inline script or inline handler (the site's CSP forbids both); it loads market.js, never site.js (the
@@ -30,8 +30,8 @@ A.ok(!/site\.js/.test(html), 'and never site.js (the only page allowed the api.g
 A.ok(/<a href="market\.html" class="on">Skills<\/a>/.test(html), 'its own nav entry is marked current');
 for (const id of ['mk-list', 'mk-status', 'mk-q', 'mk-count']) A.ok(html.indexOf('id="' + id + '"') >= 0, 'the page has #' + id + ' for market.js');
 // ---- uploads (2026-10-06): SHARE YOUR SKILL sends authors to their account's Skills tab, the only upload door ----
-A.ok(/<section class="section" id="share">[\s\S]*?<a class="btn btn-primary" href="https:\/\/account\.starnetos\.com\/account\/skills">\[ SUBMIT A SKILL \]<\/a>/.test(html), 'SHARE YOUR SKILL links SUBMIT to account.starnetos.com/account/skills');
-A.eq([...html.matchAll(/href="(https:\/\/account\.starnetos\.com[^"]*)"/g)].map(m => m[1]).filter(u => u !== 'https://account.starnetos.com/account/skills'), [], 'and no other account URL');
+A.ok(/id="share"[\s\S]*?#share">\[ SUBMISSIONS NOT CONFIGURED \]<\/a>/.test(html), 'skill submission does not open an upstream account');
+A.eq([...html.matchAll(/account\.starnetos\.com/g)], [], 'the market page does not link an upstream account host');
 A.ok(!/Not yet\. Today the market carries/.test(html), 'the FAQ no longer says publishing is impossible');
 A.eq([...html.matchAll(/<span class="section-no">(\d+)<\/span>/g)].map(m => m[1]), ['01', '02', '03', '04', '05'], 'sections stay numbered in order');
 A.ok(/if \(s\.uploaded === true\) meta\.appendChild\(document\.createTextNode\(/.test(js), 'an uploaded skill\'s card says it was shared by a StarNet user (as text)');
@@ -49,7 +49,7 @@ const missing = pages.filter(p => /class="topnav"/.test(read(p)) && !/>Skills<\/
 A.eq(missing, [], 'every page with the site nav has a Skills link');
 const noFooter = pages.filter(p => /class="footer-links"/.test(read(p)) && !/>SKILLS<\/a>/.test(read(p)));
 A.eq(noFooter, [], 'and every footer has SKILLS');
-A.ok(read('sitemap.xml').indexOf('<loc>https://starnetos.com/market.html</loc>') >= 0, 'the sitemap lists the page');
+A.ok(read('sitemap.xml').indexOf('<loc>https://eyehold.com/market.html</loc>') >= 0, 'the sitemap lists the page');
 A.ok(/href="\.\.\/market\.html"/.test(read('docs/skills.html')), 'the skills reference in the docs points to it');
 const shell = spawnSync(process.execPath, [path.join(ROOT, 'scripts', 'website-shell.mjs'), '--check'], { cwd: ROOT, encoding: 'utf8' });
 A.eq(shell.status, 0, 'the shared shell is stamped: ' + (shell.stdout || shell.stderr).trim().split('\n').pop());
@@ -57,7 +57,7 @@ A.eq(shell.status, 0, 'the shared shell is stamped: ' + (shell.stdout || shell.s
 // ---- the script ----
 const fetches = [...js.matchAll(/fetch\(\s*([^,)]+)/g)].map(m => m[1].trim());
 A.eq(fetches.sort(), ['INDEX', 'path'], 'market.js makes exactly two kinds of request: the catalog and a package file');
-A.ok(/var INDEX = '\/\.well-known\/starnet-skills\.json';/.test(js), 'the catalog is the same-origin signed index stations install from');
+A.ok(/var INDEX = '\/\.well-known\/eyehold-skills\.json';/.test(js), 'the catalog is the same-origin signed index keeps install from');
 A.ok(/function safePath\(p\) \{ return \/\^\\\/skills\\\//.test(js), 'package files are only requested under /skills/<slug>/<version>/');
 A.ok(!/innerHTML|insertAdjacentHTML|outerHTML|document\.write/.test(js), 'catalog text is never inserted as HTML');
 A.ok(/function safeHttps\(u\)/.test(js) && /a\.href = up;/.test(js), 'upstream links go through the https check');

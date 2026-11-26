@@ -1,19 +1,19 @@
 # Scheduler reliability audit — 2026-09-21
 
-StarNet baseline: `a934cb61c` (`feat/harness-backend`). Implementation lane:
+Eyehold baseline: `a934cb61c` (`feat/harness-backend`). Implementation lane:
 `agent/cron-reliability-0921`. Hermes reference: NousResearch/hermes-agent
 `8e806ae1b219ebe538bdfacd86756479c3c10a40`, downloaded from upstream on September 21.
-The comparison below distinguishes StarNet tests/live observations from Hermes source inspection.
+The comparison below distinguishes Eyehold tests/live observations from Hermes source inspection.
 Hermes was not installed or exercised against providers; this is not a comparative uptime benchmark.
 
 ## Findings and repairs
 
-| Area | StarNet baseline and evidence | Hermes reference | This pass / remaining limit |
+| Area | Eyehold baseline and evidence | Hermes reference | This pass / remaining limit |
 | --- | --- | --- | --- |
 | Missed runs | `cron.js` supports `fire_once`/`skip`, persisted next-fire times and bounded catch-up; slow schedules normally catch up once, not once per missed slot. | `jobs.py` evaluates lateness, configurable recurring catch-up and pending-slot restoration. | Existing policy retained. Neither local process executes while the host is off. A recurring advance committed immediately before a crash can still lose that occurrence before launch. |
 | Duplicate runs / ownership | Advance-before-run, one-shot claims, heartbeat leases and run-generation fences already exist. Stale reclamation deleted its lease before checking the failure write; a disk fault let a one-shot launch again. | File-locked admission, durable fire claims, execution ownership and process-liveness checks. | Reclamation now retains a settlement fence until persistence succeeds; late host completion cannot replace it. Manual runs and synchronous dispatch exceptions use the same settlement path. |
 | Lock contention | CRUD and driver persistence both bypassed a held lock through an unlocked “merge by id” fallback. Live HTTP repro returned 200 and changed disk under a foreign live PID lock. | Separate tick/jobs OS advisory locks; jobs lock waits are bounded. | Removed both unlocked fallbacks. CRUD returns an explicit error; driver outcomes wait for storage. Single sidecar per workspace remains a required invariant; the portable lock is not a distributed scheduler. |
-| Execution retries | Transient errors have bounded retries (default three, 90-second delay); terminal failure streaks can pause a job. | `unreachable_retry.py` retries recurring jobs at 5/15/30 minutes only when the model was unreachable and no API call completed. | Kept existing execution policy. Hermes is more conservative about retrying potentially effectful work. StarNet's general transient/zombie retries can repeat a tool effect; this pass does not claim otherwise. |
+| Execution retries | Transient errors have bounded retries (default three, 90-second delay); terminal failure streaks can pause a job. | `unreachable_retry.py` retries recurring jobs at 5/15/30 minutes only when the model was unreachable and no API call completed. | Kept existing execution policy. Hermes is more conservative about retrying potentially effectful work. Eyehold's general transient/zombie retries can repeat a tool effect; this pass does not claim otherwise. |
 | Persistence / restart | Verified fsync/rename writes and protected backups; pending finalization stored with each job. A later completion overwrote its predecessor's undelivered result. | Separate SQLite execution and delivery ledgers with bounded terminal history. | Added a durable per-job delivery backlog. New work is deferred at 100 pending results instead of silently evicting results. All metadata is additive; existing jobs load unchanged. |
 | Timezones | IANA validation, host-default timezone, schedule preview and DST tests already exist. Normal driver error settlement omitted the host zone. | Timezone-aware schedules plus repair of persisted instants after offset/configuration changes. | Fixed settlement and preflight-error re-arming. Regression: New York 09:00 now remains `13:00Z` after a September failure; baseline incorrectly stored `09:00Z`. Host-zone changes on old zone-less schedules remain a separate migration concern. |
 | Concurrency | In-process tick guard, one lease per job, configurable global cap and oldest-due fairness; cap defaults off. Manual command runs lacked a lease. | Persistent worker pool, configurable parallelism and running-job claims; resolver defaults to the executor's default when no explicit bound is supplied. | Manual command runs now take a lease. Stress test drains 200 simultaneous jobs exactly once at a configured peak of four. No new default user-work quota introduced. |
@@ -67,7 +67,7 @@ an uncaught exception; it is the restart stimulus, not a claim of a clean shutdo
 
 ## Remaining priorities
 
-1. **Ambiguous outcomes:** StarNet still replays pending external notifications after a
+1. **Ambiguous outcomes:** Eyehold still replays pending external notifications after a
    crash between remote acceptance and durable acknowledgement. That is at-least-once
    recovery, not exactly once. Add per-target sending/unknown receipts and explicit
    reconciliation, following the distinction in Hermes's delivery ledger; do not hide

@@ -61,7 +61,7 @@ const priceOf = () => ({ in: 3, out: 15 });
     const { seq, emit } = setup();
     let summarized = 0;
     const history = [
-      { role: 'system', content: 'You are a station agent.' },
+      { role: 'system', content: 'You are a keep agent.' },
       { role: 'user', content: 'Refactor the importer.' },
       { role: 'assistant', content: 'Reading the importer and its tests. ' + 'a'.repeat(4000) },
       { role: 'user', content: 'Also keep the CLI flags stable. ' + 'b'.repeat(4000) },

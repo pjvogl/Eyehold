@@ -28,7 +28,7 @@ Open the projection preview on port 18797, enter Refit, place a tactical table a
 
 ## Evidence
 
-docs/station-remaster/selection-audit/table-selected.png shows the live corrected border. test/remaster-physical-fit.test.js verifies alpha bounds, translation, mounting, caching and fallback. Live desk selection and tactical-table placement/selection were exercised; Undo restored the original 159 object count.
+docs/keep-remaster/selection-audit/table-selected.png shows the live corrected border. test/remaster-physical-fit.test.js verifies alpha bounds, translation, mounting, caching and fallback. Live desk selection and tactical-table placement/selection were exercised; Undo restored the original 159 object count.
 
 ## Verdict
 

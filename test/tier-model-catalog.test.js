@@ -3,11 +3,11 @@ const test = require('node:test');
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const vm = require('node:vm');
-const source = fs.readFileSync(require.resolve('../frontend/app/stationui.js'), 'utf8');
+const source = fs.readFileSync(require.resolve('../frontend/app/keepui.js'), 'utf8');
 const section = source.slice(source.indexOf("  const TIER_MODELS_KEY ="), source.indexOf('  // P1-8 NOTIFICATION'));
 
 function rig(saved, catalog) {
-  const values = new Map([['starnet.tierModels.v1', JSON.stringify(saved)]]);
+  const values = new Map([['eyehold.tierModels.v1', JSON.stringify(saved)]]);
   const nodes = new Map();
   for (const tier of ['reasoning', 'balanced', 'fast']) nodes.set('#tm-' + tier, {
     options: [], value: '', handlers: {}, replaceChildren() { this.options = []; },
@@ -17,7 +17,7 @@ function rig(saved, catalog) {
   const urls = [];
   const context = vm.createContext({ document: { createElement: () => ({}) },
     localStorage: { getItem: k => values.get(k), setItem: (k, v) => values.set(k, v) },
-    Harness: { getProv: () => 'starnet', api: { get: url => { urls.push(url); return catalog; } } }, sfx() {}
+    Harness: { getProv: () => 'eyehold', api: { get: url => { urls.push(url); return catalog; } } }, sfx() {}
   });
   vm.runInContext(section + '\nthis.wire = wireTierModels;', context);
   const open = () => context.wire({ querySelector: k => nodes.get(k) });
@@ -38,7 +38,7 @@ test('saved tier rows reconcile once with the active provider and survive reopen
     assert.ok(select.options.every(o => !/not in catalog|unverified/.test(o.textContent)));
     r.open(); await new Promise(resolve => setImmediate(resolve));
   }
-  assert.ok(r.urls.every(url => url === '/api/models/starnet'));
+  assert.ok(r.urls.every(url => url === '/api/models/eyehold'));
 });
 
 test('catalog failure preserves saved pins without claiming absence; successful absence is labeled', async () => {
@@ -47,6 +47,6 @@ test('catalog failure preserves saved pins without claiming absence; successful 
     await new Promise(resolve => setImmediate(resolve));
     assert.equal(r.nodes.get('#tm-fast').value, 'saved-model');
     assert.match(r.nodes.get('#tm-fast').options[1].textContent, label);
-    assert.equal(JSON.parse(r.values.get('starnet.tierModels.v1')).fast, 'saved-model');
+    assert.equal(JSON.parse(r.values.get('eyehold.tierModels.v1')).fast, 'saved-model');
   }
 });

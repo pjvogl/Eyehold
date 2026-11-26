@@ -41,12 +41,12 @@ async function journey() {
   });
   await new Promise(r=>server.listen(0,'127.0.0.1',r));
   const providerBase='http://127.0.0.1:'+server.address().port+'/v1';
-  const live = process.env.STARNET_MEMORY_LIVE_URL;
+  const live = process.env.EYEHOLD_MEMORY_LIVE_URL;
   const fixture = live ? null : SidecarFixture.create({prefix:'memory-corrections-',timeoutMs:20000,env:{
-    SKYNET_FULL_ACCESS:'1',STARNET_FULL_ACCESS:'1',SKYNET_AUX_BUDGET:'1',STARNET_AUX_BUDGET:'1',
-    SKYNET_OPENROUTER_KEY:'memory-fixture',STARNET_OPENROUTER_KEY:'memory-fixture',
-    SKYNET_OPENROUTER_BASE:providerBase,STARNET_OPENROUTER_BASE:providerBase,
-    SKYNET_DEFAULT_MODEL:'memory-fixture',STARNET_DEFAULT_MODEL:'memory-fixture'
+    EYEHOLD_FULL_ACCESS:'1',EYEHOLD_FULL_ACCESS:'1',EYEHOLD_AUX_BUDGET:'1',EYEHOLD_AUX_BUDGET:'1',
+    EYEHOLD_OPENROUTER_KEY:'memory-fixture',EYEHOLD_OPENROUTER_KEY:'memory-fixture',
+    EYEHOLD_OPENROUTER_BASE:providerBase,EYEHOLD_OPENROUTER_BASE:providerBase,
+    EYEHOLD_DEFAULT_MODEL:'memory-fixture',EYEHOLD_DEFAULT_MODEL:'memory-fixture'
   }});
   if(fixture && process.argv.includes('--seeded')) {
     fixture.entry=path.resolve(__dirname,'../dev/seed.js'); fixture.args=['--keep','--workspace',fixture.workspace]; fixture.timeoutMs=30000;
@@ -58,7 +58,7 @@ async function journey() {
   let token = '';
   const request = async(route,options={}) => {
     if (fixture) return fixture.request(route,options);
-    return fetch(live+route,{...options,headers:{...options.headers,Origin:live,'X-StarNet-Token':token}});
+    return fetch(live+route,{...options,headers:{...options.headers,Origin:live,'X-Eyehold-Token':token}});
   };
   const json = async(method,route,body)=> {
     const r=await request(route,{method,headers:{'Content-Type':'application/json'},body:body===undefined?undefined:JSON.stringify(body)});
@@ -99,8 +99,8 @@ async function journey() {
     assert.equal((await records())[0].body,corrected,'proposal does not silently replace approved state');
     proof.pending=p;
     if(fixture){await fixture.restart();p=(await pending())[0];assert.equal(p.replaceId,'note_1');}
-    if(process.env.STARNET_MEMORY_UI_READY) {
-      fs.writeFileSync(process.env.STARNET_MEMORY_UI_READY,JSON.stringify({baseUrl:fixture?.baseUrl||live,pending:p}));
+    if(process.env.EYEHOLD_MEMORY_UI_READY) {
+      fs.writeFileSync(process.env.EYEHOLD_MEMORY_UI_READY,JSON.stringify({baseUrl:fixture?.baseUrl||live,pending:p}));
       const until=Date.now()+180000;
       while(Date.now()<until && (await records())[0].body!==approved)await new Promise(r=>setTimeout(r,250));
       assert.equal((await records())[0].body,approved,'the live UI must apply the reviewed correction');
@@ -120,14 +120,14 @@ async function journey() {
     assert.equal(stale.status,409);assert.match((await records())[0].body,/monochrome/);
     assert.equal((await pending()).length,1,'failed correction stays available for review');
     await json('POST','/api/memory/turnin',{agentId:'agent',runId:p.runId,id:p.id,verdict:'discard'});
-    phase='stop';proof.stop=await run('Inspect the station and report the result','stop');
+    phase='stop';proof.stop=await run('Inspect the keep and report the result','stop');
     assert.equal(proof.stop.find(e=>e.name==='agent.run.end').payload.reason,'error');
     assert.ok(proof.stop.some(e=>e.name==='agent.run.error'&&/incomplete/.test(e.payload.message)));
     phase='claim';proof.claim=await run('Save my reply preference','claim');
     assert.equal(proof.claim.find(e=>e.name==='agent.run.end').payload.reason,'error');
     assert.ok(proof.claim.some(e=>e.name==='agent.run.error'&&/write receipt/.test(e.payload.message)));
     proof.records=await records();proof.calls=calls.map(c=>({phase:c.phase,auxiliary:c.auxiliary,recall:c.messages.filter(m=>String(m.content).includes('<recalled-memory>'))}));
-    if(process.env.STARNET_MEMORY_PROOF){fs.mkdirSync(path.dirname(process.env.STARNET_MEMORY_PROOF),{recursive:true});fs.writeFileSync(process.env.STARNET_MEMORY_PROOF,JSON.stringify(proof,null,2));}
+    if(process.env.EYEHOLD_MEMORY_PROOF){fs.mkdirSync(path.dirname(process.env.EYEHOLD_MEMORY_PROOF),{recursive:true});fs.writeFileSync(process.env.EYEHOLD_MEMORY_PROOF,JSON.stringify(proof,null,2));}
     console.log('memory-corrections.http.test: PASS (real writes, scoped recall, reviewed updates, restart, stale review, stops, save receipts)');
   } finally {if(fixture)await fixture.dispose();await new Promise(r=>server.close(r));}
 }

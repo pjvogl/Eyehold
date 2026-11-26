@@ -14,7 +14,7 @@ This replaces the product framing and build sequence of the earlier
 `HANDOFF_ROOMS_2026-09-04.md` proposal. That document was read in the integration tree
 and was untracked at planning time. Keep its useful source pointers as hypotheses.
 Use “group chat” or “group session” in the interface. Physical rooms, a Briefing Table,
-templates, and station placement are not prerequisites for using group chat.
+templates, and keep placement are not prerequisites for using group chat.
 
 The user has confirmed the group DM concept and requested this plan. Defaults below
 are implementation recommendations, not newly locked entries in DECISIONS.md.

@@ -22,11 +22,11 @@ This is not exhaustive hardware, security or production-provider certification. 
 
 | Priority | Record | Observed behavior | Release relationship |
 | --- | --- | --- | --- |
-| P1 | [1600dcf0](../qa/bugs/1600dcf0-late-model-catalog-reverts-new-provider-choice.md) | Hold an Ollama catalog reply; select StarNet / anthropic/test-model; release the reply. State becomes Ollama / empty model. | Existing race survives 0.11.1. Same capture/reconcile sequence is present in 0.11.0. |
+| P1 | [1600dcf0](../qa/bugs/1600dcf0-late-model-catalog-reverts-new-provider-choice.md) | Hold an Ollama catalog reply; select Eyehold / anthropic/test-model; release the reply. State becomes Ollama / empty model. | Existing race survives 0.11.1. Same capture/reconcile sequence is present in 0.11.0. |
 | P1 | [79867817](../qa/bugs/79867817-managed-image-charge-missing-from-run-cost.md) | Simulated managed wallet loses $0.025 for an image, while both cost events and completed run report $0.00. Repeated after restart. | Newly enabled managed-image path exposes an existing auxiliary-cost accounting omission. |
 | P1 | [a0dffdd7](../qa/bugs/a0dffdd7-image-generation-writes-after-run-cancellation.md) | Cancel while image response is held; after cancellation is acknowledged, release it. Run ends cancelled but the output file is created. | Inherited image-tool cancellation limitation also affects new managed route. |
 | P2 | [12203375](../qa/bugs/12203375-glass-panel-height-resets-on-reopen.md) | Settings panel height: 420px initially, 512px after two keyboard resize actions, 420px after close/reopen. | New glass control retains height only on the current DOM node. |
-| P2 | [3a2837bd](../qa/bugs/3a2837bd-byok-image-recovery-only-offers-paid-link.md) | An unlinked BYOK image task is told only to link a StarNet account, although a separate OpenRouter key is supported. | Error-message regression in the media-route repair. |
+| P2 | [3a2837bd](../qa/bugs/3a2837bd-byok-image-recovery-only-offers-paid-link.md) | An unlinked BYOK image task is told only to link a Eyehold account, although a separate OpenRouter key is supported. | Error-message regression in the media-route repair. |
 
 ### Provider selection
 
@@ -42,7 +42,7 @@ The cancellation probe releases the provider *after* the cancel endpoint acknowl
 
 ### UI recovery and persistence
 
-Use the existing window preference store for docked panel height, retaining separate normal/maximized state and clamping after DPI changes. For media recovery, distinguish a broken managed link from a BYOK station missing a media credential. The supported OpenRouter option should remain visible to BYOK users. These are bounded fixes, not reasons to redesign the menus again.
+Use the existing window preference store for docked panel height, retaining separate normal/maximized state and clamping after DPI changes. For media recovery, distinguish a broken managed link from a BYOK keep missing a media credential. The supported OpenRouter option should remain visible to BYOK users. These are bounded fixes, not reasons to redesign the menus again.
 
 ## What the hurried release left unresolved
 
@@ -50,14 +50,14 @@ Use the existing window preference store for docked panel height, retaining sepa
 | --- | --- | --- |
 | Historical managed Sonnet HTTP 400 | [fd9c4b4d](../qa/bugs/fd9c4b4d-managed-sonnet-400-unresolved.md) remains open. Production gateway tracing was deployed on September 6 and isolated production-host requests succeeded, but the affected request remains uncorrelated. | Exercise the exact installed build and a funded test account with a currently advertised model; correlate local run ID, gateway request ID and upstream response. Do not call it fixed from neighboring routing tests. |
 | Incorrect authoritative managed URL | 0.11.1 fixes stale *per-request* overrides. [3195ab5a](../qa/bugs/3195ab5a-managed-chat-can-use-a-stale-request-endpoint.md) excludes a bad saved link URL, operator override or DNS redirection. | Verify sanitized actual destination and credential source after relink/provider switch/restart. Distinguish local Ollama refusal from managed-service failure in recovery text. |
-| Funded account shows zero-credit warning | [72af29f4](../qa/bugs/72af29f4-funded-station-false-zero-warning.md), still open. | Verify cached/stale/offline balance, auth state, relink, restart and UI readback against the actual account. |
+| Funded account shows zero-credit warning | [72af29f4](../qa/bugs/72af29f4-funded-keep-false-zero-warning.md), still open. | Verify cached/stale/offline balance, auth state, relink, restart and UI readback against the actual account. |
 | Mac paid onboarding after relink | [eaaa3ec8](../qa/bugs/eaaa3ec8-mac-onboarding-unreachable-after-link.md), still open. | Real Mac installed link/reload/restart path with protected credential persistence. Linux/Windows fixtures cannot close it. |
 | Blank viewport after 10–20 minutes | [9256a771](../qa/bugs/9256a771-viewport-black-after-idle.md), still open; rendering changed substantially. | Run a sustained installed renderer test at relevant display scale with active/idle transitions, minimize/restore, sleep/wake and context loss; collect GPU/frame/memory diagnostics before reload. |
 | Unexplained idle usage | [acb47320](../qa/bugs/acb47320-idle-usage-customer-unexplained.md), no established customer-specific billing cause. | Attribute actual model/media/background calls to run receipts; compare idle with routines, loops, discovery and night shift individually enabled. Do not infer zero spend from an idle animation. |
 | ONCE routine missing | [c2a6c3c8](../qa/bugs/c2a6c3c8-once-routine-reported-missing.md), still open despite successful related readback/restart tests. | Visible create, schedule, execution, history and restart verification on the candidate; retain lost-ack and duplicate recovery cases. |
 | Trusted Project / equipment discrepancy | [432df352](../qa/bugs/432df352-saved-equipment-omitted-from-interactive-tool-pr.md): omitted placement is reproduced/fixed; the original persisted Trusted Project symptom is not. | Verify installed saved profile and actual tool list; distinguish absent, empty, removed and disabled equipment, assigned empty rooms, and explicit agent identity. |
 | Voice hardware/acoustics | [voice receipt](../qa/digests/2026-09-09-voice-continuity.md) proves controlled failures and real local Kokoro playback; not physical noise/echo or provider realtime audio. | Check installed microphone allow/deny/reset and echo/noise/barge-in on actual hardware, including Apple Silicon. Record which voice mode was tested. |
-| Automatic updater path | Publication receipt proves signed downloads, hashes, manual 0.10.13/0.11.0 upgrades and read-only updater smoke. | Drive an older installed client through actual Tauri download/install/relaunch, then verify version, station state, keychain and a run. A manually installed binary is not that canary. |
+| Automatic updater path | Publication receipt proves signed downloads, hashes, manual 0.10.13/0.11.0 upgrades and read-only updater smoke. | Drive an older installed client through actual Tauri download/install/relaunch, then verify version, keep state, keychain and a run. A manually installed binary is not that canary. |
 | Extended soak | Explicitly waived for 0.11.1. Short source/UI runs cannot replace it. | Run the established release-soak requirement on the frozen candidate with restart/outage/scale coverage; any new exception must remain explicit. |
 
 ## Current QA authority needs reconciliation

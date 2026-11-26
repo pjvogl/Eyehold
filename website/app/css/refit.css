@@ -1,7 +1,7 @@
-/* STARNET — refit.css : premium polish for the REFIT (station-build) modal forms.
-   BAY PICKER · WORKSTATION PICKER · FILTER EDITOR · MERGER EDITOR — the pickers that ride the
+/* EYEHOLD — refit.css : premium polish for the REFIT (keep-build) modal forms.
+   BAY PICKER · WORKKEEP PICKER · FILTER EDITOR · MERGER EDITOR — the pickers that ride the
    .refit-guide card in build.js. This file replaces the old inline hex + inline layout on those
-   forms with the station's premium vocabulary: theme vars only (no hardcoded hex outside var()
+   forms with the keep's premium vocabulary: theme vars only (no hardcoded hex outside var()
    fallbacks), settings-panel input styling, .sec-style region dividers, motion focus ring, and a
    soft entrance on open. Loaded after app.css/comms.css, before motion.css — see index.html.
 
@@ -89,7 +89,7 @@
 
 /* ---------- the destructive action on a card (2026-08-07) ----------
    Reads as the one dangerous verb in the row without being a red slab, and takes the ArmConfirm
-   two-step (never window.confirm — the station owns its own dialogs). `.armed` is the class
+   two-step (never window.confirm — the keep owns its own dialogs). `.armed` is the class
    ArmConfirm stamps while the second click is pending. */
 .btn-sm.refit-danger { color: rgba(255,150,138,.9); border-color: rgba(255,92,77,.3); }
 .btn-sm.refit-danger:hover:not(:disabled) { color: #ffb0a8; border-color: var(--bad); background: rgba(255,92,77,.10); }
@@ -176,7 +176,7 @@
    strip, line name, trigger truth, routine list AND the create form — and `.refit-guide` centres it in a
    fixed inset:0 layer with no scroll of its own. Measured on an 820px-tall window with this rule lifted:
    978px tall, top −79, bottom 899, ✓ GOT IT past the bottom edge and unreachable. Scoped to the flow
-   card; the thumb is skinned (the station paints its own scrollbars). */
+   card; the thumb is skinned (the keep paints its own scrollbars). */
 .refit-flow-card .refit-guide-card {
   max-height: calc(100% - 28px); overflow-y: auto;
   scrollbar-width: thin; scrollbar-color: var(--ph-dim) transparent;
@@ -189,7 +189,7 @@
 .refit-flow-intake .refit-guide-card { width: min(468px, 92vw); }
 
 /* ---------- FINISH THE LINE — the per-line checklist card (guided workflows Phase 2) ----------
-   A floating side card in the station's matte panel vocabulary: theme vars only, VT323, and every
+   A floating side card in the keep's matte panel vocabulary: theme vars only, VT323, and every
    mixed-glyph label BOX-centred (flex), never padded from font-size (symbol-glyph fallback law).
    position:fixed — it shares the flashTip/clientX coordinate basis build.js positions it in.
    z-index 3 (with the action tip): every .refit-guide picker (z 4) opens OVER it by design. */
@@ -269,7 +269,7 @@
 .workflow-footer > span { flex: 1; font-size: 13px; line-height: 1.3; color: var(--ph-dim); }
 .workflow-footer .btn-sm { min-height: 34px; padding: 7px 15px; font-size: 15px; }
 .refit-workflow-editor :is(button,input,textarea,summary):focus-visible { outline: 2px solid var(--ph-bright); outline-offset: 2px; }
-/* A placement hint can arrive while adding a workstation from the Bay editor.
+/* A placement hint can arrive while adding a workkeep from the Bay editor.
    Keep that hint for after setup instead of covering the fields with a second panel. */
 body:has(.refit-workflow-editor) > .tut-coach:not(.kit),
 body:has(.refit-workflow-editor):has(> .tut-coach:not(.kit)) > .tut-ring { visibility: hidden; pointer-events: none; }
@@ -287,7 +287,7 @@ body:has(.refit-workflow-editor):has(> .tut-coach:not(.kit)) > .tut-ring { visib
   .refit-workflow-editor #step-rows { grid-template-columns: repeat(2,minmax(0,1fr)); }
   .workflow-header p { font-size: 15px; }
 }
-/* STARTER GEAR (was STATION ORDERS) — the stage BEFORE a line exists, in the same card slot. The count is the only
+/* STARTER GEAR (was KEEP ORDERS) — the stage BEFORE a line exists, in the same card slot. The count is the only
    new part: a real n/4 off the live model, so progress reads at a glance. */
 .refit-finline .fl-count { margin-left: auto; font-size: 13px; letter-spacing: 1px; color: var(--ph-dim); }
 .refit-orders .fl-step { transition: color var(--t-fast, .12s) ease; }
@@ -310,7 +310,7 @@ body:has(.refit-workflow-editor):has(> .tut-coach:not(.kit)) > .tut-ring { visib
   padding: 4px 7px;
 }
 .refit-finline .fl-step.done { color: var(--ok); opacity: .8; }
-/* an OFF step keeps pointer events so the station tooltip ("coming online soon") still speaks */
+/* an OFF step keeps pointer events so the keep tooltip ("coming online soon") still speaks */
 .refit-finline .fl-step.off { opacity: .45; cursor: default; }
 /* the SAMPLE readout (2026-08-22): the server's recorded outcome under ③ — stages ▸ cost ▸ the first line the
    line delivered. Matte inset, dim voice; REFUSED reads in the bad colour with the server's own reason. */

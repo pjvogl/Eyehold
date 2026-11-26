@@ -26,7 +26,7 @@ All 70 previously recorded customer/owner fix commits were verified as ancestors
 
 ## Still-open investigations
 
-September 16 release interruption: owner-reported REFIT entry freeze is recorded as `bf3be27e`. Source fix `15ac83ceb` passes the copied 33-footprint/141-prop station entry, edit and undo probe. The installed candidate remains blocked until rebuilt-installation verification resolves the P1 machine finding. Repeated Task Board openings were caused by the release QA runner; its panel-driving loop has been removed. Performance observation is now passive.
+September 16 release interruption: owner-reported REFIT entry freeze is recorded as `bf3be27e`. Source fix `15ac83ceb` passes the copied 33-footprint/141-prop keep entry, edit and undo probe. The installed candidate remains blocked until rebuilt-installation verification resolves the P1 machine finding. Repeated Task Board openings were caused by the release QA runner; its panel-driving loop has been removed. Performance observation is now passive.
 
 | Report | Disposition | Evidence needed to close |
 | --- | --- | --- |

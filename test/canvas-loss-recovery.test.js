@@ -1,8 +1,8 @@
-/* node test/canvas-loss-recovery.test.js — THE STATION MAY NEVER SILENTLY GO BLACK.
+/* node test/canvas-loss-recovery.test.js — THE KEEP MAY NEVER SILENTLY GO BLACK.
 
-   Reported by Andrew on 0.10.2: "the station randomly went black and the only thing that appears
+   Reported by Andrew on 0.10.2: "the keep randomly went black and the only thing that appears
    is the agents, and the props." That symptom names its cause. Every layer that is NOT redrawn
-   from scratch each frame lives in an offscreen <canvas> — the station bake (floors/walls/hull +
+   from scratch each frame lives in an offscreen <canvas> — the keep bake (floors/walls/hull +
    lightmap), the SpaceBG sky, the Terrain ground. Agents draw from <img> sprite sheets and props
    draw procedurally, so those two rebuild every frame, and those two are exactly what survived.
 
@@ -12,7 +12,7 @@
    blits a transparent plate every frame, and it NEVER heals — a bake only re-runs when the
    geometry changes, and no geometry changed.
 
-   Measured live in the seeded app (worktree agent/black-station, 808x752 stage) by zeroing the
+   Measured live in the seeded app (worktree agent/black-keep, 808x752 stage) by zeroing the
    plates in place via World._dbgLoseCanvases():
        healthy frame   86.15% non-black px, mean luma 26.44
        plates zeroed   15.88% non-black px, mean luma  6.93   <- the reported frame
@@ -55,14 +55,14 @@ const spaceSrc = stripComments(app('spacebg.js'));
 const terrSrc = stripComments(app('terrain.js'));
 
 // the stripper itself must work, or every assertion below is vacuous
-A.ok(!/THE STATION MAY NEVER SILENTLY GO BLACK/.test(stripComments('/* THE STATION MAY NEVER SILENTLY GO BLACK */ var x = 1;')),
+A.ok(!/THE KEEP MAY NEVER SILENTLY GO BLACK/.test(stripComments('/* THE KEEP MAY NEVER SILENTLY GO BLACK */ var x = 1;')),
   'stripComments removes block comments (assertions bind to code, not prose)');
 A.ok(/var x = 1/.test(stripComments('// note\nvar x = 1;')), 'stripComments keeps the code around a line comment');
 A.ok(/'contextlost'/.test(stripComments("el.addEventListener('contextlost', f); /* c */")),
   'stripComments preserves string literals (quoted event names still match)');
 
 /* ---- 1. THE CACHE OWNERS CAN BE REBUILT AT ALL ----
-   This is the structural gap that made the black station permanent: SpaceBG and Terrain built
+   This is the structural gap that made the black keep permanent: SpaceBG and Terrain built
    their plates once and exposed NO way to drop them, so a blanked sky/ground could never come
    back for the life of the page. */
 A.ok(/function invalidate\(\)\s*\{[^}]*\bst = null\b/.test(spaceSrc),
@@ -108,7 +108,7 @@ A.ok(/if \(W < 2 \|\| H < 2\) return;/.test(worldSrc),
   'a 1x1 blank bake records no sentinel — the watchdog stays inert rather than rebaking forever');
 
 /* ---- 3. THE WATCHDOG runs in the frame, and the SAME frame repaints ----
-   Detecting the loss one frame and healing it the next would still flash a black station. */
+   Detecting the loss one frame and healing it the next would still flash a black keep. */
 const fb = /function frameBody\(now\)\s*\{([\s\S]*?)\n    ctx\.setTransform\(1, 0, 0, 1, 0, 0\);/.exec(worldSrc);
 A.ok(fb, 'world.js still defines frameBody with the pre-draw block');
 const fbHead = fb ? fb[1] : '';
@@ -120,7 +120,7 @@ A.ok(/function watchCanvasLoss\(now\)[\s\S]{0,300}?now - lastProbeAt < PROBE_MS/
 
 /* ---- 4. RECOVERY rebuilds ALL THREE cache owners ----
    The bake is only what the watchdog can SEE. The same reset blanked the sky and the ground, so
-   healing the floor alone would leave a starless void behind a correct station. */
+   healing the floor alone would leave a starless void behind a correct keep. */
 const rec = /function recoverLostCanvases\(now, why\)\s*\{([\s\S]*?)\n  \}/.exec(worldSrc);
 A.ok(rec, 'world.js defines recoverLostCanvases');
 const recBody = rec ? rec[1] : '';
@@ -131,7 +131,7 @@ A.ok(!/\bcache = null\b/.test(recBody),
   'recovery never nulls the bake — if rederive cannot produce geometry, the last good bake still beats an empty stage');
 /* THE BACKOFF MUST NOT BE A FLAT COOLDOWN. A plain `now - lastRecoverAt < COOLDOWN` was the
    obvious guard and it was wrong — caught by wiping the plates five times in a row live, where
-   the cooldown earned by the FIRST loss made the station sit black through the next one
+   the cooldown earned by the FIRST loss made the keep sit black through the next one
    (cycles 2/4/5 came back 14.7%/10.1%/11.4% non-black with the sentinel still reading blank).
    Only a recovery that changed NOTHING is evidence of a broken GPU worth rate-limiting. */
 A.ok(/futileRecoveries > 0 && now - lastRecoverAt < RECOVER_COOLDOWN_MS/.test(recBody),
@@ -143,7 +143,7 @@ A.ok(/if \(!bakeWentBlank\(\)\) \{ futileRecoveries = 0; return; \}/.test(worldS
 A.ok(/if \(!recoverLostCanvases\([\s\S]{0,80}?\) return;\s*rebake\(\);/.test(worldSrc),
   'the watchdog rebakes inside the same call, so the fresh plate is testable immediately');
 A.ok(/const PROBE_MS = (\d+)/.test(worldSrc) && Number(/const PROBE_MS = (\d+)/.exec(worldSrc)[1]) <= 250,
-  'the sentinel is read at least 4x a second — a lost frame is a flicker, never a black station');
+  'the sentinel is read at least 4x a second — a lost frame is a flicker, never a black keep');
 
 /* ---- 5. THE BROWSER-EVENT PATH: belt to the watchdog's braces ----
    preventDefault() on 'contextlost' is what ASKS for restoration; without it 'contextrestored'
@@ -168,7 +168,7 @@ A.ok(/addEventListener\('focus'[\s\S]{0,120}?lastProbeAt = 0/.test(worldSrc),
    There is no JS API to lose a 2D context on demand, so the only way to keep this honest is a
    hook that reproduces its EFFECT: zero the plates in place, objects and sizes intact. */
 A.ok(/_dbgLoseCanvases/.test(worldSrc) && /return \{[\s\S]*\b_dbgLoseCanvases\b/.test(worldSrc),
-  'World exports _dbgLoseCanvases so the black station can be reproduced on demand');
+  'World exports _dbgLoseCanvases so the black keep can be reproduced on demand');
 A.ok(/_dbgCanvasLoss/.test(worldSrc) && /return \{[\s\S]*\b_dbgCanvasLoss\b/.test(worldSrc),
   'World exports _dbgCanvasLoss so a verify script can assert RECOVERY, not just returned pixels');
 A.ok(/function _dbgLosePixels\(\)/.test(spaceSrc), 'SpaceBG can zero its plates in place for the repro');

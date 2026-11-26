@@ -5,7 +5,7 @@
 The loop is complete when each of the five ref-parity areas has:
 
 1. A reference-harness reference invariant identified from `C:\Users\<you>\harness-ref`.
-2. A StarNet gap assessment against the current JS/Tauri harness.
+2. A Eyehold gap assessment against the current JS/Tauri harness.
 3. A concrete code or test change for the highest-risk gap.
 4. Passing targeted verification and `npm run test:fast`.
 5. A scoped commit on the active agent worktree.
@@ -16,17 +16,17 @@ Repeat until all five areas are green:
 
 1. Pick the highest-risk unchecked area.
 2. Read the reference harness source and tests for the invariant, not just docs.
-3. Read the StarNet implementation and current tests.
+3. Read the Eyehold implementation and current tests.
 4. Classify the gap as `implementation`, `coverage`, or `already-covered`.
 5. Add the smallest regression test that would catch the ref-class failure.
-6. Patch StarNet using existing modules and contracts.
+6. Patch Eyehold using existing modules and contracts.
 7. Run the narrow test, then the relevant suite.
 8. Update this file with the result.
 9. Commit only the touched files.
 
 ## Areas
 
-| Area | the reference harness invariant | StarNet gap | Loop status |
+| Area | the reference harness invariant | Eyehold gap | Loop status |
 | --- | --- | --- | --- |
 | 1. Routines / cron | Manual run must claim/fire immediately through the same observable run body as scheduled fires. Scheduled/manual fires must be visible outside the local panel. | Closed: `/api/cron/run` now shares the scheduled-fire work-item helper, broadcasts run lifecycle SSE, and has source-lock plus real sidecar e2e coverage. | Green: `node test/cron.run-now.test.js`, `node test/cron.tick.test.js`, and `npm.cmd run test:http` passed. |
 | 2. Messaging channels | Inbound platform messages must drive the same run host, keep session/delivery boundaries durable, and survive transport edge cases with fake-transport tests. | Closed: Telegram can now be pointed at a local Bot API fake, and a true sidecar e2e proves inbound DM -> `runOnce` -> provider -> `sendMessage` -> SSE -> transcript. | Green: `node test/channels.telegram.e2e.test.js`, channel unit tests, and `npm.cmd run test:http` passed. |

@@ -56,7 +56,7 @@ module.exports = (async () => {
     A.eq(t2({ error: 'boom' }), { error: { message: 'boom' } }, 'a mid-stream error line becomes an error chunk');
   }
   // ---- window sizing ----
-  A.eq(N.pickNumCtx(25000, {}), 32768, 'a StarNet task (~21k prompt + 4k output) lands on 32k');
+  A.eq(N.pickNumCtx(25000, {}), 32768, 'a Eyehold task (~21k prompt + 4k output) lands on 32k');
   A.eq(N.pickNumCtx(25000, { modelMax: 16384 }), 16384, 'never past the model\'s trained window');
   A.eq(N.pickNumCtx(900000, {}), N.DEFAULT_MAX_CTX, 'never past the ceiling');
   A.eq(N.pickNumCtx(1000, { floor: 32768 }), 32768, 'never steps down from a window the model already runs at (a reload)');
@@ -192,13 +192,13 @@ module.exports = (async () => {
     seen.length = 0;
     await collect(factory.selectProvider({ provider: 'custom', baseUrl: 'http://127.0.0.1:1234/v1', fetch: async (url) => { seen.push(url); return new Response('data: [DONE]\n\n', { status: 200 }); } }), { model: 'm', messages: [{ role: 'user', content: 'hi' }] });
     A.ok(seen.every(u => !/\/api\//.test(u)), 'a custom endpoint stays on /v1');
-    const prev = process.env.SKYNET_OLLAMA_NUM_CTX;
-    process.env.SKYNET_OLLAMA_NUM_CTX = '12000';
+    const prev = process.env.EYEHOLD_OLLAMA_NUM_CTX;
+    process.env.EYEHOLD_OLLAMA_NUM_CTX = '12000';
     try {
       let ctx = 0;
       await collect(factory.selectProvider({ provider: 'ollama', fetch: async (url, init) => { if (url.endsWith('/api/chat')) { ctx = JSON.parse(init.body).options.num_ctx; return ndjson([{ message: { content: '' }, done: true }]); } return new Response('{}', { status: 200 }); } }), { model: 'm', messages: [{ role: 'user', content: 'hi' }] });
-      A.eq(ctx, 12000, 'SKYNET_OLLAMA_NUM_CTX pins the window');
-    } finally { if (prev == null) delete process.env.SKYNET_OLLAMA_NUM_CTX; else process.env.SKYNET_OLLAMA_NUM_CTX = prev; }
+      A.eq(ctx, 12000, 'EYEHOLD_OLLAMA_NUM_CTX pins the window');
+    } finally { if (prev == null) delete process.env.EYEHOLD_OLLAMA_NUM_CTX; else process.env.EYEHOLD_OLLAMA_NUM_CTX = prev; }
   }
 
   // The window outlives the provider INSTANCE (a run builds a fresh one): a greeting after a task must not reload
@@ -215,7 +215,7 @@ module.exports = (async () => {
     await collect(mk(), { model: 'q', messages: [{ role: 'user', content: 'hello' }] });
     A.eq(sizes, [32768, 32768], 'a small turn on a NEW provider instance keeps the window the task loaded');
   }
-  // StarNet restarted while Ollama still holds the model at a larger window: adopt it instead of reloading smaller.
+  // Eyehold restarted while Ollama still holds the model at a larger window: adopt it instead of reloading smaller.
   {
     const sizes = [];
     const fetch = async (url, init) => {

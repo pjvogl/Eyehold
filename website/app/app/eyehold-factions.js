@@ -16,7 +16,9 @@ const sprites={
   roost:{palette:{A:'#b78a69',B:'#6b4d42',C:'#b9a078',D:'#393642',E:'#e8ca97'},rows:[
 '.....BBBBB......','....BBCCCBB.....','....BAAAABB.....','...BBAEEAABB....','...BBAAAABB.....','....BBBBBB......','...BCCCCCCB.....','..BBCCCCCCBB....','..BBCCDDCCBB....','..BBCCDDCCBB....','...BCCCCCCB.....','...BCCCCCCB.....','...BBBBBBBB.....','...BBB..BBB.....','..BBBB..BBBB....','..BBBB..BBBB....','...CCC..CCC.....','................']},
   astral:{palette:{A:'#c8b9ae',B:'#373a66',C:'#746bac',D:'#d1b6eb',E:'#f2cc89'},rows:[
-'......BBBB......','.....BBBBBB.....','....BBCCCCBB....','....BAAAAABB....','....BAEEAABB....','.....BAAABB.....','.....BBBBBB.....','....BCCCCCBB....','...BBCCDDCCBB...','..BBCCCDCCCBB...','...BBCCCCCCB....','....BCCCCCBB....','....BBCCCCBB....','....BBCCBB......','....BB..BB......','...BBB..BBB.....','...DD....DD.....','................']}
+'......BBBB......','.....BBBBBB.....','....BBCCCCBB....','....BAAAAABB....','....BAEEAABB....','.....BAAABB.....','.....BBBBBB.....','....BCCCCCBB....','...BBCCDDCCBB...','..BBCCCDCCCBB...','...BBCCCCCCB....','....BCCCCCBB....','....BBCCCCBB....','....BBCCBB......','....BB..BB......','...BBB..BBB.....','...DD....DD.....','................']},
+  wanderer:{palette:{A:'#1c1a22',B:'#6e5340',C:'#cbb89a',D:'#8d3b32',E:'#e6c27a'},rows:[
+'......AAAA......','.....AAAAAA.....','....AACCCAA.....','....AACCCAA.....','...AAACCCAAA....','...AAAAAAAAA....','..AAAAAAAAAAA...','..AABBBBBBAA....','..AABBDDBBAA....','..AAAAAAAAAAA...','...AAABBBBAA....','...AAABBBBAA....','....AAABAAA.....','....AAA.AAA.....','...AAAA.AAAA....','..BBAA...AABB...','..BB.......BB...','................']}
 };
 // Normalize authored grids so deliberate empty margins cannot truncate a silhouette.
 for(const rec of Object.values(sprites))rec.rows=rec.rows.map(row=>row.padEnd(16,'.'));

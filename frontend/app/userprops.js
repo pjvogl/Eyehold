@@ -1,11 +1,11 @@
 /* frontend/app/userprops.js — player-made props, page side.
-   Boot: fetch the station's made props (GET /api/userprops), fetch each PNG with the API token (a blob URL, so
+   Boot: fetch the keep's made props (GET /api/userprops), fetch each PNG with the API token (a blob URL, so
    the master token never rides in a URL), and register it: PropSprites.registerUserProp (catalog row) +
    PropRemaster.registerRuntime (raster art). Placed made props draw as a dim placeholder until their art is in.
-   Make: POST /api/userprops/generate {noun} starts a StarNet-credits job; watch() polls the station (which polls
+   Make: POST /api/userprops/generate {noun} starts a Eyehold-credits job; watch() polls the keep (which polls
    the cloud and keeps the job on disk) until it settles, then loads the new prop. Every number shown to the
-   player (cost, tries) is the job state the station reports, never a guess.
-   Fires window 'starnet:userprops-changed' whenever the made-prop catalog changes (build.js re-renders). */
+   player (cost, tries) is the job state the keep reports, never a guess.
+   Fires window 'eyehold:userprops-changed' whenever the made-prop catalog changes (build.js re-renders). */
 'use strict';
 const UserProps = (() => {
   const registered = new Set();
@@ -17,7 +17,7 @@ const UserProps = (() => {
   let props = [];
   let loading = null;
   const apiFetch = (url, init) => (typeof Harness !== 'undefined' && Harness.apiFetch) ? Harness.apiFetch(url, init) : fetch(url, init);
-  const changed = () => { try { window.dispatchEvent(new CustomEvent('starnet:userprops-changed', { detail: { count: props.length } })); } catch (_) {} };
+  const changed = () => { try { window.dispatchEvent(new CustomEvent('eyehold:userprops-changed', { detail: { count: props.length } })); } catch (_) {} };
 
   // A made prop's boxes at the player's SIZE. Height scales (floor: the 14px minimum, ceiling: the renderer's 192);
   // footprints scale and round to whole tiles (1..16). Pure: same entry + scale -> same boxes, everywhere.
@@ -67,7 +67,7 @@ const UserProps = (() => {
     } catch (_) { return false; }   // the row stays; the prop keeps its placeholder rather than vanishing
     finally { if (d) URL.revokeObjectURL(d.url); }
   }
-  // the left-facing side view, once the station has one (made later, from REFIT)
+  // the left-facing side view, once the keep has one (made later, from REFIT)
   async function registerSide(p) {
     if (!p || !p.side || sided.has(p.id) || !registered.has(p.id) || !PropSprites.registerUserSide) return false;
     const gs = geometry(p).side;
@@ -83,7 +83,7 @@ const UserProps = (() => {
     finally { if (d) URL.revokeObjectURL(d.url); }
   }
   // load({ fresh: true }) never reuses a load already in flight: one that started before a prop finished would hand back the
-  // old list, so station.make_prop's reload said the new prop was not on the page (sweep 2026-10-02)
+  // old list, so keep.make_prop's reload said the new prop was not on the page (sweep 2026-10-02)
   function load(opts) {
     if (loading) return (opts && opts.fresh) ? loading.then(() => load(), () => load()) : loading;
     loading = (async () => {
@@ -110,7 +110,7 @@ const UserProps = (() => {
     try {
       const r = await apiFetch('/api/userprops/generate', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(previewId ? { noun, previewId } : { noun }) });
       return await r.json();
-    } catch (_) { return { ok: false, code: 'unreachable', message: 'The station did not answer. Try again.' }; }
+    } catch (_) { return { ok: false, code: 'unreachable', message: 'The keep did not answer. Try again.' }; }
   }
   // SIZE: store the player's size, then re-register the art at it (no regeneration, no credits).
   async function setScale(id, scale) {
@@ -120,7 +120,7 @@ const UserProps = (() => {
     try {
       const r = await apiFetch('/api/userprops/scale', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id, scale }) });
       j = await r.json();
-    } catch (_) { return { ok: false, code: 'unreachable', message: 'The station did not answer. Try again.' }; }
+    } catch (_) { return { ok: false, code: 'unreachable', message: 'The keep did not answer. Try again.' }; }
     if (!j || !j.ok) return j || { ok: false, code: 'failed', message: 'That size could not be saved.' };
     p.scale = j.scale;
     localScale.set(id, { scale: j.scale, seq: ++seq });
@@ -152,9 +152,9 @@ const UserProps = (() => {
     try {
       const r = await apiFetch('/api/userprops/side', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id }) });
       return await r.json();
-    } catch (_) { return { ok: false, code: 'unreachable', message: 'The station did not answer. Try again.' }; }
+    } catch (_) { return { ok: false, code: 'unreachable', message: 'The keep did not answer. Try again.' }; }
   }
-  // delete a made prop from the station's library; the caller removes placed copies and the catalog row
+  // delete a made prop from the keep's library; the caller removes placed copies and the catalog row
   async function remove(id) {
     try {
       const r = await apiFetch('/api/userprops/delete', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id }) });
@@ -166,13 +166,13 @@ const UserProps = (() => {
         if (typeof PropSprites !== 'undefined' && PropSprites.markUserDeleted) PropSprites.markUserDeleted([id]);
       }
       return j;
-    } catch (_) { return { ok: false, code: 'unreachable', message: 'The station did not answer. Try again.' }; }
+    } catch (_) { return { ok: false, code: 'unreachable', message: 'The keep did not answer. Try again.' }; }
   }
   async function startPreview(noun) {
     try {
       const r = await apiFetch('/api/userprops/preview', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ noun }) });
       return await r.json();
-    } catch (_) { return { ok: false, code: 'unreachable', message: 'The station did not answer. Try again.' }; }
+    } catch (_) { return { ok: false, code: 'unreachable', message: 'The keep did not answer. Try again.' }; }
   }
   // poll one preview until it settles; onUpdate(job) on every change; resolves with { job, preview }
   function watchPreview(id, onUpdate) {
@@ -202,9 +202,9 @@ const UserProps = (() => {
       const tick = async () => {
         const r = await job(id);
         const j = r && r.ok ? r.job : null;
-        // the station no longer knows this job (it settled while it restarted): stop instead of polling forever
+        // the keep no longer knows this job (it settled while it restarted): stop instead of polling forever
         if (!j && r && r.code === 'not_found' && ++missing >= 3) {
-          resolve({ id, status: 'failed', costUsd: 0, error: { code: 'lost', message: 'The station lost track of this job. If it finished, it is in MADE BY YOU; check your credit history for its charge.' } });
+          resolve({ id, status: 'failed', costUsd: 0, error: { code: 'lost', message: 'The keep lost track of this job. If it finished, it is in MADE BY YOU; check your credit history for its charge.' } });
           return;
         }
         if (j) missing = 0;

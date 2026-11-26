@@ -22,7 +22,7 @@ here and a false green is the worst outcome in the entire repo.
    `t3:release-smoke`, `t4:update-delivery`, `t5:public-distribution`. Anything that cannot run
    is BLOCKED with the exact env requirement named.
 2. **Upgrade with real state.** Install an OLD version, use it enough to have sessions, keys,
-   projects and a station, THEN update. Nothing may be lost, and nothing may be silently
+   projects and a keep, THEN update. Nothing may be lost, and nothing may be silently
    migrated wrong. A clean-install update proves almost nothing.
 3. **Interrupt the update.** Kill it mid-download, mid-verify, mid-install. Go offline halfway.
    Corrupt the downloaded artifact. Each must fail closed and leave a working install.
@@ -41,7 +41,7 @@ here and a false green is the worst outcome in the entire repo.
 ## Two traps
 
 - **`RELEASE_NOTES.md` on trunk is the LAST cut's copy**, and `release:bump` overwrites it.
-- **A branch push deploys NOTHING** — starnetos.com is a Cloudflare direct-upload. Do not infer
+- **A branch push deploys NOTHING** — eyehold.com is a Cloudflare direct-upload. Do not infer
   a deploy from a push.
 
 ## Done means

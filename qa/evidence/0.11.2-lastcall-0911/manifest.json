@@ -21,7 +21,7 @@
   },
   "build": {
     "id": 34571871677,
-    "url": "https://github.com/androoAGI/starnet/actions/runs/34571871677",
+    "url": "https://github.com/Eyehold/eyehold/actions/runs/34571871677",
     "jobs": [
       {
         "name": "build (windows-latest, win-x64, nsis)",
@@ -60,13 +60,13 @@
   "installerProof": {
     "id": 34573167978,
     "controller": "01200c9a1e6936daa286930ba1d861b407c60074",
-    "url": "https://github.com/androoAGI/starnet/actions/runs/34573167978",
+    "url": "https://github.com/Eyehold/eyehold/actions/runs/34573167978",
     "installer": {
-      "name": "StarNet_0.11.1_x64-setup.exe",
+      "name": "Eyehold_0.11.1_x64-setup.exe",
       "bytes": 130070464,
       "sha256": "78c0a42bc4f902fdd9a8ad79bedabc50b451016f76099d680479bc7742c55a2f",
       "signature": "Valid",
-      "signer": "CN=Andrew Sims, O=Andrew Sims, L=Boca Raton, S=fl, C=US"
+      "signer": "CN=Eyehold, O=Eyehold, L=Boca Raton, S=fl, C=US"
     },
     "executableSha256": "86e3d108ea95843bdcb72750dc24ab7b44228f3d18a9a06dad58db75dcfd5b94",
     "checks": {
@@ -93,7 +93,7 @@
             "sidecar/tools/builtin/orchestration.js": "1ad21f4778c607a213af17014fce69ae577d510061d26266d7fc7065d51e2243",
             "sidecar/inputpolicy.js": "77ea1085dd266d883321b350295159c0aa76c094b16cc2f56b2b6c922ba14c5e"
           },
-          "scope": "Installed Node and sidecar; isolated stations; controlled upstream providers and MCP, no customer account"
+          "scope": "Installed Node and sidecar; isolated keeps; controlled upstream providers and MCP, no customer account"
         }
       },
       "delegated-connectors": {
@@ -109,7 +109,7 @@
             "sidecar/tools/builtin/orchestration.js": "1ad21f4778c607a213af17014fce69ae577d510061d26266d7fc7065d51e2243",
             "sidecar/inputpolicy.js": "77ea1085dd266d883321b350295159c0aa76c094b16cc2f56b2b6c922ba14c5e"
           },
-          "scope": "Installed Node and sidecar; isolated stations; controlled upstream providers and MCP, no customer account"
+          "scope": "Installed Node and sidecar; isolated keeps; controlled upstream providers and MCP, no customer account"
         }
       }
     }

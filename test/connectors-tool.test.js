@@ -1,6 +1,6 @@
 /* node test/connectors-tool.test.js — the `connectors.list` builtin (sidecar/tools/builtin/connectors.js).
 
-   The tool exists because an agent could not tell "StarNet cannot reach GitHub" apart from "GitHub is one
+   The tool exists because an agent could not tell "Eyehold cannot reach GitHub" apart from "GitHub is one
    click away and nobody clicked it". So the assertions that matter are about HONESTY, not formatting:
      • an INSTALLED connector never re-appears in AVAILABLE (no nagging to add what you have);
      • a connected KEY never re-appears in AVAILABLE either;
@@ -93,7 +93,7 @@ function toolWith(over) {
     connectors: fakeManager([]), serviceKeys: fakeKeys([]),
     connectorCatalog: fakeMcpCatalog(MCP_ENTRIES), keysCatalog: fakeKeysCatalog(KEY_PLATFORMS)
   }).listTool.run({});
-  A.eq(emptySummary.summary, 'connected:0 keys:0 available:5', 'an empty station summarises as ZERO, never as the one "(none yet)" line it printed');
+  A.eq(emptySummary.summary, 'connected:0 keys:0 available:5', 'an empty keep summarises as ZERO, never as the one "(none yet)" line it printed');
 
   /* ---- scope + query narrowing ---- */
   const onlyAvail = await tool.run({ scope: 'available' });

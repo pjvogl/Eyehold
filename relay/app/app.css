@@ -1,4 +1,4 @@
-/* StarNet Remote — the phone app. Built from the station's own glass recipes (frontend/css/glass-demo.css,
+/* Eyehold Remote — the phone app. Built from the keep's own glass recipes (frontend/css/glass-demo.css,
    glass-comms.css) and the amber theme tokens (frontend/css/style.css). Matte: one hairline edge, one inner
    highlight, no glow. No browser-painted controls anywhere. */
 @font-face { font-family: 'VT323'; src: url('vt323.woff2') format('woff2'); font-display: block; }
@@ -70,7 +70,7 @@ main > * { flex: none; }   /* the page scrolls; nothing in it is squeezed to fit
 .sect { display: flex; flex-direction: column; gap: 9px; }
 .note-line { font-size: 16px; opacity: .62; line-height: 1.3; }
 
-/* THE STATION VIEW — the picture the desk's own renderer drew */
+/* THE KEEP VIEW — the picture the desk's own renderer drew */
 .hero { position: relative; overflow: hidden; border-radius: 8px; border: 1px solid var(--gd-edge); background: #040302;
   box-shadow: inset 0 1px 0 var(--gd-light), 0 10px 30px rgba(0,0,0,.45); }
 .hero-frame { position: relative; width: 100%; }
@@ -211,7 +211,7 @@ input[type=search]::-webkit-search-cancel-button { display: none; }
 .kv:last-child { border-bottom: 0; }
 .kv span { opacity: .62; flex: none; } .kv b { font-weight: 400; color: var(--ph-bright); text-align: right; overflow-wrap: anywhere; min-width: 0; }
 
-/* THE SHEET — rises from the bottom, like every station window */
+/* THE SHEET — rises from the bottom, like every keep window */
 .scrim { position: fixed; inset: 0; z-index: 30; background: rgba(0,0,0,.45); }
 .sheet { position: fixed; left: 0; right: 0; bottom: 0; z-index: 31; max-width: 640px; margin: 0 auto; max-height: 72vh; display: flex; flex-direction: column; gap: 8px;
   padding: 8px var(--gut) calc(14px + env(safe-area-inset-bottom, 0)); border: 1px solid var(--gd-edge); border-bottom: 0; border-radius: 10px 10px 0 0;
@@ -222,7 +222,7 @@ input[type=search]::-webkit-search-cancel-button { display: none; }
 .sheet-body .list { margin: 0; }
 @keyframes rise { from { transform: translateY(14px); opacity: 0; } to { transform: none; opacity: 1; } }
 
-/* THE STATION, FULL SCREEN */
+/* THE KEEP, FULL SCREEN */
 .viewer { position: fixed; inset: 0; z-index: 40; background: #040302; touch-action: none; overflow: hidden; }
 .viewer-stage { position: absolute; left: 0; top: 0; transform-origin: 0 0; will-change: transform; }
 .viewer-stage img { display: block; user-select: none; -webkit-user-drag: none; pointer-events: none; }
@@ -256,11 +256,11 @@ input[type=search]::-webkit-search-cancel-button { display: none; }
 
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
 
-/* the notifications card (Settings, and once under the station picture) */
+/* the notifications card (Settings, and once under the keep picture) */
 .push-card .push-h { font-size: 19px; letter-spacing: 1px; color: var(--ph-bright); text-transform: uppercase; }
 .btn.quiet { border-color: transparent; background: transparent; box-shadow: none; }
 
-/* the live station: the room is a still, the crew are drawn on a canvas on top */
+/* the live keep: the room is a still, the crew are drawn on a canvas on top */
 .hero-frame canvas { display: block; width: 100%; height: 100%; touch-action: manipulation; }
 .hero.stale .hero-frame canvas { filter: saturate(.7) brightness(.88); }
 #viewer .viewer-stage { position: absolute; inset: 0; transform: none; width: auto; height: auto; }
@@ -276,7 +276,7 @@ input[type=search]::-webkit-search-cancel-button { display: none; }
   background: rgba(var(--ph-rgb), .04); box-shadow: inset 0 1px 0 var(--gd-light); max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .file-chip:active { background: var(--gd-hover); border-color: var(--ph-dim); }
 
-/* the compact notifications prompt under the station picture: one line and a key */
+/* the compact notifications prompt under the keep picture: one line and a key */
 .push-card.compact { flex-direction: row; align-items: center; justify-content: space-between; gap: 10px; padding: 10px 12px; }
 .push-card.compact .push-h { font-size: 16px; letter-spacing: .8px; flex: 1; min-width: 0; }
 .push-card.compact .btns { flex: none; flex-wrap: nowrap; gap: 4px; }
@@ -306,7 +306,7 @@ input[type=search]::-webkit-search-cancel-button { display: none; }
    notch: matte panels (no blur, no sheen band, no amber haze, the faintest tint), 10px panels and 8px cards/keys.
    The content carries the Pip-Boy screen: phosphor glow with a whisper of colour fringe on titles, a soft glow on
    secondary type, section rules ending in a tick, the tube's vignette inside each panel, a selection that lights up
-   as a lit bar and blooms, and housed lamps that only say what the station says.
+   as a lit bar and blooms, and housed lamps that only say what the keep says.
    ============================================================ */
 body {
   --gd-edge: rgba(var(--ph-rgb), .26);

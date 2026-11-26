@@ -31,7 +31,7 @@
      migratePlaintext(secrets, { keychainMode, hasChannelToken }) ->
          { config, imports, changed }  // config to persist; imports=[{id,token}] to hand the keychain; changed=did we strip anything
 
-   `keychainMode` = "is this the desktop shell?" (host passes STARNET_DESKTOP_SHELL === '1'). When false the record
+   `keychainMode` = "is this the desktop shell?" (host passes EYEHOLD_DESKTOP_SHELL === '1'). When false the record
    is returned untouched (browser/dev keeps its plaintext secrets). When true, any plaintext bot token is reported
    as an `import` — but it is ONLY removed from the persisted config when hasChannelToken(id) proves the keychain
    already holds it. When the keychain does NOT (yet) hold it, the token is reported as an import AND kept in the

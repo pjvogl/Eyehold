@@ -111,7 +111,7 @@ const AuthoredPropMotion = (() => {
     ctx.strokeStyle=pal.light;ctx.lineWidth=width*.07;ctx.beginPath();
     ctx.moveTo(...local(.17,-width*.34));ctx.lineTo(...local(.83,-width*.34));ctx.stroke();
     // A recessed service seam and two hardware bolts keep wide members reading
-    // as painted box-section links at station scale, rather than diagram lines.
+    // as painted box-section links at keep scale, rather than diagram lines.
     ctx.strokeStyle=pal.dark;ctx.lineWidth=width*.075;ctx.beginPath();
     ctx.moveTo(...local(.55,-width*.2));ctx.lineTo(...local(.55,width*.24));ctx.stroke();
     for(const end of [.22,.78])disc(ctx,local(end,0),width*.055,pal.dark);

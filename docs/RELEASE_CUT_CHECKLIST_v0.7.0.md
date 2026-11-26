@@ -8,7 +8,7 @@
 >    extensibility spine — has since merged and gated on trunk. Only subscriptions (held by
 >    Andrew) and prop-rotation-yaw (parked) remain out.
 > 2. **The signing-certificate expiry blocker was false.** See §B1.
-> 3. **The "pushing the branch deploys starnetos.com" worry is false.** Re-measured today. See §B2.
+> 3. **The "pushing the branch deploys eyehold.com" worry is false.** Re-measured today. See §B2.
 >
 > Everything below was measured against the tree, a gate run, or the live GitHub feed on
 > 2026-07-27 — not read out of a plan doc. `docs/RELEASE_RUNBOOK.md` is the general procedure;
@@ -21,7 +21,7 @@
 | Thing | Value |
 |---|---|
 | Trunk | `feat/harness-backend` @ `dd3d4f90` |
-| Latest **published** release | **v0.6.8**, `androoAGI/starnet-releases`, 2026-07-27 05:06Z, 9 assets |
+| Latest **published** release | **v0.6.8**, `Eyehold/eyehold-releases`, 2026-07-27 05:06Z, 9 assets |
 | Live `latest.json` version | `0.6.8` |
 | In-tree version | `0.6.8` in all three files — **a version that has already shipped** |
 | Commits since `v0.6.8` | **~217** · **19 lane merges** |
@@ -46,13 +46,13 @@ the *highest published* release rather than the in-tree one, so it will refuse `
 
 The prep copy carried this as blocker #1: *"the code-signing certificate expires 2026-07-28."*
 **Nothing in the repo supports it.** Windows signing runs through **Azure Trusted Signing**
-(account `starnet-signing`, certificate profile `starnet-public`), which mints a **short-lived
+(account `eyehold-signing`, certificate profile `eyehold-public`), which mints a **short-lived
 certificate per signing operation** and rotates it as a service — no certificate of ours has an
 expiry we have to renew. `docs/CODE_SIGNING.md` records a provisioning date and no expiry. The
 updater key is **minisign**, which does not expire either.
 
 **What *can* actually lapse** is the Azure service principal's client secret
-(`AZURE_CLIENT_SECRET`, service principal `starnet-ci-signer`) — a different object with a
+(`AZURE_CLIENT_SECRET`, service principal `eyehold-ci-signer`) — a different object with a
 different lifetime. If the train's Windows leg comes back unsigned, that secret is the thing to
 check, not a certificate. The train treats all three `AZURE_*` secrets as optional: absent means
 an unsigned Windows build with SmartScreen back, **not** a failed build. So this is something to
@@ -61,14 +61,14 @@ verify in the run log, not a gate that stops the cut.
 ### B2 — [CORRECTED] Pushing the branch does not deploy the website
 
 Several lane digests declined to push trunk on the grounds that "the diff touches `website/` and
-pushing auto-deploys starnetos.com." Re-measured today:
+pushing auto-deploys eyehold.com." Re-measured today:
 
-- `curl -o /dev/null -w '%{http_code}' https://api.github.com/repos/androoAGI/starnet/pages`
+- `curl -o /dev/null -w '%{http_code}' https://api.github.com/repos/Eyehold/eyehold/pages`
   → **404**. GitHub Pages was never enabled, so `deploy-website.yml` fails red on every push.
   That X in Actions is noise, not a broken release.
-- `curl -sI https://starnetos.com` → `Server: cloudflare`. The live site is **Cloudflare Pages
+- `curl -sI https://eyehold.com` → `Server: cloudflare`. The live site is **Cloudflare Pages
   direct upload**, which has no git integration. It moves only when someone runs
-  `wrangler pages deploy website --project-name starnet-site`.
+  `wrangler pages deploy website --project-name eyehold-site`.
 
 **So the push is safe — and it is not optional.** The release train builds the tree at the pushed
 tag. ~184 unpushed commits means an unpushed trunk would build last week's code.
@@ -78,11 +78,11 @@ tag. ~184 unpushed commits means an unpushed trunk would build last week's code.
 Verified against the live feed today. `latest.json` on v0.6.8 lists five platforms:
 
 ```
-windows-x86_64     -> StarNet_0.6.8_x64-setup.exe        200 OK
-darwin-aarch64     -> StarNet_darwin-arm64.app.tar.gz    200 OK
-darwin-x86_64      -> StarNet_darwin-x64.app.tar.gz      200 OK
-linux-x86_64       -> StarNet_0.6.8_amd64.AppImage       404 — asset stripped at publish
-linux-x86_64-deb   -> StarNet_0.6.8_amd64.deb           404 — asset stripped at publish
+windows-x86_64     -> Eyehold_0.6.8_x64-setup.exe        200 OK
+darwin-aarch64     -> Eyehold_darwin-arm64.app.tar.gz    200 OK
+darwin-x86_64      -> Eyehold_darwin-x64.app.tar.gz      200 OK
+linux-x86_64       -> Eyehold_0.6.8_amd64.AppImage       404 — asset stripped at publish
+linux-x86_64-deb   -> Eyehold_0.6.8_amd64.deb           404 — asset stripped at publish
 ```
 
 The train assembles all five platforms, a human deletes the linux assets from the draft per
@@ -181,22 +181,22 @@ Run this **after Andrew's desktop test passes** (§F). Nothing before step 3 can
    Re-run failed jobs; `stage-draft` is idempotent.
    > **Push classifier trap:** if `git push` is blocked from PowerShell, run the identical push
    > through the Bash tool — that has worked every time PowerShell was blocked.
-10. **Review the draft** on `androoAGI/starnet-releases`. Version/tag exactly `v0.7.0`; notes are
+10. **Review the draft** on `Eyehold/eyehold-releases`. Version/tag exactly `v0.7.0`; notes are
     the real body, not the scaffold; every updater artifact has a matching `.sig`; exactly one
     `latest.json`.
 
     **Strip exactly four assets** (the linux ones), nothing else:
     ```
-    StarNet_0.7.0_amd64.AppImage  + .sig
-    StarNet_0.7.0_amd64.deb       + .sig
+    Eyehold_0.7.0_amd64.AppImage  + .sig
+    Eyehold_0.7.0_amd64.deb       + .sig
     ```
     **Keep attached** — 9 assets published:
     ```
-    StarNet_0.7.0_x64-setup.exe      + .sig    (windows updater + manual download)
-    StarNet_darwin-arm64.app.tar.gz  + .sig    (mac updater feed, Apple Silicon)
-    StarNet_darwin-x64.app.tar.gz    + .sig    (mac updater feed, Intel)
-    StarNet_0.7.0_aarch64.dmg                  (manual download, Apple Silicon)
-    StarNet_0.7.0_x64.dmg                      (manual download, Intel)
+    Eyehold_0.7.0_x64-setup.exe      + .sig    (windows updater + manual download)
+    Eyehold_darwin-arm64.app.tar.gz  + .sig    (mac updater feed, Apple Silicon)
+    Eyehold_darwin-x64.app.tar.gz    + .sig    (mac updater feed, Intel)
+    Eyehold_0.7.0_aarch64.dmg                  (manual download, Apple Silicon)
+    Eyehold_0.7.0_x64.dmg                      (manual download, Intel)
     latest.json
     ```
     Then **re-assemble and re-upload `latest.json`** without the two linux keys (B3).
@@ -210,25 +210,25 @@ Run this **after Andrew's desktop test passes** (§F). Nothing before step 3 can
     a substring (`x64-setup.exe` also matches `x64-setup.exe.sig`) and relies on GitHub returning
     assets alphabetically:
     ```bash
-    curl -s https://api.github.com/repos/androoAGI/starnet-releases/releases/latest | node -e "let d='';process.stdin.on('data',c=>d+=c).on('end',()=>{const a=(JSON.parse(d).assets||[]).map(x=>x.name);const w=a.find(n=>n.includes('x64-setup.exe'));const m=a.find(n=>n.includes('aarch64.dmg'));console.log('win ->',w,w&&!w.endsWith('.sig')?'OK':'BAD');console.log('mac ->',m,m?'OK':'BAD');})"
+    curl -s https://api.github.com/repos/Eyehold/eyehold-releases/releases/latest | node -e "let d='';process.stdin.on('data',c=>d+=c).on('end',()=>{const a=(JSON.parse(d).assets||[]).map(x=>x.name);const w=a.find(n=>n.includes('x64-setup.exe'));const m=a.find(n=>n.includes('aarch64.dmg'));console.log('win ->',w,w&&!w.endsWith('.sig')?'OK':'BAD');console.log('mac ->',m,m?'OK':'BAD');})"
     ```
 
 ---
 
 ## D2. Post-publish
 
-- Mirror the release on `androoAGI/starnet` (source repo) with exe + both DMGs.
+- Mirror the release on `Eyehold/eyehold` (source repo) with exe + both DMGs.
 - **Release hygiene is currently owed.** [release-platforms-law] says only the current version
   stays downloadable. Measured today:
-  - `starnet-releases`: **v0.6.8, v0.6.6, v0.6.5, v0.6.4** all still published.
-  - `starnet` (source): **v0.6.8, v0.6.6, v0.6.4**.
+  - `eyehold-releases`: **v0.6.8, v0.6.6, v0.6.5, v0.6.4** all still published.
+  - `eyehold` (source): **v0.6.8, v0.6.6, v0.6.4**.
 
   Archive the assets locally first (`release/archive/vX/`) — v0.6.4/6.5/6.6/6.7 are archived,
   **there is no `v0.6.8` archive yet** — then delete. Published-release deletion is a manual UI
   step: each repo → Releases → delete, then Tags → delete.
 - Website fallback strings: `website/site.js`, `index.html`, `pricing.html` now say `0.6.8` (this
   cut's prep merge moved them off `0.6.6`). Bump to `0.7.0` and upload **after** publish —
-  starnetos.com is a Cloudflare Pages direct upload, so this needs a `wrangler` deploy and is
+  eyehold.com is a Cloudflare Pages direct upload, so this needs a `wrangler` deploy and is
   cosmetic either way (the live number comes from the GitHub API at page load).
 - **Decision owed:** `website/pricing.html` is on trunk and linked from ten docs pages and the
   sitemap. The site does not auto-deploy, so it stays invisible until someone runs wrangler — but
@@ -257,7 +257,7 @@ git diff v0.6.8..HEAD -- shared/      →  EMPTY
 Every mechanism that decides where the
 app installs and where its data lives is the same code that already performed a successful
 v0.6.7 → v0.6.8 update in production: `identifier` `ai.skynet.harness` (unchanged — this is what
-makes Windows install *over* the existing app rather than beside it), `productName` `StarNet`,
+makes Windows install *over* the existing app rather than beside it), `productName` `Eyehold`,
 NSIS `installMode: passive`, the updater endpoint and minisign pubkey, and the
 `%APPDATA%\ai.skynet.harness\workspaces` data dir. A side-by-side install — the classic way an
 update reads as "it deleted everything" — is structurally impossible here. `shared/` is also
@@ -277,10 +277,10 @@ Put these in the notes, not in a bug report — an unexplained change reads as a
    used to run only A; it runs the whole line now. Floors that are a lone bay, or
    `INBOX → bay → OUTBOX`, behave exactly as before. A mutual A↔B loop is now refused with
    `CHAIN_CYCLE` where it previously did nothing.
-2. **The station looks different** — the wall crown rings the whole room, contact shadows are
+2. **The keep looks different** — the wall crown rings the whole room, contact shadows are
    pools rather than bars, the CRT aperture opened from 50% to 68%, and the bed, lockers and
    three tables were redrawn top-down.
-3. **Controls are drawn by StarNet, not the OS** — every button, dropdown, checkbox, slider,
+3. **Controls are drawn by Eyehold, not the OS** — every button, dropdown, checkbox, slider,
    scrollbar, input font, dialog and tooltip. Anyone used to the native tooltip delay will notice
    it is gone.
 4. **COMMS sounds different** — 26 cues moved off the old synth onto the pack.
@@ -295,29 +295,29 @@ installed-exe smoke (B5), earned rather than waived.
 
 1. Build the candidate from the exact cut tree: `npm run desktop:build`
    (retry once on a ctor crash — that is a known flaky Rust build, not a code fault).
-2. Install over the existing StarNet. The identifier is unchanged, so it upgrades in place and
+2. Install over the existing Eyehold. The identifier is unchanged, so it upgrades in place and
    the profile stays put (E1).
 3. Relaunch with the WebView2 debug port open and run the smoke:
    ```bash
    npm run qa:smoke:installed
    ```
    (`WEBVIEW2_ADDITIONAL_BROWSER_ARGUMENTS='--remote-debugging-port=9333'`; set
-   `STARNET_SMOKE_EXPECTED_HEAD` to the candidate SHA and `STARNET_SMOKE_ARTIFACT` to the exe.)
+   `EYEHOLD_SMOKE_EXPECTED_HEAD` to the candidate SHA and `EYEHOLD_SMOKE_ARTIFACT` to the exe.)
 4. Hand-check list below — the things a gate structurally cannot see.
 
 ### F2 — What to actually look at, and why the gate can't
 
 | Look at | Why |
 |---|---|
-| A floor drawn `INBOX → A → B → OUTBOX` runs **both** agents | The single biggest behaviour change for an existing station |
+| A floor drawn `INBOX → A → B → OUTBOX` runs **both** agents | The single biggest behaviour change for an existing keep |
 | E-STOP mid-chain stops every stage | The 6-hop / $2 caps are unit-proven but were **never live-tripped** |
 | The **easel** prop | Redrawn v6 and **never judged** — the one prop from the ugly-six pass with no verdict |
-| Wall crown on a **multi-room** station | Corner work leaked 148px on multi-room once; a single room cannot reproduce it |
+| Wall crown on a **multi-room** keep | Corner work leaked 148px on multi-room once; a single room cannot reproduce it |
 | The COMMS sound board at real volume | Level-grading was tuned by ear, and only 10 of 36 cues were mapped before |
 | ABILITIES › EXTENSIONS — create, approve, revoke, delete a hook | Shipped this cut; the authoring UI is new |
 | A restore point appears after a shell command | §G1 — this never worked before, so nobody has seen it work |
 | The ACP editor bridge from a real editor | **Never seen live in an editor** — the only proof is a spawned-bridge e2e |
-| Your own saved station and crew open intact | The data-layer risk in E1 |
+| Your own saved keep and crew open intact | The data-layer risk in E1 |
 
 ---
 
@@ -399,7 +399,7 @@ Proven in both directions on a real install:
 | locking sidecar killed | no | yes |
 | unrelated `node.exe` killed | 0 | **0 of 16** |
 
-Then re-verified against the **real** install at `%LOCALAPPDATA%\StarNet` with a live sidecar
+Then re-verified against the **real** install at `%LOCALAPPDATA%\Eyehold` with a live sidecar
 running: silent install, exit 0, no dialog, registration correct, 0 of 15 unrelated node
 processes touched.
 
@@ -429,9 +429,9 @@ the checkpoint fix (§G1).
 
 | Lane | Branch | Ahead | Why |
 |---|---|---|---|
-| Subscriptions / credits gap-close | `claude/starnet-subscription-complete-e95ae8` | 13 | Its own HEAD commit says *"does not merge until Andrew says so."* Needs a deploy + a flip, both Andrew's calls. |
+| Subscriptions / credits gap-close | `claude/eyehold-subscription-complete-e95ae8` | 13 | Its own HEAD commit says *"does not merge until Andrew says so."* Needs a deploy + a flip, both Andrew's calls. |
 | Prop rotation = yaw | `claude/prop-rotation-system-22983e` | 38 | Parked; 7 conflicts against current trunk; superseded scope. |
-| Red-Green Closer QA harness | `claude/starnet-agentic-graphs-5c6a0f` | 3 | Dev tooling, not user-facing. Optional at any time. |
+| Red-Green Closer QA harness | `claude/eyehold-agentic-graphs-5c6a0f` | 3 | Dev tooling, not user-facing. Optional at any time. |
 
 ---
 

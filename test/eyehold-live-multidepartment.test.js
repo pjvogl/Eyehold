@@ -5,33 +5,33 @@
 const fs=require('node:fs'),os=require('node:os'),path=require('node:path'),{spawn}=require('node:child_process');
 const {bootToken,sseQuery}=require('./_httpToken.js');
 const {lineDecoder}=require('./_eyehold-lines.js');
-const key=process.env.SKYNET_OPENROUTER_KEY||process.env.STARNET_OPENROUTER_KEY||process.env.OPENROUTER_API_KEY;
-const model=process.env.EYEHOLD_DELEGATION_MODEL||process.env.STARNET_SMOKE_MODEL||'openai/gpt-4.1-mini';
+const key=process.env.EYEHOLD_OPENROUTER_KEY||process.env.EYEHOLD_OPENROUTER_KEY||process.env.OPENROUTER_API_KEY;
+const model=process.env.EYEHOLD_DELEGATION_MODEL||process.env.EYEHOLD_SMOKE_MODEL||'openai/gpt-4.1-mini';
 if(!key){console.error('Missing real provider key');process.exit(2);}
 const root=fs.mkdtempSync(path.join(os.tmpdir(),'eyehold-live-delegate-'));
 const port=12000+Math.floor(Math.random()*20000);
 const base='http://127.0.0.1:'+port;
-const child=spawn(process.execPath,[path.resolve(__dirname,'../sidecar/index.js')],{env:{...process.env,SKYNET_PORT:String(port),SKYNET_WORKSPACES:root,SKYNET_BUDGET_PER_RUN:'0.20',SKYNET_BUDGET_PER_AGENT:'0.40',SKYNET_BUDGET_PER_DAY:'1.00',SKYNET_BUDGET_GLOBAL:'1.00'},stdio:'ignore'});
+const child=spawn(process.execPath,[path.resolve(__dirname,'../sidecar/index.js')],{env:{...process.env,EYEHOLD_PORT:String(port),EYEHOLD_WORKSPACES:root,EYEHOLD_BUDGET_PER_RUN:'0.20',EYEHOLD_BUDGET_PER_AGENT:'0.40',EYEHOLD_BUDGET_PER_DAY:'1.00',EYEHOLD_BUDGET_GLOBAL:'1.00'},stdio:'ignore'});
 const sleep=n=>new Promise(r=>setTimeout(r,n));
 const wait=async()=>{for(let i=0;i<50;i++){try{const r=await fetch(base+'/api/health');if(r.ok)return;}catch{}await sleep(250);}throw Error('Sidecar did not become healthy');};
 let sseController;
 async function run(){
  await wait();const token=await bootToken(base,base);
- const headers={'Content-Type':'application/json','X-StarNet-Token':token,Origin:base};
+ const headers={'Content-Type':'application/json','X-Eyehold-Token':token,Origin:base};
  const roster=await fetch(base+'/api/roster',{method:'POST',headers,body:JSON.stringify({agents:[
   {agentId:'agent',name:'THE EYE',model,provider:'openrouter',system:'You are The Eye, supervisor. Delegate the requested assignment to BOTH RAVEN COURT (research session) and DEEPFORGE (engineering session) using team_dispatch with workers. The session property is mandatory for each worker. Do not claim a result unless its worker run completed.'},
   {agentId:'deepforge',name:'DEEPFORGE',model,provider:'openrouter',specialtyId:'eyehold-forge',system:'Deepforge engineer. Answer the delegated technical task concisely; check the research context provided by the lead.'},
   {agentId:'raven',name:'RAVEN COURT',model,provider:'openrouter',specialtyId:'eyehold-archive',system:'Raven Court researcher. Produce a concise evidence-aware opportunity assessment. Avoid unsupported figures and invented citations.'}
  ],updatedAt:Date.now()})});if(!roster.ok)throw Error('Roster rejected: HTTP '+roster.status);
- // A remote delegated worker needs a connected station client for lifecycle
+ // A remote delegated worker needs a connected keep client for lifecycle
  // acknowledgments. No commands are silently approved; known coordination
  // messages only get bounded acknowledgements.
  sseController=new AbortController();
- const station=[];let ready;
+ const keep=[];let ready;
  ready=fetch(base+'/api/channels/events?'+sseQuery(token),{signal:sseController.signal}).then(async res=>{
   if(!res.ok)throw Error('Event connection failed');
   const reader=res.body.getReader(),dec=new TextDecoder();let buf='';
-  (async()=>{try{while(true){const {value,done}=await reader.read();if(done)break;buf+=dec.decode(value,{stream:true});let nl;while((nl=buf.indexOf('\n'))>=0){const line=buf.slice(0,nl).trim();buf=buf.slice(nl+1);if(!line.startsWith('data:'))continue;let ev;try{ev=JSON.parse(line.slice(5));}catch{continue;}if(ev?.name!=='station.command')continue;const p=ev.payload||{};station.push({verb:p.verb,args:p.verb==='station.deliver'?{agentId:p.args?.agentId,runId:p.args?.runId,textLength:String(p.args?.text||'').length}:null});let response={ok:false,error:'unsupported station command'};if(p.verb==='station.sessions')response={ok:true,result:{sessions:[{id:'ws_deepforge',title:'engineering',agentId:'deepforge'},{id:'ws_raven',title:'research',agentId:'raven'}]}};if(p.verb==='station.deliver')response={ok:true,result:{folded:true,session:p.args?.agentId==='raven'?'research':'engineering'}};if(['station.dispatch_start','station.dispatch_end'].includes(p.verb))response={ok:true,result:{session:p.args?.agentId==='raven'?'research':'engineering'}};await fetch(base+'/api/station/ack',{method:'POST',headers,body:JSON.stringify({id:p.id,...response})}).catch(()=>{});}}}catch{} })();return true;
+  (async()=>{try{while(true){const {value,done}=await reader.read();if(done)break;buf+=dec.decode(value,{stream:true});let nl;while((nl=buf.indexOf('\n'))>=0){const line=buf.slice(0,nl).trim();buf=buf.slice(nl+1);if(!line.startsWith('data:'))continue;let ev;try{ev=JSON.parse(line.slice(5));}catch{continue;}if(ev?.name!=='keep.command')continue;const p=ev.payload||{};keep.push({verb:p.verb,args:p.verb==='keep.deliver'?{agentId:p.args?.agentId,runId:p.args?.runId,textLength:String(p.args?.text||'').length}:null});let response={ok:false,error:'unsupported keep command'};if(p.verb==='keep.sessions')response={ok:true,result:{sessions:[{id:'ws_deepforge',title:'engineering',agentId:'deepforge'},{id:'ws_raven',title:'research',agentId:'raven'}]}};if(p.verb==='keep.deliver')response={ok:true,result:{folded:true,session:p.args?.agentId==='raven'?'research':'engineering'}};if(['keep.dispatch_start','keep.dispatch_end'].includes(p.verb))response={ok:true,result:{session:p.args?.agentId==='raven'?'research':'engineering'}};await fetch(base+'/api/keep/ack',{method:'POST',headers,body:JSON.stringify({id:p.id,...response})}).catch(()=>{});}}}catch{} })();return true;
  });
  await ready;await sleep(250);
  const assignment=String(process.env.EYEHOLD_ASSIGNMENT||'Write a two-sentence description of one safe test to verify a Node.js module loads successfully.').trim();
@@ -82,7 +82,7 @@ async function run(){
    }if(done)break;}
    if(!eventCount)throw Error('Lead stream ended without events');
   }catch(e){
-   console.error('Worker round incomplete:',JSON.stringify({worker:worker.agentId,reason:e.message,runStarted:!!runId,toolErrors:workerErrors,finished,stationCommands:station.slice(-8)}));
+   console.error('Worker round incomplete:',JSON.stringify({worker:worker.agentId,reason:e.message,runStarted:!!runId,toolErrors:workerErrors,finished,keepCommands:keep.slice(-8)}));
    runErrors.push(e.name==='AbortError'?'Handoff deadline exceeded':e.message);
   }finally{clearTimeout(timer)}
   const round={worker:worker.agentId,finished,endReason,eventCount,supervisorTextLength:supervisorText.trim().length,toolErrors:workerErrors,runErrors,runIdPresent:!!runId};rounds.push(round);
@@ -126,7 +126,7 @@ async function run(){
    if(typeof raw==='string'){try{args=JSON.parse(raw)}catch{args={parseError:true}}}
    const workers=Array.isArray(args?.workers)?args.workers:[];
    return {name:p.name||null,argumentsAvailable:!!(p.arguments||p.args||p.input),workerCount:workers.length,targetAgentIds:workers.map(w=>w.agentId).filter(Boolean),targetSessionTitles:workers.map(w=>w.session||null)};
- }),stationCommands:station.filter(x=>x?.verb?.startsWith('station.')).length,stationVerbs:station.map(x=>x.verb),toolResults:events.filter(e=>e.name==='agent.tool_result').map(e=>({isError:!!e.payload?.isError,fields:Object.keys(e.payload||{}).filter(k=>!['content','text','result','output'].includes(k))})),delivered:station.filter(x=>x.verb==='station.deliver'),model};
+ }),keepCommands:keep.filter(x=>x?.verb?.startsWith('keep.')).length,keepVerbs:keep.map(x=>x.verb),toolResults:events.filter(e=>e.name==='agent.tool_result').map(e=>({isError:!!e.payload?.isError,fields:Object.keys(e.payload||{}).filter(k=>!['content','text','result','output'].includes(k))})),delivered:keep.filter(x=>x.verb==='keep.deliver'),model};
  if(process.env.EYEHOLD_DELIVERABLE_DIR){const dest=path.resolve(process.env.EYEHOLD_DELIVERABLE_DIR);fs.mkdirSync(dest,{recursive:true,mode:0o700});fs.writeFileSync(path.join(dest,'handoff-summary.json'),JSON.stringify(summary,null,2)+'\n',{mode:0o600});}
  console.log(JSON.stringify(summary,null,2));
  if(!success)throw Error('Incomplete multi-department handoff: '+JSON.stringify(details.map(d=>({agentId:d.agentId,verified:d.outputVerified,reason:d.reason})))+'; preserve completed worker evidence and retry only after diagnosis');

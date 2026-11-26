@@ -26,7 +26,7 @@
     // COMMS rides the same DISH as WEB but is its own family on purpose: reading the internet and messaging
     // real people out of the Commander's own bot are very different amounts of trust, and this row is what
     // lets one be switched off without the other.
-    { id: 'comms',        label: 'COMMS RELAY (OUTBOUND)',   glyph: '📡', desc: 'Let an agent send a message out to a connected chat — Telegram, Discord, Slack, Matrix, Signal. Only chats someone already opened with this station.' },
+    { id: 'comms',        label: 'COMMS RELAY (OUTBOUND)',   glyph: '📡', desc: 'Let an agent send a message out to a connected chat — Telegram, Discord, Slack, Matrix, Signal. Only chats someone already opened with this keep.' },
     { id: 'cabinet',      label: 'FILE CABINET',             glyph: '🗄', desc: 'Read, search, and write files in the agent’s workspace.' },
     { id: 'workbench',    label: 'WORKBENCH (CODE EXECUTION)', glyph: '🔧', desc: 'Run shell commands and verify code — the code-execution bench.' },
     { id: 'orchestrator', label: 'TASK DELEGATION',          glyph: '🕸', desc: 'Delegate subtasks to summoned crew, summon new agents, and schedule routines.' },

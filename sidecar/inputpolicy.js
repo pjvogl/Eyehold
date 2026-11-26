@@ -37,7 +37,7 @@ const IMPACT_SET = new Set(Object.keys(IMPACTS).map(k => IMPACTS[k]));
 // it cannot even call what it finds, it only makes it advertisable. Same live-caught failure as 'taskbrief'
 // above: without an entry here it fell through to EXTERNAL_UNKNOWN and the authority layer refused it, so
 // every DEFERRED tool became permanently unreachable while looking, from the outside, merely "not found".
-const SAFE_BUILTIN_CAPS = new Set(['compute', 'cabinet', 'memory', 'quest', 'studio', 'orchestrator', 'taskbrief', 'toolsearch', 'code', 'stationinfo']);
+const SAFE_BUILTIN_CAPS = new Set(['compute', 'cabinet', 'memory', 'quest', 'studio', 'orchestrator', 'taskbrief', 'toolsearch', 'code', 'keepinfo']);
 
 function impactOfTool(tool) {
   tool = tool || {};
@@ -86,7 +86,7 @@ function makeRunAuthority(opts) {
   const surface = opts.surface === 'interactive' ? 'interactive' : 'autonomous';
   const isTask = !!opts.isTask;
   // `ownerTrusted` is minted only by an authenticated owner DM at the channel ingress. It grants that
-  // Commander the same tool authority as a watched StarNet session without changing the ordinary autonomous
+  // Commander the same tool authority as a watched Eyehold session without changing the ordinary autonomous
   // policy used by cron, delegated workers, other channels, or group messages.
   const ownerTrusted = !!opts.ownerTrusted;
   /* MASTER BYPASS (2026-08-05) — the Commander's explicit, persisted "FULL BYPASS" switch. When on, this run
@@ -269,13 +269,13 @@ function enforceSyntheticOnly(resolved, remoteDesktopAuthorized) {
 
 /* The computer-object freebies (capability/registry.js) with no TOOLSETS_META row. No switch can turn them off,
    so a restriction-only list must not either: a routine restricted to ['web'] still keeps its own notepad
-   (routine.notepad), task plan (todo), deliverable naming and the station self-knowledge tools (station.inspect,
+   (routine.notepad), task plan (todo), deliverable naming and the keep self-knowledge tools (keep.inspect,
    manual.read) its prompt tells it to call. Named, never derived ("every family without a row"): that would fail
    OPEN for 'code' (execute + consent, the SECURITY STOPGAP in tools/builtin/code.js) and 'apps' (deferred write
    tools), which a restricted routine deliberately does NOT keep — and for any family added later. */
-const TOOLSET_FREEBIES = new Set(['quest', 'toolsearch', 'taskplan', 'deliverable', 'stationinfo', 'routinescratch']);
+const TOOLSET_FREEBIES = new Set(['quest', 'toolsearch', 'taskplan', 'deliverable', 'keepinfo', 'routinescratch']);
 
-/* Per-run toolsets are attenuation only: null preserves the station grant, while an explicit array
+/* Per-run toolsets are attenuation only: null preserves the keep grant, while an explicit array
    intersects it. Compute and the TOOLSET_FREEBIES above are not toggleable tool families. */
 function enforceEnabledToolsets(resolved, registry, enabledToolsets) {
   if (enabledToolsets == null) return resolved;
@@ -361,7 +361,7 @@ function makeLoopbackListenerProbe(opts) {
     } else if (platform === 'linux' || platform === 'darwin') {
       exe = '/bin/sh';
       const script = 'owners="$(lsof -nP -t -iTCP:"$1" -sTCP:LISTEN 2>/dev/null || true)"; [ -n "$owners" ] || exit 3; for owner in $owners; do p="$owner"; i=0; owned=0; while [ "$p" -gt 0 ] 2>/dev/null && [ "$i" -lt 128 ]; do if [ "$p" = "$2" ]; then owned=1; break; fi; next="$(ps -o ppid= -p "$p" 2>/dev/null | tr -d " ")"; [ -n "$next" ] || break; [ "$next" = "$p" ] && break; p="$next"; i=$((i+1)); done; [ "$owned" = 1 ] || exit 3; done; exit 0';
-      args = ['-c', script, 'starnet-listener-probe', String(port), String(rootPid)];
+      args = ['-c', script, 'eyehold-listener-probe', String(port), String(rootPid)];
     } else return false;
     return new Promise(resolve => {
       // 12s, not 5s (measured 2026-09-29 on the Windows dev box: this PowerShell CIM + NetTCP walk took 2.4–4.6s

@@ -1,8 +1,8 @@
-/* sidecar/tools/builtin/routines.js -- StarNet ROUTINES tools.
+/* sidecar/tools/builtin/routines.js -- Eyehold ROUTINES tools.
 
    These tools let the lead/orchestrator create and inspect scheduled routines through the SAME server-owned
    cron store that backs the ROUTINES panel. They intentionally do not use shell, crontab, Windows Task
-   Scheduler, or any OS-level scheduler: a created job is a StarNet CronJob and fires through the harness. */
+   Scheduler, or any OS-level scheduler: a created job is a Eyehold CronJob and fires through the harness. */
 'use strict';
 (function (root, factory) {
   const api = factory();
@@ -101,7 +101,7 @@
   function chooseAgent(args, ctx, rosterEntries) {
     const requested = clean(args && args.agentId, 80);
     if (requested) {
-      if (!validId(requested)) throw new Error('agentId must be one of your station agents');
+      if (!validId(requested)) throw new Error('agentId must be one of your keep agents');
       const known = rosterEntries.some(e => e.id === requested);
       if (rosterEntries.length && !known && requested !== 'agent') {
         throw new Error('unknown routine agentId "' + requested + '" (known: ' + rosterEntries.map(e => e.id).join(', ') + ')');
@@ -229,9 +229,9 @@
       return p === 'codex' || p === 'openai-codex' ? 'codex' : (p === 'openrouter' ? 'openrouter' : '');
     };
     /* ⛔ AN ALLOWLIST IS A DENYLIST FOR EVERY CLASS ADDED LATER. `provider` was hardcoded
-       enum:['openrouter','codex'] in BOTH tool schemas while the station shipped 17 providers. A Commander
+       enum:['openrouter','codex'] in BOTH tool schemas while the keep shipped 17 providers. A Commander
        running on Kimi, Grok, Ollama or a custom endpoint had an agent that could not pin a routine to the very
-       provider the station runs on: shared/schema.js enforces `enum`, so the call died with
+       provider the keep runs on: shared/schema.js enforces `enum`, so the call died with
        '"kimi" not in enum' before run() was ever reached. Read the live registry instead (injected, so this
        module stays node-testable), and fall back to the historical pair only when the host wires nothing. */
     const providerIds = typeof deps.providerIds === 'function' ? deps.providerIds : function () { return ['openrouter', 'codex']; };
@@ -244,11 +244,11 @@
 
     const listTool = {
       name: 'routine.list', capability: 'orchestrator', scope: 'read', requiresConsent: false,
-      description: 'List StarNet ROUTINES scheduled jobs. Use this to check existing routines before creating another one.',
+      description: 'List Eyehold ROUTINES scheduled jobs. Use this to check existing routines before creating another one.',
       schema: { type: 'object', properties: { agentId: { type: 'string' } } },
       run: async (args) => {
         const agentId = clean(args && args.agentId, 80);
-        if (agentId && !validId(agentId)) throw new Error('agentId must be one of your station agents');
+        if (agentId && !validId(agentId)) throw new Error('agentId must be one of your keep agents');
         let jobs = (listJobs() || []).map(pack).filter(Boolean);
         if (agentId) jobs = jobs.filter(j => j.agentId === agentId);
         return { content: JSON.stringify({ schedulerArmed: !!schedulerState(), schedulerHalted: !!schedulerHalted(), schedulerNote: armedNote() || undefined, jobs: jobs }), summary: jobs.length + ' routine(s)' };
@@ -262,7 +262,7 @@
          to a shell, and the check-first rule. Dropped: the agentId auto-routing and `arm` default, both of
          which the schema below already states at the point of use, and the explanation that the server
          rejects a duplicate name — it says so itself, at call time, more precisely than a remembered note. */
-      description: 'Create a StarNet ROUTINE: work an agent runs on a schedule (digests, research, monitoring, reports, drafts, reminders). Use it whenever the Commander wants anything recurring, scheduled or automated — never shell.exec, crontab or an OS scheduler. Results come back to this chat by default; do not ask where to send them. Write a self-contained prompt: task, sources, format, what to flag. Asked to automate something broadly? Create 2-5 routines your own tools can run now (web research, writing, checks; no connection needed), then list them. Call routine.list first; never duplicate.',
+      description: 'Create a Eyehold ROUTINE: work an agent runs on a schedule (digests, research, monitoring, reports, drafts, reminders). Use it whenever the Commander wants anything recurring, scheduled or automated — never shell.exec, crontab or an OS scheduler. Results come back to this chat by default; do not ask where to send them. Write a self-contained prompt: task, sources, format, what to flag. Asked to automate something broadly? Create 2-5 routines your own tools can run now (web research, writing, checks; no connection needed), then list them. Call routine.list first; never duplicate.',
       schema: {
         type: 'object',
         required: ['prompt', 'schedule'],
@@ -270,7 +270,7 @@
           name: { type: 'string' },
           prompt: { type: 'string', description: 'The instruction the target agent will run every time the routine fires.' },
           schedule: { type: 'string', description: 'Plain English (every day at 7am, weekdays at 9am, mondays at 6pm, 1st of every month, tomorrow at 9am), every 30m, in 2h, or cron.' },
-          agentId: { type: 'string', description: 'Optional exact station agent id. Omit to auto-route by specialty.' },
+          agentId: { type: 'string', description: 'Optional exact keep agent id. Omit to auto-route by specialty.' },
           agentHint: { type: 'string', description: 'Optional specialty hint such as research, engineer, scribe, operator, designer.' },
           timezone: { type: 'string', description: 'Optional IANA timezone for cron expressions, e.g. America/New_York.' },
           provider: { type: 'string', enum: providerEnum },
@@ -283,7 +283,7 @@
           ,skills: { type: 'array', items: { type: 'string' }, maxItems: 8, description: 'Saved runtime skills to preload on every run.' }
           ,contextFrom: { type: 'array', items: { type: 'string' }, maxItems: 8, description: 'Routine ids whose latest successful outputs feed this routine.' }
           ,monitorMode: { type: 'boolean', description: 'When true with contextFrom, run only after the durable upstream source hash changes.' }
-          ,enabledToolsets: { type: 'array', items: { type: 'string' }, maxItems: 16, description: 'Only these toolset ids (e.g. web, cabinet); omit = station defaults.' }
+          ,enabledToolsets: { type: 'array', items: { type: 'string' }, maxItems: 16, description: 'Only these toolset ids (e.g. web, cabinet); omit = keep defaults.' }
         }
       },
       run: async (args, ctx) => {
@@ -374,7 +374,7 @@
 
        Consent-gated as a whole, like routine.create: an EDIT is the same attack surface as a create (a
        routine authored clean can be patched into a payload), and pausing or deleting standing autonomous
-       work is a Commander-visible change to what the station does while nobody watches.
+       work is a Commander-visible change to what the keep does while nobody watches.
 
        `run_now` QUEUES rather than runs. The panel's POST /api/cron/run streams a real run to a watching
        human; doing that from inside a tool call would nest a run inside a run (re-entrant runOnce, a second
@@ -383,7 +383,7 @@
        reference harness's trigger_job does. It reports the armed time, never "it ran". */
     const manageTool = {
       name: 'routine.manage', capability: 'orchestrator', scope: 'write', requiresConsent: true, timeoutMs: 15000,
-      description: 'Edit, pause, resume, delete, or queue an immediate fire of an existing StarNet ROUTINES job. Call routine.list first to see what exists; reference a routine by its exact id, or by name when that name is unambiguous.',
+      description: 'Edit, pause, resume, delete, or queue an immediate fire of an existing Eyehold ROUTINES job. Call routine.list first to see what exists; reference a routine by its exact id, or by name when that name is unambiguous.',
       schema: {
         type: 'object',
         required: ['action'],

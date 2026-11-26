@@ -1,10 +1,10 @@
 /* sidecar/questinject.js — fold an agent's OPEN quests (the harness-owned QUEST LEDGER, quest-store.js) into its
-   system prompt as a `STATION QUESTS` block, so a run can SEE and ACT ON its quests (QUEST V2, plan §B — agent
+   system prompt as a `KEEP QUESTS` block, so a run can SEE and ACT ON its quests (QUEST V2, plan §B — agent
    awareness). The v1 system had zero agent visibility: nothing in the prompt, no tool — asking an agent about a
    quest could never work. This is the read half; the write half is the quest.update tool (tools/builtin/quests.js).
 
    Two functions, mirroring dossierinject.js exactly:
-     questBlock(quests) — format an array of open quest records into the STATION QUESTS block. A NON-empty list →
+     questBlock(quests) — format an array of open quest records into the KEEP QUESTS block. A NON-empty list →
        the full block (how-to header + minting doctrine + per-quest stanzas). An EMPTY/absent list → the MINIMAL
        minting-doctrine block (NOT '') — a no-quest agent is exactly who should consider grounded minting (plan §E).
      withQuests(system, block) — append the block to a system prompt; an empty/whitespace block is a STRICT no-op
@@ -31,7 +31,7 @@
   // ~2200 covers the fixed header + minting doctrine + a handful of stanzas (plan §E cap guidance).
   const BLOCK_CAP = 2200;
 
-  const HEADER = 'STATION QUESTS — your standing objectives for the Commander. These progress the game in sync '
+  const HEADER = 'KEEP QUESTS — your standing objectives for the Commander. These progress the game in sync '
     + 'with the Commander\'s real work. To interact, use the quest.update tool: op:"start" binds the ONE named run '
     + 'quest you are beginning to this run; op:"progress" ticks a named step '
     + '(pass a short note on what you did); op:"attest_complete" PROPOSES a quest done with concrete evidence — it '
@@ -55,14 +55,14 @@
 
   // the MINIMAL block emitted when the agent has NO open quests: a short frame + the minting doctrine only. This is
   // NOT '' — an empty ledger for a task run should still invite grounded minting (plan §E). withQuests appends it.
-  const MINT_ONLY = 'STATION QUESTS — you have no open quests for the Commander right now.\n\n' + MINT_DOCTRINE;
+  const MINT_ONLY = 'KEEP QUESTS — you have no open quests for the Commander right now.\n\n' + MINT_DOCTRINE;
 
   // contract type → the one-line "how this completes" phrasing the agent reads under each quest.
   function completesWhen(contract) {
     const type = (contract && contract.type) || '';
     switch (type) {
       case 'run': return 'completes when: the bound run finishes successfully';
-      case 'prop': return 'completes when: the required capability goes live on the station';
+      case 'prop': return 'completes when: the required capability goes live on the keep';
       case 'fact': return 'completes when: the harness learns this about the Commander';
       case 'artifact': return 'completes when: the named deliverable exists in the workspace';
       case 'attest': return 'completes when you attest with concrete evidence and the Commander confirms';
@@ -101,7 +101,7 @@
     return lines.join('\n');
   }
 
-  // format an agent's OPEN quests into the STATION QUESTS block. Empty/absent list → the MINIMAL minting-doctrine
+  // format an agent's OPEN quests into the KEEP QUESTS block. Empty/absent list → the MINIMAL minting-doctrine
   // block (NOT '' — an empty ledger for a task run should still invite grounded minting, plan §E). The caller gates
   // this on isTask, so a non-task run never composes it; withQuests('' ...) stays the no-op for the non-task path.
   // Defensively clips to BLOCK_CAP, dropping the OLDEST quests first.

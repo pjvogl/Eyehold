@@ -2,7 +2,7 @@
 
    The fs.* tools are jailed to <workspaces>/<agentId>/ (fs.js resolveInside). This module is the ONE
    sanctioned way an fs tool call may reach a path OUTSIDE that jail: it resolves the referenced absolute
-   path against a per-station set of BLESSED PROJECT ROOTS and, when the path is not yet under any blessed
+   path against a per-keep set of BLESSED PROJECT ROOTS and, when the path is not yet under any blessed
    root, mediates a SINGLE consent decision ("work in <root>? always / once / no"). "always" records a
    standing PATH grant (dangerKey `path:<normalized-real-root>`) that the sidecar persists fail-closed and
    the existing /api/permissions surface lists + revokes. Reads flow once a root is blessed; writes stay
@@ -137,7 +137,7 @@
 
       const raw = String(absPath == null ? '' : absPath);
       const norm = P.resolve(raw);
-      // NUL and UNC are not local filesystem targets StarNet can pass to Node safely. Full Power removes
+      // NUL and UNC are not local filesystem targets Eyehold can pass to Node safely. Full Power removes
       // policy restrictions, not path syntax validity or the distinction between this computer and a share.
       if (raw.indexOf('\0') >= 0) throw new Error('illegal path (NUL): ' + raw);
       if (/^[\\/]{2}/.test(raw)) throw new Error('network paths (UNC) are not local computer paths: ' + raw);
@@ -160,15 +160,15 @@
       const rhr = hardlineReason(real, real);
       if (rhr) throw new Error(rhr + ' (reached via ' + norm + ')');
 
-      // Agent workspaces are private jails, not station-global projects. A stale or accidentally-created
+      // Agent workspaces are private jails, not keep-global projects. A stale or accidentally-created
       // path:<WORKSPACES/alpha> grant must never let beta cross that boundary, and Full Access must not turn
-      // the station's internal workspace tree into shared storage. Absolute paths into the caller's own
+      // the keep's internal workspace tree into shared storage. Absolute paths into the caller's own
       // workspace remain usable; everything else under the workspace parent is denied before standing grants.
       if (workspaceRoot) {
         const workspaceReal = await realpathOrSelf(workspaceRoot);
         if (pathInside(real, workspaceReal)) {
           const agentId = String(o.agentId == null ? '' : o.agentId);
-          // A station-owned directory (codex/, channels/, connectors/, plugins/ …) is never an agent's own
+          // A keep-owned directory (codex/, channels/, connectors/, plugins/ …) is never an agent's own
           // workspace, even for an agent whose id collides with it — those fall through to the deny below.
           if (/^[A-Za-z0-9_-]{1,40}$/.test(agentId) && !isReservedWorkspaceId(agentId)) {
             const ownReal = await realpathOrSelf(P.join(workspaceRoot, agentId));

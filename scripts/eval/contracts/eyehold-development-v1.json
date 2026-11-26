@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "starnet.eval.comparison-contract.v1",
+  "schemaVersion": "eyehold.eval.comparison-contract.v1",
   "release": "0.9.0",
   "frozenAt": "2026-08-02",
   "reference": {
@@ -10,7 +10,7 @@
     "tagObject": "d25e2dbdbc40b49808c0a0e9cfed21cc90cffab3",
     "commit": "cc4cab2f592e60a197e796506de9168f74baf3ea",
     "sourceTree": "fcdc6093750ed0a3a556e20927799d7245ba65e4",
-    "role": "failure-class and shared-workload oracle, not StarNet design authority"
+    "role": "failure-class and shared-workload oracle, not Eyehold design authority"
   },
   "claimLedger": {
     "path": "qa/product-perfect/claims.json",
@@ -39,7 +39,7 @@
     "required": "blocks v0.9 until proved or removed from the advertised surface",
     "experimental": "must be labelled where used and must fail safely",
     "excluded": "must not be advertised or included in parity scoring",
-    "differentiator": "StarNet-specific behavior graded on its own truthful contract"
+    "differentiator": "Eyehold-specific behavior graded on its own truthful contract"
   },
   "promises": [
     {
@@ -205,7 +205,7 @@
     {
       "id": "full-backup-export-restore",
       "classification": "required",
-      "releaseTreatment": "Expose and prove the full secret-free path or narrow the claim to station backup."
+      "releaseTreatment": "Expose and prove the full secret-free path or narrow the claim to keep backup."
     },
     {
       "id": "three-platform-release-pipeline",

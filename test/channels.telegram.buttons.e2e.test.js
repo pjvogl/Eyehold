@@ -37,7 +37,7 @@ function readJsonBody(req) {
 // model into asking a TASK_QUESTION and (later) into an ungranted fs.write that must raise a consent prompt.
 //
 // Steps are keyed by `when` = the request's LAST USER MESSAGE, and matched in order. That keying is load-bearing:
-// the station also fires background runs of its own (skill review, quest refresh) against this same endpoint, and
+// the keep also fires background runs of its own (skill review, quest refresh) against this same endpoint, and
 // a positional queue would let those runs eat the steps meant for the Telegram turn. Their last user message is
 // their own long prompt, so they never match and always fall through to the default acknowledgement.
 function startMockOpenRouter() {
@@ -147,7 +147,7 @@ function startMockTelegram() {
 function boot(port, env, attemptsLeft) {
   return new Promise((resolve, reject) => {
     const child = spawn(process.execPath, [INDEX], {
-      env: Object.assign({}, process.env, env, { SKYNET_PORT: String(port), STARNET_PORT: String(port) }),
+      env: Object.assign({}, process.env, env, { EYEHOLD_PORT: String(port), EYEHOLD_PORT: String(port) }),
       stdio: ['ignore', 'pipe', 'pipe']
     });
     let out = '', settled = false;
@@ -171,7 +171,7 @@ async function waitUntil(fn, ms, label) {
   while (Date.now() < deadline) { if (await fn()) return; await sleep(25); }
   throw new Error('timed out waiting for ' + label);
 }
-// The station fires background runs (skill review, quest refresh) against the same mock, so "the most recent
+// The keep fires background runs (skill review, quest refresh) against the same mock, so "the most recent
 // request" is NOT reliably the Telegram turn. Callers search ALL requests for the one they mean instead.
 const lastUserTurn = (req) => {
   const m = (req && req.messages) || [];
@@ -184,12 +184,12 @@ const lastUserTurn = (req) => {
   const tg = await startMockTelegram();
   const ws = fs.mkdtempSync(path.join(os.tmpdir(), 'sk-tg-buttons-e2e-'));
   const env = {
-    SKYNET_WORKSPACES: ws, STARNET_WORKSPACES: ws,
-    SKYNET_OPENROUTER_BASE: llm.base, STARNET_OPENROUTER_BASE: llm.base,
-    SKYNET_OPENROUTER_KEY: 'sk-or-v1-buttons-fake', STARNET_OPENROUTER_KEY: 'sk-or-v1-buttons-fake',
-    SKYNET_DEFAULT_MODEL: 'test/model', STARNET_DEFAULT_MODEL: 'test/model',
-    SKYNET_TELEGRAM_TOKEN: 'TESTTOKEN', STARNET_TELEGRAM_TOKEN: 'TESTTOKEN',
-    SKYNET_TELEGRAM_API_BASE: tg.base, STARNET_TELEGRAM_API_BASE: tg.base
+    EYEHOLD_WORKSPACES: ws, EYEHOLD_WORKSPACES: ws,
+    EYEHOLD_OPENROUTER_BASE: llm.base, EYEHOLD_OPENROUTER_BASE: llm.base,
+    EYEHOLD_OPENROUTER_KEY: 'sk-or-v1-buttons-fake', EYEHOLD_OPENROUTER_KEY: 'sk-or-v1-buttons-fake',
+    EYEHOLD_DEFAULT_MODEL: 'test/model', EYEHOLD_DEFAULT_MODEL: 'test/model',
+    EYEHOLD_TELEGRAM_TOKEN: 'TESTTOKEN', EYEHOLD_TELEGRAM_TOKEN: 'TESTTOKEN',
+    EYEHOLD_TELEGRAM_API_BASE: tg.base, EYEHOLD_TELEGRAM_API_BASE: tg.base
   };
   const { child, port } = await boot(9040 + (process.pid % 50), env, 20);
   const B = 'http://' + HOST + ':' + port;
@@ -201,7 +201,7 @@ const lastUserTurn = (req) => {
     // Enrol the Telegram account through the same explicit local pairing flow as the desktop UI.
     const pair = await (await fetch(B + '/api/channels/telegram/owner/pair', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'X-StarNet-Token': token, Origin: B },
+      headers: { 'Content-Type': 'application/json', 'X-Eyehold-Token': token, Origin: B },
       body: '{}'
     })).json();
     A.ok(/^[-A-Z0-9]{11}$/.test(String(pair.code || '')), 'local owner pairing issued a code');
@@ -253,7 +253,7 @@ const lastUserTurn = (req) => {
     A.ok(tg.sends.some(s => /Deploying now\./.test(String(s.text || ''))), 'the follow-up answer is delivered');
 
     // ---- 4. a stale second tap is acknowledged but starts nothing ----
-    // Count the runs that carry THIS OPTION'S text, not every request the station makes. A raw total is moved
+    // Count the runs that carry THIS OPTION'S text, not every request the keep makes. A raw total is moved
     // by anything the previous run still has in flight (an aux reflect/study pass, a late turn), which under
     // full-gate load lands inside the 400ms window below and turned the gate red for a dedupe that worked
     // perfectly (the stale tap was correctly acked 'no longer open' right above). The invariant under test is
@@ -280,7 +280,7 @@ const lastUserTurn = (req) => {
     // without a placed cabinet there is no fs.write for the broker to pause on, and a bay projects PURE room objects with no baseline, so it needs its own computer to run at all (a bare workspace offers only
     // the consent-free skill tools) and this would silently prove nothing.
     const rr = await fetch(B + '/api/routing', {
-      method: 'POST', headers: { 'Content-Type': 'application/json', 'X-StarNet-Token': token, Origin: B },
+      method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Eyehold-Token': token, Origin: B },
       body: JSON.stringify({ errors: [], hash: 'buttons-e2e', bays: [], dockBays: [{ agentId: 'tg_4242', objects: ['computer', 'cabinet'] }] })
     });
     A.eq(rr.status, 200, 'routing plan accepted (computer + cabinet projected onto tg_4242)');

@@ -15,11 +15,11 @@ const read = rel => fs.readFileSync(path.join(ROOT, rel), 'utf8');
   const calls = [];
   const win = { __TAURI__: { core: { invoke: async (command, args) => {
     calls.push({ command, args });
-    if (command === 'starnet_lifecycle_status') return {
+    if (command === 'eyehold_lifecycle_status') return {
       supervised: true, armed: false, reasons: [], startMinimized: true, closeToTray: true
     };
-    if (command === 'starnet_set_start_minimized') return { version: 1, startMinimized: !!args.enabled, closeToTray: true };
-    if (command === 'starnet_set_close_to_tray') return { version: 1, startMinimized: true, closeToTray: !!args.enabled };
+    if (command === 'eyehold_set_start_minimized') return { version: 1, startMinimized: !!args.enabled, closeToTray: true };
+    if (command === 'eyehold_set_close_to_tray') return { version: 1, startMinimized: true, closeToTray: !!args.enabled };
     throw new Error('unexpected command ' + command);
   } } } };
 
@@ -27,16 +27,16 @@ const read = rel => fs.readFileSync(path.join(ROOT, rel), 'utf8');
   A.eq(status, { supervised: true, armed: false, reasons: [], startMinimized: true, closeToTray: true }, 'native status exposes both verified preferences');
   A.eq(await Lifecycle.setStartMinimized(false, { win }), { startMinimized: false, closeToTray: true }, 'start-minimized setter returns native read-back');
   A.eq(await Lifecycle.setCloseToTray(false, { win }), { startMinimized: true, closeToTray: false }, 'close-to-tray setter returns native read-back');
-  A.eq(calls.map(call => call.command), ['starnet_lifecycle_status', 'starnet_set_start_minimized', 'starnet_set_close_to_tray'], 'bridge calls only the three lifecycle commands');
+  A.eq(calls.map(call => call.command), ['eyehold_lifecycle_status', 'eyehold_set_start_minimized', 'eyehold_set_close_to_tray'], 'bridge calls only the three lifecycle commands');
 
   const browser = await Lifecycle.status({ win: {} });
   A.eq(browser, { supervised: false, armed: false, reasons: [], startMinimized: false, closeToTray: false }, 'browser preview claims no native background preferences');
 
   const main = read('src-tauri/src/main.rs');
   const prefs = read('src-tauri/src/lifecycle_preferences.rs');
-  const settings = read('frontend/app/stationui.js');
+  const settings = read('frontend/app/keepui.js');
   A.ok(/mod lifecycle_preferences;/.test(main), 'desktop shell owns one focused lifecycle-preference module');
-  A.ok(/starnet_set_start_minimized[\s\S]*starnet_set_close_to_tray/.test(main), 'both native preference commands are registered');
+  A.ok(/eyehold_set_start_minimized[\s\S]*eyehold_set_close_to_tray/.test(main), 'both native preference commands are registered');
   A.ok(/StartupReveal::new\(start_minimized\)/.test(main), 'stored start-minimized choice gates initial window reveal');
   A.ok(/payload\.event\(\) == tauri::webview::PageLoadEvent::Finished[\s\S]{0,250}startup_reveal\.finish_load\(\)[\s\S]{0,400}window\.show\(\)/.test(main), 'only the first completed document load may auto-reveal the window');
   // WebView2 crash recovery (webview_recovery.rs) may re-reveal a REBUILT window, but only one that was showing before it died.

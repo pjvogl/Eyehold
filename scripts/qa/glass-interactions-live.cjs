@@ -1,12 +1,12 @@
-/* Live UI regression against an isolated seeded station. Uses normal controls only;
+/* Live UI regression against an isolated seeded keep. Uses normal controls only;
  * no provider execution, synthetic app state, saved widget changes, or external accounts.
- * STARNET_PLAYWRIGHT_MODULE / STARNET_CHROME select locally available browser dependencies. */
+ * EYEHOLD_PLAYWRIGHT_MODULE / EYEHOLD_CHROME select locally available browser dependencies. */
 'use strict';
 const assert=require('node:assert/strict');
 const fs=require('node:fs');
-const {chromium}=require(process.env.STARNET_PLAYWRIGHT_MODULE || 'playwright');
+const {chromium}=require(process.env.EYEHOLD_PLAYWRIGHT_MODULE || 'playwright');
 (async()=>{
- const browser=await chromium.launch({headless:true,...(process.env.STARNET_CHROME?{executablePath:process.env.STARNET_CHROME}:{})});
+ const browser=await chromium.launch({headless:true,...(process.env.EYEHOLD_CHROME?{executablePath:process.env.EYEHOLD_CHROME}:{})});
  const proof={url:process.argv[2] || 'http://127.0.0.1:9199/',cycles:[],geometry:[],errors:[]};
  try {
   const page=await browser.newPage({viewport:{width:1280,height:900},reducedMotion:'no-preference'});

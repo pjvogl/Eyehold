@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# Assemble an EIGHT-direction Pixellab character into the StarNet 92x92 foot-anchored
+# Assemble an EIGHT-direction Pixellab character into the Eyehold 92x92 foot-anchored
 # frame set: rot_<dir> x8, walk_<dir>_<n> x8 dirs, gesture_<dir>_<n> x8 dirs.
 # Companion to assemble.py (4-dir, blink/sit states) — this one is for the v3 8-dir
 # rebuilds where blink/sit/type stay on the shipped cardinal frames.

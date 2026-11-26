@@ -2,7 +2,7 @@
 const A = require('./_assert.js');
 const fs = require('fs');
 const path = require('path');
-const { clampTerminalSize } = require('../frontend/app/stationui.js');
+const { clampTerminalSize } = require('../frontend/app/keepui.js');
 
 const desktop = { width: 1440, height: 900 };
 const phone = { width: 390, height: 844 };
@@ -16,7 +16,7 @@ A.eq(clampTerminalSize({ width: 1060, height: 720 }, consoleLimits, phone), { wi
 A.eq(clampTerminalSize({ width: 1, height: 1 }, smallLimits, phone), { width: 320, height: 220 }, 'small window keeps its smaller usable minimum on phone');
 A.eq(clampTerminalSize({ width: 'bad', height: null }, smallLimits, desktop), { width: 320, height: 220 }, 'malformed persisted size fails closed to usable minimums');
 
-const src = fs.readFileSync(path.join(__dirname, '../frontend/app/stationui.js'), 'utf8');
+const src = fs.readFileSync(path.join(__dirname, '../frontend/app/keepui.js'), 'utf8');
 A.ok(/termSize/.test(src) && /store\.termSize\s*=\s*termSize/.test(src), 'dimensions persist beside positions');
 A.ok(/className\s*=\s*'term-resize'|mkEl\('button',\s*'term-resize'/.test(src), 'every terminal gets one shared resize affordance');
 A.ok(/pointerdown/.test(src) && /pointermove/.test(src) && /pointerup/.test(src), 'resize supports pointer, touch, and pen through pointer events');

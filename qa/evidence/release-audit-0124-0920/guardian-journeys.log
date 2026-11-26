@@ -1,5 +1,5 @@
 
-> starnet-harness@0.12.4 qa:journeys
+> eyehold-harness@0.12.4 qa:journeys
 > node scripts/qa/journeys.mjs
 
 provider: controllable journey mock on http://127.0.0.1:64637/api/v1
@@ -16,7 +16,7 @@ journey J1: task-lifecycle + taskboard truth
     PASS  J1.0-board-open::chip/done-implies-idle  — 0 DONE card(s), none busy
     PASS  J1.0-board-open::crew/working-not-exceeds-present  — shown=0 present=1
     PASS  J1.0-board-open::crew/working-covers-busy  — shownWorking=0 >= busy-on-roster=0
-    PASS  J1.0-board-open::topbar/stationLevel  — displayed=1 eq expected=1
+    PASS  J1.0-board-open::topbar/keepLevel  — displayed=1 eq expected=1
     PASS  J1.0-board-open::board/no-forever-running  — no stuck RUNNING chip while idle
     PASS  J1/plain-chat-sent  — sent
     PASS  J1.1-after-plain-chat::board/rows-match-task-store  — board=[] taskStore=[]
@@ -25,7 +25,7 @@ journey J1: task-lifecycle + taskboard truth
     PASS  J1.1-after-plain-chat::chip/done-implies-idle  — 0 DONE card(s), none busy
     PASS  J1.1-after-plain-chat::crew/working-not-exceeds-present  — shown=0 present=1
     PASS  J1.1-after-plain-chat::crew/working-covers-busy  — shownWorking=0 >= busy-on-roster=0
-    PASS  J1.1-after-plain-chat::topbar/stationLevel  — displayed=1 eq expected=1
+    PASS  J1.1-after-plain-chat::topbar/keepLevel  — displayed=1 eq expected=1
     PASS  J1.1-after-plain-chat::board/no-forever-running  — no stuck RUNNING chip while idle
     PASS  J1/task-created  — workstream id=ws_mu9fnllcfh2e
     PASS  J1/run-in-flight  — busy on ws_mu9fnllcfh2e
@@ -35,7 +35,7 @@ journey J1: task-lifecycle + taskboard truth
     PASS  J1.2-run-live::chip/done-implies-idle  — 0 DONE card(s), none busy
     PASS  J1.2-run-live::crew/working-not-exceeds-present  — shown=1 present=1
     PASS  J1.2-run-live::crew/working-covers-busy  — shownWorking=1 >= busy-on-roster=1
-    PASS  J1.2-run-live::topbar/stationLevel  — displayed=1 eq expected=1
+    PASS  J1.2-run-live::topbar/keepLevel  — displayed=1 eq expected=1
     PASS  J1.2-run-live::board/no-forever-running  — 1 run(s) legitimately in flight
     PASS  J1/assigned-card-active  — assigned card state = {"lane":"active","heading":"IN PROGRESS / REVIEW 11 RUNNING","running":true,"busy":true}
     PASS  J1/queue-midrun-keeps-running-chip  — re-queued mid-run → lane=TO busy=true RUNNING chip=true
@@ -46,7 +46,7 @@ journey J1: task-lifecycle + taskboard truth
     PASS  J1.3-run-done::chip/done-implies-idle  — 1 DONE card(s), none busy
     PASS  J1.3-run-done::crew/working-not-exceeds-present  — shown=0 present=1
     PASS  J1.3-run-done::crew/working-covers-busy  — shownWorking=0 >= busy-on-roster=0
-    PASS  J1.3-run-done::topbar/stationLevel  — displayed=1 eq expected=1
+    PASS  J1.3-run-done::topbar/keepLevel  — displayed=1 eq expected=1
     PASS  J1.3-run-done::board/no-forever-running  — no stuck RUNNING chip while idle
     PASS  J1/chip-done-after-complete  — chip=kb-state done:FINISHED — REVIEW RESULT
     PASS  J1/exactly-one-new-task  — taskStore 0 → 1 (plain chat must NOT add a card)
@@ -65,7 +65,7 @@ journey J2a: interrupt: conversation Stop mid-run
     PASS  J2.stop::chip/done-implies-idle  — 2 DONE card(s), none busy
     PASS  J2.stop::crew/working-not-exceeds-present  — shown=0 present=1
     PASS  J2.stop::crew/working-covers-busy  — shownWorking=0 >= busy-on-roster=0
-    PASS  J2.stop::topbar/stationLevel  — displayed=1 eq expected=1
+    PASS  J2.stop::topbar/keepLevel  — displayed=1 eq expected=1
     PASS  J2.stop::board/no-forever-running  — no stuck RUNNING chip while idle
     PASS  J2/stop/no-forever-running-chip  — interrupted card chip = not-running
 
@@ -84,7 +84,7 @@ journey J2b: interrupt: panel-close mid-run
     PASS  J2.panel-close::chip/done-implies-idle  — 3 DONE card(s), none busy
     PASS  J2.panel-close::crew/working-not-exceeds-present  — shown=1 present=1
     PASS  J2.panel-close::crew/working-covers-busy  — shownWorking=1 >= busy-on-roster=0
-    PASS  J2.panel-close::topbar/stationLevel  — displayed=1 eq expected=1
+    PASS  J2.panel-close::topbar/keepLevel  — displayed=1 eq expected=1
     PASS  J2.panel-close::board/no-forever-running  — no stuck RUNNING chip while idle
     PASS  J2/panel-close/no-forever-running-chip  — interrupted card chip = not-running
 
@@ -100,7 +100,7 @@ journey J2c: interrupt: reload mid-run
     PASS  J2.reload-after::chip/done-implies-idle  — 3 DONE card(s), none busy
     PASS  J2.reload-after::crew/working-not-exceeds-present  — shown=0 present=1
     PASS  J2.reload-after::crew/working-covers-busy  — shownWorking=0 >= busy-on-roster=0
-    PASS  J2.reload-after::topbar/stationLevel  — displayed=1 eq expected=1
+    PASS  J2.reload-after::topbar/keepLevel  — displayed=1 eq expected=1
     PASS  J2.reload-after::board/no-forever-running  — no stuck RUNNING chip while idle
     PASS  J2/reload/no-running-chip-after-reload  — reloaded card shows an honest (non-running) state
 
@@ -112,7 +112,7 @@ journey J3: double-send / rapid-toggle
     PASS  J3.mid-toggle::chip/done-implies-idle  — 5 DONE card(s), none busy
     PASS  J3.mid-toggle::crew/working-not-exceeds-present  — shown=0 present=1
     PASS  J3.mid-toggle::crew/working-covers-busy  — shownWorking=0 >= busy-on-roster=0
-    PASS  J3.mid-toggle::topbar/stationLevel  — displayed=1 eq expected=1
+    PASS  J3.mid-toggle::topbar/keepLevel  — displayed=1 eq expected=1
     PASS  J3.mid-toggle::board/no-forever-running  — no stuck RUNNING chip while idle
     PASS  J3/no-duplicate-board-rows  — 6 unique card(s)
     PASS  J3.settled::board/rows-match-task-store  — board=[ws_mu9fnllcfh2e,ws_mu9fno886bmk,ws_mu9fnpyd8p44,ws_mu9fnrr84b87,ws_mu9fnv0sk9c4,ws_mu9fnv2816x3] taskStore=[ws_mu9fnllcfh2e,ws_mu9fno886bmk,ws_mu9fnpyd8p44,ws_mu9fnrr84b87,ws_mu9fnv0sk9c4,ws_mu9fnv2816x3]
@@ -121,7 +121,7 @@ journey J3: double-send / rapid-toggle
     PASS  J3.settled::chip/done-implies-idle  — 5 DONE card(s), none busy
     PASS  J3.settled::crew/working-not-exceeds-present  — shown=0 present=1
     PASS  J3.settled::crew/working-covers-busy  — shownWorking=0 >= busy-on-roster=0
-    PASS  J3.settled::topbar/stationLevel  — displayed=1 eq expected=1
+    PASS  J3.settled::topbar/keepLevel  — displayed=1 eq expected=1
     PASS  J3.settled::board/no-forever-running  — no stuck RUNNING chip while idle
     PASS  J3/no-stuck-running  — 0 card(s) still RUNNING after both runs settled
     PASS  J3/exactly-two-new-streams  — 2 new stream(s) (expected 2): ws_mu9fnv0sk9c4,ws_mu9fnv2816x3

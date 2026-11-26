@@ -1,4 +1,4 @@
-/* STARNET — workshopstore.js : the AWAY-WORKSHOP return surface (lane W3, frontend).
+/* EYEHOLD — workshopstore.js : the AWAY-WORKSHOP return surface (lane W3, frontend).
 
    The Commander switched an agent's "build things while I'm away" grant on; while they were gone an
    autonomous shift built a deliverable in that agent's jailed sandbox and wrote a manifest. This store
@@ -12,7 +12,7 @@
 
    DELIVERY REVEAL (2026-07-16, per Andrew): a finished build must GREET the Commander, not hide as an
    unread rail row with a one-line stub ("it puts it all on me to prompt and figure out what it even
-   is"). When a deliverable lands — live push, attach poll, or genuine return — StarNet OPENS the
+   is"). When a deliverable lands — live push, attach poll, or genuine return — Eyehold OPENS the
    deliverable's OWN session and presents the full return card there (what it built, the honest
    verification line, the summary, the files, the Open-it link, and the decide row). The card still
    renders ONLY inside its own session — never into a random feed — and the reveal stands down (unread
@@ -44,7 +44,7 @@
    this store talks to the real sidecar only — no dev stub. */
 'use strict';
 const WorkshopStore = (() => {
-  const KEY = 'starnet.workshop.v1';
+  const KEY = 'eyehold.workshop.v1';
   const ATTACH_DELAY_MS = 1800;   // let the floor + COMMS settle before the return beat (mirrors ReturnStore)
   let state = null;               // { v:1, later:{runId:true}, seen:[runId] } — session-scoped anti-nag
   let fired = false;              // one auto-poll per page session
@@ -74,8 +74,8 @@ const WorkshopStore = (() => {
   function agentIds() { try { const a = deps.agentIds ? deps.agentIds() : null; return (Array.isArray(a) && a.length) ? a : ['agent']; } catch (_) { return ['agent']; } }
 
   // every agent's undecided manifests, unfiltered — the shared read under fetchPending/presentOnReturn.
-  // Sets lastRawOk so callers can tell "the station answered with nothing" (honest empty) apart from
-  // "the station never answered" (cold-boot race / down) — only the latter is worth retrying.
+  // Sets lastRawOk so callers can tell "the keep answered with nothing" (honest empty) apart from
+  // "the keep never answered" (cold-boot race / down) — only the latter is worth retrying.
   let lastRawOk = false;
   async function fetchRaw() {
     let list = [];
@@ -106,14 +106,14 @@ const WorkshopStore = (() => {
   //     dead-end is the real bug the audit half-saw ("fails quietly"); it doesn't fail, it succeeds-and-stalls.
   //   • The BUILD is a per-agent WORKSHOP SHIFT: a recurring cron routine (~every 6h) that the "build while away"
   //     GRANT arms (handleWorkshopGrant → armWorkshopShift, which also arms the scheduler). It fires on that
-  //     cadence while the STATION IS RUNNING — it is NOT gated on the app being closed. So the honest condition is
-  //     "grant on + station running", NOT "app closed". The return DIGEST (returnstore.js heartbeat) is the part
+  //     cadence while the KEEP IS RUNNING — it is NOT gated on the app being closed. So the honest condition is
+  //     "grant on + keep running", NOT "app closed". The return DIGEST (returnstore.js heartbeat) is the part
   //     that's about the app being closed — a different subsystem the audit conflated with the build.
   // The confirm copy therefore states the grant + recurring-shift truth, and never the false "runs while closed".
   function queueConfirmLine(name) {
     const who = String(name || 'it').trim() || 'it';
     return '◈ queued for the away workshop — ' + who + ' will build this in its private sandbox on its next away shift '
-      + '(recurring, roughly every 6 hours while the station is up). the result arrives as a new ⚒ session in your rail — '
+      + '(recurring, roughly every 6 hours while the keep is up). the result arrives as a new ⚒ session in your rail — '
       + 'see the build list (and a “build now” button) on the agent’s dossier › CONFIG.';
   }
 
@@ -177,7 +177,7 @@ const WorkshopStore = (() => {
       const j = await r.json().catch(() => null);
       if (r.ok && j && j.ok) return { ok: true };
       return { ok: false, error: (j && (j.error || j.message)) || 'could not enable it' };
-    } catch (_) { return { ok: false, error: 'could not reach the station' }; }
+    } catch (_) { return { ok: false, error: 'could not reach the keep' }; }
   }
 
   // decide a return card. decision: 'keep' (destPath required) | 'later' | 'discard'.
@@ -206,15 +206,15 @@ const WorkshopStore = (() => {
           savedOnly: j && j.savedOnly === true, patchRefused: (j && j.patchRefused) || null };
       }
       return { ok: false, error: (j && j.error) || 'could not save your decision' };
-    } catch (_) { return { ok: false, error: 'decision failed to reach the station' }; }
+    } catch (_) { return { ok: false, error: 'decision failed to reach the keep' }; }
   }
 
   /* IMPLEMENT-AS-BUILD (2026-08-14) — POST /api/workshop/implement and run what a PLAN deliverable describes.
      The response is an NDJSON run stream, not a JSON body, so Harness.api.post (which calls r.json() on the whole
      body) cannot read it — every frame is parsed here instead. Each frame is re-emitted onto U.bus exactly like
-     harness.js's run reader, so the station animates the build LIVE (floor, COMMS beats, work item) rather than
+     harness.js's run reader, so the keep animates the build LIVE (floor, COMMS beats, work item) rather than
      the Commander staring at a frozen card for minutes. Resolves the final workshop.implement.result payload.
-     Never throws: an unreachable station resolves { fired:false, reason:'unreachable' }. */
+     Never throws: an unreachable keep resolves { fired:false, reason:'unreachable' }. */
   async function implement(agentId, runId, note) {
     const body = { agentId: agentId || 'agent', runId: String(runId) };
     // what the Commander typed on the card — WHICH part of the plan to build. Rides into the build prompt, not
@@ -252,7 +252,7 @@ const WorkshopStore = (() => {
   // manifest is exactly what re-minted the session on every restart. Only fires when the run is
   // GENUINELY still pending (a kept/discarded deliverable is left alone — no spurious ledger rows).
   // The Workstreams tombstone is the hard guarantee; this is the cleanup that makes "deleted" mean
-  // the build is gone server-side too. Fail-open: an unreachable station just leaves the tombstone.
+  // the build is gone server-side too. Fail-open: an unreachable keep just leaves the tombstone.
   async function discardIfPending(agentId, runId) {
     const rid = String(runId || '');
     if (!rid) return { ok: false, error: 'no run' };
@@ -260,7 +260,7 @@ const WorkshopStore = (() => {
       const m = (await fetchRaw()).find(x => x && String(x.runId) === rid) || null;
       if (!m) return { ok: true, pending: false };
       return await decide(m.agentId || agentId || 'agent', rid, 'discard');
-    } catch (_) { return { ok: false, error: 'could not reach the station' }; }
+    } catch (_) { return { ok: false, error: 'could not reach the keep' }; }
   }
 
   // read a file inside the deliverable for the viewer, via the EXISTING jailed read-only route /api/file
@@ -291,7 +291,7 @@ const WorkshopStore = (() => {
   // W7 — OS launch is intentionally unavailable: neither loopback API possession nor
   // renderer IPC proves a fresh human gesture. The caller presents manual-open guidance.
   async function openFile(agentId, runId, relPath) {
-    return { ok: false, error: 'Open this file manually; StarNet cannot launch desktop applications from a run.' };
+    return { ok: false, error: 'Open this file manually; Eyehold cannot launch desktop applications from a run.' };
   }
 
   // the sensible default Keep destination (the Commander's Desktop, when the desktop shell knows it).
@@ -401,7 +401,7 @@ const WorkshopStore = (() => {
   // deliverable session whose run is STILL UNDECIDED server-side (fresh honest read — never a cached claim),
   // render the return card into it. Deliberately ignores the seen AND later ledgers: the Commander explicitly
   // opened this session, which is the opposite of nagging. Fail-open: any fetch error → no card, no throw —
-  // but an UNREACHABLE station RETRIES while this session stays on screen (see below), because on desktop the
+  // but an UNREACHABLE keep RETRIES while this session stays on screen (see below), because on desktop the
   // bundled frontend paints before the sidecar answers, and a one-shot probe left the Commander staring at the
   // naked stub line with no card and nothing ever retrying (the "no UI under built-while-away" bug).
   let pfRetryTimer = null;   // one retry chain at a time; each fresh presentFor call supersedes it
@@ -416,7 +416,7 @@ const WorkshopStore = (() => {
     // built by an agent that later left the roster must still resolve when its session is opened.
     const ws = (typeof Workstreams !== 'undefined' && Workstreams.get) ? Workstreams.get(id) : null;
     const aid = (ws && ws.agentId) || 'agent';
-    let pending = null;   // null = station unreachable (stay silent); [] = the server ANSWERED
+    let pending = null;   // null = keep unreachable (stay silent); [] = the server ANSWERED
     try {
       const r = await fetch('/api/workshop/pending?agent=' + encodeURIComponent(aid), { cache: 'no-store' });
       if (r.ok) { const j = await r.json().catch(() => null); pending = (j && Array.isArray(j.pending)) ? j.pending : []; }
@@ -426,12 +426,12 @@ const WorkshopStore = (() => {
       // (never assert a resolution the server didn't prove).
       const m0 = (await fetchRaw()).find(x => x && String(x.runId) === runId) || null;
       if (m0) { presentCard(m0); return; }
-      // STATION UNREACHABLE, nothing rendered: cold-boot race (webview up before the sidecar listens).
+      // KEEP UNREACHABLE, nothing rendered: cold-boot race (webview up before the sidecar listens).
       // Keep probing while THIS session is still the one on screen — fast at first, then slow — so the
-      // card appears the moment the station answers instead of never. A session switch retires the chain
+      // card appears the moment the keep answers instead of never. A session switch retires the chain
       // (chat.js load() re-fires presentFor on return), and each real presentFor call supersedes it.
       const t = _try || 0;
-      if (t >= 20) return;   // ~5 min of trying; past that the station is genuinely down, stay silent
+      if (t >= 20) return;   // ~5 min of trying; past that the keep is genuinely down, stay silent
       pfRetryTimer = setTimeout(() => {
         pfRetryTimer = null;
         try {
@@ -495,15 +495,15 @@ const WorkshopStore = (() => {
   // auto-poll on attach: give EVERY undecided deliverable its own unread session, then REVEAL the newest
   // (open its session + full return card) so the Commander is greeted with what was built, not a stub row.
   // Once per page session.
-  let attachTries = 0;   // maybePresent's unreachable-station retry budget (same shape as presentFor's)
+  let attachTries = 0;   // maybePresent's unreachable-keep retry budget (same shape as presentFor's)
   async function maybePresent() {
     if (fired || !ready()) return;
     const pending = await fetchPending();
     if (!pending.length) {
-      // NOTHING surfaced. If the station actually ANSWERED (lastRawOk), that's the honest end — no builds
+      // NOTHING surfaced. If the keep actually ANSWERED (lastRawOk), that's the honest end — no builds
       // owed. If it never answered (cold-boot race: the bundled frontend paints before the sidecar
       // listens), a one-shot poll here meant a night-shift build stayed invisible until the NEXT restart —
-      // so retry, fast then slow, until the station speaks or the budget runs out (~5 min).
+      // so retry, fast then slow, until the keep speaks or the budget runs out (~5 min).
       if (!lastRawOk && attachTries < 20) {
         attachTries++;
         const t = setTimeout(() => { maybePresent().catch(() => {}); }, attachTries <= 5 ? pfDelays.fast : pfDelays.slow);
@@ -535,7 +535,7 @@ const WorkshopStore = (() => {
      app sat open (a night-shift act or an away-workshop shift) was invisible until the next restart
      (2026-07-14: "it doesn't notify me anywhere"). The sidecar emits workshop.built the moment a manifest is
      disk-validated; this adopts the deliverable's OWN unread session immediately — never a card into whatever
-     stream is on screen — plus a persistent StationUI toast (category 'cronDigest', the Commander-mutable
+     stream is on screen — plus a persistent KeepUI toast (category 'cronDigest', the Commander-mutable
      autonomous-run class). Anti-nag: the seen/later ledger still guards, so a build already delivered this
      session never re-fires here. */
   function onBuilt(p) {
@@ -552,9 +552,9 @@ const WorkshopStore = (() => {
     if (briefingOwnsReturn() && Briefing.isAway && Briefing.isAway()) return;
     const opened = reveal(m);
     if (!opened) try {
-      if (typeof StationUI !== 'undefined' && StationUI.notify) {
+      if (typeof KeepUI !== 'undefined' && KeepUI.notify) {
         const jump = () => { try { if (typeof App !== 'undefined' && App.openWorkstream) App.openWorkstream(sessionIdOf(runId)); } catch (_) {} };
-        StationUI.notify('✦ built while you were away: ' + String(m.title || 'a deliverable') + ' — click to review it', 'gold', 'cronDigest', { onClick: jump, kind: 'result', go: { ws: sessionIdOf(runId) } });
+        KeepUI.notify('✦ built while you were away: ' + String(m.title || 'a deliverable') + ' — click to review it', 'gold', 'cronDigest', { onClick: jump, kind: 'result', go: { ws: sessionIdOf(runId) } });
       }
     } catch (_) {}
     try { if (typeof World !== 'undefined' && World.say) World.say('✦ finished a build — it’s waiting in its own session'); } catch (_) {}   // ambient in-world cue, same family as the desk-draft delivery

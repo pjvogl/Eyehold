@@ -187,7 +187,7 @@ const clock = { now: () => clk };
   const trustedCompletion = trustedStore.record({ runId: 'host-verified', completionEvidence: {
     _completionAuthority: authority,
     completionVerdict: 'completed_verified', effectVerdict: 'mechanically_verified', effects: [],
-    contract: { schemaVersion: 'starnet.task-postconditions.v1', authority: 'commander', requirements: [{ id: 'file', type: 'artifact_exists', path: 'out.txt' }] },
+    contract: { schemaVersion: 'eyehold.task-postconditions.v1', authority: 'commander', requirements: [{ id: 'file', type: 'artifact_exists', path: 'out.txt' }] },
     checks: [{ id: 'file', type: 'artifact_exists', status: 'passed', code: 'artifact_exists' }]
   } }).completionEvidence;
   A.eq(trustedCompletion.completionVerdict, 'completed_verified', 'matching in-process authority plus complete mechanical checks may persist verification');
@@ -293,7 +293,7 @@ const clock = { now: () => clk };
 }
 
 // ---- STREAM FILTER (conveyor sweep 2026-09-25): a trigger fire / sample reads back ITS rows by streamId ----
-// It used to read the station's newest 50 rows and filter — a busy station pushed the fire's own rows out of that
+// It used to read the keep's newest 50 rows and filter — a busy keep pushed the fire's own rows out of that
 // window, so a finished fire said "no run was recorded". list({ streamId }) scans the whole window for that stream.
 {
   const s = makeRunStore({ io: memIo(), clock });

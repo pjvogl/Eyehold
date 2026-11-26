@@ -1,4 +1,4 @@
-/* ============ StarNet site — CRT amber terminal ============ */
+/* ============ Eyehold site — CRT amber terminal ============ */
 @font-face{
   font-family:'VT323';
   font-style:normal; font-weight:400; font-display:swap;
@@ -208,13 +208,13 @@ a:hover{ color:var(--amber); }
   color:var(--amber-b); text-shadow:0 0 10px rgba(255,157,47,.35);
 }
 
-/* station split */
+/* keep split */
 .split{ display:grid; grid-template-columns:1.1fr 1fr; gap:clamp(24px,4vw,48px); align-items:center; }
-/* the live-preview split gives the station the bigger column so the room reads at near-app size */
-.split.station{ grid-template-columns:1fr 1.5fr; }
-/* .split.station beats the plain .split reset on specificity — name it here too,
+/* the live-preview split gives the keep the bigger column so the room reads at near-app size */
+.split.keep{ grid-template-columns:1fr 1.5fr; }
+/* .split.keep beats the plain .split reset on specificity — name it here too,
    or the section-01 grid stays two-column and crushes the copy on phones. */
-@media (max-width:860px){ .split, .split.station{ grid-template-columns:1fr; } }
+@media (max-width:860px){ .split, .split.keep{ grid-template-columns:1fr; } }
 .split-copy .lead{ font-size:clamp(19px,2.3vw,23px); line-height:1.45; color:var(--ink); margin:0 0 18px; }
 .split-copy p{ font-size:18px; line-height:1.55; color:var(--ink-d); }
 .contract{ list-style:none; margin:0 0 18px; padding:0; }
@@ -231,7 +231,7 @@ a:hover{ color:var(--amber); }
 .bezel img{ width:100%; height:auto; display:block; image-rendering:auto; }
 .bezel canvas{ width:100%; height:auto; display:block; }
 .bezel figcaption{ padding:9px 4px 2px; font-size:14px; letter-spacing:1px; color:rgba(236,224,207,.35); }
-/* every page's nav rides above the CRT glass (z 60-62) and above the homepage's lifted #station (63,
+/* every page's nav rides above the CRT glass (z 60-62) and above the homepage's lifted #keep (63,
    home.css). Doubled class so it outranks the later .topbar z-index rules below. Deliberately SHARED. */
 .topbar.topbar{ z-index:70; }
 

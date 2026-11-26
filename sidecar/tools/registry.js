@@ -42,7 +42,7 @@
      command output, and a head-only cut throws away the part that answers the question. */
   const OUTPUT_MAX = (function () {
     try {
-      const raw = (typeof process !== 'undefined' && process.env) ? process.env.SKYNET_TOOL_OUTPUT_MAX : '';
+      const raw = (typeof process !== 'undefined' && process.env) ? (process.env.EYEHOLD_TOOL_OUTPUT_MAX != null ? process.env.EYEHOLD_TOOL_OUTPUT_MAX : process.env.SKYNET_TOOL_OUTPUT_MAX) : '';
       const n = Number(String(raw == null ? '' : raw).trim());
       return (Number.isFinite(n) && n > 0) ? Math.floor(n) : 80000;
     } catch (_) { return 80000; }
@@ -362,7 +362,7 @@
     return { ctrl, detach };
   }
 
-  /* UNKNOWN TOOL, WITH A WAY OUT (Step 2, Hermes audit 2026-09-22). A bare "unknown tool: launch_rocket" gave a
+  /* UNKNOWN TOOL, WITH A WAY OUT (Step 2, Hermes audit 2026-09-22). A bare "unknown tool: launch_beacon" gave a
      hallucinating model nothing to correct toward, and it asked again — 15 turns in the audit probe. The answer now
      names up to three REAL tools whose names are closest (edit distance over the names this run can actually call:
      ctx.toolNames, the host's advertised + deferred wire names; the registry's own names when absent), or says
@@ -497,7 +497,7 @@
 
       /* HOOKS — pre_tool_call. Placed HERE, and the position is the whole security argument: it is the last
          thing before the tool runs and it is AFTER the user-control authority, the capability gate, schema
-         validation and the consent broker. A hook therefore reaches only calls the station had already
+         validation and the consent broker. A hook therefore reaches only calls the keep had already
          decided to allow, and the only thing it can do is take that permission away. It cannot approve what
          a gate refused, because a refusal returned above this line and never got here.
          Unwired (`ctx.hooks` absent) = every existing caller and test, byte-identical. */

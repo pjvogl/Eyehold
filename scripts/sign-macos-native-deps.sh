@@ -10,8 +10,8 @@ cd "$ROOT"
 : "${APPLE_SIGNING_IDENTITY:?APPLE_SIGNING_IDENTITY is required}"
 : "${TARGET:?TARGET is required}"
 
-cert="$RUNNER_TEMP/starnet-developer-id.p12"
-keychain="$RUNNER_TEMP/starnet-native-signing.keychain-db"
+cert="$RUNNER_TEMP/eyehold-developer-id.p12"
+keychain="$RUNNER_TEMP/eyehold-native-signing.keychain-db"
 keychain_password=$(openssl rand -hex 24)
 printf '%s' "$APPLE_CERTIFICATE" | openssl base64 -d -A -out "$cert"
 security create-keychain -p "$keychain_password" "$keychain"

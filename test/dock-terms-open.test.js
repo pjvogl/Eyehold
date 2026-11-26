@@ -5,7 +5,7 @@
    guard only the quest STORE, and updates had empty coverage. A shoot state was the owner-suggested route, but
    the OPEN is a static wiring chain that a source-lock pins deterministically without a browser:
 
-     index.html .bb[data-term=KEY] button  →  stationui init() binds every .bb[data-term] click to
+     index.html .bb[data-term=KEY] button  →  keepui init() binds every .bb[data-term] click to
      toggleTerm(k, BUILDERS[k][0..2])  →  BUILDERS[KEY] = [TITLE, builderFn, opts]  →  builderFn exists.
 
    A break at ANY link (button removed, BUILDERS entry dropped, builder renamed) fails here BY NAME, not in a
@@ -15,12 +15,12 @@ const A = require('./_assert.js');
 const fs = require('fs');
 
 const html = fs.readFileSync(require.resolve('../frontend/index.html'), 'utf8');
-const sui = fs.readFileSync(require.resolve('../frontend/app/stationui.js'), 'utf8');
+const sui = fs.readFileSync(require.resolve('../frontend/app/keepui.js'), 'utf8');
 
 // (1) the generic dock-button binding: every .bb[data-term] click routes through toggleTerm via BUILDERS[k].
 // This is the ONE seam that carries a data-term button to its window; if it regresses, NO dock button opens.
 A.ok(/querySelectorAll\('\.bb\[data-term\]'\)[\s\S]{0,200}addEventListener\('click'/.test(sui),
-  'stationui init() binds every .bb[data-term] dock button to a click handler');
+  'keepui init() binds every .bb[data-term] dock button to a click handler');
 A.ok(/const k = b\.dataset\.term, def = BUILDERS\[k\];[\s\S]{0,80}toggleTerm\(k, def\[0\], def\[1\], def\[2\]\)/.test(sui),
   'the dock-button click opens the window keyed by data-term via BUILDERS[k] → toggleTerm');
 

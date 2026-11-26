@@ -1,12 +1,12 @@
-/* STARNET — chatresize.js : draggable COMMS / stage divider.
-   The station grid pins COMMS to a fixed width; this lets the Commander grab the seam on the
+/* EYEHOLD — chatresize.js : draggable COMMS / stage divider.
+   The keep grid pins COMMS to a fixed width; this lets the Commander grab the seam on the
    panel's left edge and drag it LEFT to widen COMMS (the centre stage gives up the space) or
    RIGHT to shrink it. The width is a CSS var (--chat-w) the grid reads, persisted per machine.
    The stage canvas re-fits on its own — world.js observes #stage-wrap via ResizeObserver. */
 'use strict';
 
 (() => {
-  const KEY = 'starnet.chatw';
+  const KEY = 'eyehold.chatw';
   const handle = document.getElementById('comms-resizer');
   const game = document.getElementById('screen-game');
   if (!handle || !game) return;
@@ -17,7 +17,7 @@
     const expanded = game.classList.toggle('comms-expanded');
     expand.textContent = expanded ? 'RESTORE' : 'EXPAND';
     expand.setAttribute('aria-pressed', String(expanded));
-    expand.setAttribute('aria-label', expanded ? 'Restore station layout' : 'Expand conversation');
+    expand.setAttribute('aria-label', expanded ? 'Restore keep layout' : 'Expand conversation');
     // Existing canvas, overlays and logo trackers share this layout notification.
     window.dispatchEvent(new Event('resize'));
   });
@@ -30,7 +30,7 @@
   const LEFT_COL = 232, PAD = 11, GAP = 9, MIN = 300;
   const stageWrap = document.getElementById('stage-wrap');
   // COMMS may swallow the centre stage ENTIRELY (stage width → 0) — Commanders who don't want
-  // to see the station while they work drag the seam all the way to the crew rail. The stage's
+  // to see the keep while they work drag the seam all the way to the crew rail. The stage's
   // left edge is fixed by the grid, so the ceiling is everything right of it minus one gap;
   // world.js's resize() floors the canvas at 1px, so a zero-width stage is safe.
   function maxWidth() {

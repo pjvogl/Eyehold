@@ -1,4 +1,4 @@
-# StarNet power-user deep-dive audit — 2026-07-15
+# Eyehold power-user deep-dive audit — 2026-07-15
 
 Source tested: `75cad9e8` on three isolated worktrees, isolated save roots, unique ports,
 the real sidecar, project-native headless Chrome/CDP, and deterministic mock providers.
@@ -46,14 +46,14 @@ No fixes were implemented in this audit.
 #### PU-03 — Recovery “Export Agent” includes browser BYOK secrets despite “secrets excluded” copy
 
 - Repro: plant harmless sentinel
-  `starnet.byok.key.openrouter=QA_PLANTED_BROWSER_KEY_SENTINEL`; invoke the real recovery
+  `eyehold.byok.key.openrouter=QA_PLANTED_BROWSER_KEY_SENTINEL`; invoke the real recovery
   `#btn-export`; inspect the collected/exported payload.
 - Actual: `Backup.collectStore()` and the export contain the exact sentinel. The UI reports the
-  export saved successfully. Settings’ separate STATION BACKUP explicitly says secrets are
+  export saved successfully. Settings’ separate KEEP BACKUP explicitly says secrets are
   excluded and must be re-entered.
 - Expected: browser BYOK credentials are excluded, or the export is explicitly treated and
   protected as secret-bearing.
-- Seam: `frontend/app/backup.js:33` collects every `starnet.*` localStorage entry.
+- Seam: `frontend/app/backup.js:33` collects every `eyehold.*` localStorage entry.
 - Safety note: only a planted sentinel was read; it was removed after the proof.
 
 #### PU-04 — A dragged Settings window can become completely unreachable after viewport shrink
@@ -63,7 +63,7 @@ No fixes were implemented in this audit.
 - Actual: the live rect became `x:-996, width:330, right:-666`; at 900×600 its right edge was
   still `-204`. Zero pixels were reachable. `termPos.settings.left=-996` survived page reload.
 - Expected: resize/restoration clamps at least the titlebar and controls into the viewport.
-- Likely seam: `frontend/app/stationui.js` drag clamping allows only 64px of a wide window to
+- Likely seam: `frontend/app/keepui.js` drag clamping allows only 64px of a wide window to
   remain, then responsive width changes do not rebase the saved coordinate.
 
 ### P2 — material UX, data, or telemetry defects
@@ -82,7 +82,7 @@ No fixes were implemented in this audit.
 - Actual: success says the stored token was purged, yet Signal has no token, endpoint/account
   remain, status stays `configured:true`, and FORGET remains visible.
 - Expected: remove the configuration or accurately describe that there is no token to forget.
-- Seam: generic channel copy/actions in `frontend/app/stationui.js`; Signal’s clear callback is
+- Seam: generic channel copy/actions in `frontend/app/keepui.js`; Signal’s clear callback is
   a no-op.
 
 #### PU-07 — Offline Ollama/custom providers can claim “KEY SAVED / 1 key / ACTIVE”
@@ -93,7 +93,7 @@ No fixes were implemented in this audit.
   provider/model can be labeled ACTIVE without endpoint reachability.
 - Expected: “local endpoint configured” plus a separately proven reachable/runnable state.
 - Seam: unconditional Ollama credential truth in `frontend/app/harness.js:184`, projected by
-  generic provider rendering in `frontend/app/stationui.js:2236` and `:2275`.
+  generic provider rendering in `frontend/app/keepui.js:2236` and `:2275`.
 
 #### PU-08 — Re-recruiting a class creates indistinguishable duplicate display names
 
@@ -123,7 +123,7 @@ No fixes were implemented in this audit.
 #### PU-11 — Mid-stream sidecar death produces a generic unknown error
 
 - Repro: begin a slow streamed response, kill the isolated sidecar after tokens arrive.
-- Actual: top-level link truth correctly becomes LINK DOWN / STATION UNREACHABLE, but the turn
+- Actual: top-level link truth correctly becomes LINK DOWN / KEEP UNREACHABLE, but the turn
   says only “Something went wrong on that turn — try again,” with no local-service restart or
   reload guidance.
 - Expected: network/local-service-specific recovery copy.
@@ -179,7 +179,7 @@ No fixes were implemented in this audit.
   reload mid-run, rapid double-send/toggle, deliverable serving, crew idle/work behavior, and slash
   input routing.
 - Live agent sweeps covered: onboarding/connect surfaces; COMMS streaming/stop/slash/attachments;
-  concurrent sessions and offline recovery; 14 station windows; dialog focus/minimize/restore/
+  concurrent sessions and offline recovery; 14 keep windows; dialog focus/minimize/restore/
   z-order/responsive behavior; recruitment; recipes; REFIT controls; task/quest/skill/dossier
   surfaces; providers/models; budgets/runtime knobs; permissions/projects/path trust; MCP;
   Signal/channels; cron/routines; Night Shift/autonomy; backup/recovery; auth/origin boundaries;

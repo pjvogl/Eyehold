@@ -9,13 +9,13 @@ const A = require('./_assert.js');
 function fakeRepo(overrides) {
   const v = (overrides && overrides.version) || '0.10.7';
   const files = Object.assign({
-    'package.json': JSON.stringify({ name: 'starnet-harness', version: v }),
-    'package-lock.json': JSON.stringify({ name: 'starnet-harness', version: v, packages: { '': { version: v } } }),
-    'src-tauri/tauri.conf.json': JSON.stringify({ version: v, plugins: { updater: { endpoints: ['https://github.com/acme/starnet-releases/releases/latest/download/latest.json'] } } }),
+    'package.json': JSON.stringify({ name: 'eyehold-harness', version: v }),
+    'package-lock.json': JSON.stringify({ name: 'eyehold-harness', version: v, packages: { '': { version: v } } }),
+    'src-tauri/tauri.conf.json': JSON.stringify({ version: v, plugins: { updater: { endpoints: ['https://github.com/acme/eyehold-releases/releases/latest/download/latest.json'] } } }),
     'src-tauri/Cargo.toml': '[package]\nname = "skynet-desktop"\nversion = "' + v + '"\n',
     'src-tauri/Cargo.lock': '[[package]]\nname = "other"\nversion = "1.0.0"\n\n[[package]]\nname = "skynet-desktop"\nversion = "' + v + '"\n',
-    'RELEASE_NOTES.md': '# StarNet v' + v + '\n\n- real notes\n',
-    '/keys/starnet-updater.key': 'NEVER-PRINTED'
+    'RELEASE_NOTES.md': '# Eyehold v' + v + '\n\n- real notes\n',
+    '/keys/eyehold-updater.key': 'NEVER-PRINTED'
   }, (overrides && overrides.files) || {});
   const git = Object.assign({
     'rev-parse --abbrev-ref HEAD': 'feat/harness-backend\n',
@@ -26,7 +26,7 @@ function fakeRepo(overrides) {
     'rev-list --count origin/feat/harness-backend..HEAD': '0\n'
   }, (overrides && overrides.git) || {});
   const cmds = Object.assign({
-    'gh release view v0.10.8 -R acme/starnet-releases --json tagName,isDraft,isPrerelease': { status: 1, stderr: 'release not found' },
+    'gh release view v0.10.8 -R acme/eyehold-releases --json tagName,isDraft,isPrerelease': { status: 1, stderr: 'release not found' },
     'node scripts/qa/product-perfect/claims.mjs': { status: 0, stdout: 'PASS claims planning authority · 37 claims · 209 locked surface files\n' },
     'node scripts/sync-website-app.mjs --check': { status: 0 },
     'node scripts/qa/ready.mjs --json': { status: 0, stdout: JSON.stringify({ ready: true, reasons: [] }) }
@@ -66,7 +66,7 @@ const {
   runPreflight, renderChecklist, parseGateLog, bumpSemver, compareSemver, readVersionPins, parseArgs, stripBom
 } = require('../scripts/release-preflight.mjs');
 
-const CTX = { version: '0.10.8', phase: 'pre-bump', keyFile: '/keys/starnet-updater.key' };
+const CTX = { version: '0.10.8', phase: 'pre-bump', keyFile: '/keys/eyehold-updater.key' };
 const byId = (r, id) => r.rows.find(x => x.id === id);
 
 // ── helpers ──
@@ -109,7 +109,7 @@ A.ok(!parseGateLog('').ok, 'empty log rejected');
   A.eq(byId(r, 'ready').status, 'PASS', 'READY');
   A.eq(byId(r, 'updater-key').status, 'PASS', 'key present');
   A.ok(!/NEVER-PRINTED/.test(renderChecklist(r)), 'key contents never rendered');
-  A.eq(byId(r, 'updater-key-backup').status, 'SKIP', 'offline backup is human attestation');
+  A.eq(byId(r, 'updater-key-backup').status, 'SKIP', 'offline backup is human attekeep');
   A.eq(byId(r, 'notes').status, 'WARN', 'notes header is previous version pre-bump → WARN');
   A.ok(/PREFLIGHT PASS/.test(renderChecklist(r)), 'render says PASS');
   A.ok(!io.calls.some(c => /push|commit|tag v|checkout|reset/.test(c) && !/tag --list/.test(c)), 'no mutating git call: ' + io.calls.filter(c => /push|commit|checkout|reset/.test(c)).join(','));
@@ -117,9 +117,9 @@ A.ok(!parseGateLog('').ok, 'empty log rejected');
 
 // ── --next derives the target ──
 {
-  const r = runPreflight({ next: 'patch', phase: 'pre-bump', keyFile: '/keys/starnet-updater.key' }, fakeRepo());
+  const r = runPreflight({ next: 'patch', phase: 'pre-bump', keyFile: '/keys/eyehold-updater.key' }, fakeRepo());
   A.eq(r.target, '0.10.8', '--next patch → 0.10.8');
-  const r2 = runPreflight({ phase: 'pre-bump', keyFile: '/keys/starnet-updater.key' }, fakeRepo());
+  const r2 = runPreflight({ phase: 'pre-bump', keyFile: '/keys/eyehold-updater.key' }, fakeRepo());
   A.eq(byId(r2, 'target').status, 'FAIL', 'no version/next is a hard FAIL');
 }
 
@@ -158,9 +158,9 @@ A.ok(!parseGateLog('').ok, 'empty log rejected');
   const pins = readVersionPins(fakeRepo());
   A.eq(pins.length, 5, 'exactly five pins');
   A.eq(pins.map(p => p.value), ['0.10.7', '0.10.7', '0.10.7', '0.10.7', '0.10.7'], 'all five read');
-  const r2 = runPreflight({ version: '0.10.7', phase: 'pre-bump', keyFile: '/keys/starnet-updater.key' }, fakeRepo());
+  const r2 = runPreflight({ version: '0.10.7', phase: 'pre-bump', keyFile: '/keys/eyehold-updater.key' }, fakeRepo());
   A.eq(byId(r2, 'pins').status, 'WARN', 'target == current pre-bump → already bumped WARN');
-  const r3 = runPreflight({ version: '0.10.1', phase: 'pre-bump', keyFile: '/keys/starnet-updater.key' }, fakeRepo());
+  const r3 = runPreflight({ version: '0.10.1', phase: 'pre-bump', keyFile: '/keys/eyehold-updater.key' }, fakeRepo());
   A.eq(byId(r3, 'pins').status, 'FAIL', 'target below in-tree is a FAIL (updater never downgrades)');
 }
 
@@ -174,12 +174,12 @@ A.ok(!parseGateLog('').ok, 'empty log rejected');
   const r3 = runPreflight(CTX, fakeRepo({ git: { 'ls-remote --tags origin refs/tags/v0.10.8': { status: 128, stdout: '', stderr: 'fatal: unable to access' } } }));
   A.eq(byId(r3, 'tag-remote').status, 'SKIP', 'offline ls-remote → SKIP');
   A.ok(/unverified: offline/.test(byId(r3, 'tag-remote').detail), 'offline says so');
-  const r4 = runPreflight(CTX, fakeRepo({ cmds: { 'gh release view v0.10.8 -R acme/starnet-releases --json tagName,isDraft,isPrerelease': { status: 0, stdout: '{"tagName":"v0.10.8","isDraft":true}' } } }));
+  const r4 = runPreflight(CTX, fakeRepo({ cmds: { 'gh release view v0.10.8 -R acme/eyehold-releases --json tagName,isDraft,isPrerelease': { status: 0, stdout: '{"tagName":"v0.10.8","isDraft":true}' } } }));
   A.eq(byId(r4, 'tag-release').status, 'FAIL', 'draft release reserves the version');
   A.ok(/DRAFT/.test(byId(r4, 'tag-release').detail), 'says draft');
-  const r5 = runPreflight(CTX, fakeRepo({ cmds: { 'gh release view v0.10.8 -R acme/starnet-releases --json tagName,isDraft,isPrerelease': { status: null, error: { code: 'ENOENT' } } } }));
+  const r5 = runPreflight(CTX, fakeRepo({ cmds: { 'gh release view v0.10.8 -R acme/eyehold-releases --json tagName,isDraft,isPrerelease': { status: null, error: { code: 'ENOENT' } } } }));
   A.eq(byId(r5, 'tag-release').status, 'SKIP', 'no gh → SKIP, never green');
-  const r6 = runPreflight(CTX, fakeRepo({ cmds: { 'gh release view v0.10.8 -R acme/starnet-releases --json tagName,isDraft,isPrerelease': { status: 4, stderr: 'gh: To get started with GitHub CLI, please run: gh auth login' } } }));
+  const r6 = runPreflight(CTX, fakeRepo({ cmds: { 'gh release view v0.10.8 -R acme/eyehold-releases --json tagName,isDraft,isPrerelease': { status: 4, stderr: 'gh: To get started with GitHub CLI, please run: gh auth login' } } }));
   A.eq(byId(r6, 'tag-release').status, 'SKIP', 'unauth gh → SKIP with reason');
 }
 
@@ -215,7 +215,7 @@ A.ok(!parseGateLog('').ok, 'empty log rejected');
   A.ok(/--gates-proven-by/.test(byId(r3, 'gate-fast').fix), 'post-bump remediation names --gates-proven-by');
   A.eq(byId(r3, 'pins').status, 'PASS', 'post-bump: pins == target PASS');
   A.eq(byId(r3, 'notes').status, 'PASS', 'post-bump: real notes PASS');
-  const r4 = runPreflight(post, fakeRepo({ files: { 'RELEASE_NOTES.md': '# StarNet v0.10.7\n\n- TODO: summarize what changed in this release.\n' } }));
+  const r4 = runPreflight(post, fakeRepo({ files: { 'RELEASE_NOTES.md': '# Eyehold v0.10.7\n\n- TODO: summarize what changed in this release.\n' } }));
   A.eq(byId(r4, 'notes').status, 'FAIL', 'post-bump: TODO scaffold is a hard FAIL');
   const r5 = runPreflight(Object.assign({}, CTX, { phase: 'post-bump' }), fakeRepo());
   A.eq(byId(r5, 'pins').status, 'FAIL', 'post-bump with pins still on the old version FAILs');

@@ -3,7 +3,7 @@
    The router answers "which agent runs this message?" (one dock). This answers the other half: "and then
    what?" — a dock's output is the next dock's input, hop by hop along the belts, until the line ships out.
    A floor drawn INTAKE -> researcher -> writer -> OUTBOX now runs BOTH agents, and the reply that leaves the
-   station is the writer's. Before this, everything downstream of the first dock was scenery.
+   keep is the writer's. Before this, everything downstream of the first dock was scenery.
 
    PURE ORCHESTRATION — it owns policy and telemetry, never provider/loop internals. Two injected seams:
      nextAgent(agentId, { tag })              -> the downstream agentId, or null (terminal stage)
@@ -62,7 +62,7 @@ function withDock(payload, dockId) { if (dockId) payload.dockId = dockId; return
    construction-time overrides > the constants. Every layer passes through the ONE normalizer, so a raw
    number from any surface is clamped to the hard ceilings (24 hops / $50 per message / $500 per day) and
    the clamp is RECORDED, never silent. `poolCap` (the global budget pool, a sidecar fact) is applied LAST:
-   no line may be allowed to spend more per message than the whole station may spend at all. */
+   no line may be allowed to spend more per message than the whole keep may spend at all. */
 function effectiveLimits(raw, fallback, poolCap) {
   const f = fallback || {};
   const out = { maxHops: (typeof f.maxHops === 'number' && f.maxHops >= 0) ? f.maxHops : MAX_HOPS, maxUsd: (typeof f.maxUsd === 'number' && f.maxUsd > 0) ? f.maxUsd : MAX_CHAIN_USD, maxUsdPerDay: (typeof f.maxUsdPerDay === 'number' && f.maxUsdPerDay > 0) ? f.maxUsdPerDay : null, clamped: [] };
@@ -200,7 +200,7 @@ function makeChainRunner(o) {
   const maxUsd = (typeof o.maxUsd === 'number' && o.maxUsd > 0) ? o.maxUsd : MAX_CHAIN_USD;
   /* LINE BUDGET seams (2026-08-21). lineLimits(lineId) -> the compiled plan's normalized limits for the line
      this work entered on, or null (router.lineLimits in production; a direct order has no line and runs on
-     the defaults). poolCap() -> the station's global $ pool (budget.js effective cap), or null = ungoverned.
+     the defaults). poolCap() -> the keep's global $ pool (budget.js effective cap), or null = ungoverned.
      daySpend -> { spentToday(lineId), note(lineId, usd) }: the durable per-line day ledger (line-spend.js).
      All optional; absent = exactly the pre-budget executor. */
   const lineLimits = typeof o.lineLimits === 'function' ? o.lineLimits : null;

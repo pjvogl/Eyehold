@@ -47,7 +47,7 @@ jobs:
             echo "::error::no Chrome/Chromium binary on this runner — the e2e gate tests cannot run. Install one or set SKYNET_CHROME."
             exit 1
           fi
-          WRAP=/usr/local/bin/starnet-ci-chrome
+          WRAP=/usr/local/bin/eyehold-ci-chrome
           printf '#!/bin/sh\nexec %s --no-sandbox --disable-dev-shm-usage "$@"\n' "$CHROME" | sudo tee "$WRAP" > /dev/null
           sudo chmod +x "$WRAP"
           echo "SKYNET_CHROME=$WRAP" >> "$GITHUB_ENV"

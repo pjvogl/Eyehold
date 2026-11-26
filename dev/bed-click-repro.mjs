@@ -1,6 +1,6 @@
 /* dev/bed-click-repro.mjs — "I clicked the bed and the agent transferred into it."
  *
- * Boots its OWN seeded station (never touches a live session), puts a BED far from the hero, then
+ * Boots its OWN seeded keep (never touches a live session), puts a BED far from the hero, then
  * dispatches a REAL mouse click on the bed and watches the body across ~6s of frames. Prints the
  * hero's tile + goal before the click, right after it, and after the frames — so a teleport, a walk,
  * and "nothing happened, the nap just fired on its own" are told apart by evidence.
@@ -39,7 +39,7 @@ try {
   const say = async (l, e) => { const v = await evalJS(cdp, e); console.log(l, v); return v; };
 
   await say('placed:', `(() => {
-    const st = Build.__test__.station(); const b = st.bounds();
+    const st = Build.__test__.keep(); const b = st.bounds();
     // the FARTHEST placeable 2x2 from the hero's desk, so a walk and a teleport cannot be confused
     const desk = (st.doc().props || []).find(p => p.agentId) || { x: b.minTx, y: b.minTy };
     let best = null, bd = -1;

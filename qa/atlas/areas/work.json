@@ -7,12 +7,12 @@
       "kind": "state",
       "area": "work",
       "name": "shoot state: work-deliverables",
-      "purpose": "The DELIVERABLES state: a station-wide, backend-backed library of real run artifacts and Workshop builds, including lifecycle decisions and bounded cleanup.",
+      "purpose": "The DELIVERABLES state: a keep-wide, backend-backed library of real run artifacts and Workshop builds, including lifecycle decisions and bounded cleanup.",
       "promise": "Opening DELIVERABLES shows searchable/filterable rows with source, status, size, creation time, and real file actions; pending Workshop rows offer Keep/Discard, HTML opens through the opaque-origin sandbox, Markdown/CSV/image previews are bounded, and cleanup previews exact metadata targets while protecting pending/kept work and offering undo.",
       "wiring": {
         "files": [
           "frontend/app/deliverables.js",
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "frontend/index.html",
           "sidecar/index.js",
           "sidecar/deliverable-store.js"
@@ -95,7 +95,7 @@
       "promise": "CREATE ROUTINE validates + previews a schedule (server math), + ADD ROUTINE POSTs /api/cron and the job appears in ACTIVE ROUTINES; the arm control toggles the live scheduler via /api/cron/arm and RUN NOW streams a routine immediately — every displayed state reads from the authoritative GET /api/cron.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/index.js",
           "frontend/app/autojobstore.js"
         ],
@@ -139,7 +139,7 @@
       "promise": "Opening TASKS shows exactly the kind:\"task\" workstreams (never chat/summon sessions) as kanban cards across TO DO / ACTIVE / SHIPPED; a card auto-advances to ACTIVE when a run fires and only reaches SHIPPED on a deliberate human ✓ SHIP.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "frontend/app/app.js",
           "frontend/app/workstreams.js",
           "frontend/app/channels.js"
@@ -175,7 +175,7 @@
       "promise": "Clicking Close ROUTINES tears down the window (removed from the DOM); the console is no longer shown.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js"
+          "frontend/app/keepui.js"
         ],
         "events": []
       },
@@ -200,7 +200,7 @@
       "missing": false,
       "selector": "button[aria-label=\"Close ROUTINES\"]",
       "state": "work-routines",
-      "notes": "Close ROUTINES = shared stationui.js term-x plumbing; proven cleanly 1->0 on TASK BOARD (identical factory) and the ROUTINES window carries the same control. COVERED by terminal-resize-journey.mjs (closeTerm removal) + test/terminal-resize.test.js."
+      "notes": "Close ROUTINES = shared keepui.js term-x plumbing; proven cleanly 1->0 on TASK BOARD (identical factory) and the ROUTINES window carries the same control. COVERED by terminal-resize-journey.mjs (closeTerm removal) + test/terminal-resize.test.js."
     },
     {
       "id": "ui/work/aria-close-task-board",
@@ -211,7 +211,7 @@
       "promise": "Clicking Close TASK BOARD tears down the window (removed from the DOM); the board is no longer shown.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js"
+          "frontend/app/keepui.js"
         ],
         "events": []
       },
@@ -236,7 +236,7 @@
       "missing": false,
       "selector": "button[aria-label=\"Close TASK BOARD\"]",
       "state": "work-tasks",
-      "notes": "RE-PROVED live @HEAD 0a009ec2 (.uiatlas/work-probe/tasks-evidence.txt): clean open→close cycle, task-board windows 0→1→0 (window removed from DOM). COVERED: window chrome is shared stationui.js term plumbing; terminal-resize-journey.mjs closeTerm() asserts the window is removed after the term-x click (across representative windows), and test/terminal-resize.test.js source-guards the shared chrome — legitimate class-coverage of identical per-window plumbing."
+      "notes": "RE-PROVED live @HEAD 0a009ec2 (.uiatlas/work-probe/tasks-evidence.txt): clean open→close cycle, task-board windows 0→1→0 (window removed from DOM). COVERED: window chrome is shared keepui.js term plumbing; terminal-resize-journey.mjs closeTerm() asserts the window is removed after the term-x click (across representative windows), and test/terminal-resize.test.js source-guards the shared chrome — legitimate class-coverage of identical per-window plumbing."
     },
     {
       "id": "ui/work/aria-minimize-routines",
@@ -247,7 +247,7 @@
       "promise": "Clicking Minimize ROUTINES hides the window and adds a chip to the #term-strip; restoring re-opens it in place.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js"
+          "frontend/app/keepui.js"
         ],
         "events": []
       },
@@ -283,7 +283,7 @@
       "promise": "Clicking Minimize TASK BOARD hides the window (term-min-hidden) and adds a chip to the #term-strip; restoring re-opens it in place.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js"
+          "frontend/app/keepui.js"
         ],
         "events": []
       },
@@ -319,7 +319,7 @@
       "promise": "The term-resize grip resizes the ROUTINES window: arrow keys grow/shrink it in both dimensions (clamped to per-window min/max) and the size persists.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js"
+          "frontend/app/keepui.js"
         ],
         "events": []
       },
@@ -355,7 +355,7 @@
       "promise": "The term-resize grip (title \"Drag to resize · arrow keys resize\") resizes the TASK BOARD window: arrow keys grow/shrink it in both dimensions (clamped to per-window min/max) and the size persists.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js"
+          "frontend/app/keepui.js"
         ],
         "events": []
       },
@@ -391,7 +391,7 @@
       "promise": "Clicking ◷ ACTIVE ROUTINES shows each job's next run / last result / armed state (from GET /api/cron) with RUN NOW / DISABLE / DELETE row actions.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/index.js",
           "frontend/app/autojobstore.js"
         ],
@@ -433,7 +433,7 @@
       "promise": "Clicking ✦ CREATE ROUTINE shows the create pane with a live schedule preview (server math) and the + ADD ROUTINE action.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/index.js",
           "frontend/app/autojobstore.js"
         ],
@@ -471,7 +471,7 @@
       "promise": "Typing a title in #kb-in and clicking + ADD creates a kind:\"task\" workstream in the TO DO column, clears the input, and does not hijack the active chat.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "frontend/app/app.js",
           "frontend/app/workstreams.js",
           "frontend/app/channels.js"
@@ -509,7 +509,7 @@
       "promise": "Typing a title and pressing Enter (or clicking + ADD) queues it as a TO DO task; the field then clears. Max 80 chars.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "frontend/app/app.js",
           "frontend/app/workstreams.js",
           "frontend/app/channels.js"
@@ -547,7 +547,7 @@
       "promise": "When the TASK BOARD is empty (no workstreams), a win-note shows the ▸ OUTBOX button; clicking it calls openTerm('outbox') and the \"OUTBOX — FINISHED WORK\" window opens. When the board has cards, the footnote (and this link) is not rendered.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js"
+          "frontend/app/keepui.js"
         ],
         "events": []
       },
@@ -568,7 +568,7 @@
       "missing": false,
       "selector": "#kb-outbox-link",
       "state": "work-tasks",
-      "notes": "Live-proven @HEAD 0a009ec2 (.uiatlas/work-probe/tasks-evidence.txt): with 0 task workstreams #kb-outbox-link renders (text \"▸ OUTBOX\"); click → openTerm('outbox') → window titled \"OUTBOX — FINISHED WORK\". With cards present the footnote is absent (stationui.js ~2479 `streams.length ? '' : ...`). AUDITED not PERFECTED: no dedicated machine assertion for the render-condition/click — KNOWN gap + ledger finding per EL-3. COVERED + PROMOTED 2026-07-18 (HEAD 43936bd2): scripts/qa/work-console-journey.mjs JW-OUTBOX drives this seam — directly asserted live (26/26 green; negative-control proven by inverting the render/dispatch condition). audited→perfected."
+      "notes": "Live-proven @HEAD 0a009ec2 (.uiatlas/work-probe/tasks-evidence.txt): with 0 task workstreams #kb-outbox-link renders (text \"▸ OUTBOX\"); click → openTerm('outbox') → window titled \"OUTBOX — FINISHED WORK\". With cards present the footnote is absent (keepui.js ~2479 `streams.length ? '' : ...`). AUDITED not PERFECTED: no dedicated machine assertion for the render-condition/click — KNOWN gap + ledger finding per EL-3. COVERED + PROMOTED 2026-07-18 (HEAD 43936bd2): scripts/qa/work-console-journey.mjs JW-OUTBOX drives this seam — directly asserted live (26/26 green; negative-control proven by inverting the render/dispatch condition). audited→perfected."
     },
     {
       "id": "ui/work/mkt-import-file",
@@ -611,7 +611,7 @@
       "promise": "With a prompt and schedule filled, clicking + ADD ROUTINE POSTs /api/cron (with the browser IANA tz), the fields clear, and the new job appears in ACTIVE ROUTINES; a missing prompt/schedule is refused before any request.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/index.js",
           "frontend/app/autojobstore.js"
         ],
@@ -649,7 +649,7 @@
       "promise": "Selecting an agent in the rt-agent-pick group writes that id into #rt-agent; it is sent as body.agentId so the routine fires the chosen agent.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/index.js",
           "frontend/app/autojobstore.js"
         ],
@@ -685,7 +685,7 @@
       "promise": "The button reflects the authoritative GET /api/cron enabled flag; clicking it flips the live scheduler (no env edit/restart) and the badge updates to the armed/off truth.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/index.js",
           "frontend/app/autojobstore.js"
         ],
@@ -723,7 +723,7 @@
       "promise": "Clicking + ADD A ROUTINE activates the CREATE ROUTINE tab and focuses #rt-name so the user can start the first routine.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js"
+          "frontend/app/keepui.js"
         ],
         "events": []
       },
@@ -757,7 +757,7 @@
       "promise": "Typing a name (max 80 chars) sets the routine's display name; it is sent as body.name on + ADD ROUTINE and shown in the ACTIVE ROUTINES list.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/index.js",
           "frontend/app/autojobstore.js"
         ],
@@ -795,7 +795,7 @@
       "promise": "Typing a directive sets body.prompt for POST /api/cron; a blank prompt is refused before any request (the create route requires a prompt).",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/index.js",
           "frontend/app/autojobstore.js"
         ],
@@ -829,11 +829,11 @@
       "kind": "ui",
       "area": "work",
       "name": "✦ SUGGEST ROUTINES",
-      "purpose": "The ✦ SUGGEST ROUTINES button (#rt-propose): asks the station to propose standing routines from your observed work patterns.",
+      "purpose": "The ✦ SUGGEST ROUTINES button (#rt-propose): asks the keep to propose standing routines from your observed work patterns.",
       "promise": "Clicking ✦ SUGGEST ROUTINES surfaces suggested routine drafts (name + prompt + cadence) you can accept into the CREATE form — never auto-created; you confirm each.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/index.js"
         ],
         "events": []
@@ -865,7 +865,7 @@
       "promise": "Typing a schedule sets body.schedule; the server (cron.parseSchedule) validates it — a live preview shows the next fires and an unparseable string is refused with an honest error.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/index.js",
           "frontend/app/autojobstore.js"
         ],
@@ -2118,7 +2118,7 @@
       "kind": "ui",
       "area": "work",
       "name": "⌫ FORGET",
-      "purpose": "The ⌫ FORGET control: an arm-to-confirm destructive wipe of the station's learned interest profile.",
+      "purpose": "The ⌫ FORGET control: an arm-to-confirm destructive wipe of the keep's learned interest profile.",
       "promise": "Clicking ⌫ FORGET arms a confirm; confirming calls profile.forget() + MintStore.forget(), wiping the learned interest/mint state so suggestions reset to zero.",
       "wiring": {
         "files": [
@@ -2150,7 +2150,7 @@
       "kind": "ui",
       "area": "work",
       "name": "GOT IT",
-      "purpose": "The GOT IT acknowledgement: dismisses the STATION FAMILIARITY explainer once the user understands the pause/forget controls.",
+      "purpose": "The GOT IT acknowledgement: dismisses the KEEP FAMILIARITY explainer once the user understands the pause/forget controls.",
       "promise": "Clicking GOT IT dismisses the familiarity explainer copy (it does not reappear), leaving the meter + pause/forget controls in place.",
       "wiring": {
         "files": [
@@ -2530,7 +2530,7 @@
       "kind": "ui",
       "area": "work",
       "name": "❚❚ PAUSE LEARNING",
-      "purpose": "The ❚❚ PAUSE LEARNING / ▸ RESUME LEARNING toggle: stops or resumes the station learning from your work signals for suggestions.",
+      "purpose": "The ❚❚ PAUSE LEARNING / ▸ RESUME LEARNING toggle: stops or resumes the keep learning from your work signals for suggestions.",
       "promise": "Clicking ❚❚ PAUSE LEARNING halts work-signal learning (meter → PAUSED) and the button flips to ▸ RESUME LEARNING; resuming re-enables it.",
       "wiring": {
         "files": [
@@ -3059,11 +3059,11 @@
       "notes": "Recipe-catalog roster tile (one of 50 builtins, marketplace.js). CLASS-PROVEN @HEAD 0a009ec2 (.uiatlas/work-probe/recipes-evidence.txt): render contract 50 store === 50 .mkt-card (all data-id); the representative morning-brief tile drove select→dossier→SET UP & LAUNCH→2 params→RUN NOW→Workstreams kind:task \"Morning Brief\" end-to-end. Clones share the identical render+data-id+dispatch seam, store-covered by recipes.test.js. AUDITED: per-tile DOM dispatch not journey-guarded (finding 72f74d2c, EL-3). COVERED + PROMOTED 2026-07-18 (HEAD 43936bd2): scripts/qa/work-console-journey.mjs JW-RECIPES drives this seam — class-identical card-select seam (representative: Morning Brief asserted live) (26/26 green; negative-control proven by inverting the render/dispatch condition). audited→perfected."
     },
     {
-      "id": "ui/work/txt-button-mkt-roster-station-familiaritycalibratingstill-ge",
+      "id": "ui/work/txt-button-mkt-roster-keep-familiaritycalibratingstill-ge",
       "kind": "ui",
       "area": "work",
-      "name": "◉STATION FAMILIARITYCALIBRATINGstill getting to know you — s",
-      "purpose": "The STATION FAMILIARITY glass box: an honest meter of how much the station has learned about your work (it drives recipe/recruit suggestions), with controls to pause or wipe that learning.",
+      "name": "◉KEEP FAMILIARITYCALIBRATINGstill getting to know you — s",
+      "purpose": "The KEEP FAMILIARITY glass box: an honest meter of how much the keep has learned about your work (it drives recipe/recruit suggestions), with controls to pause or wipe that learning.",
       "promise": "The meter reads the real familiarity summary — CALIBRATING while no signal is strong enough, a percentage once it is, PAUSED when learning is off — and never asserts a level the profile cannot back.",
       "wiring": {
         "files": [
@@ -3088,7 +3088,7 @@
       "missing": false,
       "selector": "button",
       "state": "work-recipes",
-      "notes": "PROVEN live @HEAD 0a009ec2 (.uiatlas/work-probe/recipes-evidence.txt): .mkt-fam box present, .mkt-fam-meter shows \"CALIBRATING\" for the fresh seed (truthful — source shows CALIBRATING until an interest signal is strong enough), title STATION FAMILIARITY, with PAUSE LEARNING / FORGET / GOT IT controls. Truthful telemetry. KNOWN: guarded by the adaptive-recruitment/familiarity system, not an atlas-work journey."
+      "notes": "PROVEN live @HEAD 0a009ec2 (.uiatlas/work-probe/recipes-evidence.txt): .mkt-fam box present, .mkt-fam-meter shows \"CALIBRATING\" for the fresh seed (truthful — source shows CALIBRATING until an interest signal is strong enough), title KEEP FAMILIARITY, with PAUSE LEARNING / FORGET / GOT IT controls. Truthful telemetry. KNOWN: guarded by the adaptive-recruitment/familiarity system, not an atlas-work journey."
     },
     {
       "id": "ui/work/txt-button-mkt-roster-subscription-auditwhat-you-are-paying-",

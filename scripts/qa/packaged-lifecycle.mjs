@@ -11,7 +11,7 @@
  *
  * THE MATRIX (see CASES):
  *   idle-close     default prefs: WM_CLOSE → shell exe GONE, no orphan <install>\node.exe, relaunch
- *                  → visible "StarNet" window + /api/health up. Branch proof: startup.log says
+ *                  → visible "Eyehold" window + /api/health up. Branch proof: startup.log says
  *                  `close-request: close_to_tray=false` and never `staying resident`.
  *   close-to-tray  lifecycle.json {closeToTray:true} (the shell's own versioned record, written
  *                  while the app is NOT running because it is read once at startup) → launch →
@@ -42,10 +42,10 @@ import { pathToFileURL } from 'node:url';
 
 /* ─────────────────────────────── PURE CORE ─────────────────────────────── */
 
-export const RECEIPT_SCHEMA = 'starnet.packaged-lifecycle-receipt.v1';
+export const RECEIPT_SCHEMA = 'eyehold.packaged-lifecycle-receipt.v1';
 export const SHELL_EXE = 'skynet-desktop.exe';
 export const SIDECAR_EXE = 'node.exe';
-export const WINDOW_TITLE = 'StarNet';
+export const WINDOW_TITLE = 'Eyehold';
 export const APP_IDENTIFIER = 'ai.skynet.harness';
 export const PREFS_FILE = 'lifecycle.json';
 export const PREFS_VERSION = 1;
@@ -90,9 +90,9 @@ export function classifyProcesses(procs, installDir) {
   return out;
 }
 
-/** Visible top-level windows titled exactly "StarNet" that belong to one of the shell pids.
- *  Title equality is deliberate: WebView2 spawns no top-level "StarNet" windows of its own. */
-export function starnetWindows(windows, shellPids) {
+/** Visible top-level windows titled exactly "Eyehold" that belong to one of the shell pids.
+ *  Title equality is deliberate: WebView2 spawns no top-level "Eyehold" windows of its own. */
+export function eyeholdWindows(windows, shellPids) {
   const pids = new Set((shellPids || []).map(Number));
   return (Array.isArray(windows) ? windows : []).filter((w) =>
     w && w.visible === true && String(w.title || '').trim() === WINDOW_TITLE && pids.has(Number(w.pid)));
@@ -144,7 +144,7 @@ export function judgeIdleClose({ after, relaunch, log }) {
   if (!relaunch) reasons.push('no relaunch snapshot');
   else {
     if (relaunch.shell.length !== 1) reasons.push(`expected exactly 1 shell after relaunch, saw ${relaunch.shell.length}`);
-    if (!relaunch.windows.length) reasons.push('no visible "StarNet" window after relaunch');
+    if (!relaunch.windows.length) reasons.push('no visible "Eyehold" window after relaunch');
     if (relaunch.health !== true) reasons.push('sidecar /api/health not up after relaunch');
   }
   return { pass: reasons.length === 0, reasons, branch };
@@ -159,7 +159,7 @@ export function judgeTrayClose({ launchedPid, resident, revealed, log }) {
     if (resident.shell.length !== 1) reasons.push(`expected the shell to STAY (1 pid), saw ${resident.shell.length}`);
     else if (launchedPid != null && resident.shell[0].pid !== Number(launchedPid)) reasons.push(`resident shell pid ${resident.shell[0].pid} is not the launched pid ${launchedPid}`);
     if (!resident.sidecar.length) reasons.push('sidecar node.exe was killed although the shell stayed resident');
-    if (resident.windows.length) reasons.push('a visible "StarNet" window remained after close-to-tray (should be hidden)');
+    if (resident.windows.length) reasons.push('a visible "Eyehold" window remained after close-to-tray (should be hidden)');
     if (resident.health !== true) reasons.push('sidecar /api/health not up while resident');
   }
   const branch = closeBranch(log && log.closeLines);
@@ -168,7 +168,7 @@ export function judgeTrayClose({ launchedPid, resident, revealed, log }) {
   else {
     if (revealed.shell.length !== 1) reasons.push(`expected exactly 1 shell after the second launch (single-instance), saw ${revealed.shell.length}`);
     else if (launchedPid != null && revealed.shell[0].pid !== Number(launchedPid)) reasons.push(`the surviving shell pid ${revealed.shell[0].pid} is not the original ${launchedPid} — the resident was replaced, not revealed`);
-    if (!revealed.windows.length) reasons.push('second launch did NOT reveal a visible "StarNet" window — windowless resident (the 0.10.x escape)');
+    if (!revealed.windows.length) reasons.push('second launch did NOT reveal a visible "Eyehold" window — windowless resident (the 0.10.x escape)');
   }
   return { pass: reasons.length === 0, reasons, branch };
 }
@@ -240,7 +240,7 @@ export async function pollUntil(fn, { timeoutMs, intervalMs, sleep, now }) {
 
 async function snapshot(drivers, installDir, port) {
   const procs = classifyProcesses(await drivers.listProcesses(), installDir);
-  const windows = starnetWindows(await drivers.listWindows(), procs.shell.map((p) => p.pid));
+  const windows = eyeholdWindows(await drivers.listWindows(), procs.shell.map((p) => p.pid));
   let health = null;
   if (port) { try { health = await drivers.health(port); } catch { health = false; } }
   return { shell: procs.shell, sidecar: procs.sidecar, windows, health, port: port || null };
@@ -263,7 +263,7 @@ async function waitForBoot(drivers, installDir, logMark, waits) {
 
 async function closeMain(drivers, installDir) {
   const s = await snapshot(drivers, installDir, null);
-  if (!s.windows.length) throw new Error('cannot WM_CLOSE: no visible "StarNet" window');
+  if (!s.windows.length) throw new Error('cannot WM_CLOSE: no visible "Eyehold" window');
   await drivers.closeWindow(s.windows[0].hwnd);
   return s.windows[0];
 }
@@ -402,7 +402,7 @@ async function cleanupIdle(drivers, ctx) {
 function ps(script) {
   // Write the script to a temp .ps1 and run it with -File: stdin `-Command -` silently drops
   // here-strings (the Add-Type block), and -EncodedCommand has a length ceiling.
-  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'starnet-g1-'));
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'eyehold-g1-'));
   const file = path.join(dir, 'step.ps1');
   fs.writeFileSync(file, '$ErrorActionPreference = "Stop"\n' + script + '\n', 'utf8');
   try {
@@ -417,10 +417,10 @@ function ps(script) {
 }
 
 const USER32 = `
-if (-not ('StarNetG1.Win32' -as [type])) {
+if (-not ('EyeholdG1.Win32' -as [type])) {
 Add-Type -TypeDefinition @"
 using System; using System.Text; using System.Runtime.InteropServices; using System.Collections.Generic;
-namespace StarNetG1 {
+namespace EyeholdG1 {
   public static class Win32 {
     public delegate bool EnumWindowsProc(IntPtr hWnd, IntPtr lParam);
     [DllImport("user32.dll")] public static extern bool EnumWindows(EnumWindowsProc cb, IntPtr lParam);
@@ -452,11 +452,11 @@ export function makeWindowsDrivers({ appDataDir }) {
       return out.split(/\r?\n/).filter(Boolean).map((l) => { const [pid, name, ppid, p] = l.split('\t'); return { pid: Number(pid), name, ppid: Number(ppid), path: p || null }; });
     },
     listWindows() {
-      const out = ps(`${USER32}\n[StarNetG1.Win32]::List() | ForEach-Object { $_ }`);
+      const out = ps(`${USER32}\n[EyeholdG1.Win32]::List() | ForEach-Object { $_ }`);
       return out.split(/\r?\n/).filter(Boolean).map((l) => { const [hwnd, pid, vis, ...t] = l.split('\t'); return { hwnd: Number(hwnd), pid: Number(pid), visible: vis === '1', title: t.join('\t') }; });
     },
     closeWindow(hwnd) {
-      const out = ps(`${USER32}\n[StarNetG1.Win32]::Close(${Number(hwnd)})`);
+      const out = ps(`${USER32}\n[EyeholdG1.Win32]::Close(${Number(hwnd)})`);
       if (!/True/i.test(out)) throw new Error(`PostMessage(WM_CLOSE) to hwnd ${hwnd} returned ${out}`);
     },
     launch(exe) {
@@ -479,7 +479,7 @@ export function makeWindowsDrivers({ appDataDir }) {
     },
     exeVersion(exe) { return ps(`(Get-Item '${exe.replace(/'/g, "''")}').VersionInfo.ProductVersion`); },
     async fetchJson(url) {
-      const r = await fetch(url, { redirect: 'follow', headers: { 'user-agent': 'starnet-g1-packaged-lifecycle' } });
+      const r = await fetch(url, { redirect: 'follow', headers: { 'user-agent': 'eyehold-g1-packaged-lifecycle' } });
       if (!r.ok) throw new Error(`HTTP ${r.status} for ${url}`);
       return r.json();
     },
@@ -503,11 +503,11 @@ export function parseArgs(argv) {
 async function main() {
   const a = parseArgs(process.argv.slice(2));
   if (process.platform !== 'win32') { console.error('packaged-lifecycle: Windows only'); process.exit(2); }
-  const exe = a.exe || process.env.STARNET_G1_EXE;
+  const exe = a.exe || process.env.EYEHOLD_G1_EXE;
   if (!exe || !fs.existsSync(exe)) { console.error('packaged-lifecycle: --exe=<path to installed skynet-desktop.exe> is required'); process.exit(2); }
   const installDir = a['install-dir'] || path.dirname(exe);
   const appDataDir = a['app-data'] || path.join(process.env.APPDATA || '', APP_IDENTIFIER);
-  const tag = a.tag || process.env.STARNET_G1_TAG || '';
+  const tag = a.tag || process.env.EYEHOLD_G1_TAG || '';
   const expectedVersion = a['expect-version'] || (tag ? tag.replace(/^v/i, '') : '');
   const out = a.out || 'packaged-lifecycle-receipt.json';
   const cases = a.cases ? String(a.cases).split(',').map((s) => s.trim()).filter(Boolean) : CASES.slice();
@@ -517,7 +517,7 @@ async function main() {
     tagFeedUrl: a['tag-feed-url'] || '',
     // the tag's own latest.json, already downloaded next to the installer (drafts are not public)
     tagFeed: a['tag-feed-path'] ? JSON.parse(fs.readFileSync(String(a['tag-feed-path']), 'utf8')) : null,
-    publicFeedUrl: a['public-feed-url'] || 'https://github.com/androoAGI/starnet-releases/releases/latest/download/latest.json',
+    publicFeedUrl: a['public-feed-url'] || 'https://github.com/Eyehold/eyehold-releases/releases/latest/download/latest.json',
     feedMustMatch: a['feed-must-match'] === true || a['feed-must-match'] === 'true',
     meta: { exe, installDir, appDataDir, tag, runId: process.env.GITHUB_RUN_ID || null, host: process.env.COMPUTERNAME || null, image: process.env.ImageOS ? `${process.env.ImageOS} ${process.env.ImageVersion || ''}`.trim() : null },
     log: (m) => console.log(m),

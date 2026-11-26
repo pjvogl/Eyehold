@@ -22,7 +22,7 @@ A saved routine with follow-up enabled is rejected by the scheduler because it h
 
 ## Repro
 
-In New schedule leave Keep in StarNet selected, check Allow follow-up, fill name and prompt, save. Inspect job: attachToSession true, origin null. Actual cronPreflightConfig returns missing-session-origin. This persisted through an isolated sidecar restart.
+In New schedule leave Keep in Eyehold selected, check Allow follow-up, fill name and prompt, save. Inspect job: attachToSession true, origin null. Actual cronPreflightConfig returns missing-session-origin. This persisted through an isolated sidecar restart.
 
 See qa/seam-audit-0912/REPORT.md finding A3 for exact scope and repair criteria.
 

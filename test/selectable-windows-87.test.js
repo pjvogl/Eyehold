@@ -1,5 +1,5 @@
 'use strict';
-/* node test/selectable-windows-87.test.js — #87 stays fixed: what a station window SAYS can be selected and copied, and
+/* node test/selectable-windows-87.test.js — #87 stays fixed: what a keep window SAYS can be selected and copied, and
    DELIVERABLES' OPEN THE FULL CONVERSATION really opens the run's conversation (fixed in bba85b23a, no lock until now).
 
    1. frontend/css/app.css: `.term-body` selects as text (it inherited the game chrome's `user-select: none`, so a
@@ -41,15 +41,15 @@ const read = rel => fs.readFileSync(path.join(__dirname, '..', 'frontend', rel),
   const src = read('app/deliverables.js');
   const block = A.fnBody(src, "if (b.dataset.act === 'session') {");
   A.ok(block.length > 200 && block.length < 3000, 'the OPEN THE FULL CONVERSATION branch is located (length guard)');
-  const branch = new Function('b', 'r', 'say', 'ReturnStore', 'App', 'Workstreams', 'StationUI',
+  const branch = new Function('b', 'r', 'say', 'ReturnStore', 'App', 'Workstreams', 'KeepUI',
     'return (async () => { ' + block + '\n return "fell-through"; })();');
   const fakes = (over) => {
     const log = { said: [], opened: [], bare: [], conv: [] };
     const b = { dataset: { act: 'session' }, disabled: false };
     const App = { openWorkstream: sid => log.bare.push(sid) };
-    const StationUI = { h: { workConversation: from => log.conv.push(from) } };
+    const KeepUI = { h: { workConversation: from => log.conv.push(from) } };
     const say = (t, bad) => { log.said.push({ t, bad: !!bad, disabledWhileSaying: b.disabled }); };
-    return Object.assign({ log, b, App, StationUI, say, Workstreams: { get: () => null } }, over || {});
+    return Object.assign({ log, b, App, KeepUI, say, Workstreams: { get: () => null } }, over || {});
   };
   const row = { runId: 'run-wf-1', agentId: 'researcher', title: 'Morning brief', run: { streamId: 'ws-wf-1' } };
   (async () => {
@@ -57,7 +57,7 @@ const read = rel => fs.readFileSync(path.join(__dirname, '..', 'frontend', rel),
     {
       const f = fakes();
       const RS = { openWork: async (w) => { f.log.opened.push(w); return true; } };
-      await branch(f.b, row, f.say, RS, f.App, f.Workstreams, f.StationUI);
+      await branch(f.b, row, f.say, RS, f.App, f.Workstreams, f.KeepUI);
       A.eq(f.log.opened, [{ runId: 'run-wf-1', streamId: 'ws-wf-1', agentId: 'researcher', title: 'Morning brief' }], 'the run\'s stream goes through ReturnStore.openWork with its run, agent and title');
       A.eq(f.log.bare, [], 'never a bare App.openWorkstream (it no-ops on an unadopted stream)');
       A.eq(f.log.conv, ['deliverables'], 'the conversation opens, remembering it came from DELIVERABLES');
@@ -66,7 +66,7 @@ const read = rel => fs.readFileSync(path.join(__dirname, '..', 'frontend', rel),
     // the transcript is gone: say so, never pretend it opened
     {
       const f = fakes();
-      await branch(f.b, row, f.say, { openWork: async () => false }, f.App, f.Workstreams, f.StationUI);
+      await branch(f.b, row, f.say, { openWork: async () => false }, f.App, f.Workstreams, f.KeepUI);
       A.ok(f.log.said.length === 1 && f.log.said[0].bad && /Could not read that conversation/.test(f.log.said[0].t), 'a transcript that is gone says so: ' + JSON.stringify(f.log.said));
       A.eq(f.log.conv, [], 'and nothing claims to have opened it');
       A.ok(f.b.disabled === false, 'the button is re-enabled after a miss');
@@ -74,22 +74,22 @@ const read = rel => fs.readFileSync(path.join(__dirname, '..', 'frontend', rel),
     // openWork throwing is a miss, not an uncaught page error
     {
       const f = fakes();
-      await branch(f.b, row, f.say, { openWork: async () => { throw new Error('boom'); } }, f.App, f.Workstreams, f.StationUI);
+      await branch(f.b, row, f.say, { openWork: async () => { throw new Error('boom'); } }, f.App, f.Workstreams, f.KeepUI);
       A.ok(f.log.said.length === 1 && /Could not read that conversation/.test(f.log.said[0].t) && f.log.conv.length === 0, 'a failed open says it could not read the conversation');
     }
     // a run that never recorded a stream says that
     {
       const f = fakes();
-      await branch(f.b, { runId: 'r', run: {} }, f.say, { openWork: async () => { throw new Error('must not be called'); } }, f.App, f.Workstreams, f.StationUI);
+      await branch(f.b, { runId: 'r', run: {} }, f.say, { openWork: async () => { throw new Error('must not be called'); } }, f.App, f.Workstreams, f.KeepUI);
       A.ok(f.log.said.length === 1 && /did not record a session/.test(f.log.said[0].t), 'no recorded session is named as such');
     }
     // the bare fallback (no ReturnStore on this page) only opens a stream the rail actually has
     {
       const f = fakes();
-      await branch(f.b, row, f.say, undefined, f.App, { get: () => null }, f.StationUI);
+      await branch(f.b, row, f.say, undefined, f.App, { get: () => null }, f.KeepUI);
       A.ok(f.log.bare.length === 0 && /Could not read that conversation/.test((f.log.said[0] || {}).t || ''), 'without ReturnStore an unknown stream is never "opened" by a no-op');
       const g = fakes();
-      await branch(g.b, row, g.say, undefined, g.App, { get: sid => (sid === 'ws-wf-1' ? { id: sid } : null) }, g.StationUI);
+      await branch(g.b, row, g.say, undefined, g.App, { get: sid => (sid === 'ws-wf-1' ? { id: sid } : null) }, g.KeepUI);
       A.ok(g.log.bare.length === 1 && g.log.conv.length === 1, 'without ReturnStore a stream the rail has opens directly');
     }
     A.report('selectable-windows-87.test');

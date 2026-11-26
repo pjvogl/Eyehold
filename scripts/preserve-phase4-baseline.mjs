@@ -6,7 +6,7 @@ import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
-const OUT = join(ROOT, 'docs', 'STARNET_PHASE4_BASELINE.md');
+const OUT = join(ROOT, 'docs', 'EYEHOLD_PHASE4_BASELINE.md');
 
 function readMaybe(path) {
   try { return readFileSync(path, 'utf8').trim(); } catch (_) { return ''; }
@@ -33,7 +33,7 @@ const phase2Summary = readMaybe(join(ROOT, '.dogfood', 'phase2-latest', 'summary
 const phase3Summary = readMaybe(join(ROOT, '.dogfood', 'phase3-latest', 'summary.md'));
 const dogfoodSummary = readMaybe(join(ROOT, '.dogfood', 'dogfood-latest', 'summary.md'));
 
-let md = '# StarNet Phase 4 Baseline\n\n';
+let md = '# Eyehold Phase 4 Baseline\n\n';
 md += 'Generated: `' + new Date().toISOString() + '`\n\n';
 md += 'This file preserves the latest Phase 1-3 evidence before Phase 4 planning. It is intentionally tracked in `docs/`; raw logs remain under `.dogfood/` and may be regenerated.\n\n';
 md += '## Status Snapshot\n\n';

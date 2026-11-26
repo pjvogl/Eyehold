@@ -1,4 +1,4 @@
-/* STARNET — recipes.js : THE RECIPE / MISSION LIBRARY — ready-made, parameterized job templates.
+/* EYEHOLD — recipes.js : THE RECIPE / MISSION LIBRARY — ready-made, parameterized job templates.
 
    The sibling of specialties.js. A SPECIALTY answers "who should my agent BE" (its purpose + standing
    orders); a RECIPE answers "what should my agent DO right now" — a one-tap mission like "morning research
@@ -12,7 +12,7 @@
    fillTask(idOrRecipe, values) -> the directive string the agent receives (params substituted). It is THE
    single launch primitive — pure + deterministic + node-testable, the recipe analogue of Specialties.compose.
    The app's launchRecipe() takes that string, mints a workstream, and Chat.send()s it (which classifies it as
-   a real task directive, so the agent walks to the workstation and works — and the send folds the recipe's
+   a real task directive, so the agent walks to the workkeep and works — and the send folds the recipe's
    interest tag into the personalization profile, so launching recipes sharpens future recommendations).
 
    Recipes carry `tags` (interest-lane weights over the SAME {code|research|general} vocabulary as specialties)
@@ -20,7 +20,7 @@
 
    UMD-light: a `Recipes` global in the browser, module.exports under node (so the registry + the launch
    primitives are unit-testable without a DOM). It leans on the pure TopicMatch engine (the SAME matcher the
-   archetype shelf uses) so the FOR YOU row can rank on the station's LEARNED TOPICS, not just the 3-bucket
+   archetype shelf uses) so the FOR YOU row can rank on the keep's LEARNED TOPICS, not just the 3-bucket
    profile — resolved with the recruiter.js conditional-require pattern so a missing module simply means the
    topic term is 0 (the ranking then behaves exactly as it did before topics existed). */
 'use strict';
@@ -34,8 +34,8 @@
 })(typeof globalThis !== 'undefined' ? globalThis : this, function (TopicMatch) {
   'use strict';
 
-  const STORE_KEY = 'starnet.recipes.v2';        // localStorage home for custom (save-your-own) recipes (schema v2)
-  const STORE_KEY_V1 = 'starnet.recipes.v1';     // legacy v1 home — read once + migrated forward, then left in place
+  const STORE_KEY = 'eyehold.recipes.v2';        // localStorage home for custom (save-your-own) recipes (schema v2)
+  const STORE_KEY_V1 = 'eyehold.recipes.v1';     // legacy v1 home — read once + migrated forward, then left in place
 
   // the interest vocabulary the personalization recommender ranks against (mirrors classify.js getTag and
   // specialties.js) — a recipe's `tags` map weights these lanes so it ranks honestly in the same feed.
@@ -44,7 +44,7 @@
   // ---- schema v2 vocabularies (all ADVISORY — a recipe NEVER gates execution) ----
   // GEAR = the capability objectTypes a use case draws on, same vocabulary as the skills catalog `requires`
   // (dish=web, cabinet=files, notebook=memory, workbench=terminal, studio=images, computer, connector). A recipe
-  // renders a WANT badge for gear the station lacks; it never blocks the launch (sandbox/no-gating law).
+  // renders a WANT badge for gear the keep lacks; it never blocks the launch (sandbox/no-gating law).
   const GEAR_TYPES = ['dish', 'cabinet', 'notebook', 'workbench', 'studio', 'computer', 'connector'];
   // the SUGGESTED-cadence ids a recipe may carry (mirrors autojobs.js CADENCES). null = one-shot by nature.
   const CADENCES = ['morning', 'weekly', 'sixhourly', 'hourly'];
@@ -54,7 +54,7 @@
   // 'general' is the catch-all fallback. Additive only — no bucket is ever renamed or removed.
   //
   // STANDING-AUTOMATION BUCKETS (2026-08-04): the catalog is a use-case dictionary for someone who cannot yet
-  // name their own use case, so the buckets are the areas a StarNet user actually works in. A bucket only
+  // name their own use case, so the buckets are the areas a Eyehold user actually works in. A bucket only
   // exists if a real shelf of recipes stands behind it — an empty or one-item bucket reads as broken next to
   // a full one, so a bucket is added WITH its module and removed when its module goes.
   const CATEGORIES = ['developer', 'research', 'creator', 'writing', 'ops', 'business', 'money',
@@ -129,7 +129,7 @@
        choice    — one of `options` (chips); needs >= 2 options or it degrades to text (never an empty picker)
        file      — an absolute file path + a native BROWSE button (the OS file chooser)
        folder    — an absolute folder path + the same chooser in directory mode
-       connector — one of the station's LIVE connected services (the form fills the list from /api/connectors)
+       connector — one of the keep's LIVE connected services (the form fills the list from /api/connectors)
      Unknown/garbage type -> 'text'. Everything here is presentation: a type NEVER gates a launch, and a
      recipe authored before types existed reads as all-text, exactly as it rendered before. */
   const PARAM_TYPES = ['text', 'choice', 'file', 'folder', 'connector'];
@@ -583,7 +583,7 @@
       }
       return row;
     });
-    return { schemaVersion: 'starnet.task-postconditions.v1', authority: 'commander', requirements };
+    return { schemaVersion: 'eyehold.task-postconditions.v1', authority: 'commander', requirements };
   }
 
   // build a DRAFT custom recipe from a launched one (P3 "save what you keep asking for" seam). Returns a plain
@@ -780,7 +780,7 @@
   function exportRecipe(idOrRecipe) {
     const r = typeof idOrRecipe === 'string' ? get(idOrRecipe) : idOrRecipe;
     if (!r) return null;
-    const out = { starnetRecipe: EXPORT_FORMAT };
+    const out = { eyeholdRecipe: EXPORT_FORMAT };
     for (const k of EXPORT_FIELDS) {
       const v = r[k];
       if (v == null) { out[k] = (k === 'cadence' || k === 'forkedFrom') ? null : v; continue; }
@@ -858,7 +858,7 @@
     if (!v.ok) return v;
     // strip any id from the draft so saveCustom always mints a fresh one (the file's id lives on in forkedFrom).
     const clean = Object.assign({}, v.recipe); delete clean.id;
-    // a name already on the station gets a numbered suffix and the caller is told (renamedFrom) — re-importing an
+    // a name already on the keep gets a numbered suffix and the caller is told (renamedFrom) — re-importing an
     // edited file used to land an indistinguishable twin of the recipe it was meant to update.
     const clash = findByName(clean.name);
     if (clash) clean.name = uniqueName(clean.name);
@@ -873,7 +873,7 @@
      signal). Pure + case-insensitive; punctuation is split on. No fuzzy matching (honest).
 
      MATCHING IS WORD-WISE, NOT SUBSTRING. The first cut used `hay.indexOf(word)`, which made "for" match
-     per·FOR·mance and "the" match o·THE·r — on a cold station (no profile affinity, no launches) this term is the
+     per·FOR·mance and "the" match o·THE·r — on a cold keep (no profile affinity, no launches) this term is the
      ONLY live signal, so stopword collisions alone decided the whole FOR YOU row: a real goals belief scored 42 of
      50 recipes above zero and surfaced four unrelated cards. Two rules fix it and keep the result explainable:
        • common words carry no topic signal and are skipped outright (the same GOAL_STOP discipline the
@@ -924,12 +924,12 @@
   const namableGoalHits = (hits) => (Array.isArray(hits) ? hits : []).filter(w => !GOAL_STOP.has(String(w)));
 
   /* ---- the LEARNED-TOPIC term (2026-07-28) ----
-     The station's interest histogram (sidecar/interests.js, served to the browser via GET /api/scout and cached
+     The keep's interest histogram (sidecar/interests.js, served to the browser via GET /api/scout and cached
      in ProspectStore.interests()) knows WHAT the Commander keeps working on — "gpu price tracking", not just
      "research". Until now the FOR YOU row could not read it. This folds it in as ONE MORE POSITIVE TERM.
 
      STRICTLY ADDITIVE, and that is the safety property: TopicMatch.match returns null unless a WARM topic
-     (weight ≥ 0.8) covers a majority of the recipe's tokens, so on a cold/calibrating station the term is
+     (weight ≥ 0.8) covers a majority of the recipe's tokens, so on a cold/calibrating keep the term is
      exactly 0 and every ranking is byte-identical to before. Because it can only ever RAISE a score, it can
      never shrink the survivor set the way the negative outcome term could (the 2026-07-26 blank-shelf trap) —
      it can only promote a recipe the Commander's real, evidenced work points at.
@@ -985,7 +985,7 @@
   //   launches        -> {id: {n, rated?}} or {id: n} — REAL per-recipe launch counts (the scout usage read), each
   //                      optionally carrying rate-the-work outcome counters {great, ok, miss}. Launching ranks a
   //                      recipe up (capped nudge); the Commander's own verdicts rank what actually HELPED.
-  //   topics          -> [row]   — the station's LEARNED interest topics (interests.summary rows, as served by
+  //   topics          -> [row]   — the keep's LEARNED interest topics (interests.summary rows, as served by
   //                      GET /api/scout and cached in ProspectStore.interests()). A warm topic that covers the
   //                      recipe adds a capped POSITIVE term — never subtracts, so it cannot empty the row.
   //   exclude         -> id      — a recipe to omit (e.g. the one already in the dossier).
@@ -1002,7 +1002,7 @@
      produce this row, or is it the cold-start category spread? (2026-08-05)
 
      The bay printed its personalized "◈ FOR YOU" header off `UnderstandingStore.readiness()` alone. Readiness
-     says the station has learned enough to be ASKED; it does not say this particular row used any of it. A
+     says the keep has learned enough to be ASKED; it does not say this particular row used any of it. A
      Commander with a filled dossier but no profile signal, no goal keyword that hits any of ~100 recipe names,
      no launches and no warm topic gets `anySignal === false` and a category spread drawn in catalog order — and
      a header claiming those three cards are FOR THEM. That is the product's core law broken by a string.
@@ -1015,7 +1015,7 @@
      ⛔ AND `personalized` ALONE STILL OVERCLAIMS ON THE TOP-UP PATH (2026-08-05). "at least one card is for them"
      is not "this row was picked from your real work", and the header was reading the boolean as if it were. A
      one-hit row tops up from the SAME catalog spread the cold start uses, and those filler cards carry no why at
-     all — so a plural, whole-row claim sat over two cards the station had never seen the Commander touch. So the
+     all — so a plural, whole-row claim sat over two cards the keep had never seen the Commander touch. So the
      count rides out too: `scored` is how many cards a real term actually produced, `items.length` how many are
      shown. Equal → the whole row is earned. Fewer → the caller owes MIXED phrasing, not the full claim. */
   function rankRecipes(items, opts) { return rankRecipesExplained(items, opts).items; }
@@ -1064,7 +1064,7 @@
       const goal = goalKeywordScore(r, goalText) + goalKeywordScore(r, painText);   // goals + pain/ambition, same weight
       const use = launchCount(r.id);
       // a WARM learned topic is real evidence in its own right (it is only ever folded from observed activity),
-      // so it counts as signal — a station that has learned a habit but launched nothing is NOT cold-start.
+      // so it counts as signal — a keep that has learned a habit but launched nothing is NOT cold-start.
       const topic = topics ? topicScore(r, topics) : 0;
       const preference = preferenceScore(r);
       if (aff > 0 || goal > 0 || use > 0 || topic > 0 || preference !== 0) anySignal = true;   // ratings never signal alone: a rating implies a launch
@@ -1086,7 +1086,7 @@
         const spare = scored.filter(x => x.s === 0 && !inRow[x.r.id]).map(x => x.r);
         top = top.concat(categorySpread(spare, limit - top.length, opts.spreadOffset));
       }
-      // …unless the SINK TOOK EVERYTHING. The outcome term is negative-heavy on purpose, so a station whose only
+      // …unless the SINK TOOK EVERYTHING. The outcome term is negative-heavy on purpose, so a keep whose only
       // engagement on record is a 👎 (launched one recipe, rated it miss — the exact first-session shape: no
       // profile affinity, no goal text) scores every candidate <= 0 and this filter returns NOTHING. The caller
       // renders no row at all, so honest feedback would DELETE the FOR YOU shelf. Fall through to the cold-start
@@ -1104,7 +1104,7 @@
      ⛔ SPREAD BY BUCKET, NOT BY RAW CATEGORY. This walked `r.category` and it quietly broke as the catalog
      grew: core.js owns four legacy categories (research/code/writing/planning) and sits FIRST in the aggregate,
      so a 4-card cold-start row was filled entirely from core.js before any persona module was reached — the
-     other hundred-odd recipes could never appear on a cold station no matter how many were added. It was not
+     other hundred-odd recipes could never appear on a cold keep no matter how many were added. It was not
      even varied in the way the Commander sees it, since code+developer and writing+planning+ops each render
      under ONE rail chip. Folding to the bucket first fixes both: the row spans what the rail actually shows.
 

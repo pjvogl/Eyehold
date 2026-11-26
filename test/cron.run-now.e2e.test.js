@@ -1,6 +1,6 @@
 /* node test/cron.run-now.e2e.test.js - real sidecar proof for routine Run Now.
 
-   This boots the actual sidecar, creates a routine, opens the station SSE feed,
+   This boots the actual sidecar, creates a routine, opens the keep SSE feed,
    presses /api/cron/run, and proves the manual fire is visible in every layer:
    panel NDJSON, mocked provider request, workitem.placed, and run lifecycle SSE. */
 'use strict';
@@ -61,7 +61,7 @@ function startMockOpenRouter() {
 function boot(port, env, attemptsLeft) {
   return new Promise((resolve, reject) => {
     const child = spawn(process.execPath, [INDEX], {
-      env: Object.assign({}, process.env, env, { SKYNET_PORT: String(port) }),
+      env: Object.assign({}, process.env, env, { EYEHOLD_PORT: String(port) }),
       stdio: ['ignore', 'pipe', 'pipe']
     });
     let out = '', settled = false;
@@ -152,11 +152,11 @@ async function readNdjson(res) {
   const mock = await startMockOpenRouter();
   const ws = fs.mkdtempSync(path.join(os.tmpdir(), 'sk-cron-run-now-'));
   const env = {
-    SKYNET_WORKSPACES: ws,
-    SKYNET_OPENROUTER_BASE: mock.base,
-    SKYNET_OPENROUTER_KEY: 'sk-or-v1-run-now-fake',
-    SKYNET_DEFAULT_MODEL: 'test/model',
-    SKYNET_CRON_TICK_MS: '1000'
+    EYEHOLD_WORKSPACES: ws,
+    EYEHOLD_OPENROUTER_BASE: mock.base,
+    EYEHOLD_OPENROUTER_KEY: 'sk-or-v1-run-now-fake',
+    EYEHOLD_DEFAULT_MODEL: 'test/model',
+    EYEHOLD_CRON_TICK_MS: '1000'
   };
   const { child, port } = await boot(8910 + (process.pid % 50), env, 20);
   const B = 'http://' + HOST + ':' + port;
@@ -164,7 +164,7 @@ async function readNdjson(res) {
   try {
     const token = await bootToken(B, B);
     A.ok(token.length >= 32, 'got a session API token');
-    const headers = { 'Content-Type': 'application/json', 'X-StarNet-Token': token, Origin: B };
+    const headers = { 'Content-Type': 'application/json', 'X-Eyehold-Token': token, Origin: B };
     const create = await fetch(B + '/api/cron', {
       method: 'POST',
       headers,
@@ -178,9 +178,9 @@ async function readNdjson(res) {
     A.ok(job && job.id, 'routine id returned');
 
     sse = await startSseCollector(B + '/api/channels/events?' + require('./_httpToken.js').sseQuery(token), async event => {
-      if (event.name !== 'station.command') return;
+      if (event.name !== 'keep.command') return;
       const p = event.payload;
-      await fetch(B + '/api/station/ack', { method: 'POST', headers,
+      await fetch(B + '/api/keep/ack', { method: 'POST', headers,
         body: JSON.stringify({ id: p.id, ok: true, result: { folded: true } }) });
     });
     const run = await fetch(B + '/api/cron/run', {
@@ -235,12 +235,12 @@ async function readNdjson(res) {
        a floorless routine's system is byte-identical to the pre-brief behavior. */
     const sysOf = req => ((req.messages || []).find(m => m.role === 'system') || {}).content || '';
     const preFloor = mock.requests.slice(0, callsBefore);
-    A.ok(preFloor.length >= 1 && preFloor.every(r => sysOf(r).indexOf('YOUR STANDING BRIEF FOR THIS STATION') < 0),
+    A.ok(preFloor.length >= 1 && preFloor.every(r => sysOf(r).indexOf('YOUR STANDING BRIEF FOR THIS KEEP') < 0),
       'before a floor is posted, a Run Now carries NO brief header (pre-brief behavior intact)');
     const stage1 = mock.requests.slice(callsBefore).find(r =>
       (r.messages || []).some(m => m.role === 'user' && String(m.content || '').indexOf('gather relevant AI news') >= 0));
     A.ok(stage1, "found stage one's recorded provider request");
-    /* RUN NOW GETS THE SCHEDULED FIRE'S TOOLS (B5). Stage one passed no `station`, so runOnce fell back to the broad
+    /* RUN NOW GETS THE SCHEDULED FIRE'S TOOLS (B5). Stage one passed no `keep`, so runOnce fell back to the broad
        autonomous office and Run Now had a dish (web_fetch/web_request) the routine's computer-only bay does not —
        "test it now" proved tools the scheduled fire lacks. Recorded off the REAL provider requests: the floorless
        fire runs in the default office (dish included), the bay-bound fire only in its bay room. */
@@ -248,7 +248,7 @@ async function readNdjson(res) {
     A.ok(preFloor.some(r => toolNamesOf(r).indexOf('web_fetch') >= 0), 'before a floor is posted, Run Now runs in the default office (web_fetch offered)');
     A.ok(stage1 && toolNamesOf(stage1).indexOf('web_fetch') < 0 && toolNamesOf(stage1).indexOf('web_request') < 0,
       "a bay-bound Run Now runs in its computer-only bay room like the scheduled fire: no dish, no web tools");
-    A.ok(sysOf(stage1).indexOf('YOUR STANDING BRIEF FOR THIS STATION:\nDig three primary sources and cite them.') >= 0,
+    A.ok(sysOf(stage1).indexOf('YOUR STANDING BRIEF FOR THIS KEEP:\nDig three primary sources and cite them.') >= 0,
       "stage one's system carries the dock's standing brief under the hub's exact section header");
 
     /* ---- A ROUTINE THAT DOES NOT BELONG TO THE LINE BUYS EXACTLY ONE RUN (2026-08-07, Andrew's ruling) ----
@@ -322,7 +322,7 @@ async function readNdjson(res) {
       A.eq(delivered.lastDeliveryOk, true, 'scheduled session-only origin ran and received a durable delivery ack');
       A.ok(!delivered.blockedConfig, 'session-only origin passes preflight');
       A.ok(/not connected and healthy/.test(blocked.blockedConfig && blocked.blockedConfig.reason), 'remote origin never silently falls back to its session');
-      A.ok(sse.events.some(e => e.name === 'station.command' && e.payload.verb === 'station.deliver' && e.payload.args.sessionId === 'proof-session'), 'delivery targeted the captured session');
+      A.ok(sse.events.some(e => e.name === 'keep.command' && e.payload.verb === 'keep.deliver' && e.payload.args.sessionId === 'proof-session'), 'delivery targeted the captured session');
       await fetch(B + '/api/cron/arm', { method: 'POST', headers, body: JSON.stringify({ enabled: false }) });
       for (const j of jobs) await fetch(B + '/api/cron/remove', { method: 'POST', headers, body: JSON.stringify({ id: j.id }) });
     }

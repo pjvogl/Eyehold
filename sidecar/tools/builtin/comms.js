@@ -1,18 +1,18 @@
 /* sidecar/tools/builtin/comms.js — OUTBOUND channel reach: the agent can message a connected platform.
 
-   THE GAP THIS CLOSES. StarNet drives five real messaging channels (telegram/discord/slack/matrix/signal) but
-   every one of them was INBOUND-only: a human messages the station, the hub runs a turn, the reply goes back
+   THE GAP THIS CLOSES. Eyehold drives five real messaging channels (telegram/discord/slack/matrix/signal) but
+   every one of them was INBOUND-only: a human messages the keep, the hub runs a turn, the reply goes back
    down the same chat. Nothing let an agent SPEAK FIRST. The only outbound path in the whole sidecar was
    autonotify.js — a fixed one-line "a routine ran on its own" ping, composed by the host, not by the agent. So
    "reach" was half a pillar: a routine could research all night and had no way to tell anyone, and an agent
    asked to "let me know on Telegram when the build goes green" could only answer into a chat window nobody was
    watching. The reference harness has had tools/send_message_tool.py + gateway/channel_directory.py from early
-   on; this is the same capability on StarNet's own seams.
+   on; this is the same capability on Eyehold's own seams.
 
      makeCommsTools({ listTargets, sendTo, maxLenFor?, redact?, emit? }) -> { targetsTool, sendTool, register }
 
    ── KNOWN TARGETS ONLY (read this before "improving" the target grammar) ─────────────────────────────────────
-   A target must already be in the station's chat map — a chat a human actually opened with this station. The
+   A target must already be in the keep's chat map — a chat a human actually opened with this keep. The
    agent CANNOT dial an arbitrary chat id, phone number, or channel name. That is not a limitation we failed to
    remove, it is the security boundary:
 
@@ -23,7 +23,7 @@
      · truthful telemetry: an unknown id would fail at the transport anyway, and a tool that accepts a target it
        cannot reach teaches the model it succeeded.
 
-   Widening reach stays a human act: a person opens a chat with the station, and that chat becomes addressable.
+   Widening reach stays a human act: a person opens a chat with the keep, and that chat becomes addressable.
    The reference harness accepts raw ids/E.164 numbers here; we deliberately do not, and this comment is why.
 
    ── AMBIGUITY IS AN ERROR ───────────────────────────────────────────────────────────────────────────────────
@@ -99,10 +99,10 @@
      told "that channel is disconnected" instead of "no such target" (two different things to a user). */
   function resolveTarget(targets, want) {
     const q = clean(want, 200);
-    if (!q) throw new Error('target is required — call channel.targets to see what this station can reach');
+    if (!q) throw new Error('target is required — call channel.targets to see what this keep can reach');
     const all = (targets || []).map(packTarget).filter(t => t.target);
     if (!all.length) {
-      throw new Error('this station has no reachable chats yet — a person has to message it on a connected '
+      throw new Error('this keep has no reachable chats yet — a person has to message it on a connected '
         + 'channel once before an agent can send there');
     }
     const exact = all.find(t => t.target === q);
@@ -116,9 +116,9 @@
           + hits.map(t => t.target).join(', '));
       }
     }
-    throw new Error('"' + q + '" is not a chat this station can reach. Known targets: '
+    throw new Error('"' + q + '" is not a chat this keep can reach. Known targets: '
       + all.map(t => t.target).join(', ') + '. An agent can only message a chat a human already opened '
-      + 'with this station — it cannot dial a new id.');
+      + 'with this keep — it cannot dial a new id.');
   }
 
   function makeCommsTools(deps) {
@@ -139,7 +139,7 @@
 
     const targetsTool = {
       name: 'channel.targets', capability: 'comms', scope: 'read', requiresConsent: false,
-      description: 'List the messaging chats this station can actually send to (channel, chat, which agent it is bound to, and whether that channel is connected right now). Call this before channel.send.',
+      description: 'List the messaging chats this keep can actually send to (channel, chat, which agent it is bound to, and whether that channel is connected right now). Call this before channel.send.',
       schema: { type: 'object', properties: {} },
       run: async () => {
         const targets = (listTargets() || []).map(packTarget).filter(t => t.target);
@@ -148,14 +148,14 @@
           content: JSON.stringify({ targets: targets, reachable: live }),
           summary: targets.length
             ? live + ' of ' + targets.length + ' known chat(s) reachable now'
-            : 'no chats known yet — nobody has messaged this station on a connected channel'
+            : 'no chats known yet — nobody has messaged this keep on a connected channel'
         };
       }
     };
 
     const sendTool = {
       name: 'channel.send', capability: 'comms', scope: 'execute', requiresConsent: true, timeoutMs: 30000,
-      description: 'Send a message from this station to a connected messaging chat (Telegram, Discord, Slack, Matrix, Signal), optionally with files attached. Use this when the Commander asks to be told, pinged, notified, or messaged somewhere, or to report a result outside the station — including sending them an image, chart, or document you produced. The target must be a chat channel.targets lists — an agent cannot message a new id.',
+      description: 'Send a message from this keep to a connected messaging chat (Telegram, Discord, Slack, Matrix, Signal), optionally with files attached. Use this when the Commander asks to be told, pinged, notified, or messaged somewhere, or to report a result outside the keep — including sending them an image, chart, or document you produced. The target must be a chat channel.targets lists — an agent cannot message a new id.',
       schema: {
         type: 'object',
         required: ['target', 'text'],
@@ -209,7 +209,7 @@
            short message off the first photo as its caption — but then a channel that cannot upload would have
            swallowed the words along with the file. The floor is delivery: the message lands even when every
            upload fails, and a failed file degrades to a line naming where it is in the workspace, which the
-           Commander can still open on the station.
+           Commander can still open on the keep.
 
            Each file is reported truthfully in the result: the model must be able to tell "sent with 2 files"
            from "sent, and the files did not go". */
@@ -239,12 +239,12 @@
           const missed = wanted.slice(0, MAX_FILES).filter(f => attached.indexOf(f) === -1);
           if (missed.length) {
             const note = 'Note: ' + (missed.length === 1 ? 'this file' : 'these files') + ' could not be attached here — '
-              + missed.map(f => '"' + f + '"').join(', ') + '. ' + (missed.length === 1 ? 'It is' : 'They are') + ' saved in the workspace on the station.';
+              + missed.map(f => '"' + f + '"').join(', ') + '. ' + (missed.length === 1 ? 'It is' : 'They are') + ' saved in the workspace on the keep.';
             try { await sendTo(t.target, note); } catch (_) { /* the note is a courtesy; never fail the send over it */ }
           }
         }
 
-        /* OUTBOUND TELEMETRY on the existing contract event, so the station floor pulses the sending agent's
+        /* OUTBOUND TELEMETRY on the existing contract event, so the keep floor pulses the sending agent's
            dish for an agent-initiated message exactly as it does for a hub reply. Never fabricated: `ok`
            reflects whether every part actually landed, and `chunks` is what landed, not what was attempted.
            runId comes from the dispatch context (index.js threads it onto capCtx) so this delivery is

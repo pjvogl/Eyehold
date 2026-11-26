@@ -13,7 +13,7 @@ A.ok(body.length > 200 && body.length < source.length / 4, 'the reconcile functi
 const merge = new Function(body + '; return mergeCanonicalHistory;')();
 const sig = rows => rows.map(r => (r.sys ? 'S' : r.role[0]) + ':' + r.content);
 
-// 1. the real shape from a live station: an @mention run journals its user turn as a context packet, so none of
+// 1. the real shape from a live keep: an @mention run journals its user turn as a context packet, so none of
 //    the Commander's own lines match the server. They must stay exactly where they were.
 const local = [
   { role: 'user', content: 'hi', ts: 1 }, { role: 'assistant', content: 'Commander.', ts: 2 },

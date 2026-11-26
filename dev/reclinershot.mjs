@@ -9,7 +9,7 @@
  * REAL planCouchSit path (World._dbgCouchSit — no staged pixels), and crops #stage around each.
  *
  * ⛔ The preview pane never fires rAF, so the world clock is frozen there. Headless-ish Chrome over
- *    CDP is the only surface where the station actually ticks — hence the whole CDP dance.
+ *    CDP is the only surface where the keep actually ticks — hence the whole CDP dance.
  *
  *   node dev/reclinershot.mjs [--port=8961] [--cdp=9361] [--out=.reclinershot] [--scale=6]
  */
@@ -26,12 +26,12 @@ const OUT = join(process.cwd(), arg('out', '.reclinershot'));
 const SCRATCH = join(OUT, '_seed-workspace');
 const APP_URL = `http://127.0.0.1:${PORT}/`;
 
-/* Lay a lounge ABUTTING the seeded station (projectGeometry auto-doors the shared seam, so it is
+/* Lay a lounge ABUTTING the seeded keep (projectGeometry auto-doors the shared seam, so it is
    reachable) and stand the three seats in it. Kept close so every tile stays inside the hero's
    14-tile roam zone — planCouchSit cages both the cushion and the approach tile to that zone. */
 const PLACE = `(() => {
-  const st = (typeof Build !== 'undefined' && Build.__test__) ? Build.__test__.station() : null;
-  if (!st) return { error: 'no live station (Build.__test__ unavailable)' };
+  const st = (typeof Build !== 'undefined' && Build.__test__) ? Build.__test__.keep() : null;
+  if (!st) return { error: 'no live keep (Build.__test__ unavailable)' };
   const b = st.bounds();
   const x1 = b.maxTx + 1, y1 = b.minTy + 1;
   const room = st.addRoom({ kind: 'hab', rects: [{ x1, y1, x2: x1 + 9, y2: y1 + 7 }] });
@@ -60,7 +60,7 @@ const CLEAN = `(() => {
 })()`;
 
 const SEAT = (aid, t) => `(() => {
-  const p = (Build.__test__.station().projectGeometry().props || []).find(q => q.t === ${JSON.stringify(t)});
+  const p = (Build.__test__.keep().projectGeometry().props || []).find(q => q.t === ${JSON.stringify(t)});
   if (!p) return { err: 'prop missing from geo' };
   return { id: p.id, tile: { x: p.x, y: p.y }, seated: World._dbgCouchSit(${JSON.stringify(aid)}, p.id) };
 })()`;
@@ -68,7 +68,7 @@ const SEAT = (aid, t) => `(() => {
 /* world→canvas: the renderer does setTransform(scale,0,0,scale,panX,panY) then draws the bake at
    0,0, so a LOCAL bake pixel maps to px*scale + pan. geo.props already speak that local frame. */
 const CROP = (t, padT) => `(() => {
-  const geo = Build.__test__.station().projectGeometry(), T = geo.TILE, cam = World.cameraDbg();
+  const geo = Build.__test__.keep().projectGeometry(), T = geo.TILE, cam = World.cameraDbg();
   const p = (geo.props || []).find(q => q.t === ${JSON.stringify(t)});
   if (!p) return { error: 'no ' + ${JSON.stringify(t)} + ' in geo' };
   const cv = document.getElementById('stage');

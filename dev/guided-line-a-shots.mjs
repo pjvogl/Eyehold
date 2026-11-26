@@ -32,7 +32,7 @@ const OPEN_REFIT = `(() => {
 })()`;
 
 const CLEAR_FLOOR = `(() => {
-  const st = Build.__test__.station();
+  const st = Build.__test__.keep();
   for (const b of st.belts()) st.removeBelt(b.x, b.y);
   const WF = { intake:1, bay:1, outbox:1, filter:1, splitter:1, merger:1 };
   for (const p of st.props().slice()) if (WF[p.t]) st.removeProp(p.id);
@@ -40,7 +40,7 @@ const CLEAR_FLOOR = `(() => {
 })()`;
 
 const findSpot = (bpId) => `(() => {
-  const st = Build.__test__.station();
+  const st = Build.__test__.keep();
   const b = st.bounds();
   for (let ty = b.minTy - 2; ty <= b.maxTy + 2; ty++)
     for (let tx = b.minTx - 2; tx <= b.maxTx + 2; tx++)
@@ -68,7 +68,7 @@ async function main() {
 
     // default text size (the shelf harness's known zoom trap) — pin + reload
     await evalJS(cdp, `(() => {
-      const KEY = 'starnet.station.v1';
+      const KEY = 'eyehold.keep.v1';
       const r = JSON.parse(localStorage.getItem(KEY) || '{"v":1}');
       r.settings = Object.assign({}, r.settings, { textScale: 100 });
       localStorage.setItem(KEY, JSON.stringify(r));
@@ -89,7 +89,7 @@ async function main() {
     if (!spot) throw new Error('no stampable spot for research_line');
     const stamped = await evalJS(cdp, `(() => {
       const bp = WorldModel.BLUEPRINTS.find(b => b.id === 'research_line');
-      const st = Build.__test__.station();
+      const st = Build.__test__.keep();
       const before = st.props().length;
       const cx = ${spot.tx} + (bp.w >> 1), cy = ${spot.ty} + (bp.h >> 1);
       const cv = document.querySelector('.refit-canvas');
@@ -145,7 +145,7 @@ async function main() {
     })()`);
     await sleep(1800);
     const bound = await evalJS(cdp, `JSON.stringify((() => {
-      const st = Build.__test__.station();
+      const st = Build.__test__.keep();
       const p = st.propById(${JSON.stringify(bayId)});
       const roster = (typeof App !== 'undefined' && App.agents) ? App.agents() : [];
       const a = roster.find(x => x.id === p.agentId) || null;

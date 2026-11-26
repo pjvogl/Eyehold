@@ -12,7 +12,7 @@ recruitment + FOR-YOU shelf surfaces · `sidecar/scout.js` · `questinject.js` �
 
 ## How to run this lane
 
-**From a genuinely fresh station, every time** (`node dev/onboard-fresh.js`). A seeded station
+**From a genuinely fresh keep, every time** (`node dev/onboard-fresh.js`). A seeded keep
 hides exactly the bugs this lane exists to find. Then play it as a beginner who does the wrong
 thing — not as an author who knows the intended path.
 
@@ -26,8 +26,8 @@ thing — not as an author who knows the intended path.
    different language, an answer that contradicts an earlier one. Then go BACK and change an
    answer after the flow has already acted on it.
 3. **Quit and return.** Close at every stage and reopen. Restart the sidecar mid-onboarding.
-   Does it resume where it was, restart honestly, or land in a half-built station?
-4. **Fresh-install leaks.** A fresh station must contain nothing from a previous one. Grep the
+   Does it resume where it was, restart honestly, or land in a half-built keep?
+4. **Fresh-install leaks.** A fresh keep must contain nothing from a previous one. Grep the
    first-run state for seeded agents, seeded sessions, seeded quests, leftover keys.
 5. **Sandbox, no gating.** Full power from minute one. Any grind, unlock, level requirement or
    permission wall discovered on this path is a product-law violation, not a feature — file it
@@ -42,5 +42,5 @@ thing — not as an author who knows the intended path.
 
 ## Done means
 
-Two complete passes from a fresh station: one cooperative, one hostile. Every dead end recorded
+Two complete passes from a fresh keep: one cooperative, one hostile. Every dead end recorded
 with the exact step and what the user was shown.

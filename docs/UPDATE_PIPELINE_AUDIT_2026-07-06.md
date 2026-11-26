@@ -3,7 +3,7 @@
 Scope: everything between "trunk is ready" and "an installed user is on the new version."
 Grounded against current code (not docs): `src-tauri/tauri.conf.json`, `src-tauri/src/main.rs:1001-1093`,
 `frontend/app/updates.js` + `updatecore.js`, `scripts/release-cut.mjs`, `scripts/verify-update-host.mjs`,
-`scripts/starnet-release-manifest.mjs`, `.github/workflows/release.yml`, `.github/workflows/desktop-build.yml`.
+`scripts/eyehold-release-manifest.mjs`, `.github/workflows/release.yml`, `.github/workflows/desktop-build.yml`.
 
 ## What is already solid (do not rebuild)
 
@@ -51,12 +51,12 @@ Grounded against current code (not docs): `src-tauri/tauri.conf.json`, `src-taur
 8. **Rollback is possible but undocumented.** Deleting a bad release reverts `releases/latest` to the prior
    release (which carries its own latest.json) — instant rollback for not-yet-updated users. Already-updated
    clients can only be fixed forward (Tauri never offers a lower version). Nobody wrote this down.
-9. **Updater key is a single point of total loss.** `~/.tauri/starnet-updater.key`, empty password, one dev
+9. **Updater key is a single point of total loss.** `~/.tauri/eyehold-updater.key`, empty password, one dev
    machine + GitHub secret. Pubkey is baked into every shipped binary: **lose the key and every installed app
    can never update again** (no re-signing path, endpoint is fixed). No offline backup, no rotation plan.
 10. **verify-update-host checks Windows only** (hardcoded `windows-x86_64`) — it will pass green while the
     mac/linux feed is broken or absent.
-11. **The `latest` pointer is unprotected.** Any future non-prerelease published on `starnet-releases`
+11. **The `latest` pointer is unprotected.** Any future non-prerelease published on `eyehold-releases`
     without a `latest.json` asset makes the endpoint 404 → every client's check errors until fixed.
 
 ### P2 — polish / future insurance
@@ -67,8 +67,8 @@ Grounded against current code (not docs): `src-tauri/tauri.conf.json`, `src-taur
 15. **No workspace schema version stamp.** Sidecar stores are versionless JSON; future shape changes rely on
     ad-hoc backward compat. Stamp `schemaVersion` into the workspace root NOW (cheap) so future migrations
     have something to key on.
-16. `starnet-release-manifest.mjs` is stale/misleading (single-platform, example URL points at the dead
-    `updates.starnet.app`). Rewrite as the multi-platform assembler or delete.
+16. `eyehold-release-manifest.mjs` is stale/misleading (single-platform, example URL points at the dead
+    `updates.eyehold.app`). Rewrite as the multi-platform assembler or delete.
 
 ## Target design — the release train
 
@@ -83,8 +83,8 @@ One path, one button, one human checkpoint:
      desktop-build test builds). OS signing applied when secrets exist.
    - **Assemble job**: download all artifacts, build ONE multi-platform `latest.json`
      (`windows-x86_64` → nsis exe, `darwin-aarch64`/`darwin-x86_64` → `.app.tar.gz`, `linux-x86_64` →
-     AppImage), each with its own signature. Rewrite `starnet-release-manifest.mjs` to do this.
-   - **Stage job**: create a **DRAFT** release `v<version>` on `starnet-releases` with all assets +
+     AppImage), each with its own signature. Rewrite `eyehold-release-manifest.mjs` to do this.
+   - **Stage job**: create a **DRAFT** release `v<version>` on `eyehold-releases` with all assets +
      `latest.json`; run the verify script against the draft's assets via API; print the go/no-go summary.
 3. **The ONLY publish is human**: Andrew opens the draft, checks the verify summary, clicks **Publish**.
    Until that click, zero users can receive anything. (Optionally wrap promotion in a GitHub Environment
@@ -96,14 +96,14 @@ One path, one button, one human checkpoint:
 
 ### Non-code actions (Andrew only)
 
-- **Back up `~/.tauri/starnet-updater.key` to ≥2 offline locations TODAY.** This is the highest
+- **Back up `~/.tauri/eyehold-updater.key` to ≥2 offline locations TODAY.** This is the highest
   consequence-per-minute item in the whole audit.
 - **Windows signing**: Azure Trusted Signing (cheapest legit path) or an OV cert; wire into the train.
 - **Apple**: $99 Developer Program → certs/notarization secrets (desktop-build.yml is already wired for them).
 
 ### Rules going forward
 
-- Nothing publishes a non-prerelease to `starnet-releases` except the release train (protects `latest`).
+- Nothing publishes a non-prerelease to `eyehold-releases` except the release train (protects `latest`).
 - The robocopy in-place hot-patch recipe is DEV-ONLY, never a user-facing update path.
 - Every release train run must end with `verify-update-host` green on ALL platforms before the draft is
   published.

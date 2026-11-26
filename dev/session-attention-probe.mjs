@@ -7,7 +7,7 @@ import {spawn} from 'node:child_process';
 import http from 'node:http';
 import {findChrome,connectCDP,evalJS,capture,sleep} from '../scripts/lib/cdp.mjs';
 import {materializeSeedWorkspace,bootSeededSidecar,waitUp,waitDevReady} from '../scripts/lib/seed.mjs';
-const out='.worldshots/session-attention', scratch=mkdtempSync(join(tmpdir(),'starnet-attention-'));
+const out='.worldshots/session-attention', scratch=mkdtempSync(join(tmpdir(),'eyehold-attention-'));
 mkdirSync(out,{recursive:true});const report={checks:[],exceptions:[]};let side,chrome,cdp;
 const mock=http.createServer((req,res)=>{res.writeHead(200,{'Content-Type':'application/json'});res.end(JSON.stringify({data:[{id:'test/model',context_length:32000,pricing:{prompt:'0',completion:'0'},supported_parameters:['tools']}]}));});
 await new Promise(r=>mock.listen(0,'127.0.0.1',r));
@@ -17,10 +17,10 @@ async function shot(name){await run(`document.activeElement?.blur();typeof Hint!
 async function key(key,code){await cdp.send('Input.dispatchKeyEvent',{type:'keyDown',key,code:key,windowsVirtualKeyCode:code});await cdp.send('Input.dispatchKeyEvent',{type:'keyUp',key,code:key,windowsVirtualKeyCode:code});}
 try{
   const ws=join(scratch,'ws');materializeSeedWorkspace(ws,'test/model');
-  // Borrow only the demo's station and roster, preserving its source save untouched.
+  // Borrow only the demo's keep and roster, preserving its source save untouched.
   const saved=JSON.parse(readFileSync(join(ws,'agent.save.json'),'utf8'));
   const demo=JSON.parse(readFileSync('dev/.scratch-workspace/agent.save.json','utf8')).doc;
-  for(const k of ['station','agents','agent'])saved.doc[k]=demo[k];
+  for(const k of ['keep','agents','agent'])saved.doc[k]=demo[k];
   saved.doc.agent.model='test/model';
   for(const a of Object.values(saved.doc.agents||{}))a.model='test/model';
   writeFileSync(join(ws,'agent.save.json'),JSON.stringify(saved));
@@ -28,7 +28,7 @@ try{
   for(const a of roster.agents||[])a.model='test/model';
   writeFileSync(join(ws,'agent.roster.json'),JSON.stringify(roster));
   const base='http://127.0.0.1:'+mock.address().port+'/api/v1';
-  side=bootSeededSidecar({port:9488,model:'test/model',scratchDir:ws,key:'sk-or-ui-fixture',env:{SKYNET_OPENROUTER_BASE:base,STARNET_OPENROUTER_BASE:base}});
+  side=bootSeededSidecar({port:9488,model:'test/model',scratchDir:ws,key:'sk-or-ui-fixture',env:{SKYNET_OPENROUTER_BASE:base,EYEHOLD_OPENROUTER_BASE:base}});
   assert.ok(await waitUp('http://127.0.0.1:9488/'),'seeded server starts');
   chrome=spawn(findChrome(),['--headless=new','--enable-gpu','--no-first-run','--no-default-browser-check','--hide-scrollbars','--mute-audio','--remote-debugging-port=9489','--window-size=1440,1000','--user-data-dir='+join(scratch,'chrome'),'about:blank'],{stdio:'ignore',windowsHide:true});
   cdp=await connectCDP(9489);await cdp.send('Runtime.enable');await cdp.send('Page.enable');
@@ -88,8 +88,8 @@ try{
   await run(`document.querySelector('#ws-attention').focus();Channels.clearPending(window.__sessions.b)`);await sleep(1200);
   await check('Resolving the last prompt hides the shortcut, restores ordinary sessions and recovers focus',`document.querySelector('#ws-attention').hidden&&document.querySelector('#ws-attention').getAttribute('aria-pressed')==='false'&&!!document.querySelector('#workstreams [data-id="'+window.__before.session+'"]')&&document.activeElement.id==='ws-search'`);
   await check('Resolved archived sessions return to the archive',`!document.querySelector('#workstreams [data-id="'+window.__sessions.b+'"]')`);
-  await check('Controls use station styling instead of native white paint',`[...document.querySelectorAll('#crew-search-toggle,#crew-search,#crew-search-close,#ws-attention')].every(e=>!['rgb(255, 255, 255)','rgb(239, 239, 239)'].includes(getComputedStyle(e).backgroundColor))`);
-  await run(`localStorage.setItem('starnet.crewrail.rows','0');localStorage.setItem('skynet.session-view',JSON.stringify({kind:'conversations'}))`);await cdp.send('Page.reload');
+  await check('Controls use keep styling instead of native white paint',`[...document.querySelectorAll('#crew-search-toggle,#crew-search,#crew-search-close,#ws-attention')].every(e=>!['rgb(255, 255, 255)','rgb(239, 239, 239)'].includes(getComputedStyle(e).backgroundColor))`);
+  await run(`localStorage.setItem('eyehold.crewrail.rows','0');localStorage.setItem('skynet.session-view',JSON.stringify({kind:'conversations'}))`);await cdp.send('Page.reload');
   assert.ok(await waitDevReady(cdp,evalJS,{url:'http://127.0.0.1:9488/'}));await sleep(500);
   await check('A deliberately collapsed roster stays collapsed after reload',`document.querySelector('#crew').classList.contains('shut')`);
   await check('A saved retired Chats filter returns to All after reload',`document.querySelector('[data-ws-kind=all]').getAttribute('aria-pressed')==='true'&&!document.querySelector('[data-ws-kind=conversations]')`);

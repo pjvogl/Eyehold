@@ -20,20 +20,20 @@ Read `docs/BRAIN.md` first for project orientation, then this.
 ## Architecture you need (all on trunk `feat/harness-backend`, merged today)
 
 - `team.dispatch` (sidecar/tools/builtin/orchestration.js) accepts `session` per worker. It resolves the
-  name over the **station bridge** (`resolveSessions`, ~L215) and passes the resolved workstream id into
+  name over the **keep bridge** (`resolveSessions`, ~L215) and passes the resolved workstream id into
   `runOnce({ streamId })`, so the **durable record is correct**: `runStore.record({streamId})` and the
   transcript under `/api/transcript?agent=<worker>&stream=<wsId>` really carry the work.
 - After a worker completes, `deliverToSession` (same file, ~L262) sends the answer to the PAGE via the
-  bridge verb `station.deliver`; the page half (`frontend/app/stationcommands.js`) appends the turns into
+  bridge verb `keep.deliver`; the page half (`frontend/app/keepcommands.js`) appends the turns into
   `Workstreams.get(id).history` (APPEND, idempotent by runId) and persists. THAT append is the only thing
   that makes the work VISIBLE in the session UI.
-- The bridge (`sidecar/station-bridge.js`) is request/response over the SSE hub with a
+- The bridge (`sidecar/keep-bridge.js`) is request/response over the SSE hub with a
   **6-second timeout** (`DEFAULT_TIMEOUT_MS`) and **no retry** (deliberate: a retried side-effect could
   double-post — but deliver is idempotent by runId, so a retry for THIS verb would actually be safe).
 
 ## Root cause (high confidence)
 
-**The visible fold is a one-shot 6s window; the durable record has no backfill.** If `station.deliver`
+**The visible fold is a one-shot 6s window; the durable record has no backfill.** If `keep.deliver`
 misses — page briefly busy, SSE hiccup, Commander mid-navigation, sidecar under load, or the model
 omitted/failed the `session` param so no fold was attempted — the session's `ws.history` stays empty
 FOREVER, even though the full conversation sits in the durable transcript under that exact stream id.
@@ -55,10 +55,10 @@ A reconciliation pass, mirroring autosessions' pattern, so the durable truth hea
 1. When the page OPENS a session (Chat.load / Workstreams.switch) whose `runIds`/history look behind, or
    on boot: fetch `/api/runs?agent=*` rows whose `streamId` equals a real workstream id the page owns,
    and for any run not in `ws.runIds`, fold its turns from `/api/transcript?agent=<agentId>&stream=<wsId>`
-   using the same append/attribution shape `station.deliver` uses (sys marker + assistant turn with
-   `agentId`). Idempotent by runId — `station.deliver`'s dedup already established the convention.
+   using the same append/attribution shape `keep.deliver` uses (sys marker + assistant turn with
+   `agentId`). Idempotent by runId — `keep.deliver`'s dedup already established the convention.
 2. Optionally: let `deliverToSession` retry once (it is idempotent by runId), and/or raise the bridge
-   timeout for `station.deliver` specifically.
+   timeout for `keep.deliver` specifically.
 3. Add the miss path to `test/e2e.dispatch-session.test.js`: complete a worker while NO page listener is
    attached, then attach and prove the session heals from the durable record.
 
@@ -68,8 +68,8 @@ A reconciliation pass, mirroring autosessions' pattern, so the durable truth hea
   Always read the LOG, never the exit code; `npm test | tail` hides a red gate.
 - Session-targeted dispatch end-to-end vs a real sidecar: `test/e2e.dispatch-session.test.js`
   (durable ledger + transcript assertions, refusal on unknown names).
-- Page verbs against the real Workstreams store: `test/station-commands.test.js` (92 asserts).
-- Session tools + capability declaration: `test/station-tools.test.js`. ⛔ The capability registry
+- Page verbs against the real Workstreams store: `test/keep-commands.test.js` (92 asserts).
+- Session tools + capability declaration: `test/keep-tools.test.js`. ⛔ The capability registry
   (`sidecar/capability/registry.js`) is an ALLOWLIST — registering a tool without declaring it there
   exposes it to nobody, and only a live model probe catches it.
 - Live voice: call BOUND to its opening session (`voice-live.js` bindSession/ensureBoundFocus); NO
@@ -78,7 +78,7 @@ A reconciliation pass, mirroring autosessions' pattern, so the durable truth hea
   sessions (peek-first rule in the [ORCHESTRATION] briefing in `sidecar/index.js`).
 - Voice identity on installed builds: `local:true` TTS maps the picked voice onto the Edge floor when the
   Kokoro engine is absent (`sidecar/local-voice.js edgeVoiceFor`, `handleTts serveEdge`) — never the
-  keyed provider chain. Kill-switch `STARNET_LOCAL_VOICE=0` reproduces the installed shape.
+  keyed provider chain. Kill-switch `EYEHOLD_LOCAL_VOICE=0` reproduces the installed shape.
 
 ## Protocol (non-negotiable, from CLAUDE.md + hard-won today)
 
@@ -96,11 +96,11 @@ A reconciliation pass, mirroring autosessions' pattern, so the durable truth hea
   Co-Authored-By trailers.
 - Dev server for live verification: `SKYNET_PORT=<port> SKYNET_DEFAULT_MODEL=<id> node dev/seed.js --keep`
   (key comes from `dev/.env.dev`). Andrew's current test server is :8797 (integration tree). 8796 was the
-  outgoing session's acceptance station (worktree `gen-trees/voice-bundle-models`).
+  outgoing session's acceptance keep (worktree `gen-trees/voice-bundle-models`).
 
 ## Still open beyond this bug
 
-- `station.report` (the "tell me when it's done" voice verb) — unbuilt; background dispatch +
+- `keep.report` (the "tell me when it's done" voice verb) — unbuilt; background dispatch +
   `team.subagents` cover it.
 - The full spoken round-trip has never been verified with a real microphone (browser-pane harnesses
   cannot grant one). The mechanics are tested; the assembled call needs human ears.

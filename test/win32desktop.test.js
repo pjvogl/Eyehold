@@ -10,10 +10,10 @@ const path = require('node:path');
 // Mocking execFile's response cannot catch PowerShell command/alias precedence bugs.
 async function checkNativeDispatch() {
   if (process.platform !== 'win32') return;
-  const cwd = fs.mkdtempSync(path.join(os.tmpdir(), 'starnet-mouse-dispatch-'));
+  const cwd = fs.mkdtempSync(path.join(os.tmpdir(), 'eyehold-mouse-dispatch-'));
   const nativeStub = `Add-Type @'
 using System;
-public static class StarNetNative {
+public static class EyeholdNative {
   public static bool SetCursorPos(int x, int y) { Console.Error.WriteLine("cursor " + x + "," + y); return true; }
   public static void mouse_event(uint flags, uint dx, uint dy, uint data, UIntPtr extra) { Console.Error.WriteLine("mouse " + flags); }
 }
@@ -50,7 +50,7 @@ public static class StarNetNative {
     platform: 'win32', env: { SystemRoot: 'C:\\Windows' },
     execFile: (exe, args, opts, cb) => {
       seen.push({ exe, args, opts });
-      const request = JSON.parse(opts.env.STARNET_REMOTE_DESKTOP_REQUEST);
+      const request = JSON.parse(opts.env.EYEHOLD_REMOTE_DESKTOP_REQUEST);
       if (request.kind === 'capture') return cb(null, JSON.stringify({ width: 2, height: 1, data: 'iVBORw0KGgo=' }), '');
       if (request.kind === 'foreground') return cb(null, JSON.stringify({ title: 'Notepad', process: 'notepad' }), '');
       cb(null, JSON.stringify({ ok: true, action: request.action.action }), '');
@@ -59,7 +59,7 @@ public static class StarNetNative {
   A.ok(driver, 'Windows creates the native driver');
   A.eq(powershellPath({ SystemRoot: 'C:\\Windows' }), 'C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe', 'native driver resolves the system PowerShell path');
   A.eq(await driver.perform({ action: 'type', text: "x'; Remove-Item C:\\*" }), 'performed type', 'action data is treated as data by the native bridge');
-  A.eq(JSON.parse(seen[0].opts.env.STARNET_REMOTE_DESKTOP_REQUEST).action.text, "x'; Remove-Item C:\\*", 'untrusted action text travels only inside JSON');
+  A.eq(JSON.parse(seen[0].opts.env.EYEHOLD_REMOTE_DESKTOP_REQUEST).action.text, "x'; Remove-Item C:\\*", 'untrusted action text travels only inside JSON');
   A.ok(!seen[0].args.join(' ').includes("Remove-Item"), 'action text is never interpolated into the PowerShell program');
   A.eq(await driver.foreground(), { title: 'Notepad', process: 'notepad' }, 'native foreground probe is returned as structured data');
   A.eq((await driver.capture()).width, 2, 'native capture returns image metadata');

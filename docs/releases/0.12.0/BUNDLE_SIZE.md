@@ -11,7 +11,7 @@ failed to bundle project `The system cannot find the file specified. (os error 2
 ```
 
 **Cause:** Tauri embeds every byte under `build.frontendDist` (`../frontend`) into the executable. The
-station remaster merged on September 12–16 tracks its art SOURCES under `frontend/assets/industrial/`
+keep remaster merged on September 12–16 tracks its art SOURCES under `frontend/assets/industrial/`
 (review batches, camera audits, calibration sheets, superseded prop sets) next to the runtime art:
 
 | Measure | v0.11.2 | 0.12.0 candidate before the fix |
@@ -55,7 +55,7 @@ copy (`"frontend-dist": "frontend"`, target name unchanged, so `sidecar/index.js
 | --- | --- |
 | staged frontend | 11,225 files / 266 MB (dropped 670 files / 954 MB) |
 | `skynet-desktop.exe` | 268 MB (was 926 MB) |
-| `StarNet_0.12.0_x64-setup.exe` | 908,434,576 bytes signed, sha256 6125316eeac173ca3c1971f5b0e438623b24174d0318b9e0a62ae51a06c30820, built from `fd55ee2b2` (first cut: 1,568,318,690 bytes) |
+| `Eyehold_0.12.0_x64-setup.exe` | 908,434,576 bytes signed, sha256 6125316eeac173ca3c1971f5b0e438623b24174d0318b9e0a62ae51a06c30820, built from `fd55ee2b2` (first cut: 1,568,318,690 bytes) |
 
 The installer is still larger than 0.11.2 (130 MB): the remaster's runtime art is ~200 MB of PNG that
 does not compress. Shrinking that further (pre-rasterizing the projection sources at their DENSITY-6

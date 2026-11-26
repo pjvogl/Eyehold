@@ -86,7 +86,7 @@ function makeUpdatePreparation(deps) {
       const createdAt = Number(now());
       const id = String(createdAt) + '-' + String(newId()).replace(/[^A-Za-z0-9_-]+/g, '').slice(0, 80);
       const dir = path.join(path.dirname(workspaceRoot), 'update-snapshots');
-      const bundleFile = path.join(dir, 'pre-' + safeTarget(o.targetVersion) + '-' + id + '.starnet-backup.json');
+      const bundleFile = path.join(dir, 'pre-' + safeTarget(o.targetVersion) + '-' + id + '.eyehold-backup.json');
       const bundle = recovery.capture({
         workspaceRoot: workspaceRoot,
         browserStore: o.browserStore && typeof o.browserStore === 'object' ? o.browserStore : {},
@@ -101,14 +101,14 @@ function makeUpdatePreparation(deps) {
 
       const receiptFile = bundleFile + '.receipt.json';
       const nextReceipt = {
-        schema: 'starnet.update-preparation', version: 1, id: id,
+        schema: 'eyehold.update-preparation', version: 1, id: id,
         createdAt: createdAt, fromVersion: String(appVersion() || 'unknown'), targetVersion: String(o.targetVersion || ''),
         frozen: true, activeMutations: activeMutations, liveRuns: Number(liveRuns()),
         completedMutation: 'http:' + completedMutations,
         snapshot: { file: bundleFile, bytes: written.bytes, sha256: written.sha256, manifestSha256: written.manifestSha256 },
         semanticFingerprint: fingerprint,
         requirements: readBack.report && readBack.report.requirements || [],
-        // entries the capture could not read (#91: vanished/locked/unresolvable) — the receipt never implies a byte-complete station
+        // entries the capture could not read (#91: vanished/locked/unresolvable) — the receipt never implies a byte-complete keep
         unreadable: (readBack.report && Array.isArray(readBack.report.skipped) ? readBack.report.skipped : []).filter(s => /^unreadable: /.test(String(s && s.reason))),
         browserKeys: Array.isArray(readBack.browser) ? readBack.browser.length : 0
       };
@@ -118,7 +118,7 @@ function makeUpdatePreparation(deps) {
         throw new Error('update receipt read-back mismatch');
       }
       // Integrity hashes are authoritative; read-only mode adds a practical guard against accidental rewrites.
-      try { fs.chmodSync(bundleFile, 0o400); } catch (_) {}   // owner-only: the bundle holds the whole station (0o444 was world-readable)
+      try { fs.chmodSync(bundleFile, 0o400); } catch (_) {}   // owner-only: the bundle holds the whole keep (0o444 was world-readable)
       try { fs.chmodSync(receiptFile, 0o400); } catch (_) {}
       nextReceipt.receiptFile = receiptFile;
       receipt = nextReceipt;

@@ -56,7 +56,7 @@ function startMockOpenRouter() {
 function boot(port, env, attemptsLeft) {
   return new Promise((resolve, reject) => {
     const child = spawn(process.execPath, [INDEX], {
-      env: Object.assign({}, process.env, env, { SKYNET_PORT: String(port) }), stdio: ['ignore', 'pipe', 'pipe']
+      env: Object.assign({}, process.env, env, { EYEHOLD_PORT: String(port) }), stdio: ['ignore', 'pipe', 'pipe']
     });
     let out = '', settled = false;
     const onData = d => {
@@ -76,11 +76,11 @@ function boot(port, env, attemptsLeft) {
 (async () => {
   const mock = await startMockOpenRouter();
   const ws = fs.mkdtempSync(path.join(os.tmpdir(), 'sk-chat-diet-'));
-  const { child, port } = await boot(9040 + (process.pid % 25), { SKYNET_WORKSPACES: ws, SKYNET_OPENROUTER_BASE: mock.base }, 20);
+  const { child, port } = await boot(9040 + (process.pid % 25), { EYEHOLD_WORKSPACES: ws, EYEHOLD_OPENROUTER_BASE: mock.base }, 20);
   const B = 'http://' + HOST + ':' + port;
   try {
     const token = await bootToken(B, B);
-    const hdr = { 'Content-Type': 'application/json', 'X-StarNet-Token': token, Origin: B };
+    const hdr = { 'Content-Type': 'application/json', 'X-Eyehold-Token': token, Origin: B };
     const r0 = await fetch(B + '/api/roster', { method: 'POST', headers: hdr, body: JSON.stringify({ agents: [
       { agentId: 'agent', system: 'lead', name: 'NOVA', role: 'overseer', track: '' },
       { agentId: 'rookie', system: 'you research', name: 'ROOKIE', role: 'researcher', track: '' }
@@ -108,14 +108,14 @@ function boot(port, env, attemptsLeft) {
 
     /* ---- the greeting is on a diet ---- */
     A.eq(chat.tools, 0, 'a non-task turn puts no tool schemas on the wire (unchanged contract)');
-    A.ok(chat.system.indexOf('<starnet_operator_manual>') < 0, 'greeting: no operator manual');
+    A.ok(chat.system.indexOf('<eyehold_operator_manual>') < 0, 'greeting: no operator manual');
     A.ok(chat.system.indexOf('[ORCHESTRATION]') < 0, 'greeting: no delegation briefing (it names tools the turn does not have)');
     A.ok(chat.system.indexOf('[HARNESS]') < 0, 'greeting: no tool note (unchanged contract)');
     const skillHeads = (task.system.match(/^### .+ -- /gm) || []);
     A.ok(skillHeads.length >= 1, 'the task turn carries at least one skill recipe (default-on library skills)');
     A.ok(skillHeads.every(h => chat.system.indexOf(h) < 0), 'greeting: none of those skill recipes ship');
     A.ok(chat.system.indexOf('<capabilities_ground_truth>') >= 0, 'greeting: the capabilities ground truth STAYS (truthful telemetry)');
-    // ...but it never says "You CAN" on a turn with no tools attached: it states the station grant and that this reply has none
+    // ...but it never says "You CAN" on a turn with no tools attached: it states the keep grant and that this reply has none
     A.ok(chat.system.indexOf('NONE of these tools are attached to THIS reply') >= 0 && !/- You CAN: (?!think and reply)/.test(chat.system), 'greeting: the ground truth says no tools are attached to this reply');
     A.ok(task.system.indexOf('NONE of these tools are attached to THIS reply') < 0 && task.system.indexOf('- You CAN: ') >= 0, 'task: the ground truth still says what it CAN do');
     A.ok(chat.system.indexOf('[RUNTIME]') >= 0 && chat.system.indexOf('Run id:') >= 0, 'greeting: the runtime identity block STAYS');
@@ -123,7 +123,7 @@ function boot(port, env, attemptsLeft) {
 
     /* ---- real work is never starved ---- */
     A.ok(task.tools > 0, 'the task turn still puts tool schemas on the wire');
-    A.ok(task.system.indexOf('<starnet_operator_manual>') >= 0, 'task: operator manual present');
+    A.ok(task.system.indexOf('<eyehold_operator_manual>') >= 0, 'task: operator manual present');
     A.ok(task.system.indexOf('[ORCHESTRATION]') >= 0, 'task: delegation briefing present');
     A.ok(task.system.indexOf('[HARNESS]') >= 0, 'task: tool note present');
     A.ok(task.system.indexOf('<capabilities_ground_truth>') >= 0, 'task: capabilities ground truth present');
@@ -131,7 +131,7 @@ function boot(port, env, attemptsLeft) {
     /* ---- prefix-cache order: the per-run line rides after the byte-stable blocks ---- */
     const iRuntime = task.system.indexOf('[RUNTIME]');
     A.ok(iRuntime > task.system.indexOf('[ORCHESTRATION]'), 'task: [RUNTIME] comes after the [ORCHESTRATION] briefing');
-    A.ok(iRuntime > task.system.indexOf('<starnet_operator_manual>'), 'task: [RUNTIME] comes after the manual');
+    A.ok(iRuntime > task.system.indexOf('<eyehold_operator_manual>'), 'task: [RUNTIME] comes after the manual');
     A.ok(iRuntime > task.system.indexOf('<capabilities_ground_truth>'), 'task: [RUNTIME] comes after the capabilities block');
     A.ok(iRuntime > task.system.lastIndexOf('### '), 'task: [RUNTIME] comes after the last skill recipe');
     A.eq((task.system.match(/Run id: /g) || []).length, 1, 'task: exactly one run id line');

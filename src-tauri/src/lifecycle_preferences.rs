@@ -118,7 +118,7 @@ mod tests {
 
     fn temp_dir(name: &str) -> PathBuf {
         std::env::temp_dir().join(format!(
-            "starnet-lifecycle-{name}-{}-{}",
+            "eyehold-lifecycle-{name}-{}-{}",
             std::process::id(),
             std::time::SystemTime::now()
                 .duration_since(std::time::UNIX_EPOCH)

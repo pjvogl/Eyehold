@@ -3,7 +3,7 @@ const fs=require('node:fs'),path=require('node:path'),crypto=require('node:crypt
 const root=path.resolve(__dirname,'../..'),dir='frontend/assets/industrial/batch02/coordinator/';
 const sha=b=>crypto.createHash('sha256').update(b).digest('hex');
 async function main(){
- const list=JSON.parse(fs.readFileSync(path.join(root,'docs/station-remaster/batch02/coordinator/sources.json')));
+ const list=JSON.parse(fs.readFileSync(path.join(root,'docs/keep-remaster/batch02/coordinator/sources.json')));
  const records=[];fs.mkdirSync(path.join(root,dir),{recursive:true});
  for(const a of list){
   const bytes=fs.readFileSync(path.join(root,a.source));

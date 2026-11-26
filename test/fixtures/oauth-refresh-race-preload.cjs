@@ -13,7 +13,7 @@ const originalFetch = globalThis.fetch;
 globalThis.fetch = async function (raw, options) {
   const u = new URL(String(raw));
   if (u.hostname !== 'audit.example.com') return originalFetch(raw, options);
-  const root = process.env.STARNET_WORKSPACES;
+  const root = process.env.EYEHOLD_WORKSPACES;
   if (u.pathname === '/token') {
     fs.writeFileSync(path.join(root, 'refresh-started'), '1');
     await new Promise((resolve, reject) => {

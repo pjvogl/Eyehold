@@ -68,7 +68,7 @@
         },
         {
           "role": "assistant",
-          "content": "⚠ The reply stream stopped before it finished — StarNet's local service answered a health check, so the app itself is running; this was the connection carrying the reply. Try again.",
+          "content": "⚠ The reply stream stopped before it finished — Eyehold's local service answered a health check, so the app itself is running; this was the connection carrying the reply. Try again.",
           "error": true
         }
       ],
@@ -117,7 +117,7 @@
         },
         {
           "role": "assistant",
-          "content": "⚠ The reply stream stopped before it finished — StarNet's local service answered a health check, so the app itself is running; this was the connection carrying the reply. Try again.",
+          "content": "⚠ The reply stream stopped before it finished — Eyehold's local service answered a health check, so the app itself is running; this was the connection carrying the reply. Try again.",
           "error": true
         }
       ],
@@ -144,7 +144,7 @@
         },
         {
           "role": "assistant",
-          "content": "⚠ The reply stream stopped before it finished — StarNet's local service answered a health check, so the app itself is running; this was the connection carrying the reply. Try again.",
+          "content": "⚠ The reply stream stopped before it finished — Eyehold's local service answered a health check, so the app itself is running; this was the connection carrying the reply. Try again.",
           "error": true
         }
       ],

@@ -20,8 +20,8 @@ const Overseer = (() => {
       if (adopted) { App.persist(); App.refreshRail(); }
       const deliveries = JSON.stringify([(data.workers || []).map(w => [w.runId, w.status]),
         (data.reviews || []).map(r => [r.reviewRunId, r.status])]);
-      if ((adopted || deliveries !== lastDeliveries) && typeof StationCommands !== 'undefined') {
-        await StationCommands.reconcile(); lastDeliveries = deliveries;
+      if ((adopted || deliveries !== lastDeliveries) && typeof KeepCommands !== 'undefined') {
+        await KeepCommands.reconcile(); lastDeliveries = deliveries;
       }
     } catch (error) {
       // Existing connection UI owns outages. Retry reconciliation after recovery.

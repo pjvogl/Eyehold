@@ -9,7 +9,7 @@ const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
 (async () => {
   const preload = path.join(__dirname, 'fixtures', 'oauth-refresh-race-preload.cjs').replace(/\\/g, '/');
   const fixture = SidecarFixture.create({
-    prefix: 'starnet-oauth-refresh-race-', timeoutMs: 20000,
+    prefix: 'eyehold-oauth-refresh-race-', timeoutMs: 20000,
     env: { DEFAULT_MODEL: 'replay', OPENROUTER_KEY: '', NODE_OPTIONS: '--require=' + preload }
   });
   const original = { id: 'oauth-race', transport: 'http', url: 'https://audit.example.com/original', oauth: true, enabled: false };
@@ -22,7 +22,7 @@ const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
     } }, clients: {} }
   }));
   const importConnector = cfg => fixture.json('POST', '/api/config/import', {
-    envelope: { starnetExport: 1, sections: { connectors: [cfg] } }
+    envelope: { eyeholdExport: 1, sections: { connectors: [cfg] } }
   });
   try {
     await fixture.start();

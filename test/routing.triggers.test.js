@@ -6,7 +6,7 @@
    the durable record so a new runner — a restart — keeps it), the bounded queue + one fire in flight, the folder
    watcher's settle/debounce, temp-name ignores and name+mtime+size DEDUPE, the arming BASELINE (files already in
    the folder never fire), a CHANGED file firing once more, restart NO-REFIRE (a new runner over the same stores),
-   the folder JAIL (system dirs, drive roots, the station's own data, outside home), and the dispatch outcome truth
+   the folder JAIL (system dirs, drive roots, the keep's own data, outside home), and the dispatch outcome truth
    (ok only when every recorded run is done AND the line reached its OUTBOX; the crate only for the routed dock). */
 'use strict';
 const A = require('./_assert.js');
@@ -117,11 +117,11 @@ const { makeFolderWatcher, makeFolderPolicy } = require('../sidecar/routing/trig
 
   /* ---- 7. the folder jail ---- */
   const home = path.join(root, 'home'); fs.mkdirSync(path.join(home, 'inbox'), { recursive: true });
-  const station = path.join(home, 'station'); fs.mkdirSync(station);
+  const keep = path.join(home, 'keep'); fs.mkdirSync(keep);
   const sys = path.join(root, 'sysdir'); fs.mkdirSync(sys);
   const policy = makeFolderPolicy({ fsp, pathMod: path, winish: path.sep === '\\',
     hardlineReason: (raw) => /[\\/]\.git([\\/]|$)/.test(raw) ? 'git internals' : null,
-    homeRoots: () => [home], blessedRoots: () => [drop], forbiddenRoots: () => [station], systemRoots: () => [sys] });
+    homeRoots: () => [home], blessedRoots: () => [drop], forbiddenRoots: () => [keep], systemRoots: () => [sys] });
   A.ok((await policy.check(path.join(home, 'inbox'))).ok, 'a folder inside home is allowed');
   A.ok((await policy.check(drop)).ok, 'a folder inside a blessed project is allowed');
   const refused = async (p, code, what) => { const r = await policy.check(p); A.ok(!r.ok && r.code === code, what + ' -> ' + code + ' (' + JSON.stringify(r) + ')'); };
@@ -130,7 +130,7 @@ const { makeFolderWatcher, makeFolderPolicy } = require('../sidecar/routing/trig
   await refused(path.join(drop, 'new.txt'), 'notdir', 'a file');
   await refused(sys, 'system', 'a system folder');
   await refused(path.parse(root).root, 'system', 'a whole drive');
-  await refused(station, 'station', 'the station data folder');
+  await refused(keep, 'keep', 'the keep data folder');
   await refused(home, 'broad', 'home itself');
   await refused(root, 'outside', 'a folder outside home and every project');
   fs.mkdirSync(path.join(home, 'inbox', '.git'));

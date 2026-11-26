@@ -46,7 +46,7 @@ jobs:
       - name: Execute offline Eyehold tests (paid proofs are manual-only)
         env:
           SKYNET_OPENROUTER_KEY: ''
-          STARNET_OPENROUTER_KEY: ''
+          EYEHOLD_OPENROUTER_KEY: ''
           OPENROUTER_API_KEY: ''
           SKYNET_BUDGET_GLOBAL: '0'
           SKYNET_BUDGET_PER_DAY: '0'

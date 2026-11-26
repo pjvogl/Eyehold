@@ -16,7 +16,7 @@ frontend/js/util.js SFX — files are unmodified originals):
 | ui-open.wav   | Data_Point_04  | window open (1.0) / close (0.85)     |
 | ui-alarm.wav  | Bleep_02       | alarm (1.0) / bad (0.9)              |
 | ui-chime.wav  | Complete_02    | chime (memory / permission)          |
-| ui-notify.wav | Confirm_04     | station bell                         |
+| ui-notify.wav | Confirm_04     | keep bell                         |
 | ui-msg.wav    | Bleep_03       | inbound message                      |
 | ui-ship.wav   | Complete_01    | work delivered                       |
 | ui-think.wav  | Data_Point_01  | voice ack "thinking"                 |

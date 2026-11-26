@@ -1,7 +1,7 @@
 # macOS update test — the proof before Mac users exist
 
-Goal: prove, on a real Mac, that an **older installed StarNet updates itself to a newer one and
-the user's station survives** — before anyone outside tests it. Windows is proven end-to-end
+Goal: prove, on a real Mac, that an **older installed Eyehold updates itself to a newer one and
+the user's keep survives** — before anyone outside tests it. Windows is proven end-to-end
 (the local update canary caught + fixed a real hang). Mac is architecturally sound but has ZERO
 end-to-end runs; this runbook closes that.
 
@@ -13,9 +13,9 @@ key required on the tester's Mac — they only install `.dmg`s and click Update.
 ## Why this is safe to run without a public launch
 
 The updater endpoint baked into every build is
-`https://github.com/androoAGI/starnet-releases/releases/latest/download/latest.json`.
+`https://github.com/Eyehold/eyehold-releases/releases/latest/download/latest.json`.
 `releases/latest` is just "the newest non-prerelease on that repo." Publishing there makes a build
-reachable **only to someone who already has StarNet installed and pointed at that repo** — there is
+reachable **only to someone who already has Eyehold installed and pointed at that repo** — there is
 no store listing, no announcement, no index. Two real releases on the (still-unadvertised) repo are
 visible to an audience of exactly one: your tester. Nothing about this "launches" the product.
 
@@ -36,8 +36,8 @@ updater artifacts + `.dmg` installers, assembles `latest.json`, and stages a **d
 **Publish** the v0.5.0 draft (set as latest, NOT pre-release).
 
 ### 2. Tester installs A and SEEDS RECOGNISABLE STATE
-- Download `StarNet_0.5.0_aarch64.dmg` (Apple Silicon) or `_x64.dmg` (Intel) from the release page.
-- Open it, drag StarNet to Applications, launch. (Unsigned build ⇒ first-launch Gatekeeper prompt:
+- Download `Eyehold_0.5.0_aarch64.dmg` (Apple Silicon) or `_x64.dmg` (Intel) from the release page.
+- Open it, drag Eyehold to Applications, launch. (Unsigned build ⇒ first-launch Gatekeeper prompt:
   right-click → Open, or System Settings → Privacy → Open Anyway. Expected; documented in INSTALL.md.)
 - **Seed state we can check survives the update** — this is the "won't break setups" proof:
   - complete onboarding / wake the first agent (note its NAME),
@@ -48,7 +48,7 @@ updater artifacts + `.dmg` installers, assembles `latest.json`, and stages a **d
 `npm run release:bump 0.5.1` → tag `v0.5.1` → train → **publish** the draft as latest.
 
 ### 4. Tester updates A → B in-app
-- In StarNet: Settings → UPDATES → UPDATE CENTER → **CHECK NOW**.
+- In Eyehold: Settings → UPDATES → UPDATE CENTER → **CHECK NOW**.
 - It should show v0.5.1 available. Click **INSTALL UPDATE**.
 - The app downloads, installs, and **relaunches on its own** as v0.5.1.
 
@@ -56,7 +56,7 @@ updater artifacts + `.dmg` installers, assembles `latest.json`, and stages a **d
 - **Update mechanism:** Settings → UPDATES shows `current v0.5.1`; the app relaunched itself with
   no manual step, no stuck installer, no error.
 - **Setups survived (the important one):** the agent from step 2 is still there by name, the extra
-  agent / setting change is intact, the station looks like it did before. Nothing reset to
+  agent / setting change is intact, the keep looks like it did before. Nothing reset to
   first-run.
 
 If step 5 passes, Mac auto-update is proven end-to-end AND update-safe for existing setups.
@@ -80,7 +80,7 @@ data**, because user state lives OUTSIDE the `.app` bundle the installer replace
   on macOS anyway (`purge_stale_webview_cache_on_version_change`, `src-tauri/src/main.rs`).
 
 So the guarantee is layered: auto-update is the happy path; if it ever fails, the manual reinstall
-always works and never costs the user their station. Have the tester confirm the manual path too:
+always works and never costs the user their keep. Have the tester confirm the manual path too:
 trigger it (there's a `download manually` link in the footer) and check it opens the releases page.
 
 ---

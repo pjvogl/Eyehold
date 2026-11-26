@@ -1,7 +1,7 @@
-/* STARNET — permissions.js : the PURE engine for the PERMISSIONS PANEL (autonomy Stage B / B1).
+/* EYEHOLD — permissions.js : the PURE engine for the PERMISSIONS PANEL (autonomy Stage B / B1).
 
    The user-facing "how autonomous" SPECTRUM + the curated catalog of standing capability grants. This is the
-   trust UX the Commander picked: an OS-style panel where they dial the station from "never acts on its own" all
+   trust UX the Commander picked: an OS-style panel where they dial the keep from "never acts on its own" all
    the way to "fully autonomous" (acts AND writes real local files), and where every standing grant is visible
    and revocable.
 
@@ -94,7 +94,7 @@
     return { title: k, detail: '', key: k, curated: false, note: '' };
   }
 
-  // some grants only take EFFECT once a matching station OBJECT is placed (object=capability): cabinet:write needs a
+  // some grants only take EFFECT once a matching keep OBJECT is placed (object=capability): cabinet:write needs a
   // INTEL CAB in the agent's room — the grant is the CONSENT, the placed object is the CAPABILITY. The panel
   // uses this so a granted-but-inert capability is shown honestly (with a "place an INTEL CAB" nudge), never as a
   // silent "writes files" that does nothing — the exact "app lies" beat this project refuses.

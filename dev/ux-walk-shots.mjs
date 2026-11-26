@@ -27,7 +27,7 @@ const OPEN_REFIT = `(() => {
 })()`;
 
 const CLEAR_FLOOR = `(() => {
-  const st = Build.__test__.station();
+  const st = Build.__test__.keep();
   for (const b of st.belts()) st.removeBelt(b.x, b.y);
   const WF = { intake:1, bay:1, outbox:1, filter:1, splitter:1, merger:1 };
   for (const p of st.props().slice()) if (WF[p.t]) st.removeProp(p.id);
@@ -35,7 +35,7 @@ const CLEAR_FLOOR = `(() => {
 })()`;
 
 const findSpot = (bpId) => `(() => {
-  const st = Build.__test__.station();
+  const st = Build.__test__.keep();
   const b = st.bounds();
   for (let ty = b.minTy - 2; ty <= b.maxTy + 2; ty++)
     for (let tx = b.minTx - 2; tx <= b.maxTx + 2; tx++)
@@ -78,7 +78,7 @@ async function main() {
     mkdirSync(OUT, { recursive: true });
 
     await evalJS(cdp, `(() => {
-      const KEY = 'starnet.station.v1';
+      const KEY = 'eyehold.keep.v1';
       const r = JSON.parse(localStorage.getItem(KEY) || '{"v":1}');
       r.settings = Object.assign({}, r.settings, { textScale: 100 });
       localStorage.setItem(KEY, JSON.stringify(r));
@@ -129,7 +129,7 @@ async function main() {
     }
 
     // 5. the step card on a dock
-    const bay = await evalJS(cdp, `(() => { const b = Build.__test__.station().props().find(p => p.t === 'bay'); return b ? { x: b.x, y: b.y, id: b.id } : null; })()`);
+    const bay = await evalJS(cdp, `(() => { const b = Build.__test__.keep().props().find(p => p.t === 'bay'); return b ? { x: b.x, y: b.y, id: b.id } : null; })()`);
     notes.push('bay: ' + JSON.stringify(bay));
     if (bay && bay.x !== undefined) {
       await evalJS(cdp, clickTile(bay.x, bay.y));
@@ -140,7 +140,7 @@ async function main() {
     }
 
     // 6. the trigger card on the inbox
-    const intake = await evalJS(cdp, `(() => { const p = Build.__test__.station().props().find(p => p.t === 'intake'); return p ? { x: p.x, y: p.y } : null; })()`);
+    const intake = await evalJS(cdp, `(() => { const p = Build.__test__.keep().props().find(p => p.t === 'intake'); return p ? { x: p.x, y: p.y } : null; })()`);
     notes.push('intake: ' + JSON.stringify(intake));
     if (intake && intake.x !== undefined) {
       await evalJS(cdp, clickTile(intake.x, intake.y));

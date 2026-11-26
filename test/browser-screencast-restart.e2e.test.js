@@ -24,7 +24,7 @@ console.error = (...a) => { const t = a.join(' '); if (/cast-fallback/.test(t)) 
   });
   await new Promise(r => server.listen(0, '127.0.0.1', r));
   const base = 'http://127.0.0.1:' + server.address().port + '/';
-  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'starnet-cast-restart-'));
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'eyehold-cast-restart-'));
   const d = T.makeCdpDriver({ forceHeadless: true, syntheticInputOnly: true, cdpPort: 0, profileDir: dir, timeoutMs: 20000 });
   d.allowLocal(base);
   try {

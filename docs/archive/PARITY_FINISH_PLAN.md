@@ -1,8 +1,8 @@
-# StarNet → ref-parity FINISH Loop (G1 computer/browser · G2 MCP stdio · G4 cron · G5 fs patch · G6 spend)
+# Eyehold → ref-parity FINISH Loop (G1 computer/browser · G2 MCP stdio · G4 cron · G5 fs patch · G6 spend)
 
 > The durable brain for the self-paced parity-finish + reliability loop. Source: the 2026-06-23
-> StarNet-vs-the reference harness audit (verified file:line recon + adversarial critique). Scope = the five
-> ON-MOAT gaps where the reference harness excels and StarNet lacks or lies: **G1** computer/browser use,
+> Eyehold-vs-the reference harness audit (verified file:line recon + adversarial critique). Scope = the five
+> ON-MOAT gaps where the reference harness excels and Eyehold lacks or lies: **G1** computer/browser use,
 > **G2** MCP stdio transport, **G4** cron 100%-reliability, **G5** fs multi-hunk patch, **G6**
 > spend/model honesty. **Discord / gap #3 is INTENTIONALLY EXCLUDED — held off by the user; do
 > not touch channels.** Defining theme: most of this is PORT-WITH-PROOF — copy the reference harness's exact
@@ -22,7 +22,7 @@
 3. **Watched before DONE.** Any loop/UI/tool-affecting item gets a live `npm start` check on a
    FREE port (don't collide with :8787 if it's in use) — boot clean, exercise the surface, read
    the result back. Capture the transcript. A headless test alone does NOT satisfy a
-   tool/loop/UI item (StarNet's recurring "fake-done / app-lies" failure mode).
+   tool/loop/UI item (Eyehold's recurring "fake-done / app-lies" failure mode).
 4. **One revertable commit per item** (a tight series is ok). Conventional commits, each ending
    with `Co-Authored-By: Claude Opus 4.8 <noreply@anthropic.com>`. Commit only YOUR files with
    explicit pathspecs — NEVER `git add -A` / `git add .`.
@@ -89,7 +89,7 @@
 ---
 
 ## GOAL G1 — Computer use + browser automation (two surfaces)  ·  STATUS: TODO
-> PARITY TARGET: the reference harness ships TWO surfaces (desktop `computer_use` + `browser`); StarNet has
+> PARITY TARGET: the reference harness ships TWO surfaces (desktop `computer_use` + `browser`); Eyehold has
 > NEITHER (no such builtin under `sidecar/tools/builtin/` — only fs/image/notebook/orchestration/
 > recall/shell/skills/spotify/todo/verify/web). **RECONCILED DESIGN (the two recon reports
 > contradicted each other — this is the single source of truth):** file names = `browser.js` +
@@ -114,7 +114,7 @@ snapshot with stable `@e1..` refs rebuilt on every snapshot.
   - GROUNDING + STALE (headless): a `@ref` used AFTER a newer snapshot returns an EXPLICIT stale
     error and never silently re-resolves to a different element (the reference harness `element_token`
     invariant, `backend.py:27-33`). Per-session ref→Locator map keyed by `agent+task` id (no
-    global map → no cross-agent ref bleed across StarNet's 7–10 agents).
+    global map → no cross-agent ref bleed across Eyehold's 7–10 agents).
   - SETTLE (headless, fake timers): `navigate` waits for DOM + network settle (networkidle OR a
     quiet-timer, hard-capped ~5s) before returning the first snapshot; at least one LIVE run
     exercises a LAZY/async-rendered element to prove the settle-wait actually waits.
@@ -197,7 +197,7 @@ fallback so the tool degrades instead of failing to load.
 ---
 
 ## GOAL G2 — MCP stdio transport  ·  STATUS: TODO
-> Today the StarNet MCP client is HTTP-only (`makeTransport: makeHttpTransport`,
+> Today the Eyehold MCP client is HTTP-only (`makeTransport: makeHttpTransport`,
 > `index.js:647-650`/`:58`). The seam is `makeTransport` in `manager.js:56-64`; the contract is
 > `client.js:19-22` — `send(message)->Promise`, optional `onMessage(cb)`, optional `close()`.
 > A new `makeStdioTransport` only needs that 3-method duplex shape; `client.js`, `translate.js`,
@@ -264,7 +264,7 @@ the same `{send, onMessage, close}` duplex shape, spawn injected for testability
 ## GOAL G4 — Cron 100% reliability (the critical one)  ·  STATUS: DONE (all 6 items)
 > PARITY TARGET: the reference harness cron guarantees tz/DST-correct next-fire, at-most-once across crash
 > (advance-before-run), no-backlog catch-up, cross-process exactly-once (two file locks),
-> atomic+durable persistence, recurring-never-silently-disabled. StarNet's determinism split
+> atomic+durable persistence, recurring-never-silently-disabled. Eyehold's determinism split
 > (pure cron-math + injected clock) is already AHEAD on testability and matches most of this.
 > FIVE gaps remain. Preserve the architecture; close the gaps; keep all new math PURE (injected
 > clock; `Intl.DateTimeFormat` with an explicit timeZone is pure given ms and is NOT banned by
@@ -291,7 +291,7 @@ constant); add the offset-drift repair branch (parity `jobs.py:1364-1385`).
     "next: 9:00 AM EDT").
 - **Files:** `sidecar/cron.js` (edit, med — additive tz param, default UTC preserves current
   behavior, no signature break, stays determinism-lint clean); `sidecar/index.js` (edit, HIGH —
-  host-tz constant near `:170`, tz in preview at `:1287-1303`); `frontend/app/stationui.js`
+  host-tz constant near `:170`, tz in preview at `:1287-1303`); `frontend/app/keepui.js`
   (edit, med — tz in the `buildRoutines` preview `:1234-1390`); `test/cron.dst.test.js` (NEW,
   low); `package.json` (edit, med — append test).
 - **Notes:** Document the nonexistent/ambiguous policy in the `cron.js` header. Event additive:
@@ -321,7 +321,7 @@ constant); add the offset-drift repair branch (parity `jobs.py:1364-1385`).
   - **Files:** `sidecar/cron.js` (tz-aware match + DST repair, header policy), `sidecar/index.js`
     (`CRON_HOST_TZ` const + tz-aware preview returning `tz`/`localNext`, `parseCronScheduleOr400`
     tz-arg + reject), `sidecar/cron-driver.js` (inject + thread `defaultTz` into `planTick`),
-    `frontend/app/stationui.js` (preview shows local time + tz tag), `test/cron.dst.test.js` (NEW),
+    `frontend/app/keepui.js` (preview shows local time + tz tag), `test/cron.dst.test.js` (NEW),
     `test/cron.api.test.js` (extended), `package.json` (append cron.dst test).
   - **Coordination/event note (NOT emitted this iteration — for the batched memory-cortex request):**
     `cron.fire` optional `tz` field and a `cron.skipped` reason `tz-recompute` would let the HUD show
@@ -607,9 +607,9 @@ ORs with `SKYNET_CRON_ENABLED`, NOT runtime `process.env` mutation), then re-ren
     stays fully inert — the "byte-identical browser path when off" guarantee holds (assert no
     timer armed, no behavior change). A toggle that arms must not change the off-path.
   - LIVE: toggle ENABLE in the running app → a due job fires within ONE tick; UI flips
-    `○ scheduler is OFF` (`stationui.js:1301`) → `● scheduler armed`; `GET /api/cron` reflects
+    `○ scheduler is OFF` (`keepui.js:1301`) → `● scheduler armed`; `GET /api/cron` reflects
     `enabled`.
-- **Files:** `frontend/app/stationui.js` (edit, med — `buildRoutines`, one-click enable + honest
+- **Files:** `frontend/app/keepui.js` (edit, med — `buildRoutines`, one-click enable + honest
   badge); `sidecar/index.js` (edit, HIGH — boot block reads the persisted flag; new toggle route
   → run `test:http`). 
 - **Notes:** A persisted `cronArmed` flag OR'd at boot is cleaner than mutating `process.env` and
@@ -629,15 +629,15 @@ ORs with `SKYNET_CRON_ENABLED`, NOT runtime `process.env` mutation), then re-ren
     backlog — then arm the interval; no-op if a timer already runs) / `disarmCron()` (clear the interval). New
     privileged route **`POST /api/cron/arm {enabled:bool}`** persists the flag durably FIRST, sets the live
     `cronArmed`, then `armCron()`/`disarmCron()` so a due job fires within ONE tick of enabling with NO restart
-    and disabling stops the timer immediately. **Guarded by the SAME `x-starnet-token` gate as the cron CRUD
+    and disabling stops the timer immediately. **Guarded by the SAME `x-eyehold-token` gate as the cron CRUD
     routes** — `rejectBadApiToken` runs before dispatch for every `/api/*` POST except
     `/api/session|/api/key|/api/save`, so a cross-site browser call can't arm the autonomous scheduler (NOT a
     weaker hand-rolled guard). The frontend `fetch` is already token-hardened (`harness.js` monkey-patch
-    auto-injects `X-StarNet-Token`), so no UI token plumbing was needed.
+    auto-injects `X-Eyehold-Token`), so no UI token plumbing was needed.
   - **GET /api/cron `enabled`** now reports the live `cronArmed` (was boot-frozen `CRON_ENABLED`) so the panel
     reflects a runtime arm/disarm immediately. The cron.api.test `enabled:false` assertion still holds (cron
     off → `cronArmed` false).
-  - **Honest UI** (`stationui.js` `buildRoutines.refresh`) — OFF shows a RED `○ scheduling is OFF — routines
+  - **Honest UI** (`keepui.js` `buildRoutines.refresh`) — OFF shows a RED `○ scheduling is OFF — routines
     will NOT fire.` badge + a one-click `▶ ENABLE SCHEDULING` button (posts the arm route, then re-renders from
     the authoritative GET); ON shows `● scheduler armed` + a `⏸ DISABLE SCHEDULING` control. Replaced the old
     dim "set SKYNET_CRON_ENABLED=1" hint (which told the user to edit env + restart — the lie this closes).
@@ -650,7 +650,7 @@ ORs with `SKYNET_CRON_ENABLED`, NOT runtime `process.env` mutation), then re-ren
     persisted (exit 1); the inert-when-off + token-guard 403 assertions PASSED even pre-fix (the invariants
     that must not regress — and don't). GREEN after: `OK (25 assertions)`. Cases: (1) INERT-WHEN-OFF — boot OFF
     → `enabled:false`, no flag file, no timer armed, a due routine never ticks over a multi-tick window;
-    (2) TOKEN GUARD — arm without `X-StarNet-Token` → 403, enabled unchanged; (3) RUNTIME ARM — arm flips
+    (2) TOKEN GUARD — arm without `X-Eyehold-Token` → 403, enabled unchanged; (3) RUNTIME ARM — arm flips
     `enabled:true`, persists `armed:true`, and the LIVE timer ticks a DUE one-shot within one tick (the
     non-mockable `[cron] cron.tick` signal — no key → no-capability path → zero spend); (4) RUNTIME DISARM —
     flips off, persists `armed:false`, no further ticks run; (5) ARM-AT-BOOT — a persisted `armed:true` arms
@@ -659,14 +659,14 @@ ORs with `SKYNET_CRON_ENABLED`, NOT runtime `process.env` mutation), then re-ren
     files; `index.js` is the lint-exempt composition root). `npm run test:http` GREEN (EXIT 0 — cron.api 56
     assertions unchanged + cron.arm 25). **LIVE-WATCHED** (`npm start`, free port :8873, temp WORKSPACES,
     cron OFF): boot prints no "cron tick armed" (inert); `GET /api/cron` → `enabled:false`; the served
-    `stationui.js` carries the new OFF-badge + ENABLE control; arm route → `{ok:true,enabled:true}`, GET flips
+    `keepui.js` carries the new OFF-badge + ENABLE control; arm route → `{ok:true,enabled:true}`, GET flips
     `enabled:true`, the boot-reconcile ticks the due past one-shot within one tick
     (`[cron] cron.tick {fired:0,skipped:1,planned:1}` + `cron.skipped no-capability` — zero spend),
     `cron.armed.json` = `{"version":1,"armed":true}`; disarm → `enabled:false`, `cron tick DISARMED`,
     `armed:false`; a bad body (no `enabled`) → 400; arm without token → 403. The honest OFF badge + ENABLE
     button also rendered in a real Chromium DOM.
   - **Files:** `sidecar/index.js` (persisted `cronArmed` store + `armCron`/`disarmCron` + boot-OR + `POST
-    /api/cron/arm` route + GET reports live `cronArmed`), `frontend/app/stationui.js` (`buildRoutines` honest
+    /api/cron/arm` route + GET reports live `cronArmed`), `frontend/app/keepui.js` (`buildRoutines` honest
     OFF/ON badge + one-click enable/disable), `test/cron.arm.test.js` (NEW), `package.json` (append
     `cron.arm.test` to `test:http`). No `shared/events.js`/`shared/schema.js` edit
     (`git log feat/harness-backend..agent/parity-finish -- shared/*` stays empty); no new event emitted (the
@@ -676,7 +676,7 @@ ORs with `SKYNET_CRON_ENABLED`, NOT runtime `process.env` mutation), then re-ren
 
 ## GOAL G5 — fs multi-hunk patch (V4A, validate-then-apply, atomic)  ·  STATUS: TODO
 > PARITY TARGET: the reference harness's V4A patch tool — multi-hunk, two-phase (validate ALL before any write),
-> all-or-nothing, with a fuzzy matcher (`fuzzy_match.py`). StarNet's `fs.edit`
+> all-or-nothing, with a fuzzy matcher (`fuzzy_match.py`). Eyehold's `fs.edit`
 > (`fs.js:137-158`) is a single global `split().join()` find/replace — no hunks, no context, no
 > fuzz, no atomicity. **DECISION: ADD a NEW `fs.patch` tool; do NOT overload `fs.edit`** (its
 > `{path,find,replace}` schema + "replace every occurrence" semantics are load-bearing for
@@ -817,7 +817,7 @@ double-register).
    an autonomous surface.
 7. **G1 frontend capability-OBJECT surfacing is a SEPARATE later lane**, AFTER the backend tools
    land green — it serializes against `agent/crew-sentience` (world.js, 50m) and
-   `agent/workstation-ui` (build.js/propsprites.js). It must NOT be bundled into this lane's merge.
+   `agent/workkeep-ui` (build.js/propsprites.js). It must NOT be bundled into this lane's merge.
 
 **Board-check protocol:** before EVERY edit session and again immediately before each merge, from
 the integration tree run `node scripts/board.mjs --files <substr>` for each hot target. MANDATORY
@@ -826,7 +826,7 @@ files (revival-risk): `sidecar/index.js`, `sidecar/capability/registry.js`, `sid
 iterated files), `sidecar/permissions.js` (exec-spine), `sidecar/mcp/manager.js` (mcp lane),
 `frontend/app/world.js` (crew-sentience/workforce-zones/state-integrity — PREFER not touching;
 route presentation through props instead), `frontend/app/app.js` (state-integrity/onboarding-
-remaster), `frontend/app/stationui.js`. The three NEW backend files (`browser.js`, `computer.js`,
+remaster), `frontend/app/keepui.js`. The three NEW backend files (`browser.js`, `computer.js`,
 `transport.stdio.js`) are verified free of existing owners but RE-check at merge in case another
 lane adds the same path. `board.mjs` only sees uncommitted/ahead-of-trunk state — combine with
 `git log -1 -- <file>` recency for the full picture. Keep the lane SHORT, land NEW files first,
@@ -954,9 +954,9 @@ merge in small increments.
   **`POST /api/cron/arm {enabled:bool}`** persists the flag durably FIRST, sets the live `cronArmed`, then actually
   arms/disarms the live timer NOW via idempotent `armCron()` (one immediate reconcile under the G4.3 lock + arm the
   interval) / `disarmCron()` (clear it) — so a due job fires within ONE tick of enabling with NO restart. Guarded by
-  the SAME `x-starnet-token` gate as the cron CRUD routes (`rejectBadApiToken` before dispatch), not a weaker
+  the SAME `x-eyehold-token` gate as the cron CRUD routes (`rejectBadApiToken` before dispatch), not a weaker
   hand-rolled guard. `GET /api/cron enabled` now reports the live `cronArmed` (reflects a runtime arm/disarm
-  immediately). UI (`stationui buildRoutines`): OFF shows a red "scheduling is OFF — routines will NOT fire" badge +
+  immediately). UI (`keepui buildRoutines`): OFF shows a red "scheduling is OFF — routines will NOT fire" badge +
   one-click ENABLE SCHEDULING; ON shows armed + DISABLE. INERT-WHEN-OFF preserved (no env + no flag → cronArmed=false
   → boot no-ops → byte-identical off-path). RED→GREEN proven (`test/cron.arm.test.js`, NEW, 25 assertions in
   `test:http`: pre-fix RED — arm route 404s, enabled never flips, no flag persisted; the inert-when-off + token-guard

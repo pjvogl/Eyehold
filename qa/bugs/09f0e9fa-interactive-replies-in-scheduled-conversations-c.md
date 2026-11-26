@@ -9,7 +9,7 @@ found: 2026-09-16
 lane: release-0120-prep-0915
 fix: da0658486
 origin: customer
-report: https://github.com/androoAGI/starnet/issues/18
+report: https://github.com/Eyehold/eyehold/issues/18
 affected: v0.11.2 Windows, source 69baf91a5b2c22230f87e614da6a72882278bc6c
 family: work-rating-origin
 installer: unverified

@@ -1,7 +1,7 @@
 /* sidecar/plugin-tools.js — a plugin's api.tool() definitions as tools the crew can call (phase 2, 2026-09-29).
 
    Same contract as an MCP connector tool (sidecar/mcp/translate.js), on purpose — one trust model for "code the
-   Commander installed that the station cannot see inside":
+   Commander installed that the keep cannot see inside":
      · capability 'plugin:<id>': granted only by that plugin's TERMINAL placed in the agent's room (object =
        capability; frontend worldmodel.bayObjects → { objectType: 'plugin', pluginId });
      · impact 'external-unknown' + requiresConsent: a watched run shows the Commander a per-call approval card, an
@@ -45,7 +45,7 @@ function makePluginToolDefs(o) {
     const desc = untrustedText(t.description, DESC_MAX) || ('A tool from the ' + label + ' plugin.');
     out.push({
       name: pluginToolName(pluginId, t.name),
-      description: '[' + label + ' plugin tool; written by that plugin, not by StarNet] ' + desc,
+      description: '[' + label + ' plugin tool; written by that plugin, not by Eyehold] ' + desc,
       schema: translateSchema(t.parameters),
       scope: readOnly ? 'read' : 'execute',
       readOnly,

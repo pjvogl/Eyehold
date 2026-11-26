@@ -12,6 +12,6 @@
     "Finder launch and recovery were not reached"
   ],
   "rawLogSha256": "f2a7335f5d2826f35304f97f5a62ba692eb74271e2c70d824d7a88201fb34770",
-  "logUrl": "https://github.com/androoAGI/starnet/actions/runs/35477408214/job/105994358074",
+  "logUrl": "https://github.com/Eyehold/eyehold/actions/runs/35477408214/job/105994358074",
   "retry": "same acceptance job, same artifact; no trust bypass"
 }

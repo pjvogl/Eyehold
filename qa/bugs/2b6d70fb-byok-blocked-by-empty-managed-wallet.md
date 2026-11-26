@@ -9,7 +9,7 @@ found: 2026-08-28
 lane: reliability-followup
 fix: 5b5f50a1d
 origin: customer
-report: https://github.com/androoAGI/starnet/issues/6
+report: https://github.com/Eyehold/eyehold/issues/6
 affected: Reported before v0.10.13; installer recovery unverified
 family: execution-configuration
 installer: unverified
@@ -24,7 +24,7 @@ A linked account with zero managed credit cannot wake using its own valid provid
 
 ## Repro
 
-Link a station to a zero-balance managed account, select a custom BYOK provider and run; repeat as managed StarNet.
+Link a keep to a zero-balance managed account, select a custom BYOK provider and run; repeat as managed Eyehold.
 
 ## Evidence
 
@@ -42,7 +42,7 @@ Before 5b5f50a1d admission gated BYOK on the managed wallet. The zero-wallet sid
 
 {
   "adapters": [
-    {"target":"starnet","state":"covered","test":"test/customer-journey.e2e.test.js","scenario":"Saved starnet configuration, successful tool and second inference; direct, routine and sample; two boots","gate":"http"},
+    {"target":"eyehold","state":"covered","test":"test/customer-journey.e2e.test.js","scenario":"Saved eyehold configuration, successful tool and second inference; direct, routine and sample; two boots","gate":"http"},
     {"target":"openrouter","state":"covered","test":"test/customer-journey.e2e.test.js","scenario":"Saved openrouter configuration, successful tool and second inference; direct, routine and sample; two boots","gate":"http"},
     {"target":"custom","state":"covered","test":"test/customer-journey.e2e.test.js","scenario":"Saved custom configuration, successful tool and second inference; direct, routine and sample; two boots","gate":"http"},
     {"target":"gemini","state":"covered","test":"test/customer-journey.e2e.test.js","scenario":"Saved gemini configuration, successful tool and second inference; direct, routine and sample; two boots","gate":"http"},

@@ -225,7 +225,7 @@ function makeSkillExchange(deps) {
     // agent) exports as a fresh standard package built from what the skill holds now.
     if (!sealed) return exportAuthored(current);
     const pkg = packageFormat.fromEnvelope({ format: packageFormat.FORMAT, digest: current.packageDigest, files: current.packageFiles });
-    return { filename: (current.id || 'skill') + '.starnet-skill.json', digest: pkg.digest, envelope: packageFormat.toEnvelope(pkg, {
+    return { filename: (current.id || 'skill') + '.eyehold-skill.json', digest: pkg.digest, envelope: packageFormat.toEnvelope(pkg, {
       name: current.name, summary: current.summary || '', category: current.category || '', requires: current.requires || [], platforms: current.platforms || [],
       sourceUrl: current.sourceUrl || '', sourceDigest: current.sourceDigest || '', sourceFetchedAt: current.sourceFetchedAt || 0,
       sourceVersion: current.sourceVersion || '', sourceAuthor: current.sourceAuthor || '', sourceLicense: current.sourceLicense || ''
@@ -258,7 +258,7 @@ function makeSkillExchange(deps) {
       .filter(f => f && f.path && f.path !== 'SKILL.md')
       .map(f => ({ path: f.path, encoding: f.encoding === 'base64' ? 'base64' : 'utf8', content: str(f.content) })));
     const pkg = packageFormat.canonicalize(files);
-    return { filename: specName(current.name) + '.starnet-skill.json', digest: pkg.digest, envelope: packageFormat.toEnvelope(pkg, {
+    return { filename: specName(current.name) + '.eyehold-skill.json', digest: pkg.digest, envelope: packageFormat.toEnvelope(pkg, {
       name: current.name, summary: current.summary || description, category: current.category || '', requires: current.requires || [], platforms: current.platforms || [],
       sourceUrl: '', sourceDigest: '', sourceFetchedAt: 0,
       sourceVersion: current.sourceVersion || '', sourceAuthor: current.sourceAuthor || '', sourceLicense: current.sourceLicense || ''
@@ -277,7 +277,7 @@ function makeSkillExchange(deps) {
       },
       instructions: [
         'Extract the standard skill folder represented by the package and host it without changing bytes.',
-        'Set sourceUrl to the public HTTPS URL of SKILL.md and add the registry entry to a starnet-skill-registry/v1 index.',
+        'Set sourceUrl to the public HTTPS URL of SKILL.md and add the registry entry to an eyehold-skill-registry/v1 index.',
         'Inspect the hosted URL in StarNet and confirm its package SHA-256 is ' + exported.digest + ' before sharing.'
       ],
       uploaded: false

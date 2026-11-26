@@ -27,7 +27,7 @@ const PORT = process.env.SKYNET_PORT || '8745';
 const CDP_PORT = Number(process.env.SKYNET_CDP_PORT || 9795);
 
 const OPEN_EMPTY = `(async () => {
-  StationUI.openTerm('quests');
+  KeepUI.openTerm('quests');
   await new Promise(r => setTimeout(r, 2200));
   const win = [...document.querySelectorAll('.term')].find(t => /QUEST LOG/.test(t.textContent));
   (win.getAnimations ? win.getAnimations() : []).forEach(a => { try { a.finish(); } catch (_) {} });
@@ -39,7 +39,7 @@ const OPEN_EMPTY = `(async () => {
 
 // Stage a REAL goal through the shipped confirm seam, then read the track the engine produced.
 const STAGE_GOAL = `(async () => {
-  const belief = { id: null, text: 'Launch StarNet to my first 100 users' };
+  const belief = { id: null, text: 'Launch Eyehold to my first 100 users' };
   const texts = [
     'Write the launch announcement',
     'Record a 60-second demo',
@@ -47,7 +47,7 @@ const STAGE_GOAL = `(async () => {
     'Ship the v1 installer'
   ];
   const goal = GoalStore.confirm(belief, texts);
-  StationUI.rerender('quests', false);
+  KeepUI.rerender('quests', false);
   await new Promise(r => setTimeout(r, 600));
   return JSON.stringify({ made: !!goal, milestones: goal ? goal.milestones.length : 0 });
 })()`;
@@ -75,7 +75,7 @@ const READ_TRACK = `(() => {
     acceptBtns: track.querySelectorAll('.q-arc-accept').length,
     // the arc must NOT also appear as cards in the grid below
     arcCardsInGrid: [...document.querySelectorAll('.q-grid .q-card')]
-      .filter(c => /Launch StarNet to my first 100 users|Record a 60-second demo/.test(c.textContent)).length,
+      .filter(c => /Launch Eyehold to my first 100 users|Record a 60-second demo/.test(c.textContent)).length,
     // standing law: the log gates nothing — no lock language anywhere on the track
     lockLanguage: /locked|unlock|tier \\d|🔒/i.test(track.textContent),
     // the payoff line must name the SIDECAR's next stage — never a name invented in the frontend
@@ -91,7 +91,7 @@ const ADVANCE = `(async () => {
   const goal = GoalStore.activeGoal();
   const next = goal.milestones.find(m => m.status !== 'done');
   next.status = 'done'; next.evidence = 'proof: marked done through the goal tree';
-  StationUI.rerender('quests', false);
+  KeepUI.rerender('quests', false);
   await new Promise(r => setTimeout(r, 500));
   const track = document.querySelector('.q-track');
   const nodes = [...track.querySelectorAll('.q-node')].map(n => n.className.match(/q-node-(done|now|ahead)/)[1]);
@@ -103,7 +103,7 @@ const ADVANCE = `(async () => {
 })()`;
 
 /* THE PROMISE, KEPT (2026-08-14). The track tells the Commander that finishing this path advances the
-   station. That is a claim the harness must be able to back, so this drives the REAL chain to its end:
+   keep. That is a claim the harness must be able to back, so this drives the REAL chain to its end:
    the production `Goals.foldMilestoneDone` for each milestone (the same fold `reconcile` calls when a
    bound work quest completes) -> the goal's own status flips done -> the production
    `GoalStore._syncJourneyMilestones()` posts `goalDone` to the LIVE sidecar -> `addGoalReached` ->
@@ -120,7 +120,7 @@ const COMPLETE_THE_PATH = `(async () => {
   const synced = await GoalStore._syncJourneyMilestones();
   await new Promise(r => setTimeout(r, 900));
   await JourneyStore.sync(true);
-  StationUI.rerender('quests', false);
+  KeepUI.rerender('quests', false);
   await new Promise(r => setTimeout(r, 700));
   const after = await (await fetch('/api/journey', { cache: 'no-store' })).json();
   const track = document.querySelector('.q-track');
@@ -153,7 +153,7 @@ const RUNNING_STATE = `(async () => {
   const front = g.milestones.find(m => m.status !== 'done');
   if (!front) return JSON.stringify({ ok: false, why: 'no open milestone' });
   front.questRef = wqId;
-  StationUI.rerender('quests', false);
+  KeepUI.rerender('quests', false);
   await new Promise(r => setTimeout(r, 600));
   const track = document.querySelector('.q-track');
   const nowNode = track.querySelector('.q-node-now');

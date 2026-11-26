@@ -1,4 +1,4 @@
-// Run against an isolated dev/seed.js station; uses no inference or account credentials.
+// Run against an isolated dev/seed.js keep; uses no inference or account credentials.
 import assert from 'node:assert/strict';
 import { mkdtempSync } from 'node:fs';
 import { tmpdir } from 'node:os';
@@ -14,10 +14,10 @@ try {
   const diagnostics = collectDiagnostics(cdp);
   await cdp.send('Page.navigate', { url: 'http://127.0.0.1:18792' });
   for (let i = 0; i < 50; i++) {
-    if (await evalJS(cdp, "typeof StationUI !== 'undefined' && typeof Harness !== 'undefined'").catch(() => false)) break;
+    if (await evalJS(cdp, "typeof KeepUI !== 'undefined' && typeof Harness !== 'undefined'").catch(() => false)) break;
     await sleep(200);
   }
-  await evalJS(cdp, "StationUI.openTerm('settings', 'models'); true");
+  await evalJS(cdp, "KeepUI.openTerm('settings', 'models'); true");
   await sleep(1500);
   const picked = await evalJS(cdp, `(() => {
     const s = document.querySelector('#tm-reasoning');
@@ -29,7 +29,7 @@ try {
     }
     return option.value;
   })()`);
-  await evalJS(cdp, "StationUI.closeTerm('settings'); StationUI.openTerm('settings', 'models'); true");
+  await evalJS(cdp, "KeepUI.closeTerm('settings'); KeepUI.openTerm('settings', 'models'); true");
   await sleep(1500);
   const reopened = await evalJS(cdp, `['reasoning', 'balanced', 'fast'].map(tier => {
     const s = document.querySelector('#tm-' + tier);

@@ -18,8 +18,8 @@ const reqStart = build.indexOf('function requisition(');
 A.ok(reqStart >= 0, 'Build.requisition exists');
 const reqSeg = build.slice(reqStart, build.indexOf('\n  const api', reqStart));
 A.ok(/findPlaceableTile\(/.test(reqSeg), 'requisition places at a VALIDATED tile (findPlaceableTile)');
-A.ok(/station\.addProp\(/.test(reqSeg), 'requisition goes through the real station.addProp (object=capability stays honest)');
-A.ok(/if\s*\(!running\s*\|\|\s*!station\)/.test(reqSeg), 'requisition refuses when REFIT is not open');
+A.ok(/keep\.addProp\(/.test(reqSeg), 'requisition goes through the real keep.addProp (object=capability stays honest)');
+A.ok(/if\s*\(!running\s*\|\|\s*!keep\)/.test(reqSeg), 'requisition refuses when REFIT is not open');
 A.ok(/isEditableProp\(t\)/.test(reqSeg), 'requisition refuses editable/config props (no editor popping mid-ceremony)');
 A.ok(/Tutorial\.onPropPlaced\)\s*Tutorial\.onPropPlaced\(t\)/.test(reqSeg), 'a requisitioned placement fires the SAME first-touch/kit hook as a hand placement');
 A.ok(/requisition\s*[},]/.test(build.slice(build.indexOf('const api'))), 'requisition is exported on the Build api');
@@ -66,9 +66,9 @@ A.ok(/function scheduleFrame\(failed\)[\s\S]{0,600}Math\.min\(1000,[\s\S]{0,600}
 const recoverStart = build.indexOf('function recoverFrame(err)');
 const recoverSeg = build.slice(recoverStart, build.indexOf('\n  function frame(now)', recoverStart));
 A.ok(/cache = null; cacheGeo = null/.test(recoverSeg) && /bakeDirty = true/.test(recoverSeg),
-  'recovery discards the suspect derived bake and rebuilds from canonical station state');
+  'recovery discards the suspect derived bake and rebuilds from canonical keep state');
 A.ok(/resize\(\); fitCamera\(\)/.test(recoverSeg),
-  'recovery re-measures and re-fits the station after a first-layout race');
+  'recovery re-measures and re-fits the keep after a first-layout race');
 
 /* ---------- P1: the kit-out is opt-IN, so it must be opt-OUT-able at any moment ---------- */
 A.ok(/function kitBail\(\)/.test(tut), 'the kit-out has a bail');
@@ -78,7 +78,7 @@ A.ok(/Build\.isOpen\(\)\s*&&\s*Build\.close\)\s*\{\s*Build\.close\(\);\s*return;
 A.ok(/kitClosedDuringPlace\(\)/.test(bailSeg), 'outside REFIT it lands on the same honest wired-vs-dark accounting');
 A.ok(/class = 'tut-coach-bail'|className = 'tut-coach-bail'/.test(tut), 'every kit-out step renders a visible way out');
 A.ok(/e\.key !== 'Escape'[\s\S]{0,200}\.refit-overlay'\)[\s\S]{0,80}#terms \.term'\)\) return;\s*kitBail\(\)/.test(tut),
-  'Esc bails only when nothing else claims the key — not over REFIT, not over an open station panel');
+  'Esc bails only when nothing else claims the key — not over REFIT, not over an open keep panel');
 
 /* ---------- P1: the tour's two closing surfaces must not cover each other ----------
    (the GEOMETRY itself is unit-tested for real in test/coach-dodge.test.js — these only lock the wiring) */
@@ -86,6 +86,6 @@ A.ok(/function dodgeBrief\(/.test(tut), 'the coachmark measures the live FIRST S
 A.ok(/dodgeBrief\(\{ left, top, w: bw, h: bh \}, vw, vh\)/.test(tut), 'placeCoach routes its computed box through the dodge');
 A.ok(/^function dodgeRect\(box, brief, vw, vh\)/m.test(tut), 'the geometry is a pure top-level fn, not trapped in the IIFE');
 A.ok(/typeof module !== 'undefined' && module\.exports\) module\.exports = \{ dodgeRect\b/.test(tut),
-  'and it is exported under the same browser-safe guard stationui.js uses, so the gate can run it');
+  'and it is exported under the same browser-safe guard keepui.js uses, so the gate can run it');
 
 A.report('kitout.test');

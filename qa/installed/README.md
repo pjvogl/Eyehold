@@ -27,7 +27,7 @@ running binary:
   "mode": "desktop",
   "origin": "http://tauri.localhost",
   "artifact": {
-    "path": "C:/Program Files/StarNet/StarNet.exe",
+    "path": "C:/Program Files/Eyehold/Eyehold.exe",
     "sha256": "<64 hexadecimal characters>",
     "size": 123456789
   },
@@ -45,10 +45,10 @@ running binary:
 }
 ```
 
-GREEN requires all of the following: a trusted Tauri origin, successful `starnet_build_info`, a
+GREEN requires all of the following: a trusted Tauri origin, successful `eyehold_build_info`, a
 clean full source SHA and source-tree SHA equal to the explicitly expected candidate, matching
 shell/sidecar versions and provenance, and an exact SHA-256/size match between
-`STARNET_SMOKE_ARTIFACT` and the executable bytes reported by the running Tauri process. Evidence
+`EYEHOLD_SMOKE_ARTIFACT` and the executable bytes reported by the running Tauri process. Evidence
 is also content-bound by SHA-256/size, and every named smoke assertion must be present and passing.
 Browser mode, dirty/unknown source, missing assertions, mismatched candidate/tree/executable, or
 missing artifact/evidence is BLOCKED. A parity failure on an otherwise proven candidate is RED.
@@ -56,7 +56,7 @@ missing artifact/evidence is BLOCKED. A parity failure on an otherwise proven ca
 The W0 taxonomy is deliberately open-source friendly:
 
 - `reproducible-source` — clean, known commit + tree; the default for an ordinary source build.
-- `custom` — a clean build explicitly made as custom (`STARNET_BUILD_PROVENANCE_KIND=custom`).
+- `custom` — a clean build explicitly made as custom (`EYEHOLD_BUILD_PROVENANCE_KIND=custom`).
 - `dirty-dev` — dirty bytes, unknown commit/tree, or an explicitly dirty development build. It
   cannot produce a proved installed result.
 - `official` — never accepted from a build flag or hand-authored JSON. A clean
@@ -66,7 +66,7 @@ The W0 taxonomy is deliberately open-source friendly:
 
 An explicit custom build always stays custom, even if unrelated official evidence is supplied.
 This taxonomy identifies what was tested; it does not restrict the source owner or local
-administrator from inspecting, modifying, or running StarNet.
+administrator from inspecting, modifying, or running Eyehold.
 
 `npm run qa:ready` re-hashes the artifact and every evidence file, resolves the candidate's Git tree,
 and re-checks the commit/tree/classification plus artifact/runtime equality before accepting the
@@ -75,21 +75,21 @@ W0 without invoking the broader READY aggregate. Legacy receipts are intentional
 
 ## Operator recipe
 
-Fully quit StarNet, then launch the exact candidate executable with WebView debugging enabled. Set
+Fully quit Eyehold, then launch the exact candidate executable with WebView debugging enabled. Set
 both explicit proof inputs before running the smoke; neither has an ambient fallback. Point the
 artifact variable at the executable launched by `Start-Process`, not an installer or archive. The
 receipt deliberately proves byte identity (SHA-256 + size), not the private runtime filesystem path.
 
 ```powershell
 $candidate = git rev-parse HEAD
-$artifact = 'C:\Program Files\StarNet\StarNet.exe'
+$artifact = 'C:\Program Files\Eyehold\Eyehold.exe'
 $env:WEBVIEW2_ADDITIONAL_BROWSER_ARGUMENTS = '--remote-debugging-port=9333'
-$env:STARNET_SMOKE_EXPECTED_HEAD = $candidate
-$env:STARNET_SMOKE_ARTIFACT = $artifact
+$env:EYEHOLD_SMOKE_EXPECTED_HEAD = $candidate
+$env:EYEHOLD_SMOKE_ARTIFACT = $artifact
 Start-Process $artifact
 npm run qa:smoke:installed
 ```
 
 Open the TASKS board before the sweep so the installed UI assertion is actually observed. Override
-the conventional CDP port with `STARNET_SMOKE_CDP_PORT`. Exit codes are `0` GREEN, `1` RED, and `2`
+the conventional CDP port with `EYEHOLD_SMOKE_CDP_PORT`. Exit codes are `0` GREEN, `1` RED, and `2`
 BLOCKED. Evidence and receipts are gitignored; never commit them or any credential.

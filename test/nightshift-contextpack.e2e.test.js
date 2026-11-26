@@ -89,7 +89,7 @@ function startMockOpenRouter() {
 
 function boot(port, env, attemptsLeft) {
   return new Promise((resolve, reject) => {
-    const child = spawn(process.execPath, [INDEX], { env: Object.assign({}, process.env, env, { SKYNET_PORT: String(port) }), stdio: ['ignore', 'pipe', 'pipe'] });
+    const child = spawn(process.execPath, [INDEX], { env: Object.assign({}, process.env, env, { EYEHOLD_PORT: String(port) }), stdio: ['ignore', 'pipe', 'pipe'] });
     let out = '', settled = false;
     const onData = d => {
       out += d.toString();
@@ -146,12 +146,12 @@ function seedLogs(ws, now) {
   const ws = fs.mkdtempSync(path.join(os.tmpdir(), 'sk-nscp-e2e-'));
   const now = Date.now();
   seedLogs(ws, now);
-  const env = { SKYNET_WORKSPACES: ws, SKYNET_DEV: '1', SKYNET_OPENROUTER_BASE: mock.base, SKYNET_OPENROUTER_KEY: 'sk-or-v1-nscp-fake', SKYNET_DEFAULT_MODEL: 'test/model' };
+  const env = { EYEHOLD_WORKSPACES: ws, EYEHOLD_DEV: '1', EYEHOLD_OPENROUTER_BASE: mock.base, EYEHOLD_OPENROUTER_KEY: 'sk-or-v1-nscp-fake', EYEHOLD_DEFAULT_MODEL: 'test/model' };
   const { child, port } = await boot(8970 + (process.pid % 25), env, 20);
   const B = 'http://' + HOST + ':' + port;
   try {
     const token = await bootToken(B, B);
-    const headers = { 'Content-Type': 'application/json', 'X-StarNet-Token': token, Origin: B };
+    const headers = { 'Content-Type': 'application/json', 'X-Eyehold-Token': token, Origin: B };
 
     // ===== 1. THIN-DOSSIER + FABRICATED-ACTIVITY BEAT — reach sandbox + the away grant → a real build. =====
     await fetch(B + '/api/workshop/grant', { method: 'POST', headers, body: JSON.stringify({ agentId: 'agent', on: true }) });
@@ -178,7 +178,7 @@ function seedLogs(ws, now) {
     // ===== 2. COLD-LEASH FIX — with NO dossier and NO activity, status reports binding:readiness + no spend. =====
     // wipe the activity by pointing at a FRESH workspace-less state: clear the dossier (empty beliefs) and rely on
     // the status route's statusDecision (folds the precheck). We can't erase seeded runs live, so instead prove the
-    // pre-spend path via the STATUS binding after making the station present (so no beat fired) AND then reason about
+    // pre-spend path via the STATUS binding after making the keep present (so no beat fired) AND then reason about
     // the readiness precheck directly: with the dossier cleared to empty, the ONLY grounding is the seeded activity —
     // so to show a TRUE cold decline we boot a SECOND, unseeded sidecar.
     // (handled in the cold-boot block below)
@@ -193,18 +193,18 @@ function seedLogs(ws, now) {
     // ===== COLD BOOT — a brand-new workspace: no dossier, no runs, no chats. The night-shift status must report a
     //        pre-spend readiness stand-down (binding:'readiness') with beatsUsedToday 0 — NO leash spent. =====
     const ws2 = fs.mkdtempSync(path.join(os.tmpdir(), 'sk-nscp-cold-'));
-    const boot2 = await boot(port + 1, Object.assign({}, env, { SKYNET_WORKSPACES: ws2 }), 20);
+    const boot2 = await boot(port + 1, Object.assign({}, env, { EYEHOLD_WORKSPACES: ws2 }), 20);
     const B2 = 'http://' + HOST + ':' + boot2.port;
     try {
       const token2 = await bootToken(B2, B2);
-      const headers2 = { 'Content-Type': 'application/json', 'X-StarNet-Token': token2, Origin: B2 };
+      const headers2 = { 'Content-Type': 'application/json', 'X-Eyehold-Token': token2, Origin: B2 };
       // permit acting (initiative leash) so posture/present/leash/cooldown all clear — leaving READINESS as the only
       // thing that can bind. Make the Commander AWAY by setting lastActivity far in the past is not exposed; instead
       // the status route's statusDecision surfaces the binding the tick would hit once away. With an empty dossier +
       // empty activity, the precheck returns not-ok → binding 'readiness'.
       await fetch(B2 + '/api/autonomy/posture', { method: 'POST', headers: headers2, body: JSON.stringify({ posture: { initiative: 'leash', reach: 'observe', leashPerDay: 12 }, beliefs: { known: [], beliefs: {} } }) });
       const st2 = await (await fetch(B2 + '/api/nightshift/status', { headers: headers2 })).json();
-      A.eq(st2.beatsUsedToday, 0, 'COLD-LEASH: a brand-new station has spent NO leash');
+      A.eq(st2.beatsUsedToday, 0, 'COLD-LEASH: a brand-new keep has spent NO leash');
       // the binding is either 'present' (if the boot-seeded away clock hasn't elapsed) or 'readiness' (if away). In
       // BOTH cases NO leash was spent — the point of the fix. We assert the readiness precheck is reachable by
       // confirming the binding is one of the pre-spend/local gates, never a spent-leash state.

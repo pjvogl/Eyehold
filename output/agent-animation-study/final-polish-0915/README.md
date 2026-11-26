@@ -1,6 +1,6 @@
 # Final motion polish — 2026-09-15
 
-The station review retains the approved 19-world-pixel standing height and 28-unit crew cruise speed.
+The keep review retains the approved 19-world-pixel standing height and 28-unit crew cruise speed.
 
 - Walking anchors the current frame's measured alpha boundary, rather than the standing frame's transparent padding. Across 2,400 available walking frames this removes up to two world pixels of unintended vertical drift without resizing the artwork.
 - Approved sets estimate stride from additional side-view foot separation. Standing boot width is excluded; the previous universal ceiling no longer forces long-legged sets to cycle at the shortest cadence. Robes and ambiguous silhouettes retain the established fallback; original retained artwork keeps its previous cadence.

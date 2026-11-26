@@ -32,7 +32,7 @@ Per skin, in order:
    measured 0.8% frame drift vs 84% for a regenerated blink.
 
 4. **Sit — NOT SOLVED.** Still the old flat art (~7-12 colours vs ~50 on the new idle). It is the
-   visible seam because agents sit at workstations constantly. Another `create_character_state`
+   visible seam because agents sit at workkeeps constantly. Another `create_character_state`
    at ~20 each = 720 for the full roster. Deferred, not skipped.
 
 5. **Assemble** with `scripts` equivalent of `_assembly/assemble.py`: 92×92 canvas, content bottom
@@ -56,7 +56,7 @@ Per skin, in order:
 
 | set | source id | set | source id |
 |---|---|---|---|
-| endoskeleton | `e30d1197-5733-40e8-a8d0-319f39aefb22` | astronaut | `c01cab90-a5ce-4733-b7f2-5dc48fbaf50a` |
+| endoskeleton | `e30d1197-5733-40e8-a8d0-319f39aefb22` | warden | `c01cab90-a5ce-4733-b7f2-5dc48fbaf50a` |
 | heisenberg | `99ed62eb-1ac2-4f7f-b7ee-d52054341d3c` | vaultboy | `f9022b14-4dce-4761-a204-391c553b51ee` |
 | robot | `688b77cc-5c2b-423a-afb2-c974242a18c6` | crewmate | `f7214c81-2f8b-4750-a156-6916fc6481f3` |
 | alien | `851b7b25-1597-4c95-825f-22900086e81e` | steve | `ea50696a-4722-4a7b-a3ba-7b6702b319cf` |

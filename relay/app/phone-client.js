@@ -2,17 +2,17 @@
 
    This exact file is what the phone app will load (phase 2) and what the tests drive under Node, whose
    globalThis.crypto.subtle is the same WebCrypto API a phone browser has. So every test that passes here
-   proves the station speaks to a real browser's crypto, not to a Node-only twin of itself.
+   proves the keep speaks to a real browser's crypto, not to a Node-only twin of itself.
 
    Uses only: crypto.subtle (P-256 ECDH, HKDF-SHA256, AES-GCM, HMAC), crypto.getRandomValues, TextEncoder,
    fetch, and optionally a stream reader for events. No Node modules.
 
      const kp = await PhoneClient.makeDeviceKey()                 // { privateKey:CryptoKey, publicRaw }
      const p  = await PhoneClient.pair({ base, pairingId, code, name, key: kp })
-     const c  = PhoneClient.connect({ base, deviceId, stationPub, key: kp })          LAN door (HTTP; tests, local tools)
+     const c  = PhoneClient.connect({ base, deviceId, keepPub, key: kp })          LAN door (HTTP; tests, local tools)
      await c.open();  await c.call('status');  c.onEvent(fn);  await c.listen();  c.close()
-     const p2 = await PhoneClient.pairRelay({ relay, stationPub, pairingId, code, name, key: kp })
-     const r  = PhoneClient.connectRelay({ relay, stationPub, deviceId, relayToken, key: kp })   the product path
+     const p2 = await PhoneClient.pairRelay({ relay, keepPub, pairingId, code, name, key: kp })
+     const r  = PhoneClient.connectRelay({ relay, keepPub, deviceId, relayToken, key: kp })   the product path
      await r.open(); await r.call('status'); r.onEvent(fn); r.onStatus(fn); r.close() */
 (function (root, factory) {
   if (typeof module === 'object' && module.exports) module.exports = factory();
@@ -20,7 +20,7 @@
 }(typeof self !== 'undefined' ? self : this, function () {
   'use strict';
 
-  const LABEL = 'starnet-remote/1';
+  const LABEL = 'eyehold-remote/1';
   const VERSION = 1;
   const subtle = () => globalThis.crypto.subtle;
   const enc = new TextEncoder(), dec = new TextDecoder();
@@ -56,11 +56,11 @@
   async function ecdh(priv, pubRaw) { return new Uint8Array(await subtle().deriveBits({ name: 'ECDH', public: await importPub(pubRaw) }, priv, 256)); }
 
   async function deriveKeys(o) {
-    const ee = await ecdh(o.ephPrivate, o.stationEph);
-    const ss = await ecdh(o.devicePrivate, o.stationPub);
+    const ee = await ecdh(o.ephPrivate, o.keepEph);
+    const ss = await ecdh(o.devicePrivate, o.keepPub);
     const salt = new Uint8Array(await subtle().digest('SHA-256', concat([
-      enc.encode(LABEL), unb64u(o.stationPub), unb64u(o.devicePub), unb64u(o.stationEph), unb64u(o.phoneEph),
-      unb64u(o.phoneNonce), unb64u(o.stationNonce)
+      enc.encode(LABEL), unb64u(o.keepPub), unb64u(o.devicePub), unb64u(o.keepEph), unb64u(o.phoneEph),
+      unb64u(o.phoneNonce), unb64u(o.keepNonce)
     ])));
     const ikm = await subtle().importKey('raw', concat([ee, ss]), 'HKDF', false, ['deriveKey']);
     const key = (info, usage) => subtle().deriveKey({ name: 'HKDF', hash: 'SHA-256', salt, info: enc.encode(info) }, ikm, { name: 'AES-GCM', length: 256 }, false, usage);
@@ -79,7 +79,7 @@
 
   const open_ = open;   // the relay transport below has its own open(); keep a name for the decrypt
 
-  // "A1B2-C3D4-E5F6": the same short code the desk shows for its station key, so a person can compare them
+  // "A1B2-C3D4-E5F6": the same short code the desk shows for its keep key, so a person can compare them
   async function fingerprint(publicRaw) {
     const h = new Uint8Array(await subtle().digest('SHA-256', unb64u(publicRaw)));
     let hex = ''; for (let i = 0; i < 6; i++) hex += h[i].toString(16).padStart(2, '0');
@@ -119,8 +119,8 @@
       const w = r.body.welcome;
       state.keys = await deriveKeys({
         ephPrivate: eph.privateKey, devicePrivate: o.key.privateKey,
-        stationPub: o.stationPub, devicePub: o.key.publicRaw,
-        stationEph: w.eph, phoneEph: eph.publicRaw, phoneNonce: nonce, stationNonce: w.nonce
+        keepPub: o.keepPub, devicePub: o.key.publicRaw,
+        keepEph: w.eph, phoneEph: eph.publicRaw, phoneNonce: nonce, keepNonce: w.nonce
       });
       state.sid = w.sessionId; state.seq = 0; state.lastRes = 0; state.lastEv = 0;
       return w.sessionId;
@@ -179,14 +179,14 @@
 
 
   /* ---- RELAY transport (the product path): one WebSocket to the relay, which switches sealed frames to the
-     station. Works from anywhere; the page must be HTTPS (or localhost) because WebCrypto needs a secure
+     keep. Works from anywhere; the page must be HTTPS (or localhost) because WebCrypto needs a secure
      context. The relay never sees inside a frame. */
   function wsUrlOf(relay) {
     const u = String(relay || '').replace(/\/+$/, '');
     return u.replace(/^https:/i, 'wss:').replace(/^http:/i, 'ws:');
   }
-  async function ridOf(stationPub) {
-    const h = new Uint8Array(await subtle().digest('SHA-256', unb64u(stationPub)));
+  async function ridOf(keepPub) {
+    const h = new Uint8Array(await subtle().digest('SHA-256', unb64u(keepPub)));
     return b64u(h).slice(0, 22);
   }
 
@@ -195,12 +195,12 @@
     const WS = o.WebSocket || globalThis.WebSocket;
     const name = String(o.name || 'Phone');
     const proof = await pairingProof(o.code, o.key.publicRaw, name);
-    const rid = await ridOf(o.stationPub);
+    const rid = await ridOf(o.keepPub);
     return new Promise((resolve, reject) => {
       const ws = new WS(wsUrlOf(o.relay) + '/v1/phone?rid=' + encodeURIComponent(rid));
       let done = false;
       const finish = (err, val) => { if (done) return; done = true; try { ws.close(); } catch (_) {} if (err) reject(err); else resolve(val); };
-      const timer = setTimeout(() => finish(new Error('the station did not answer the pairing request')), 20000);
+      const timer = setTimeout(() => finish(new Error('the keep did not answer the pairing request')), 20000);
       ws.onopen = () => ws.send(JSON.stringify({ t: 'pair', pairingId: o.pairingId, publicKey: o.key.publicRaw, name, proof }));
       ws.onmessage = (ev) => {
         let m; try { m = JSON.parse(ev.data); } catch (_) { return; }
@@ -214,10 +214,10 @@
 
   function closeReason(ev) {
     const c = ev && ev.code;
-    if (c === 4404) return 'station offline';
-    if (c === 4401) return 'this phone is not paired with that station (or was removed)';
+    if (c === 4404) return 'keep offline';
+    if (c === 4401) return 'this phone is not paired with that keep (or was removed)';
     if (c === 4429) return 'too many requests — wait a moment';
-    if (c === 4410) return 'the station reconnected';
+    if (c === 4410) return 'the keep reconnected';
     return 'connection closed' + (c ? ' (' + c + ')' : '');
   }
 
@@ -235,7 +235,7 @@
     function open() {
       if (st.opening) return st.opening;
       st.opening = (async () => {
-        const rid = await ridOf(o.stationPub);
+        const rid = await ridOf(o.keepPub);
         const eph = await makeKeyPair(false);
         const nonce = randomB64u(16);
         status('connecting');
@@ -244,7 +244,7 @@
         await new Promise((resolve, reject) => {
           let welcomed = false, deriving = false;
           const early = [];   // frames that arrive while the keys are still being derived (events never wait for us)
-          const timer = setTimeout(() => reject(new Error('the station did not answer')), 20000);
+          const timer = setTimeout(() => reject(new Error('the keep did not answer')), 20000);
           ws.onopen = () => ws.send(JSON.stringify({ t: 'hello', v: VERSION, deviceId: o.deviceId, eph: eph.publicRaw, nonce }));
           ws.onmessage = async (ev) => {
             let m; try { m = JSON.parse(ev.data); } catch (_) { return; }
@@ -254,8 +254,8 @@
                 deriving = true;
                 const w = m.welcome;
                 try {
-                  st.keys = await deriveKeys({ ephPrivate: eph.privateKey, devicePrivate: o.key.privateKey, stationPub: o.stationPub, devicePub: o.key.publicRaw,
-                    stationEph: w.eph, phoneEph: eph.publicRaw, phoneNonce: nonce, stationNonce: w.nonce });
+                  st.keys = await deriveKeys({ ephPrivate: eph.privateKey, devicePrivate: o.key.privateKey, keepPub: o.keepPub, devicePub: o.key.publicRaw,
+                    keepEph: w.eph, phoneEph: eph.publicRaw, phoneNonce: nonce, keepNonce: w.nonce });
                 } catch (e) { clearTimeout(timer); return reject(e); }
                 st.sid = w.sessionId; st.seq = 0; st.lastRes = 0; st.lastEv = 0; welcomed = true; deriving = false;
                 clearTimeout(timer); resolve();
@@ -306,7 +306,7 @@
       }
     }
 
-    // The station forgets an idle session after ten minutes (and any session when it restarts) while the socket to
+    // The keep forgets an idle session after ten minutes (and any session when it restarts) while the socket to
     // the relay can stay up. That answers 'no session'. Shake hands again on a fresh socket and send the call once
     // more, so the person never sees it.
     function reopen() {
@@ -324,7 +324,7 @@
         return callOnce(verb, args, timeoutMs);
       }
     }
-    // sealing is async: chain it, so frame n always leaves before frame n+1 (the station refuses an older seq)
+    // sealing is async: chain it, so frame n always leaves before frame n+1 (the keep refuses an older seq)
     let sendChain = Promise.resolve();
     async function callOnce(verb, args, timeoutMs) {
       await open();
@@ -334,7 +334,7 @@
       sendChain = turn.catch(() => {});
       await turn;
       return new Promise((resolve, reject) => {
-        const timer = setTimeout(() => { st.pending.delete(id); st.bySeq.delete(seq); reject(new Error('the station took too long to answer')); }, timeoutMs || 30000);
+        const timer = setTimeout(() => { st.pending.delete(id); st.bySeq.delete(seq); reject(new Error('the keep took too long to answer')); }, timeoutMs || 30000);
         st.pending.set(id, { resolve, reject, timer, seq });
         st.bySeq.set(seq, id);
         try { st.ws.send(JSON.stringify({ t: 'call', frame })); } catch (e) { clearTimeout(timer); st.pending.delete(id); st.bySeq.delete(seq); reject(e); }

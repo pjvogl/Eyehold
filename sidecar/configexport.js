@@ -1,4 +1,4 @@
-/* sidecar/configexport.js — STATION BACKUP (P1-7): serialize the station's persisted config/state to ONE
+/* sidecar/configexport.js — KEEP BACKUP (P1-7): serialize the keep's persisted config/state to ONE
    portable JSON file, import it back, and reset a section to its defaults. Pure + injected-deps (no IO / clock /
    env) so it is node-testable; index.js wires the live stores (budget/fallback/roster/dossier/connectors/
    permissions/autonomy/notify prefs) into the collectors below and persists what applyImport returns.
@@ -7,7 +7,7 @@
    are exported as a `configured: true` marker ONLY — the raw secret is never read into the envelope. On import
    those markers surface a "re-enter your key" state; the import never fabricates a secret it doesn't have.
 
-   FORMAT: a schema-versioned envelope { starnetExport: 1, exportedAt, app, sections: {...} }. `starnetExport`
+   FORMAT: a schema-versioned envelope { eyeholdExport: 1, exportedAt, app, sections: {...} }. `eyeholdExport`
    is the migration pivot: a future importer can branch on it. Every section is OPTIONAL — a partial export (or a
    partial import selecting only some sections) round-trips cleanly. Unknown sections are ignored on import (never
    a hard failure), so a newer export can still be read by an older build (forward-tolerant).
@@ -29,7 +29,7 @@
   const MAX_CONNECTOR_MAP_FIELDS = 256;
   const MAX_CONNECTOR_VALUE_LENGTH = 8192;
 
-  // the sections a station backup carries. Order is stable so an exported file diffs cleanly across versions.
+  // the sections a keep backup carries. Order is stable so an exported file diffs cleanly across versions.
   // Each key maps to a live collector (export) + a live applier (import) wired in index.js. `secret:true` marks
   // a section that carries a configured-marker ONLY (never the raw secret).
   const SECTIONS = [
@@ -190,9 +190,9 @@
     if (want('notifyPrefs') && isObj(s.notifyPrefs)) sections.notifyPrefs = s.notifyPrefs;
 
     return {
-      starnetExport: SCHEMA,
+      eyeholdExport: SCHEMA,
       exportedAt: (typeof o.now === 'number') ? o.now : null,
-      app: clampStr(o.app || 'StarNet', 40),
+      app: clampStr(o.app || 'Eyehold', 40),
       sections
     };
   }
@@ -203,10 +203,10 @@
      of "re-enter your key" prompts the UI must surface. ---- */
   function parseImport(env) {
     if (!isObj(env)) return { ok: false, error: 'not a JSON object' };
-    const schema = env.starnetExport;
-    if (typeof schema !== 'number' || schema < 1) return { ok: false, error: 'missing or invalid "starnetExport" version marker' };
+    const schema = env.eyeholdExport;
+    if (typeof schema !== 'number' || schema < 1) return { ok: false, error: 'missing or invalid "eyeholdExport" version marker' };
     const notes = [];
-    if (schema > SCHEMA) notes.push('file is from a newer StarNet (schema ' + schema + '); importing what this build understands');
+    if (schema > SCHEMA) notes.push('file is from a newer Eyehold (schema ' + schema + '); importing what this build understands');
     const inSec = isObj(env.sections) ? env.sections : {};
     const out = {};
     const secretsNeeded = [];
@@ -238,7 +238,7 @@
     if (isObj(inSec.permissions) && Array.isArray(inSec.permissions.allow)) {
       // A 'path:<root>' grant is machine-specific AUTHORITY, not a preference: it blesses a folder for agent file
       // reads (pathtrust) and checkpoint restores. A config file from another machine — or one crafted to carry
-      // 'path:C:\' — must not widen this station's reach just by being imported. Same rule as station-recovery.js,
+      // 'path:C:\' — must not widen this keep's reach just by being imported. Same rule as keep-recovery.js,
       // which strips path grants from backups: re-authorize the folder from a watched session instead.
       const allow = inSec.permissions.allow.filter(x => typeof x === 'string').slice(0, 256);
       const machinePaths = allow.filter(x => /^path:/i.test(x));

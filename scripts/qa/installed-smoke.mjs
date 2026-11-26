@@ -9,12 +9,12 @@
  * is that proof, kept to a SMOKE (minutes, a handful of assertions) — not the full Atlas.
  *
  * HOW YOU RUN IT (operator, on Andrew's machine):
- *   1. Relaunch the installed StarNet with the WebView2 debug port open:
+ *   1. Relaunch the installed Eyehold with the WebView2 debug port open:
  *        $env:WEBVIEW2_ADDITIONAL_BROWSER_ARGUMENTS='--remote-debugging-port=9333'
- *        & "$env:LOCALAPPDATA\..\StarNet.exe"     # or the Start-menu shortcut
+ *        & "$env:LOCALAPPDATA\..\Eyehold.exe"     # or the Start-menu shortcut
  *      (9333 is the convention prior installed-exe CDP work used — desktop-bundles /
- *       voice-system memory. Override with STARNET_SMOKE_CDP_PORT.)
- *   2. Set STARNET_SMOKE_EXPECTED_HEAD (full candidate SHA) and STARNET_SMOKE_ARTIFACT (the exact executable being run).
+ *       voice-system memory. Override with EYEHOLD_SMOKE_CDP_PORT.)
+ *   2. Set EYEHOLD_SMOKE_EXPECTED_HEAD (full candidate SHA) and EYEHOLD_SMOKE_ARTIFACT (the exact executable being run).
  *   3. `npm run qa:smoke:installed`  → attaches to that port, sweeps, writes the stamp.
  *
  * THE STAMP CONTRACT (read by the qa:ready gate — scripts/qa/ready.mjs, lane agent/ready-gate):
@@ -71,7 +71,7 @@ export const REQUIRED_CHECKS = Object.freeze([
 // inspect the boot-default (closed) surface and report a product RED without ever operating the
 // control whose contents it claimed to verify. Drive the real dock control first and wait for the
 // panel to settle; SMOKE_PROBE remains the read-only assertion pass. A cold WebView can expose the
-// dock DOM before StationUI.init() has attached its listener, so an unhandled first click is not
+// dock DOM before KeepUI.init() has attached its listener, so an unhandled first click is not
 // evidence of a product failure. Retry while the board is absent. Opening TASKS creates .kb-cols
 // synchronously, which makes the success check prevent a later retry from toggling it closed.
 export const PREPARE_SMOKE_SURFACE = `(async () => {
@@ -80,7 +80,7 @@ export const PREPARE_SMOKE_SURFACE = `(async () => {
     const trigger = document.querySelector('[data-term="tasks"]');
     // 0.13 front doors: TASKS is a tab of MY WORK, not a dock key — open it the way its tab does
     if (trigger) trigger.click();
-    else if (typeof StationUI !== 'undefined' && StationUI.openTerm) StationUI.openTerm('tasks');
+    else if (typeof KeepUI !== 'undefined' && KeepUI.openTerm) KeepUI.openTerm('tasks');
     await new Promise(resolve => setTimeout(resolve, 250));
   }
   return document.querySelectorAll('.kb-cols').length === 1;
@@ -95,9 +95,9 @@ function str(v) { return v == null ? '' : String(v); }
 // only invariants a real production page exposes (the launch token, /api/version, /api/diagnostics,
 // the world/canvas, and the Workstreams/Channels no-forever-running truth when the board is open).
 //
-// AUTH HEADER (ledger finding 4d9992d9) — the probe MUST send X-StarNet-Token, never an "Authorization: Bearer"
-// header. The sidecar authenticates on X-StarNet-Token (a Bearer token is rejected as "forbidden token"), and its
-// CORS Access-Control-Allow-Headers lists only Content-Type,X-StarNet-Token,X-Skynet-Token. On the packaged desktop
+// AUTH HEADER (ledger finding 4d9992d9) — the probe MUST send X-Eyehold-Token, never an "Authorization: Bearer"
+// header. The sidecar authenticates on X-Eyehold-Token (a Bearer token is rejected as "forbidden token"), and its
+// CORS Access-Control-Allow-Headers lists only Content-Type,X-Eyehold-Token,X-Skynet-Token. On the packaged desktop
 // exe the page origin is http://tauri.localhost while the sidecar is http://127.0.0.1:<port>, so every /api/* call is
 // CROSS-ORIGIN: a stray Authorization header makes the OPTIONS preflight request a header the sidecar won't allow, the
 // preflight is rejected, and fetch() dies with "Failed to fetch" BEFORE any response — appVersion reads blank and the
@@ -116,28 +116,28 @@ export const SMOKE_PROBE = `(async () => {
   try {
     const core = window.__TAURI__ && window.__TAURI__.core;
     if (!core || typeof core.invoke !== 'function') throw new Error('Tauri invoke unavailable');
-    out.shell = await core.invoke('starnet_build_info');
+    out.shell = await core.invoke('eyehold_build_info');
     const knownKinds = new Set(['reproducible-source', 'custom', 'dirty-dev']);
     const known = !!(out.shell && /^[0-9a-f]{40}$/i.test(String(out.shell.sha || '')) &&
       /^[0-9a-f]{40}$/i.test(String(out.shell.sourceTree || '')) && knownKinds.has(String(out.shell.provenanceKind || '')));
     add('desktop/build-info', known, known
       ? ('commit=' + out.shell.sha + ' tree=' + out.shell.sourceTree + ' kind=' + out.shell.provenanceKind + ' describe=' + out.shell.describe + ' dirty=' + !!out.shell.dirty)
-      : 'starnet_build_info returned no known commit/tree/provenance kind');
+      : 'eyehold_build_info returned no known commit/tree/provenance kind');
     const executableSha256 = String((out.shell && out.shell.executableSha256) || '').toLowerCase();
     const executableSize = Number(out.shell && out.shell.executableSize);
     const executableKnown = /^[0-9a-f]{64}$/.test(executableSha256) && Number.isSafeInteger(executableSize) && executableSize > 0;
     add('desktop/executable-identity', executableKnown, executableKnown
       ? ('sha256=' + executableSha256.slice(0, 12) + '… size=' + executableSize)
-      : 'starnet_build_info returned no valid runtime executable SHA-256/size');
+      : 'eyehold_build_info returned no valid runtime executable SHA-256/size');
   } catch (e) {
-    add('desktop/build-info', false, 'starnet_build_info failed: ' + (e && e.message));
-    add('desktop/executable-identity', false, 'starnet_build_info failed before runtime executable identity was available');
+    add('desktop/build-info', false, 'eyehold_build_info failed: ' + (e && e.message));
+    add('desktop/executable-identity', false, 'eyehold_build_info failed before runtime executable identity was available');
   }
-  const tok = (typeof window !== 'undefined' && window.__STARNET_API_TOKEN__) ? String(window.__STARNET_API_TOKEN__) : '';
-  // X-StarNet-Token is the sidecar's auth header AND the only auth header its CORS allow-list accepts on the
+  const tok = (typeof window !== 'undefined' && window.__EYEHOLD_API_TOKEN__) ? String(window.__EYEHOLD_API_TOKEN__) : '';
+  // X-Eyehold-Token is the sidecar's auth header AND the only auth header its CORS allow-list accepts on the
   // cross-origin packaged build. See the long note above SMOKE_PROBE (finding 4d9992d9) before changing this.
-  const authHeaders = tok ? { 'X-StarNet-Token': tok } : {};
-  add('boot/api-token-present', !!tok, tok ? 'per-launch token injected into the page' : 'no window.__STARNET_API_TOKEN__ — is this the app page?');
+  const authHeaders = tok ? { 'X-Eyehold-Token': tok } : {};
+  add('boot/api-token-present', !!tok, tok ? 'per-launch token injected into the page' : 'no window.__EYEHOLD_API_TOKEN__ — is this the app page?');
 
   // ---- app version (token-gated GET /api/version): the whole point of the smoke — WHICH build is this? ----
   try {
@@ -164,7 +164,7 @@ export const SMOKE_PROBE = `(async () => {
   // ---- boot state sane: the world actually rendered ----
   const hasWorld = (typeof window !== 'undefined') && (!!window.__world || !!window.__SKYNET_WORLD || !!document.querySelector('canvas'));
   add('boot/world-present', hasWorld, hasWorld ? 'world model / canvas present' : 'no __world and no <canvas> — app did not render');
-  const hasStage = !!document.querySelector('#stage, canvas, .station, #app, .stage');
+  const hasStage = !!document.querySelector('#stage, canvas, .keep, #app, .stage');
   add('boot/stage-rendered', hasStage, hasStage ? 'stage/app root present in DOM' : 'no stage/app root element');
 
   // ---- production-safe parity subset (cousin of journeys parityCheck; no __SKYNET_TEST__ needed) ----
@@ -542,15 +542,15 @@ if (INVOKED_DIRECTLY) (async () => {
   const LEDGER_CLI = path.join(REPO, 'scripts', 'qa', 'ledger.mjs');
   const OUT_DIR = path.join(REPO, 'qa', 'installed');
   const STAMP_FILE = path.join(OUT_DIR, 'last-smoke.json');
-  const PORT = parseInt(process.env.STARNET_SMOKE_CDP_PORT || '9333', 10);
-  const expectedHead = str(process.env.STARNET_SMOKE_EXPECTED_HEAD || process.env.STARNET_PRODUCT_PERFECT_CANDIDATE_SHA).trim().toLowerCase();
+  const PORT = parseInt(process.env.EYEHOLD_SMOKE_CDP_PORT || '9333', 10);
+  const expectedHead = str(process.env.EYEHOLD_SMOKE_EXPECTED_HEAD || process.env.EYEHOLD_PRODUCT_PERFECT_CANDIDATE_SHA).trim().toLowerCase();
   const expectedTree = (() => {
     if (!/^[0-9a-f]{40}$/.test(expectedHead)) return '';
     const result = spawnSync('git', ['rev-parse', expectedHead + '^{tree}'], { cwd: REPO, encoding: 'utf8', windowsHide: true });
     const value = str(result.stdout).trim().toLowerCase();
     return result.status === 0 && /^[0-9a-f]{40}$/.test(value) ? value : '';
   })();
-  const artifactPath = str(process.env.STARNET_SMOKE_ARTIFACT).trim();
+  const artifactPath = str(process.env.EYEHOLD_SMOKE_ARTIFACT).trim();
 
   const stampIsoNow = new Date().toISOString();
   const RUN_DIR = path.join(OUT_DIR, 'smoke-' + stampIsoNow.replace(/[:.]/g, '-'));
@@ -613,8 +613,8 @@ if (INVOKED_DIRECTLY) (async () => {
   };
 
   io.log('attaching to installed exe CDP on 127.0.0.1:' + PORT + ' (relaunch it with WEBVIEW2_ADDITIONAL_BROWSER_ARGUMENTS=--remote-debugging-port=' + PORT + ')');
-  if (!expectedHead) io.log('BLOCKED — set STARNET_SMOKE_EXPECTED_HEAD to the full candidate commit SHA');
-  if (!artifact) io.log('BLOCKED — set STARNET_SMOKE_ARTIFACT to the exact installed executable bytes being run');
+  if (!expectedHead) io.log('BLOCKED — set EYEHOLD_SMOKE_EXPECTED_HEAD to the full candidate commit SHA');
+  if (!artifact) io.log('BLOCKED — set EYEHOLD_SMOKE_ARTIFACT to the exact installed executable bytes being run');
   if (!expectedTree) io.log('BLOCKED - the expected candidate source tree could not be resolved');
   const smoke = makeSmoke({ attach, clock: { nowIso: () => stampIsoNow }, expectedHead, expectedTree, artifact, io });
   const { result } = await smoke.run();

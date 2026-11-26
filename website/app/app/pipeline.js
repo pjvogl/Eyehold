@@ -2,7 +2,7 @@
 
    Pure, zero-dep, UMD: node tests + the browser sim + the sidecar router all require() the SAME module,
    so "the box you watch ride to a bay" and "the agent that actually runs" are provably one plan — they
-   cannot drift. This is to ROUTING what resolveTools(agentId, station) is to CAPABILITY.
+   cannot drift. This is to ROUTING what resolveTools(agentId, keep) is to CAPABILITY.
 
    compileRoutingPlan(geo)  -> a validated { sources, bays, junctions, belts, bayTileToAgent, reach, errors, hash }
    resolveTarget(plan,{tag}) -> the agentId a work-item routes to (following FILTER content-routing), or null.
@@ -486,7 +486,7 @@
     const map = links ? linkedBeltMap(buildBeltMap(geo && geo.belts), props, links) : buildBeltMap(geo && geo.belts);
     const errors = [], sources = [], bays = [], junctions = {}, bayTileToAgent = {}, escExplicit = {};
     /* THE DOCK KEY (multi-bay agents, 2026-09-22 — Andrew's ruling: one bay has ONE agent, one agent may crew
-       MANY bays). A dock is its bay PROP id: stable in the station doc, already on bays[]/dockBays[]. Every
+       MANY bays). A dock is its bay PROP id: stable in the keep doc, already on bays[]/dockBays[]. Every
        routing walk below keys on the dock that owns a tile (bayTileToDock), never on the agent crewing it —
        writer@A → editor@B → writer@C is three docks and two agents. The agent-keyed maps stay as VIEWS. */
     const bayTileToDock = {}, agentOfDock = {};
@@ -519,7 +519,7 @@
         // WARN, never a blocker (2026-07-26): an intake with no belt contributes no source, so it can neither
         // loop nor route work into a void — the two things `ok()` exists to prevent. Blocking on it meant ONE
         // decorative INTAKE anywhere on the floor made the whole plan non-deployable, which the sidecar
-        // refuses wholesale — taking per-bay capability isolation down with it (see router.stationFor).
+        // refuses wholesale — taking per-bay capability isolation down with it (see router.keepFor).
         // Same standing as its neighbours ORPHAN_BAY / BAY_NOT_FED: the floor still nags, it just isn't fatal.
         if (!t) { errors.push({ code: 'ORPHAN_SOURCE', propId: p.id, warn: true }); continue; }
         // EVERY ring belt tile is a feed mouth (2026-08-04 audit — same multi-hookup rule bays and outboxes
@@ -664,8 +664,8 @@
       // EVERY bound bay is a working dock (legibility list; NOT the dispatch `bays` — router semantics untouched).
       // A LONE assigned bay is a COMPLETE build: work addressed to its agent arrives at the dock, no belts needed.
       // `brief` (step editor, 2026-08-05) rides THIS list only — the Commander's standing job brief for this
-      // station, PROMPT TEXT ONLY: it never touches routing (resolveTarget/chainNext ignore it) or capability
-      // (stationFor reads objects, never brief), and `dockBays` is outside the hash so it cannot move dispatch
+      // keep, PROMPT TEXT ONLY: it never touches routing (resolveTarget/chainNext ignore it) or capability
+      // (keepFor reads objects, never brief), and `dockBays` is outside the hash so it cannot move dispatch
       // either. Bounded here so no surface can post an unbounded blob.
       // HANDS OFF (workflow panel, 2026-09-22): the dock's optional hand-off phrase is COMPOSED into the brief
       // here, so the agent is actually told it (object=capability — never a cosmetic field). Same list, same
@@ -795,7 +795,7 @@
     plan.unboundBayTile = unboundBayTile;   // ring belt tile -> UNCREWED bay (legibility only, outside the hash): a lane that
                                             // ends at a bay with no agent yet is named "BAY n (no agent yet)", never "nowhere"
     /* SPLIT_CREW (multi-bay, 2026-09-22): a DESK-LESS agent whose bays sit in more than one room gets a
-       different toolbox at each bay (station isolation is per dock — never the union), which is surprising.
+       different toolbox at each bay (keep isolation is per dock — never the union), which is surprising.
        Advice, never a blocker: "PLACE A DESK — TOOLS FOLLOW THE DOCK" — a desk pins every bay to one room.
        Anchored on the agent's second-oldest bay (the one whose room differs from the first). */
     for (const a in capRoomsOf) {
@@ -867,7 +867,7 @@
     const tooClose = b => bayTilesOf(b).some(t => { const k = key(t.x, t.y); return (sharedRing[k] === 'src' || (ringOwners[k] || []).length > 1) && aimsInto(t, b.propId); });
     // UNDER A BELT CYCLE reach is deliberately never computed (all false — a glowing lane must mean "a route runs
     // here", and nothing routes while the loop stands), so "not fed" would be a GUESS: it sent the Commander to
-    // belt bays that were already fed while the real fault — the CYCLE, a blocking error — went unread (station.layout
+    // belt bays that were already fed while the real fault — the CYCLE, a blocking error — went unread (keep.layout
     // audit 2026-09-28). Only the CYCLE speaks until it is broken.
     if (!cyc) for (const b of bays) if (!reachDock[b.propId] && !chainFed[b.propId] && !flowsToOutbox(b.tile)) errors.push({ code: tooClose(b) ? 'BAY_TOO_CLOSE' : 'BAY_NOT_FED', propId: b.propId, agentId: b.agentId, warn: true });
     // A CHAIN LOOP IS A BLOCKING ERROR — and it is INVISIBLE to detectCycle. A's ship tile feeding B's dock and
@@ -905,7 +905,7 @@
 
        Attached AFTER the hash inputs are fixed, and only onto the LEGIBILITY list (`dockBays`) plus these
        lookup maps — the dispatch topology is unchanged, so the same floor keeps the same plan.hash it had
-       before line identity existed and no station needlessly re-arms on upgrade. */
+       before line identity existed and no keep needlessly re-arms on upgrade. */
     const lines = [], lineOfProp = {}, lineOfAgent = {}, lineLimits = {};
     for (const c of lineComponents(geo)) {
       const lineId = c.key, rec = { lineId, propIds: c.props.slice(), intakes: c.intakes.slice(), outboxes: c.outboxes.slice(), agents: [] };
@@ -950,7 +950,7 @@
 
     // THE HASH IS DISPATCH TOPOLOGY, NOTHING ELSE — sources, dispatch bays, junctions, belts. Every legibility
     // extra (dockBays + their briefs, unboundBays, outs, reach, chains, lines) is OUTSIDE it, so the same floor
-    // keeps the same hash and no station needlessly re-arms: typing a job brief, naming a line or upgrading to
+    // keeps the same hash and no keep needlessly re-arms: typing a job brief, naming a line or upgrading to
     // line identity moves nothing here. Verified by test/pipeline.test.js ("a brief edit does not move the hash").
     plan.hash = hashStr(JSON.stringify({ sources, bays, junctions, belts: map }));
     // the links this plan was compiled from, for a re-compile of the same floor (WorkflowLine's stand-in crew probe).
@@ -985,7 +985,7 @@
      channel bots deliberately hard-lock stage one to their bound agent and consult no floor routing at all,
      so a resolution-flavoured answer would have said "no line" for exactly the case the belts were drawn for.
 
-     WHAT COUNTS AS "THE LINE'S OWN TRIGGER" is the station's existing law, not a new idea: **work handed
+     WHAT COUNTS AS "THE LINE'S OWN TRIGGER" is the keep's existing law, not a new idea: **work handed
      over in person skips the ride in.** The REFIT flow strip has said so since belt-teach — "COMMS orders
      skip the ride in — you gave them in person" — and world.js already refuses to spawn an INTAKE crate for
      a kind:'directive' work-item. So the test is "did it ride in through this line's front door?": the dock
@@ -1077,7 +1077,7 @@
     return out;
   }
 
-  // agentId -> [dockId…] oldest first — every bound bay (beltless docks included: they are real stations)
+  // agentId -> [dockId…] oldest first — every bound bay (beltless docks included: they are real keeps)
   function docksOfAgentOf(agentOfDock) {
     const out = {};
     for (const d in agentOfDock) { const a = agentOfDock[d]; if (a) (out[a] = out[a] || []).push(d); }
@@ -1679,10 +1679,10 @@
     // verdict-keyed LOOP gate (sidecar/routing/verdict.js composes it) — optional 6th param, same law.
     const brief = (typeof stageBrief === 'string' && stageBrief.trim()) ? stageBrief.trim().slice(0, 2000) : '';
     const verdict = (typeof verdictBrief === 'string' && verdictBrief.trim()) ? verdictBrief.trim().slice(0, 600) : '';
-    return 'PIPELINE HANDOFF — you are stage ' + (hop + 1) + ' of a work line on this station.\n\n'
+    return 'PIPELINE HANDOFF — you are stage ' + (hop + 1) + ' of a work line on this keep.\n\n'
       + 'The original request was:\n' + String(originalText || '(none recorded)') + '\n\n'
       + 'The upstream stage (' + fromAgentId + ') produced:\n' + String(upstream) + '\n\n'
-      + (brief ? 'YOUR STANDING BRIEF FOR THIS STATION:\n' + brief + '\n\n' : '')
+      + (brief ? 'YOUR STANDING BRIEF FOR THIS KEEP:\n' + brief + '\n\n' : '')
       + (verdict ? verdict + '\n\n' : '')
       /* lastStage (2026-09-30 — found on a real model): the stage whose reply LEAVES the line is told so. "Produce the output for
          the next stage … build on it" made a last WRITER asked for three short stories write an essay about "the upstream report".
@@ -1699,7 +1699,7 @@
      result to the Commander (2026-09-27 audit R2: the OUTBOX titled a line's result "PIPELINE HANDOFF — you are stage 2 of a work
      line on this stati…" and showed the whole machine prompt under WHAT YOU ASKED FOR). Reads only the fixed frame handoffPrompt
      writes; anything else is null. Pure. */
-  const HANDOFF_RE = /^PIPELINE HANDOFF — you are stage (\d+) of a work line on this station\.\n\nThe original request was:\n([\s\S]*?)\n\nThe upstream stage \(([^)]*)\) produced:\n/;
+  const HANDOFF_RE = /^PIPELINE HANDOFF — you are stage (\d+) of a work line on this keep\.\n\nThe original request was:\n([\s\S]*?)\n\nThe upstream stage \(([^)]*)\) produced:\n/;
   function parseHandoff(text) {
     const m = HANDOFF_RE.exec(String(text == null ? '' : text));
     return m ? { stage: +m[1], original: m[2], from: m[3] } : null;
@@ -1708,7 +1708,7 @@
      frame's fixed opening is read, so a run row's shortened title answers too. A hand-off's words are the LINE's — the step's
      standing instructions, the upstream stage's work — never the Commander's own: the run-end STUDY and THREAD passes skip such a
      run (2026-09-30: NOVA quoted a WRITER step's brief back to the Commander as «because you said …»). Pure. */
-  const HANDOFF_HEAD_RE = /^PIPELINE HANDOFF — you are stage \d+ of a work line on this station\./;
+  const HANDOFF_HEAD_RE = /^PIPELINE HANDOFF — you are stage \d+ of a work line on this keep\./;
   function isHandoff(text) { return HANDOFF_HEAD_RE.test(String(text == null ? '' : text).replace(/^\s+/, '')); }
   /* stripVerdictLine(text) -> the text without a trailing reviewer VERDICT line (one of its last 3 non-empty lines), for showing
      a work line's result: the line is the loop gate's control signal, not part of the work (R1; sidecar/routing/verdict.js holds

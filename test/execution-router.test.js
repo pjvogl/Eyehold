@@ -2,7 +2,7 @@
 const A = require('./_assert.js');
 const { makeExecutionRouter } = require('../sidecar/execution-router.js');
 
-const profiles = { legacy: 'station-gear', safe: 'safe-cell', remote: 'remote-ssh', trusted: 'trusted-project', host: 'this-computer' };
+const profiles = { legacy: 'keep-gear', safe: 'safe-cell', remote: 'remote-ssh', trusted: 'trusted-project', host: 'this-computer' };
 function fake(id) {
   return {
     id, backendId: id, supports: { hostileCodeSandbox: id === 'docker' },
@@ -30,17 +30,17 @@ function fake(id) {
 const local = fake('local'), docker = fake('docker'), ssh = fake('ssh');
 const router = makeExecutionRouter({
   environments: { local, docker, ssh }, defaultBackendId: 'local',
-  profileForAgent: agentId => profiles[agentId] || 'station-gear'
+  profileForAgent: agentId => profiles[agentId] || 'keep-gear'
 });
 let fullPower = false;
 const fullPowerRouter = makeExecutionRouter({
   environments: { local, docker, ssh }, defaultBackendId: 'local',
-  profileForAgent: agentId => profiles[agentId] || 'station-gear',
+  profileForAgent: agentId => profiles[agentId] || 'keep-gear',
   forceLocalForAgent: () => fullPower
 });
 
-A.eq(router.backendId, 'local', 'legacy backendId remains the station default for old callers');
-A.eq(router.backendIdFor('legacy'), 'local', 'compatibility profile follows the station default');
+A.eq(router.backendId, 'local', 'legacy backendId remains the keep default for old callers');
+A.eq(router.backendIdFor('legacy'), 'local', 'compatibility profile follows the keep default');
 A.eq(router.backendIdFor('safe'), 'docker', 'Safe Cell routes to Docker immediately');
 A.eq(router.backendIdFor('remote'), 'ssh', 'Remote SSH routes to SSH immediately');
 A.eq(router.backendIdFor('trusted'), 'local', 'Trusted Project routes local');
@@ -62,8 +62,8 @@ router.execute({ agentId: 'safe', cmd: 'x' }).then(async result => {
   const synced = await router.syncWorkspace('remote', { direction: 'push' });
   A.eq(synced.backend, 'ssh', 'workspace synchronization routes through the remote agent environment');
   A.eq(router.describeAgent('safe').effectiveBackend, 'docker', 'per-agent runtime truth names Docker');
-  A.eq(router.describe().routing.perAgent, true, 'station execution status exposes dynamic routing');
-  A.eq(router.killAllBackground(), 3, 'station halt reaches every distinct backend');
+  A.eq(router.describe().routing.perAgent, true, 'keep execution status exposes dynamic routing');
+  A.eq(router.killAllBackground(), 3, 'keep halt reaches every distinct backend');
 
   // ---- an ASYNC backend reap (SSH) is dispatched, never an unhandledRejection (customer diagnostics 10-07) ----
   const unhandled = [];
@@ -72,18 +72,18 @@ router.execute({ agentId: 'safe', cmd: 'x' }).then(async result => {
   try {
     let sshAsked = 0;
     const rejectingSsh = Object.assign(fake('ssh'), { killAllBackground: () => { sshAsked++; return Promise.reject(new Error('SSH target is not configured for agent')); } });
-    const asyncRouter = makeExecutionRouter({ environments: { local: fake('local'), docker: fake('docker'), ssh: rejectingSsh }, defaultBackendId: 'local', profileForAgent: agentId => profiles[agentId] || 'station-gear' });
+    const asyncRouter = makeExecutionRouter({ environments: { local: fake('local'), docker: fake('docker'), ssh: rejectingSsh }, defaultBackendId: 'local', profileForAgent: agentId => profiles[agentId] || 'keep-gear' });
     A.eq(asyncRouter.killAllBackground(), 2, 'the synchronous count covers only the proven local/docker kills');
     A.eq(sshAsked, 1, 'the async backend is still asked to reap');
     await new Promise(r => setTimeout(r, 0)); await new Promise(r => setTimeout(r, 0));
     A.eq(unhandled.length, 0, 'a rejecting async reap is caught by the router, not left to the process');
 
-    // real wiring: the actual three managers a no-SSH station registers (a sync fake hid the async shape once)
+    // real wiring: the actual three managers a no-SSH keep registers (a sync fake hid the async shape once)
     const fs = require('fs'), os = require('os'), path = require('path');
     const { makeEnvironmentManager } = require('../sidecar/environment.js');
     const root = fs.mkdtempSync(path.join(os.tmpdir(), 'sk-router-'));
     try {
-      const noSpawn = () => { throw new Error('a no-SSH station halt must not spawn anything'); };
+      const noSpawn = () => { throw new Error('a no-SSH keep halt must not spawn anything'); };
       const realDeps = { spawn: noSpawn, fs, pathMod: path, root, env: {}, sshConfig: () => null };
       const real = makeExecutionRouter({
         environments: {
@@ -91,19 +91,19 @@ router.execute({ agentId: 'safe', cmd: 'x' }).then(async result => {
           docker: makeEnvironmentManager(Object.assign({}, realDeps, { config: { backend: 'docker' } })),
           ssh: makeEnvironmentManager(Object.assign({}, realDeps, { config: { backend: 'ssh' } }))
         },
-        defaultBackendId: 'local', profileForAgent: () => 'station-gear', env: {}
+        defaultBackendId: 'local', profileForAgent: () => 'keep-gear', env: {}
       });
       let threw = null, n = null;
       try { n = real.killAllBackground(); } catch (e) { threw = e; }
       A.eq(threw, null, 'E-STOP fan-out over the real managers does not throw');
-      A.eq(n, 0, 'nothing to reap on a fresh no-SSH station');
+      A.eq(n, 0, 'nothing to reap on a fresh no-SSH keep');
       await new Promise(r => setTimeout(r, 0)); await new Promise(r => setTimeout(r, 0));
       A.eq(unhandled.length, 0, 'real local+docker+ssh managers with no SSH target: zero unhandled rejections on halt');
     } finally { try { fs.rmSync(root, { recursive: true, force: true }); } catch (_) {} }
   } finally { process.removeListener('unhandledRejection', onUnhandled); }
 
   // ---- Lane C: a requested sandbox is honored or refused, never faked ----
-  const noDocker = makeExecutionRouter({ environments: { local }, defaultBackendId: 'local', profileForAgent: agentId => profiles[agentId] || 'station-gear', env: {} });
+  const noDocker = makeExecutionRouter({ environments: { local }, defaultBackendId: 'local', profileForAgent: agentId => profiles[agentId] || 'keep-gear', env: {} });
   const safeRes = noDocker.resolutionFor('safe');
   A.eq(safeRes.matched, false, 'safe-cell with no docker resolves matched:false');
   A.eq(safeRes.requested, 'docker', 'resolution names the requested backend');
@@ -133,13 +133,13 @@ router.execute({ agentId: 'safe', cmd: 'x' }).then(async result => {
   A.eq(noDocker.describeAgent('trusted').backendMatched, true, 'trusted-project unaffected');
   A.eq((await noDocker.execute({ agentId: 'trusted', cmd: 'x' })).backend, 'local', 'trusted-project still executes');
   A.eq((await noDocker.execute({ agentId: 'host', cmd: 'x' })).backend, 'local', 'this-computer still executes');
-  A.eq((await noDocker.execute({ agentId: 'legacy', cmd: 'x' })).backend, 'local', 'station-gear still executes');
+  A.eq((await noDocker.execute({ agentId: 'legacy', cmd: 'x' })).backend, 'local', 'keep-gear still executes');
   let refusedSsh = null;
   try { await noDocker.execute({ agentId: 'remote', cmd: 'x' }); } catch (e) { refusedSsh = e; }
   A.eq(refusedSsh && refusedSsh.requested, 'ssh', 'remote-ssh without ssh refuses the same way');
   A.eq(noDocker.describeAgent('remote').backendMatched, false, 'remote-ssh mismatch is reported');
 
-  const allowRouter = makeExecutionRouter({ environments: { local }, defaultBackendId: 'local', profileForAgent: agentId => profiles[agentId] || 'station-gear', env: { STARNET_SANDBOX_FALLBACK: 'allow' } });
+  const allowRouter = makeExecutionRouter({ environments: { local }, defaultBackendId: 'local', profileForAgent: agentId => profiles[agentId] || 'keep-gear', env: { EYEHOLD_SANDBOX_FALLBACK: 'allow' } });
   A.eq((await allowRouter.execute({ agentId: 'safe', cmd: 'x' })).backend, 'local', 'allow policy runs the command locally');
   A.eq(allowRouter.describeAgent('safe').backendMatched, false, 'allow policy still reports backendMatched:false');
   A.eq(allowRouter.describeAgent('safe').refusing, false, 'allow policy is not refusing');
@@ -151,7 +151,7 @@ router.execute({ agentId: 'safe', cmd: 'x' }).then(async result => {
     describe: () => ({ backend: 'docker', availability: dockerState }),
     execute: () => { dockerState.state = 'unavailable'; dockerState.error = 'docker: command not found'; return Promise.reject(new Error('could not create persistent Docker environment')); }
   });
-  const probed = makeExecutionRouter({ environments: { local, docker: flakyDocker }, defaultBackendId: 'local', profileForAgent: agentId => profiles[agentId] || 'station-gear', env: {} });
+  const probed = makeExecutionRouter({ environments: { local, docker: flakyDocker }, defaultBackendId: 'local', profileForAgent: agentId => profiles[agentId] || 'keep-gear', env: {} });
   A.eq(probed.resolutionFor('safe').matched, true, 'an unprobed docker is trusted until it fails');
   A.eq(probed.backendIdFor('safe'), 'docker', 'and routes to docker');
   let probedErr = null;

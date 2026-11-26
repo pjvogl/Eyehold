@@ -1,4 +1,4 @@
-/* STARNET — conveyor.js : directional belts + the boxes that ride them.
+/* EYEHOLD — conveyor.js : directional belts + the boxes that ride them.
 
    The WorldModel owns belt TOPOLOGY (a keyed "x,y"->dir graph, walkable floor machinery). This
    module owns everything ALIVE: the transport simulation (boxes flowing tile-to-tile, spawned at
@@ -184,7 +184,7 @@ const Conveyor = (() => {
     function reset() { boxes = []; pending.length = 0; rr.clear(); mergeFx.length = 0; }
 
     /* FRAME SHIFT (origin-move truth, 2026-08-11): world.js hands us belts in its LOCAL tile frame
-       (origin = station bounds − margin), so a floor edit that grows the bounds on the north/west
+       (origin = keep bounds − margin), so a floor edit that grows the bounds on the north/west
        edge moves every belt to new coordinates while riding boxes and queued pending items keep the
        OLD frame — tick() then reads "belt pulled out" and sinks paid work mid-ride (or splices the
        pending item as belt-less). The crates are real work; the frame moved, not the line. Mirror the
@@ -440,7 +440,7 @@ const Conveyor = (() => {
        (static rollers, dark drive light, dimmed) so an incomplete line visibly isn't running. Omitted →
        every tile draws live (legacy callers unchanged). The glow IS the compiled plan — truthful telemetry. */
     /* BELT ATLAS + CULLING (2026-10-07, the 0.13 "laggy" reports). A belt tile is ~50 canvas commands (seven rim
-       strokes, the rollers, rail rivets, wear) and a 133-tile station drew ~6,500 fills + ~1,100 strokes a frame:
+       strokes, the rollers, rail rivets, wear) and a 133-tile keep drew ~6,500 fills + ~1,100 strokes a frame:
        >90% of every command on the stage, ~3ms of each draw and ~14% of a core in the GPU process alone.
          · a tile wholly off the canvas is skipped (every command is clipped to its own tile: it drew nothing);
          · while the camera holds still, each on-screen tile is drawn ONCE per roller phase into a device-aligned atlas

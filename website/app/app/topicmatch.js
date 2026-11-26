@@ -1,6 +1,6 @@
-/* STARNET — topicmatch.js : the ONE pure matcher between a LEARNED INTEREST TOPIC and a candidate's text.
+/* EYEHOLD — topicmatch.js : the ONE pure matcher between a LEARNED INTEREST TOPIC and a candidate's text.
 
-   WHY THIS EXISTS — the station learns what the Commander actually keeps working on in sidecar/interests.js: a
+   WHY THIS EXISTS — the keep learns what the Commander actually keeps working on in sidecar/interests.js: a
    decayed histogram of SPECIFIC topics ("gpu price tracking", "songwriting"), each carrying the verbatim evidence
    quote that earned it. Until now that signal only reached the LLM drafting paths (the scout's directives, the
    quest refresh) and the archetype matcher. Every DETERMINISTIC recommendation surface — the FOR YOU recipe row,
@@ -17,7 +17,7 @@
    THE ANCHOR RULE (the safety property this whole lane rests on): match() returns null unless at least one hit is
    a WARM habit (decayed weight ≥ WARM_WEIGHT, the same floor interests.warm() uses). Below that the contribution
    is EXACTLY ZERO — so every consumer's ranking is byte-identical to what it produced before this module existed
-   until the station has genuinely learned something, and a thin/cold histogram can never move a recommendation.
+   until the keep has genuinely learned something, and a thin/cold histogram can never move a recommendation.
 
    TRUTHFUL TELEMETRY: reason() renders the WHY from the topic's OWN persisted counters (its label + observation
    count) — never a synthesized pitch. A consumer may only cite a topic this module actually matched.
@@ -41,7 +41,7 @@
   // shelves would disagree about what a topic even is.
   const STOP = new Set(['the', 'and', 'for', 'with', 'that', 'this', 'from', 'your', 'their', 'about', 'into',
     'over', 'what', 'when', 'work', 'working', 'works', 'task', 'tasks', 'project', 'projects', 'daily', 'weekly',
-    'general', 'station', 'commander', 'agent', 'agents', 'using', 'help', 'helping', 'stuff', 'things', 'keep',
+    'general', 'keep', 'commander', 'agent', 'agents', 'using', 'help', 'helping', 'stuff', 'things', 'keep',
     'keeps', 'other', 'some', 'more', 'most', 'like', 'time', 'times', 'every', 'each', 'never', 'always']);
 
   const str = (v) => (v == null ? '' : String(v));
@@ -130,16 +130,16 @@
      EVIDENCE_CAP per topic, each one grounded against the real activity line it was quoted from, and its header
      states the law: a recommendation downstream may cite THIS evidence and nothing else). match() has been
      carrying that quote through on every hit — and every surface threw it away, rendering "you keep working on
-     gpu price tracking (seen 4×)". The Commander was asked to take the count on faith when the station was
+     gpu price tracking (seen 4×)". The Commander was asked to take the count on faith when the keep was
      holding the receipt the whole time.
 
      ⛔ THE FRAME CLAIMS NO SPEAKER, AND THAT IS DELIBERATE. It would be easy to write `because you said "…"`, and
      wrong: interests quotes an ACTIVITY LINE, and contextpack's activity pool is runs + completed-task briefs +
      chat openings + the goal + landed deliverable titles. A run title is very often machine-composed (a recipe
-     launch, a scheduled brief) and a landed title is the STATION's own words. So the quote is real evidence with
+     launch, a scheduled brief) and a landed title is the KEEP's own words. So the quote is real evidence with
      unknown authorship — exactly the case chat.js's recCite already answers with a neutral citation rather than
      putting words in the Commander's mouth. "e.g." is also the phrasing sidecar/interests.topicsBlock already
-     uses for this same data, so the station cites its own histogram one way everywhere.
+     uses for this same data, so the keep cites its own histogram one way everywhere.
 
      Visibly truncated when clipped (the repo's citation law: a cut quote must LOOK cut, so it can never read as
      a sentence the Commander never finished). */

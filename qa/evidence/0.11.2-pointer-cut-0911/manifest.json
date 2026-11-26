@@ -1,5 +1,5 @@
 {
-  "schema": "starnet.pointer-release-evidence.v1",
+  "schema": "eyehold.pointer-release-evidence.v1",
   "at": "2026-09-11T18:22:00.349Z",
   "candidate": "69baf91a5b2c22230f87e614da6a72882278bc6c",
   "sourceTree": "930d6dc2c4f556f9f22ded59f0f9cbfcc72d3fe5",

@@ -1,4 +1,4 @@
-// Live build UI on an isolated in-memory copy of the custom demo; no saved-station edits or model calls.
+// Live build UI on an isolated in-memory copy of the custom demo; no saved-keep edits or model calls.
 import assert from 'node:assert/strict';
 import {mkdirSync,writeFileSync} from 'node:fs';
 import {spawn} from 'node:child_process';
@@ -15,8 +15,8 @@ try{
   cdp=await connectCDP(9362);await cdp.send('Page.enable');await cdp.send('Runtime.enable');
   cdp.on('Runtime.exceptionThrown',e=>report.exceptions.push(e.exceptionDetails.exception?.description||e.exceptionDetails.text));
   await cdp.send('Page.navigate',{url:'http://127.0.0.1:9177/'});
-  await until(`typeof Build!=='undefined'&&Build.__test__&&Build.__test__.station()`);
-  await run(`window.__fixture=WorldModel.create(Build.__test__.station().serialize());Build.init({getStation:()=>window.__fixture,persist:()=>{},world:World,agents:()=>App.agents()});Build.open();document.querySelector('#refit-guide-go')?.click();document.querySelector('.fl-x')?.click();document.querySelector('[data-tool="prop"]').click()`);
+  await until(`typeof Build!=='undefined'&&Build.__test__&&Build.__test__.keep()`);
+  await run(`window.__fixture=WorldModel.create(Build.__test__.keep().serialize());Build.init({getKeep:()=>window.__fixture,persist:()=>{},world:World,agents:()=>App.agents()});Build.open();document.querySelector('#refit-guide-go')?.click();document.querySelector('.fl-x')?.click();document.querySelector('[data-tool="prop"]').click()`);
   await until(`document.querySelector('[data-access-cap]')?.dataset.state==='available'`);
   await check('Props opens on Abilities with the five real core cards',`document.querySelector('[data-prop-section="abilities"]').classList.contains('active')&&document.querySelectorAll('.refit-core-card').length===PropSprites.STARTER.length&&PropSprites.STARTER.every(id=>document.querySelector('.refit-core-card[data-prop="'+id+'"]'))`);
   await check('The three purpose sections and ten tools remain accessible',`document.querySelectorAll('[data-prop-section]').length===3&&document.querySelectorAll('.refit-tool').length===10`);
@@ -27,11 +27,11 @@ try{
   await run(`document.querySelector('.refit-details-back').click();document.activeElement?.blur();window.__selectedBeforeHover=document.querySelector('#refit-selected-prop b').textContent`);
   const hoverPoint=await run(`(()=>{const r=document.querySelector('[data-core-ability="dish"]').getBoundingClientRect();return {x:r.x+r.width/2,y:r.y+r.height/2}})()`);
   await cdp.send('Input.dispatchMouseEvent',{type:'mouseMoved',...hoverPoint});await sleep(450);
-  await check('Hover briefly identifies the prop and ability without changing the selection or opening details',`(()=>{const b=document.querySelector('[data-core-ability="dish"]'),t=document.querySelector('#station-tip');return !t.hidden&&t.textContent.includes(PropSprites.spec(b.dataset.prop).label)&&t.textContent.includes('WEB & BROWSER')&&t.textContent.length<240&&!b.hasAttribute('title')&&document.querySelector('#refit-selected-prop b').textContent===window.__selectedBeforeHover&&!document.querySelector('.refit-propworkspace').classList.contains('show-details')})()`);
+  await check('Hover briefly identifies the prop and ability without changing the selection or opening details',`(()=>{const b=document.querySelector('[data-core-ability="dish"]'),t=document.querySelector('#keep-tip');return !t.hidden&&t.textContent.includes(PropSprites.spec(b.dataset.prop).label)&&t.textContent.includes('WEB & BROWSER')&&t.textContent.length<240&&!b.hasAttribute('title')&&document.querySelector('#refit-selected-prop b').textContent===window.__selectedBeforeHover&&!document.querySelector('.refit-propworkspace').classList.contains('show-details')})()`);
   await cdp.send('Input.dispatchMouseEvent',{type:'mouseMoved',x:900,y:80});await sleep(100);
-  await check('Hover hint disappears when the pointer leaves the prop',`document.querySelector('#station-tip').hidden`);
+  await check('Hover hint disappears when the pointer leaves the prop',`document.querySelector('#keep-tip').hidden`);
   await run(`document.querySelector('[data-core-ability="dish"]').focus()`);
-  await check('Keyboard focus gets the same accessible hint without selecting the prop',`!document.querySelector('#station-tip').hidden&&document.activeElement.getAttribute('aria-describedby')==='station-tip'&&document.querySelector('#refit-selected-prop b').textContent===window.__selectedBeforeHover`);
+  await check('Keyboard focus gets the same accessible hint without selecting the prop',`!document.querySelector('#keep-tip').hidden&&document.activeElement.getAttribute('aria-describedby')==='keep-tip'&&document.querySelector('#refit-selected-prop b').textContent===window.__selectedBeforeHover`);
   await run(`document.activeElement.blur()`);
   await check('Overview agrees with the actual per-agent toolsets endpoint',`(async()=>{const aid=document.querySelector('.refit-ability-overview select').value,f=EquipmentHelp.inspect(window.__fixture,aid,'war_intelcab'),v=await Harness.api.get('/api/toolsets?agent='+encodeURIComponent(aid)+'&placed='+encodeURIComponent(f.placed.join(',')));return [...document.querySelectorAll('[data-access-cap]')].every(b=>b.dataset.state===EquipmentHelp.access(b.dataset.accessCap,v).state)})()`);
   await shot('01-core-abilities');
@@ -60,7 +60,7 @@ try{
   await run(`document.querySelector('[data-cat="lounge"]').click()`);
   await check('Decoration category selection filters correctly',`[...document.querySelectorAll('.refit-proptile')].every(b=>PropSprites.spec(b.dataset.prop).cat==='lounge')&&!document.querySelector('.refit-category-menu').open`);
   await run(`document.querySelector('[data-prop-section="equipment"]').click()`);
-  await check('Workstations and operational equipment are separate from abilities and decoration',`document.querySelector('[data-prop="desk"]')&&[...document.querySelectorAll('.refit-proptile')].every(b=>EquipmentHelp.kind(PropSprites.spec(b.dataset.prop),WorldModel.capForProp(b.dataset.prop))==='equipment')&&document.querySelector('.refit-preview-grant').textContent==='WORKSTATION'`);await shot('04-workstations');
+  await check('Workkeeps and operational equipment are separate from abilities and decoration',`document.querySelector('[data-prop="desk"]')&&[...document.querySelectorAll('.refit-proptile')].every(b=>EquipmentHelp.kind(PropSprites.spec(b.dataset.prop),WorldModel.capForProp(b.dataset.prop))==='equipment')&&document.querySelector('.refit-preview-grant').textContent==='WORKKEEP'`);await shot('04-workkeeps');
   await run(`window.__baseGet=Harness.api.get;window.__accessReads=0;Harness.api.get=function(url,...args){if(url.startsWith('/api/toolsets'))window.__accessReads++;return window.__baseGet.call(this,url,...args)};document.querySelector('[data-access-cap="dish"]').click();document.querySelector('.refit-designs').click();document.querySelector('[data-prop="comms_uplink"]').click();document.querySelector('[data-prop="comms_dish"]').click()`);await sleep(250);
   await check('Selecting equivalent designs does not repeat access requests',`window.__accessReads===0`);
   await run(`(()=>{const input=document.querySelector('#refit-propsearch-input');input.focus();input.value='files';input.dispatchEvent(new Event('input'))})()`);

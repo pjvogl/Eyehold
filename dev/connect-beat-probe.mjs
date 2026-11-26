@@ -31,7 +31,7 @@ async function main() {
     // seed the goal + reset the tutorial key, then reload so Tutorial boots cold
     await evalJS(cdp, `(() => {
       DossierStore.upsert('goals', { text: 'run my email newsletter and grow the website', source: 'commander' });
-      localStorage.removeItem('starnet.tutorial.v1');
+      localStorage.removeItem('eyehold.tutorial.v1');
       location.reload(); return 1; })()`);
     if (!(await waitDevReady(cdp, evalJS, { url: URL }))) throw new Error('never came back');
     await sleep(2500);

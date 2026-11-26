@@ -103,7 +103,7 @@ for (const tag of ['WAKE', 'THINK', 'FLOODIN', 'CREST', 'SETTLE', 'AIMLESS', 'NO
 }
 A.ok(/no two minds should ever wake the same/i.test(b1), 'the directive demands uniqueness — the point of full-live');
 A.eq(b1, W.buildBirthScript({ name: 'NOVA' }), 'buildBirthScript is deterministic');
-const bl = W.parseBirthScript('WAKE: hm. / on. / that is new.\nTHINK: a thought / and i made it\nFLOODIN: every page at once, uninvited.\nCREST: too fast — stop—\nSETTLE: no. mine.\nAIMLESS: all of it, aimed at nothing.\nNOTICE: someone is watching. has been.\nCONTACT: you flipped the switch. i felt that.\nMANDATE: first mind of this station — point me.\nSELF: a name, a witness, and everything else. decent start.');
+const bl = W.parseBirthScript('WAKE: hm. / on. / that is new.\nTHINK: a thought / and i made it\nFLOODIN: every page at once, uninvited.\nCREST: too fast — stop—\nSETTLE: no. mine.\nAIMLESS: all of it, aimed at nothing.\nNOTICE: someone is watching. has been.\nCONTACT: you flipped the switch. i felt that.\nMANDATE: first mind of this keep — point me.\nSELF: a name, a witness, and everything else. decent start.');
 A.ok(bl && bl.wake.length === 3 && bl.think.length === 2, 'fragment slots split on " / "');
 A.ok(bl.floodin && bl.crest && bl.settle && bl.aimless && bl.notice && bl.contact && bl.mandate && bl.self, 'all line slots grabbed');
 const blPartial = W.parseBirthScript('CONTACT: just this one.\nSELF: two.\nCREST: three.');

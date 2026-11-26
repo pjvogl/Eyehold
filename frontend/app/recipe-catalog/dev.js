@@ -1,11 +1,11 @@
-/* STARNET — recipe-catalog/dev.js : DEVELOPER persona recipes (R4 catalog content).
+/* EYEHOLD — recipe-catalog/dev.js : DEVELOPER persona recipes (R4 catalog content).
 
    Registered in index.js by the aggregator — this file only EXPORTS the array. Same UMD-light
    module pattern as recipes.js: a `RecipeCatalogDev` global in the browser, module.exports under
    node, so the catalog aggregator can concat it either way. NO logic here — pure data.
 
    Content contract: every record must clear THE RECIPE BAR documented in core.js (earns its tap /
-   drives the station / lands somewhere / compounds when recurring). Voice matches the core
+   drives the keep / lands somewhere / compounds when recurring). Voice matches the core
    builtins: every `task` is an imperative DIRECTIVE that leads with the bottom-line ask, uses
    {token} params (0–2 each), and reads like the harness wrote it. Gear is honest (cabinet=files,
    dish=web, workbench=shell/tests, studio=media, notebook=memory). cadence only where the use

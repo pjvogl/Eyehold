@@ -1,14 +1,14 @@
 /* sidecar/skills/market-signing.js — the Skill Market's signatures (2026-09-29).
 
-   Every document a station trusts from the market — the catalog index and the pulled-skills list — is signed with
+   Every document a keep trusts from the market — the catalog index and the pulled-skills list — is signed with
    an Ed25519 key that lives only on the publisher's machine: never on the website, never in this repo. The app
    ships the PUBLIC keys below and refuses any document whose detached signature (<document url>.sig) does not
-   verify over the exact bytes it downloaded, so controlling the website is not enough to change what a station
+   verify over the exact bytes it downloaded, so controlling the website is not enough to change what a keep
    installs.
 
    Two keys are trusted: the working key that signs every catalog build, and a backup kept offline. If the working
-   key is ever lost or exposed, the backup signs while a new pair ships in an app update, and no installed station
-   is stranded. A station pointed at its own catalog (STARNET_SKILL_MARKET_URL) adds that catalog's public key with
+   key is ever lost or exposed, the backup signs while a new pair ships in an app update, and no installed keep
+   is stranded. A keep pointed at its own catalog (STARNET_SKILL_MARKET_URL) adds that catalog's public key with
    STARNET_SKILL_MARKET_KEYS (see keysFromEnv).
 
    Pure: no network, no clock. */
@@ -16,13 +16,13 @@
 
 const crypto = require('node:crypto');
 
-const SIG_FORMAT = 'starnet-signature/v1';
+const SIG_FORMAT = 'eyehold-signature/v1';
 const KEY_ID_RE = /^[a-z0-9][a-z0-9-]{0,62}$/;
 
 // public keys as base64 SPKI DER (what publicKeyOf returns)
 const TRUSTED_KEYS = Object.freeze([
-  Object.freeze({ id: 'market-2026-a', publicKey: 'MCowBQYDK2VwAyEAAfLsd/480eFRM7LdmI7icZf/0QNg61d8d9iGJo+vUxU=' }),
-  Object.freeze({ id: 'market-backup-2026-a', publicKey: 'MCowBQYDK2VwAyEAMP197BVUfEfM98o4fdUB89HcHKolS48prfN253GXxAk=' })
+  Object.freeze({ id: 'eyehold-market-2026-a', publicKey: 'MCowBQYDK2VwAyEAhVLPK6ek86D1XIu8h18mYfJf0Eo2td3iXHTr2VKjfjo=' }),
+  Object.freeze({ id: 'eyehold-market-backup-2026-a', publicKey: 'MCowBQYDK2VwAyEA1t4I1lOv8z96rYSRcaRPnkkdrKs1A19MRobbTFD32bs=' })
 ]);
 
 function str(v) { return v == null ? '' : String(v); }
@@ -44,7 +44,7 @@ function generateKeyPair() {
 }
 
 /* sign(bytes, privateKeyPem, keys?) -> the .sig document text. The signing key must be one of `keys` (the app's
-   trusted keys by default): signing with a key no station trusts would publish a catalog every station refuses. */
+   trusted keys by default): signing with a key no keep trusts would publish a catalog every keep refuses. */
 function sign(bytes, privateKeyPem, keys) {
   keys = keys || TRUSTED_KEYS;
   const key = crypto.createPrivateKey(privateKeyPem);
@@ -80,7 +80,7 @@ function sigUrl(url) {
 }
 
 /* keysFromEnv(value) -> extra trusted keys from STARNET_SKILL_MARKET_KEYS: a JSON list of { id, publicKey } for a
-   station that runs its own catalog. Malformed entries are ignored; the built-in keys are always trusted. */
+   keep that runs its own catalog. Malformed entries are ignored; the built-in keys are always trusted. */
 function keysFromEnv(value) {
   if (!str(value).trim()) return [];
   let list = null;

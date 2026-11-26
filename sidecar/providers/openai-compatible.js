@@ -28,7 +28,7 @@
     if (text.indexOf(param) >= 0) return true;
     return (PARAM_ALIASES[param] || []).some(alias => text.indexOf(alias) >= 0);
   }
-  // The chat-completions wire accepts this effort scale; StarNet's wider scale (xhigh/max) clamps into it.
+  // The chat-completions wire accepts this effort scale; Eyehold's wider scale (xhigh/max) clamps into it.
   const WIRE_EFFORTS = ['minimal', 'low', 'medium', 'high'];
   function wireEffort(value) {
     const v = String(value || '').trim().toLowerCase();
@@ -52,7 +52,7 @@
     if (v === 'min') return 'minimal';
     if (v === 'med' || v === 'mid') return 'medium';
     if (v === 'extra' || v === 'xtra' || v === 'extrahigh') return 'xhigh';
-    return EFFORT_ORDER.indexOf(v) >= 0 ? v : '';   // a level StarNet has no name for is dropped, never coerced
+    return EFFORT_ORDER.indexOf(v) >= 0 ? v : '';   // a level Eyehold has no name for is dropped, never coerced
   }
   function declaredEffortList(raw) {
     if (!Array.isArray(raw)) return null;
@@ -154,11 +154,11 @@
   /* REASONING_CONTENT RIDES BACK (DeepSeek thinking mode, api-docs.deepseek.com/guides/thinking_mode, 2026-09).
      "For requests carrying the tools parameter, the reasoning_content must be fully passed back to the API in all
      subsequent requests — even for turns where the model did not perform a tool call", else 400 "The
-     reasoning_content in the thinking mode must be passed back to the API". Every StarNet run carries tools, so a
+     reasoning_content in the thinking mode must be passed back to the API". Every Eyehold run carries tools, so a
      V4 model thinking by default (high) failed on its second request. The adapter parks each turn's text as an
      opaque { type:'reasoning_content' } block on the turn (provider.js contract) and hands it back here. A turn
      with no captured text (history the page kept, a sidecar restart) gets '' — the shape the fix other harnesses
-     shipped (Hermes, OpenCode). StarNet's own `reasoning` parking field never rides the wire. */
+     shipped (Hermes, OpenCode). Eyehold's own `reasoning` parking field never rides the wire. */
   function reasoningTextOf(blocks) {
     if (!Array.isArray(blocks)) return null;
     let text = null;
@@ -184,7 +184,7 @@
   }
 
   // NO default endpoint. This adapter used to fall back to https://api.openai.com/v1 on an empty baseUrl,
-  // which meant a provider whose baseUrl resolves dynamically (starnet: the linked cloud URL) silently sent
+  // which meant a provider whose baseUrl resolves dynamically (eyehold: the linked cloud URL) silently sent
   // its runs — bearer credential and all — to OpenAI's API the moment the link failed to resolve, and the
   // user got OpenAI's "invalid model ID" for a catalog id that was never meant for that endpoint
   // (2026-08-25 stranded-user incident). An endpointless provider must refuse loudly, never reroute.
@@ -236,7 +236,7 @@
     const providerName = safeErrorField((e && e.provider) || (e && e.metadata && (e.metadata.provider_name || e.metadata.provider)), 100);
     const requestId = safeErrorField(
       (e && (e.request_id || e.requestId)) || (data && (data.request_id || data.requestId)) ||
-      responseHeader(res, ['x-starnet-request-id', 'x-request-id', 'x-openrouter-request-id', 'request-id']),
+      responseHeader(res, ['x-eyehold-request-id', 'x-request-id', 'x-openrouter-request-id', 'request-id']),
       120
     );
     const upstreamRequestId = safeErrorField(e && e.upstream_request_id, 120);
@@ -254,10 +254,10 @@
     const id = (m && (m.id || m.name || m.model)) ? String(m.id || m.name || m.model) : '';
     if (!id) return null;
     const params = Array.isArray(m.supported_parameters) ? m.supported_parameters.slice() : [];
-    // Declared levels: StarNet's own non-empty `reasoningEfforts` (static rosters, the managed proxy), else a
+    // Declared levels: Eyehold's own non-empty `reasoningEfforts` (static rosters, the managed proxy), else a
     // vendor block — xAI `capabilities.reasoning_effort` / `default_reasoning_effort`, DeepSeek
     // `effort.supported_levels` / `default_level` (api-docs.deepseek.com, GET /models). An xAI entry that carries
-    // capabilities but no levels is a DECLARED "no dial" ([]). An empty StarNet list keeps its old meaning (unknown).
+    // capabilities but no levels is a DECLARED "no dial" ([]). An empty Eyehold list keeps its old meaning (unknown).
     const caps = (m.capabilities && typeof m.capabilities === 'object' && !Array.isArray(m.capabilities)) ? m.capabilities : null;
     // Only an xAI-shaped block declares the dial: one that names reasoning levels, xAI's empty no-dial `{}`, or an
     // xAI-owned entry. Other vendors publish capability blocks too (Mistral: completion_chat, function_calling, ...)
@@ -331,7 +331,7 @@
        names the prices.js table to fall back to (null for ollama/custom/perplexity — genuinely unpriced, and
        the run stays honestly 'unpriced' there). Catalog pricing, when an endpoint DOES publish it, still wins. */
     const priceFamily = (typeof opts.priceFamily === 'string' && opts.priceFamily.trim()) ? opts.priceFamily.trim() : null;
-    /* RUN ATTRIBUTION (2026-09-29). A profile that names a runIdHeader (only `starnet`: our own proxy) gets the
+    /* RUN ATTRIBUTION (2026-09-29). A profile that names a runIdHeader (only `eyehold`: our own proxy) gets the
        harness run id of the calling run (req.runId) on every chat request, so the cloud ledger can tie each
        debit to the run that spent it. Off for every other profile: a run id is never sent to a third party. */
     const runIdHeader = (typeof opts.runIdHeader === 'string' && /^[A-Za-z0-9-]{1,64}$/.test(opts.runIdHeader)) ? opts.runIdHeader : '';
@@ -523,7 +523,7 @@
           && ((declared && declared.some(e => e !== 'none')) || emitsReasoning(baseUrl, req.model));
         body.messages = replayReasoningContent(body.messages, thinking, !!body.tools);
       }
-      // Strict Chat Completions endpoints (Mistral: 422 extra_forbidden) reject StarNet's own bookkeeping keys on a
+      // Strict Chat Completions endpoints (Mistral: 422 extra_forbidden) reject Eyehold's own bookkeeping keys on a
       // message (ts, streamId, agentId, the `reasoning` parking field) — only Chat Completions message keys leave.
       body.messages = provider.chatWireMessages(body.messages);
       // OLLAMA NATIVE: size the window to THIS request before it leaves (the model's trained maximum is one local
@@ -533,7 +533,7 @@
         const facts = await factsFor(req.model);
         const modelMax = (facts && facts.contextLength) || 0;
         const need = ollamaNative.estimateTokens(body) + (Number(body.max_tokens) || 0);
-        // First use of this model in this process: if Ollama already holds it loaded at a usable window (StarNet was
+        // First use of this model in this process: if Ollama already holds it loaded at a usable window (Eyehold was
         // restarted inside the keep-alive, or the Commander loaded it larger), keep that window rather than reload.
         if (!pinnedCtx && !ollamaWindow(nativeBase, req.model)) {
           const loaded = ollamaNative.loadedWindow(await ollamaStatus(), req.model);
@@ -770,14 +770,14 @@
         // run never pay the extra round-trip). Does not consume a transient-retry attempt.
         if (dropUnsupportedParam(body, res.status, detail)) { attempt--; continue; }
         // A vendor API rejecting a slash-prefixed id as an unknown/invalid model means a ROUTED-catalog id
-        // (StarNet managed / OpenRouter, e.g. "openai/gpt-…") reached a direct vendor endpoint. Without this
+        // (Eyehold managed / OpenRouter, e.g. "openai/gpt-…") reached a direct vendor endpoint. Without this
         // line the user sees only the vendor's bare "invalid model ID" and has no path back (2026-08-25
         // stranded-user incident) — name the mismatch and the fix. Slash-native catalogs (together, fireworks,
         // groq) are safe: their ids resolve on their own endpoints, so this only fires on a real mismatch.
         if ((res.status === 400 || res.status === 404)
           && /invalid model|is not a valid model|model .*(does not exist|not found)/i.test(String(detail))
           && String(body.model || '').indexOf('/') > 0) {
-          detail += ' — "' + body.model + '" is a routed-catalog model id (vendor/model), but this provider calls the vendor API directly. Switch the provider in the model picker (STARNET or OPENROUTER for routed ids), or pick a model from this provider\'s own catalog.';
+          detail += ' — "' + body.model + '" is a routed-catalog model id (vendor/model), but this provider calls the vendor API directly. Switch the provider in the model picker (EYEHOLD or OPENROUTER for routed ids), or pick a model from this provider\'s own catalog.';
         }
         const err = new Error(errLabel + ' http ' + res.status + ' - ' + detail);
         err.status = res.status;

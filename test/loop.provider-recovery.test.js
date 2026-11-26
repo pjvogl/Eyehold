@@ -99,7 +99,7 @@ const openCtx = () => ({ canRun: () => true, canUse: () => ({ ok: true }), agent
     A.eq(seq.find(e => e.name === 'agent.run.error').payload.transient, true, 'the prompt failure remains classified as transient');
   }
 
-  // (2a-exhausted-chain) an OVERLOADED provider with NO failover chain (every single-provider station,
+  // (2a-exhausted-chain) an OVERLOADED provider with NO failover chain (every single-provider keep,
   //     e.g. ChatGPT-login codex) gets the same-provider retries the A2 comment always promised. This was
   //     the field failure behind "servers overloaded" runs dying at ~2s: retryable+shouldFallback with an
   //     empty chain hit neither the failover branch nor the retry branch and went straight to fatal.
@@ -121,7 +121,7 @@ const openCtx = () => ({ canRun: () => true, canUse: () => ({ ok: true }), agent
   }
 
   // (2a-live-parity) The installed Hermes comparison exposed a longer overload window after a successful
-  //     host action: StarNet's four-rung (~16.6s) ladder ended the run while Hermes kept working for up to
+  //     host action: Eyehold's four-rung (~16.6s) ladder ended the run while Hermes kept working for up to
   //     ~102s. Repeating the CURRENT model turn is safe here because the prior turn's tool result is already
   //     paired in messages; the completed host effect must never be dispatched a second time.
   {

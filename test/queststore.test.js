@@ -1,16 +1,16 @@
 /* node test/queststore.test.js — the thin read-join behind the QUEST LOG panel (frontend/app/queststore.js).
    Decisions live in the pure quests.js (tested separately); this verifies the JOIN: view() gathers the real
-   station XP rollup (meter + milestones), the dossier known/blank dims, and the pending-idea flag, and hands them
+   keep XP rollup (meter + milestones), the dossier known/blank dims, and the pending-idea flag, and hands them
    to Quests.build — and degrades to "fewer quests, no crash" when a subsystem is absent. */
 'use strict';
 const A = require('./_assert.js');
 global.Xp = require('../frontend/app/xp.js');
 global.Quests = require('../frontend/app/quests.js');
 
-// a station rollup with one task shipped → first_light earned, pack_rat not
+// a keep rollup with one task shipped → first_light earned, pack_rat not
 let stats = Xp.fresh();
 stats = Xp.applyEvent(stats, { name: 'agent.run.end', payload: { reason: 'done', usd: 0.1 } }).stats;
-global.XpStore = { stationStats: () => stats };
+global.XpStore = { keepStats: () => stats };
 
 global.DossierStore = {
   summary: () => ({ counts: { goals: 1 }, known: ['goals'], blank: ['identity', 'stack', 'style', 'standing_orders'], total: 1, familiarity: 0.2, observed: null }),
@@ -26,7 +26,7 @@ const { QuestStore } = require('../frontend/app/queststore.js');
 
 /* ---------- the join ---------- */
 const v = QuestStore.view();
-A.ok(v.meter && v.meter.level >= 1, 'view() carries the station meter (Xp.compute of the rollup)');
+A.ok(v.meter && v.meter.level >= 1, 'view() carries the keep meter (Xp.compute of the rollup)');
 A.ok(v.quests.length > 0, 'view() builds a quest list');
 A.eq(v.quests[0].kind, 'idea', 'a pending idea leads the list');
 A.eq(v.quests.find(q => q.id === 'dim:goals').status, 'done', 'a known dossier dimension → a done quest');
@@ -41,15 +41,15 @@ A.eq(st.indexOf('done') > st.lastIndexOf('open'), true, 'the view preserves open
 pending = false;
 A.eq(QuestStore.view().quests.some(q => q.kind === 'idea'), false, 'no idea quest when none is due');
 
-/* ---------- the STATION ARC joins from live floor counts (World) + crew size (App) ---------- */
-A.eq(QuestStore.view().quests.some(q => q.kind === 'station'), false, 'no World → no station arc (never an arc claiming a floor we cannot read)');
-global.World = { stationCounts: () => ({ belts: 2, connectors: 0, liveRoute: 2 }) };
+/* ---------- the KEEP ARC joins from live floor counts (World) + crew size (App) ---------- */
+A.eq(QuestStore.view().quests.some(q => q.kind === 'keep'), false, 'no World → no keep arc (never an arc claiming a floor we cannot read)');
+global.World = { keepCounts: () => ({ belts: 2, connectors: 0, liveRoute: 2 }) };
 global.App = { crewCount: () => 2 };
 const withArc = QuestStore.view();
 A.eq(withArc.quests.find(q => q.id === 'st:crew').status, 'done', 'crew size 2 → recruit quest done through the join');
 A.eq(withArc.quests.find(q => q.id === 'st:belt').status, 'done', 'a LIVE route (not bare belts) → belt quest done through the join');
 A.eq(withArc.quests.find(q => q.id === 'st:connector').status, 'open', 'no portals yet → portal quest open through the join');
-global.World = { stationCounts: () => ({ belts: 0, connectors: 0 }) };
+global.World = { keepCounts: () => ({ belts: 0, connectors: 0 }) };
 global.App = undefined;   // World present but App missing → crew reads 0, arc still renders (recruit stays open)
 A.eq(QuestStore.view().quests.find(q => q.id === 'st:crew').status, 'open', 'missing App degrades to crew:0 (recruit open), never a crash');
 global.World = undefined;

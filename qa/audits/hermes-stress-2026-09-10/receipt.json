@@ -1,6 +1,6 @@
 {
   "generatedAt": "2026-09-10T03:44:20.139Z",
-  "starnet": {
+  "eyehold": {
     "version": "0.11.1",
     "commit": "83c896e7d2c5b88d99147e75fbeedde6fb93c27b"
   },
@@ -12,11 +12,11 @@
   "liveModel": false,
   "installedCandidateBound": false,
   "methods": {
-    "starnet": "Production sidecar + loopback scripted provider; live browser COMMS. Delegation schema probe injects child run result.",
+    "eyehold": "Production sidecar + loopback scripted provider; live browser COMMS. Delegation schema probe injects child run result.",
     "hermes": "Production HTTP adapter on loopback aiohttp TestServer with injected agent results; production CLI renderer and schema validator. Targeted repository tests. Existing Python dependency path plus isolated pytest environment."
   },
   "partialFailure": {
-    "starnet": [
+    "eyehold": [
       {
         "repeat": 1,
         "stream": false,
@@ -124,7 +124,7 @@
     ]
   },
   "idempotency": {
-    "starnet": [
+    "eyehold": [
       {
         "repeat": 1,
         "primaryProviderCalls": 2
@@ -155,7 +155,7 @@
     "limits": "HTTP chat completions only; no external mutation, crash durability, or cross-process retry guarantee tested."
   },
   "schema": {
-    "starnet": [
+    "eyehold": [
       {
         "name": "basic",
         "schema": {
@@ -366,7 +366,7 @@
     "copyButtonFeedback": "Copied"
   },
   "sharedJsonFormatGap": {
-    "starnet": [
+    "eyehold": [
       {
         "type": "json_object",
         "status": 200,
@@ -397,13 +397,13 @@
     "graderViolationProbes": 4,
     "hermesTargeted": 48,
     "hermesExpanded": 142,
-    "starnetFocusedAssertions": 150,
-    "starnetFast": {
+    "eyeholdFocusedAssertions": 150,
+    "eyeholdFast": {
       "passed": 752,
       "total": 752,
       "exitCode": 0
     },
-    "starnetHttp": {
+    "eyeholdHttp": {
       "standardCommandExitCode": 124,
       "timeoutMs": 900000,
       "completedPrefix": 101,
@@ -416,11 +416,11 @@
   },
   "artifacts": [
     {
-      "path": ".audit/starnet-partial.json",
+      "path": ".audit/eyehold-partial.json",
       "sha256": "15bdc462411857865eb5530cc7813b2970d48b711d8d75bc6c6cf7751264fdc7"
     },
     {
-      "path": ".audit/starnet-idempotency.json",
+      "path": ".audit/eyehold-idempotency.json",
       "sha256": "1a6bd11008b7495ab502f4aaca8301a513732773af96959fa616b843c26cda13"
     },
     {
@@ -428,7 +428,7 @@
       "sha256": "02fdf9b6e5349a17bb322938e70d7cd6def675cb642c625578660c8e10d05acc"
     },
     {
-      "path": ".audit/starnet-schema.json",
+      "path": ".audit/eyehold-schema.json",
       "sha256": "7b538bdc30f73909faf465aa2ddc5cecaedfec970e5682e0a667c4e1eb996a68"
     },
     {

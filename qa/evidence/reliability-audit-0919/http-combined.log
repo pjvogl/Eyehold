@@ -1,9 +1,9 @@
 
-> starnet-harness@0.12.3 test:http
+> eyehold-harness@0.12.3 test:http
 > node scripts/timeout.mjs --label test:http --timeout=1200000 -- npm run test:http:raw
 
 
-> starnet-harness@0.12.3 test:http:raw
+> eyehold-harness@0.12.3 test:http:raw
 > node scripts/run-test-list.mjs test/http.list
 
 provider-recovery.e2e: OK (15 assertions)
@@ -36,7 +36,7 @@ connector-oauth-refresh-race.e2e.test: OK (5 assertions)
 github-device.http: real routes, cancellation, durable tokens, restart and public secret redaction passed
 workspace-owner.e2e.test: OK (9 assertions)
 workspace-lineage.http.test: OK (29 assertions)
-lineage-stationless-halt.http.test: OK (10 assertions)
+lineage-keepless-halt.http.test: OK (10 assertions)
 update-preparation.http.test: OK (9 assertions)
 codex-status.e2e.test: OK (13 assertions)
 oauth-status.e2e.test: OK (26 assertions)
@@ -165,7 +165,7 @@ casual-response-safety.e2e: PASS (lead/worker, hosted/local caps, context, task 
 routes-coverage.http.test: OK (94 assertions)
 atlas-events.emit.e2e: OK (14 assertions)
 openai-compat.e2e: OK (36 assertions)
-station-recovery.e2e.test: OK (23 assertions)
+keep-recovery.e2e.test: OK (23 assertions)
 TAP version 13
 # Subtest: unlink wins over an unfinished pairing response and survives restart
 ok 1 - unlink wins over an unfinished pairing response and survives restart

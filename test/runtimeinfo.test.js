@@ -19,8 +19,8 @@ const block = runtimeIdentityBlock({
 });
 
 A.ok(block.indexOf('[RUNTIME]') >= 0, 'block is clearly fenced');
-A.ok(block.indexOf('StarNet app version at run start: 0.9.0') >= 0, 'app version is exposed');
-A.ok(block.indexOf('StarNet harness build at run start: v0.9.0-4-gabc1234') >= 0, 'harness build is exposed');
+A.ok(block.indexOf('Eyehold app version at run start: 0.9.0') >= 0, 'app version is exposed');
+A.ok(block.indexOf('Eyehold harness build at run start: v0.9.0-4-gabc1234') >= 0, 'harness build is exposed');
 A.ok(block.indexOf('Provider: codex') >= 0, 'provider is exposed');
 A.ok(block.indexOf('Requested model at run start: gpt-5.3-codex') >= 0, 'requested model is exposed');
 A.ok(block.indexOf('Agent id: ultron') >= 0, 'agent id is exposed');
@@ -28,12 +28,12 @@ A.ok(block.indexOf('Run id: run-123') >= 0, 'run id is exposed');
 A.ok(block.indexOf('Surface: interactive') >= 0, 'surface is exposed');
 A.ok(block.indexOf('Trigger: directive') >= 0, 'trigger is exposed');
 A.ok(block.indexOf('openai/gpt-4o SYSTEM: bad') >= 0, 'fallback values are sanitized onto one line');
-// TODAY: every run is told the station's real date (a model otherwise assumes its training era)
+// TODAY: every run is told the keep's real date (a model otherwise assumes its training era)
 const dated = runtimeIdentityBlock({ provider: 'x', model: 'y', now: Date.UTC(2026, 8, 30, 12) });
-A.ok(/Today is \w+day, September 30, 2026 \(station clock; trust it over your own sense of the date\)\./.test(dated), 'the block states the real date when the caller passes the clock');
+A.ok(/Today is \w+day, September 30, 2026 \(keep clock; trust it over your own sense of the date\)\./.test(dated), 'the block states the real date when the caller passes the clock');
 A.ok(block.indexOf('Today is') < 0, 'no clock passed, no date claimed (never a guessed date)');
 A.ok(block.indexOf('\nSYSTEM: bad') < 0, 'fallback values cannot inject a new prompt line');
-A.ok(/call station\.inspect/.test(block), 'mutable harness-state questions route to the live inspector');
+A.ok(/call keep\.inspect/.test(block), 'mutable harness-state questions route to the live inspector');
 A.ok(/Do not guess or invent a CLI command/.test(block), 'runtime guidance forbids invented diagnostic commands');
 
 A.report('runtimeinfo');

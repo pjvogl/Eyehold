@@ -4,13 +4,13 @@
    Asserts:
      (a) NO key configured                       -> every /v1/* answers 403 (api_disabled)
      (b) bad bearer                              -> 401 (invalid_api_key)
-     (c) good key                                -> GET /v1/models lists starnet-agent
+     (c) good key                                -> GET /v1/models lists eyehold-agent
      (d) POST /v1/chat/completions (sync)        -> a real completion + REAL usage numbers from the mock provider
      (e) POST /v1/chat/completions stream:true   -> chat.completion.chunk deltas then a final chunk then [DONE]
      (f) POST /v1/runs                           -> 202 {run_id,status:started}; events SSE reaches run.completed
      (g) concurrency cap                         -> a 2nd run while one is in flight answers 429 (rate_limit_exceeded)
 
-   The upstream LLM is mocked via SKYNET_OPENROUTER_BASE (no real key, no network). Modeled on e2e.run.test.js. */
+   The upstream LLM is mocked via EYEHOLD_OPENROUTER_BASE (no real key, no network). Modeled on e2e.run.test.js. */
 'use strict';
 const A = require('./_assert.js');
 const http = require('http');
@@ -68,7 +68,7 @@ function startMockOpenRouter() {
 function boot(port, env, attemptsLeft) {
   return new Promise((resolve, reject) => {
     const child = spawn(process.execPath, [INDEX], {
-      env: Object.assign({}, process.env, env, { SKYNET_PORT: String(port) }), stdio: ['ignore', 'pipe', 'pipe']
+      env: Object.assign({}, process.env, env, { EYEHOLD_PORT: String(port) }), stdio: ['ignore', 'pipe', 'pipe']
     });
     let out = '', settled = false;
     const onData = d => {
@@ -92,12 +92,12 @@ async function drain(res) {
 
 (async () => {
   const mock = await startMockOpenRouter();
-  const baseEnv = { SKYNET_OPENROUTER_BASE: mock.base, OPENROUTER_KEY: 'sk-or-e2e-fake', STARNET_DEFAULT_MODEL: 'test/model' };
+  const baseEnv = { EYEHOLD_OPENROUTER_BASE: mock.base, OPENROUTER_KEY: 'sk-or-e2e-fake', EYEHOLD_DEFAULT_MODEL: 'test/model' };
 
   // ---- (a) NO key configured -> /v1/* is disabled (403) ----------------------------------------------------
   {
     const ws = fs.mkdtempSync(path.join(os.tmpdir(), 'sk-v1-nokey-'));
-    const { child, port } = await boot(8940 + (process.pid % 40), Object.assign({ SKYNET_WORKSPACES: ws }, baseEnv), 20);
+    const { child, port } = await boot(8940 + (process.pid % 40), Object.assign({ EYEHOLD_WORKSPACES: ws }, baseEnv), 20);
     const B = 'http://' + HOST + ':' + port;
     try {
       const models = await fetch(B + '/v1/models');
@@ -115,7 +115,7 @@ async function drain(res) {
 
   // ---- keyed sidecar for (b)-(g). max-concurrent 1 so the 429 path is cheap to induce. ---------------------
   const ws = fs.mkdtempSync(path.join(os.tmpdir(), 'sk-v1-'));
-  const env = Object.assign({ SKYNET_WORKSPACES: ws, STARNET_API_KEY: KEY, STARNET_V1_MAX_CONCURRENT: '1' }, baseEnv);
+  const env = Object.assign({ EYEHOLD_WORKSPACES: ws, EYEHOLD_API_KEY: KEY, EYEHOLD_V1_MAX_CONCURRENT: '1' }, baseEnv);
   const { child, port } = await boot(8970 + (process.pid % 40), env, 20);
   const B = 'http://' + HOST + ':' + port;
   const auth = { Authorization: 'Bearer ' + KEY };
@@ -130,10 +130,10 @@ async function drain(res) {
     A.eq(models.status, 200, '(c) /v1/models is 200 with the right bearer');
     const mj = await models.json();
     A.eq(mj.object, 'list', '(c) /v1/models returns an OpenAI list');
-    A.ok((mj.data || []).some(m => m.id === 'starnet-agent'), '(c) the advertised model starnet-agent is listed');
+    A.ok((mj.data || []).some(m => m.id === 'eyehold-agent'), '(c) the advertised model eyehold-agent is listed');
 
     // ---- (d) sync chat/completions -> real completion + REAL usage ----------------------------------------
-    const ccRes = await fetch(B + '/v1/chat/completions', { method: 'POST', headers: Object.assign({ 'Content-Type': 'application/json' }, auth), body: JSON.stringify({ model: 'starnet-agent', messages: [{ role: 'user', content: 'hi' }] }) });
+    const ccRes = await fetch(B + '/v1/chat/completions', { method: 'POST', headers: Object.assign({ 'Content-Type': 'application/json' }, auth), body: JSON.stringify({ model: 'eyehold-agent', messages: [{ role: 'user', content: 'hi' }] }) });
     A.eq(ccRes.status, 200, '(d) sync chat/completions returns 200');
     const cc = await ccRes.json();
     A.eq(cc.object, 'chat.completion', '(d) response is a chat.completion');
@@ -148,7 +148,7 @@ async function drain(res) {
     A.ok(hiCall && hiCall.tools.some(n => /^fs_(read|write)$/.test(n)), '(d) including a real file tool (fs_read/fs_write)');
 
     // ---- (e) stream:true -> chat.completion.chunk deltas then [DONE] --------------------------------------
-    const stRes = await fetch(B + '/v1/chat/completions', { method: 'POST', headers: Object.assign({ 'Content-Type': 'application/json' }, auth), body: JSON.stringify({ model: 'starnet-agent', stream: true, messages: [{ role: 'user', content: 'hi' }] }) });
+    const stRes = await fetch(B + '/v1/chat/completions', { method: 'POST', headers: Object.assign({ 'Content-Type': 'application/json' }, auth), body: JSON.stringify({ model: 'eyehold-agent', stream: true, messages: [{ role: 'user', content: 'hi' }] }) });
     A.eq(stRes.status, 200, '(e) streaming chat/completions returns 200');
     A.ok(String(stRes.headers.get('content-type') || '').indexOf('text/event-stream') >= 0, '(e) the stream is an SSE response');
     const raw = await drain(stRes);
@@ -163,7 +163,7 @@ async function drain(res) {
     A.ok(finish.usage && finish.usage.total_tokens === 6, '(e) the terminal chunk carries the real usage numbers');
 
     // ---- (f) /v1/runs -> 202, then events SSE reaches run.completed ---------------------------------------
-    const runRes = await fetch(B + '/v1/runs', { method: 'POST', headers: Object.assign({ 'Content-Type': 'application/json' }, auth), body: JSON.stringify({ model: 'starnet-agent', input: 'do a small thing' }) });
+    const runRes = await fetch(B + '/v1/runs', { method: 'POST', headers: Object.assign({ 'Content-Type': 'application/json' }, auth), body: JSON.stringify({ model: 'eyehold-agent', input: 'do a small thing' }) });
     A.eq(runRes.status, 202, '(f) POST /v1/runs answers 202');
     const rj = await runRes.json();
     A.eq(rj.status, 'started', '(f) the 202 body says status started');
@@ -191,10 +191,10 @@ async function drain(res) {
           let n = 0; rs.on('data', () => { n++; if (n >= 1) { clearTimeout(guard); resolve(rq); } }); rs.on('error', () => {});
         });
         rq.on('error', () => {});
-        rq.end(JSON.stringify({ model: 'starnet-agent', stream: true, messages: [{ role: 'user', content: 'DRIPFEED please stream slowly' }] }));
+        rq.end(JSON.stringify({ model: 'eyehold-agent', stream: true, messages: [{ role: 'user', content: 'DRIPFEED please stream slowly' }] }));
       });
       // a 2nd request now exceeds the max-concurrent=1 cap -> 429
-      const over = await fetch(B + '/v1/chat/completions', { method: 'POST', headers: Object.assign({ 'Content-Type': 'application/json' }, auth), body: JSON.stringify({ model: 'starnet-agent', messages: [{ role: 'user', content: 'hi' }] }) });
+      const over = await fetch(B + '/v1/chat/completions', { method: 'POST', headers: Object.assign({ 'Content-Type': 'application/json' }, auth), body: JSON.stringify({ model: 'eyehold-agent', messages: [{ role: 'user', content: 'hi' }] }) });
       A.eq(over.status, 429, '(g) a run over the concurrency cap answers 429');
       A.eq((await over.json()).error.code, 'rate_limit_exceeded', '(g) the 429 body names rate_limit_exceeded');
       try { held.destroy(); } catch (_) {}   // free the in-flight run (client-disconnect interrupts it)
@@ -213,7 +213,7 @@ async function drain(res) {
     // review findings: /v1 keeps its pre-#96 admission and never shares a per-agent durable brief or fires paid aux passes
     A.ok(/const imageTask = isTask && !o\.toolsOptional \?/.test(core) && /const directDomainTask = isTask && !o\.toolsOptional \?/.test(core), 'a /v1 request is never classified as an image/domain task ("Image task blocked: no STUDIO" on a text model)');
     A.ok(/if \(isTask && o\.taskKey && !o\.toolsOptional\) \{/.test(core), 'a /v1 request never prepares the per-agent durable brief (one client\'s open question cannot swallow the next client\'s request)');
-    A.ok(/isTask && !o\.toolsOptional && !internal && _skillToolsOn/.test(core) && /SKYNET_SCOUT !== '0' && isTask && !o\.toolsOptional && _auxDone/.test(core), 'external /v1 traffic never fires skill review or scout on the user\'s key');
+    A.ok(/isTask && !o\.toolsOptional && !internal && _skillToolsOn/.test(core) && /EYEHOLD_SCOUT !== '0' && isTask && !o\.toolsOptional && _auxDone/.test(core), 'external /v1 traffic never fires skill review or scout on the user\'s key');
   }
   A.report('openai-compat.e2e');
 })().catch(e => { console.error(e); process.exit(1); });

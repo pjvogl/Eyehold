@@ -10,14 +10,14 @@ const { bootToken } = require('../../test/_httpToken');
 async function run(base) {
   const root = path.resolve(__dirname, '../../.qa_tmp/cua-production');
   fs.mkdirSync(root, { recursive: true });
-  const filename = 'starnet-production-' + randomUUID().slice(0, 8) + '.txt';
+  const filename = 'eyehold-production-' + randomUUID().slice(0, 8) + '.txt';
   const file = path.join(root, filename);
-  const initial = 'StarNet production fixture.\r\n';
-  const addition = 'Saved through the real StarNet run.';
+  const initial = 'Eyehold production fixture.\r\n';
+  const addition = 'Saved through the real Eyehold run.';
   fs.writeFileSync(file, initial, { flag: 'wx' });
   const token = await bootToken(base, base);
   const request = async (route, body) => {
-    const response = await fetch(base + route, { method: 'POST', headers: { Origin: base, 'X-StarNet-Token': token, 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+    const response = await fetch(base + route, { method: 'POST', headers: { Origin: base, 'X-Eyehold-Token': token, 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
     assert.equal(response.status, 200, await response.clone().text()); return response;
   };
   let step = 0, target, providerError, imageSeen = false;

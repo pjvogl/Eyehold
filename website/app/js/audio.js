@@ -1,8 +1,8 @@
 /* ============================================================================
-   STARNET — audio.js : the colony sound Director.
+   EYEHOLD — audio.js : the colony sound Director.
 
    The generative background score was removed (2026-07-04, by decision): the
-   station now speaks only through designed SFX (see util.js). What remains is
+   keep now speaks only through designed SFX (see util.js). What remains is
    the Director's other job — turning REAL colony events on the U.bus into
    notification sounds — plus the autoplay arm: browsers block Web Audio until
    a user gesture, so the first pointer/key/touch boots the SFX context and

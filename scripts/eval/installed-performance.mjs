@@ -6,7 +6,7 @@ import { dirname, join, resolve } from 'node:path';
 import { performance } from 'node:perf_hooks';
 import { fileURLToPath } from 'node:url';
 import { startFixtureMcpServer } from './campaign/fixture-host.mjs';
-import { desktopStartupLogMark, installedDesktopStartupLog, startStarNetDriver, waitInstalledDesktopPort } from './campaign/drivers.mjs';
+import { desktopStartupLogMark, installedDesktopStartupLog, startEyeholdDriver, waitInstalledDesktopPort } from './campaign/drivers.mjs';
 import { validateManifest } from './bind.mjs';
 import { makeReceipt } from './comparison.mjs';
 import { gradeParityTrajectory, validateParityFixtures } from './independent-grader.mjs';
@@ -46,13 +46,13 @@ async function waitDesktopReady(base, child, timeoutMs, started = performance.no
   while (performance.now() - started < timeoutMs) {
     if (child.exitCode != null) throw new Error(`installed desktop exited ${child.exitCode} before readiness`);
     try {
-      const [healthResponse, stationResponse] = await Promise.all([
+      const [healthResponse, keepResponse] = await Promise.all([
         fetch(base + '/health', { signal: AbortSignal.timeout(1000) }),
         fetch(base + '/', { signal: AbortSignal.timeout(1000) })
       ]);
-      const health = await healthResponse.json(), html = await stationResponse.text();
-      if (healthResponse.ok && stationResponse.ok && health.status === 'ok' && /<html|<!doctype/i.test(html)) {
-        return { ms: performance.now() - started, version: String(health.version || ''), healthStatus: health.status, stationBytes: Buffer.byteLength(html) };
+      const health = await healthResponse.json(), html = await keepResponse.text();
+      if (healthResponse.ok && keepResponse.ok && health.status === 'ok' && /<html|<!doctype/i.test(html)) {
+        return { ms: performance.now() - started, version: String(health.version || ''), healthStatus: health.status, keepBytes: Buffer.byteLength(html) };
       }
     } catch (_) {}
     await sleep(100);
@@ -94,7 +94,7 @@ async function main() {
   const fixtureServer = await startFixtureMcpServer(); let driver = null;
   const artifactSamples = [];
   try {
-    driver = await startStarNetDriver({ desktopExecutable: executable, root: opts['runtime-root'], workspaces: opts.workspaces, fixtureUrl: fixtureServer.url, outputDir, timeoutMs });
+    driver = await startEyeholdDriver({ desktopExecutable: executable, root: opts['runtime-root'], workspaces: opts.workspaces, fixtureUrl: fixtureServer.url, outputDir, timeoutMs });
     for (let index = 0; index < samples; index++) {
       const root = mkdtempSync(join(outputDir, `installed-artifact-a${index + 1}-`)), state = fixtureServer.activate(fixture, root);
       try {
@@ -108,23 +108,23 @@ async function main() {
   } finally { if (driver) await driver.close(); await fixtureServer.close(); }
 
   const result = {
-    schemaVersion: 'starnet.eval.installed-performance.v1', pass: coldSamples.length === samples && artifactSamples.length === samples,
+    schemaVersion: 'eyehold.eval.installed-performance.v1', pass: coldSamples.length === samples && artifactSamples.length === samples,
     scope: 'installed Windows desktop cold start plus installed-runtime provider-backed useful artifact', samples,
     measurements: {
-      desktopProcessToHealthAndStationMs: performanceStats(coldSamples.map(row => row.ms)),
+      desktopProcessToHealthAndKeepMs: performanceStats(coldSamples.map(row => row.ms)),
       sendToFirstVisibleTokenMs: performanceStats(artifactSamples.map(row => row.firstVisibleTokenMs)),
       sendToVerifiedArtifactMs: performanceStats(artifactSamples.map(row => row.verifiedArtifactMs)),
       sendToFinalMs: performanceStats(artifactSamples.map(row => row.finalMs))
     },
     coldSamples, artifactSamples,
-    limitations: ['Desktop readiness is health plus served station HTML; one live Windows UI inspection is recorded separately.', 'Useful-artifact timing uses the installed runtime and active provider credentials, not simulated output.']
+    limitations: ['Desktop readiness is health plus served keep HTML; one live Windows UI inspection is recorded separately.', 'Useful-artifact timing uses the installed runtime and active provider credentials, not simulated output.']
   };
   const report = { ...result, capturedAt: new Date().toISOString(), candidate: { executable, sha256: hashFile(executable), describe: subject.provenance.describe }, fixtureSetSha256: validation.fixtureSha256 };
   writeFileSync(output, JSON.stringify(report, null, 2) + '\n', 'utf8');
   let receipt = makeReceipt({ kind: 'installed-performance', contract: json(opts.contract), subject, result,
     evidence: { path: output, bytes: statSync(output).size, sha256: hashFile(output), manifestPath, manifestSha256: hashFile(manifestPath), fixtureSetSha256: validation.fixtureSha256 }, limitations: result.limitations });
   receipt = signReceipt(receipt, opts['signing-key']); writeFileSync(receiptPath, JSON.stringify(receipt, null, 2) + '\n', 'utf8');
-  console.log(`[agent-eval] INSTALLED PERFORMANCE PASS cold=${result.measurements.desktopProcessToHealthAndStationMs.median}ms useful=${result.measurements.sendToVerifiedArtifactMs.median}ms samples=${samples}`);
+  console.log(`[agent-eval] INSTALLED PERFORMANCE PASS cold=${result.measurements.desktopProcessToHealthAndKeepMs.median}ms useful=${result.measurements.sendToVerifiedArtifactMs.median}ms samples=${samples}`);
   console.log(`[agent-eval] receipt ${receiptPath}`);
 }
 

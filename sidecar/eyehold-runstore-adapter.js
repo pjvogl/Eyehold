@@ -1,4 +1,4 @@
-/* Strict adapter between the existing StarNet run-store shape and Eyehold's
+/* Strict adapter between the existing Eyehold run-store shape and Eyehold's
  * trusted acceptance contract. runStore entries contain runId/reason, not
  * id/status/taskId. The task identity is the immutable runId for MVP receipts.
  * NEVER infer verified business impact from "reason: done".

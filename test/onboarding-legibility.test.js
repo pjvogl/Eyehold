@@ -46,7 +46,7 @@ const Glossary = require('../frontend/app/glossary.js');
     },
     Chat: { typeLine() {}, localLine() {}, choices() {} },
     Dialogue: { open(opts) { opens++; speakerNames.push(opts.name); }, node() { return new Promise(() => {}); }, isOpen() { return false; }, close() {} },
-    StationUI: { closeTerm(key) { if (key === 'manual') closedManual++; } },
+    KeepUI: { closeTerm(key) { if (key === 'manual') closedManual++; } },
     U: { bus: { on() {} } },
     document: { querySelector() { return null; }, getElementById(id) { return id === 'gt-agent' ? { textContent: liveName } : null; }, body: { contains() { return false; }, appendChild() {}, style: {} } },
     window: { addEventListener() {}, removeEventListener() {} },
@@ -69,25 +69,25 @@ const Glossary = require('../frontend/app/glossary.js');
   A.eq(resetState.firstCommandDone, false, 'new-Commander reset re-arms the one-shot tour');
   A.eq(resetState.seen, {}, 'new-Commander reset clears inherited coachmark history');
   A.eq(resetState.brief, {}, 'new-Commander reset clears inherited FIRST STEPS progress');
-  A.eq(tutorialRemovals, 1, 'tutorial reset explicitly removes starnet.tutorial.v1');
+  A.eq(tutorialRemovals, 1, 'tutorial reset explicitly removes eyehold.tutorial.v1');
 
   // Release clarity regression: Genesis must route each editable choice to its real home, and the work
   // vocabulary must preserve the product's existing truth — deliberate tasks are board cards; every saved
   // conversation is a COMMS Session; recruited crew are real agents, never decorative placeholders.
   const indexSrc = fs.readFileSync(path.join(root, 'frontend', 'index.html'), 'utf8');
-  const stationUiSrc = fs.readFileSync(path.join(root, 'frontend', 'app', 'stationui.js'), 'utf8');
+  const keepUiSrc = fs.readFileSync(path.join(root, 'frontend', 'app', 'keepui.js'), 'utf8');
   const appSrc = fs.readFileSync(path.join(root, 'frontend', 'app', 'app.js'), 'utf8');
   A.ok(/Workstreams\.reset\(\);[\s\S]{0,240}Tutorial\.reset\(\)/.test(appSrc),
-    'the real new-Commander reset funnel clears tutorial ownership before entering the station');
-  A.ok(indexSrc.includes('agent setup in CREW › AGENTS') && indexSrc.includes('model in COMMS') && indexSrc.includes('SYSTEM › SETTINGS'),
+    'the real new-Commander reset funnel clears tutorial ownership before entering the keep');
+  A.ok(indexSrc.includes('agent setup in COMPANY › AGENTS') && indexSrc.includes('model in MISSIVES') && indexSrc.includes('SYSTEM › SETTINGS'),
     'Genesis routes editable setup to the real agent, model, and settings surfaces');
   A.eq(indexSrc.includes('everything here is re-editable later in the Commander Dossier'), false,
     'Genesis no longer sends agent configuration to the Commander Dossier');
-  A.ok(/\{ id: 'tasks', k: 'tasks', label: 'TASKS', tip: '[^']*[Pp]lanned work[^']*' \}/.test(stationUiSrc),
+  A.ok(/\{ id: 'tasks', k: 'tasks', label: 'TASKS', tip: '[^']*[Pp]lanned work[^']*' \}/.test(keepUiSrc),
     'WORK describes TASKS as planned board work instead of claiming every run lives there');
-  A.ok(stationUiSrc.includes('<b>NO TASKS</b>') && /id="kb-in"[^>]*aria-label="New task"/.test(stationUiSrc),
+  A.ok(keepUiSrc.includes('<b>NO TASKS</b>') && /id="kb-in"[^>]*aria-label="New task"/.test(keepUiSrc),
     'TASK BOARD uses task language instead of exposing the internal workstream record name');
-  A.ok(stationUiSrc.includes('Chats, routines, and while-away runs live as Sessions in COMMS'),
+  A.ok(keepUiSrc.includes('Chats, routines, and while-away runs live as Sessions in COMMS'),
     'TASK BOARD explains which real work belongs only in COMMS Sessions');
   A.ok(/workstream:\s+'the saved conversation behind a COMMS session/.test(fs.readFileSync(path.join(root, 'frontend', 'app', 'glossary.js'), 'utf8')),
     'the glossary explains the workstream record without conflating it with a board task');

@@ -21,7 +21,7 @@ const srv = createServer((req, res) => {
 });
 await new Promise(r => srv.listen(PORT, '127.0.0.1', r));
 
-const profile = `${process.env.TEMP}/starnet-shoot-${PORT}`;
+const profile = `${process.env.TEMP}/eyehold-shoot-${PORT}`;
 rmSync(profile, { recursive: true, force: true }); mkdirSync(profile, { recursive: true });
 const cdpPort = PORT + 1000;
 const chrome = spawn(CHROME, [

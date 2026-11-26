@@ -2,7 +2,7 @@
 /* dev/refit-perf-bench.mjs — REPEATABLE frame-cost benchmark for REFIT (build.js).
  *
  * WHY IT EXISTS: "REFIT stutters on a big floor" is not a claim until two numbers exist for the
- * SAME scene. This builds a deterministic synthetic station (42 rooms / 336 props / 756 belt
+ * SAME scene. This builds a deterministic synthetic keep (42 rooms / 336 props / 756 belt
  * tiles), drives the real app through CDP, and reports per-frame cost three ways:
  *
  *   1. rAF WALL TIME — every requestAnimationFrame callback is wrapped and timed. This works on an
@@ -48,8 +48,8 @@ const OPEN_REFIT = `(() => {
    Deterministic by construction (no RNG, no clock): the same grid every run, so BEFORE and AFTER
    are measured on a scene that is identical tile for tile. 7x6 rooms of 9x7 on an 11x9 pitch. */
 const BUILD_FLOOR = `(() => {
-  const st = Build.__test__.station();
-  /* The seed's own station STAYS (removeRoom refuses the spawn room, and demolishing the hero's
+  const st = Build.__test__.keep();
+  /* The seed's own keep STAYS (removeRoom refuses the spawn room, and demolishing the hero's
      desk would change what the validation layer has to say). The grid is laid clear to its east,
      so every run measures the seed floor PLUS exactly the same synthetic extension. */
   const b0 = st.bounds();
@@ -133,7 +133,7 @@ const STOP = `JSON.stringify((() => {
 
 // the individual calls the audit named, timed directly — tree-agnostic
 const MICRO = `JSON.stringify((() => {
-  const st = Build.__test__.station();
+  const st = Build.__test__.keep();
   const t = (label, reps, fn) => { const a = performance.now(); for (let i = 0; i < reps; i++) fn(i); const ms = performance.now() - a; return { reps, totalMs: +ms.toFixed(2), perCallUs: +((ms / reps) * 1000).toFixed(1) }; };
   const bays = st.props().filter(p => p.t === 'bay' && p.agentId);
   const props = st.props();
@@ -151,7 +151,7 @@ const MICRO = `JSON.stringify((() => {
 
 // finding 8 + 9: the cost paid on the FIRST frame after an edit, and by the shelf
 const RESCAN = `JSON.stringify((() => {
-  const st = Build.__test__.station();
+  const st = Build.__test__.keep();
   const BPS = ['research_line', 'sorting_office', 'parallel_crew', 'ship_out'];
   /* invalidate WITHOUT changing the floor: flip one existing belt tile and flip it straight back,
      so every measurement below runs on a scene that is identical to the one just photographed. */
@@ -204,7 +204,7 @@ async function main() {
 
     // pin the text size (the shelf harness's known zoom trap) — every run measures the same glass
     await evalJS(cdp, `(() => {
-      const KEY = 'starnet.station.v1';
+      const KEY = 'eyehold.keep.v1';
       const r = JSON.parse(localStorage.getItem(KEY) || '{"v":1}');
       r.settings = Object.assign({}, r.settings, { textScale: 100 });
       localStorage.setItem(KEY, JSON.stringify(r));
@@ -297,7 +297,7 @@ async function main() {
         const f = Build.__test__.lineField(id);
         out.fields[id] = f ? { count: f.count, runs: f.runs, sample: f.sample } : null;
       }
-      const b = Build.__test__.station().bounds();
+      const b = Build.__test__.keep().bounds();
       for (let ty = b.minTy - 2; ty <= b.maxTy + 2; ty += 3)
         for (let tx = b.minTx - 2; tx <= b.maxTx + 2; tx += 3)
           out.snaps.push([tx, ty, Build.__test__.lineSnapAt(tx, ty)]);

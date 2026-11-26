@@ -1,4 +1,4 @@
-/* node test/remote-view.test.js — the STATION picture a paired phone sees, end to end without a browser:
+/* node test/remote-view.test.js — the KEEP picture a paired phone sees, end to end without a browser:
      · sidecar/remote/view.js      holds the desk's latest still and whether a phone is looking
      · sidecar/remote/portraits.js an agent's own sprite, by the frontend's own skin table
      · host.view / host.portrait through the REAL gateway (validation, chunking, the picture's age)
@@ -23,7 +23,7 @@ const jpeg = () => Buffer.concat([Buffer.from([0xff, 0xd8, 0xff, 0xe0]), Buffer.
   /* ---------- 1. the store ---------- */
   let t = 1000;
   const view = makeRemoteView({ now: () => t });
-  A.eq(view.meta(), null, 'a fresh station has no picture');
+  A.eq(view.meta(), null, 'a fresh keep has no picture');
   A.eq(view.wanted(), false, 'and nobody is looking');
   A.eq(view.put({ w: 800, h: 600, data: Buffer.from('<html>').toString('base64') }).ok, false, 'a non-image is refused whatever it claims to be');
   A.eq(view.put({ mime: 'image/webp', w: 0, h: 600, data: webp(64).toString('base64') }).ok, false, 'a bad size is refused');
@@ -150,7 +150,7 @@ const jpeg = () => Buffer.concat([Buffer.from([0xff, 0xd8, 0xff, 0xe0]), Buffer.
   answer = { ok: true, enabled: true, want: false, at: null };
   I.encode = async () => ({ mime: 'image/jpeg', data: 'QQ==' });
   await I.step();
-  A.eq(posts.length, 4, 'a station that lost its picture (restart) gets a new one without a phone asking');
+  A.eq(posts.length, 4, 'a keep that lost its picture (restart) gets a new one without a phone asking');
 
   // an unchanged room says "same" — but a sidecar that no longer HOLDS the picture (restart) answers 409, and the page
   // must then send the full still instead of re-posting "same" forever (sweep 2026-10-01)
@@ -166,12 +166,12 @@ const jpeg = () => Buffer.concat([Buffer.from([0xff, 0xd8, 0xff, 0xe0]), Buffer.
     A.eq(sent, ['full', 'same'], 'an unchanged room is only confirmed as the same');
     held = false; sent.length = 0;
     await I.step();
-    A.eq(sent, ['same', 'full'], 'a station that lost the picture (409 on "same") gets the full still right away');
+    A.eq(sent, ['same', 'full'], 'a keep that lost the picture (409 on "same") gets the full still right away');
     globalThis.fetch = realFetch;
   }
 
   answer = null;
-  A.eq(await I.step(), I.IDLE_MS, 'an unreachable station: nothing drawn, nothing thrown');
+  A.eq(await I.step(), I.IDLE_MS, 'an unreachable keep: nothing drawn, nothing thrown');
   A.eq(posts.length, 4, 'and nothing sent');
 
   /* ---------- 5. the live crew: a crew-free room + the crew stream + their sprite drawings ---------- */
@@ -228,28 +228,28 @@ const jpeg = () => Buffer.concat([Buffer.from([0xff, 0xd8, 0xff, 0xe0]), Buffer.
 
   /* SESSION HISTORY NEVER DISAPPEARS (Andrew 10-02, testing on the road: "sometimes session history disappears").
      Reproduction: you write from the phone, the desk later saves a newer turn of the same session without having
-     merged yours — the phone used to keep only station turns NEWER than the desk's last line, so yours vanished. */
+     merged yours — the phone used to keep only keep turns NEWER than the desk's last line, so yours vanished. */
   {
     const desk = [
       { role: 'user', content: 'plan the launch', ts: 100 }, { role: 'assistant', content: 'Here is the plan.', ts: 110 },
       { role: 'system', sys: true, content: '■ RUN COMPLETE' },
       { role: 'user', content: 'and the budget?', ts: 500 }, { role: 'assistant', content: 'About $40.', ts: 510 }
     ];
-    const station = [
+    const keep = [
       { role: 'user', content: 'plan the launch', ts: 100, rowId: 1 }, { role: 'assistant', content: 'Here is the plan.', ts: 110, rowId: 2 },
       { role: 'user', content: 'from my phone: add a teaser', ts: 300, rowId: 3 }, { role: 'assistant', content: 'Teaser added.', ts: 310, rowId: 4 },
       { role: 'user', content: 'and the budget?', ts: 500, rowId: 5 }, { role: 'assistant', content: 'About $40.', ts: 510, rowId: 6 }
     ];
     const hm = makeRemoteHost({ now: () => now, newId: () => 'r', broadcast: () => {}, roster: () => [{ agentId: 'nova', name: 'NOVA' }], liveRuns: () => [],
-      transcript: { streams: () => [{ streamId: 'ws_launch', turns: 6, lastAt: 510, preview: '' }], history: () => station },
+      transcript: { streams: () => [{ streamId: 'ws_launch', turns: 6, lastAt: 510, preview: '' }], history: () => keep },
       deskSessions: () => [{ id: 'ws_launch', agentId: 'nova', title: 'Launch', history: desk, lastActiveAt: 510 }] });
     const turns = (await hm.thread({ streamId: 'ws_launch', limit: 60 })).map(t => t.content);
     A.eq(turns, ['plan the launch', 'Here is the plan.', 'from my phone: add a teaser', 'Teaser added.', 'and the budget?', 'About $40.'],
       'a phone turn the desk never merged stays in its place, even after the desk saved newer turns');
   }
   /* (sweep 2026-10-02, review of ac17da7ce) a phone SEND hands the model at most the newest 100 turns, as it always did — the merge
-     lost the limit and sent the whole desk save plus up to 2000 station turns — and a desk turn holding a secret is redacted before
-     it merges: the station copy is redacted at write, so the raw desk copy doubled the turn and went to the relay. */
+     lost the limit and sent the whole desk save plus up to 2000 keep turns — and a desk turn holding a secret is redacted before
+     it merges: the keep copy is redacted at write, so the raw desk copy doubled the turn and went to the relay. */
   {
     const { redact } = require('../sidecar/context.js');
     const KEY = 'sk-or-v1-' + 'abcdef'.repeat(7);
@@ -263,12 +263,12 @@ const jpeg = () => Buffer.concat([Buffer.from([0xff, 0xd8, 0xff, 0xe0]), Buffer.
     A.ok(ran && Array.isArray(ran.messages) && ran.messages.length === 101 && ran.messages[0].content === 'line 160' && ran.messages[100].content === 'and now?',
       'a phone send hands the model the newest 100 turns plus the new message, never the whole session: ' + (ran && ran.messages && ran.messages.length));
     const desk = [{ role: 'user', content: 'use ' + KEY + ' for it', ts: 100 }, { role: 'assistant', content: 'Done.', ts: 110 }];
-    const station = [{ role: 'user', content: redact('use ' + KEY + ' for it'), ts: 100, rowId: 1 }, { role: 'assistant', content: 'Done.', ts: 110, rowId: 2 }];
+    const keep = [{ role: 'user', content: redact('use ' + KEY + ' for it'), ts: 100, rowId: 1 }, { role: 'assistant', content: 'Done.', ts: 110, rowId: 2 }];
     const hr = makeRemoteHost({ now: () => now, newId: () => 'r', broadcast: () => {}, roster: () => [{ agentId: 'nova', name: 'NOVA' }], liveRuns: () => [], redact,
-      transcript: { streams: () => [{ streamId: 'ws_key', turns: 2, lastAt: 110, preview: '' }], history: () => station },
+      transcript: { streams: () => [{ streamId: 'ws_key', turns: 2, lastAt: 110, preview: '' }], history: () => keep },
       deskSessions: () => [{ id: 'ws_key', agentId: 'nova', title: 'Key', history: desk, lastActiveAt: 110 }] });
     const kt = (await hr.thread({ streamId: 'ws_key', limit: 60 })).map(t => t.content);
-    A.eq(kt.length, 2, 'a turn holding a secret is ONE turn on the phone, not the desk copy and the station copy: ' + JSON.stringify(kt));
+    A.eq(kt.length, 2, 'a turn holding a secret is ONE turn on the phone, not the desk copy and the keep copy: ' + JSON.stringify(kt));
     A.ok(kt.every(t => t.indexOf(KEY) < 0), 'and the raw key never leaves for the relay');
   }
   // a long conversation is never cut off: it comes in pages, and the phone is told how many older turns remain
@@ -293,11 +293,11 @@ const jpeg = () => Buffer.concat([Buffer.from([0xff, 0xd8, 0xff, 0xe0]), Buffer.
       deskSessions: () => desks });
     const list = await hs2.threads({ limit: 300 });
     A.eq(list.length, 121, 'all 121 sessions are listed');
-    A.ok(list.some(t => t.streamId === 'ws_quiet' && t.preview === 'what I asked from the phone'), 'a session whose turns live only in the station record is not hidden as blank');
+    A.ok(list.some(t => t.streamId === 'ws_quiet' && t.preview === 'what I asked from the phone'), 'a session whose turns live only in the keep record is not hidden as blank');
   }
   // a file read for an agent that does not exist makes nothing
   A.eq((await hl.fetchFile({ agentId: 'ghost', path: 'x.txt', offset: 0, length: 10 })).ok, false, 'no file read (and no folder) for a made-up agent');
-  // a phone reads only what the station showed it: the agent's own workspace, or a file a run/deliverable recorded
+  // a phone reads only what the keep showed it: the agent's own workspace, or a file a run/deliverable recorded
   {
     const reads = [];
     const hf = makeRemoteHost({ now: () => now, newId: () => 'r', broadcast: () => {}, roster: () => [{ agentId: 'forge', name: 'FORGE' }], liveRuns: () => [],
@@ -484,7 +484,7 @@ const jpeg = () => Buffer.concat([Buffer.from([0xff, 0xd8, 0xff, 0xe0]), Buffer.
     const gw2 = makeGateway({ host: mk(false), now: () => Date.now() });
     const on2 = await gw2.call({ verb: 'routine', args: { jobId: 'job1', enabled: true } }, { deviceId: 'd2' });
     A.ok(on2 && on2.ok !== false, 'an ordinary phone still turns a routine on');
-    A.eq(calls, [['job1', false], ['job1', true]], 'only the allowed changes reached the station');
+    A.eq(calls, [['job1', false], ['job1', true]], 'only the allowed changes reached the keep');
   }
   // (QA 2026-10-02) the desk side of a phone run: E-STOP reaches one accepted a moment ago (not yet in `runs`), and its
   // session-scoped grants end with it like every other run's
@@ -493,7 +493,7 @@ const jpeg = () => Buffer.concat([Buffer.from([0xff, 0xd8, 0xff, 0xe0]), Buffer.
     A.ok(idx.includes("for (const id of Array.from(remoteHost._remoteRuns.keys())) if (!runs.has(id)) { remoteHost.stop({ runId: id })")
       && idx.includes('halted: halted + phoneAborted'), 'E-STOP stops a phone task still on its way into runs, and counts it once');
     A.ok(idx.includes('finally { runs.delete(rid); runsMeta.delete(rid); grantsSession.delete(rid); }'), 'a phone run drops its session grants when it ends');
-    A.ok(idx.includes('stationOneShots.add(ctrl);') && idx.includes('stationOneShots.delete(ctrl); }') && idx.includes('for (const c of Array.from(stationOneShots)) { try { c.abort();'), 'E-STOP also aborts a NEEDS CHANGES / SET IT UP FOR ME call in flight');
+    A.ok(idx.includes('keepOneShots.add(ctrl);') && idx.includes('keepOneShots.delete(ctrl); }') && idx.includes('for (const c of Array.from(keepOneShots)) { try { c.abort();'), 'E-STOP also aborts a NEEDS CHANGES / SET IT UP FOR ME call in flight');
   }
   A.report('remote-view');
 })().catch((e) => { console.log('FAIL: threw ' + (e && e.stack || e)); process.exit(1); });

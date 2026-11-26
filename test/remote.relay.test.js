@@ -1,15 +1,15 @@
-/* node test/remote.relay.test.js — StarNet Remote over the RELAY (phase 3), in one process, on 127.0.0.1.
+/* node test/remote.relay.test.js — Eyehold Remote over the RELAY (phase 3), in one process, on 127.0.0.1.
 
-   The real relay (relay/server.js + its dependency-free WebSocket server), the real station side
+   The real relay (relay/server.js + its dependency-free WebSocket server), the real keep side
    (sidecar/remote/relay-client.js over Node's built-in WebSocket, with the real devices/sessions/approvals/
    gateway) and the real WebCrypto phone client. What it proves:
-     · a station signs in with its own key; a forged signature is refused; another key can't take its routing id
+     · a keep signs in with its own key; a forged signature is refused; another key can't take its routing id
      · a phone pairs through the relay with the one-time code, then connects with its relay pass
      · a stranger without a pass can only send a pairing request; anything else is closed (4401)
      · sealed calls and live events flow end to end; the relay never holds anything it could open
      · approvals: the phone approves once; always/full are refused
      · revoke kicks the phone at the relay and its pass stops working
-     · station offline -> phones get 4404; the station comes back by itself after a relay restart */
+     · keep offline -> phones get 4404; the keep comes back by itself after a relay restart */
 'use strict';
 const A = require('./_assert.js');
 const fs = require('fs');
@@ -45,7 +45,7 @@ function wsClose(url) {
   const sessions = makeSessions({ devices, crypto: C, now: () => Date.now(), newId });
   const approvals = makeApprovals({ now: () => Date.now() });
   const host = {
-    status: async () => ({ station: 'TEST STATION', agents: [{ agentId: 'forge', name: 'FORGE', state: 'idle' }], runs: [] }),
+    status: async () => ({ keep: 'TEST KEEP', agents: [{ agentId: 'forge', name: 'FORGE', state: 'idle' }], runs: [] }),
     threads: async () => [], thread: async () => [], send: async () => ({ runId: 'r1', streamId: 's1' }), stop: async () => ({ ok: false }),
     files: async () => [], fetchFile: async () => ({ ok: false, error: 'unknown file' }), routines: async () => [], setRoutine: async () => ({ ok: true })
   };
@@ -56,17 +56,17 @@ function wsClose(url) {
   const base = 'http://127.0.0.1:' + port;
   let rc = null;
   try {
-    // a forged station sign-in is refused
+    // a forged keep sign-in is refused
     {
-      const ws = new WebSocket(base.replace('http', 'ws') + '/v1/station');
+      const ws = new WebSocket(base.replace('http', 'ws') + '/v1/keep');
       const code = await new Promise((resolve) => {
-        ws.onmessage = (ev) => { const m = JSON.parse(ev.data); if (m.t === 'challenge') ws.send(JSON.stringify({ t: 'auth', pub: devices.stationKeys().publicRaw, sig: C.b64u(Buffer.alloc(70, 1)) })); };
+        ws.onmessage = (ev) => { const m = JSON.parse(ev.data); if (m.t === 'challenge') ws.send(JSON.stringify({ t: 'auth', pub: devices.keepKeys().publicRaw, sig: C.b64u(Buffer.alloc(70, 1)) })); };
         ws.onclose = (ev) => resolve(ev.code);
       });
-      A.eq(code, 4401, 'a station that cannot sign for its key is refused');
+      A.eq(code, 4401, 'a keep that cannot sign for its key is refused');
     }
 
-    // ONE bad request must never take the relay down (it carries every station and phone)
+    // ONE bad request must never take the relay down (it carries every keep and phone)
     {
       // a relay that serves the phone app (the crash lived on that path)
       const appRelay = makeRelay({ appDir: path.join(__dirname, '..', 'relay', 'app'), log: () => {} });
@@ -94,7 +94,7 @@ function wsClose(url) {
         A.ok(!!etag, 'it carries an ETag');
         A.eq((await fetch(abase + '/app.js', { headers: { 'If-None-Match': etag } })).status, 304, 'a phone that has it already gets a 304, not the bytes again');
         const sw = await fetch(abase + '/sw.js').then(r => r.text());
-        A.ok(/const CACHE = 'starnet-remote-[A-Za-z0-9_-]{12}'/.test(sw) && sw.indexOf('%SHELL%') < 0, 'the service worker is served with a fingerprint of the shell in its cache name');
+        A.ok(/const CACHE = 'eyehold-remote-[A-Za-z0-9_-]{12}'/.test(sw) && sw.indexOf('%SHELL%') < 0, 'the service worker is served with a fingerprint of the shell in its cache name');
         const sw2 = await fetch(abase + '/sw.js').then(r => r.text());
         A.eq(sw2, sw, 'the same shell gives the same name (no needless re-install)');
       }
@@ -103,7 +103,7 @@ function wsClose(url) {
 
     // NOBODY CAN EXHAUST THE RELAY BEFORE PROVING ANYTHING. Raw WebSocket frames from an unauthenticated socket:
     // a flood of empty continuation frames (once grew a list forever and killed the process in about a second),
-    // a big message before a station has signed in, and too many sockets from one address.
+    // a big message before a keep has signed in, and too many sockets from one address.
     {
       const capRelay = makeRelay({ log: () => {}, maxPerIp: 3 });
       const cport = await capRelay.listen(0, '127.0.0.1');
@@ -127,8 +127,8 @@ function wsClose(url) {
         s.on('close', () => { closed = true; if (!done) { done = true; resolve({ s, status: 0, closed: () => true, code: () => null }); } });
         s.on('error', () => {});
       });
-      const a = await raw('/v1/station');
-      A.eq(a.status, 101, 'a station socket opens');
+      const a = await raw('/v1/keep');
+      A.eq(a.status, 101, 'a keep socket opens');
       const flood = [frameOf(0x01, 'x')];
       for (let i = 0; i < 4000; i++) flood.push(frameOf(0x00, ''));
       a.s.write(Buffer.concat(flood));
@@ -137,16 +137,16 @@ function wsClose(url) {
       A.eq((await fetch('http://127.0.0.1:' + cport + '/healthz').then(r => r.json())).ok, true, 'and the relay is still up');
       a.s.destroy();
 
-      const b = await raw('/v1/station');
+      const b = await raw('/v1/keep');
       b.s.write(frameOf(0x81, 'y'.repeat(64 * 1024)));
       await waitUntil(() => b.code() !== null || b.closed(), 3000, 'the big pre-auth frame is refused');
-      A.eq(b.code(), 1009, 'a station that has not signed in may not send a big message');
+      A.eq(b.code(), 1009, 'a keep that has not signed in may not send a big message');
       b.s.destroy();
       await sleep(150);
 
-      const held = [await raw('/v1/station'), await raw('/v1/station'), await raw('/v1/station')];
+      const held = [await raw('/v1/keep'), await raw('/v1/keep'), await raw('/v1/keep')];
       A.ok(held.every(x => x.status === 101), 'three sockets from one address are fine');
-      const over = await raw('/v1/station');
+      const over = await raw('/v1/keep');
       A.eq(over.status, 429, 'a fourth from the same address is refused at the door');
       for (const x of held.concat(over)) x.s.destroy();
       await sleep(150);
@@ -154,11 +154,11 @@ function wsClose(url) {
       await capRelay.close();
     }
 
-    // A phone that arrives while a station has just connected (its paired list not sent yet) WAITS for the list
+    // A phone that arrives while a keep has just connected (its paired list not sent yet) WAITS for the list
     // instead of being told "not paired" (which used to make a healthy phone believe it was removed)
     {
-      const keys = devices.stationKeys();
-      const sws = new WebSocket(base.replace('http', 'ws') + '/v1/station');
+      const keys = devices.keepKeys();
+      const sws = new WebSocket(base.replace('http', 'ws') + '/v1/keep');
       const got = [];
       let rid = null;
       await new Promise((resolve) => {
@@ -173,7 +173,7 @@ function wsClose(url) {
       await new Promise(r => { pws.onopen = r; });
       pws.send(JSON.stringify({ t: 'hello', v: 1, deviceId: 'dev_early' }));
       await sleep(300);
-      A.eq(got.filter(m => m.t === 'open').length, 0, 'the phone is held while the station has not said who is paired');
+      A.eq(got.filter(m => m.t === 'open').length, 0, 'the phone is held while the keep has not said who is paired');
       sws.send(JSON.stringify({ t: 'tokens', hashes: [tokenHash('early-token')] }));
       await waitUntil(() => got.some(m => m.t === 'open') && got.some(m => m.t === 'from'), 3000, 'held phone admitted');
       A.eq(got.find(m => m.t === 'open').paired, true, 'then admitted as paired, its early hello delivered');
@@ -183,36 +183,36 @@ function wsClose(url) {
 
     rc = makeRelayClient({ url: base, devices, sessions, gateway, crypto: C, now: () => Date.now(), log: () => {} });
     rc.start();
-    await waitUntil(() => rc.info().state === 'online', 5000, 'station online at the relay');
-    const st = devices.stationKeys();
-    A.eq(rc.info().rid, ridOf(st.publicRaw), 'the routing id is the hash of the station key');
+    await waitUntil(() => rc.info().state === 'online', 5000, 'keep online at the relay');
+    const st = devices.keepKeys();
+    A.eq(rc.info().rid, ridOf(st.publicRaw), 'the routing id is the hash of the keep key');
     A.eq(await Phone.ridOf(st.publicRaw), rc.info().rid, 'the phone computes the same routing id from the QR');
 
     // a stranger (no pass) can't do anything but ask to pair
     A.eq(await wsClose(base.replace('http', 'ws') + '/v1/phone?rid=' + rc.info().rid), 4401, 'no relay pass: a hello is refused at the relay');
-    A.eq(await wsClose(base.replace('http', 'ws') + '/v1/phone?rid=nope'), 4404, 'unknown station: 4404');
+    A.eq(await wsClose(base.replace('http', 'ws') + '/v1/phone?rid=nope'), 4404, 'unknown keep: 4404');
 
     // pair through the relay
     const p = devices.startPairing({});
     const key = await Phone.makeDeviceKey();
-    let bad = null; try { await Phone.pairRelay({ relay: base, stationPub: st.publicRaw, pairingId: p.pairingId, code: 'WRONGCOD', name: 'Relay phone', key }); } catch (e) { bad = e.message; }
-    A.ok(/wrong pairing code/.test(bad || ''), 'a wrong code over the relay is refused by the station: ' + bad);
-    const paired = await Phone.pairRelay({ relay: base, stationPub: st.publicRaw, pairingId: p.pairingId, code: p.code, name: 'Relay phone', key });
+    let bad = null; try { await Phone.pairRelay({ relay: base, keepPub: st.publicRaw, pairingId: p.pairingId, code: 'WRONGCOD', name: 'Relay phone', key }); } catch (e) { bad = e.message; }
+    A.ok(/wrong pairing code/.test(bad || ''), 'a wrong code over the relay is refused by the keep: ' + bad);
+    const paired = await Phone.pairRelay({ relay: base, keepPub: st.publicRaw, pairingId: p.pairingId, code: p.code, name: 'Relay phone', key });
     A.ok(/^dev_/.test(paired.deviceId), 'paired through the relay');
     A.ok(typeof paired.relayToken === 'string' && paired.relayToken.length >= 32, 'the phone got its relay pass');
     const raw = fs.readFileSync(path.join(dir, '.secrets', 'remote.json'), 'utf8');
-    A.ok(raw.indexOf(paired.relayToken) < 0, 'the station stores only a hash of the pass');
+    A.ok(raw.indexOf(paired.relayToken) < 0, 'the keep stores only a hash of the pass');
 
     // connect with the pass; sealed calls + events
-    const c = Phone.connectRelay({ relay: base, stationPub: st.publicRaw, deviceId: paired.deviceId, relayToken: paired.relayToken, key });
+    const c = Phone.connectRelay({ relay: base, keepPub: st.publicRaw, deviceId: paired.deviceId, relayToken: paired.relayToken, key });
     const states = []; c.onStatus((s) => states.push(s));
     const events = []; c.onEvent((e) => events.push(e));
     const s1 = await c.call('status');
-    A.eq(s1.data.station, 'TEST STATION', 'status over the relay');
+    A.eq(s1.data.keep, 'TEST KEEP', 'status over the relay');
     A.ok(states.indexOf('open') >= 0, 'the link reports open only after the sealed handshake');
     sessions.broadcast({ type: 'hello.phone', n: 7 });
     await waitUntil(() => events.length > 0, 3000, 'event over the relay');
-    A.eq(events[0], { type: 'hello.phone', n: 7 }, 'a station event arrives sealed and opens on the phone');
+    A.eq(events[0], { type: 'hello.phone', n: 7 }, 'a keep event arrives sealed and opens on the phone');
 
     const decided = [];
     const done = approvals.add({ runId: 'rR', promptId: 'pR', agentId: 'forge', surface: 'remote', tool: 'shell.exec', argsSummary: 'npm test', finish: (d) => decided.push(d) });
@@ -222,17 +222,17 @@ function wsClose(url) {
     A.eq(decided, ['once'], 'the waiter got it');
     done();
 
-    // the station drops the session (idle expiry, restart) while the socket stays up: the client recovers by itself
+    // the keep drops the session (idle expiry, restart) while the socket stays up: the client recovers by itself
     for (const s of sessions.list()) sessions.end(s.id);
     const again = await c.call('status');
-    A.eq(again.ok && again.data.station, 'TEST STATION', 'a dropped station session is re-established transparently');
+    A.eq(again.ok && again.data.keep, 'TEST KEEP', 'a dropped keep session is re-established transparently');
 
     // parallel calls resolve to the right replies
     const [a1, a2, a3] = await Promise.all([c.call('ping'), c.call('status'), c.call('approvals')]);
-    A.ok(a1.ok && a2.data.station === 'TEST STATION' && Array.isArray(a3.data), 'concurrent calls are matched to their own replies');
+    A.ok(a1.ok && a2.data.keep === 'TEST KEEP' && Array.isArray(a3.data), 'concurrent calls are matched to their own replies');
 
     // what the relay holds: routing only
-    const rs = relay._stations.get(rc.info().rid);
+    const rs = relay._keeps.get(rc.info().rid);
     A.ok(rs && rs.tokens.size === 1 && !rs.tokens.has(paired.relayToken), 'the relay keeps only pass hashes');
 
     // revoke: kicked at the relay, pass dead
@@ -244,8 +244,8 @@ function wsClose(url) {
     // a second phone survives a relay restart
     const p2 = devices.startPairing({});
     const key2 = await Phone.makeDeviceKey();
-    const paired2 = await Phone.pairRelay({ relay: base, stationPub: st.publicRaw, pairingId: p2.pairingId, code: p2.code, name: 'Tablet', key: key2 });
-    const c2 = Phone.connectRelay({ relay: base, stationPub: st.publicRaw, deviceId: paired2.deviceId, relayToken: paired2.relayToken, key: key2 });
+    const paired2 = await Phone.pairRelay({ relay: base, keepPub: st.publicRaw, pairingId: p2.pairingId, code: p2.code, name: 'Tablet', key: key2 });
+    const c2 = Phone.connectRelay({ relay: base, keepPub: st.publicRaw, deviceId: paired2.deviceId, relayToken: paired2.relayToken, key: key2 });
     A.eq((await c2.call('ping')).ok, true, 'second phone linked');
     // a paired phone cannot say hello as ANOTHER paired phone (its relay pass belongs to its own device)
     {
@@ -262,19 +262,19 @@ function wsClose(url) {
     const closed2 = [];
     c2.onStatus((s, d) => { if (s === 'closed') closed2.push(d && d.code); });
     await relay.close();
-    await waitUntil(() => rc.info().state === 'offline', 5000, 'station notices the relay is gone');
+    await waitUntil(() => rc.info().state === 'offline', 5000, 'keep notices the relay is gone');
     A.ok(closed2.length > 0, 'the phone sees the link drop');
     relay = makeRelay({ log: () => {} });
     port = await relay.listen(port, '127.0.0.1');
-    await waitUntil(() => rc.info().state === 'online', 15000, 'station back online by itself');
+    await waitUntil(() => rc.info().state === 'online', 15000, 'keep back online by itself');
     A.eq((await c2.call('status')).ok, true, 'the phone reconnects after the relay restart');
 
-    // the station stops -> phones are told the station is offline
+    // the keep stops -> phones are told the keep is offline
     const offline = [];
     c2.onStatus((s, d) => { if (s === 'closed') offline.push(d && d.code); });
     rc.stop();
-    await waitUntil(() => offline.includes(4404), 5000, 'phone told station offline');
-    A.ok(true, 'station stop -> phone gets 4404 station offline');
+    await waitUntil(() => offline.includes(4404), 5000, 'phone told keep offline');
+    A.ok(true, 'keep stop -> phone gets 4404 keep offline');
     c2.close();
   } catch (e) {
     A.ok(false, 'threw: ' + (e && e.stack || e));
@@ -283,13 +283,13 @@ function wsClose(url) {
     await relay.close().catch(() => {});
     try { fs.rmSync(dir, { recursive: true, force: true }); } catch (_) {}
   }
-  // (sweep 2026-10-02) a link that is replaced right after 'ready' (two stations on one key: close 4410) keeps backing
+  // (sweep 2026-10-02) a link that is replaced right after 'ready' (two keeps on one key: close 4410) keeps backing
   // off — the backoff used to reset on every 'ready', so they swapped once a second forever and dropped every phone
   {
     let clock = 1000;
     const socks = [];
     class FakeWS { constructor() { socks.push(this); setImmediate(() => { if (this.onopen) this.onopen(); this.onmessage({ data: JSON.stringify({ t: 'ready', rid: 'r1' }) }); setImmediate(() => this.onclose({ code: 4410, reason: 'replaced' })); }); } send() {} close() {} }
-    const rc2 = makeRelayClient({ url: 'ws://relay.test', devices: { stationKeys() { return {}; }, relayTokenHashes() { return []; } }, sessions: {}, gateway: {}, crypto: C, WebSocketImpl: FakeWS, now: () => clock, log: () => {} });
+    const rc2 = makeRelayClient({ url: 'ws://relay.test', devices: { keepKeys() { return {}; }, relayTokenHashes() { return []; } }, sessions: {}, gateway: {}, crypto: C, WebSocketImpl: FakeWS, now: () => clock, log: () => {} });
     rc2.start();
     await new Promise(r => setTimeout(r, 30));
     const first = rc2.info().retryInMs;

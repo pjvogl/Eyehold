@@ -159,7 +159,7 @@ const jumps = [];
 global.Channels = { pendingIds: () => ['removed', 'waiting'] };
 global.Workstreams = { get: id => id === 'waiting' ? { id } : null };
 global.App = { openWorkstream: id => jumps.push('conversation:' + id) };
-global.StationUI = { openTerm: id => jumps.push('window:' + id), h: { workConversation: () => jumps.push('reveal') } };
+global.KeepUI = { openTerm: id => jumps.push('window:' + id), h: { workConversation: () => jumps.push('reveal') } };
 A.eq(Widgets._openWidget('approvals'), true, 'waiting conversation shortcut is available');
 A.eq(jumps.join(','), 'conversation:waiting,reveal', 'shortcut opens and reveals the existing waiting conversation');
 global.Channels.pendingIds = () => [];
@@ -168,7 +168,7 @@ A.eq(jumps.length, 2, 'resolved attention performs no navigation');
 A.eq(Widgets._openWidget('next'), true, 'schedule shortcut opens its real settings');
 A.eq(jumps[2], 'window:routines', 'schedule shortcut routes to routines without running a job');
 A.eq(Widgets._openWidget('tokens'), false, 'plain counters have no invented action');
-delete global.Channels; delete global.Workstreams; delete global.App; delete global.StationUI;
+delete global.Channels; delete global.Workstreams; delete global.App; delete global.KeepUI;
 const emptyConfigured = Widgets._sanitizeFeedRecord({ id:'saved', label:'Revenue', value:null, updatedAt:0,
   config:{ source:{kind:'connector',id:'stripe',label:'Stripe'}, request:'This month', display:'metric', version:1 },
   sourceState:'disabled', sourceUrl:'javascript:alert(1)', error:'Could not read app' });

@@ -7,7 +7,7 @@ import { fileURLToPath } from 'node:url';
 import { runBoundedCommand } from './lib/run-command.mjs';
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
-const OUT = resolve(process.env.STARNET_PHASE4_RECOVERY_DIR || join(ROOT, '.dogfood', 'phase4-recovery-proof'));
+const OUT = resolve(process.env.EYEHOLD_PHASE4_RECOVERY_DIR || join(ROOT, '.dogfood', 'phase4-recovery-proof'));
 const attendedFile = join(ROOT, '.dogfood', 'phase4-attended-evidence.json');
 const nodeCmd = process.execPath;
 
@@ -35,7 +35,7 @@ function evidenceTemplate() {
     generatedAt: new Date().toISOString(),
     operator: process.env.USERNAME || process.env.USER || 'andro',
     sameWorkTrial: { passed: false, screenshots: [], runIds: [], transcriptIds: [], artifactPaths: [], ledgerRows: [], notes: '' },
-    soak: { freshPass: false, restartPass: false, transcriptPreserved: false, ledgerPreserved: false, artifactsPreserved: false, memoryPreserved: false, stationStatePreserved: false, notes: '' },
+    soak: { freshPass: false, restartPass: false, transcriptPreserved: false, ledgerPreserved: false, artifactsPreserved: false, memoryPreserved: false, keepStatePreserved: false, notes: '' },
     failureRecovery: { cancelPassed: false, budgetPassed: false, deniedConsentPassed: false, toolErrorPassed: false, checkpointRestorePassed: false, notes: '' }
   };
 }

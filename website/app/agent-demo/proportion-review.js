@@ -22,9 +22,9 @@
   spots.push({x:x+4.4,y:y+3.25});
  }
  doc._nid=10000;
- const station=WorldModel.deserialize(doc),geo=station.projectGeometry();
- const props=geo.props.map(p=>({...p,mount:station.mountOf(p)}));PropSprites.setSurfaceLayout(props);
- const bake=StationBake.bake(geo);
+ const keep=WorldModel.deserialize(doc),geo=keep.projectGeometry();
+ const props=geo.props.map(p=>({...p,mount:keep.mountOf(p)}));PropSprites.setSurfaceLayout(props);
+ const bake=KeepBake.bake(geo);
  const bodies=spots.map((s,i)=>({id:'proportion-study-'+i,skin:sets[i],px:(s.x-geo.origin.tx)*12,py:(s.y-geo.origin.ty)*12,dir:'south',state:'idle',aph:0}));
  let scale=1,ox=0,oy=0;
  function resize(){
@@ -41,7 +41,7 @@
  cv.dataset.ready=String(!missing.length);cv.dataset.height='18';cv.dataset.variants='4';
  function paint(now){
   if(!paused)time+=Math.min(100,now-(last||now));last=now;
-  ctx.setTransform(scale,0,0,scale,-ox*scale,-oy*scale);ctx.clearRect(ox,oy,cv.width/scale,cv.height/scale);StationBake.drawBase(ctx,bake,0,0);
+  ctx.setTransform(scale,0,0,scale,-ox*scale,-oy*scale);ctx.clearRect(ox,oy,cv.width/scale,cv.height/scale);KeepBake.drawBase(ctx,bake,0,0);
   PropSprites.setCtx(ctx);PropSprites.setNow(0);PropSprites.setSurfaceLayout(props);
   for(const p of props)PropSprites.drawShadow(p,p.mount);
   const items=props.map(p=>({y:(p.y+p.h)*12,draw:()=>PropSprites.draw(p,false,{still:true,occupied:false})}));

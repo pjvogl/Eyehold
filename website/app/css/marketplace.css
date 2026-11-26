@@ -3,7 +3,7 @@
    is active. Premium rebuild (agent/recruit-bay): a struck-metal console — engraved class SEALS (never a
    character skin), a two-pane character-select / DOSSIER layout, lane filter, clearance pips, footer. */
 
-/* Recipes and Recruitment are standard wide station windows. Their inner catalog never
+/* Recipes and Recruitment are standard wide keep windows. Their inner catalog never
    sizes itself against the viewport; the shared term manager owns all geometry and glass. */
 .mkt-window .mkt-window-body { display: flex; padding: 0; overflow: hidden; }
 .mkt-host { display: flex; flex: 1 1 auto; min-width: 0; min-height: 0; }
@@ -201,7 +201,7 @@
 .mkt-dos-class { color: var(--ph-dim); font-size: 11px; letter-spacing: 2px; margin-top: 6px; }
 /* the three facts worth stating about a class, as chips under the hero — the lane it leads with, the clearance
    tier it's tuned for, the voice it speaks in. This replaced a 4-row label/value spec grid whose values were
-   mostly "station default" (2026-08-15): four rows of chrome for three words of content. */
+   mostly "keep default" (2026-08-15): four rows of chrome for three words of content. */
 .mkt-dos-meta { display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 16px; }
 .mkt-block { margin-bottom: 18px; }
 .mkt-block .bh { color: var(--ph); font-size: 10.5px; letter-spacing: 2.5px; margin-bottom: 7px; }
@@ -227,7 +227,7 @@
   box-shadow: inset 0 1px 3px rgba(0,0,0,.45); }
 .mkt-starters li::before { content: "▸ "; color: var(--accent, var(--ph)); }
 
-/* ---- LOADOUT: DRAWS ON STATION GEAR + SKILL PACKAGE dossier rows (shared-gear model) ---- */
+/* ---- LOADOUT: DRAWS ON KEEP GEAR + SKILL PACKAGE dossier rows (shared-gear model) ---- */
 .mkt-kit, .mkt-skills { display: flex; flex-direction: column; gap: 4px; }
 .mkt-kit-row, .mkt-skill-row { display: flex; align-items: baseline; gap: 9px; padding: 6px 10px; border-radius: 0;
   background: rgba(0,0,0,.26); border: 1px solid var(--ph-faint); border-left: 2px solid var(--ph-dim);
@@ -235,7 +235,7 @@
 .mkt-kit-obj, .mkt-skill-name { flex: 0 0 auto; color: var(--ph-bright); font-size: 11px; letter-spacing: 1px;
   min-width: 92px; text-transform: uppercase; }
 .mkt-kit-grant, .mkt-skill-desc { flex: 1 1 auto; color: var(--text); font-size: 12px; line-height: 1.4; opacity: .85; }
-/* present/missing state (shared-gear model): a ●/○ dot carries it (green ● = on station, dim ○ = not yet).
+/* present/missing state (shared-gear model): a ●/○ dot carries it (green ● = on keep, dim ○ = not yet).
    The single .mkt-kit-note footnote states the "add in REFIT" guidance ONCE, not per row (audit item 8). */
 .mkt-kit-row { flex-wrap: wrap; }
 .mkt-kit-dot { flex: 0 0 auto; align-self: center; color: var(--ok); font-size: 10px; line-height: 1; }
@@ -529,13 +529,13 @@ button.mkt-archive-head:focus-visible { outline: 2px solid var(--gold); outline-
 .mkt-sect-h.mkt-rec-sect::after, .mkt-sect-h.mkt-suggest-sect::after { background: linear-gradient(90deg, rgba(var(--gold-rgb), .5), var(--ph-faint) 88%); }
 .mkt-sect-h.mkt-rec-sect::before, .mkt-sect-h.mkt-suggest-sect::before { color: var(--gold); }
 /* CURATED FOR YOUR WORKFLOW — the earned adaptive-recruitment shelf: the strongest gold read (it only
-   appears once the station has a warm read of real work). Accent via --gold-rgb, never a literal amber. */
+   appears once the keep has a warm read of real work). Accent via --gold-rgb, never a literal amber. */
 .mkt-sect-h.mkt-curated-sect { text-shadow: 0 0 14px rgba(var(--gold-rgb), .55); }
 .mkt-curated-sect + .mkt-rec-rail .mkt-rec { border-color: rgba(var(--gold-rgb), .55); }
 .mkt-curated-sect + .mkt-rec-rail .mkt-rec::before { background: linear-gradient(180deg, var(--gold) 0 62%, transparent); opacity: .9; }
 .mkt-curated-sect + .mkt-rec-rail .mkt-rec:hover { border-color: var(--gold); box-shadow: 0 0 15px rgba(var(--gold-rgb), .5); }
 /* UNCOVERED — a warm learned topic nobody on the crew handles. It reports an ABSENCE, not an earned rank, so it
-   reads in the station's own BRIGHT PHOSPHOR rather than the gold "you earned this" language of the shelves
+   reads in the keep's own BRIGHT PHOSPHOR rather than the gold "you earned this" language of the shelves
    above. Both vars are per-theme (--ph-bright / --ph-bright-rgb), so it re-skins with every theme; there is no
    --warn-rgb in the token set, and a literal amber would break the skins. Same rail geometry as every shelf. */
 .mkt-sect-h.mkt-gap-sect { color: var(--ph-bright); text-shadow: 0 0 10px rgba(var(--ph-bright-rgb), .35); }
@@ -575,7 +575,7 @@ button.mkt-archive-head:focus-visible { outline: 2px solid var(--gold); outline-
 .mkt-suggest-review { color: var(--ink) !important; background: var(--gold) !important; border-color: var(--gold) !important; text-shadow: none !important; flex: 1 1 auto; }
 .mkt-suggest-dismiss { flex: 0 0 auto; }
 
-/* PROSPECTS — bespoke roles the station DRAFTED from real work (Slice 4). Draft treatment: a solid gold
+/* PROSPECTS — bespoke roles the keep DRAFTED from real work (Slice 4). Draft treatment: a solid gold
    hairline + soft gold inner glow (drafts glow, they never dash) + a provenance note. --gold-rgb only. */
 .mkt-sect-h.mkt-prospect-sect { color: var(--gold); text-shadow: 0 0 9px rgba(var(--gold-rgb), .3); }
 .mkt-sect-h.mkt-prospect-sect::after { background: linear-gradient(90deg, rgba(var(--gold-rgb), .5), var(--ph-faint) 88%); }
@@ -589,7 +589,7 @@ button.mkt-archive-head:focus-visible { outline: 2px solid var(--gold); outline-
 .mkt-prospect-open { color: var(--ink) !important; background: var(--gold) !important; border-color: var(--gold) !important; text-shadow: none !important; flex: 1 1 auto; }
 .mkt-prospect-dismiss { flex: 0 0 auto; }
 
-/* ---- SCOUT LOG — the scout's visible ATTEMPT LEDGER (what the station tried + the honest reason each time).
+/* ---- SCOUT LOG — the scout's visible ATTEMPT LEDGER (what the keep tried + the honest reason each time).
    Collapsible strip modelled on the SUMMON CONFIG (.mkt-cfg) idiom: a caret head + a phosphor-dim body list, so a
    dismissed draft is never the whole story. Every row is a real GET /api/scout ledger entry (truthful telemetry). */
 .mkt-scoutlog { margin: 4px 0 12px; border: 1px solid var(--ph-dim); border-radius: 2px; overflow: hidden; background: var(--panel2); }
@@ -760,13 +760,13 @@ button.mkt-archive-head:focus-visible { outline: 2px solid var(--gold); outline-
   .mkt-foot .reg { display: none; }
 }
 
-/* ---------- READY ON THIS STATION — the context-bound recipe shelf ----------
+/* ---------- READY ON THIS KEEP — the context-bound recipe shelf ----------
    Reuses .mkt-rec/.mkt-foryou wholesale (markup, focus, click) and only adds what this shelf says that the
    others cannot: the audit strip naming what was read, the cadence chip, and the pre-fill line. Deliberately
-   sober — this shelf is a claim about the Commander's own station, so it should read as instrumentation
+   sober — this shelf is a claim about the Commander's own keep, so it should read as instrumentation
    rather than a promotion. Matte, never glossy. */
 .mkt-sect-h.mkt-ready-sect { color: var(--gold); display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
-/* the audit trail: exactly what the station looked at to produce the cards below */
+/* the audit trail: exactly what the keep looked at to produce the cards below */
 .mkt-ready-basis { color: var(--ph-dim); font-size: 11.5px; letter-spacing: .4px; text-transform: none; opacity: .85; }
 .mkt-ready-card { border-color: rgba(var(--gold-rgb), .38); }
 .mkt-ready-card:hover { border-color: rgba(var(--gold-rgb), .7); }
@@ -778,7 +778,7 @@ button.mkt-archive-head:focus-visible { outline: 2px solid var(--gold); outline-
    back correctly the whole time. Keep the badge's own contrast and change only the fill. */
 .mkt-ready-cad { background: transparent; color: var(--gold); border: 1px solid rgba(var(--gold-rgb), .45);
   border-radius: 3px; }
-/* what the station pre-filled, stated plainly — a silently filled form is one that gets launched unread */
+/* what the keep pre-filled, stated plainly — a silently filled form is one that gets launched unread */
 .mkt-ready-fill { margin-top: 6px; font-size: 11.5px; letter-spacing: .3px; color: var(--ph-dim);
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
@@ -803,7 +803,7 @@ button.mkt-archive-head:focus-visible { outline: 2px solid var(--gold); outline-
   padding-bottom: 6px;                          /* room for the scrollbar so it never overlaps a card */
 }
 .mkt-rec-rail.mkt-rail-deep > * { scroll-snap-align: start; }
-/* a thin, matte scrollbar — the station's chrome, never a glossy OS default */
+/* a thin, matte scrollbar — the keep's chrome, never a glossy OS default */
 .mkt-rec-rail.mkt-rail-deep::-webkit-scrollbar { height: 6px; }
 .mkt-rec-rail.mkt-rail-deep::-webkit-scrollbar-track { background: rgba(var(--ph-rgb), .08); }
 .mkt-rec-rail.mkt-rail-deep::-webkit-scrollbar-thumb { background: rgba(var(--ph-rgb), .35); border-radius: 3px; }

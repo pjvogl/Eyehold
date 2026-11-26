@@ -6,18 +6,18 @@
   "emptyModel": {
     "gap": {
       "kind": "nomodel",
-      "provider": "starnet"
+      "provider": "eyehold"
     },
-    "label": "\n        \n        CHOOSE MODELOFF\n      no model selectedSTARNETOFF · reasoning effortno extra reasoning — fastest, cheapestclick to change model & effort"
+    "label": "\n        \n        CHOOSE MODELOFF\n      no model selectedEYEHOLDOFF · reasoning effortno extra reasoning — fastest, cheapestclick to change model & effort"
   },
   "selected": {
-    "provider": "starnet",
+    "provider": "eyehold",
     "model": "anthropic/test-model",
     "bannerHidden": true
   },
   "unrelatedChoicesSurvive": true,
   "lateCatalog": {
-    "provider": "starnet",
+    "provider": "eyehold",
     "model": "anthropic/test-model"
   }
 }

@@ -1,6 +1,6 @@
 import { createHash } from 'node:crypto';
 
-export const FIXTURE_SCHEMA = 'starnet.eval.fixture.v1';
+export const FIXTURE_SCHEMA = 'eyehold.eval.fixture.v1';
 
 const stable = value => JSON.stringify(value, Object.keys(value || {}).sort());
 const digest = value => createHash('sha256').update(JSON.stringify(value), 'utf8').digest('hex');
@@ -114,7 +114,7 @@ export function gradeParityTrajectory(task, fixture, trajectory, fixtureSetSha25
   };
   const passed = checks.every(check => check.pass) && Object.values(violations).every(value => value === 0);
   return {
-    schemaVersion: 'starnet.eval.independent-grade.v1', taskId: task.id, fixtureId: fixture.fixtureId,
+    schemaVersion: 'eyehold.eval.independent-grade.v1', taskId: task.id, fixtureId: fixture.fixtureId,
     fixtureSetSha256, fixtureSha256: digest(fixture), passed, checks, violations
   };
 }

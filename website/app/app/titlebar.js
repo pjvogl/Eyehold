@@ -1,7 +1,7 @@
-/* STARNET titlebar.js
+/* EYEHOLD titlebar.js
    Custom window chrome for the Windows desktop shell. The Rust shell drops the
    native titlebar/border (decorations(false)) and stamps
-   window.__STARNET_CUSTOM_CHROME__ = 1 in its init script; ONLY then does this
+   window.__EYEHOLD_CUSTOM_CHROME__ = 1 in its init script; ONLY then does this
    module render the themed titlebar — a drag region plus MIN / MAX / CLOSE that
    ride the body.theme-* phosphor vars (css/titlebar.css). Browser preview and
    macOS keep their native chrome, so this module stays completely inert there.
@@ -18,7 +18,7 @@
 
   /** The shell opted this window into custom chrome (set by main.rs, Windows only). */
   function shouldInstall(win) {
-    return !!(win && win.__STARNET_CUSTOM_CHROME__);
+    return !!(win && win.__EYEHOLD_CUSTOM_CHROME__);
   }
 
   /** Resolve the current Tauri window handle across API shapes (same ladder as fullscreen.js). */
@@ -167,10 +167,10 @@
     win = win || root;
     doc = doc || (win && win.document);
     if (!doc || !doc.body || !shouldInstall(win)) return false;
-    if (win.__STARNET_TITLEBAR_WIRED__) return false;
+    if (win.__EYEHOLD_TITLEBAR_WIRED__) return false;
     const appWindow = tauriWindow(win);
     if (!appWindow) return false; // no handle → no chrome; native-less window still closable via Alt+F4
-    win.__STARNET_TITLEBAR_WIRED__ = true;
+    win.__EYEHOLD_TITLEBAR_WIRED__ = true;
 
     const els = buildBar(doc);
     const act = handlers(appWindow, win.console && win.console.warn ? win.console.warn.bind(win.console) : null);

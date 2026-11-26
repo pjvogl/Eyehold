@@ -1,6 +1,6 @@
 /* sidecar/browser-handoff-routes.js — the STEP-IN HTTP surface + the remembered-sign-ins list.
 
-   Routes (all behind the central /api auth gate; nothing here is reachable without the station token):
+   Routes (all behind the central /api auth gate; nothing here is reachable without the keep token):
      GET  /api/browser/handoffs              live + recent handoffs and the remembered-sign-ins view
      POST /api/browser/handoff/take   {id}   the Commander takes the wheel (stream starts)
      POST /api/browser/handoff/back   {id}   HAND BACK — the agent resumes
@@ -8,13 +8,13 @@
      GET  /api/browser/handoff/frame?id=&after=   long-poll for the next JPEG frame (only while taken)
      POST /api/browser/handoff/input  {id, events:[…]}   the Commander's pointer / keys / paste (only while taken)
      GET  /api/browser/signins                remembered sign-ins
-     POST /api/browser/signins/forget         wipe the station browser profile (every saved sign-in)
+     POST /api/browser/signins/forget         wipe the keep browser profile (every saved sign-in)
 
    SECRECY. Input events are forwarded and forgotten: never logged, never stored, never echoed. Frames are served
-   only to the authenticated station page. The remembered-sign-ins list records WHERE the Commander signed in (host,
+   only to the authenticated keep page. The remembered-sign-ins list records WHERE the Commander signed in (host,
    agent, when) and nothing else — no usernames, no cookies.
 
-   REMEMBERED SIGN-INS, grounded against trunk (2026-09-29): the station already keeps ONE durable browser profile
+   REMEMBERED SIGN-INS, grounded against trunk (2026-09-29): the keep already keeps ONE durable browser profile
    (index.js BROWSER_PROFILE_DIR, single-run leased) that every run tries first. A handoff inside a run that holds
    that lease is remembered automatically; one inside a run that fell back to a temporary profile is not, and the
    handoff record says which (`remembered`). The list lives INSIDE the profile dir, so FORGET (which removes the
@@ -22,7 +22,7 @@
 'use strict';
 const { note: failNote } = require('./failopen.js');
 
-const LIST_FILE = 'StarNet-signins.json';
+const LIST_FILE = 'Eyehold-signins.json';
 const MAX_SITES = 60;
 const MAX_EVENTS = 64;
 
@@ -51,7 +51,7 @@ function makeSigninStore(deps) {
   }
   function forget() {
     if (anyLive()) return { ok: false, error: 'an agent is waiting on you in this browser right now - hand it back or cancel first' };
-    if (isBusy()) return { ok: false, error: 'a run is using the station browser right now - try again when it finishes' };
+    if (isBusy()) return { ok: false, error: 'a run is using the keep browser right now - try again when it finishes' };
     try { fs.rmSync(dir, { recursive: true, force: true }); }
     catch (e) { return { ok: false, error: 'could not remove the saved browser profile: ' + ((e && e.message) || e) }; }
     let gone = true; try { gone = !fs.existsSync(dir); } catch (e) { failNote('signins.gone', e); }
@@ -128,7 +128,7 @@ function makeHandoffRoutes(deps) {
 function nudgeLine(view, agentName) {
   const who = String(agentName || view.agentId || 'An agent').toUpperCase();
   const why = { login: 'sign in', '2fa': 'enter a sign-in code', captcha: 'get past a human check', payment: 'confirm a payment', other: 'help with a page' }[view.reason] || 'help with a page';
-  return who + ' is waiting for you to ' + why + (view.where ? ' at ' + view.where : '') + '. Open StarNet > STEP-IN to take its browser.' + (view.note ? ' (' + String(view.note).slice(0, 160) + ')' : '');
+  return who + ' is waiting for you to ' + why + (view.where ? ' at ' + view.where : '') + '. Open Eyehold > STEP-IN to take its browser.' + (view.note ? ' (' + String(view.note).slice(0, 160) + ')' : '');
 }
 
 module.exports = { makeHandoffRoutes, makeSigninStore, nudgeLine, LIST_FILE };

@@ -4,7 +4,7 @@ The later signed candidate passes the candidate-bound READY gate. See [NATIVE_RE
 
 ---
 
-# StarNet 0.12.4 release-readiness audit
+# Eyehold 0.12.4 release-readiness audit
 
 Status: **BLOCKED — not approved for release**. No tag, push, release, publication, updater pointer change, or installed-app replacement was performed by this audit.
 
@@ -36,7 +36,7 @@ Workspace-election limitations: local filesystems must support hard links; unsup
 | Authentication | Launch token and Origin checks; provider pairing, expiration and recovery; saved-provider selection; connector OAuth refresh/removal races | Current real-account provider and billing acceptance not established |
 | Overseer and agents | Existing roster identity, named working sessions, automatic result review, queued user history, synthetic-message exclusion, halt/resume, lightweight polling | Controlled provider; no claim of arbitrary model task quality |
 | Conversations | Restore-before-send, drafts/focus, partial streams, explicit run-end authority, interrupted tool history, durable transcript/restart | Native WebView acceptance required in addition to Chrome |
-| Conveyors and station | Delivery exactly once, filters/mergers, approvals, autosave and refit projection, movement/right-of-way | Native small-screen/DPI and Mac visual acceptance outstanding |
+| Conveyors and keep | Delivery exactly once, filters/mergers, approvals, autosave and refit projection, movement/right-of-way | Native small-screen/DPI and Mac visual acceptance outstanding |
 | Integrations | Selected-file Google scope boundary, deferred broad Workspace services, connector secret migration/readback, keychain failure, MCP session recovery | Publisher registration, real consent/picker, locked native keychain on exact installers outstanding |
 | Local storage | Malformed/unreadable main and backups, write failure, acknowledgment timeout, permission ordering, exclusive workspace mutation, explicit recovery | Native filesystem/keychain acceptance on macOS outstanding |
 | Updates | Snapshot/recovery exclusions, runtime dependencies, bundled catalog, five version pins, candidate provenance and signing contracts | Signed updater path, install/upgrade/relaunch/rollback of exact candidate outstanding |
@@ -60,7 +60,7 @@ Failed attempts remain evidence: an initial fast run encountered the audit's the
 
 The final combined-source Windows NSIS build passed with a local configuration override disabling updater-artifact signing only. Product/file version is 0.12.4; bundled Node is 22.23.2. Installer: 640,515,736 bytes; SHA-256 `0c755a955f309243eedc279e5bfc33e9860196c1b9eb9c6ea5c9adba0b01b568`. Executable: 274,099,712 bytes; SHA-256 `ebf07778b59a8beb415bce57203e647ff171251240d3a8e1ee68dd9a263fe392`. Authenticode: NotSigned. It has not been installed or distributed. Earlier artifact hashes in retained logs refer to earlier builds and are superseded by `artifacts-final-combined.json`.
 
-## Large-station performance observation
+## Large-keep performance observation
 
 The configured 3,000-conversation budget audit initially failed startup (5,802.96 ms vs 2,500 ms) and recovery-list median (162.59 ms vs 150 ms), while storage correctness and all other budgets passed. A paired code comparison using identical synthetic data and current dependencies measured candidate startup at 882.20/851.33 ms and baseline v0.12.3 at 4,801.98/919.23 ms; candidate recovery medians were 135.62/111.07 ms versus baseline 143.34/116.84 ms. This does not demonstrate a candidate regression, but it also does not certify cold installed startup. The complete budget audit then passed with unchanged thresholds. Both attempts and the comparison are retained; fresh installed cold-start acceptance remains owed.
 

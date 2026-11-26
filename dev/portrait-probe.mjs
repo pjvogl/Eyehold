@@ -86,11 +86,11 @@ async function main() {
     await evalJS(cdp, `location.href = ${JSON.stringify(URL)}`);
     if (!(await waitDevReady(cdp, evalJS, { url: URL }))) throw new Error('never reached game');
     await sleep(2000);
-    await evalJS(cdp, `(() => { const K='starnet.station.v1'; const r=JSON.parse(localStorage.getItem(K)||'{"v":1}'); r.settings=Object.assign({},r.settings,{textScale:100}); localStorage.setItem(K,JSON.stringify(r)); location.reload(); return 1; })()`);
+    await evalJS(cdp, `(() => { const K='eyehold.keep.v1'; const r=JSON.parse(localStorage.getItem(K)||'{"v":1}'); r.settings=Object.assign({},r.settings,{textScale:100}); localStorage.setItem(K,JSON.stringify(r)); location.reload(); return 1; })()`);
     if (!(await waitDevReady(cdp, evalJS, { url: URL }))) throw new Error('never came back');
     await sleep(2200);
     mkdirSync(OUT, { recursive: true });
-    await evalJS(cdp, `StationUI.openAgent(0)`);
+    await evalJS(cdp, `KeepUI.openAgent(0)`);
     await sleep(2000);
 
     console.log('SKIN SCALES:', JSON.stringify(await evalJS(cdp, MASTER)));
@@ -121,7 +121,7 @@ async function main() {
     await evalJS(cdp, `(() => { const z = document.getElementById('__zoom'); if (z) z.remove(); return 1; })()`);
     const sweep = await evalJS(cdp, `(async () => {
       const w = ${WIN}; const cv = w.querySelector('#ag-portrait');
-      const a = StationUI.h.present[0];
+      const a = KeepUI.h.present[0];
       const bounds = (c) => { const g = c.getContext('2d'); const d = g.getImageData(0,0,c.width,c.height).data;
         let mnX=c.width,mnY=c.height,mxX=0,mxY=0,any=false,op=0,sf=0;
         for (let y=0;y<c.height;y++) for (let x=0;x<c.width;x++){ const al=d[(y*c.width+x)*4+3];
@@ -138,7 +138,7 @@ async function main() {
         await SPRITES.ensureSkin(id);
         if (!SPRITES.isSkinReady(id)) { out.push({ id, err: 'skin never became ready' }); continue; }
         a.skin = id;
-        StationUI.rerender('agents');
+        KeepUI.rerender('agents');
         await new Promise(r => setTimeout(r, 120));
         const live = w.querySelector('#ag-portrait');
         const b = bounds(live), m = await master(DATA.SKINS[id].set);
@@ -156,12 +156,12 @@ async function main() {
     } else { console.log('SWEEP:', JSON.stringify(sweep).slice(0, 400)); }
     // a visual strip: six skins' real portraits side by side at 3x NN, so the pixels are judgeable
     await evalJS(cdp, `(async () => {
-      const w = ${WIN}; const a = StationUI.h.present[0];
+      const w = ${WIN}; const a = KeepUI.h.present[0];
       const IDS = ['blank', 'pikachu', 'voidwizard', 'skeleton', 'bear', 'plaguedoctor'];
       const shots = [];
       for (const id of IDS) {
         await SPRITES.ensureSkin(id);
-        a.skin = id; StationUI.rerender('agents');
+        a.skin = id; KeepUI.rerender('agents');
         await new Promise(r => setTimeout(r, 150));
         const cv = w.querySelector('#ag-portrait');
         const c = document.createElement('canvas'); c.width = cv.width; c.height = cv.height;

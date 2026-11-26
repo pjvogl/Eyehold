@@ -11,7 +11,7 @@
 #comms-expand:is(:hover, :focus-visible) { border-color: var(--ph-bright); background: var(--ph-faint); }
 #comms-expand:focus-visible { outline: 2px solid var(--ph-bright); outline-offset: 2px; }
 
-/* A laptop gives space to reading before the station. A dragged width still wins. */
+/* A laptop gives space to reading before the keep. A dragged width still wins. */
 @media (min-width: 861px) and (max-width: 1440px), (min-width: 861px) and (max-height: 740px) {
   body #screen-game.active {
     --comms-auto-width: clamp(360px, 38vw, 520px);
@@ -61,7 +61,7 @@
   body #screen-game.active { grid-template-rows: calc(42px * var(--cz)) calc(72px * var(--cz)) minmax(0, 1fr) minmax(38px, auto); }
 }
 
-/* Explicit reading focus. Restore reveals the same crew/station widths and preferences. */
+/* Explicit reading focus. Restore reveals the same crew/keep widths and preferences. */
 body #screen-game.active.comms-expanded {
   grid-template-columns: minmax(0, 1fr);
   grid-template-rows: calc(64px * var(--cz)) minmax(0, 1fr) minmax(44px, auto);

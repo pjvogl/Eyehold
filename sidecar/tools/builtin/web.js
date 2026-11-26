@@ -42,8 +42,8 @@
   /* RAW-BODY CEILING, applied BEFORE anything parses the response.
      htmlToText is a chain of lazy `[\s\S]*?` replaces — quadratic in the input — and the clamp to
      FETCH_MAX_CHARS ran AFTER it. Measured on a page of repeated "<script>": 64KB -> 55ms, 256KB -> 880ms,
-     1MB -> 14.3 SECONDS of synchronous event-loop freeze, and it grows from there. StarNet is one process,
-     so that is the whole station stopped by a page the agent was asked to read — and web_fetch is
+     1MB -> 14.3 SECONDS of synchronous event-loop freeze, and it grows from there. Eyehold is one process,
+     so that is the whole keep stopped by a page the agent was asked to read — and web_fetch is
      read-only, no-consent, callable on any URL including one suggested by untrusted content.
      2MB leaves the extractor far more material than the 6k it will keep, while bounding the worst case to
      well under a second. */
@@ -323,7 +323,7 @@
      does not control. `<script` with no `</script>` makes the lazy scan walk to end-of-input from each of
      the N start positions; `<[^>]+>` does the same on a run of `<`. Measured on a page of repeated
      "<script>": 64KB -> 55ms, 256KB -> 880ms, 1MB -> 14.3 SECONDS of synchronous event-loop freeze — the
-     whole station (UI, API, SSE bus, every agent run) stopped by a page an agent was asked to read, on a
+     whole keep (UI, API, SSE bus, every agent run) stopped by a page an agent was asked to read, on a
      read-only no-consent tool. Capping the input alone only moved the number; the scan itself had to stop
      being quadratic.
      An indexOf-driven walk is O(n) and output-equivalent for well-formed HTML: skip the contents of
@@ -500,7 +500,7 @@
     // the Commander's stored keys. Default: no keys and the strict surface, so an unwired caller can only
     // make UNAUTHENTICATED requests rather than silently gaining credentials it was never handed.
     const surface = deps.surface === 'interactive' ? 'interactive' : 'autonomous';
-    // The station READER (webreader.js): a shared headless cookie-less real Chrome that fetch/search
+    // The keep READER (webreader.js): a shared headless cookie-less real Chrome that fetch/search
     // borrow when plain HTTP hits a bot wall or every engine throttles. Optional — absent, everything
     // behaves exactly as before. Availability is probed lazily per use (Chrome may not exist).
     const reader = deps.reader || null;
@@ -814,7 +814,7 @@
       name: 'web_fetch', capability: 'web', scope: 'read', requiresConsent: false,
       timeoutMs: FETCH_TIMEOUT_MS + 20000 + (reader ? 45000 : 0),   // the reader rung needs Chrome boot + nav + settle
       description: 'Fetch a web page by URL and return its main text content (cleaned). Use after web_search to read a result. ' +
-        'Bot-blocked and JavaScript-only pages are automatically retried through the station\'s own browser, so one call is enough. ' +
+        'Bot-blocked and JavaScript-only pages are automatically retried through the keep\'s own browser, so one call is enough. ' +
         'If a page still cannot be read (dead link, site outage, verification wall) the result says so — that is information about the site, not a tool failure; use a different source rather than retrying the same URL.',
       schema: { type: 'object', required: ['url'], properties: { url: { type: 'string' } } },
       run: async (args, ctx) => {
@@ -835,14 +835,14 @@
             if (r && r.ok) {
               const text = clamp(r.text, FETCH_MAX_CHARS);
               return {
-                content: fenceExternal(text, 'page text from ' + (r.url || args.url) + ' (read via the station browser' + (s ? ' after http ' + s : '') + ')'),
-                fullContent: text === r.text ? undefined : fenceExternal(r.text, 'page text from ' + (r.url || args.url) + ' (read via the station browser' + (s ? ' after http ' + s : '') + ')'),
+                content: fenceExternal(text, 'page text from ' + (r.url || args.url) + ' (read via the keep browser' + (s ? ' after http ' + s : '') + ')'),
+                fullContent: text === r.text ? undefined : fenceExternal(r.text, 'page text from ' + (r.url || args.url) + ' (read via the keep browser' + (s ? ' after http ' + s : '') + ')'),
                 summary: text.length + ' chars via browser'
               };
             }
             const soft2 = softFetchAnswer(e, args.url);
             if (soft2) return {
-              content: soft2.content + ' (The station\'s own browser also tried and was refused'
+              content: soft2.content + ' (The keep\'s own browser also tried and was refused'
                 + (r && r.reason === 'challenge' ? ' — the site is holding a verification wall' : '') + '.)',
               summary: soft2.summary
             };
@@ -856,7 +856,7 @@
     };
 
     /* ---------- web_request: call a third-party REST API with the Commander's key ----------
-       WHY THIS EXISTS: before it, nothing in StarNet could send a custom header. web_fetch's whole schema
+       WHY THIS EXISTS: before it, nothing in Eyehold could send a custom header. web_fetch's whole schema
        is {url}, so ANY authenticated API meant handing the agent a full shell (shell.exec + curl), which
        needs a placed workbench and is a far larger grant than "make one HTTPS call". This tool is the
        narrow capability that job actually needs.
@@ -894,7 +894,7 @@
       // A MODEL-PROVIDER key is never handed to a tool and KEYS refuses to store one, so pointing at KEYS here sent
       // agents to ask the Commander for "access" nobody can grant (2026-09-28: OpenRouter was already connected;
       // the agent wanted the raw key to chase a transparent background image_generate could not make yet).
-      if (r.reason === 'reserved') return name + ' is a model-provider key: StarNet never hands provider keys to tools and KEYS cannot store one, so do not ask the Commander for it. Use the built-in tools that already ride the station\'s connection instead: image_generate for images (transparent:true for a transparent background) and image_analyze to look at one.';
+      if (r.reason === 'reserved') return name + ' is a model-provider key: Eyehold never hands provider keys to tools and KEYS cannot store one, so do not ask the Commander for it. Use the built-in tools that already ride the keep\'s connection instead: image_generate for images (transparent:true for a transparent background) and image_analyze to look at one.';
       return 'no enabled service key provides ' + name + ' — add it in TOOLSETS & CONNECTORS → KEYS';
     }
 
@@ -1041,7 +1041,7 @@
           // quotes/CRLF in a name or filename would break out of the Content-Disposition header line
           const cleanToken = (s, what) => { s = String(s); if (/[\r\n"]/.test(s)) throw new Error(what + ' must not contain quotes or newlines'); return s; };
           if (!nodeCrypto) throw new Error('multipart needs the Node host');
-          const boundary = '----StarNetPart' + nodeCrypto.randomBytes(16).toString('hex');
+          const boundary = '----EyeholdPart' + nodeCrypto.randomBytes(16).toString('hex');
           const chunks = [];
           for (const p of multipart) {
             if (!p || typeof p !== 'object' || !p.name) throw new Error('each multipart part needs a "name"');

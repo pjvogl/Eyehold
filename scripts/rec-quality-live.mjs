@@ -7,7 +7,7 @@
      2. THE SCORER CHANGES A REAL OUTCOME: two REAL agent.run.end passes, the gentle-band field the pass itself
         stages captured each time (projected to kind/dim/why/strength/quality — base, streak and declines are
         dropped), real outcomes folded through the store's own API in between — and the same-band winner moves
-        off the one pure priority order would have named. NB slice 2 WRITES: it trains the station's mint,
+        off the one pure priority order would have named. NB slice 2 WRITES: it trains the keep's mint,
         prospect and quality stores, which slices 3/5 then read. It is not a read-only measurement.
      3. The QUALITY WEIGHT reaches the live pass: Recommend.pick is wrapped, a real agent.run.end is emitted,
         and the candidates the REAL recommendPass hands the spine are inspected for their earned `quality`.
@@ -68,7 +68,7 @@ try {
   })()`);
   ok(loaded.quality && loaded.store && loaded.spine, 'recquality.js + recqualitystore.js + recommend.js are all live in the page');
   ok(loaded.dims > 0, 'the live understanding read exposes real dimensions (' + loaded.dims + ')');
-  eq(loaded.neutralWeight, 1, 'a cold station reads every channel NEUTRAL (it can change no ranking it has no evidence for)');
+  eq(loaded.neutralWeight, 1, 'a cold keep reads every channel NEUTRAL (it can change no ranking it has no evidence for)');
   ok(loaded.floor >= 0.5, 'the quality floor is live at ' + loaded.floor);
 
   /* ---- 2. THE SCORER CHANGES A REAL OUTCOME — proved on candidates the REAL pass produced ----
@@ -80,21 +80,21 @@ try {
      apply REAL outcomes through the store's own API in between, and watch the same-band winner change. The first
      pass's pick is SUPPRESSED (returns null) so no card fires and no session/channel cap is spent.
 
-     WHAT THIS SLICE REALLY DOES TO THE STATION, stated plainly (it is NOT read-only, and an earlier version of
+     WHAT THIS SLICE REALLY DOES TO THE KEEP, stated plainly (it is NOT read-only, and an earlier version of
      this comment claimed it was). Suppressing pick() only stops a CARD rendering. To earn the candidates it
      measures, the block below writes real state that later slices then run against: four MintStore.observe
      directives, four ProspectStore.noteLaunch records, CuriosityStore.noteWork ticks, and — between the two
      passes — SIXTY real RecQualityStore.noteOutcome folds (30 'miss' on the cold winner, 30 'great' on the
      runner-up). Slices 3/5 deliberately re-read that same store afterwards, so the ordering here is load-bearing:
      the two channels this slice trains are gentle-band ones it picks at runtime, and slice 3 trains 'curiosity'
-     separately for exactly that reason. Move this slice and the later ones measure a different station.
+     separately for exactly that reason. Move this slice and the later ones measure a different keep.
 
      WHAT THE CAPTURE KEEPS is also less than the whole candidate: the field is projected to
      {kind, dim, why, strength, quality} — `base`, `streak` and `declines` are DROPPED. That is sound for the
      pair measured here (dim-less gentle channels carry none of the three) but it means the re-scoring printed
      below is the score of the PROJECTION, not necessarily of the original candidate. The winner assertions
      themselves are computed by the real Recommend.pick on the same projection, so they compare like with like. */
-  // PASS 1 — the field as the station stages it COLD (every channel neutral). pick() is SUPPRESSED for both
+  // PASS 1 — the field as the keep stages it COLD (every channel neutral). pick() is SUPPRESSED for both
   // passes: no card fires, no session/channel cap is spent, no nudge lands in the feed. The field the pass staged
   // and the arbiter that ranks it are the real ones; only rendering is skipped (see the caveats above).
   const staged = await evalJS(cdp, `(() => {
@@ -109,13 +109,13 @@ try {
       return null;
     };
     /* EARN TWO MORE GENTLE CHANNELS THE WAY THE PRODUCT REALLY EARNS THEM — no injected candidates:
-         SEED    — the station learns a recurring SHAPE by observing real task directives (chat.js calls
+         SEED    — the keep learns a recurring SHAPE by observing real task directives (chat.js calls
                    MintStore.observe on every one). Four repeats crosses mint.js's THRESHOLD, and seedCandidate
                    then cites that REAL repeat count as its strength.
          ROUTINE — a recipe hand-launched past RoutineNudgeStore.LAUNCH_FLOOR, recorded through the same
                    ProspectStore.noteLaunch the bay calls, plus the store's own cron read (its duplicate gate).
        Both are dim-less, so neither carries a value-of-information term: the ONLY thing that can separate them
-       is what the station has learned about the two channels' real outcomes. That is exactly the measurement. */
+       is what the keep has learned about the two channels' real outcomes. That is exactly the measurement. */
     let seedReady = false, routine = null;
     try {
       for (const t of ['summarise the weekly billing report', 'summarise the weekly invoice report',
@@ -131,10 +131,10 @@ try {
     U.bus.emit('agent.run.end', { agentId: 'agent', runId: 'rq-reorder-1', reason: 'done' });
     return { seedReady, routine };
   })()`);
-  ok(staged.seedReady, 'four real observations of one directive shape earned the station a live SEED candidate');
+  ok(staged.seedReady, 'four real observations of one directive shape earned the keep a live SEED candidate');
   ok(!!staged.routine, 'and four real hand-launches of a recurring recipe earned it a live ROUTINE candidate (' + staged.routine + ')');
   await sleep(13500);
-  // teach the station the OPPOSITE of its rank order through REAL outcomes: the channel that leads on rank alone
+  // teach the keep the OPPOSITE of its rank order through REAL outcomes: the channel that leads on rank alone
   // gets a run of real declines; the one below it gets real accepts. Then run the pass again.
   const cold = await evalJS(cdp, `(() => {
     const s = window.__rq2, all = s.field ? s.field.slice() : [];
@@ -182,11 +182,11 @@ try {
     'two of them are dim-less, so no value-of-information term can confound the measurement (' + (reorder.pair || []).join(', ') + ')');
   if (reorder.pair && reorder.pair.length >= 2) {
     eq(reorder.sameBand, true, 'the two channels really are in one band (a cross-band flip would be a BUG, not a feature)');
-    eq(reorder.coldWinner, reorder.priorityWinner, 'cold, the station knows nothing about either and rank order decides');
+    eq(reorder.coldWinner, reorder.priorityWinner, 'cold, the keep knows nothing about either and rank order decides');
     ok(reorder.weights.down <= 0.55 && reorder.weights.up >= 1.2,
       'thirty real 👎 outcomes and thirty real 👍 outcomes moved the two channels apart: ' + JSON.stringify(reorder.weights));
     eq(reorder.warm.map(c => c.kind).sort(), reorder.pair.slice().sort(),
-      'the SECOND pass staged the SAME two channels — only what the station has learned about them changed');
+      'the SECOND pass staged the SAME two channels — only what the keep has learned about them changed');
     eq(reorder.warmWinner, reorder.runnerUp,
       'and the arbiter hands the moment to the one whose offers actually produced good work (was ' + reorder.coldWinner + ')');
     ok(reorder.warmWinner !== reorder.priorityWinner,
@@ -224,7 +224,7 @@ try {
         the very first pass of the session takes the stale branch (an arc that fires normally opens a Dialogue
         panel and spends a paid decomposition call — neither belongs in a verification run). ---- */
   const seeded = await evalJS(cdp, `(() => {
-    // age the station's REAL goals belief(s) past the staleness threshold, through the live records
+    // age the keep's REAL goals belief(s) past the staleness threshold, through the live records
     const arr = DossierStore.beliefs('goals');
     const at = Date.now() - 45 * 86400000;
     for (const b of arr) { b.updatedAt = at; b.createdAt = at; b.observedAt = null; b.pinned = false; }
@@ -237,7 +237,7 @@ try {
              willOffer: !!(GoalStore.willOfferDecomposition && GoalStore.willOfferDecomposition()) };
   })()`);
   console.log('aged the live goals belief: ' + JSON.stringify(seeded));
-  ok(seeded.count > 0, 'the seeded station holds a real goals belief to age');
+  ok(seeded.count > 0, 'the seeded keep holds a real goals belief to age');
   ok(seeded.stale && seeded.stale.stale === true, 'it reads STALE against the live understanding engine');
   ok(seeded.willOffer, 'and the arc would otherwise have ASSERTED it (willOfferDecomposition is true)');
 

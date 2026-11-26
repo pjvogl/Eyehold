@@ -27,7 +27,7 @@ const codeOnly = block.replace(/\/\*[\s\S]*?\*\//g, '').replace(/\/\/[^\n]*/g, '
 A.ok(!/\bgeo\.|\bself\.|\bU\.|\bZones\.|\bdocument\b|\bwindow\b/.test(codeOnly), 'the block is PURE (no module state / RNG / DOM — safe to execute standalone)');
 const { losWalk } = eval('(function(){' + block + '\nreturn { losWalk };})()');
 
-/* ---- a synthetic station, in exactly the two pieces geo hands losClear ----
+/* ---- a synthetic keep, in exactly the two pieces geo hands losClear ----
    zone id per tile (null = wall/void), plus canStep's rule: same zone always, different zones only
    through a registered door pair. This mirrors worldmodel.projectGeometry's zoneGrid + canStep, which
    is the whole point — the sightline must fail where WALKING already fails.
@@ -74,7 +74,7 @@ A.ok(!losWalk(8, 4, 10, 4, floorFn, sealedStep), 'a room whose boundary doors ar
 // ---- void / off-floor endpoints are never in sight ----
 A.ok(!los(1, 1, 9, 1), 'a tile that is wall is not a sightline endpoint');
 A.ok(!los(-1, 1, 1, 1), 'off-grid coordinates cannot see anything');
-A.ok(!los(1, 1, 40, 1), 'a target outside the station is never in sight');
+A.ok(!los(1, 1, 40, 1), 'a target outside the keep is never in sight');
 
 // ---- a single pillar occludes exactly the tiles behind it ----
 const pillar = (x, y) => floorFn(x, y) && !(x === 4 && y === 4);
@@ -140,11 +140,11 @@ A.ok(/if \(!geo\.walkable\(t\.x, t\.y, blocked\)\) return false;/.test(nudge),
 A.ok(/const SEP_JAM_MS = 2500;/.test(src) && /seizeFromIdle\(b\);/.test(sep),
   'a walker shoved continuously (its destination taken) gives up on the leg and re-decides — no push/counter-push standoff');
 A.ok(/if \(b\.goal === 'social' \|\| b\.goal === 'gather'\) \{ b\.sepSince = 0; continue; \}/.test(sep),
-  'but NEVER a body mid-encounter: seizeFromIdle leaves b.social set, and encounterBroken tests exactly `social == null`, so releasing one here would half-kill the beat while it holds the single station slot');
+  'but NEVER a body mid-encounter: seizeFromIdle leaves b.social set, and encounterBroken tests exactly `social == null`, so releasing one here would half-kill the beat while it holds the single keep slot');
 // the claim is module-level state held by a body reference — the same shape as occupiedSeats, and the
-// same leak: a body dropped by spawn()/loadStation() would hold the slot until its 45s expiry.
+// same leak: a body dropped by spawn()/loadKeep() would hold the slot until its 45s expiry.
 A.ok((src.match(/beltWatch = null;/g) || []).length >= 3,
-  'the belt-watch claim is cleared on BOTH session resets (spawn + loadStation), not only lazily expired');
+  'the belt-watch claim is cleared on BOTH session resets (spawn + loadKeep), not only lazily expired');
 A.ok(/if \(!geo \|\| !geo\.zoneGrid \|\| !geo\.COLS \|\| !geo\.ROWS \|\|/.test(src),
   'the fail-open guard covers COLS/ROWS too — the bounds test reads them, and `x < undefined` is false, which would silence the whole social engine instead of failing open');
 
@@ -154,7 +154,7 @@ A.ok(/if \(!geo \|\| !geo\.zoneGrid \|\| !geo\.COLS \|\| !geo\.ROWS \|\|/.test(s
    runs the same engine — so laying belt to a new bay switched the candidate on for the whole crew. */
 const poi = A.fnBody(src, 'function planPOI(');
 A.ok(/const beltOk = now >= \(self\.beltWatchCd \|\| 0\) && !beltWatchTaken\(now\);/.test(poi),
-  'the belt candidate is gated on BOTH a per-body cooldown and the station-wide single-watcher claim');
+  'the belt candidate is gated on BOTH a per-body cooldown and the keep-wide single-watcher claim');
 A.ok(/const inBelts = beltOk \? belts\.filter/.test(poi), 'and the gate is applied before the candidate is built, not after');
 A.ok(/beltWatch = \{ body: self, until: now \+ 45000 \}; self\.beltWatchCd = now \+ U\.irnd\(BELT_WATCH_CD_MIN, BELT_WATCH_CD_MAX\);/.test(poi),
   'both are ARMED only once a watch actually commits (a failed pick must not spend the cooldown)');

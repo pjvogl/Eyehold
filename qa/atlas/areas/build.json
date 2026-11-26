@@ -11,7 +11,7 @@
       "promise": "Opening CONNECTORS → CATALOG renders one card per catalog entry (catalog count === rendered cc-card count), each grouped by category with a working ADD/SIGN-IN action and a site link.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "frontend/app/harness.js"
         ],
         "events": []
@@ -45,11 +45,11 @@
       "kind": "state",
       "area": "build",
       "name": "shoot state: build-manual",
-      "purpose": "The FIELD MANUAL console — the in-app help book (first steps, the loop, growth, gear, wiring) for the station systems.",
+      "purpose": "The FIELD MANUAL console — the in-app help book (first steps, the loop, growth, gear, wiring) for the keep systems.",
       "promise": "Opening the FIELD MANUAL shows a tabbed help window whose section tabs (FIRST STEPS / THE LOOP / GROWTH / GEAR / WIRING) each swap the manual body.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "frontend/app/harness.js"
         ],
         "events": []
@@ -79,11 +79,11 @@
       "kind": "state",
       "area": "build",
       "name": "shoot state: build-skills",
-      "purpose": "The SKILLS & CAPABILITIES console — the per-agent recipe library and the capability readout for the objects at its workstation.",
+      "purpose": "The SKILLS & CAPABILITIES console — the per-agent recipe library and the capability readout for the objects at its workkeep.",
       "promise": "Opening SKILLS renders one card per bundled recipe (catalog count === rendered sk-card count) with a working ON/OFF switch and a READY/NEEDS-GEAR chip that reflects the floor grant.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "frontend/app/harness.js"
         ],
         "events": []
@@ -109,15 +109,15 @@
       "notes": "SKILLS LIBRARY live: /api/skills catalog=40 === 40 .sk-card nodes with 40 switches + 21 PLACE buttons; CAPABILITIES is default aria-selected tab. Truthful count. Machine-guarded by skills.library.test.js (199, pass at HEAD). Dead build3-verify.mjs audit ref removed (finding 0a808216). [live-proof this session @ HEAD c06bdef7 (port 8966/CDP 9366)]"
     },
     {
-      "id": "state/build-station",
+      "id": "state/build-keep",
       "kind": "state",
       "area": "build",
-      "name": "shoot state: build-station",
+      "name": "shoot state: build-keep",
       "purpose": "The REFIT room-kind picker state — the palette row that chooses which ROOM KIND a dragged room becomes.",
-      "promise": "In REFIT with the ROOM tool active, the palette lists every station room kind (BRIDGE/FOUNDRY/HAB/LAB/QUARTERS/STORAGE) and picking one sets the kind the next room-drag paints.",
+      "promise": "In REFIT with the ROOM tool active, the palette lists every keep room kind (BRIDGE/FOUNDRY/HAB/LAB/QUARTERS/STORAGE) and picking one sets the kind the next room-drag paints.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "frontend/app/harness.js"
         ],
         "events": []
@@ -150,7 +150,7 @@
       "promise": "Each manual tab swaps the help body to that section; close/minimize follow the window law. No backend claim (pure static help).",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js"
+          "frontend/app/keepui.js"
         ],
         "events": []
       },
@@ -181,11 +181,11 @@
       "kind": "ui",
       "area": "build",
       "name": "Close SKILLS & CAPABILITIES",
-      "purpose": "Window chrome for the SKILLS & CAPABILITIES console — close / minimize / resize, following the station window law.",
+      "purpose": "Window chrome for the SKILLS & CAPABILITIES console — close / minimize / resize, following the keep window law.",
       "promise": "Close dismisses the panel; minimize sends it to the minimized strip; resize adjusts the window.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/skillstore.js",
           "sidecar/skills/catalog.js",
           "sidecar/index.js"
@@ -218,11 +218,11 @@
       "kind": "ui",
       "area": "build",
       "name": "Close TOOLSETS & CONNECTORS",
-      "purpose": "Window chrome for the CONNECTORS console — close / minimize / resize / search, following the station window law.",
+      "purpose": "Window chrome for the CONNECTORS console — close / minimize / resize / search, following the keep window law.",
       "promise": "Close dismisses the panel; minimize sends it to the minimized strip; resize adjusts the window; search filters the connector/toolset rows.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/mcp/catalog.js",
           "sidecar/index.js"
         ],
@@ -258,7 +258,7 @@
       "promise": "Toggling an Enable switch turns that toolset on/off in backend capability state; installed connectors also appear as dynamic 'Enable connector <id>' toggles.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/mcp/catalog.js",
           "sidecar/index.js"
         ],
@@ -294,7 +294,7 @@
       "promise": "Toggling an Enable switch turns that toolset on/off in backend capability state; installed connectors also appear as dynamic 'Enable connector <id>' toggles.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/mcp/catalog.js",
           "sidecar/index.js"
         ],
@@ -330,7 +330,7 @@
       "promise": "Toggling an Enable switch turns that toolset on/off in backend capability state; installed connectors also appear as dynamic 'Enable connector <id>' toggles.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/mcp/catalog.js",
           "sidecar/index.js"
         ],
@@ -366,7 +366,7 @@
       "promise": "Toggling an Enable switch turns that toolset on/off in backend capability state; installed connectors also appear as dynamic 'Enable connector <id>' toggles.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/mcp/catalog.js",
           "sidecar/index.js"
         ],
@@ -402,7 +402,7 @@
       "promise": "Toggling an Enable switch turns that toolset on/off in backend capability state; installed connectors also appear as dynamic 'Enable connector <id>' toggles.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/mcp/catalog.js",
           "sidecar/index.js"
         ],
@@ -438,7 +438,7 @@
       "promise": "Toggling an Enable switch turns that toolset on/off in backend capability state; installed connectors also appear as dynamic 'Enable connector <id>' toggles.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/mcp/catalog.js",
           "sidecar/index.js"
         ],
@@ -474,7 +474,7 @@
       "promise": "Toggling an Enable switch turns that toolset on/off in backend capability state; installed connectors also appear as dynamic 'Enable connector <id>' toggles.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/mcp/catalog.js",
           "sidecar/index.js"
         ],
@@ -510,7 +510,7 @@
       "promise": "Each manual tab swaps the help body to that section; close/minimize follow the window law. No backend claim (pure static help).",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js"
+          "frontend/app/keepui.js"
         ],
         "events": []
       },
@@ -541,11 +541,11 @@
       "kind": "ui",
       "area": "build",
       "name": "Minimize SKILLS & CAPABILITIES",
-      "purpose": "Window chrome for the SKILLS & CAPABILITIES console — close / minimize / resize, following the station window law.",
+      "purpose": "Window chrome for the SKILLS & CAPABILITIES console — close / minimize / resize, following the keep window law.",
       "promise": "Close dismisses the panel; minimize sends it to the minimized strip; resize adjusts the window.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/skillstore.js",
           "sidecar/skills/catalog.js",
           "sidecar/index.js"
@@ -578,11 +578,11 @@
       "kind": "ui",
       "area": "build",
       "name": "Minimize TOOLSETS & CONNECTORS",
-      "purpose": "Window chrome for the CONNECTORS console — close / minimize / resize / search, following the station window law.",
+      "purpose": "Window chrome for the CONNECTORS console — close / minimize / resize / search, following the keep window law.",
       "promise": "Close dismisses the panel; minimize sends it to the minimized strip; resize adjusts the window; search filters the connector/toolset rows.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/mcp/catalog.js",
           "sidecar/index.js"
         ],
@@ -618,7 +618,7 @@
       "promise": "Clicking 'Read the <recipe> recipe' expands that card (sk-card on open) and renders the recipe's markdown body.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/skillstore.js",
           "sidecar/skills/catalog.js",
           "sidecar/index.js"
@@ -655,7 +655,7 @@
       "promise": "Clicking 'Read the <recipe> recipe' expands that card (sk-card on open) and renders the recipe's markdown body.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/skillstore.js",
           "sidecar/skills/catalog.js",
           "sidecar/index.js"
@@ -692,7 +692,7 @@
       "promise": "Clicking 'Read the <recipe> recipe' expands that card (sk-card on open) and renders the recipe's markdown body.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/skillstore.js",
           "sidecar/skills/catalog.js",
           "sidecar/index.js"
@@ -729,7 +729,7 @@
       "promise": "Clicking 'Read the <recipe> recipe' expands that card (sk-card on open) and renders the recipe's markdown body.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/skillstore.js",
           "sidecar/skills/catalog.js",
           "sidecar/index.js"
@@ -766,7 +766,7 @@
       "promise": "Clicking 'Read the <recipe> recipe' expands that card (sk-card on open) and renders the recipe's markdown body.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/skillstore.js",
           "sidecar/skills/catalog.js",
           "sidecar/index.js"
@@ -803,7 +803,7 @@
       "promise": "Clicking 'Read the <recipe> recipe' expands that card (sk-card on open) and renders the recipe's markdown body.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/skillstore.js",
           "sidecar/skills/catalog.js",
           "sidecar/index.js"
@@ -840,7 +840,7 @@
       "promise": "Clicking 'Read the <recipe> recipe' expands that card (sk-card on open) and renders the recipe's markdown body.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/skillstore.js",
           "sidecar/skills/catalog.js",
           "sidecar/index.js"
@@ -877,7 +877,7 @@
       "promise": "Clicking 'Read the <recipe> recipe' expands that card (sk-card on open) and renders the recipe's markdown body.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/skillstore.js",
           "sidecar/skills/catalog.js",
           "sidecar/index.js"
@@ -914,7 +914,7 @@
       "promise": "Clicking 'Read the <recipe> recipe' expands that card (sk-card on open) and renders the recipe's markdown body.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/skillstore.js",
           "sidecar/skills/catalog.js",
           "sidecar/index.js"
@@ -951,7 +951,7 @@
       "promise": "Clicking 'Read the <recipe> recipe' expands that card (sk-card on open) and renders the recipe's markdown body.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/skillstore.js",
           "sidecar/skills/catalog.js",
           "sidecar/index.js"
@@ -988,7 +988,7 @@
       "promise": "Clicking 'Read the <recipe> recipe' expands that card (sk-card on open) and renders the recipe's markdown body.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/skillstore.js",
           "sidecar/skills/catalog.js",
           "sidecar/index.js"
@@ -1025,7 +1025,7 @@
       "promise": "Clicking 'Read the <recipe> recipe' expands that card (sk-card on open) and renders the recipe's markdown body.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/skillstore.js",
           "sidecar/skills/catalog.js",
           "sidecar/index.js"
@@ -1062,7 +1062,7 @@
       "promise": "Clicking 'Read the <recipe> recipe' expands that card (sk-card on open) and renders the recipe's markdown body.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/skillstore.js",
           "sidecar/skills/catalog.js",
           "sidecar/index.js"
@@ -1099,7 +1099,7 @@
       "promise": "Clicking 'Read the <recipe> recipe' expands that card (sk-card on open) and renders the recipe's markdown body.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/skillstore.js",
           "sidecar/skills/catalog.js",
           "sidecar/index.js"
@@ -1136,7 +1136,7 @@
       "promise": "Clicking 'Read the <recipe> recipe' expands that card (sk-card on open) and renders the recipe's markdown body.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/skillstore.js",
           "sidecar/skills/catalog.js",
           "sidecar/index.js"
@@ -1173,7 +1173,7 @@
       "promise": "Clicking 'Read the <recipe> recipe' expands that card (sk-card on open) and renders the recipe's markdown body.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/skillstore.js",
           "sidecar/skills/catalog.js",
           "sidecar/index.js"
@@ -1210,7 +1210,7 @@
       "promise": "Clicking 'Read the <recipe> recipe' expands that card (sk-card on open) and renders the recipe's markdown body.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/skillstore.js",
           "sidecar/skills/catalog.js",
           "sidecar/index.js"
@@ -1247,7 +1247,7 @@
       "promise": "Clicking 'Read the <recipe> recipe' expands that card (sk-card on open) and renders the recipe's markdown body.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/skillstore.js",
           "sidecar/skills/catalog.js",
           "sidecar/index.js"
@@ -1284,7 +1284,7 @@
       "promise": "Clicking 'Read the <recipe> recipe' expands that card (sk-card on open) and renders the recipe's markdown body.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/skillstore.js",
           "sidecar/skills/catalog.js",
           "sidecar/index.js"
@@ -1321,7 +1321,7 @@
       "promise": "Clicking 'Read the <recipe> recipe' expands that card (sk-card on open) and renders the recipe's markdown body.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/skillstore.js",
           "sidecar/skills/catalog.js",
           "sidecar/index.js"
@@ -1358,7 +1358,7 @@
       "promise": "Clicking 'Read the <recipe> recipe' expands that card (sk-card on open) and renders the recipe's markdown body.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/skillstore.js",
           "sidecar/skills/catalog.js",
           "sidecar/index.js"
@@ -1395,7 +1395,7 @@
       "promise": "Clicking 'Read the <recipe> recipe' expands that card (sk-card on open) and renders the recipe's markdown body.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/skillstore.js",
           "sidecar/skills/catalog.js",
           "sidecar/index.js"
@@ -1432,7 +1432,7 @@
       "promise": "Clicking 'Read the <recipe> recipe' expands that card (sk-card on open) and renders the recipe's markdown body.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/skillstore.js",
           "sidecar/skills/catalog.js",
           "sidecar/index.js"
@@ -1469,7 +1469,7 @@
       "promise": "Clicking 'Read the <recipe> recipe' expands that card (sk-card on open) and renders the recipe's markdown body.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/skillstore.js",
           "sidecar/skills/catalog.js",
           "sidecar/index.js"
@@ -1506,7 +1506,7 @@
       "promise": "Clicking 'Read the <recipe> recipe' expands that card (sk-card on open) and renders the recipe's markdown body.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/skillstore.js",
           "sidecar/skills/catalog.js",
           "sidecar/index.js"
@@ -1543,7 +1543,7 @@
       "promise": "Clicking 'Read the <recipe> recipe' expands that card (sk-card on open) and renders the recipe's markdown body.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/skillstore.js",
           "sidecar/skills/catalog.js",
           "sidecar/index.js"
@@ -1580,7 +1580,7 @@
       "promise": "Clicking 'Read the <recipe> recipe' expands that card (sk-card on open) and renders the recipe's markdown body.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/skillstore.js",
           "sidecar/skills/catalog.js",
           "sidecar/index.js"
@@ -1617,7 +1617,7 @@
       "promise": "Clicking 'Read the <recipe> recipe' expands that card (sk-card on open) and renders the recipe's markdown body.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/skillstore.js",
           "sidecar/skills/catalog.js",
           "sidecar/index.js"
@@ -1654,7 +1654,7 @@
       "promise": "Clicking 'Read the <recipe> recipe' expands that card (sk-card on open) and renders the recipe's markdown body.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/skillstore.js",
           "sidecar/skills/catalog.js",
           "sidecar/index.js"
@@ -1691,7 +1691,7 @@
       "promise": "Clicking 'Read the <recipe> recipe' expands that card (sk-card on open) and renders the recipe's markdown body.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/skillstore.js",
           "sidecar/skills/catalog.js",
           "sidecar/index.js"
@@ -1728,7 +1728,7 @@
       "promise": "Clicking 'Read the <recipe> recipe' expands that card (sk-card on open) and renders the recipe's markdown body.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/skillstore.js",
           "sidecar/skills/catalog.js",
           "sidecar/index.js"
@@ -1765,7 +1765,7 @@
       "promise": "Clicking 'Read the <recipe> recipe' expands that card (sk-card on open) and renders the recipe's markdown body.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/skillstore.js",
           "sidecar/skills/catalog.js",
           "sidecar/index.js"
@@ -1802,7 +1802,7 @@
       "promise": "Clicking 'Read the <recipe> recipe' expands that card (sk-card on open) and renders the recipe's markdown body.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/skillstore.js",
           "sidecar/skills/catalog.js",
           "sidecar/index.js"
@@ -1839,7 +1839,7 @@
       "promise": "Clicking 'Read the <recipe> recipe' expands that card (sk-card on open) and renders the recipe's markdown body.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/skillstore.js",
           "sidecar/skills/catalog.js",
           "sidecar/index.js"
@@ -1876,7 +1876,7 @@
       "promise": "Clicking 'Read the <recipe> recipe' expands that card (sk-card on open) and renders the recipe's markdown body.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/skillstore.js",
           "sidecar/skills/catalog.js",
           "sidecar/index.js"
@@ -1913,7 +1913,7 @@
       "promise": "Clicking 'Read the <recipe> recipe' expands that card (sk-card on open) and renders the recipe's markdown body.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/skillstore.js",
           "sidecar/skills/catalog.js",
           "sidecar/index.js"
@@ -1950,7 +1950,7 @@
       "promise": "Clicking 'Read the <recipe> recipe' expands that card (sk-card on open) and renders the recipe's markdown body.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/skillstore.js",
           "sidecar/skills/catalog.js",
           "sidecar/index.js"
@@ -1987,7 +1987,7 @@
       "promise": "Clicking 'Read the <recipe> recipe' expands that card (sk-card on open) and renders the recipe's markdown body.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/skillstore.js",
           "sidecar/skills/catalog.js",
           "sidecar/index.js"
@@ -2024,7 +2024,7 @@
       "promise": "Clicking 'Read the <recipe> recipe' expands that card (sk-card on open) and renders the recipe's markdown body.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/skillstore.js",
           "sidecar/skills/catalog.js",
           "sidecar/index.js"
@@ -2061,7 +2061,7 @@
       "promise": "Clicking 'Read the <recipe> recipe' expands that card (sk-card on open) and renders the recipe's markdown body.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/skillstore.js",
           "sidecar/skills/catalog.js",
           "sidecar/index.js"
@@ -2094,11 +2094,11 @@
       "kind": "ui",
       "area": "build",
       "name": "Resize FIELD MANUAL",
-      "purpose": "The FIELD MANUAL window resize control — adjusts the help console window per the station window law.",
+      "purpose": "The FIELD MANUAL window resize control — adjusts the help console window per the keep window law.",
       "promise": "Dragging the resize control adjusts the FIELD MANUAL window size. No backend claim (pure static help).",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js"
+          "frontend/app/keepui.js"
         ],
         "events": []
       },
@@ -2126,11 +2126,11 @@
       "kind": "ui",
       "area": "build",
       "name": "Resize SKILLS & CAPABILITIES",
-      "purpose": "Window chrome for the SKILLS & CAPABILITIES console — close / minimize / resize, following the station window law.",
+      "purpose": "Window chrome for the SKILLS & CAPABILITIES console — close / minimize / resize, following the keep window law.",
       "promise": "Close dismisses the panel; minimize sends it to the minimized strip; resize adjusts the window.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/skillstore.js",
           "sidecar/skills/catalog.js",
           "sidecar/index.js"
@@ -2163,11 +2163,11 @@
       "kind": "ui",
       "area": "build",
       "name": "Resize TOOLSETS & CONNECTORS",
-      "purpose": "Window chrome for the CONNECTORS console — close / minimize / resize / search, following the station window law.",
+      "purpose": "Window chrome for the CONNECTORS console — close / minimize / resize / search, following the keep window law.",
       "promise": "Close dismisses the panel; minimize sends it to the minimized strip; resize adjusts the window; search filters the connector/toolset rows.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/mcp/catalog.js",
           "sidecar/index.js"
         ],
@@ -2199,11 +2199,11 @@
       "kind": "ui",
       "area": "build",
       "name": "Search connectors",
-      "purpose": "Window chrome for the CONNECTORS console — close / minimize / resize / search, following the station window law.",
+      "purpose": "Window chrome for the CONNECTORS console — close / minimize / resize / search, following the keep window law.",
       "promise": "Close dismisses the panel; minimize sends it to the minimized strip; resize adjusts the window; search filters the connector/toolset rows.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/mcp/catalog.js",
           "sidecar/index.js"
         ],
@@ -2239,7 +2239,7 @@
       "promise": "Typing a query marks matching rows as hits, dims empty sections, and shows every section in search mode; clearing restores the active tab.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js"
+          "frontend/app/keepui.js"
         ],
         "events": []
       },
@@ -2271,7 +2271,7 @@
       "promise": "Toggling ON/OFF writes POST /api/skills/toggle and flips the skill's backend enabled state; an enabled+available recipe is composed into the prompt (over-budget recipes are omit-flagged, never silently dropped).",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/skillstore.js",
           "sidecar/skills/catalog.js",
           "sidecar/index.js"
@@ -2310,7 +2310,7 @@
       "promise": "Toggling ON/OFF writes POST /api/skills/toggle and flips the skill's backend enabled state; an enabled+available recipe is composed into the prompt (over-budget recipes are omit-flagged, never silently dropped).",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/skillstore.js",
           "sidecar/skills/catalog.js",
           "sidecar/index.js"
@@ -2349,7 +2349,7 @@
       "promise": "Toggling ON/OFF writes POST /api/skills/toggle and flips the skill's backend enabled state; an enabled+available recipe is composed into the prompt (over-budget recipes are omit-flagged, never silently dropped).",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/skillstore.js",
           "sidecar/skills/catalog.js",
           "sidecar/index.js"
@@ -2388,7 +2388,7 @@
       "promise": "Toggling ON/OFF writes POST /api/skills/toggle and flips the skill's backend enabled state; an enabled+available recipe is composed into the prompt (over-budget recipes are omit-flagged, never silently dropped).",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/skillstore.js",
           "sidecar/skills/catalog.js",
           "sidecar/index.js"
@@ -2427,7 +2427,7 @@
       "promise": "Toggling ON/OFF writes POST /api/skills/toggle and flips the skill's backend enabled state; an enabled+available recipe is composed into the prompt (over-budget recipes are omit-flagged, never silently dropped).",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/skillstore.js",
           "sidecar/skills/catalog.js",
           "sidecar/index.js"
@@ -2466,7 +2466,7 @@
       "promise": "Toggling ON/OFF writes POST /api/skills/toggle and flips the skill's backend enabled state; an enabled+available recipe is composed into the prompt (over-budget recipes are omit-flagged, never silently dropped).",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/skillstore.js",
           "sidecar/skills/catalog.js",
           "sidecar/index.js"
@@ -2505,7 +2505,7 @@
       "promise": "Toggling ON/OFF writes POST /api/skills/toggle and flips the skill's backend enabled state; an enabled+available recipe is composed into the prompt (over-budget recipes are omit-flagged, never silently dropped).",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/skillstore.js",
           "sidecar/skills/catalog.js",
           "sidecar/index.js"
@@ -2544,7 +2544,7 @@
       "promise": "Toggling ON/OFF writes POST /api/skills/toggle and flips the skill's backend enabled state; an enabled+available recipe is composed into the prompt (over-budget recipes are omit-flagged, never silently dropped).",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/skillstore.js",
           "sidecar/skills/catalog.js",
           "sidecar/index.js"
@@ -2583,7 +2583,7 @@
       "promise": "Toggling ON/OFF writes POST /api/skills/toggle and flips the skill's backend enabled state; an enabled+available recipe is composed into the prompt (over-budget recipes are omit-flagged, never silently dropped).",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/skillstore.js",
           "sidecar/skills/catalog.js",
           "sidecar/index.js"
@@ -2622,7 +2622,7 @@
       "promise": "Toggling ON/OFF writes POST /api/skills/toggle and flips the skill's backend enabled state; an enabled+available recipe is composed into the prompt (over-budget recipes are omit-flagged, never silently dropped).",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/skillstore.js",
           "sidecar/skills/catalog.js",
           "sidecar/index.js"
@@ -2661,7 +2661,7 @@
       "promise": "Toggling ON/OFF writes POST /api/skills/toggle and flips the skill's backend enabled state; an enabled+available recipe is composed into the prompt (over-budget recipes are omit-flagged, never silently dropped).",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/skillstore.js",
           "sidecar/skills/catalog.js",
           "sidecar/index.js"
@@ -2700,7 +2700,7 @@
       "promise": "Toggling ON/OFF writes POST /api/skills/toggle and flips the skill's backend enabled state; an enabled+available recipe is composed into the prompt (over-budget recipes are omit-flagged, never silently dropped).",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/skillstore.js",
           "sidecar/skills/catalog.js",
           "sidecar/index.js"
@@ -2739,7 +2739,7 @@
       "promise": "Toggling ON/OFF writes POST /api/skills/toggle and flips the skill's backend enabled state; an enabled+available recipe is composed into the prompt (over-budget recipes are omit-flagged, never silently dropped).",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/skillstore.js",
           "sidecar/skills/catalog.js",
           "sidecar/index.js"
@@ -2778,7 +2778,7 @@
       "promise": "Toggling ON/OFF writes POST /api/skills/toggle and flips the skill's backend enabled state; an enabled+available recipe is composed into the prompt (over-budget recipes are omit-flagged, never silently dropped).",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/skillstore.js",
           "sidecar/skills/catalog.js",
           "sidecar/index.js"
@@ -2817,7 +2817,7 @@
       "promise": "Toggling ON/OFF writes POST /api/skills/toggle and flips the skill's backend enabled state; an enabled+available recipe is composed into the prompt (over-budget recipes are omit-flagged, never silently dropped).",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/skillstore.js",
           "sidecar/skills/catalog.js",
           "sidecar/index.js"
@@ -2856,7 +2856,7 @@
       "promise": "Toggling ON/OFF writes POST /api/skills/toggle and flips the skill's backend enabled state; an enabled+available recipe is composed into the prompt (over-budget recipes are omit-flagged, never silently dropped).",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/skillstore.js",
           "sidecar/skills/catalog.js",
           "sidecar/index.js"
@@ -2895,7 +2895,7 @@
       "promise": "Toggling ON/OFF writes POST /api/skills/toggle and flips the skill's backend enabled state; an enabled+available recipe is composed into the prompt (over-budget recipes are omit-flagged, never silently dropped).",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/skillstore.js",
           "sidecar/skills/catalog.js",
           "sidecar/index.js"
@@ -2934,7 +2934,7 @@
       "promise": "Toggling ON/OFF writes POST /api/skills/toggle and flips the skill's backend enabled state; an enabled+available recipe is composed into the prompt (over-budget recipes are omit-flagged, never silently dropped).",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/skillstore.js",
           "sidecar/skills/catalog.js",
           "sidecar/index.js"
@@ -2973,7 +2973,7 @@
       "promise": "Toggling ON/OFF writes POST /api/skills/toggle and flips the skill's backend enabled state; an enabled+available recipe is composed into the prompt (over-budget recipes are omit-flagged, never silently dropped).",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/skillstore.js",
           "sidecar/skills/catalog.js",
           "sidecar/index.js"
@@ -3012,7 +3012,7 @@
       "promise": "Toggling ON/OFF writes POST /api/skills/toggle and flips the skill's backend enabled state; an enabled+available recipe is composed into the prompt (over-budget recipes are omit-flagged, never silently dropped).",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/skillstore.js",
           "sidecar/skills/catalog.js",
           "sidecar/index.js"
@@ -3051,7 +3051,7 @@
       "promise": "Toggling ON/OFF writes POST /api/skills/toggle and flips the skill's backend enabled state; an enabled+available recipe is composed into the prompt (over-budget recipes are omit-flagged, never silently dropped).",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/skillstore.js",
           "sidecar/skills/catalog.js",
           "sidecar/index.js"
@@ -3090,7 +3090,7 @@
       "promise": "Toggling ON/OFF writes POST /api/skills/toggle and flips the skill's backend enabled state; an enabled+available recipe is composed into the prompt (over-budget recipes are omit-flagged, never silently dropped).",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/skillstore.js",
           "sidecar/skills/catalog.js",
           "sidecar/index.js"
@@ -3129,7 +3129,7 @@
       "promise": "Toggling ON/OFF writes POST /api/skills/toggle and flips the skill's backend enabled state; an enabled+available recipe is composed into the prompt (over-budget recipes are omit-flagged, never silently dropped).",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/skillstore.js",
           "sidecar/skills/catalog.js",
           "sidecar/index.js"
@@ -3168,7 +3168,7 @@
       "promise": "Toggling ON/OFF writes POST /api/skills/toggle and flips the skill's backend enabled state; an enabled+available recipe is composed into the prompt (over-budget recipes are omit-flagged, never silently dropped).",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/skillstore.js",
           "sidecar/skills/catalog.js",
           "sidecar/index.js"
@@ -3207,7 +3207,7 @@
       "promise": "Toggling ON/OFF writes POST /api/skills/toggle and flips the skill's backend enabled state; an enabled+available recipe is composed into the prompt (over-budget recipes are omit-flagged, never silently dropped).",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/skillstore.js",
           "sidecar/skills/catalog.js",
           "sidecar/index.js"
@@ -3246,7 +3246,7 @@
       "promise": "Toggling ON/OFF writes POST /api/skills/toggle and flips the skill's backend enabled state; an enabled+available recipe is composed into the prompt (over-budget recipes are omit-flagged, never silently dropped).",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/skillstore.js",
           "sidecar/skills/catalog.js",
           "sidecar/index.js"
@@ -3285,7 +3285,7 @@
       "promise": "Toggling ON/OFF writes POST /api/skills/toggle and flips the skill's backend enabled state; an enabled+available recipe is composed into the prompt (over-budget recipes are omit-flagged, never silently dropped).",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/skillstore.js",
           "sidecar/skills/catalog.js",
           "sidecar/index.js"
@@ -3324,7 +3324,7 @@
       "promise": "Toggling ON/OFF writes POST /api/skills/toggle and flips the skill's backend enabled state; an enabled+available recipe is composed into the prompt (over-budget recipes are omit-flagged, never silently dropped).",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/skillstore.js",
           "sidecar/skills/catalog.js",
           "sidecar/index.js"
@@ -3363,7 +3363,7 @@
       "promise": "Toggling ON/OFF writes POST /api/skills/toggle and flips the skill's backend enabled state; an enabled+available recipe is composed into the prompt (over-budget recipes are omit-flagged, never silently dropped).",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/skillstore.js",
           "sidecar/skills/catalog.js",
           "sidecar/index.js"
@@ -3402,7 +3402,7 @@
       "promise": "Toggling ON/OFF writes POST /api/skills/toggle and flips the skill's backend enabled state; an enabled+available recipe is composed into the prompt (over-budget recipes are omit-flagged, never silently dropped).",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/skillstore.js",
           "sidecar/skills/catalog.js",
           "sidecar/index.js"
@@ -3441,7 +3441,7 @@
       "promise": "Toggling ON/OFF writes POST /api/skills/toggle and flips the skill's backend enabled state; an enabled+available recipe is composed into the prompt (over-budget recipes are omit-flagged, never silently dropped).",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/skillstore.js",
           "sidecar/skills/catalog.js",
           "sidecar/index.js"
@@ -3480,7 +3480,7 @@
       "promise": "Toggling ON/OFF writes POST /api/skills/toggle and flips the skill's backend enabled state; an enabled+available recipe is composed into the prompt (over-budget recipes are omit-flagged, never silently dropped).",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/skillstore.js",
           "sidecar/skills/catalog.js",
           "sidecar/index.js"
@@ -3519,7 +3519,7 @@
       "promise": "Toggling ON/OFF writes POST /api/skills/toggle and flips the skill's backend enabled state; an enabled+available recipe is composed into the prompt (over-budget recipes are omit-flagged, never silently dropped).",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/skillstore.js",
           "sidecar/skills/catalog.js",
           "sidecar/index.js"
@@ -3558,7 +3558,7 @@
       "promise": "Toggling ON/OFF writes POST /api/skills/toggle and flips the skill's backend enabled state; an enabled+available recipe is composed into the prompt (over-budget recipes are omit-flagged, never silently dropped).",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/skillstore.js",
           "sidecar/skills/catalog.js",
           "sidecar/index.js"
@@ -3597,7 +3597,7 @@
       "promise": "Toggling ON/OFF writes POST /api/skills/toggle and flips the skill's backend enabled state; an enabled+available recipe is composed into the prompt (over-budget recipes are omit-flagged, never silently dropped).",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/skillstore.js",
           "sidecar/skills/catalog.js",
           "sidecar/index.js"
@@ -3636,7 +3636,7 @@
       "promise": "Toggling ON/OFF writes POST /api/skills/toggle and flips the skill's backend enabled state; an enabled+available recipe is composed into the prompt (over-budget recipes are omit-flagged, never silently dropped).",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/skillstore.js",
           "sidecar/skills/catalog.js",
           "sidecar/index.js"
@@ -3675,7 +3675,7 @@
       "promise": "Toggling ON/OFF writes POST /api/skills/toggle and flips the skill's backend enabled state; an enabled+available recipe is composed into the prompt (over-budget recipes are omit-flagged, never silently dropped).",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/skillstore.js",
           "sidecar/skills/catalog.js",
           "sidecar/index.js"
@@ -3714,7 +3714,7 @@
       "promise": "Toggling ON/OFF writes POST /api/skills/toggle and flips the skill's backend enabled state; an enabled+available recipe is composed into the prompt (over-budget recipes are omit-flagged, never silently dropped).",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/skillstore.js",
           "sidecar/skills/catalog.js",
           "sidecar/index.js"
@@ -3753,7 +3753,7 @@
       "promise": "Toggling ON/OFF writes POST /api/skills/toggle and flips the skill's backend enabled state; an enabled+available recipe is composed into the prompt (over-budget recipes are omit-flagged, never silently dropped).",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/skillstore.js",
           "sidecar/skills/catalog.js",
           "sidecar/index.js"
@@ -3792,7 +3792,7 @@
       "promise": "Toggling ON/OFF writes POST /api/skills/toggle and flips the skill's backend enabled state; an enabled+available recipe is composed into the prompt (over-budget recipes are omit-flagged, never silently dropped).",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/skillstore.js",
           "sidecar/skills/catalog.js",
           "sidecar/index.js"
@@ -3831,7 +3831,7 @@
       "promise": "Clicking a tab swaps the console body to that section; CATALOG lazily fetches /api/connectors/catalog and renders the grouped cards.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/mcp/catalog.js",
           "sidecar/index.js"
         ],
@@ -3865,7 +3865,7 @@
       "promise": "Clicking a tab swaps the console body to that section; CATALOG lazily fetches /api/connectors/catalog and renders the grouped cards.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/mcp/catalog.js",
           "sidecar/index.js"
         ],
@@ -3899,7 +3899,7 @@
       "promise": "Clicking a tab swaps the console body to that section; CATALOG lazily fetches /api/connectors/catalog and renders the grouped cards.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/mcp/catalog.js",
           "sidecar/index.js"
         ],
@@ -3933,7 +3933,7 @@
       "promise": "Clicking it swaps to the AGENT SKILLS pane (the agent-owned skillbase list).",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js"
+          "frontend/app/keepui.js"
         ],
         "events": []
       },
@@ -3961,11 +3961,11 @@
       "kind": "ui",
       "area": "build",
       "name": "◈CAPABILITIES",
-      "purpose": "The CAPABILITIES tab of the SKILLS window — shows what this agent can actually do right now, driven by the objects placed at its workstation.",
+      "purpose": "The CAPABILITIES tab of the SKILLS window — shows what this agent can actually do right now, driven by the objects placed at its workkeep.",
       "promise": "Clicking it shows the CAPABILITIES pane (live perks for the selected agent); it is the default-landed tab and reads aria-selected=true.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js"
+          "frontend/app/keepui.js"
         ],
         "events": []
       },
@@ -3997,7 +3997,7 @@
       "promise": "Clicking it swaps to the SKILL LIBRARY pane and renders the recipe cards (switch + ready chip + PLACE buttons).",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js"
+          "frontend/app/keepui.js"
         ],
         "events": []
       },
@@ -4029,7 +4029,7 @@
       "promise": "Filling the form + '+ ADD & CONNECT' upserts a connector; every field id the handler reads is present and the HTTP tab shows its inputs while the STDIO tab explains why a local server cannot run on this host.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/mcp/catalog.js",
           "sidecar/index.js"
         ],
@@ -4071,7 +4071,7 @@
       "promise": "Filling the form + '+ ADD & CONNECT' upserts a connector; every field id the handler reads is present and the HTTP tab shows its inputs while the STDIO tab explains why a local server cannot run on this host.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/mcp/catalog.js",
           "sidecar/index.js"
         ],
@@ -4113,7 +4113,7 @@
       "promise": "Filling the form + '+ ADD & CONNECT' upserts a connector; every field id the handler reads is present and the HTTP tab shows its inputs while the STDIO tab explains why a local server cannot run on this host.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/mcp/catalog.js",
           "sidecar/index.js"
         ],
@@ -4155,7 +4155,7 @@
       "promise": "Filling the form + '+ ADD & CONNECT' upserts a connector; every field id the handler reads is present and the HTTP tab shows its inputs while the STDIO tab explains why a local server cannot run on this host.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/mcp/catalog.js",
           "sidecar/index.js"
         ],
@@ -4197,7 +4197,7 @@
       "promise": "Filling the form + '+ ADD & CONNECT' upserts a connector; every field id the handler reads is present and the HTTP tab shows its inputs while the STDIO tab explains why a local server cannot run on this host.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/mcp/catalog.js",
           "sidecar/index.js"
         ],
@@ -4239,7 +4239,7 @@
       "promise": "Filling the form + '+ ADD & CONNECT' upserts a connector; every field id the handler reads is present and the HTTP tab shows its inputs while the STDIO tab explains why a local server cannot run on this host.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/mcp/catalog.js",
           "sidecar/index.js"
         ],
@@ -4281,7 +4281,7 @@
       "promise": "Filling the form + '+ ADD & CONNECT' upserts a connector; every field id the handler reads is present and the HTTP tab shows its inputs while the STDIO tab explains why a local server cannot run on this host.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/mcp/catalog.js",
           "sidecar/index.js"
         ],
@@ -4323,7 +4323,7 @@
       "promise": "Filling the form + '+ ADD & CONNECT' upserts a connector; every field id the handler reads is present and the HTTP tab shows its inputs while the STDIO tab explains why a local server cannot run on this host.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/mcp/catalog.js",
           "sidecar/index.js"
         ],
@@ -4365,7 +4365,7 @@
       "promise": "Filling the form + '+ ADD & CONNECT' upserts a connector; every field id the handler reads is present and the HTTP tab shows its inputs while the STDIO tab explains why a local server cannot run on this host.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/mcp/catalog.js",
           "sidecar/index.js"
         ],
@@ -4403,7 +4403,7 @@
       "kind": "ui",
       "area": "build",
       "name": "finish + save (Esc)",
-      "purpose": "The REFIT primary button: finish build mode, persist the new station layout, re-bake the live world, and resume the sim.",
+      "purpose": "The REFIT primary button: finish build mode, persist the new keep layout, re-bake the live world, and resume the sim.",
       "promise": "Clicking DONE (or Esc) closes REFIT, saves the layout, and any capability props placed this session stay online in the live world after the re-bake.",
       "wiring": {
         "files": [
@@ -4436,16 +4436,16 @@
       "lastSeen": "2026-07-18T00:54:02.711Z",
       "missing": false,
       "selector": "#refit-done",
-      "state": "build-station",
+      "state": "build-keep",
       "notes": "Live: placed comms_dish (grants dish) then #refit-done -> refit-on=false, Build.isOpen=false (REFIT closed) and World.heroCaps still holds dish through the re-bake (persist). Machine-guarded by worldmodel bayObjects test (pass at HEAD). [live-proof this session @ HEAD c06bdef7 (port 8966/CDP 9366)]"
     },
     {
       "id": "ui/build/refit-fit",
       "kind": "ui",
       "area": "build",
-      "name": "frame the station",
-      "purpose": "Camera affordance: reframe the REFIT canvas so the whole station is centred and visible.",
-      "promise": "Clicking FIT (or F) recomputes zoom/pan from station bounds so the built station is framed inside the viewport.",
+      "name": "frame the keep",
+      "purpose": "Camera affordance: reframe the REFIT canvas so the whole keep is centred and visible.",
+      "promise": "Clicking FIT (or F) recomputes zoom/pan from keep bounds so the built keep is framed inside the viewport.",
       "wiring": {
         "files": [
           "frontend/app/build.js"
@@ -4471,7 +4471,7 @@
       "lastSeen": "2026-07-18T00:54:02.711Z",
       "missing": false,
       "selector": "#refit-fit",
-      "state": "build-station",
+      "state": "build-keep",
       "notes": "Live: #refit-fit present in REFIT; click reframes without throwing (recompute zoom/pan). [live-proof this session @ HEAD c06bdef7 (port 8966/CDP 9366)]"
     },
     {
@@ -4479,7 +4479,7 @@
       "kind": "ui",
       "area": "build",
       "name": "▸ START BUILDING",
-      "purpose": "The first-use guide dismiss button: closes the BUILD YOUR STATION coach card and marks it seen so it never re-nags.",
+      "purpose": "The first-use guide dismiss button: closes the BUILD YOUR KEEP coach card and marks it seen so it never re-nags.",
       "promise": "Clicking START BUILDING removes the .refit-guide card and persists the seen flag (localStorage), returning to the live grid.",
       "wiring": {
         "files": [
@@ -4506,8 +4506,8 @@
       "lastSeen": "2026-07-18T00:54:02.711Z",
       "missing": false,
       "selector": "#refit-guide-go",
-      "state": "build-station",
-      "notes": "Live: #refit-guide-go dismisses the .refit-guide card and persists starnet.refit.seen=1 (localStorage). [live-proof this session @ HEAD c06bdef7 (port 8966/CDP 9366)]"
+      "state": "build-keep",
+      "notes": "Live: #refit-guide-go dismisses the .refit-guide card and persists eyehold.refit.seen=1 (localStorage). [live-proof this session @ HEAD c06bdef7 (port 8966/CDP 9366)]"
     },
     {
       "id": "ui/build/refit-help",
@@ -4541,7 +4541,7 @@
       "lastSeen": "2026-07-18T00:54:02.711Z",
       "missing": false,
       "selector": "#refit-help",
-      "state": "build-station",
+      "state": "build-keep",
       "notes": "Live: #refit-help present; the .refit-guide card renders with a START BUILDING (#refit-guide-go) dismiss button. [live-proof this session @ HEAD c06bdef7 (port 8966/CDP 9366)]"
     },
     {
@@ -4550,7 +4550,7 @@
       "area": "build",
       "name": "redo (Ctrl+Shift+Z)",
       "purpose": "Redo the last undone build mutation, re-applying it (including any capability it re-grants).",
-      "promise": "Clicking REDO (or Ctrl+Shift+Z) re-applies the last undone station change; redoing a reclaimed cap-prop brings its real capability back online.",
+      "promise": "Clicking REDO (or Ctrl+Shift+Z) re-applies the last undone keep change; redoing a reclaimed cap-prop brings its real capability back online.",
       "wiring": {
         "files": [
           "frontend/app/build.js",
@@ -4574,7 +4574,7 @@
       "lastSeen": "2026-07-18T00:54:02.711Z",
       "missing": false,
       "selector": "#refit-redo",
-      "state": "build-station",
+      "state": "build-keep",
       "notes": "Live: place studio -> undo (revoke) -> #refit-redo click -> World.heroCaps regains studio (regrant). Machine-guarded by worldmodel undo/redo round-trip (pass at HEAD). [live-proof this session @ HEAD c06bdef7 (port 8966/CDP 9366)]"
     },
     {
@@ -4609,7 +4609,7 @@
       "lastSeen": "2026-07-18T00:54:02.711Z",
       "missing": false,
       "selector": "#refit-test",
-      "state": "build-station",
+      "state": "build-keep",
       "notes": "Live: #refit-test present in REFIT; click spawns the belt dry-run without throwing. [live-proof this session @ HEAD c06bdef7 (port 8966/CDP 9366)]"
     },
     {
@@ -4617,8 +4617,8 @@
       "kind": "ui",
       "area": "build",
       "name": "undo (Ctrl+Z)",
-      "purpose": "Undo the last build mutation, restoring prior station state (and REVOKING any capability that placement granted).",
-      "promise": "Clicking UNDO (or Ctrl+Z) reverts the last station change; undoing a placed cap-prop takes its real capability back offline (place=grant, undo=revoke).",
+      "purpose": "Undo the last build mutation, restoring prior keep state (and REVOKING any capability that placement granted).",
+      "promise": "Clicking UNDO (or Ctrl+Z) reverts the last keep change; undoing a placed cap-prop takes its real capability back offline (place=grant, undo=revoke).",
       "wiring": {
         "files": [
           "frontend/app/build.js",
@@ -4642,7 +4642,7 @@
       "lastSeen": "2026-07-18T00:54:02.711Z",
       "missing": false,
       "selector": "#refit-undo",
-      "state": "build-station",
+      "state": "build-keep",
       "notes": "Live: placeCapProp(studio) grants studio -> #refit-undo click -> World.heroCaps loses studio (revoke; truthful inverse of place-grant). Machine-guarded by worldmodel undo/redo round-trip (pass at HEAD). [live-proof this session @ HEAD c06bdef7 (port 8966/CDP 9366)]"
     },
     {
@@ -4654,7 +4654,7 @@
       "promise": "sp-client input + sp-connect/sp-disconnect controls render and are wired to the Spotify OAuth connect flow (setupSpotify).",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/mcp/catalog.js",
           "sidecar/index.js"
         ],
@@ -4688,7 +4688,7 @@
       "promise": "sp-client input + sp-connect/sp-disconnect controls render and are wired to the Spotify OAuth connect flow (setupSpotify).",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/mcp/catalog.js",
           "sidecar/index.js"
         ],
@@ -4722,7 +4722,7 @@
       "promise": "sp-client input + sp-connect/sp-disconnect controls render and are wired to the Spotify OAuth connect flow (setupSpotify).",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/mcp/catalog.js",
           "sidecar/index.js"
         ],
@@ -4756,7 +4756,7 @@
       "promise": "Each catalog card renders exactly one 'site ↗' link to that connector's https homepage; link count === catalog count (37).",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/mcp/catalog.js",
           "sidecar/index.js"
         ],
@@ -4794,7 +4794,7 @@
       "promise": "Each catalog card renders exactly one 'site ↗' link to that connector's https homepage; link count === catalog count (37).",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/mcp/catalog.js",
           "sidecar/index.js"
         ],
@@ -4832,7 +4832,7 @@
       "promise": "Each catalog card renders exactly one 'site ↗' link to that connector's https homepage; link count === catalog count (37).",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/mcp/catalog.js",
           "sidecar/index.js"
         ],
@@ -4870,7 +4870,7 @@
       "promise": "Each catalog card renders exactly one 'site ↗' link to that connector's https homepage; link count === catalog count (37).",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/mcp/catalog.js",
           "sidecar/index.js"
         ],
@@ -4908,7 +4908,7 @@
       "promise": "Each catalog card renders exactly one 'site ↗' link to that connector's https homepage; link count === catalog count (37).",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/mcp/catalog.js",
           "sidecar/index.js"
         ],
@@ -4946,7 +4946,7 @@
       "promise": "Each catalog card renders exactly one 'site ↗' link to that connector's https homepage; link count === catalog count (37).",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/mcp/catalog.js",
           "sidecar/index.js"
         ],
@@ -4984,7 +4984,7 @@
       "promise": "Each catalog card renders exactly one 'site ↗' link to that connector's https homepage; link count === catalog count (37).",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/mcp/catalog.js",
           "sidecar/index.js"
         ],
@@ -5022,7 +5022,7 @@
       "promise": "Each catalog card renders exactly one 'site ↗' link to that connector's https homepage; link count === catalog count (37).",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/mcp/catalog.js",
           "sidecar/index.js"
         ],
@@ -5060,7 +5060,7 @@
       "promise": "Each catalog card renders exactly one 'site ↗' link to that connector's https homepage; link count === catalog count (37).",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/mcp/catalog.js",
           "sidecar/index.js"
         ],
@@ -5098,7 +5098,7 @@
       "promise": "Each catalog card renders exactly one 'site ↗' link to that connector's https homepage; link count === catalog count (37).",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/mcp/catalog.js",
           "sidecar/index.js"
         ],
@@ -5136,7 +5136,7 @@
       "promise": "Each catalog card renders exactly one 'site ↗' link to that connector's https homepage; link count === catalog count (37).",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/mcp/catalog.js",
           "sidecar/index.js"
         ],
@@ -5174,7 +5174,7 @@
       "promise": "Each catalog card renders exactly one 'site ↗' link to that connector's https homepage; link count === catalog count (37).",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/mcp/catalog.js",
           "sidecar/index.js"
         ],
@@ -5212,7 +5212,7 @@
       "promise": "Each catalog card renders exactly one 'site ↗' link to that connector's https homepage; link count === catalog count (37).",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/mcp/catalog.js",
           "sidecar/index.js"
         ],
@@ -5250,7 +5250,7 @@
       "promise": "Each catalog card renders exactly one 'site ↗' link to that connector's https homepage; link count === catalog count (37).",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/mcp/catalog.js",
           "sidecar/index.js"
         ],
@@ -5288,7 +5288,7 @@
       "promise": "Each catalog card renders exactly one 'site ↗' link to that connector's https homepage; link count === catalog count (37).",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/mcp/catalog.js",
           "sidecar/index.js"
         ],
@@ -5326,7 +5326,7 @@
       "promise": "Each catalog card renders exactly one 'site ↗' link to that connector's https homepage; link count === catalog count (37).",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/mcp/catalog.js",
           "sidecar/index.js"
         ],
@@ -5364,7 +5364,7 @@
       "promise": "Each catalog card renders exactly one 'site ↗' link to that connector's https homepage; link count === catalog count (37).",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/mcp/catalog.js",
           "sidecar/index.js"
         ],
@@ -5402,7 +5402,7 @@
       "promise": "Each catalog card renders exactly one 'site ↗' link to that connector's https homepage; link count === catalog count (37).",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/mcp/catalog.js",
           "sidecar/index.js"
         ],
@@ -5440,7 +5440,7 @@
       "promise": "Each catalog card renders exactly one 'site ↗' link to that connector's https homepage; link count === catalog count (37).",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/mcp/catalog.js",
           "sidecar/index.js"
         ],
@@ -5478,7 +5478,7 @@
       "promise": "Each catalog card renders exactly one 'site ↗' link to that connector's https homepage; link count === catalog count (37).",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/mcp/catalog.js",
           "sidecar/index.js"
         ],
@@ -5516,7 +5516,7 @@
       "promise": "Each catalog card renders exactly one 'site ↗' link to that connector's https homepage; link count === catalog count (37).",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/mcp/catalog.js",
           "sidecar/index.js"
         ],
@@ -5554,7 +5554,7 @@
       "promise": "Each catalog card renders exactly one 'site ↗' link to that connector's https homepage; link count === catalog count (37).",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/mcp/catalog.js",
           "sidecar/index.js"
         ],
@@ -5592,7 +5592,7 @@
       "promise": "Each catalog card renders exactly one 'site ↗' link to that connector's https homepage; link count === catalog count (37).",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/mcp/catalog.js",
           "sidecar/index.js"
         ],
@@ -5630,7 +5630,7 @@
       "promise": "Each catalog card renders exactly one 'site ↗' link to that connector's https homepage; link count === catalog count (37).",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/mcp/catalog.js",
           "sidecar/index.js"
         ],
@@ -5668,7 +5668,7 @@
       "promise": "Each catalog card renders exactly one 'site ↗' link to that connector's https homepage; link count === catalog count (37).",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/mcp/catalog.js",
           "sidecar/index.js"
         ],
@@ -5706,7 +5706,7 @@
       "promise": "Each catalog card renders exactly one 'site ↗' link to that connector's https homepage; link count === catalog count (37).",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/mcp/catalog.js",
           "sidecar/index.js"
         ],
@@ -5744,7 +5744,7 @@
       "promise": "Each catalog card renders exactly one 'site ↗' link to that connector's https homepage; link count === catalog count (37).",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/mcp/catalog.js",
           "sidecar/index.js"
         ],
@@ -5782,7 +5782,7 @@
       "promise": "Each catalog card renders exactly one 'site ↗' link to that connector's https homepage; link count === catalog count (37).",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/mcp/catalog.js",
           "sidecar/index.js"
         ],
@@ -5820,7 +5820,7 @@
       "promise": "Each catalog card renders exactly one 'site ↗' link to that connector's https homepage; link count === catalog count (37).",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/mcp/catalog.js",
           "sidecar/index.js"
         ],
@@ -5858,7 +5858,7 @@
       "promise": "Each catalog card renders exactly one 'site ↗' link to that connector's https homepage; link count === catalog count (37).",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/mcp/catalog.js",
           "sidecar/index.js"
         ],
@@ -5896,7 +5896,7 @@
       "promise": "Each catalog card renders exactly one 'site ↗' link to that connector's https homepage; link count === catalog count (37).",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/mcp/catalog.js",
           "sidecar/index.js"
         ],
@@ -5934,7 +5934,7 @@
       "promise": "Each catalog card renders exactly one 'site ↗' link to that connector's https homepage; link count === catalog count (37).",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/mcp/catalog.js",
           "sidecar/index.js"
         ],
@@ -5972,7 +5972,7 @@
       "promise": "Each catalog card renders exactly one 'site ↗' link to that connector's https homepage; link count === catalog count (37).",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/mcp/catalog.js",
           "sidecar/index.js"
         ],
@@ -6010,7 +6010,7 @@
       "promise": "Each catalog card renders exactly one 'site ↗' link to that connector's https homepage; link count === catalog count (37).",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/mcp/catalog.js",
           "sidecar/index.js"
         ],
@@ -6048,7 +6048,7 @@
       "promise": "Each catalog card renders exactly one 'site ↗' link to that connector's https homepage; link count === catalog count (37).",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/mcp/catalog.js",
           "sidecar/index.js"
         ],
@@ -6086,7 +6086,7 @@
       "promise": "Each catalog card renders exactly one 'site ↗' link to that connector's https homepage; link count === catalog count (37).",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/mcp/catalog.js",
           "sidecar/index.js"
         ],
@@ -6124,7 +6124,7 @@
       "promise": "Each catalog card renders exactly one 'site ↗' link to that connector's https homepage; link count === catalog count (37).",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/mcp/catalog.js",
           "sidecar/index.js"
         ],
@@ -6162,7 +6162,7 @@
       "promise": "Clicking the ▸ toggles the card open (glyph -> ▾) and shows the recipe <pre> body that /api/skills already returned; the body shown == the body compose() injects into the run.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/index.js",
           "sidecar/skills/catalog.js"
         ],
@@ -6194,12 +6194,12 @@
       "id": "ui/build/txt-button-bottombar-system1-1",
       "kind": "ui",
       "area": "build",
-      "name": "Station systems — manual, settings, updates, restore, logs, notifications",
-      "purpose": "The bottombar SYSTEM button: opens the station-systems menu (manual, settings, updates, restore, logs, notifications).",
+      "name": "Keep systems — manual, settings, updates, restore, logs, notifications",
+      "purpose": "The bottombar SYSTEM button: opens the keep-systems menu (manual, settings, updates, restore, logs, notifications).",
       "promise": "Clicking it opens the SYSTEM menu whose items reach the FIELD MANUAL, SETTINGS, updates, restore, logs and notifications surfaces.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js"
+          "frontend/app/keepui.js"
         ],
         "events": []
       },
@@ -6223,7 +6223,7 @@
       "missing": false,
       "selector": "button",
       "state": "build-manual",
-      "notes": "Live: a bottombar button titled \"Station systems — manual, settings, updates, restore, logs, notifications\" is present; it is the SYSTEM dock entry (this atlas entry previously carried a copy-pasted manual-tab promise — corrected this session). No machine assertion guards it yet (ledger:0a808216). [live-proof this session @ HEAD cccd9519 (port 8966/CDP 9366)]"
+      "notes": "Live: a bottombar button titled \"Keep systems — manual, settings, updates, restore, logs, notifications\" is present; it is the SYSTEM dock entry (this atlas entry previously carried a copy-pasted manual-tab promise — corrected this session). No machine assertion guards it yet (ledger:0a808216). [live-proof this session @ HEAD cccd9519 (port 8966/CDP 9366)]"
     },
     {
       "id": "ui/build/txt-button-cc-list-add-1",
@@ -6234,7 +6234,7 @@
       "promise": "Clicking '+ ADD' upserts that connector by its catalog id (never re-typed); one ADD renders per addable (none/apikey) card; the installed card stops offering ADD.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/mcp/catalog.js",
           "sidecar/index.js"
         ],
@@ -6276,7 +6276,7 @@
       "promise": "Clicking '+ ADD' upserts that connector by its catalog id (never re-typed); one ADD renders per addable (none/apikey) card; the installed card stops offering ADD.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/mcp/catalog.js",
           "sidecar/index.js"
         ],
@@ -6318,7 +6318,7 @@
       "promise": "Clicking '+ ADD' upserts that connector by its catalog id (never re-typed); one ADD renders per addable (none/apikey) card; the installed card stops offering ADD.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/mcp/catalog.js",
           "sidecar/index.js"
         ],
@@ -6360,7 +6360,7 @@
       "promise": "Clicking '+ ADD' upserts that connector by its catalog id (never re-typed); one ADD renders per addable (none/apikey) card; the installed card stops offering ADD.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/mcp/catalog.js",
           "sidecar/index.js"
         ],
@@ -6402,7 +6402,7 @@
       "promise": "Clicking '+ ADD' upserts that connector by its catalog id (never re-typed); one ADD renders per addable (none/apikey) card; the installed card stops offering ADD.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/mcp/catalog.js",
           "sidecar/index.js"
         ],
@@ -6444,7 +6444,7 @@
       "promise": "Clicking '+ ADD' upserts that connector by its catalog id (never re-typed); one ADD renders per addable (none/apikey) card; the installed card stops offering ADD.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/mcp/catalog.js",
           "sidecar/index.js"
         ],
@@ -6486,7 +6486,7 @@
       "promise": "Clicking '+ ADD' upserts that connector by its catalog id (never re-typed); one ADD renders per addable (none/apikey) card; the installed card stops offering ADD.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/mcp/catalog.js",
           "sidecar/index.js"
         ],
@@ -6528,7 +6528,7 @@
       "promise": "Clicking '+ ADD' upserts that connector by its catalog id (never re-typed); one ADD renders per addable (none/apikey) card; the installed card stops offering ADD.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/mcp/catalog.js",
           "sidecar/index.js"
         ],
@@ -6570,7 +6570,7 @@
       "promise": "Clicking '+ ADD' upserts that connector by its catalog id (never re-typed); one ADD renders per addable (none/apikey) card; the installed card stops offering ADD.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/mcp/catalog.js",
           "sidecar/index.js"
         ],
@@ -6612,7 +6612,7 @@
       "promise": "Clicking '+ ADD' upserts that connector by its catalog id (never re-typed); one ADD renders per addable (none/apikey) card; the installed card stops offering ADD.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/mcp/catalog.js",
           "sidecar/index.js"
         ],
@@ -6654,7 +6654,7 @@
       "promise": "Clicking '+ ADD' upserts that connector by its catalog id (never re-typed); one ADD renders per addable (none/apikey) card; the installed card stops offering ADD.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/mcp/catalog.js",
           "sidecar/index.js"
         ],
@@ -6696,7 +6696,7 @@
       "promise": "Clicking '+ ADD' upserts that connector by its catalog id (never re-typed); one ADD renders per addable (none/apikey) card; the installed card stops offering ADD.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/mcp/catalog.js",
           "sidecar/index.js"
         ],
@@ -6738,7 +6738,7 @@
       "promise": "Clicking '+ ADD' upserts that connector by its catalog id (never re-typed); one ADD renders per addable (none/apikey) card; the installed card stops offering ADD.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/mcp/catalog.js",
           "sidecar/index.js"
         ],
@@ -6780,7 +6780,7 @@
       "promise": "Clicking '+ ADD' upserts that connector by its catalog id (never re-typed); one ADD renders per addable (none/apikey) card; the installed card stops offering ADD.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/mcp/catalog.js",
           "sidecar/index.js"
         ],
@@ -6822,7 +6822,7 @@
       "promise": "Clicking '+ ADD' upserts that connector by its catalog id (never re-typed); one ADD renders per addable (none/apikey) card; the installed card stops offering ADD.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/mcp/catalog.js",
           "sidecar/index.js"
         ],
@@ -6864,7 +6864,7 @@
       "promise": "Clicking '+ ADD' upserts that connector by its catalog id (never re-typed); one ADD renders per addable (none/apikey) card; the installed card stops offering ADD.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/mcp/catalog.js",
           "sidecar/index.js"
         ],
@@ -6906,7 +6906,7 @@
       "promise": "Clicking '+ ADD' upserts that connector by its catalog id (never re-typed); one ADD renders per addable (none/apikey) card; the installed card stops offering ADD.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/mcp/catalog.js",
           "sidecar/index.js"
         ],
@@ -6948,7 +6948,7 @@
       "promise": "Clicking '+ ADD' upserts that connector by its catalog id (never re-typed); one ADD renders per addable (none/apikey) card; the installed card stops offering ADD.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/mcp/catalog.js",
           "sidecar/index.js"
         ],
@@ -6990,7 +6990,7 @@
       "promise": "Clicking '+ ADD' upserts that connector by its catalog id (never re-typed); one ADD renders per addable (none/apikey) card; the installed card stops offering ADD.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/mcp/catalog.js",
           "sidecar/index.js"
         ],
@@ -7032,7 +7032,7 @@
       "promise": "A 'Sign in' button renders on each OAuth catalog card; count === oauth connectors that are available (18 oauth − 2 coming-soon = 16).",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/mcp/catalog.js",
           "sidecar/index.js"
         ],
@@ -7068,7 +7068,7 @@
       "promise": "A 'Sign in' button renders on each OAuth catalog card; count === oauth connectors that are available (18 oauth − 2 coming-soon = 16).",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/mcp/catalog.js",
           "sidecar/index.js"
         ],
@@ -7104,7 +7104,7 @@
       "promise": "A 'Sign in' button renders on each OAuth catalog card; count === oauth connectors that are available (18 oauth − 2 coming-soon = 16).",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/mcp/catalog.js",
           "sidecar/index.js"
         ],
@@ -7140,7 +7140,7 @@
       "promise": "A 'Sign in' button renders on each OAuth catalog card; count === oauth connectors that are available (18 oauth − 2 coming-soon = 16).",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/mcp/catalog.js",
           "sidecar/index.js"
         ],
@@ -7176,7 +7176,7 @@
       "promise": "A 'Sign in' button renders on each OAuth catalog card; count === oauth connectors that are available (18 oauth − 2 coming-soon = 16).",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/mcp/catalog.js",
           "sidecar/index.js"
         ],
@@ -7212,7 +7212,7 @@
       "promise": "A 'Sign in' button renders on each OAuth catalog card; count === oauth connectors that are available (18 oauth − 2 coming-soon = 16).",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/mcp/catalog.js",
           "sidecar/index.js"
         ],
@@ -7248,7 +7248,7 @@
       "promise": "A 'Sign in' button renders on each OAuth catalog card; count === oauth connectors that are available (18 oauth − 2 coming-soon = 16).",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/mcp/catalog.js",
           "sidecar/index.js"
         ],
@@ -7284,7 +7284,7 @@
       "promise": "A 'Sign in' button renders on each OAuth catalog card; count === oauth connectors that are available (18 oauth − 2 coming-soon = 16).",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/mcp/catalog.js",
           "sidecar/index.js"
         ],
@@ -7320,7 +7320,7 @@
       "promise": "A 'Sign in' button renders on each OAuth catalog card; count === oauth connectors that are available (18 oauth − 2 coming-soon = 16).",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/mcp/catalog.js",
           "sidecar/index.js"
         ],
@@ -7356,7 +7356,7 @@
       "promise": "A 'Sign in' button renders on each OAuth catalog card; count === oauth connectors that are available (18 oauth − 2 coming-soon = 16).",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/mcp/catalog.js",
           "sidecar/index.js"
         ],
@@ -7392,7 +7392,7 @@
       "promise": "A 'Sign in' button renders on each OAuth catalog card; count === oauth connectors that are available (18 oauth − 2 coming-soon = 16).",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/mcp/catalog.js",
           "sidecar/index.js"
         ],
@@ -7428,7 +7428,7 @@
       "promise": "A 'Sign in' button renders on each OAuth catalog card; count === oauth connectors that are available (18 oauth − 2 coming-soon = 16).",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/mcp/catalog.js",
           "sidecar/index.js"
         ],
@@ -7464,7 +7464,7 @@
       "promise": "A 'Sign in' button renders on each OAuth catalog card; count === oauth connectors that are available (18 oauth − 2 coming-soon = 16).",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/mcp/catalog.js",
           "sidecar/index.js"
         ],
@@ -7500,7 +7500,7 @@
       "promise": "A 'Sign in' button renders on each OAuth catalog card; count === oauth connectors that are available (18 oauth − 2 coming-soon = 16).",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/mcp/catalog.js",
           "sidecar/index.js"
         ],
@@ -7536,7 +7536,7 @@
       "promise": "A 'Sign in' button renders on each OAuth catalog card; count === oauth connectors that are available (18 oauth − 2 coming-soon = 16).",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/mcp/catalog.js",
           "sidecar/index.js"
         ],
@@ -7572,7 +7572,7 @@
       "promise": "A 'Sign in' button renders on each OAuth catalog card; count === oauth connectors that are available (18 oauth − 2 coming-soon = 16).",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/mcp/catalog.js",
           "sidecar/index.js"
         ],
@@ -7608,7 +7608,7 @@
       "promise": "Coming-soon cards render a non-actionable 'Soon' control (no upsert); count === not-yet-available catalog entries (2).",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/mcp/catalog.js",
           "sidecar/index.js"
         ],
@@ -7644,7 +7644,7 @@
       "promise": "Coming-soon cards render a non-actionable 'Soon' control (no upsert); count === not-yet-available catalog entries (2).",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/mcp/catalog.js",
           "sidecar/index.js"
         ],
@@ -7680,7 +7680,7 @@
       "promise": "Selecting HTTP shows url/token/headers with ADD enabled; selecting STDIO shows why a local server cannot run here, renders NO inputs, and disables ADD. Both options render.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/mcp/catalog.js",
           "sidecar/index.js"
         ],
@@ -7714,7 +7714,7 @@
       "promise": "Selecting HTTP shows url/token/headers with ADD enabled; selecting STDIO shows why a local server cannot run here, renders NO inputs, and disables ADD. Both options render.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/mcp/catalog.js",
           "sidecar/index.js"
         ],
@@ -7743,12 +7743,12 @@
       "id": "ui/build/txt-button-off-415",
       "kind": "ui",
       "area": "build",
-      "name": "Turn ON this skill station-wide",
-      "purpose": "The per-recipe ON/OFF switch in its OFF state — a library recipe the user has turned off station-wide (gear irrelevant while off).",
+      "name": "Turn ON this skill keep-wide",
+      "purpose": "The per-recipe ON/OFF switch in its OFF state — a library recipe the user has turned off keep-wide (gear irrelevant while off).",
       "promise": "Reads OFF (aria-checked=false); clicking it POSTs /api/skills/toggle {enabled:true} and the panel reloads showing ON, with GET /api/skills reading back enabled:true.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/index.js",
           "sidecar/skills/prefs.js",
           "sidecar/skills/catalog.js"
@@ -7775,18 +7775,18 @@
       "missing": true,
       "selector": "button",
       "state": "build-skills",
-      "notes": "KEPT missing: the live button (Turn ON this skill station-wide) still exists in the SKILLS library pane (live-proven: 40 switches + 21 PLACE CTAs present at HEAD c06bdef7) but the control has no id/aria anchor, so the sweep loses it as a shifting positional key. Not superseded by an anchored replacement — retirement deferred until the buttons get stable selectors (ledger:cea0899f)."
+      "notes": "KEPT missing: the live button (Turn ON this skill keep-wide) still exists in the SKILLS library pane (live-proven: 40 switches + 21 PLACE CTAs present at HEAD c06bdef7) but the control has no id/aria anchor, so the sweep loses it as a shifting positional key. Not superseded by an anchored replacement — retirement deferred until the buttons get stable selectors (ledger:cea0899f)."
     },
     {
       "id": "ui/build/txt-button-on-405",
       "kind": "ui",
       "area": "build",
-      "name": "Turn OFF this skill station-wide",
-      "purpose": "The per-recipe ON/OFF switch in its ON state — the user's station-wide choice to enable a library recipe (distinct from the floor grant).",
+      "name": "Turn OFF this skill keep-wide",
+      "purpose": "The per-recipe ON/OFF switch in its ON state — the user's keep-wide choice to enable a library recipe (distinct from the floor grant).",
       "promise": "Reads ON (aria-checked=true); clicking it POSTs /api/skills/toggle {enabled:false}, persists to skillPrefs, and the panel reloads showing OFF — and GET /api/skills reads back enabled:false (truthful: the switch mirrors real persisted prefs, which feed the run-path compose()).",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/index.js",
           "sidecar/skills/prefs.js",
           "sidecar/skills/catalog.js"
@@ -7813,7 +7813,7 @@
       "missing": true,
       "selector": "button",
       "state": "build-skills",
-      "notes": "KEPT missing: the live button (Turn OFF this skill station-wide) still exists in the SKILLS library pane (live-proven: 40 switches + 21 PLACE CTAs present at HEAD c06bdef7) but the control has no id/aria anchor, so the sweep loses it as a shifting positional key. Not superseded by an anchored replacement — retirement deferred until the buttons get stable selectors (ledger:cea0899f)."
+      "notes": "KEPT missing: the live button (Turn OFF this skill keep-wide) still exists in the SKILLS library pane (live-proven: 40 switches + 21 PLACE CTAs present at HEAD c06bdef7) but the control has no id/aria anchor, so the sweep loses it as a shifting positional key. Not superseded by an anchored replacement — retirement deferred until the buttons get stable selectors (ledger:cea0899f)."
     },
     {
       "id": "ui/build/txt-button-place-cabinet-416",
@@ -7824,7 +7824,7 @@
       "promise": "Clicking \"→ PLACE CABINET\" minimizes SKILLS, opens REFIT (body.refit-on), and drives the palette so the safe prop tile is armed active — the very next floor-click drops it.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js"
+          "frontend/app/keepui.js"
         ],
         "events": []
       },
@@ -7859,7 +7859,7 @@
       "promise": "Clicking \"→ PLACE DISH\" minimizes SKILLS, opens REFIT (body.refit-on), and drives the palette so the comms_dish prop tile is armed active — the very next floor-click drops it.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js"
+          "frontend/app/keepui.js"
         ],
         "events": []
       },
@@ -7894,7 +7894,7 @@
       "promise": "Clicking \"→ PLACE WORKBENCH\" minimizes SKILLS, opens REFIT (body.refit-on), and drives the palette so the workbench prop tile is armed active — the very next floor-click drops it.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js"
+          "frontend/app/keepui.js"
         ],
         "events": []
       },
@@ -7926,7 +7926,7 @@
       "area": "build",
       "name": "BRIDGE",
       "purpose": "A ROOM-KIND choice tile in the REFIT room palette — sets which kind (BRIDGE/FOUNDRY/HAB/LAB/QUARTERS/STORAGE) the next room-drag paints.",
-      "promise": "Selecting a room-kind tile sets the active kind; the next room-drag on the grid paints a room of that kind (station.KIND_ORDER).",
+      "promise": "Selecting a room-kind tile sets the active kind; the next room-drag on the grid paints a room of that kind (keep.KIND_ORDER).",
       "wiring": {
         "files": [
           "frontend/app/build.js",
@@ -7952,7 +7952,7 @@
       "lastSeen": "2026-07-18T00:54:02.711Z",
       "missing": false,
       "selector": "button",
-      "state": "build-station",
+      "state": "build-keep",
       "notes": "Live: with the ROOM tool active the ROOM TYPE palette (#refit-palette .refit-kind) lists HAB/BRIDGE/LAB/FOUNDRY/QUARTERS/STORAGE (=WorldModel.KIND_ORDER, factory->FOUNDRY). Clicking the BRIDGE tile sets it active (proven: click LAB -> LAB active/HAB off; click STORAGE -> STORAGE active). addRoom-by-kind machine-covered in worldmodel.test.js (222, pass). Dead build3-verify.mjs ref removed (finding 0a808216). [live-proof this session @ HEAD cccd9519 (port 8966/CDP 9366)]"
     },
     {
@@ -7961,7 +7961,7 @@
       "area": "build",
       "name": "FOUNDRY",
       "purpose": "A ROOM-KIND choice tile in the REFIT room palette — sets which kind (BRIDGE/FOUNDRY/HAB/LAB/QUARTERS/STORAGE) the next room-drag paints.",
-      "promise": "Selecting a room-kind tile sets the active kind; the next room-drag on the grid paints a room of that kind (station.KIND_ORDER).",
+      "promise": "Selecting a room-kind tile sets the active kind; the next room-drag on the grid paints a room of that kind (keep.KIND_ORDER).",
       "wiring": {
         "files": [
           "frontend/app/build.js",
@@ -7987,7 +7987,7 @@
       "lastSeen": "2026-07-18T00:54:02.711Z",
       "missing": false,
       "selector": "button",
-      "state": "build-station",
+      "state": "build-keep",
       "notes": "Live: with the ROOM tool active the ROOM TYPE palette (#refit-palette .refit-kind) lists HAB/BRIDGE/LAB/FOUNDRY/QUARTERS/STORAGE (=WorldModel.KIND_ORDER, factory->FOUNDRY). Clicking the FOUNDRY tile sets it active (proven: click LAB -> LAB active/HAB off; click STORAGE -> STORAGE active). addRoom-by-kind machine-covered in worldmodel.test.js (222, pass). Dead build3-verify.mjs ref removed (finding 0a808216). [live-proof this session @ HEAD cccd9519 (port 8966/CDP 9366)]"
     },
     {
@@ -7996,7 +7996,7 @@
       "area": "build",
       "name": "HAB",
       "purpose": "A ROOM-KIND choice tile in the REFIT room palette — sets which kind (BRIDGE/FOUNDRY/HAB/LAB/QUARTERS/STORAGE) the next room-drag paints.",
-      "promise": "Selecting a room-kind tile sets the active kind; the next room-drag on the grid paints a room of that kind (station.KIND_ORDER).",
+      "promise": "Selecting a room-kind tile sets the active kind; the next room-drag on the grid paints a room of that kind (keep.KIND_ORDER).",
       "wiring": {
         "files": [
           "frontend/app/build.js",
@@ -8022,7 +8022,7 @@
       "lastSeen": "2026-07-18T00:54:02.711Z",
       "missing": false,
       "selector": "button",
-      "state": "build-station",
+      "state": "build-keep",
       "notes": "Live: with the ROOM tool active the ROOM TYPE palette (#refit-palette .refit-kind) lists HAB/BRIDGE/LAB/FOUNDRY/QUARTERS/STORAGE (=WorldModel.KIND_ORDER, factory->FOUNDRY). Clicking the HAB tile sets it active (proven: click LAB -> LAB active/HAB off; click STORAGE -> STORAGE active). addRoom-by-kind machine-covered in worldmodel.test.js (222, pass). Dead build3-verify.mjs ref removed (finding 0a808216). [live-proof this session @ HEAD cccd9519 (port 8966/CDP 9366)]"
     },
     {
@@ -8031,7 +8031,7 @@
       "area": "build",
       "name": "LAB",
       "purpose": "A ROOM-KIND choice tile in the REFIT room palette — sets which kind (BRIDGE/FOUNDRY/HAB/LAB/QUARTERS/STORAGE) the next room-drag paints.",
-      "promise": "Selecting a room-kind tile sets the active kind; the next room-drag on the grid paints a room of that kind (station.KIND_ORDER).",
+      "promise": "Selecting a room-kind tile sets the active kind; the next room-drag on the grid paints a room of that kind (keep.KIND_ORDER).",
       "wiring": {
         "files": [
           "frontend/app/build.js",
@@ -8057,7 +8057,7 @@
       "lastSeen": "2026-07-18T00:54:02.711Z",
       "missing": false,
       "selector": "button",
-      "state": "build-station",
+      "state": "build-keep",
       "notes": "Live: with the ROOM tool active the ROOM TYPE palette (#refit-palette .refit-kind) lists HAB/BRIDGE/LAB/FOUNDRY/QUARTERS/STORAGE (=WorldModel.KIND_ORDER, factory->FOUNDRY). Clicking the LAB tile sets it active (proven: click LAB -> LAB active/HAB off; click STORAGE -> STORAGE active). addRoom-by-kind machine-covered in worldmodel.test.js (222, pass). Dead build3-verify.mjs ref removed (finding 0a808216). [live-proof this session @ HEAD cccd9519 (port 8966/CDP 9366)]"
     },
     {
@@ -8066,7 +8066,7 @@
       "area": "build",
       "name": "QUARTERS",
       "purpose": "A ROOM-KIND choice tile in the REFIT room palette — sets which kind (BRIDGE/FOUNDRY/HAB/LAB/QUARTERS/STORAGE) the next room-drag paints.",
-      "promise": "Selecting a room-kind tile sets the active kind; the next room-drag on the grid paints a room of that kind (station.KIND_ORDER).",
+      "promise": "Selecting a room-kind tile sets the active kind; the next room-drag on the grid paints a room of that kind (keep.KIND_ORDER).",
       "wiring": {
         "files": [
           "frontend/app/build.js",
@@ -8092,7 +8092,7 @@
       "lastSeen": "2026-07-18T00:54:02.711Z",
       "missing": false,
       "selector": "button",
-      "state": "build-station",
+      "state": "build-keep",
       "notes": "Live: with the ROOM tool active the ROOM TYPE palette (#refit-palette .refit-kind) lists HAB/BRIDGE/LAB/FOUNDRY/QUARTERS/STORAGE (=WorldModel.KIND_ORDER, factory->FOUNDRY). Clicking the QUARTERS tile sets it active (proven: click LAB -> LAB active/HAB off; click STORAGE -> STORAGE active). addRoom-by-kind machine-covered in worldmodel.test.js (222, pass). Dead build3-verify.mjs ref removed (finding 0a808216). [live-proof this session @ HEAD cccd9519 (port 8966/CDP 9366)]"
     },
     {
@@ -8101,7 +8101,7 @@
       "area": "build",
       "name": "STORAGE",
       "purpose": "A ROOM-KIND choice tile in the REFIT room palette — sets which kind (BRIDGE/FOUNDRY/HAB/LAB/QUARTERS/STORAGE) the next room-drag paints.",
-      "promise": "Selecting a room-kind tile sets the active kind; the next room-drag on the grid paints a room of that kind (station.KIND_ORDER).",
+      "promise": "Selecting a room-kind tile sets the active kind; the next room-drag on the grid paints a room of that kind (keep.KIND_ORDER).",
       "wiring": {
         "files": [
           "frontend/app/build.js",
@@ -8127,7 +8127,7 @@
       "lastSeen": "2026-07-18T00:54:02.711Z",
       "missing": false,
       "selector": "button",
-      "state": "build-station",
+      "state": "build-keep",
       "notes": "Live: with the ROOM tool active the ROOM TYPE palette (#refit-palette .refit-kind) lists HAB/BRIDGE/LAB/FOUNDRY/QUARTERS/STORAGE (=WorldModel.KIND_ORDER, factory->FOUNDRY). Clicking the STORAGE tile sets it active (proven: click LAB -> LAB active/HAB off; click STORAGE -> STORAGE active). addRoom-by-kind machine-covered in worldmodel.test.js (222, pass). Dead build3-verify.mjs ref removed (finding 0a808216). [live-proof this session @ HEAD cccd9519 (port 8966/CDP 9366)]"
     },
     {
@@ -8164,7 +8164,7 @@
       "lastSeen": "2026-07-18T00:54:02.711Z",
       "missing": false,
       "selector": "button",
-      "state": "build-station",
+      "state": "build-keep",
       "notes": "Live: BELT tool (key 7) present, hint CLICK one machine then another the belt lays itself. belt-model machine-covered in conveyor.test.js + placeBeltRun in worldmodel.test.js (both pass at HEAD). [live-proof this session @ HEAD c06bdef7 (port 8966/CDP 9366)]"
     },
     {
@@ -8201,8 +8201,8 @@
       "lastSeen": "2026-07-18T00:54:02.716Z",
       "missing": false,
       "selector": "button",
-      "state": "build-station",
-      "notes": "Renderer-judged sibling of the 7 perfected refit-tools. Live: BUILD STATION -> refit tools palette shows the 8th tool \"⧉ DUPE 8\" alongside room/hallway/paint/move/reclaim/prop/belt. [live-proof this session @ HEAD 43936bd2 (port 8966/CDP 9366)]"
+      "state": "build-keep",
+      "notes": "Renderer-judged sibling of the 7 perfected refit-tools. Live: BUILD KEEP -> refit tools palette shows the 8th tool \"⧉ DUPE 8\" alongside room/hallway/paint/move/reclaim/prop/belt. [live-proof this session @ HEAD 43936bd2 (port 8966/CDP 9366)]"
     },
     {
       "id": "ui/build/txt-button-refit-tools-hallway-2-1",
@@ -8234,7 +8234,7 @@
       "lastSeen": "2026-07-18T00:54:02.711Z",
       "missing": false,
       "selector": "button",
-      "state": "build-station",
+      "state": "build-keep",
       "notes": "Live: HALLWAY tool (key 2) present, hint drag along an axis to run a corridor. placeHallway machine-covered in worldmodel.test.js (pass at HEAD). [live-proof this session @ HEAD c06bdef7 (port 8966/CDP 9366)]"
     },
     {
@@ -8267,7 +8267,7 @@
       "lastSeen": "2026-07-18T00:54:02.711Z",
       "missing": false,
       "selector": "button",
-      "state": "build-station",
+      "state": "build-keep",
       "notes": "Live: MOVE tool (key 4) present, hint drag a room to relocate it. moveProp+undo machine-covered in worldmodel.test.js (pass at HEAD). [live-proof this session @ HEAD c06bdef7 (port 8966/CDP 9366)]"
     },
     {
@@ -8300,7 +8300,7 @@
       "lastSeen": "2026-07-18T00:54:02.711Z",
       "missing": false,
       "selector": "button",
-      "state": "build-station",
+      "state": "build-keep",
       "notes": "Live: SURFACE tool (key 3, internal id paint) present, hint drag to paint deck tiles / click a room to fill it. setFloor/paintTiles machine-covered in worldmodel.test.js (pass at HEAD). [live-proof this session @ HEAD c06bdef7 (port 8966/CDP 9366)]"
     },
     {
@@ -8341,7 +8341,7 @@
       "lastSeen": "2026-07-18T00:54:02.711Z",
       "missing": false,
       "selector": "button",
-      "state": "build-station",
+      "state": "build-keep",
       "notes": "Live: PROP tool (key 6) present, hint click to place furniture / agents walk around it; place=grant proven via placeCapProp (heroCaps gains cap). bayObjects machine-covered in worldmodel.test.js (pass at HEAD). [live-proof this session @ HEAD c06bdef7 (port 8966/CDP 9366)]"
     },
     {
@@ -8378,7 +8378,7 @@
       "lastSeen": "2026-07-18T00:54:02.711Z",
       "missing": false,
       "selector": "button",
-      "state": "build-station",
+      "state": "build-keep",
       "notes": "Live: RECLAIM tool (key 5) present, hint click a room prop or belt to tear it down / drag across a belt to clear the whole run (UNDO restores it). removeProp/one-undo-belt machine-covered in worldmodel.test.js + conveyor.test.js (both pass at HEAD). [live-proof this session @ HEAD c06bdef7 (port 8966/CDP 9366)]"
     },
     {
@@ -8411,7 +8411,7 @@
       "lastSeen": "2026-07-18T00:54:02.711Z",
       "missing": false,
       "selector": "button",
-      "state": "build-station",
+      "state": "build-keep",
       "notes": "Live: REFIT tools belt shows ROOM (key 1), hint drag on the grid to place a room, active by default. addRoom machine-covered in worldmodel.test.js (pass at HEAD). [live-proof this session @ HEAD c06bdef7 (port 8966/CDP 9366)]"
     },
     {
@@ -8423,7 +8423,7 @@
       "promise": "Clicking '→ PLACE <prop>' enters refit placement mode ('click to place'); placing the required object activates the recipe (object=capability grant).",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/skillstore.js",
           "sidecar/skills/catalog.js",
           "sidecar/index.js",
@@ -8463,7 +8463,7 @@
       "promise": "Clicking '→ PLACE <prop>' enters refit placement mode ('click to place'); placing the required object activates the recipe (object=capability grant).",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/skillstore.js",
           "sidecar/skills/catalog.js",
           "sidecar/index.js",
@@ -8503,7 +8503,7 @@
       "promise": "Clicking '→ PLACE <prop>' enters refit placement mode ('click to place'); placing the required object activates the recipe (object=capability grant).",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/skillstore.js",
           "sidecar/skills/catalog.js",
           "sidecar/index.js",
@@ -8543,7 +8543,7 @@
       "promise": "Clicking '→ PLACE <prop>' enters refit placement mode ('click to place'); placing the required object activates the recipe (object=capability grant).",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/skillstore.js",
           "sidecar/skills/catalog.js",
           "sidecar/index.js",
@@ -8583,7 +8583,7 @@
       "promise": "Clicking '→ PLACE <prop>' enters refit placement mode ('click to place'); placing the required object activates the recipe (object=capability grant).",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/skillstore.js",
           "sidecar/skills/catalog.js",
           "sidecar/index.js",
@@ -8623,7 +8623,7 @@
       "promise": "Clicking '→ PLACE <prop>' enters refit placement mode ('click to place'); placing the required object activates the recipe (object=capability grant).",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/skillstore.js",
           "sidecar/skills/catalog.js",
           "sidecar/index.js",
@@ -8663,7 +8663,7 @@
       "promise": "Clicking '→ PLACE <prop>' enters refit placement mode ('click to place'); placing the required object activates the recipe (object=capability grant).",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/skillstore.js",
           "sidecar/skills/catalog.js",
           "sidecar/index.js",
@@ -8703,7 +8703,7 @@
       "promise": "Clicking '→ PLACE <prop>' enters refit placement mode ('click to place'); placing the required object activates the recipe (object=capability grant).",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/skillstore.js",
           "sidecar/skills/catalog.js",
           "sidecar/index.js",
@@ -8743,7 +8743,7 @@
       "promise": "Clicking '→ PLACE <prop>' enters refit placement mode ('click to place'); placing the required object activates the recipe (object=capability grant).",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/skillstore.js",
           "sidecar/skills/catalog.js",
           "sidecar/index.js",
@@ -8783,7 +8783,7 @@
       "promise": "Clicking '→ PLACE <prop>' enters refit placement mode ('click to place'); placing the required object activates the recipe (object=capability grant).",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/skillstore.js",
           "sidecar/skills/catalog.js",
           "sidecar/index.js",
@@ -8823,7 +8823,7 @@
       "promise": "Clicking '→ PLACE <prop>' enters refit placement mode ('click to place'); placing the required object activates the recipe (object=capability grant).",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/skillstore.js",
           "sidecar/skills/catalog.js",
           "sidecar/index.js",
@@ -8863,7 +8863,7 @@
       "promise": "Clicking '→ PLACE <prop>' enters refit placement mode ('click to place'); placing the required object activates the recipe (object=capability grant).",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/skillstore.js",
           "sidecar/skills/catalog.js",
           "sidecar/index.js",
@@ -8903,7 +8903,7 @@
       "promise": "Clicking '→ PLACE <prop>' enters refit placement mode ('click to place'); placing the required object activates the recipe (object=capability grant).",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/skillstore.js",
           "sidecar/skills/catalog.js",
           "sidecar/index.js",
@@ -8943,7 +8943,7 @@
       "promise": "Clicking '→ PLACE <prop>' enters refit placement mode ('click to place'); placing the required object activates the recipe (object=capability grant).",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/skillstore.js",
           "sidecar/skills/catalog.js",
           "sidecar/index.js",
@@ -8983,7 +8983,7 @@
       "promise": "Clicking '→ PLACE <prop>' enters refit placement mode ('click to place'); placing the required object activates the recipe (object=capability grant).",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/skillstore.js",
           "sidecar/skills/catalog.js",
           "sidecar/index.js",
@@ -9023,7 +9023,7 @@
       "promise": "Clicking '→ PLACE <prop>' enters refit placement mode ('click to place'); placing the required object activates the recipe (object=capability grant).",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/skillstore.js",
           "sidecar/skills/catalog.js",
           "sidecar/index.js",
@@ -9063,7 +9063,7 @@
       "promise": "Clicking '→ PLACE <prop>' enters refit placement mode ('click to place'); placing the required object activates the recipe (object=capability grant).",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/skillstore.js",
           "sidecar/skills/catalog.js",
           "sidecar/index.js",
@@ -9103,7 +9103,7 @@
       "promise": "Clicking '→ PLACE <prop>' enters refit placement mode ('click to place'); placing the required object activates the recipe (object=capability grant).",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/skillstore.js",
           "sidecar/skills/catalog.js",
           "sidecar/index.js",
@@ -9143,7 +9143,7 @@
       "promise": "Clicking '→ PLACE <prop>' enters refit placement mode ('click to place'); placing the required object activates the recipe (object=capability grant).",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/skillstore.js",
           "sidecar/skills/catalog.js",
           "sidecar/index.js",
@@ -9183,7 +9183,7 @@
       "promise": "Clicking '→ PLACE <prop>' enters refit placement mode ('click to place'); placing the required object activates the recipe (object=capability grant).",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/skillstore.js",
           "sidecar/skills/catalog.js",
           "sidecar/index.js",
@@ -9223,7 +9223,7 @@
       "promise": "Clicking '→ PLACE <prop>' enters refit placement mode ('click to place'); placing the required object activates the recipe (object=capability grant).",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/skillstore.js",
           "sidecar/skills/catalog.js",
           "sidecar/index.js",
@@ -9263,7 +9263,7 @@
       "promise": "Clicking '→ PLACE <prop>' enters refit placement mode ('click to place'); placing the required object activates the recipe (object=capability grant).",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/skillstore.js",
           "sidecar/skills/catalog.js",
           "sidecar/index.js",
@@ -9303,7 +9303,7 @@
       "promise": "Clicking '→ PLACE <prop>' enters refit placement mode ('click to place'); placing the required object activates the recipe (object=capability grant).",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/skillstore.js",
           "sidecar/skills/catalog.js",
           "sidecar/index.js",
@@ -9343,7 +9343,7 @@
       "promise": "Clicking '→ PLACE <prop>' enters refit placement mode ('click to place'); placing the required object activates the recipe (object=capability grant).",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/skillstore.js",
           "sidecar/skills/catalog.js",
           "sidecar/index.js",
@@ -9383,7 +9383,7 @@
       "promise": "Clicking '→ PLACE <prop>' enters refit placement mode ('click to place'); placing the required object activates the recipe (object=capability grant).",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/skillstore.js",
           "sidecar/skills/catalog.js",
           "sidecar/index.js",
@@ -9423,7 +9423,7 @@
       "promise": "Clicking '→ PLACE <prop>' enters refit placement mode ('click to place'); placing the required object activates the recipe (object=capability grant).",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/skillstore.js",
           "sidecar/skills/catalog.js",
           "sidecar/index.js",
@@ -9463,7 +9463,7 @@
       "promise": "Clicking '→ PLACE <prop>' enters refit placement mode ('click to place'); placing the required object activates the recipe (object=capability grant).",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/skillstore.js",
           "sidecar/skills/catalog.js",
           "sidecar/index.js",
@@ -9503,7 +9503,7 @@
       "promise": "Clicking '→ PLACE <prop>' enters refit placement mode ('click to place'); placing the required object activates the recipe (object=capability grant).",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/skillstore.js",
           "sidecar/skills/catalog.js",
           "sidecar/index.js",
@@ -9543,7 +9543,7 @@
       "promise": "Clicking '→ PLACE <prop>' enters refit placement mode ('click to place'); placing the required object activates the recipe (object=capability grant).",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/skillstore.js",
           "sidecar/skills/catalog.js",
           "sidecar/index.js",
@@ -9583,7 +9583,7 @@
       "promise": "Clicking '→ PLACE <prop>' enters refit placement mode ('click to place'); placing the required object activates the recipe (object=capability grant).",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/skillstore.js",
           "sidecar/skills/catalog.js",
           "sidecar/index.js",
@@ -9623,7 +9623,7 @@
       "promise": "Clicking '→ PLACE <prop>' enters refit placement mode ('click to place'); placing the required object activates the recipe (object=capability grant).",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/skillstore.js",
           "sidecar/skills/catalog.js",
           "sidecar/index.js",
@@ -9663,7 +9663,7 @@
       "promise": "Clicking '→ PLACE <prop>' enters refit placement mode ('click to place'); placing the required object activates the recipe (object=capability grant).",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/skillstore.js",
           "sidecar/skills/catalog.js",
           "sidecar/index.js",
@@ -9703,7 +9703,7 @@
       "promise": "Clicking '→ PLACE <prop>' enters refit placement mode ('click to place'); placing the required object activates the recipe (object=capability grant).",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/skillstore.js",
           "sidecar/skills/catalog.js",
           "sidecar/index.js",
@@ -9746,7 +9746,7 @@
       "promise": "Clicking '→ PLACE <prop>' enters refit placement mode ('click to place'); placing the required object activates the recipe (object=capability grant).",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/skillstore.js",
           "sidecar/skills/catalog.js",
           "sidecar/index.js",
@@ -9786,7 +9786,7 @@
       "promise": "Clicking '→ PLACE <prop>' enters refit placement mode ('click to place'); placing the required object activates the recipe (object=capability grant).",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/skillstore.js",
           "sidecar/skills/catalog.js",
           "sidecar/index.js",
@@ -9826,7 +9826,7 @@
       "promise": "Clicking '→ PLACE <prop>' enters refit placement mode ('click to place'); placing the required object activates the recipe (object=capability grant).",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/skillstore.js",
           "sidecar/skills/catalog.js",
           "sidecar/index.js",
@@ -9866,7 +9866,7 @@
       "promise": "Clicking '→ PLACE <prop>' enters refit placement mode ('click to place'); placing the required object activates the recipe (object=capability grant).",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/skillstore.js",
           "sidecar/skills/catalog.js",
           "sidecar/index.js",
@@ -9906,7 +9906,7 @@
       "promise": "Clicking '→ PLACE <prop>' enters refit placement mode ('click to place'); placing the required object activates the recipe (object=capability grant).",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/skillstore.js",
           "sidecar/skills/catalog.js",
           "sidecar/index.js",
@@ -9946,7 +9946,7 @@
       "promise": "Clicking '→ PLACE <prop>' enters refit placement mode ('click to place'); placing the required object activates the recipe (object=capability grant).",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/skillstore.js",
           "sidecar/skills/catalog.js",
           "sidecar/index.js",
@@ -9986,7 +9986,7 @@
       "promise": "Clicking '→ PLACE <prop>' enters refit placement mode ('click to place'); placing the required object activates the recipe (object=capability grant).",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/skillstore.js",
           "sidecar/skills/catalog.js",
           "sidecar/index.js",
@@ -10026,7 +10026,7 @@
       "promise": "Clicking '→ PLACE <prop>' enters refit placement mode ('click to place'); placing the required object activates the recipe (object=capability grant).",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/skillstore.js",
           "sidecar/skills/catalog.js",
           "sidecar/index.js",
@@ -10066,7 +10066,7 @@
       "promise": "Clicking '→ PLACE <prop>' enters refit placement mode ('click to place'); placing the required object activates the recipe (object=capability grant).",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/skillstore.js",
           "sidecar/skills/catalog.js",
           "sidecar/index.js",
@@ -10106,7 +10106,7 @@
       "promise": "Clicking '→ PLACE <prop>' enters refit placement mode ('click to place'); placing the required object activates the recipe (object=capability grant).",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/skillstore.js",
           "sidecar/skills/catalog.js",
           "sidecar/index.js",
@@ -10146,7 +10146,7 @@
       "promise": "Clicking '→ PLACE <prop>' enters refit placement mode ('click to place'); placing the required object activates the recipe (object=capability grant).",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/skillstore.js",
           "sidecar/skills/catalog.js",
           "sidecar/index.js",
@@ -10186,7 +10186,7 @@
       "promise": "Clicking '→ PLACE <prop>' enters refit placement mode ('click to place'); placing the required object activates the recipe (object=capability grant).",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/skillstore.js",
           "sidecar/skills/catalog.js",
           "sidecar/index.js",
@@ -10226,7 +10226,7 @@
       "promise": "Clicking '→ PLACE <prop>' enters refit placement mode ('click to place'); placing the required object activates the recipe (object=capability grant).",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/skillstore.js",
           "sidecar/skills/catalog.js",
           "sidecar/index.js",
@@ -10266,7 +10266,7 @@
       "promise": "Clicking '→ PLACE <prop>' enters refit placement mode ('click to place'); placing the required object activates the recipe (object=capability grant).",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/skillstore.js",
           "sidecar/skills/catalog.js",
           "sidecar/index.js",
@@ -10306,7 +10306,7 @@
       "promise": "Each manual tab swaps the help body to that section; close/minimize follow the window law. No backend claim (pure static help).",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js"
+          "frontend/app/keepui.js"
         ],
         "events": []
       },
@@ -10341,7 +10341,7 @@
       "promise": "Each manual tab swaps the help body to that section; close/minimize follow the window law. No backend claim (pure static help).",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js"
+          "frontend/app/keepui.js"
         ],
         "events": []
       },
@@ -10376,7 +10376,7 @@
       "promise": "Each manual tab swaps the help body to that section; close/minimize follow the window law. No backend claim (pure static help).",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js"
+          "frontend/app/keepui.js"
         ],
         "events": []
       },
@@ -10411,7 +10411,7 @@
       "promise": "Each manual tab swaps the help body to that section; close/minimize follow the window law. No backend claim (pure static help).",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js"
+          "frontend/app/keepui.js"
         ],
         "events": []
       },
@@ -10446,7 +10446,7 @@
       "promise": "Each manual tab swaps the help body to that section; close/minimize follow the window law. No backend claim (pure static help).",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js"
+          "frontend/app/keepui.js"
         ],
         "events": []
       },
@@ -10481,7 +10481,7 @@
       "promise": "Each capability row shows the tool name + its backing object; when the object is absent it reads '○ NO <PROP> AT DESK' (capability off), and the header count ('N of 7 live') matches the placed objects.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/skillstore.js",
           "sidecar/skills/catalog.js",
           "sidecar/index.js"
@@ -10518,7 +10518,7 @@
       "promise": "Each capability row shows the tool name + its backing object; when the object is absent it reads '○ NO <PROP> AT DESK' (capability off), and the header count ('N of 7 live') matches the placed objects.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/skillstore.js",
           "sidecar/skills/catalog.js",
           "sidecar/index.js"
@@ -10555,7 +10555,7 @@
       "promise": "Each capability row shows the tool name + its backing object; when the object is absent it reads '○ NO <PROP> AT DESK' (capability off), and the header count ('N of 7 live') matches the placed objects.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/skillstore.js",
           "sidecar/skills/catalog.js",
           "sidecar/index.js"
@@ -10592,7 +10592,7 @@
       "promise": "Each capability row shows the tool name + its backing object; when the object is absent it reads '○ NO <PROP> AT DESK' (capability off), and the header count ('N of 7 live') matches the placed objects.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/skillstore.js",
           "sidecar/skills/catalog.js",
           "sidecar/index.js"
@@ -10629,7 +10629,7 @@
       "promise": "Each capability row shows the tool name + its backing object; when the object is absent it reads '○ NO <PROP> AT DESK' (capability off), and the header count ('N of 7 live') matches the placed objects.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/skillstore.js",
           "sidecar/skills/catalog.js",
           "sidecar/index.js"
@@ -10666,7 +10666,7 @@
       "promise": "Each capability row shows the tool name + its backing object; when the object is absent it reads '○ NO <PROP> AT DESK' (capability off), and the header count ('N of 7 live') matches the placed objects.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/skillstore.js",
           "sidecar/skills/catalog.js",
           "sidecar/index.js"
@@ -10703,7 +10703,7 @@
       "promise": "Each api-key catalog card renders one key input; count === apikey connectors (10). The value is posted to /api/connectors, never placed in a URL.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/mcp/catalog.js",
           "sidecar/index.js"
         ],
@@ -10739,7 +10739,7 @@
       "promise": "Each api-key catalog card renders one key input; count === apikey connectors (10). The value is posted to /api/connectors, never placed in a URL.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/mcp/catalog.js",
           "sidecar/index.js"
         ],
@@ -10775,7 +10775,7 @@
       "promise": "Each api-key catalog card renders one key input; count === apikey connectors (10). The value is posted to /api/connectors, never placed in a URL.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/mcp/catalog.js",
           "sidecar/index.js"
         ],
@@ -10811,7 +10811,7 @@
       "promise": "Each api-key catalog card renders one key input; count === apikey connectors (10). The value is posted to /api/connectors, never placed in a URL.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/mcp/catalog.js",
           "sidecar/index.js"
         ],
@@ -10847,7 +10847,7 @@
       "promise": "Each api-key catalog card renders one key input; count === apikey connectors (10). The value is posted to /api/connectors, never placed in a URL.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/mcp/catalog.js",
           "sidecar/index.js"
         ],
@@ -10883,7 +10883,7 @@
       "promise": "Each api-key catalog card renders one key input; count === apikey connectors (10). The value is posted to /api/connectors, never placed in a URL.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/mcp/catalog.js",
           "sidecar/index.js"
         ],
@@ -10919,7 +10919,7 @@
       "promise": "Each api-key catalog card renders one key input; count === apikey connectors (10). The value is posted to /api/connectors, never placed in a URL.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/mcp/catalog.js",
           "sidecar/index.js"
         ],
@@ -10955,7 +10955,7 @@
       "promise": "Each api-key catalog card renders one key input; count === apikey connectors (10). The value is posted to /api/connectors, never placed in a URL.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/mcp/catalog.js",
           "sidecar/index.js"
         ],
@@ -10991,7 +10991,7 @@
       "promise": "Each api-key catalog card renders one key input; count === apikey connectors (10). The value is posted to /api/connectors, never placed in a URL.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/mcp/catalog.js",
           "sidecar/index.js"
         ],
@@ -11027,7 +11027,7 @@
       "promise": "Each api-key catalog card renders one key input; count === apikey connectors (10). The value is posted to /api/connectors, never placed in a URL.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "sidecar/mcp/catalog.js",
           "sidecar/index.js"
         ],

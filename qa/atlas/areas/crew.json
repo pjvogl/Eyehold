@@ -8,10 +8,10 @@
       "area": "crew",
       "name": "shoot state: crew-agents",
       "purpose": "Shoot state: the CREW / mission-control panel open \u2014 the per-agent roster with each agent's controls (workshop toggle, model, reflection config, dossier edit).",
-      "promise": "When this window is up, the sweep sees the agent list, the search box, per-agent EDIT/model controls, the away-workshop toggle, and the station-wide reflection on/cooldown \u2014 all reading real roster + /api/memory/config state.",
+      "promise": "When this window is up, the sweep sees the agent list, the search box, per-agent EDIT/model controls, the away-workshop toggle, and the keep-wide reflection on/cooldown \u2014 all reading real roster + /api/memory/config state.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "frontend/app/app.js"
         ],
         "events": []
@@ -46,11 +46,11 @@
       "kind": "state",
       "area": "crew",
       "name": "shoot state: crew-commander",
-      "purpose": "Shoot state: the COMMANDER DOSSIER open \u2014 the station-wide model of the USER (the glass box shared by every agent).",
+      "purpose": "Shoot state: the COMMANDER DOSSIER open \u2014 the keep-wide model of the USER (the glass box shared by every agent).",
       "promise": "When this window is up, the sweep sees the familiarity meter, per-dimension belief cards (add/edit/pin/forget), and the interview trigger \u2014 all reading the real Commander dossier store.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js"
+          "frontend/app/keepui.js"
         ],
         "events": []
       },
@@ -123,7 +123,7 @@
       "promise": "A 2-click armed confirm (first click arms DELETE - sure?, never deletes on one click); disabled with a stated reason for hero/last agent; on confirm the agent leaves the roster and /api/agent/delete archives its stores.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "frontend/app/app.js",
           "sidecar/index.js"
         ],
@@ -149,12 +149,12 @@
       "id": "ui/crew/ag-model-clear",
       "kind": "ui",
       "area": "crew",
-      "name": "run this agent on the station default model again",
-      "purpose": "AGENT DOSSIER > CONFIG > FOLLOW STATION DEFAULT \u2014 clears the per-agent model pin so the agent runs on the station default again.",
+      "name": "run this agent on the keep default model again",
+      "purpose": "AGENT DOSSIER > CONFIG > FOLLOW KEEP DEFAULT \u2014 clears the per-agent model pin so the agent runs on the keep default again.",
       "promise": "Clicking it clears a.model/provider/effort and the model readout drops to dash (inherit); the button only appears while a pin exists.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "frontend/app/app.js"
         ],
         "events": []
@@ -176,7 +176,7 @@
       "missing": false,
       "selector": "#ag-model-clear",
       "state": "crew-agents",
-      "notes": "Re-proof @ 0a009ec2: FOLLOW STATION DEFAULT present while a pin exists -> click -> #ag-model-clear vanished, picker reset (pin cleared). Ev run1-full.json (clear-pin)."
+      "notes": "Re-proof @ 0a009ec2: FOLLOW KEEP DEFAULT present while a pin exists -> click -> #ag-model-clear vanished, picker reset (pin cleared). Ev run1-full.json (clear-pin)."
     },
     {
       "id": "ui/crew/ag-model-in",
@@ -187,7 +187,7 @@
       "promise": "Used only when the picker has no selection (picker is primary: model = pick.model || advModel); a typed id pins the agent model with no effort leaked onto it.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "frontend/app/app.js"
         ],
         "events": []
@@ -220,7 +220,7 @@
       "promise": "Re-fitted on every model change (an effort the new model cannot do is cleared); only persisted for the picked model, never leaked onto a typed advanced model or a cleared pin.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "frontend/app/app.js"
         ],
         "events": []
@@ -257,7 +257,7 @@
       "promise": "Populates + preselects from the agent current pin; a change re-fits the effort select; the read feeds SAVE PIN so the choice becomes a persisted roster property.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "frontend/app/app.js"
         ],
         "events": []
@@ -294,7 +294,7 @@
       "promise": "Saving writes a.model/provider/effort on the agent record and pushes it to the sidecar roster + persists (honored by runOnce + cron) \u2014 the model is a roster property, never a per-chat choice.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "frontend/app/app.js"
         ],
         "events": []
@@ -320,7 +320,7 @@
       "missing": false,
       "selector": "#ag-model-save",
       "state": "crew-agents",
-      "notes": "Re-proof @ 0a009ec2: SAVE PIN present + clicked; a pin then exists so FOLLOW STATION DEFAULT is shown. Ev run1-full.json (save-pin-then-clear)."
+      "notes": "Re-proof @ 0a009ec2: SAVE PIN present + clicked; a pin then exists so FOLLOW KEEP DEFAULT is shown. Ev run1-full.json (save-pin-then-clear)."
     },
     {
       "id": "ui/crew/ag-prov-in",
@@ -331,7 +331,7 @@
       "promise": "Present in the CONFIG advanced row beside #ag-model-in; a typed provider pins alongside the advanced model (picker stays primary). Roster property, persisted.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "frontend/app/app.js"
         ],
         "events": []
@@ -364,7 +364,7 @@
       "promise": "Clicking it swaps the name to an inline input; committing a non-empty name calls setName which renames the agent, pushes the roster + persists (rename is a roster property).",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "frontend/app/app.js"
         ],
         "events": []
@@ -397,7 +397,7 @@
       "promise": "Toggling flips the agent's workshop-enabled flag on its roster record; the away loop only dispatches workshop runs for agents with it on.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "frontend/app/app.js"
         ],
         "events": []
@@ -427,7 +427,7 @@
       "promise": "Clicking the \"Alien\" tile calls World.setSkin so the agent\u2019s floor sprite swaps live, the .sel selected-tile marker moves to it, and the skin persists as a roster property (survives reload).",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "frontend/app/world.js"
         ],
         "events": []
@@ -498,7 +498,7 @@
       "promise": "Clicking the \"Blank\" tile calls World.setSkin so the agent\u2019s floor sprite swaps live, the selected tile moves to it, and the skin persists as a roster property (survives reload).",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "frontend/app/world.js"
         ],
         "events": []
@@ -537,7 +537,7 @@
       "promise": "Clicking the \"Blank Amber\" tile calls World.setSkin so the agent\u2019s floor sprite swaps live, the .sel selected-tile marker moves to it, and the skin persists as a roster property (survives reload).",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "frontend/app/world.js"
         ],
         "events": []
@@ -576,7 +576,7 @@
       "promise": "Clicking the \"Blank Blue\" tile calls World.setSkin so the agent\u2019s floor sprite swaps live, the .sel selected-tile marker moves to it, and the skin persists as a roster property (survives reload).",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "frontend/app/world.js"
         ],
         "events": []
@@ -615,7 +615,7 @@
       "promise": "Clicking the \"Blank Green\" tile calls World.setSkin so the agent\u2019s floor sprite swaps live, the .sel selected-tile marker moves to it, and the skin persists as a roster property (survives reload).",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "frontend/app/world.js"
         ],
         "events": []
@@ -654,7 +654,7 @@
       "promise": "Clicking the \"Blank Red\" tile calls World.setSkin so the agent\u2019s floor sprite swaps live, the .sel selected-tile marker moves to it, and the skin persists as a roster property (survives reload).",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "frontend/app/world.js"
         ],
         "events": []
@@ -729,7 +729,7 @@
       "promise": "Clicking the \"Cadet\" tile calls World.setSkin so the agent\u2019s floor sprite swaps live, the .sel selected-tile marker moves to it, and the skin persists as a roster property (survives reload).",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "frontend/app/world.js"
         ],
         "events": []
@@ -768,7 +768,7 @@
       "promise": "Clicking the \"Capybara\" tile calls World.setSkin so the agent\u2019s floor sprite swaps live, the .sel selected-tile marker moves to it, and the skin persists as a roster property (survives reload).",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "frontend/app/world.js"
         ],
         "events": []
@@ -804,10 +804,10 @@
       "area": "crew",
       "name": "Close AGENT DOSSIER",
       "purpose": "AGENT DOSSIER close door \u2014 dismisses the dossier window.",
-      "promise": "Clicking it closes the dossier and returns to the station/roster with no dangling focus.",
+      "promise": "Clicking it closes the dossier and returns to the keep/roster with no dangling focus.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js"
+          "frontend/app/keepui.js"
         ],
         "events": []
       },
@@ -835,11 +835,11 @@
       "kind": "ui",
       "area": "crew",
       "name": "Close COMMANDER DOSSIER",
-      "purpose": "COMMANDER DOSSIER close door \u2014 dismisses the station-wide user-model window.",
-      "promise": "Clicking it closes the commander dossier and returns to the station with no dangling focus.",
+      "purpose": "COMMANDER DOSSIER close door \u2014 dismisses the keep-wide user-model window.",
+      "promise": "Clicking it closes the commander dossier and returns to the keep with no dangling focus.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js"
+          "frontend/app/keepui.js"
         ],
         "events": []
       },
@@ -867,7 +867,7 @@
       "kind": "ui",
       "area": "crew",
       "name": "Close recruitment bay",
-      "purpose": "The RECRUITMENT BAY close door \u2014 dismisses the bay window and returns to the station.",
+      "purpose": "The RECRUITMENT BAY close door \u2014 dismisses the bay window and returns to the keep.",
       "promise": "Clicking it closes the bay (its controls leave the DOM / become non-visible) with no state left dangling.",
       "wiring": {
         "files": [
@@ -903,7 +903,7 @@
       "promise": "Clicking the \"Crewmate\" tile calls World.setSkin so the agent\u2019s floor sprite swaps live, the .sel selected-tile marker moves to it, and the skin persists as a roster property (survives reload).",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "frontend/app/world.js"
         ],
         "events": []
@@ -942,7 +942,7 @@
       "promise": "Clicking the \"CRT Head\" tile calls World.setSkin so the agent\u2019s floor sprite swaps live, the .sel selected-tile marker moves to it, and the skin persists as a roster property (survives reload).",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "frontend/app/world.js"
         ],
         "events": []
@@ -981,7 +981,7 @@
       "promise": "Clicking the \"Dario\" tile calls World.setSkin so the agent\u2019s floor sprite swaps live, the .sel selected-tile marker moves to it, and the skin persists as a roster property (survives reload).",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "frontend/app/world.js"
         ],
         "events": []
@@ -1020,7 +1020,7 @@
       "promise": "Clicking the \"Endoskeleton\" tile calls World.setSkin so the agent\u2019s floor sprite swaps live, the .sel selected-tile marker moves to it, and the skin persists as a roster property (survives reload).",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "frontend/app/world.js"
         ],
         "events": []
@@ -1059,7 +1059,7 @@
       "promise": "Clicking the \"Grim Reaper\" tile calls World.setSkin so the agent\u2019s floor sprite swaps live, the .sel selected-tile marker moves to it, and the skin persists as a roster property (survives reload).",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "frontend/app/world.js"
         ],
         "events": []
@@ -1098,7 +1098,7 @@
       "promise": "Clicking the \"Heisenberg\" tile calls World.setSkin so the agent\u2019s floor sprite swaps live, the .sel selected-tile marker moves to it, and the skin persists as a roster property (survives reload).",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "frontend/app/world.js"
         ],
         "events": []
@@ -1137,7 +1137,7 @@
       "promise": "Clicking it minimizes the agent dossier (reopenable from the dock via openAgent) with the selected agent + tab preserved.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js"
+          "frontend/app/keepui.js"
         ],
         "events": []
       },
@@ -1169,7 +1169,7 @@
       "promise": "Clicking it minimizes the commander dossier (window leaves the viewport, reopenable from the dock) with its dossier state intact.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js"
+          "frontend/app/keepui.js"
         ],
         "events": []
       },
@@ -1201,7 +1201,7 @@
       "promise": "Clicking the \"Pepe\" tile calls World.setSkin so the agent\u2019s floor sprite swaps live, the .sel selected-tile marker moves to it, and the skin persists as a roster property (survives reload).",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "frontend/app/world.js"
         ],
         "events": []
@@ -1240,7 +1240,7 @@
       "promise": "Clicking the \"Plague Doctor\" tile calls World.setSkin so the agent\u2019s floor sprite swaps live, the .sel selected-tile marker moves to it, and the skin persists as a roster property (survives reload).",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "frontend/app/world.js"
         ],
         "events": []
@@ -1313,15 +1313,15 @@
       "state": "crew-commander"
     },
     {
-      "id": "ui/crew/aria-retro-astronaut",
+      "id": "ui/crew/aria-retro-warden",
       "kind": "ui",
       "area": "crew",
-      "name": "Retro Astronaut",
+      "name": "Retro Warden",
       "purpose": "AGENT DOSSIER > BRIEF > CHANGE SKIN \u2014 one skin-picker tile (the aria-<name> button IS a .ag-skin-thumb[data-skin]); clicking it swaps this agent\u2019s genesis skin.",
-      "promise": "Clicking the \"Retro Astronaut\" tile calls World.setSkin so the agent\u2019s floor sprite swaps live, the .sel selected-tile marker moves to it, and the skin persists as a roster property (survives reload).",
+      "promise": "Clicking the \"Retro Warden\" tile calls World.setSkin so the agent\u2019s floor sprite swaps live, the .sel selected-tile marker moves to it, and the skin persists as a roster property (survives reload).",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "frontend/app/world.js"
         ],
         "events": []
@@ -1347,9 +1347,9 @@
       "firstSeen": "2026-07-18T00:54:02.715Z",
       "lastSeen": "2026-07-18T00:54:02.715Z",
       "missing": false,
-      "selector": "button[aria-label=\"Retro Astronaut\"]",
+      "selector": "button[aria-label=\"Retro Warden\"]",
       "state": "crew-agents",
-      "notes": "Re-proof @ 0a009ec2: skin picker is a 27-tile [data-skin] grid; PROVEN the round-trip (blank -> bear -> reverted to blank; the .sel marker followed each click). This named tile (\"Retro Astronaut\") is present in the live set. PERFECTED (wave-3): machine assertion test/world-setskin.test.js guards the DATA.SKINS catalog + the setSkin/setAgentSkin validate->persist(roster)->re-render wiring; the live sprite round-trip + .sel move were live-proven @0a009ec2 (canvas pixel stays sweep-only). Finding d2121f51 resolved. Ev .uiatlas/crew-perfwave/run1-full.json (skin-picker) + skin-list enumeration."
+      "notes": "Re-proof @ 0a009ec2: skin picker is a 27-tile [data-skin] grid; PROVEN the round-trip (blank -> bear -> reverted to blank; the .sel marker followed each click). This named tile (\"Retro Warden\") is present in the live set. PERFECTED (wave-3): machine assertion test/world-setskin.test.js guards the DATA.SKINS catalog + the setSkin/setAgentSkin validate->persist(roster)->re-render wiring; the live sprite round-trip + .sel move were live-proven @0a009ec2 (canvas pixel stays sweep-only). Finding d2121f51 resolved. Ev .uiatlas/crew-perfwave/run1-full.json (skin-picker) + skin-list enumeration."
     },
     {
       "id": "ui/crew/aria-robot",
@@ -1360,7 +1360,7 @@
       "promise": "Clicking the \"Robot\" tile calls World.setSkin so the agent\u2019s floor sprite swaps live, the .sel selected-tile marker moves to it, and the skin persists as a roster property (survives reload).",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "frontend/app/world.js"
         ],
         "events": []
@@ -1399,7 +1399,7 @@
       "promise": "Clicking the \"Sam\" tile calls World.setSkin so the agent\u2019s floor sprite swaps live, the .sel selected-tile marker moves to it, and the skin persists as a roster property (survives reload).",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "frontend/app/world.js"
         ],
         "events": []
@@ -1438,7 +1438,7 @@
       "promise": "Typing filters the visible agent rows to name matches; empties to the full roster; reads the real roster, invents no rows.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js"
+          "frontend/app/keepui.js"
         ],
         "events": []
       },
@@ -1462,7 +1462,7 @@
       "promise": "Clicking the \"Secret Agent\" tile calls World.setSkin so the agent\u2019s floor sprite swaps live, the .sel selected-tile marker moves to it, and the skin persists as a roster property (survives reload).",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "frontend/app/world.js"
         ],
         "events": []
@@ -1501,7 +1501,7 @@
       "promise": "Clicking the \"Skeleton\" tile calls World.setSkin so the agent\u2019s floor sprite swaps live, the .sel selected-tile marker moves to it, and the skin persists as a roster property (survives reload).",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "frontend/app/world.js"
         ],
         "events": []
@@ -1540,7 +1540,7 @@
       "promise": "Clicking the \"Teddy Bear\" tile calls World.setSkin so the agent\u2019s floor sprite swaps live, the .sel selected-tile marker moves to it, and the skin persists as a roster property (survives reload).",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "frontend/app/world.js"
         ],
         "events": []
@@ -1600,7 +1600,7 @@
       "promise": "Clicking the \"Vault Boy\" tile calls World.setSkin so the agent\u2019s floor sprite swaps live, the .sel selected-tile marker moves to it, and the skin persists as a roster property (survives reload).",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "frontend/app/world.js"
         ],
         "events": []
@@ -1681,7 +1681,7 @@
       "promise": "Clicking it shows the BRIEF pane (aria-selected true) with the agent name, an Lv chip, the skin picker, and the DELETE gate; it is the default-selected tab.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js"
+          "frontend/app/keepui.js"
         ],
         "events": []
       },
@@ -1714,10 +1714,10 @@
       "area": "crew",
       "name": "\u25a3CONFIG",
       "purpose": "AGENT DOSSIER > CONFIG tab \u2014 the markdown files that compose this agent\u2019s prompt plus its per-agent model/provider/effort pin controls.",
-      "promise": "Clicking it shows the model picker (preselected from the pin), effort select, advanced model/provider inputs, SAVE PIN, and FOLLOW STATION DEFAULT \u2014 the pin write is a persisted roster property, not a per-chat choice.",
+      "promise": "Clicking it shows the model picker (preselected from the pin), effort select, advanced model/provider inputs, SAVE PIN, and FOLLOW KEEP DEFAULT \u2014 the pin write is a persisted roster property, not a per-chat choice.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "frontend/app/app.js"
         ],
         "events": []
@@ -1754,11 +1754,11 @@
       "kind": "ui",
       "area": "crew",
       "name": "\u2605GROWTH",
-      "purpose": "AGENT DOSSIER > GROWTH tab \u2014 the XP ladder, satisfaction gauge, trophy case, and station-prestige rollup, all read off the pure Xp engine.",
+      "purpose": "AGENT DOSSIER > GROWTH tab \u2014 the XP ladder, satisfaction gauge, trophy case, and keep-prestige rollup, all read off the pure Xp engine.",
       "promise": "Clicking it shows Progression (LV n->n+1, in-level/span XP, %), a Satisfaction gauge that reads \"FEEDBACK EWMA n=0\" while calibrating, and a trophy count \u2014 every number reduces from real Xp.compute(stats), never fabricated.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "frontend/app/app.js"
         ],
         "events": []
@@ -1795,11 +1795,11 @@
       "kind": "ui",
       "area": "crew",
       "name": "\u25c8MEMORY",
-      "purpose": "AGENT DOSSIER > MEMORY tab \u2014 every belief this agent has kept (traced to the run that earned it) plus the station reflection on/off + cooldown controls.",
+      "purpose": "AGENT DOSSIER > MEMORY tab \u2014 every belief this agent has kept (traced to the run that earned it) plus the keep reflection on/off + cooldown controls.",
       "promise": "Clicking it shows the reflection toggle + cooldown + SAVE, a stored-beliefs count, and (when empty) an honest \"NO MEMORIES YET\" state \u2014 the belief count reads from the real memory store, never a fabricated number.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js"
+          "frontend/app/keepui.js"
         ],
         "events": []
       },
@@ -1833,11 +1833,11 @@
       "kind": "ui",
       "area": "crew",
       "name": "\u25c7SKILLS",
-      "purpose": "AGENT DOSSIER > SKILLS tab \u2014 the capabilities granted by the objects at this agent\u2019s workstation, shown as a perk grid with a \"GRANTED \u2014 N LIVE\" header.",
-      "promise": "The \"N LIVE\" count equals the run-path grant: a perk is LIVE iff its cap is null (the always-on compute freebie) OR its cap object is placed at the workstation (World.heroCaps). N == the count of .perk.on tiles == what composeOffice actually grants \u2014 never a decorative number.",
+      "purpose": "AGENT DOSSIER > SKILLS tab \u2014 the capabilities granted by the objects at this agent\u2019s workkeep, shown as a perk grid with a \"GRANTED \u2014 N LIVE\" header.",
+      "promise": "The \"N LIVE\" count equals the run-path grant: a perk is LIVE iff its cap is null (the always-on compute freebie) OR its cap object is placed at the workkeep (World.heroCaps). N == the count of .perk.on tiles == what composeOffice actually grants \u2014 never a decorative number.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js"
+          "frontend/app/keepui.js"
         ],
         "events": []
       },
@@ -1873,7 +1873,7 @@
       "promise": "Entering 0-60 + SAVE POSTs reflectCooldownMs (mins*60000) to /api/memory/config; persists and applies at the reflect gate; out-of-range is rejected client-side.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js"
+          "frontend/app/keepui.js"
         ],
         "events": []
       },
@@ -1905,11 +1905,11 @@
       "kind": "ui",
       "area": "crew",
       "name": "input",
-      "purpose": "Master on/off for station reflection \u2014 whether the station proposes memories after a completed task (consent-gated).",
+      "purpose": "Master on/off for keep reflection \u2014 whether the keep proposes memories after a completed task (consent-gated).",
       "promise": "Toggling + SAVE POSTs reflectEnabled to /api/memory/config; the value persists and is honored live at the sidecar reflect gate. Hydrates from GET on open.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js"
+          "frontend/app/keepui.js"
         ],
         "events": []
       },
@@ -1941,11 +1941,11 @@
       "kind": "ui",
       "area": "crew",
       "name": "SAVE",
-      "purpose": "Persists the reflection on/off + cooldown to the station memory config.",
+      "purpose": "Persists the reflection on/off + cooldown to the keep memory config.",
       "promise": "Click validates cooldown (0-60) then POSTs both fields to /api/memory/config; a saved response flips the inline msg to \"\u2713 saved\"; a failure shows an honest error, never a false success.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js"
+          "frontend/app/keepui.js"
         ],
         "events": []
       },
@@ -2591,7 +2591,7 @@
       "promise": "Clicking it reveals a text composer whose SAVE upserts a belief (source \"commander\") into that dimension via CDS().upsert, then re-renders; one \"+ add\" exists per dimension.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js"
+          "frontend/app/keepui.js"
         ],
         "events": []
       },
@@ -2616,7 +2616,7 @@
       "missing": false,
       "selector": "button",
       "state": "crew-commander",
-      "notes": "Re-proof @ 0a009ec2: COMMANDER DOSSIER shows the add / pin / forget belief controls + the \"let the station get to know you\" interview trigger in matching counts (14 add-rows, 3 pin, 3 forget). Positional txt-key \u2014 audited, held (per-belief button identity is not individually machine-guarded). Ev .uiatlas/crew-perfwave/run2-focused.json (commander-truth)."
+      "notes": "Re-proof @ 0a009ec2: COMMANDER DOSSIER shows the add / pin / forget belief controls + the \"let the keep get to know you\" interview trigger in matching counts (14 add-rows, 3 pin, 3 forget). Positional txt-key \u2014 audited, held (per-belief button identity is not individually machine-guarded). Ev .uiatlas/crew-perfwave/run2-focused.json (commander-truth)."
     },
     {
       "id": "ui/crew/txt-button-terms-add-2",
@@ -2627,7 +2627,7 @@
       "promise": "Clicking + add opens an input; a saved belief is appended to that dimension of the real Commander dossier store and re-rendered.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "frontend/app/dossier.js"
         ],
         "events": []
@@ -2649,7 +2649,7 @@
       "missing": false,
       "selector": "button",
       "state": "crew-commander",
-      "notes": "Re-proof @ 0a009ec2: COMMANDER DOSSIER shows the add / pin / forget belief controls + the \"let the station get to know you\" interview trigger in matching counts (14 add-rows, 3 pin, 3 forget). Positional txt-key \u2014 audited, held (per-belief button identity is not individually machine-guarded). Ev .uiatlas/crew-perfwave/run2-focused.json (commander-truth)."
+      "notes": "Re-proof @ 0a009ec2: COMMANDER DOSSIER shows the add / pin / forget belief controls + the \"let the keep get to know you\" interview trigger in matching counts (14 add-rows, 3 pin, 3 forget). Positional txt-key \u2014 audited, held (per-belief button identity is not individually machine-guarded). Ev .uiatlas/crew-perfwave/run2-focused.json (commander-truth)."
     },
     {
       "id": "ui/crew/txt-button-terms-add-3",
@@ -2660,7 +2660,7 @@
       "promise": "Clicking + add opens an input; a saved belief is appended to that dimension of the real Commander dossier store and re-rendered.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "frontend/app/dossier.js"
         ],
         "events": []
@@ -2682,7 +2682,7 @@
       "missing": false,
       "selector": "button",
       "state": "crew-commander",
-      "notes": "Re-proof @ 0a009ec2: COMMANDER DOSSIER shows the add / pin / forget belief controls + the \"let the station get to know you\" interview trigger in matching counts (14 add-rows, 3 pin, 3 forget). Positional txt-key \u2014 audited, held (per-belief button identity is not individually machine-guarded). Ev .uiatlas/crew-perfwave/run2-focused.json (commander-truth)."
+      "notes": "Re-proof @ 0a009ec2: COMMANDER DOSSIER shows the add / pin / forget belief controls + the \"let the keep get to know you\" interview trigger in matching counts (14 add-rows, 3 pin, 3 forget). Positional txt-key \u2014 audited, held (per-belief button identity is not individually machine-guarded). Ev .uiatlas/crew-perfwave/run2-focused.json (commander-truth)."
     },
     {
       "id": "ui/crew/txt-button-terms-add-4",
@@ -2693,7 +2693,7 @@
       "promise": "Clicking + add opens an input; a saved belief is appended to that dimension of the real Commander dossier store and re-rendered.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "frontend/app/dossier.js"
         ],
         "events": []
@@ -2715,7 +2715,7 @@
       "missing": false,
       "selector": "button",
       "state": "crew-commander",
-      "notes": "Re-proof @ 0a009ec2: COMMANDER DOSSIER shows the add / pin / forget belief controls + the \"let the station get to know you\" interview trigger in matching counts (14 add-rows, 3 pin, 3 forget). Positional txt-key \u2014 audited, held (per-belief button identity is not individually machine-guarded). Ev .uiatlas/crew-perfwave/run2-focused.json (commander-truth)."
+      "notes": "Re-proof @ 0a009ec2: COMMANDER DOSSIER shows the add / pin / forget belief controls + the \"let the keep get to know you\" interview trigger in matching counts (14 add-rows, 3 pin, 3 forget). Positional txt-key \u2014 audited, held (per-belief button identity is not individually machine-guarded). Ev .uiatlas/crew-perfwave/run2-focused.json (commander-truth)."
     },
     {
       "id": "ui/crew/txt-button-terms-add-5",
@@ -2726,7 +2726,7 @@
       "promise": "Clicking + add opens an input; a saved belief is appended to that dimension of the real Commander dossier store and re-rendered.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "frontend/app/dossier.js"
         ],
         "events": []
@@ -2748,7 +2748,7 @@
       "missing": false,
       "selector": "button",
       "state": "crew-commander",
-      "notes": "Re-proof @ 0a009ec2: COMMANDER DOSSIER shows the add / pin / forget belief controls + the \"let the station get to know you\" interview trigger in matching counts (14 add-rows, 3 pin, 3 forget). Positional txt-key \u2014 audited, held (per-belief button identity is not individually machine-guarded). Ev .uiatlas/crew-perfwave/run2-focused.json (commander-truth)."
+      "notes": "Re-proof @ 0a009ec2: COMMANDER DOSSIER shows the add / pin / forget belief controls + the \"let the keep get to know you\" interview trigger in matching counts (14 add-rows, 3 pin, 3 forget). Positional txt-key \u2014 audited, held (per-belief button identity is not individually machine-guarded). Ev .uiatlas/crew-perfwave/run2-focused.json (commander-truth)."
     },
     {
       "id": "ui/crew/txt-button-terms-add-6",
@@ -2759,7 +2759,7 @@
       "promise": "Clicking + add opens an input; a saved belief is appended to that dimension of the real Commander dossier store and re-rendered.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "frontend/app/dossier.js"
         ],
         "events": []
@@ -2781,7 +2781,7 @@
       "missing": false,
       "selector": "button",
       "state": "crew-commander",
-      "notes": "Re-proof @ 0a009ec2: COMMANDER DOSSIER shows the add / pin / forget belief controls + the \"let the station get to know you\" interview trigger in matching counts (14 add-rows, 3 pin, 3 forget). Positional txt-key \u2014 audited, held (per-belief button identity is not individually machine-guarded). Ev .uiatlas/crew-perfwave/run2-focused.json (commander-truth)."
+      "notes": "Re-proof @ 0a009ec2: COMMANDER DOSSIER shows the add / pin / forget belief controls + the \"let the keep get to know you\" interview trigger in matching counts (14 add-rows, 3 pin, 3 forget). Positional txt-key \u2014 audited, held (per-belief button identity is not individually machine-guarded). Ev .uiatlas/crew-perfwave/run2-focused.json (commander-truth)."
     },
     {
       "id": "ui/crew/txt-button-terms-add-7",
@@ -2792,7 +2792,7 @@
       "promise": "Clicking + add opens an input; a saved belief is appended to that dimension of the real Commander dossier store and re-rendered.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "frontend/app/dossier.js"
         ],
         "events": []
@@ -2814,7 +2814,7 @@
       "missing": false,
       "selector": "button",
       "state": "crew-commander",
-      "notes": "Re-proof @ 0a009ec2: COMMANDER DOSSIER shows the add / pin / forget belief controls + the \"let the station get to know you\" interview trigger in matching counts (14 add-rows, 3 pin, 3 forget). Positional txt-key \u2014 audited, held (per-belief button identity is not individually machine-guarded). Ev .uiatlas/crew-perfwave/run2-focused.json (commander-truth)."
+      "notes": "Re-proof @ 0a009ec2: COMMANDER DOSSIER shows the add / pin / forget belief controls + the \"let the keep get to know you\" interview trigger in matching counts (14 add-rows, 3 pin, 3 forget). Positional txt-key \u2014 audited, held (per-belief button identity is not individually machine-guarded). Ev .uiatlas/crew-perfwave/run2-focused.json (commander-truth)."
     },
     {
       "id": "ui/crew/txt-button-terms-edit-1",
@@ -2909,7 +2909,7 @@
       "promise": "Clicking Forget calls CDS().forget(dim,id) and the card leaves the dossier on re-render; the belief is dropped from the store (local-first, user-owned).",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js"
+          "frontend/app/keepui.js"
         ],
         "events": []
       },
@@ -2934,7 +2934,7 @@
       "missing": false,
       "selector": "button",
       "state": "crew-commander",
-      "notes": "Re-proof @ 0a009ec2: COMMANDER DOSSIER shows the add / pin / forget belief controls + the \"let the station get to know you\" interview trigger in matching counts (14 add-rows, 3 pin, 3 forget). Positional txt-key \u2014 audited, held (per-belief button identity is not individually machine-guarded). Ev .uiatlas/crew-perfwave/run2-focused.json (commander-truth)."
+      "notes": "Re-proof @ 0a009ec2: COMMANDER DOSSIER shows the add / pin / forget belief controls + the \"let the keep get to know you\" interview trigger in matching counts (14 add-rows, 3 pin, 3 forget). Positional txt-key \u2014 audited, held (per-belief button identity is not individually machine-guarded). Ev .uiatlas/crew-perfwave/run2-focused.json (commander-truth)."
     },
     {
       "id": "ui/crew/txt-button-terms-forget-2",
@@ -2945,7 +2945,7 @@
       "promise": "Clicking Forget removes the first-matching belief from that dimension (mirrors memcore.applyForget) and re-renders.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "frontend/app/dossier.js"
         ],
         "events": []
@@ -2967,7 +2967,7 @@
       "missing": false,
       "selector": "button",
       "state": "crew-commander",
-      "notes": "Re-proof @ 0a009ec2: COMMANDER DOSSIER shows the add / pin / forget belief controls + the \"let the station get to know you\" interview trigger in matching counts (14 add-rows, 3 pin, 3 forget). Positional txt-key \u2014 audited, held (per-belief button identity is not individually machine-guarded). Ev .uiatlas/crew-perfwave/run2-focused.json (commander-truth)."
+      "notes": "Re-proof @ 0a009ec2: COMMANDER DOSSIER shows the add / pin / forget belief controls + the \"let the keep get to know you\" interview trigger in matching counts (14 add-rows, 3 pin, 3 forget). Positional txt-key \u2014 audited, held (per-belief button identity is not individually machine-guarded). Ev .uiatlas/crew-perfwave/run2-focused.json (commander-truth)."
     },
     {
       "id": "ui/crew/txt-button-terms-forget-3",
@@ -2978,7 +2978,7 @@
       "promise": "Clicking Forget removes the first-matching belief from that dimension (mirrors memcore.applyForget) and re-renders.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "frontend/app/dossier.js"
         ],
         "events": []
@@ -3000,18 +3000,18 @@
       "missing": false,
       "selector": "button",
       "state": "crew-commander",
-      "notes": "Re-proof @ 0a009ec2: COMMANDER DOSSIER shows the add / pin / forget belief controls + the \"let the station get to know you\" interview trigger in matching counts (14 add-rows, 3 pin, 3 forget). Positional txt-key \u2014 audited, held (per-belief button identity is not individually machine-guarded). Ev .uiatlas/crew-perfwave/run2-focused.json (commander-truth)."
+      "notes": "Re-proof @ 0a009ec2: COMMANDER DOSSIER shows the add / pin / forget belief controls + the \"let the keep get to know you\" interview trigger in matching counts (14 add-rows, 3 pin, 3 forget). Positional txt-key \u2014 audited, held (per-belief button identity is not individually machine-guarded). Ev .uiatlas/crew-perfwave/run2-focused.json (commander-truth)."
     },
     {
-      "id": "ui/crew/txt-button-terms-let-the-station-get-to-know-you-1",
+      "id": "ui/crew/txt-button-terms-let-the-keep-get-to-know-you-1",
       "kind": "ui",
       "area": "crew",
-      "name": "\u25b8 LET THE STATION GET TO KNOW YOU",
+      "name": "\u25b8 LET THE KEEP GET TO KNOW YOU",
       "purpose": "COMMANDER DOSSIER interview trigger \u2014 launches the intake interview in COMMS, folding answers into the shared user dossier.",
       "promise": "Clicking it starts the intake interview (gated on a free, awake agent); answers upsert into the dossier through the same path the belief cards use. Label reads \"GET TO KNOW YOU\" (blank dims) or \"REFINE\" (all known).",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "frontend/app/app.js"
         ],
         "events": []
@@ -3037,7 +3037,7 @@
       "missing": false,
       "selector": "button",
       "state": "crew-commander",
-      "notes": "Re-proof @ 0a009ec2: COMMANDER DOSSIER shows the add / pin / forget belief controls + the \"let the station get to know you\" interview trigger in matching counts (14 add-rows, 3 pin, 3 forget). Positional txt-key \u2014 audited, held (per-belief button identity is not individually machine-guarded). Ev .uiatlas/crew-perfwave/run2-focused.json (commander-truth)."
+      "notes": "Re-proof @ 0a009ec2: COMMANDER DOSSIER shows the add / pin / forget belief controls + the \"let the keep get to know you\" interview trigger in matching counts (14 add-rows, 3 pin, 3 forget). Positional txt-key \u2014 audited, held (per-belief button identity is not individually machine-guarded). Ev .uiatlas/crew-perfwave/run2-focused.json (commander-truth)."
     },
     {
       "id": "ui/crew/txt-button-terms-pin-1",
@@ -3048,7 +3048,7 @@
       "promise": "Clicking Pin toggles CDS().setPinned(dim,id,true) and re-renders the card as pinned (label flips to \"Unpin\"); pin state persists in the dossier store.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js"
+          "frontend/app/keepui.js"
         ],
         "events": []
       },
@@ -3073,7 +3073,7 @@
       "missing": false,
       "selector": "button",
       "state": "crew-commander",
-      "notes": "Re-proof @ 0a009ec2: COMMANDER DOSSIER shows the add / pin / forget belief controls + the \"let the station get to know you\" interview trigger in matching counts (14 add-rows, 3 pin, 3 forget). Positional txt-key \u2014 audited, held (per-belief button identity is not individually machine-guarded). Ev .uiatlas/crew-perfwave/run2-focused.json (commander-truth)."
+      "notes": "Re-proof @ 0a009ec2: COMMANDER DOSSIER shows the add / pin / forget belief controls + the \"let the keep get to know you\" interview trigger in matching counts (14 add-rows, 3 pin, 3 forget). Positional txt-key \u2014 audited, held (per-belief button identity is not individually machine-guarded). Ev .uiatlas/crew-perfwave/run2-focused.json (commander-truth)."
     },
     {
       "id": "ui/crew/txt-button-terms-pin-2",
@@ -3084,7 +3084,7 @@
       "promise": "Clicking Pin marks the belief pinned in the dossier store so it is always included in the shared context.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "frontend/app/dossier.js"
         ],
         "events": []
@@ -3106,7 +3106,7 @@
       "missing": false,
       "selector": "button",
       "state": "crew-commander",
-      "notes": "Re-proof @ 0a009ec2: COMMANDER DOSSIER shows the add / pin / forget belief controls + the \"let the station get to know you\" interview trigger in matching counts (14 add-rows, 3 pin, 3 forget). Positional txt-key \u2014 audited, held (per-belief button identity is not individually machine-guarded). Ev .uiatlas/crew-perfwave/run2-focused.json (commander-truth)."
+      "notes": "Re-proof @ 0a009ec2: COMMANDER DOSSIER shows the add / pin / forget belief controls + the \"let the keep get to know you\" interview trigger in matching counts (14 add-rows, 3 pin, 3 forget). Positional txt-key \u2014 audited, held (per-belief button identity is not individually machine-guarded). Ev .uiatlas/crew-perfwave/run2-focused.json (commander-truth)."
     },
     {
       "id": "ui/crew/txt-button-terms-pin-3",
@@ -3117,7 +3117,7 @@
       "promise": "Clicking Pin marks the belief pinned in the dossier store so it is always included in the shared context.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "frontend/app/dossier.js"
         ],
         "events": []
@@ -3139,7 +3139,7 @@
       "missing": false,
       "selector": "button",
       "state": "crew-commander",
-      "notes": "Re-proof @ 0a009ec2: COMMANDER DOSSIER shows the add / pin / forget belief controls + the \"let the station get to know you\" interview trigger in matching counts (14 add-rows, 3 pin, 3 forget). Positional txt-key \u2014 audited, held (per-belief button identity is not individually machine-guarded). Ev .uiatlas/crew-perfwave/run2-focused.json (commander-truth)."
+      "notes": "Re-proof @ 0a009ec2: COMMANDER DOSSIER shows the add / pin / forget belief controls + the \"let the keep get to know you\" interview trigger in matching counts (14 add-rows, 3 pin, 3 forget). Positional txt-key \u2014 audited, held (per-belief button identity is not individually machine-guarded). Ev .uiatlas/crew-perfwave/run2-focused.json (commander-truth)."
     },
     {
       "id": "ui/crew/txt-span-terms-anthropic-claude-sonnet-4-6-1",
@@ -3150,7 +3150,7 @@
       "promise": "Displays the real per-agent model (or dash when unpinned/inherit) - truthful telemetry; clicking/Enter lands the console on the CONFIG section.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "frontend/app/app.js"
         ],
         "events": []
@@ -3204,7 +3204,7 @@
       "promise": "Expanding shows a text input; a typed id becomes the agent's pinned model on its roster record (advisory tier stays cosmetic). Blank inherits the orchestrator model.",
       "wiring": {
         "files": [
-          "frontend/app/stationui.js"
+          "frontend/app/keepui.js"
         ],
         "events": []
       },

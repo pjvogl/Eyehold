@@ -8,7 +8,7 @@
 const A = require('./_assert.js');
 const fs = require('fs');
 const path = require('path');
-const ui = fs.readFileSync(path.join(__dirname, '..', 'frontend', 'app', 'stationui.js'), 'utf8');
+const ui = fs.readFileSync(path.join(__dirname, '..', 'frontend', 'app', 'keepui.js'), 'utf8');
 
 const sw = ui.slice(ui.indexOf('function switchFamilyTab('), ui.indexOf('function swapInPlace('));
 A.ok(sw.length > 0, 'switchFamilyTab exists');

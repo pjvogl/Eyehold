@@ -25,7 +25,7 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
 
 function boot(port, env, attemptsLeft) {
   return new Promise((resolve, reject) => {
-    const child = spawn(process.execPath, [INDEX], { env: Object.assign({}, process.env, env, { SKYNET_PORT: String(port) }), stdio: ['ignore', 'pipe', 'pipe'] });
+    const child = spawn(process.execPath, [INDEX], { env: Object.assign({}, process.env, env, { EYEHOLD_PORT: String(port) }), stdio: ['ignore', 'pipe', 'pipe'] });
     let out = '', settled = false;
     const onData = d => {
       out += d.toString();
@@ -42,15 +42,15 @@ function kill(child) { return new Promise(r => { try { child.on('exit', () => r(
 (async () => {
   const ws = fs.mkdtempSync(path.join(os.tmpdir(), 'sk-nshalt-ws-'));
   // away threshold 1ms so the pure gates get PAST 'present' and the status binding can truthfully name 'halt'.
-  const env = { SKYNET_WORKSPACES: ws, SKYNET_DEV: '1', SKYNET_NIGHTSHIFT_AWAY_MS: '1' };
+  const env = { EYEHOLD_WORKSPACES: ws, EYEHOLD_DEV: '1', EYEHOLD_NIGHTSHIFT_AWAY_MS: '1' };
   let { child, port } = await boot(8990 + (process.pid % 25), env, 20);
   let B = 'http://' + HOST + ':' + port;
   try {
     let token = await bootToken(B, B);
-    let headers = { 'Content-Type': 'application/json', 'X-StarNet-Token': token, Origin: B };
+    let headers = { 'Content-Type': 'application/json', 'X-Eyehold-Token': token, Origin: B };
     const status = async () => (await fetch(B + '/api/nightshift/status', { headers })).json();
 
-    // arm the shift by raising the dial (the same call a live station makes) — and confirm the clean baseline.
+    // arm the shift by raising the dial (the same call a live keep makes) — and confirm the clean baseline.
     const arm = await (await fetch(B + '/api/autonomy/posture', { method: 'POST', headers, body: JSON.stringify({ posture: { initiative: 'leash', reach: 'sandbox', leashPerDay: 3 } }) })).json();
     A.ok(arm.ok === true && arm.nightshiftArmed === true, 'raising the dial arms the night shift');
     let s = await status();
@@ -70,7 +70,7 @@ function kill(child) { return new Promise(r => { try { child.on('exit', () => r(
     ({ child, port } = await boot(port, env, 20));
     B = 'http://' + HOST + ':' + port;
     token = await bootToken(B, B);
-    headers = { 'Content-Type': 'application/json', 'X-StarNet-Token': token, Origin: B };
+    headers = { 'Content-Type': 'application/json', 'X-Eyehold-Token': token, Origin: B };
     s = await status();
     A.eq(s.halted, true, 'the halt survived the sidecar restart (durable, not in-memory)');
 

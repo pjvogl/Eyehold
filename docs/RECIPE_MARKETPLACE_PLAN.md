@@ -22,20 +22,20 @@ give the user total freedom with it: tweak it, run it once, or put it on a sched
 ## Current state (mapped 2026-07-02)
 
 - `frontend/app/recipes.js` — schema `{id,name,emoji,tagline,blurb,accent,tags,params,task,custom}`,
-  10 builtins, custom store in `localStorage.starnet.recipes.v1`, `fillTask()` token substitution.
+  10 builtins, custom store in `localStorage.eyehold.recipes.v1`, `fillTask()` token substitution.
 - Launch path: `app.js launchRecipe()` → new workstream → `Chat.send(directive,{isTask:true})`.
 - Marketplace UI: `frontend/app/marketplace.js:303–380` (RECIPES tab roster + dossier + launch).
 - Cron: `sidecar/cron.js` + `POST /api/cron` — full scheduler (interval/once/5-field, tz). **Zero wiring to recipes.**
 - AutoJobs (`frontend/app/autojobs.js`): `toCronBody()` + a 4-option cadence menu — the exact
   conversion shape R3 needs, already proven.
 - Skills library (`sidecar/skills/catalog.js`): `requires:[objectType]` gear-gating vocabulary +
-  WANT-state UI pattern in `stationui.js` — reuse both.
+  WANT-state UI pattern in `keepui.js` — reuse both.
 
 ## Slices
 
 ### R1 — Schema v2: recipes that can carry freedom
 Additive fields on the recipe object (builtins + customs):
-- `gear: [objectType,...]` — what station objects this use case wants (same vocabulary as
+- `gear: [objectType,...]` — what keep objects this use case wants (same vocabulary as
   skills `requires`). Advisory only.
 - `skills: [slug,...]` — optional bundled-skill references ("this use case pairs with feed-watch").
 - `cadence: string|null` — a *suggested* cadence id ('morning' etc.) for use cases that are
@@ -78,7 +78,7 @@ Additive fields on the recipe object (builtins + customs):
   drafts, comment digest…), **ops/personal** (inbox triage brief, meeting prep, weekly review,
   price/stock watch…). Each with honest `gear`, sensible `cadence`, tight task template.
   Naturally-recurring ones get `cadence`; paired ones get `skills` refs.
-- Gear-aware browsing: recipes whose `gear` the station lacks render with a WANT badge
+- Gear-aware browsing: recipes whose `gear` the keep lacks render with a WANT badge
   (skills-panel pattern) → click = the prop-gate hook (drives object purchases; object=capability moat).
 - "FOR YOU" row: rank by dossier interests/goals using existing `tags` weighting + goal-text
   keyword match. Honest fallback order when dossier is thin.

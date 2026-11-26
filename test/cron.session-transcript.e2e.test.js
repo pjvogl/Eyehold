@@ -52,7 +52,7 @@ function startMockOpenRouter() {
 function boot(port, env, attemptsLeft) {
   return new Promise((resolve, reject) => {
     const child = spawn(process.execPath, [INDEX], {
-      env: Object.assign({}, process.env, env, { SKYNET_PORT: String(port) }),
+      env: Object.assign({}, process.env, env, { EYEHOLD_PORT: String(port) }),
       stdio: ['ignore', 'pipe', 'pipe']
     });
     let out = '', settled = false;
@@ -105,10 +105,10 @@ async function drainNdjson(res) { const reader = res.body.getReader(); const dec
   const mock = await startMockOpenRouter();
   const wsDir = fs.mkdtempSync(path.join(os.tmpdir(), 'sk-cron-session-'));
   const env = {
-    SKYNET_WORKSPACES: wsDir,
-    SKYNET_OPENROUTER_BASE: mock.base,
-    SKYNET_OPENROUTER_KEY: 'sk-or-v1-session-fake',
-    SKYNET_DEFAULT_MODEL: 'test/model'
+    EYEHOLD_WORKSPACES: wsDir,
+    EYEHOLD_OPENROUTER_BASE: mock.base,
+    EYEHOLD_OPENROUTER_KEY: 'sk-or-v1-session-fake',
+    EYEHOLD_DEFAULT_MODEL: 'test/model'
   };
   const { child, port } = await boot(8960 + (process.pid % 40), env, 20);
   const B = 'http://' + HOST + ':' + port;
@@ -116,7 +116,7 @@ async function drainNdjson(res) { const reader = res.body.getReader(); const dec
   try {
     const token = await bootToken(B, B);
     A.ok(token.length >= 32, 'got a session API token');
-    const headers = { 'Content-Type': 'application/json', 'X-StarNet-Token': token, Origin: B };
+    const headers = { 'Content-Type': 'application/json', 'X-Eyehold-Token': token, Origin: B };
 
     const create = await fetch(B + '/api/cron', {
       method: 'POST', headers,
@@ -142,7 +142,7 @@ async function drainNdjson(res) { const reader = res.body.getReader(); const dec
     // let the async transcript append settle, then perform the EXACT read autosessions.js does.
     let turns = [];
     for (let i = 0; i < 40; i++) {
-      const tr = await fetch(B + '/api/transcript?agent=digest-agent&stream=' + encodeURIComponent(stream) + '&limit=200', { headers: { 'X-StarNet-Token': token, Origin: B } });
+      const tr = await fetch(B + '/api/transcript?agent=digest-agent&stream=' + encodeURIComponent(stream) + '&limit=200', { headers: { 'X-Eyehold-Token': token, Origin: B } });
       A.eq(tr.status, 200, 'transcript route 200');
       turns = ((await tr.json()) || {}).turns || [];
       if (turns.some(t => t.role === 'assistant' && String(t.content || '').indexOf(REPLY) >= 0)) break;
@@ -155,7 +155,7 @@ async function drainNdjson(res) { const reader = res.body.getReader(); const dec
     A.ok(asstTurn && String(asstTurn.content).indexOf(REPLY) >= 0, 'the routine REAL reply is durable + fetchable under cron-<runId> (the fix)');
 
     // negative control: the global catch-all stream must NOT hold this run's dialogue (per-run isolation).
-    const g = await fetch(B + '/api/transcript?agent=digest-agent&stream=global&limit=200', { headers: { 'X-StarNet-Token': token, Origin: B } });
+    const g = await fetch(B + '/api/transcript?agent=digest-agent&stream=global&limit=200', { headers: { 'X-Eyehold-Token': token, Origin: B } });
     const gTurns = ((await g.json()) || {}).turns || [];
     A.ok(!gTurns.some(t => String(t.content || '').indexOf(REPLY) >= 0), 'the reply is NOT dumped into the unreachable global stream');
   } finally {

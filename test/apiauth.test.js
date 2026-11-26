@@ -33,12 +33,12 @@ A.eq(auth.requiresApiToken(req('GET', '/index.html')), false, 'static asset need
 A.eq(auth.requiresApiToken(req('GET', '/')), false, 'root needs no token');
 
 // ---- apiTokenOk: custom-header path, exact + constant-time ----
-A.eq(auth.apiTokenOk(req('POST', '/api/run', { 'x-starnet-token': TOK }), TOK), true, 'correct header token accepted');
+A.eq(auth.apiTokenOk(req('POST', '/api/run', { 'x-eyehold-token': TOK }), TOK), true, 'correct header token accepted');
 A.eq(auth.apiTokenOk(req('POST', '/api/run', { 'x-skynet-token': TOK }), TOK), true, 'legacy header name accepted');
-A.eq(auth.apiTokenOk(req('POST', '/api/run', { 'x-starnet-token': 'b'.repeat(64) }), TOK), false, 'wrong token rejected');
-A.eq(auth.apiTokenOk(req('POST', '/api/run', { 'x-starnet-token': 'a'.repeat(63) }), TOK), false, 'length mismatch rejected (no throw)');
+A.eq(auth.apiTokenOk(req('POST', '/api/run', { 'x-eyehold-token': 'b'.repeat(64) }), TOK), false, 'wrong token rejected');
+A.eq(auth.apiTokenOk(req('POST', '/api/run', { 'x-eyehold-token': 'a'.repeat(63) }), TOK), false, 'length mismatch rejected (no throw)');
 A.eq(auth.apiTokenOk(req('POST', '/api/run', {}), TOK), false, 'missing header rejected');
-A.eq(auth.apiTokenOk(req('POST', '/api/run', { 'x-starnet-token': TOK }), ''), false, 'empty server token rejects everything');
+A.eq(auth.apiTokenOk(req('POST', '/api/run', { 'x-eyehold-token': TOK }), ''), false, 'empty server token rejects everything');
 
 // ---- the master token in a QUERY STRING is refused everywhere (2026-09-25: URLs leak) ----
 A.eq(typeof auth.queryTokenOk, 'undefined', 'no query-token acceptor is exported any more');
@@ -91,8 +91,8 @@ A.eq(auth.isAllowedApiOrigin('http://127.0.0.1:1234', PORT), false, 'wrong-port 
 A.eq(auth.isAllowedApiOrigin('http://localhost:9000', PORT, 'localhost:9000'), true, 'ssh -L 9000 tunnel: Origin matches the request Host -> allowed');
 A.eq(auth.isAllowedApiOrigin('http://127.0.0.1:9000', PORT, '127.0.0.1:9000'), true, 'tunnel on 127.0.0.1 allowed');
 A.eq(auth.isAllowedApiOrigin('http://[::1]:9000', PORT, '[::1]:9000'), true, 'tunnel on ipv6 loopback allowed');
-A.eq(auth.isAllowedApiOrigin('http://localhost:3000', PORT, 'localhost:' + PORT), false, 'ANOTHER local site calling the station (Origin != Host) stays refused');
-A.eq(auth.isAllowedApiOrigin('http://127.0.0.1:1234', PORT, '127.0.0.1:' + PORT), false, 'wrong-port loopback origin still rejected when Host is the station');
+A.eq(auth.isAllowedApiOrigin('http://localhost:3000', PORT, 'localhost:' + PORT), false, 'ANOTHER local site calling the keep (Origin != Host) stays refused');
+A.eq(auth.isAllowedApiOrigin('http://127.0.0.1:1234', PORT, '127.0.0.1:' + PORT), false, 'wrong-port loopback origin still rejected when Host is the keep');
 A.eq(auth.isAllowedApiOrigin('http://evil.example:9000', PORT, 'evil.example:9000'), false, 'a rebinding attacker (non-loopback Host) is refused even when Origin == Host');
 A.eq(auth.isAllowedApiOrigin('http://user@localhost:9000', PORT, 'localhost:9000'), false, 'a non-serialized origin (userinfo) never matches');
 A.eq(auth.isAllowedApiOrigin('http://localhost:9000/x', PORT, 'localhost:9000'), false, 'an origin with a path never matches');

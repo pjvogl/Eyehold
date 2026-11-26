@@ -1,12 +1,12 @@
 /* sidecar/plugin-template.js — the files "Create a plugin" (and the crew's plugin.draft_start) write.
 
    A WORKING plugin, not a stub: code in index.js (a hook, two crew tools, a handler for its window) and one window
-   (ui/index.html) built from the station kit — a note list saved through starnet.store, a stat fed by its own
+   (ui/index.html) built from the keep kit — a note list saved through eyehold.store, a stat fed by its own
    backend, and a KIT tab that shows every component in the live theme. The author's first sight is proof every
    socket works; their job is to edit, never to guess the shape.
 
    The two big files live beside this module as plain templates (sidecar/plugin-template/*.tpl) — they are the
-   PLUGIN's code, not the station's, so they stay out of the backend's own lint (they use the clock like any app).
+   PLUGIN's code, not the keep's, so they stay out of the backend's own lint (they use the clock like any app).
 
    templateFiles({ id, name, description }) -> { 'plugin.json': text, 'index.js': text, 'ui/index.html': text } */
 'use strict';
@@ -30,7 +30,7 @@ function htmlText(s) { return String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp
 function templateFiles(spec) {
   const id = String(spec.id);
   const name = String(spec.name || id);
-  const description = String(spec.description || 'A StarNet plugin.');
+  const description = String(spec.description || 'A Eyehold plugin.');
   const title = name.replace(/[&<>"'`\u0000-\u001f\u007f]/g, '').toUpperCase().slice(0, 40) || 'PLUGIN';
   const t = templates();
 

@@ -1,4 +1,4 @@
-# StarNet roadmap — 7 / 30 / 90 days (brutal edition)
+# Eyehold roadmap — 7 / 30 / 90 days (brutal edition)
 
 Written 2026-07-04, grounded in trunk state: v0.1.7 installed, GitHub-Releases updater LIVE,
 release:cut kit working, UX audit + fix plan in flight, all test gates green.
@@ -9,7 +9,7 @@ else is explicitly on the STOP list.
 
 ## The brutal truths this roadmap is built on
 
-1. **You have zero users.** Not "few" — zero people outside this room have ever run StarNet.
+1. **You have zero users.** Not "few" — zero people outside this room have ever run Eyehold.
    Every additional feature built before launch is inventory for a store with no door. The
    bottleneck is not capability — the harness demonstrably works (live-LLM smoke, 17/17 UI
    sweep, real tool runs). The bottleneck is that nobody can download it.
@@ -39,12 +39,12 @@ else is explicitly on the STOP list.
 
 ## Days 1–7: LAUNCH. Nothing else counts.
 
-**Definition of done for the week: a stranger can download StarNet from a public URL,
+**Definition of done for the week: a stranger can download Eyehold from a public URL,
 install it, and reach one real deliverable — and at least 10 strangers have.**
 
 | # | Item | Why it's on the list | Owner |
 |---|------|----------------------|-------|
-| 1 | Andrew's launch checklist: support email swap, rotate dev OpenRouter key, create `starnet-releases` public repo | Blocks everything; the email placeholder is a shipped-broken trust breaker (audit Theme 7) | Andrew (~1h) |
+| 1 | Andrew's launch checklist: support email swap, rotate dev OpenRouter key, create `eyehold-releases` public repo | Blocks everything; the email placeholder is a shipped-broken trust breaker (audit Theme 7) | Andrew (~1h) |
 | 2 | Merge UX fix plan **Wave 1 P0s only** (error doors, open-folder on deliverables, approval-pause state, routines-disarmed banner, away-workshop honesty, dismiss confirms) | These are the trust breakers a first user hits in minutes; all cheap, all planned, lanes already shaped | agents |
 | 3 | **Attended 15-min playtest, fresh profile, before the cut** | Gate 5 has been dodged repeatedly; it is the only gate that simulates a user | Andrew |
 | 4 | Re-cut LAST, publish v0.1.8 to GitHub Releases, verify the updater applies a trivial v0.1.9 (the true unattended-update proof) | Launch gotchas #1 and #3 from LAUNCH_CHECKLIST | agents + Andrew |
@@ -100,7 +100,7 @@ above zero.**
 
 ### Revenue (the only new BUILD of the quarter)
 - **Managed-key starter credits.** The locked thesis is resold-AI + BYOK. Build the minimum:
-  Stripe checkout → credit balance → StarNet routes through a metered proxy key → the
+  Stripe checkout → credit balance → Eyehold routes through a metered proxy key → the
   existing budget engine (caps, per-scope spend, already on trunk) enforces the ceiling.
   This is ALSO the biggest onboarding fix you have: it deletes the "go create an OpenRouter
   account" wall — the hardest step in the current first-run — for exactly the beginner the

@@ -1,4 +1,4 @@
-// APPS — live proof against a RUNNING station with a REAL model (default http://127.0.0.1:8871).
+// APPS — live proof against a RUNNING keep with a REAL model (default http://127.0.0.1:8871).
 //   node dev/apps-live-proof.mjs [port]      → .worldshots/apps-live/*.png + report.json
 // Drives the real UI in headless Chromium: APPS → NEW APP → the AI News Brief example → BUILD IT, then waits for the
 // crew to build it for real (the page written, real content published, a schedule set), approving any card that asks
@@ -12,7 +12,7 @@ import { findChrome, connectCDP, evalJS, capture, sleep } from '../scripts/lib/c
 const PORT = Number(process.argv[2] || 8871), CDP_PORT = 9497;
 const out = '.worldshots/apps-live';
 mkdirSync(out, { recursive: true });
-const scratch = mkdtempSync(join(tmpdir(), 'starnet-apps-live-'));
+const scratch = mkdtempSync(join(tmpdir(), 'eyehold-apps-live-'));
 const report = { checks: [], facts: {}, exceptions: [], approvals: 0 };
 let chrome, cdp;
 const run = (s) => evalJS(cdp, s);
@@ -49,7 +49,7 @@ try {
   await cdp.send('Emulation.setDeviceMetricsOverride', { width: 1440, height: 900, deviceScaleFactor: 1, mobile: false });
   await cdp.send('Page.navigate', { url: 'http://127.0.0.1:' + PORT + '/' });
   for (let i = 0; i < 60; i++) { try { if (await run(`!!document.querySelector('#screen-game.active') && typeof AppsUI === 'object'`)) break; } catch {} await sleep(500); }
-  check('the station is up with APPS loaded', await run(`typeof AppsUI === 'object' && !!document.querySelector('[data-group="apps"]')`));
+  check('the keep is up with APPS loaded', await run(`typeof AppsUI === 'object' && !!document.querySelector('[data-group="apps"]')`));
 
   // ---- 1. the dock: APPS → NEW APP → pick the example → BUILD IT (real clicks through the DOM) ----
   check('before the first app, the APPS dock is not displayed', await run(`(() => { const g = document.querySelector('#bottombar .bb-group[data-group="apps"]'); return !!g && g.getClientRects().length === 0; })()`));
@@ -65,7 +65,7 @@ try {
   check('the form holds the name and what-it-does', /AI News Brief/.test(filled.name) && /24h/.test(filled.what));
   await run(`document.getElementById('app-create').click(), true`);
   await waitApproving(`!!document.querySelector('.term.plugin-app-win iframe.plugin-frame')`, 20000, 'the app window');
-  check('BUILD IT opens the app window at once (building page) and sends the build to COMMS', await run(`/Build my new StarNet app "AI News Brief"/.test(document.querySelector('#chat-panel').innerText)`));
+  check('BUILD IT opens the app window at once (building page) and sends the build to COMMS', await run(`/Build my new Eyehold app "AI News Brief"/.test(document.querySelector('#chat-panel').innerText)`));
   check('the build went to the OWN COMMS session of the app (not whatever was open)', await run(`(() => { const w = Workstreams.get(Workstreams.activeId()); return !!w && /^App · AI News Brief/.test(w.title || '') ; })()`));
   check('the APPS dock appeared with the first app', await run(`(() => { const g = document.querySelector('#bottombar .bb-group[data-group="apps"]'); return !!g && g.getClientRects().length > 0 && !!document.querySelector('#bb-apps-items .bb'); })()`));
   await sleep(800);
@@ -84,7 +84,7 @@ try {
   await sleep(2500);
   const kitClasses = await frameEval(`document.querySelectorAll('[class*="sn-"]').length`, /\/app-ui\//).catch(() => -1);
   report.facts.kitElements = kitClasses;
-  check('the app page is built from the station kit (sn-* elements)', kitClasses > 3);
+  check('the app page is built from the keep kit (sn-* elements)', kitClasses > 3);
   const text = await frameEval(`document.body.innerText.slice(0, 800)`, /\/app-ui\//).catch(() => '');
   report.facts.pageText = text;
   check('the app shows real content (not the building page)', text.length > 120 && !/crew is building this app/.test(text));
@@ -95,7 +95,7 @@ try {
   // ---- 3. vibe-code it from the bar ----
   const before = app.app.digest;
   await run(`(()=>{ const i=document.querySelector('.term.plugin-app-win .app-change'); i.value='make each headline a clickable row that opens its source, and add the date at the top'; document.querySelector('.term.plugin-app-win .app-bar').requestSubmit(); return true; })()`);
-  check('CHANGE sends the request to the app\'s own COMMS session', await run(`/Change my StarNet app "AI News Brief"/.test(document.querySelector('#chat-panel').innerText)`));
+  check('CHANGE sends the request to the app\'s own COMMS session', await run(`/Change my Eyehold app "AI News Brief"/.test(document.querySelector('#chat-panel').innerText)`));
   await waitApproving(`fetch('/api/apps').then(r=>r.json()).then(j=>{ const a=j.apps.find(a=>/^ai-news-brief/.test(a.id)); return !!(a && a.digest !== ${JSON.stringify(before)}); })`, 10 * 60 * 1000, 'the crew to rewrite the page');
   await waitApproving(`!(typeof Chat !== 'undefined' && Chat.isBusy && Chat.isBusy())`, 5 * 60 * 1000, 'the change run to finish');
   await sleep(2500);

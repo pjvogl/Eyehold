@@ -107,7 +107,7 @@ const msg = (text, extra) => Object.assign({ channel: 'telegram', chatId: '42', 
     A.ok(/runJournal\.begin\(\{[\s\S]{0,1200}?untrustedEntry: untrustedEntryRun === true/.test(src), 'the run journal records the untrusted-entry verdict');
     A.ok(/function recoverySourceEntryUntrusted\(o\) \{[\s\S]{0,400}?runJournal\.inspect\(sourceRunId\)[\s\S]{0,200}?st\.meta\.untrustedEntry === true[\s\S]{0,300}?return true;/.test(src),
       'a continuation reads its source journal and fails CLOSED (untrusted) when it cannot');
-    A.eq((src.match(/fullAccess: stationBypassNow\(\) \|\| agentFullAccessNow\(\) \|\| connectorFullAccess, untrustedEntry: untrustedEntryRun/g) || []).length, 2,
+    A.eq((src.match(/fullAccess: keepBypassNow\(\) \|\| agentFullAccessNow\(\) \|\| connectorFullAccess, untrustedEntry: untrustedEntryRun/g) || []).length, 2,
       'BOTH post-taint boundary calls (first check + after the live prompt) carry the origin verdict');
     A.ok(/withholdHostPower: hostPowerWithheld,\s*\n\s*untrustedEntry: untrustedEntryRun,/.test(src), 'delegated workers inherit the origin verdict');
     A.ok(/entryTaint: 'line trigger payload',/.test(src), 'the trigger hub still taints its entry');

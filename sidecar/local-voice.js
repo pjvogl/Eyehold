@@ -6,31 +6,31 @@ const fs = require('node:fs');
 const fsp = require('node:fs/promises');
 const { pathToFileURL } = require('node:url');
 
-// Per-user model cache, alongside the rest of the app's data root (%LOCALAPPDATA%\StarNet on Windows,
-// ~/Library/Application Support/StarNet on macOS — the two platforms we ship). Never inside the repo:
+// Per-user model cache, alongside the rest of the app's data root (%LOCALAPPDATA%\Eyehold on Windows,
+// ~/Library/Application Support/Eyehold on macOS — the two platforms we ship). Never inside the repo:
 // these are ~150 MB of downloaded weights, and PRIVACY.md documents this path for manual removal.
 function defaultCacheRoot() {
   if (process.platform === 'win32') {
-    return path.join(process.env.LOCALAPPDATA || path.join(os.homedir(), 'AppData', 'Local'), 'StarNet', 'models');
+    return path.join(process.env.LOCALAPPDATA || path.join(os.homedir(), 'AppData', 'Local'), 'Eyehold', 'models');
   }
   if (process.platform === 'darwin') {
-    return path.join(os.homedir(), 'Library', 'Application Support', 'StarNet', 'models');
+    return path.join(os.homedir(), 'Library', 'Application Support', 'Eyehold', 'models');
   }
-  return path.join(process.env.XDG_CACHE_HOME || path.join(os.homedir(), '.cache'), 'starnet', 'models');
+  return path.join(process.env.XDG_CACHE_HOME || path.join(os.homedir(), '.cache'), 'eyehold', 'models');
 }
 
-const cacheRoot = process.env.STARNET_MODEL_CACHE || defaultCacheRoot();
+const cacheRoot = process.env.EYEHOLD_MODEL_CACHE || defaultCacheRoot();
 const state = { asr: 'cold', tts: 'cold', progress: null, error: '', cacheRoot };
-/* THE SPOKEN VOICE OF THE STATION — male by default. The written station voice is "a low, smooth American
-   male with a subtle gravelly rasp" (personas.js STATION_VOICE) and the crew sprites read male, so a female
+/* THE SPOKEN VOICE OF THE KEEP — male by default. The written keep voice is "a low, smooth American
+   male with a subtle gravelly rasp" (personas.js KEEP_VOICE) and the crew sprites read male, so a female
    default was simply wrong. These ids are the engine's own voice files (node_modules/kokoro-js/voices):
    `am_` American male, `bm_` British male, `af_`/`bf_` the female sets. Listed male-first because that is the
-   station's character; every one of them is selectable. */
+   keep's character; every one of them is selectable. */
 const DEFAULT_LOCAL_VOICE = 'am_onyx';
 /* `edge` on every row: the nearest Microsoft Edge read-aloud neural to that voice. This is the built-in
    fallback identity when the bundled offline engine is disabled, damaged, or unavailable, and before this
    mapping existed /api/tts silently fell through to the KEYED provider voice:
-   the picker was inert and the station spoke with a completely different identity than the one chosen
+   the picker was inert and the keep spoke with a completely different identity than the one chosen
    (2026-07-30, found by Andrew's ears on a stale-node_modules dev server that behaved like an installed
    build). The mapping lives ON the catalogue row so a new voice cannot be added without deciding its
    shipped fallback — a test fails on any row without one. Sex and accent are preserved; the Edge free
@@ -102,12 +102,12 @@ function packagePresent(name) {
   return false;
 }
 
-/* Kill-switch: STARNET_LOCAL_VOICE=0 (or SKYNET_) forces the engine unavailable even where the packages
+/* Kill-switch: EYEHOLD_LOCAL_VOICE=0 (or SKYNET_) forces the engine unavailable even where the packages
    resolve. Two real uses: a user opting out of the on-disk models, and TESTS reproducing the installed-build
    shape (no node_modules) on a dev checkout — the shape the 2026-07-30 keyed-fallthrough bug only showed on.
    Read dynamically (not cached) so a spawned test server's env always wins over require-time state. */
 function disabledByEnv() {
-  const v = process.env.STARNET_LOCAL_VOICE != null ? process.env.STARNET_LOCAL_VOICE : process.env.SKYNET_LOCAL_VOICE;
+  const v = process.env.EYEHOLD_LOCAL_VOICE != null ? process.env.EYEHOLD_LOCAL_VOICE : process.env.SKYNET_LOCAL_VOICE;
   return /^(0|false|no|off)$/i.test(String(v == null ? '' : v).trim());
 }
 
@@ -135,7 +135,7 @@ let ttsBusy = 0;
 let lastTtsMs = null;
 const monotonicMs = () => Number(process.hrtime.bigint() / 1000000n);
 
-// Transformers eagerly loads Sharp even though StarNet's offline voice paths are audio/text only. Sharp
+// Transformers eagerly loads Sharp even though Eyehold's offline voice paths are audio/text only. Sharp
 // <0.35 inherits vulnerable libvips loaders; upstream's documented compatible workaround is to disable
 // GIF, TIFF, and VIPS decoding. Apply it before either Transformers copy is imported so future call sites
 // cannot accidentally turn an unused image surface into an untrusted-input decoder.

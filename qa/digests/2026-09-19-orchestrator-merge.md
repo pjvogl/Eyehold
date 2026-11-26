@@ -4,7 +4,7 @@ Owner explicitly requested merge after the completed inconsistency sweep.
 
 - Prior trunk / rollback point: `621bbf46773eb670846a93b6b4ec86d172eb214b`.
 - Verified candidate: `8931c6245e504447a2dc87da5e70b4dfeec7c9d8`.
-- Integration: `14c77d6677160844a8c4c2a23423bbe2389b186b`, `merge: coordinate existing station crew through COMMS`.
+- Integration: `14c77d6677160844a8c4c2a23423bbe2389b186b`, `merge: coordinate existing keep crew through COMMS`.
 - Integration tree equals the accepted candidate tree exactly (`git diff HEAD agent/overseer-home-0919 --stat` empty at integration). No content conflicts or product changes were introduced by the merge.
 - Existing uncommitted `docs/NEXT.md` and `qa/STATUS.md` operational notes were preserved. The reservation covers this integration and the complete post-merge gates.
 - Post-merge suites run in the owned workspace at the exact integration commit, avoiding the shared integration workspace. No rebasing.

@@ -10,7 +10,7 @@ makes them durable, and their history is the audit trail.
 ## What is here
 
 - `last-gate-receipt.json` — the most recent run of `npm run eval:gate`
-  (schema `starnet.eval.gate-receipt.v1`). One compact JSON receipt covering the whole
+  (schema `eyehold.eval.gate-receipt.v1`). One compact JSON receipt covering the whole
   credential-free slice: pack file sha256s, expected/parsed row counts, per-step exit
   codes and wall times, per-pack verdicts, grader identity, git commit, and an explicit
   honesty block. The stable filename is intentional — each meaningful run overwrites it,

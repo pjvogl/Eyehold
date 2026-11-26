@@ -16,5 +16,5 @@ const output = path.join(root, 'frontend/assets/industrial');
   }
   await sharp(path.join(masters, 'exec-b45bdc91-97e4-4d33-8709-7f19ea87be0f.png'))
     .trim({ background: '#00000000', threshold: 1 }).resize({ width: 768 })
-    .png().toFile(path.join(output, 'workstation.png'));
+    .png().toFile(path.join(output, 'workkeep.png'));
 })();

@@ -122,7 +122,7 @@ function makeTriggerRunner(deps) {
     // because a line's project can change after the trigger was created
     if (t.kind === 'folder' && typeof d.folderConflict === 'function') {
       let why = null;
-      try { why = d.folderConflict(t.config.path); } catch (e) { why = 'the station could not check this folder against its lines\' working folders'; warn('[triggers] folder conflict check failed: ' + ((e && e.message) || e)); }
+      try { why = d.folderConflict(t.config.path); } catch (e) { why = 'the keep could not check this folder against its lines\' working folders'; warn('[triggers] folder conflict check failed: ' + ((e && e.message) || e)); }
       if (why) return why;
     }
     let cap = null;
@@ -285,7 +285,7 @@ function makeTriggerRunner(deps) {
 
   /* create(fields, { secretHash, baselineKeys }) -> { ok, trigger } | { ok:false, error } */
   function create(fields, extra) {
-    if (records.length >= T.MAX_TRIGGERS) return { ok: false, error: 'at most ' + T.MAX_TRIGGERS + ' triggers per station' };
+    if (records.length >= T.MAX_TRIGGERS) return { ok: false, error: 'at most ' + T.MAX_TRIGGERS + ' triggers per keep' };
     const at = now();
     const id = 'trg_' + String(newId()).replace(/[^a-z0-9]/gi, '').toLowerCase().slice(0, 12);
     const raw = Object.assign({ id, enabled: true, createdAt: at, updatedAt: at, fires: 0, recent: [] }, fields);

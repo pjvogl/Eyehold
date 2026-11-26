@@ -34,7 +34,7 @@ A.ok(/projectRoot: o\.projectRoot \|\| null,/.test(SRC),
   'the tool dispatch ctx carries the run\'s projectRoot (o.projectRoot → ctx.projectRoot)');
 
 // ---- B. the hand-off over the real tools ----
-const BASE = fs.mkdtempSync(path.join(os.tmpdir(), 'starnet-issue88-handoff-'));
+const BASE = fs.mkdtempSync(path.join(os.tmpdir(), 'eyehold-issue88-handoff-'));
 const WORKSPACES = path.join(BASE, 'workspaces');
 const PROJECT = path.join(BASE, 'ShopLine');
 const PNG_B64 = 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==';

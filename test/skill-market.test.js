@@ -3,7 +3,7 @@
      A. market-format: a bundled original becomes a standard SKILL.md and reads back exactly; buildEntry enforces
         the market's rules; readCatalog drops malformed rows instead of half-trusting them
      B. listing: available / bundled (our bundled text is exactly the published version) / update / missing gear
-     C. install: downloads the manifest, lands in the station library, replaces a bundled copy, switches nothing else
+     C. install: downloads the manifest, lands in the keep library, replaces a bundled copy, switches nothing else
      D. refused: a changed file, a digest that doesn't match, dangerous content — and nothing is written
      E. tamper: a file changed on disk after install drops out of the library and shows as tampered
      F. uninstall brings the bundled copy back; the off switch says so
@@ -27,8 +27,8 @@ const guard = require('../sidecar/skills/guard.js');
 
 const TEST_KEY = signing.generateKeyPair();
 const TEST_KEYS = [{ id: 'test-market', publicKey: TEST_KEY.publicKey }];
-const INDEX_URL = 'https://market.example/.well-known/starnet-skills.json';
-const REVOKED_URL = 'https://market.example/.well-known/starnet-skills-revoked.json';
+const INDEX_URL = 'https://market.example/.well-known/eyehold-skills.json';
+const REVOKED_URL = 'https://market.example/.well-known/eyehold-skills-revoked.json';
 
 const BUNDLED = catalog.parse('---\nname: Feed Watch\nslug: feed-watch\ndescription: Watch a source for change.\ncategory: Research\nrequires: [dish]\nlicense: MIT\nversion: 1.0.0\n---\n1. Fetch the source.\n2. Compare with the baseline.', 'feed-watch');
 const COMMUNITY_MD = '---\nname: grill-me\ndescription: "Question a plan hard before building it."\nlicense: MIT\nmetadata:\n  title: "Grill Me"\n  category: "Planning"\n  author: "Matt Pocock"\n---\n1. Ask one hard question at a time.\n2. Stop when the plan survives.';
@@ -45,11 +45,11 @@ const MIT = 'MIT License\n\nCopyright (c) 2025 Matt Pocock\n';
   A.throws(() => market.buildEntry({ slug: 'grill-me', version: '1.0.0', shelf: 'community', files: [{ path: 'SKILL.md', content: COMMUNITY_MD }, { path: 'LICENSE', content: MIT }] }), /upstream/, 'and name its upstream commit');
   A.throws(() => market.buildEntry({ slug: 'feed-watch', version: '1.0.0', shelf: 'originals', files: [{ path: 'SKILL.md', content: md }, { path: 'scripts/run.sh', content: 'echo' }] }), /not allowed/, 'only SKILL.md, LICENSE/NOTICE and references/ ship');
   A.throws(() => market.buildEntry({ slug: 'feed-watch', version: '1.0.0', shelf: 'originals', files: [{ path: 'SKILL.md', content: md + '\u0000' }] }), /text/, 'market packages are text only');
-  A.throws(() => market.buildEntry({ slug: 'feed-watch', version: '1.0.0', shelf: 'originals', requires: ['laser'], files: [{ path: 'SKILL.md', content: md }] }), /unknown gear/, 'gear must be real station objects');
+  A.throws(() => market.buildEntry({ slug: 'feed-watch', version: '1.0.0', shelf: 'originals', requires: ['laser'], files: [{ path: 'SKILL.md', content: md }] }), /unknown gear/, 'gear must be real keep objects');
   const read = market.readCatalog({ format: market.FORMAT, serial: 1, skills: [{ slug: 'ok-one', version: '1.0.0', digest: 'a'.repeat(64), files: [{ path: 'SKILL.md', sha256: 'b'.repeat(64) }] }, { slug: 'Bad', version: '1.0.0' }, { slug: 'no-files', version: '1.0.0', digest: 'a'.repeat(64), files: [] }] });
   A.eq([read.entries.map(e => e.slug), read.rejected.map(r => r.why)], [['ok-one'], ['bad slug', 'no SKILL.md in its manifest']], 'readCatalog keeps valid rows and names why it dropped the rest');
   A.throws(() => market.readCatalog({ format: 'other', serial: 1, skills: [] }), /unsupported/, 'an unknown document format is refused outright');
-  A.throws(() => market.readCatalog({ format: market.FORMAT, skills: [] }), /unsupported/, 'a catalog without a serial is refused (a station could not tell it from an older one)');
+  A.throws(() => market.readCatalog({ format: market.FORMAT, skills: [] }), /unsupported/, 'a catalog without a serial is refused (a keep could not tell it from an older one)');
   A.eq(market.compareVersions('1.10.0', '1.9.3'), 1, 'versions compare numerically');
 }
 
@@ -78,7 +78,7 @@ function serve(sources, mutate, opts) {
     }
   };
 }
-// a client; pass the same `store` to model one station reading different servers over time
+// a client; pass the same `store` to model one keep reading different servers over time
 function client(server, root, url, store, extra) {
   store = store || new Map();
   return makeSkillMarket(Object.assign({
@@ -120,12 +120,12 @@ A.rejects = async (fn, re, label) => { let err = null; try { await fn(); } catch
     A.eq([r.ok, r.action, r.version], [true, 'install', '1.0.0'], 'a market skill installs');
     A.ok(fs.existsSync(path.join(root, 'grill-me', 'SKILL.md')) && fs.existsSync(path.join(root, 'grill-me', 'LICENSE')), 'its files, license included, are in the market folder');
     const lib = m.mergeLibrary([BUNDLED]);
-    A.eq(lib.map(x => x.slug).sort(), ['feed-watch', 'grill-me'], 'it joins the station library next to the bundled recipes');
+    A.eq(lib.map(x => x.slug).sort(), ['feed-watch', 'grill-me'], 'it joins the keep library next to the bundled recipes');
     const g = lib.find(x => x.slug === 'grill-me');
     A.eq([g.name, g.author, g.market, g.body.indexOf('one hard question') >= 0], ['Grill Me', 'Matt Pocock, Nous Research', true, true], 'as a real recipe with its title, credit and procedure');
     await m.install({ slug: 'feed-watch' });
     const fw = m.mergeLibrary([BUNDLED]).find(x => x.slug === 'feed-watch');
-    A.ok(fw.market && fw.body.indexOf('Alert only past the bar') >= 0 && fw.version === '1.1.0', 'the market update REPLACES the bundled copy for this station');
+    A.ok(fw.market && fw.body.indexOf('Alert only past the bar') >= 0 && fw.version === '1.1.0', 'the market update REPLACES the bundled copy for this keep');
     const after = await m.listing({ bundled: [BUNDLED] });
     A.eq(after.entries.map(e => e.status).sort(), ['installed', 'installed'], 'both now read as installed');
   }
@@ -185,15 +185,15 @@ A.rejects = async (fn, re, label) => { let err = null; try { await fn(); } catch
     await A.rejects(() => client(unsigned, tmp()).listing({}), /could not download the skill market catalog's signature/, 'an unsigned catalog is refused (its signature cannot be fetched)');
     A.throws(() => signing.sign(Buffer.from('x'), signing.generateKeyPair().privateKeyPem, TEST_KEYS), /not one the app trusts/, 'the build can only sign with a key the app trusts');
 
-    // one station, two servers over time: it saw serial 5, then an OLDER signed catalog shows up
+    // one keep, two servers over time: it saw serial 5, then an OLDER signed catalog shows up
     const store = new Map();
     let current = serve([GRILL], null, { serial: 5 });
     const root = tmp();
     const m = client({ fetchDocument: (u) => current.fetchDocument(u) }, root, undefined, store);
-    A.eq((await m.listing({})).catalog.serial, 5, 'the station reads catalog serial 5');
+    A.eq((await m.listing({})).catalog.serial, 5, 'the keep reads catalog serial 5');
     current = serve([GRILL], null, { serial: 4 });
-    await A.rejects(() => m.listing({ refresh: true }), /older than one this station already saw \(4 < 5\)/, 'a replayed older catalog is refused even though it is validly signed');
-    await A.rejects(() => client({ fetchDocument: (u) => current.fetchDocument(u) }, root, undefined, store).listing({}), /older/, 'and the station remembers the serial across restarts');
+    await A.rejects(() => m.listing({ refresh: true }), /older than one this keep already saw \(4 < 5\)/, 'a replayed older catalog is refused even though it is validly signed');
+    await A.rejects(() => client({ fetchDocument: (u) => current.fetchDocument(u) }, root, undefined, store).listing({}), /older/, 'and the keep remembers the serial across restarts');
 
     // the file rule, shared by build and app
     A.eq(['SKILL.md', 'LICENSE', 'NOTICE.md', 'references/checklist.md', 'references/data.csv'].map(market.marketFileAllowed), [true, true, true, true, true], 'SKILL.md, license files and plain-text references are allowed');
@@ -217,7 +217,7 @@ A.rejects = async (fn, re, label) => { let err = null; try { await fn(); } catch
     current = serve([], null, { serial: 2, revoked: [{ slug: 'grill-me', reason: 'asks the agent to send files out', at: '2026-09-30' }] });
     const r = await m.checkRevocations();
     A.eq([r.serial, r.pulled], [2, ['grill-me']], 'a newer signed pulled list switches grill-me off');
-    A.ok(!m.mergeLibrary([BUNDLED]).some(x => x.slug === 'grill-me'), 'it is out of the station library (no agent is offered it)');
+    A.ok(!m.mergeLibrary([BUNDLED]).some(x => x.slug === 'grill-me'), 'it is out of the keep library (no agent is offered it)');
     A.ok(fs.existsSync(path.join(root, 'grill-me', 'SKILL.md')), 'its files stay on disk until the Commander removes it');
     const row = (await m.listing({ refresh: true })).entries.find(e => e.slug === 'grill-me');
     A.eq([row && row.status, row && row.pulledReason, row && row.delisted], ['pulled', 'asks the agent to send files out', true], 'the market shows it PULLED with the reason, though the catalog no longer offers it');
@@ -266,16 +266,16 @@ A.rejects = async (fn, re, label) => { let err = null; try { await fn(); } catch
     const store2 = new Map();
     const official = serve([GRILL], null, { serial: 5 });
     await client(official, tmp(), undefined, store2).listing({});
-    const OTHER = 'https://my-market.example/.well-known/starnet-skills.json';
+    const OTHER = 'https://my-market.example/.well-known/eyehold-skills.json';
     const mine = serve([GRILL], null, { serial: 1 });
     const other = { fetchDocument: async (u) => mine.fetchDocument(u.replace('https://my-market.example/', 'https://market.example/')) };
     A.eq((await client(other, tmp(), OTHER, store2).listing({})).catalog.serial, 1, 'a self-hosted catalog keeps its own serial, never refused because of another catalog\'s');
 
-    // the app build's floor: a fresh station refuses an official catalog older than the one live at build time
+    // the app build's floor: a fresh keep refuses an official catalog older than the one live at build time
     const { DEFAULT_CATALOG_URL } = require('../sidecar/skills/market.js');
     const oldOfficial = serve([GRILL], null, { serial: 2 });
-    const viaDefault = { fetchDocument: async (u) => oldOfficial.fetchDocument(u.replace('https://starnetos.com/', 'https://market.example/')) };
-    await A.rejects(() => client(viaDefault, tmp(), DEFAULT_CATALOG_URL, new Map(), { floorSerial: 3 }).listing({}), /older than one this station already saw \(2 < 3\)/, 'a fresh station refuses an official catalog older than its app build\'s floor');
+    const viaDefault = { fetchDocument: async (u) => oldOfficial.fetchDocument(u.replace('https://eyehold.babelbook.net/', 'https://market.example/')) };
+    await A.rejects(() => client(viaDefault, tmp(), DEFAULT_CATALOG_URL, new Map(), { floorSerial: 3 }).listing({}), /older than one this keep already saw \(2 < 3\)/, 'a fresh keep refuses an official catalog older than its app build\'s floor');
     A.eq((await client(viaDefault, tmp(), DEFAULT_CATALOG_URL, new Map(), { floorSerial: 2 }).listing({})).catalog.serial, 2, 'and accepts one at the floor');
 
     // a failed swap leaves the working copy in place
@@ -339,9 +339,9 @@ A.rejects = async (fn, re, label) => { let err = null; try { await fn(); } catch
     const big = 'x'.repeat(300000);
     const fetchDoc = makeSkillDocumentFetcher({ fetchImpl: async () => ({ status: 200, ok: true, headers: { get: () => null }, arrayBuffer: async () => Buffer.from(big) }) });
     await A.rejects(() => fetchDoc('https://market.example/skills/a/1.0.0/SKILL.md'), /is larger than 256 KB/, 'a skill file keeps the 256 KB cap');
-    A.eq((await fetchDoc('https://market.example/.well-known/starnet-skills.json', { maxBytes: 2000000, label: 'the skill market catalog' })).bytes.length, 300000, 'the catalog index may be larger');
-    await A.rejects(() => fetchDoc('https://market.example/.well-known/starnet-skills.json', { maxBytes: 200000, label: 'the skill market catalog' }), /the skill market catalog is larger than 200 KB/, 'and an oversized one is named correctly');
-    A.eq(market.fileUrl('https://x.example/market/.well-known/starnet-skills.json', { slug: 'grill-me', version: '1.0.0' }, 'SKILL.md'), 'https://x.example/market/skills/grill-me/1.0.0/SKILL.md', 'a catalog under a subpath finds its files beside it');
+    A.eq((await fetchDoc('https://market.example/.well-known/eyehold-skills.json', { maxBytes: 2000000, label: 'the skill market catalog' })).bytes.length, 300000, 'the catalog index may be larger');
+    await A.rejects(() => fetchDoc('https://market.example/.well-known/eyehold-skills.json', { maxBytes: 200000, label: 'the skill market catalog' }), /the skill market catalog is larger than 200 KB/, 'and an oversized one is named correctly');
+    A.eq(market.fileUrl('https://x.example/market/.well-known/eyehold-skills.json', { slug: 'grill-me', version: '1.0.0' }, 'SKILL.md'), 'https://x.example/market/skills/grill-me/1.0.0/SKILL.md', 'a catalog under a subpath finds its files beside it');
   }
 
   A.report('skill-market.test');

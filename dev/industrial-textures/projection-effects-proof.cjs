@@ -1,7 +1,7 @@
 'use strict';
 const fs=require('node:fs'),path=require('node:path');
 const sharp=require('C:/Users/andro/gen-trees/industrial-textures-0912/node_modules/sharp');
-const root='frontend/assets/industrial/projection-correction',out='docs/station-remaster/projection-effects';
+const root='frontend/assets/industrial/projection-correction',out='docs/keep-remaster/projection-effects';
 const manifest=JSON.parse(fs.readFileSync(root+'/manifest.json'));
 const effects=require('../../frontend/app/projection-prop-effects.js');
 const groups=[

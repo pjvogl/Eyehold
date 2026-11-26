@@ -70,7 +70,7 @@ function startMockOpenRouter(script) {
 function boot(port, env, attemptsLeft) {
   return new Promise((resolve, reject) => {
     const child = spawn(process.execPath, [INDEX], {
-      env: Object.assign({}, process.env, env, { SKYNET_PORT: String(port), STARNET_PORT: String(port) }),
+      env: Object.assign({}, process.env, env, { EYEHOLD_PORT: String(port), EYEHOLD_PORT: String(port) }),
       stdio: ['ignore', 'pipe', 'pipe']
     });
     let out = '', settled = false;
@@ -124,18 +124,18 @@ function twoStagePlan(hopBrief) {
   const ws = fs.mkdtempSync(path.join(os.tmpdir(), 'sk-steptest-'));
   const hermes = fs.mkdtempSync(path.join(os.tmpdir(), 'sk-steptest-hermes-'));
   const env = {
-    SKYNET_WORKSPACES: ws, STARNET_WORKSPACES: ws, HERMES_HOME: hermes,
-    STARNET_DEV: '', SKYNET_DEV: '',
-    SKYNET_OPENROUTER_BASE: mock.base,
-    SKYNET_OPENROUTER_KEY: 'sk-or-v1-steptest-fake',
-    SKYNET_DEFAULT_MODEL: 'test/model'
+    EYEHOLD_WORKSPACES: ws, EYEHOLD_WORKSPACES: ws, HERMES_HOME: hermes,
+    EYEHOLD_DEV: '', EYEHOLD_DEV: '',
+    EYEHOLD_OPENROUTER_BASE: mock.base,
+    EYEHOLD_OPENROUTER_KEY: 'sk-or-v1-steptest-fake',
+    EYEHOLD_DEFAULT_MODEL: 'test/model'
   };
   let { child, port } = await boot(9180 + (process.pid % 40), env, 20);
   let B = 'http://' + HOST + ':' + port;
   try {
     let token = await bootToken(B, B);
     A.ok(token.length >= 32, 'got a session API token');
-    let headers = { 'Content-Type': 'application/json', 'X-StarNet-Token': token, Origin: B };
+    let headers = { 'Content-Type': 'application/json', 'X-Eyehold-Token': token, Origin: B };
     const call = (method, p, body) => fetch(B + p, { method, headers, body: body === undefined ? undefined : (typeof body === 'string' ? body : JSON.stringify(body)) })
       .then(r => r.text().then(t => { let j = null; try { j = JSON.parse(t); } catch (_) { j = null; } return { status: r.status, j }; }));
     const poll = async (id) => {
@@ -183,7 +183,7 @@ function twoStagePlan(hopBrief) {
     const sysOf = rq => ((rq && rq.messages) || []).filter(x => x && x.role === 'system').map(x => String(x.content || '')).join('\n');
     const lastUserOf = rq => { const m = [...((rq && rq.messages) || [])].reverse().find(x => x && x.role === 'user'); return String((m && m.content) || ''); };
     const entryReq = mock.requests.find(rq => lastUserOf(rq).indexOf('STEPTEST JOB') >= 0 && lastUserOf(rq).indexOf('PIPELINE HANDOFF') < 0);
-    A.ok(entryReq && sysOf(entryReq).indexOf('YOUR STANDING BRIEF FOR THIS STATION:\n' + ENTRY_BRIEF) >= 0, 'the entry dock\'s brief rode its system context');
+    A.ok(entryReq && sysOf(entryReq).indexOf('YOUR STANDING BRIEF FOR THIS KEEP:\n' + ENTRY_BRIEF) >= 0, 'the entry dock\'s brief rode its system context');
 
     /* ---- 4. continue with an EDITED handoff ---- */
     const EDIT = 'stage one findings + OWNER NOTE: cite two studies';
@@ -197,7 +197,7 @@ function twoStagePlan(hopBrief) {
     A.eq(s.hops[1].output, 'final answer built on the owner note', 'the writer really worked from the edited text');
     A.eq(s.paused.next, { kind: 'outbox' }, 'next stop: the OUTBOX');
     const hopReq = mock.requests.find(rq => lastUserOf(rq).indexOf('OWNER NOTE') >= 0);
-    A.ok(hopReq && /PIPELINE HANDOFF/.test(lastUserOf(hopReq)) && lastUserOf(hopReq).indexOf('YOUR STANDING BRIEF FOR THIS STATION:\n' + HOP_BRIEF) >= 0, 'the writer\'s handoff turn carries the edit AND its brief');
+    A.ok(hopReq && /PIPELINE HANDOFF/.test(lastUserOf(hopReq)) && lastUserOf(hopReq).indexOf('YOUR STANDING BRIEF FOR THIS KEEP:\n' + HOP_BRIEF) >= 0, 'the writer\'s handoff turn carries the edit AND its brief');
     const runs1 = await call('GET', '/api/runs?agent=*&limit=50');
     const writerRow = ((runs1.j && runs1.j.runs) || []).find(r => r.runId === s.hops[1].runId);
     A.ok(writerRow, 'the writer\'s run is in GET /api/runs');
@@ -227,7 +227,7 @@ function twoStagePlan(hopBrief) {
     ({ child, port } = await boot(port + 1, env, 20));
     B = 'http://' + HOST + ':' + port;
     token = await bootToken(B, B);
-    headers = { 'Content-Type': 'application/json', 'X-StarNet-Token': token, Origin: B };
+    headers = { 'Content-Type': 'application/json', 'X-Eyehold-Token': token, Origin: B };
     const after = await call('GET', '/api/routing/steptest');
     A.eq(after.status, 200);
     A.eq(after.j.session && after.j.session.id, id, 'after a restart GET answers the same session');

@@ -17,16 +17,16 @@ const { SidecarFixture } = require('./helpers/sidecar-fixture.js');
         return res.end(JSON.stringify({ error: { message: 'Codex quota exceeded', code: 'usage_limit_reached' } }));
       }
       res.writeHead(200, { 'Content-Type': 'text/event-stream' });
-      const delta = mode === 'text' ? { content: 'Fallback completed.' } : { tool_calls: [{ index: 0, id: 'cost-probe', type: 'function', function: { name: 'station_inspect', arguments: '{}' } }] };
+      const delta = mode === 'text' ? { content: 'Fallback completed.' } : { tool_calls: [{ index: 0, id: 'cost-probe', type: 'function', function: { name: 'keep_inspect', arguments: '{}' } }] };
       res.end('data: ' + JSON.stringify({ choices: [{ delta, finish_reason: mode === 'text' ? 'stop' : 'tool_calls' }], usage: { prompt_tokens: 12, completion_tokens: 4, ...(mode === 'unpriced' ? {} : { cost: 0.012 }) } }) + '\n\ndata: [DONE]\n\n');
     });
   });
   await new Promise(r => upstream.listen(0, '127.0.0.1', r));
   const base = 'http://127.0.0.1:' + upstream.address().port;
   const fixture = SidecarFixture.create({ timeoutMs: 20000, env: {
-    SKYNET_SCOUT: '0', SKYNET_SKILL_REVIEW: '0', SKYNET_SKILL_CURATOR: '0', SKYNET_THREAD_MINE: '0',
-    OPENROUTER_KEY: key, OPENROUTER_API_KEY: key, SKYNET_OPENROUTER_BASE: base + '/router',
-    SKYNET_FALLBACK_MODELS: 'gpt-5.4', SKYNET_FULL_ACCESS: '0', STARNET_FULL_ACCESS: '0'
+    EYEHOLD_SCOUT: '0', EYEHOLD_SKILL_REVIEW: '0', EYEHOLD_SKILL_CURATOR: '0', EYEHOLD_THREAD_MINE: '0',
+    OPENROUTER_KEY: key, OPENROUTER_API_KEY: key, EYEHOLD_OPENROUTER_BASE: base + '/router',
+    EYEHOLD_FALLBACK_MODELS: 'gpt-5.4', EYEHOLD_FULL_ACCESS: '0', EYEHOLD_FULL_ACCESS: '0'
   } });
   const jwt = ['eyJhbGciOiJub25lIn0', Buffer.from(JSON.stringify({ exp: Math.floor(Date.now() / 1000) + 86400 })).toString('base64url'), 'synthetic'].join('.');
   fs.mkdirSync(path.join(fixture.workspace, 'codex'), { recursive: true });
@@ -61,12 +61,12 @@ const { SidecarFixture } = require('./helpers/sidecar-fixture.js');
     await fixture.json('POST', '/api/fallback/chain', { models: null });
     await run(); assert.ok(calls.some(c => c.model === 'gpt-5.4' && c.url === '/codex/responses'), 'environment default retains primary provider');
     await fixture.json('POST', '/api/fallback/chain', { models: ['z-ai/glm-5.3-flash'] });
-    fixture.env.SKYNET_BUDGET_PER_RUN = '0.005';
+    fixture.env.EYEHOLD_BUDGET_PER_RUN = '0.005';
     await fixture.restart(); mode = 'cost';
     const capped = await run();
     assert.equal(capped.findLast(e => e.name === 'agent.run.end')?.payload.reason, 'budget', 'paid fallback activates the opted-in dollar ceiling');
     assert.equal(calls.filter(c => c.url.startsWith('/router/')).length, 1, 'no second paid turn after the cap');
-    fixture.env.SKYNET_BUDGET_PER_RUN = '0'; fixture.env.SKYNET_MAX_UNPRICED_TOKENS = '10';
+    fixture.env.EYEHOLD_BUDGET_PER_RUN = '0'; fixture.env.EYEHOLD_MAX_UNPRICED_TOKENS = '10';
     await fixture.restart(); mode = 'unpriced';
     const unpriced = await run();
     assert.equal(unpriced.findLast(e => e.name === 'agent.run.end')?.payload.reason, 'budget', 'paid fallback activates the unpriced-token ceiling');

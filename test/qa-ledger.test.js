@@ -1,4 +1,4 @@
-/* node test/qa-ledger.test.js — the Self-Testing Station's findings spine (lane Q0),
+/* node test/qa-ledger.test.js — the Self-Testing Keep's findings spine (lane Q0),
    fed an in-memory io + a controllable clock (zero disk). Asserts the Part-5 laws:
    fingerprint dedup (same defect files once), known/dismissed refusal (anti-nag),
    evidence-required rejection (no vibes-findings), a readable digest grouped by

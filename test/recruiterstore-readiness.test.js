@@ -4,7 +4,7 @@ let ready = false, recommendCalls = 0, gapCalls = 0;
 global.UnderstandingStore = { readiness: () => ({ ready, reasons: ready ? [] : ['no-direction'] }) };
 global.ProfileStore = { enabled: () => true, score: () => 1 };
 global.WorkSignalStore = { model: () => ({ lanes: {}, total: 4 }) };
-global.DossierStore = { beliefs: () => [{ text: 'ship the station' }] };
+global.DossierStore = { beliefs: () => [{ text: 'ship the keep' }] };
 global.App = { agents: () => [] };
 global.ProspectStore = { interests: () => [{ label: 'release automation', weight: 1 }] };
 global.Specialties = { builtins: () => [{ id: 'researcher' }], get: id => ({ id }) };

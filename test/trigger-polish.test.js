@@ -115,7 +115,7 @@ function fakeStore() {
     const sysThrows = await makeFolderPolicy(Object.assign({}, base, { systemRoots: () => { throw new Error('env unreadable'); } })).check(inbox);
     A.ok(!sysThrows.ok && sysThrows.code === 'policy', 'a throwing system-root reader REFUSES (was: checks skipped): ' + JSON.stringify(sysThrows));
     const fbThrows = await makeFolderPolicy(Object.assign({}, base, { forbiddenRoots: () => { throw new Error('x'); } })).check(inbox);
-    A.ok(!fbThrows.ok && fbThrows.code === 'policy', 'a throwing station-root reader REFUSES');
+    A.ok(!fbThrows.ok && fbThrows.code === 'policy', 'a throwing keep-root reader REFUSES');
     const noReal = await makeFolderPolicy(Object.assign({}, base, { fsp: { stat: fsp.stat, realpath: async () => { throw new Error('EPERM'); } } })).check(inbox);
     A.ok(!noReal.ok && noReal.code === 'unresolved', 'an unresolvable realpath REFUSES (was: judged by its unresolved spelling)');
     try { fs.rmSync(root, { recursive: true, force: true }); } catch (_) {}
@@ -141,7 +141,7 @@ function fakeStore() {
       store: fakeStore(), send: () => Promise.resolve({ ok: true }), secrets: () => ({ key: 'k', model: 'm/x', configured: true }),
       classify: () => true, emit: () => {}, newId: () => 'h' + (++n), bindChats: false,
       resolveAgent: (ctx) => router.resolveDock(Object.assign({}, ctx, { lineId: 'p10' })), lineOriginFor: (a, d) => router.lineOriginFor(a, d),
-      stageBriefFor: (a, d) => router.stageBrief(a, d), resolveStation: (a, d) => router.stationFor(a, d), chain
+      stageBriefFor: (a, d) => router.stageBrief(a, d), resolveKeep: (a, d) => router.keepFor(a, d), chain
     }, extra));
     const tainted = [];
     const before = failopen.counts()['channels.hub.lineOutcome'] || 0;

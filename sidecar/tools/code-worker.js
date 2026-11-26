@@ -63,8 +63,8 @@ Object.freeze(bridge);
 // Runs INSIDE the context. Everything it defines is context-realm; `bridge` lives only in this closure.
 const SETUP = `(() => {
   "use strict";
-  const bridge = globalThis.__starnetBridge;
-  delete globalThis.__starnetBridge;
+  const bridge = globalThis.__eyeholdBridge;
+  delete globalThis.__eyeholdBridge;
   const out = [];
   const fmt = v => typeof v === 'string' ? v : JSON.stringify(v);
   const print = (...vs) => { out.push(vs.map(fmt).join(' ')); };
@@ -86,10 +86,10 @@ const SETUP = `(() => {
     bridge('done', json === undefined ? 'null' : json, out.join('\\n'));
   };
   const fail = (e) => bridge('error', String((e && e.message) || e));
-  Object.defineProperty(globalThis, '__starnetRun', { configurable: true, value: () => {
-    const fn = globalThis.__starnetUserFn;
-    delete globalThis.__starnetRun;
-    delete globalThis.__starnetUserFn;
+  Object.defineProperty(globalThis, '__eyeholdRun', { configurable: true, value: () => {
+    const fn = globalThis.__eyeholdUserFn;
+    delete globalThis.__eyeholdRun;
+    delete globalThis.__eyeholdUserFn;
     let p;
     try { p = fn(); } catch (e) { return fail(e); }
     p.then(finish, fail);
@@ -123,18 +123,18 @@ process.on('message', (msg) => {
   const syncTimeout = Number(msg.syncTimeoutMs) || 1000;
   try {
     const sandbox = Object.create(null);
-    sandbox.__starnetBridge = bridge;
+    sandbox.__eyeholdBridge = bridge;
     const context = vm.createContext(sandbox, {
-      name: 'starnet-code-mode',
+      name: 'eyehold-code-mode',
       codeGeneration: { strings: false, wasm: false }
     });
     new vm.Script(SETUP, { filename: 'code-mode-setup.js' }).runInContext(context, { timeout: syncTimeout });
     // The context assigns its own function; the host never holds or calls a context object.
-    new vm.Script('globalThis.__starnetUserFn = (async () => {\n"use strict";\n' + String(msg.code || '') + '\n});', { filename: 'model-code.js' })
+    new vm.Script('globalThis.__eyeholdUserFn = (async () => {\n"use strict";\n' + String(msg.code || '') + '\n});', { filename: 'model-code.js' })
       .runInContext(context, { timeout: syncTimeout });
     // The synchronous part of the model's code runs here, under the vm timeout; the rest is bounded by the
     // parent's wall clock, which kills this whole process.
-    new vm.Script('__starnetRun();', { filename: 'code-mode-run.js' }).runInContext(context, { timeout: syncTimeout });
+    new vm.Script('__eyeholdRun();', { filename: 'code-mode-run.js' }).runInContext(context, { timeout: syncTimeout });
   } catch (e) {
     active.report({ type: 'error', error: String((e && e.message) || e) });
   }

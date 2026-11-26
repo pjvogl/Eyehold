@@ -1,4 +1,4 @@
-/* STARNET — routinenudgestore.js : the "you keep launching this — schedule it?" nudge (lane D).
+/* EYEHOLD — routinenudgestore.js : the "you keep launching this — schedule it?" nudge (lane D).
 
    A recipe the Commander keeps hand-launching is a routine that hasn't been admitted yet. This store watches
    the REAL per-recipe launch counters (ProspectStore.launches — the scout usage read) and, when a recipe
@@ -15,7 +15,7 @@
    it never emits and never writes server state. node-exportable for its test. */
 'use strict';
 const RoutineNudgeStore = (() => {
-  const KEY = 'starnet.routinenudge.v1';
+  const KEY = 'eyehold.routinenudge.v1';
   const CAP = 1;             // at most one schedule offer per session
   const LAUNCH_FLOOR = 3;    // a recipe earns the offer only after this many REAL launches
   const OFFER_MAX = 2;       // …and is never offered more than this many times, ever (ignored ≠ declined, but twice is enough)
@@ -94,7 +94,7 @@ const RoutineNudgeStore = (() => {
       if (!Number.isFinite(n) || n < LAUNCH_FLOOR) continue;
       /* ⛔ LAUNCH COUNT IS NOT THE ONLY COUNTER ON RECORD (2026-08-05). This read `u.n` and nothing else, so a
          recipe the Commander ran three times and rated 👎 all three times still earned "want this every day?" —
-         the station reading repetition as approval while its own rate-the-work verdicts said the opposite. The
+         the keep reading repetition as approval while its own rate-the-work verdicts said the opposite. The
          usage store already keeps `rated.great` / `rated.miss` beside `n` (the FOR YOU ranker spends them).
          A MISMATCH OF KIND MUST EXCLUDE, NOT DOWN-RANK (repo law): this offer is binary, so a miss-heavy
          recipe is dropped outright rather than sorted below — there is no "slightly less" schedule to propose.
@@ -110,7 +110,7 @@ const RoutineNudgeStore = (() => {
       const r = Recipes.get(id);
       if (!r) continue;                                               // the recipe is gone (deleted custom) → nothing to schedule
       /* THE CADENCE GATE IS GONE (2026-08-05) — it was a dead end, not a filter.
-         This used to require `r.cadence` (the CATALOG AUTHOR's suggestion). But the station's own self-growing
+         This used to require `r.cadence` (the CATALOG AUTHOR's suggestion). But the keep's own self-growing
          path — seedstore → Recipes.draft → saveCustom — mints every recipe with `cadence: null` (recipes.js
          draft()), so an agent-authored recipe the Commander went on to launch eight times by hand could NEVER
          earn "want it on a schedule?". The one recipe shape that PROVES a habit was the one shape structurally

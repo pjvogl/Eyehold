@@ -44,7 +44,7 @@ if (process.argv[2] === '--owner') {
     A.ok(true, 'Windows force-death proof is host-gated; portable ledger semantics are covered by procledger.test');
     return A.report('mcp.orphan-recovery');
   }
-  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'starnet-mcp-orphan-'));
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'eyehold-mcp-orphan-'));
   const server = path.join(dir, 'server.js');
   fs.writeFileSync(server, [
     "'use strict';",

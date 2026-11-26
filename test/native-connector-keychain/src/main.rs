@@ -12,7 +12,7 @@ fn main() -> Result<(), String> {
     // This harness may mutate only a disposable GitHub-hosted acceptance keychain.
     if std::env::var("GITHUB_ACTIONS").as_deref() != Ok("true")
         || std::env::var("RUNNER_OS").as_deref() != Ok("macOS")
-        || std::env::var("STARNET_DISPOSABLE_KEYCHAIN").as_deref() != Ok("1")
+        || std::env::var("EYEHOLD_DISPOSABLE_KEYCHAIN").as_deref() != Ok("1")
     {
         return Err("Requires the disposable macOS CI keychain".into());
     }
@@ -53,7 +53,7 @@ fn main() -> Result<(), String> {
     let status = std::process::Command::new("node")
         .arg("test/native-connector-keychain/vault-check.cjs")
         .arg(&phase)
-        .env("STARNET_CONNECTOR_ENCRYPTION_KEY", key)
+        .env("EYEHOLD_CONNECTOR_ENCRYPTION_KEY", key)
         .status().map_err(|_| "Cannot run vault acceptance")?;
     if !status.success() { return Err("Vault acceptance failed".into()); }
     Ok(())

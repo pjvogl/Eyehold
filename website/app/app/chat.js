@@ -1,6 +1,6 @@
-/* STARNET — chat.js : the in-game COMMS panel.
+/* EYEHOLD — chat.js : the in-game COMMS panel.
    Talking to your agent is a REAL streaming model call (via Harness). While a reply
-   the agent walks to its workstation and types (World.setActivity('task')).
+   the agent walks to its workkeep and types (World.setActivity('task')).
    Supports: preloaded history (resume), and an "awaiting purpose" first-message mode. */
 'use strict';
 
@@ -494,7 +494,7 @@ const Chat = (() => {
     const ask = index => {
       if (!isActiveWs(ws) || index >= calls.length) return;
       const call = calls[index];
-      toolLine('before the restart, did ' + String(call.name || 'this action') + ' actually happen? StarNet will not run it again while the answer is uncertain.', true);
+      toolLine('before the restart, did ' + String(call.name || 'this action') + ' actually happen? Eyehold will not run it again while the answer is uncertain.', true);
       choices([
         { label: 'It happened', value: 'happened' },
         { label: 'It did not happen', value: 'did_not_happen' },
@@ -528,7 +528,7 @@ const Chat = (() => {
       if (review && announce && isActiveWs(ws) && !recoveryNotices.has(review.runId)) {
         recoveryNotices.add(review.runId);
         const names = (review.uncertain || []).map(x => x.name || 'action').join(', ');
-        toolLine('recovery paused — ' + (names || 'an action') + ' may already have happened. StarNet will not repeat it; verify the outcome before continuing.', true);
+        toolLine('recovery paused — ' + (names || 'an action') + ' may already have happened. Eyehold will not repeat it; verify the outcome before continuing.', true);
         offerRecoveryReview(review, ws);
       }
       return review ? 'review' : 'none';
@@ -572,7 +572,7 @@ const Chat = (() => {
     } else {
       if (degraded && degraded !== lastDegradedLine && activeWs && interruptedStreams.has(activeWs.id)) {
         lastDegradedLine = degraded;
-        toolLine('station service ' + degraded + (Harness.canRestartEngine && Harness.canRestartEngine() ? ' — restart it from LINK DOWN at the top.' : ''), true);
+        toolLine('keep service ' + degraded + (Harness.canRestartEngine && Harness.canRestartEngine() ? ' — restart it from LINK DOWN at the top.' : ''), true);
       }
       reconnectTimer = setTimeout(probeReconnect, 3000);   // still down — keep watching
     }
@@ -866,7 +866,7 @@ const Chat = (() => {
       window.__chatStarterTimer = setInterval(() => { try { refreshStarters(); } catch (_) {} }, 15000);
     }
     // F2: re-derive the idle status on the same cadence the topbar repaints #sig (3s) so a link that dies with
-    // NO run in flight still downgrades 'online' → 'station unreachable'. Once-armed (init re-runs per session).
+    // NO run in flight still downgrades 'online' → 'keep unreachable'. Once-armed (init re-runs per session).
     if (typeof window !== 'undefined' && !window.__chatLinkStatusTimer) {
       window.__chatLinkStatusTimer = setInterval(() => { try { if (!isBusy()) syncStatus(); } catch (_) {} }, 3000);
     }
@@ -893,7 +893,7 @@ const Chat = (() => {
         const invoke = (window.__TAURI__ && window.__TAURI__.core) ? window.__TAURI__.core.invoke : null;
         if (!invoke) return;   // a plain browser: target=_blank works as is
         e.preventDefault();
-        invoke('open_external_url', { url: link.href }).catch(() => { if (typeof StationUI !== 'undefined' && StationUI.notify) StationUI.notify('could not open your browser for that link', 'warn'); });
+        invoke('open_external_url', { url: link.href }).catch(() => { if (typeof KeepUI !== 'undefined' && KeepUI.notify) KeepUI.notify('could not open your browser for that link', 'warn'); });
       });
     }
     // COPY: one delegated click handler for every (current + future) message row's ⧉ button — copies the
@@ -913,7 +913,7 @@ const Chat = (() => {
           const invoke = (typeof window !== 'undefined' && window.__TAURI__ && window.__TAURI__.core) ? window.__TAURI__.core.invoke : null;
           if (invoke) {
             e.preventDefault();
-            invoke('open_external_url', { url: link.href }).catch(() => { if (typeof StationUI !== 'undefined' && StationUI.notify) StationUI.notify('could not open your browser for that link', 'warn'); });
+            invoke('open_external_url', { url: link.href }).catch(() => { if (typeof KeepUI !== 'undefined' && KeepUI.notify) KeepUI.notify('could not open your browser for that link', 'warn'); });
           }
           return;
         }
@@ -1042,16 +1042,16 @@ const Chat = (() => {
       return;
     }
     // LARGE-PASTE CONTEXT GUARD: the 100K composer ceiling is a transport allowance, not a promise that every
-    // model has room for 100K characters plus StarNet's system/tool context. When the live catalog or an honest
+    // model has room for 100K characters plus Eyehold's system/tool context. When the live catalog or an honest
     // per-conversation projection proves the selected model is too small, keep the paste byte-for-byte in the
     // composer and explain the remedy instead of clearing it into a provider context-overflow failure.
     const contextIssue = t ? composerContextIssue(activeWs, t) : null;
     if (contextIssue) {
       const model = (typeof Harness !== 'undefined' && Harness.getModel) ? Harness.getModel() : 'this model';
       const limit = (typeof U !== 'undefined' && U.tokens) ? U.tokens(contextIssue.limit) : contextIssue.limit;
-      const note = 'Paste kept — it may exceed ' + model + '\'s ' + limit + '-token context once StarNet\'s working context is included. Choose a larger-context model or split the text; nothing was sent.';
+      const note = 'Paste kept — it may exceed ' + model + '\'s ' + limit + '-token context once Eyehold\'s working context is included. Choose a larger-context model or split the text; nothing was sent.';
       localLine(note);
-      if (typeof StationUI !== 'undefined' && StationUI.notify) StationUI.notify('paste kept — selected model context is too small', 'warn');
+      if (typeof KeepUI !== 'undefined' && KeepUI.notify) KeepUI.notify('paste kept — selected model context is too small', 'warn');
       return;
     }
     if (t) recordSent(t);
@@ -1163,12 +1163,12 @@ const Chat = (() => {
         if (entry && entry.isDirectory) { directories = true; return []; }
         const file = item.getAsFile(); return file ? [file] : [];
       }) : Array.from(e.dataTransfer.files || []);
-      if (directories && typeof StationUI !== 'undefined' && StationUI.notify) {
-        StationUI.notify('Drop individual files; folders cannot be attached.', 'warn');
+      if (directories && typeof KeepUI !== 'undefined' && KeepUI.notify) {
+        KeepUI.notify('Drop individual files; folders cannot be attached.', 'warn');
       }
       if (files.length) { handleFiles(files); input.focus({ preventScroll: true }); }
     });
-    // A missed file drop must never navigate away from the station. Capture does not
+    // A missed file drop must never navigate away from the keep. Capture does not
     // stop propagation, so other file targets can still handle their own drops.
     document.addEventListener('dragover', e => {
       if (!hasFiles(e)) return;
@@ -1234,13 +1234,13 @@ const Chat = (() => {
     for (const f of files) {
       if (!f) continue;
       const oversized = f.size > ATTACH_MAX_FILE_BYTES;
-      if (oversized && !isVideoFile(f)) { if (typeof StationUI !== 'undefined' && StationUI.notify) StationUI.notify('“' + f.name + '” is too large to attach (max 8MB)', 'warn'); continue; }
+      if (oversized && !isVideoFile(f)) { if (typeof KeepUI !== 'undefined' && KeepUI.notify) KeepUI.notify('“' + f.name + '” is too large to attach (max 8MB)', 'warn'); continue; }
       if (!oversized) stageFile(f);
       if (isVideoFile(f)) {
         // even an over-limit video still contributes SIGHT: its frames are small JPEGs and attach fine
-        if (oversized && typeof StationUI !== 'undefined' && StationUI.notify) StationUI.notify('“' + f.name + '” is over 8MB — attaching still frames only', 'warn');
+        if (oversized && typeof KeepUI !== 'undefined' && KeepUI.notify) KeepUI.notify('“' + f.name + '” is over 8MB — attaching still frames only', 'warn');
         extractVideoFrames(f, 3).then(frames => {
-          if (!frames.length && oversized && typeof StationUI !== 'undefined' && StationUI.notify) StationUI.notify('could not decode “' + f.name + '” for frames', 'warn');
+          if (!frames.length && oversized && typeof KeepUI !== 'undefined' && KeepUI.notify) KeepUI.notify('could not decode “' + f.name + '” for frames', 'warn');
           for (const fr of frames) stageFile(fr);
           if (frames.length) renderAttachStrip();
         });
@@ -1258,7 +1258,7 @@ const Chat = (() => {
       entry.status = 'ready'; entry.ref = ref;
     }).catch(() => {
       entry.status = 'error';
-      if (typeof StationUI !== 'undefined' && StationUI.notify) StationUI.notify('could not attach “' + entry.name + '”', 'warn');
+      if (typeof KeepUI !== 'undefined' && KeepUI.notify) KeepUI.notify('could not attach “' + entry.name + '”', 'warn');
     }).then(() => renderAttachStrip());
   }
   // wait for every still-uploading staged file to settle (resolve or fail) so a send never silently drops one
@@ -1279,7 +1279,7 @@ const Chat = (() => {
     const dataUrl = await readAsDataUrl(file);
     const tok = (typeof Harness !== 'undefined' && Harness.apiToken) ? String(Harness.apiToken() || '') : '';
     const headers = { 'Content-Type': 'application/json' };
-    if (tok) headers['X-StarNet-Token'] = tok;
+    if (tok) headers['X-Eyehold-Token'] = tok;
     const res = await fetch('/api/attachments', { method: 'POST', headers, body: JSON.stringify({ agent: attachAgentId(), name: file.name || 'file', dataUrl }) });
     const j = await res.json().catch(() => ({}));
     if (!res.ok || !j || !j.ok) throw new Error((j && j.error) || ('upload HTTP ' + res.status));
@@ -1321,7 +1321,7 @@ const Chat = (() => {
     // best-effort: prune the uploaded bytes so an attach-then-remove doesn't orphan a file in the workspace
     if (entry.ref && entry.ref.path) {
       const tok = (typeof Harness !== 'undefined' && Harness.apiToken) ? String(Harness.apiToken() || '') : '';
-      const headers = { 'Content-Type': 'application/json' }; if (tok) headers['X-StarNet-Token'] = tok;
+      const headers = { 'Content-Type': 'application/json' }; if (tok) headers['X-Eyehold-Token'] = tok;
       fetch('/api/attachments', { method: 'POST', headers, body: JSON.stringify({ op: 'delete', agent: attachAgentId(), path: entry.ref.path }) }).catch(() => {});
     }
     pendingAtts.splice(i, 1);
@@ -1378,7 +1378,7 @@ const Chat = (() => {
   function agentModelText(a) {
     if (!a) return '';
     const model = a.model ? String(a.model) : '';
-    if (!model) return 'follows station default';
+    if (!model) return 'follows keep default';
     // reuse the dock's short-label vocabulary when present; else the last path segment (never invent a name)
     return (typeof ModelDock !== 'undefined' && ModelDock.labels && ModelDock.labels.short)
       ? ModelDock.labels.short(model)
@@ -1388,11 +1388,11 @@ const Chat = (() => {
   // Never invents a name: every branch reads the same real roster/localStorage state agentModelText does.
   function pinReadout(a) {
     const mine = agentModelText(a);
-    if (!a.model) return mine;                                    // unpinned — "follows station default", no bogus "pin:" prefix
-    const station = (typeof Harness !== 'undefined' && Harness.getModel) ? String(Harness.getModel() || '') : '';
-    const stationShort = (station && typeof ModelDock !== 'undefined' && ModelDock.labels && ModelDock.labels.short)
-      ? ModelDock.labels.short(station) : '';
-    return (stationShort && mine === stationShort) ? 'pinned' : ('pin: ' + mine);
+    if (!a.model) return mine;                                    // unpinned — "follows keep default", no bogus "pin:" prefix
+    const keep = (typeof Harness !== 'undefined' && Harness.getModel) ? String(Harness.getModel() || '') : '';
+    const keepShort = (keep && typeof ModelDock !== 'undefined' && ModelDock.labels && ModelDock.labels.short)
+      ? ModelDock.labels.short(keep) : '';
+    return (keepShort && mine === keepShort) ? 'pinned' : ('pin: ' + mine);
   }
   // P1.2 (UPDATE_STATE_SAFETY_AUDIT) — an honest one-line notice shown in the COMMS header's model slot when the
   // focused agent id is NOT in the live registry (roster out of sync). focusAgent sets it instead of silently
@@ -1436,7 +1436,7 @@ const Chat = (() => {
     // agent's pin resolves to that SAME model, spelling the name twice in one panel adds nothing — collapse to
     // the one fact the dock chip genuinely can't carry ("this agent is pinned, it won't follow the default").
     // The full name stays whenever the two actually differ, which is the case worth reading. And an UNPINNED
-    // agent no longer prints the self-contradicting "pin: follows station default".
+    // agent no longer prints the self-contradicting "pin: follows keep default".
     if (modelEl) modelEl.textContent = cur ? pinReadout(cur) : '';
     if (bar) bar.hidden = !list.length;   // no roster yet (pre-wake) → hide the row rather than show an empty selector
   }
@@ -1628,8 +1628,8 @@ const Chat = (() => {
     if (cronSession && !busy && !readable) next.push({
       role: 'system', sys: true, error: true, transcriptPending: true,
       content: reachable
-        ? '⚠ output has not arrived yet — StarNet will retry automatically when this session opens'
-        : '⚠ couldn\'t load the output yet — StarNet will retry automatically when this session opens'
+        ? '⚠ output has not arrived yet — Eyehold will retry automatically when this session opens'
+        : '⚠ couldn\'t load the output yet — Eyehold will retry automatically when this session opens'
     });
     if (JSON.stringify(next) === JSON.stringify(ws.history || [])) return reachable;
     ws.history = next;
@@ -1728,7 +1728,7 @@ const Chat = (() => {
 
   function setSystem(s) { system = s; }
   // HISTORY CAP (Lane E3): ws.history grew unbounded across a session, and the WHOLE array was POSTed as `messages`
-  // on every run — memory + payload both climbing forever on a 24/7 station. Cap the STORED history and send only a
+  // on every run — memory + payload both climbing forever on a 24/7 keep. Cap the STORED history and send only a
   // capped window. Chosen to preserve behavior for any normal session:
   //   • The sidecar (index.js) only auto-seeds from the durable transcript when the client sends ≤1 non-system
   //     message, and its own resume horizon is transcriptStore.reconstruct(streamId,{limit:100}) — the server
@@ -1779,7 +1779,7 @@ const Chat = (() => {
     }
     return kept;
   }
-  // char/4 is StarNet's calibrated dialogue estimate, but it can undercount dense Unicode. Half the real UTF-8
+  // char/4 is Eyehold's calibrated dialogue estimate, but it can undercount dense Unicode. Half the real UTF-8
   // bytes is a deliberately cautious second lens that still lets a full 100K English paste fit a 128K model.
   function contextEstimateMessages(messages) {
     const src = Array.isArray(messages) ? messages : [];
@@ -1961,7 +1961,7 @@ const Chat = (() => {
     // a peer run no longer blocks THIS session — the status stays an honest 'online' (send is allowed) with
     // the peer named beside it; the soft #comms-agent-busy row below carries the VIEW ACTIVE RUN route.
     // ('running', not 'busy'/'working': status() classifies by substring and this session is NOT the one working.)
-    status(p ? 'awaiting your approval…' : (isBusy() ? (channelStatus || 'thinking…') : (peer ? ('online · also running in ' + streamLabel(peer)) : (down ? 'station unreachable' : 'online'))));
+    status(p ? 'awaiting your approval…' : (isBusy() ? (channelStatus || 'thinking…') : (peer ? ('online · also running in ' + streamLabel(peer)) : (down ? 'keep unreachable' : 'online'))));
     renderAgentBusy(peer);
     // keep the elapsed readout matched to the DISPLAYED stream — switching to a busy stream picks up its
     // live count, switching to an idle one clears it. (send() also starts it the instant a run begins.)
@@ -2098,17 +2098,17 @@ const Chat = (() => {
      (load() rebuilds the log from ws.history, and a local line is not history), and any live beat dropped it
      outright. A brand-new agent's session was then indistinguishable from any other empty stream.
      It is now a property of the STREAM: every open of a deskless specialist's session states the step and offers
-     the door. The claim is re-derived from the live floor (App.needsWorkstation) on every load, never stored — so
-     it cannot outlive the desk it asks for, and cannot assert a floor state the station can't prove.
+     the door. The claim is re-derived from the live floor (App.needsWorkkeep) on every load, never stored — so
+     it cannot outlive the desk it asks for, and cannot assert a floor state the keep can't prove.
      Anti-nag: it is one system line + the chip row that answers it, in the session that owes the desk, and it is
      silent while that stream is mid-run (the run owns its own DOM; the prompt returns on the next open). */
   // BUILD MODE can satisfy the prompt while this stream remains open. Its text is a derived floor claim, not history,
   // so retire both of its DOM rows as soon as the live floor proves the desk now exists. Keep every unrelated
   // system/choice row intact; a broad clearChoices() here would erase whichever real question owns COMMS.
   function retireDeskPrompt() {
-    if (!log || !activeWs || typeof App === 'undefined' || !App.needsWorkstation) return false;
+    if (!log || !activeWs || typeof App === 'undefined' || !App.needsWorkkeep) return false;
     const rows = Array.from(log.querySelectorAll('.comms-desk-prompt'));
-    if (!rows.length || App.needsWorkstation(activeWs.agentId || 'agent')) return false;
+    if (!rows.length || App.needsWorkkeep(activeWs.agentId || 'agent')) return false;
     for (const r of rows) { activeChoiceRows.delete(r); r.remove(); }
     maybeEmptyState();   // the desk prompt can be the empty stream's only content; restore its normal starter state
     return true;
@@ -2116,12 +2116,12 @@ const Chat = (() => {
   function maybeDeskPrompt() {
     if (!log || interview || !activeWs || isBusy()) return;
     const id = activeWs.agentId || 'agent';
-    if (typeof App === 'undefined' || !App.needsWorkstation || !App.needsWorkstation(id)) return;
+    if (typeof App === 'undefined' || !App.needsWorkkeep || !App.needsWorkkeep(id)) return;
     const who = (App.agentName && App.agentName(id)) || name;
     const prompt = row('system'); prompt.d.classList.add('comms-desk-prompt');
     prompt.body.textContent = who + ' has nowhere to sit yet — it needs a desk of its own before it can take floor work. want to place one?';
     autoscroll();
-    // the chip is the whole point: it opens BUILD MODE already armed on the WORKSTATIONS palette, so the next floor
+    // the chip is the whole point: it opens BUILD MODE already armed on the WORKKEEPS palette, so the next floor
     // click drops the desk. 'later' just dismisses this view of it — the step is still owed, so the next open
     // of this session says so again (it stops for good the moment the desk exists).
     const chips = choices([{ label: '▤ PLACE ITS DESK', value: 'desk' }, { label: 'later', value: 'later', skip: true }], item => {
@@ -2253,7 +2253,7 @@ const Chat = (() => {
         link.appendChild(img); view.appendChild(link);
         // fetch->blob->objectURL (NOT a direct <img src=/api/file>): a native image GET sends no Origin header,
         // which the API-auth gate rejects — the fetch path carries same-origin auth. Mirrors imageDeliverableLine,
-        // including revoking the object URL once the bitmap has decoded so a 24/7 station never leaks one per image.
+        // including revoking the object URL once the bitmap has decoded so a 24/7 keep never leaks one per image.
         fileBlobUrl(rel, aid).then(u => {
           img.src = u;
           const free = () => { try { URL.revokeObjectURL(u); } catch (_) {} };
@@ -2271,10 +2271,10 @@ const Chat = (() => {
     if (view.childNodes.length) rowEl.appendChild(view);
   }
   // command / client-side output (/help, /whoami, version, unknown-command, …). A SYSTEM register — dim, no
-  // speaker chip, never copyable — so the station's own words are never mistaken for the agent's speech.
+  // speaker chip, never copyable — so the keep's own words are never mistaken for the agent's speech.
   function localLine(t) {
     const r = row('system'); r.body.textContent = t; autoscroll();
-    if (typeof Systems !== 'undefined' && Systems.noticeReply) { try { Systems.noticeReply(t); } catch (_) {} }   // door law: a station line naming a system brings it online
+    if (typeof Systems !== 'undefined' && Systems.noticeReply) { try { Systems.noticeReply(t); } catch (_) {} }   // door law: a keep line naming a system brings it online
     return r.d;
   }
   // the history-cap marker ("…N earlier turns trimmed …") as a dim, centered, hairline-flanked system line —
@@ -2313,7 +2313,7 @@ const Chat = (() => {
     log.appendChild(d); autoscroll();
   }
 
-  /* ---------- CELEBRATION broadcast: a terse station system line (level-up / quest / trophy) ----------
+  /* ---------- CELEBRATION broadcast: a terse keep system line (level-up / quest / trophy) ----------
      NOT a beat-slot card: it never touches activeNudge/the post-run precedence chain (turn-in→suggestion→
      seed→curiosity), so it can never compete with or suppress a real ask. It's an ambient system line —
      dim, letter-spaced, centered, hairline rules either side — appended to the transcript exactly where it
@@ -2330,7 +2330,7 @@ const Chat = (() => {
   const broadcastQueue = [];       // {text, opts} coalesced inside the window — drained in order, one per window slot
   let broadcastDrainTimer = null;
   function broadcastBlocked() {
-    // never during the create/onboarding/interview flows — a celebration must land only on the live station
+    // never during the create/onboarding/interview flows — a celebration must land only on the live keep
     const game = el('screen-game');
     if (!game || !game.classList.contains('active')) return true;
     if (typeof Onboarding !== 'undefined' && Onboarding.isRunning && Onboarding.isRunning()) return true;
@@ -2339,7 +2339,7 @@ const Chat = (() => {
   }
   // drain ONE queued broadcast (oldest first) then reschedule until the queue empties — each drained line still
   // respects the one-per-window rate limit, so a burst plays out as an ordered trickle instead of stacking. A
-  // queued line that turned invalid mid-wait (Commander left the station) is dropped, but the rest keep draining.
+  // queued line that turned invalid mid-wait (Commander left the keep) is dropped, but the rest keep draining.
   function drainBroadcasts() {
     broadcastDrainTimer = null;
     if (!broadcastQueue.length) return;
@@ -2371,7 +2371,7 @@ const Chat = (() => {
     opts = opts || {};
     lastBroadcastAt = Date.now();
     clearEmptyState();
-    // COALESCE INTO ONE BLOCK: consecutive station lines share a single broadcast row (a centered stack
+    // COALESCE INTO ONE BLOCK: consecutive keep lines share a single broadcast row (a centered stack
     // inside the same hairline chrome) instead of each claiming a full transcript row — four trophies
     // land as one quiet moment, not four rows wedged between the Commander and their agent.
     const raw = String(text == null ? '' : text);
@@ -2431,7 +2431,7 @@ const Chat = (() => {
     }
     stack.appendChild(line);
     autoscroll();
-    // ASCII-motion (asciifx.js): the station line DECODES out of glyph-static — the eerie register the
+    // ASCII-motion (asciifx.js): the keep line DECODES out of glyph-static — the eerie register the
     // broadcast asks for (a signal resolving, never a party). scramble walks leaf text nodes only, so the
     // tinted agent-name span keeps its colour; it restores the exact text on completion; reduced-motion no-op.
     try { if (typeof AsciiFX !== 'undefined') AsciiFX.scramble(line, { duration: 700 }); } catch (_) {}
@@ -2650,7 +2650,7 @@ const Chat = (() => {
     const refresh = () => { try { a.href = fileUrl(title, agentId); } catch (_) {} };
     a.addEventListener('click', refresh, true); a.addEventListener('auxclick', refresh, true);
     a.addEventListener('contextmenu', refresh, true); a.addEventListener('focus', refresh, true);
-    // A web page opens RUNNING, in the station's BROWSER window (the window has OPEN OUTSIDE for the OS browser).
+    // A web page opens RUNNING, in the keep's BROWSER window (the window has OPEN OUTSIDE for the OS browser).
     // /api/file would hand the same .html over as an inert download.
     if (typeof OutputBrowser !== 'undefined' && OutputBrowser.isHtml && OutputBrowser.isHtml(title)) {
       a.addEventListener('click', ev => {
@@ -2665,13 +2665,13 @@ const Chat = (() => {
       a.addEventListener('click', ev => {
         ev.preventDefault(); ev.stopPropagation();
         if (window.getSelection && String(window.getSelection())) return;   // a drag-selection release is not an open (the delegated handler's SELECTION GUARD law)
-        Promise.resolve(core.invoke('starnet_open_artifact', { path: String(title || ''), agentId: agentId || 'agent' }))
+        Promise.resolve(core.invoke('eyehold_open_artifact', { path: String(title || ''), agentId: agentId || 'agent' }))
           .catch(err => {
             // The host shows a native confirm before any OS launch (renderer clicks are not host
             // gestures). Cancel there is an ANSWER, not a failure — never fall back around it.
             if (/declined at the host/i.test(String(err || ''))) return;
             return Promise.resolve(core.invoke('open_external_url', { url: fileUrl(title, agentId) }))
-              .catch(() => { if (typeof StationUI !== 'undefined' && StationUI.notify) StationUI.notify('could not open that file — use folder or copy path to find it on disk', 'warn'); });
+              .catch(() => { if (typeof KeepUI !== 'undefined' && KeepUI.notify) KeepUI.notify('could not open that file — use folder or copy path to find it on disk', 'warn'); });
           });
       });
     }
@@ -2726,7 +2726,7 @@ const Chat = (() => {
       img.src = u;
     }).catch(() => {
       if (lightbox === mine) closeLightbox();
-      if (typeof StationUI !== 'undefined' && StationUI.notify) StationUI.notify('could not load that image — the sidecar may be unreachable', 'warn');
+      if (typeof KeepUI !== 'undefined' && KeepUI.notify) KeepUI.notify('could not load that image — the sidecar may be unreachable', 'warn');
     });
   }
   // wire an image thumb in the transcript: click enlarges via the jailed /api/file route (fresh blob each
@@ -2747,7 +2747,7 @@ const Chat = (() => {
   function workspaceDir(agentId) {
     const aid = agentId || 'agent';
     if (_wsDirCache.has(aid)) return _wsDirCache.get(aid);
-    // header auth only: the hardened window.fetch (harness.js) attaches X-StarNet-Token to every /api/ URL
+    // header auth only: the hardened window.fetch (harness.js) attaches X-Eyehold-Token to every /api/ URL
     const p = fetch('/api/workspace/dir?agent=' + encodeURIComponent(aid), { cache: 'no-store' })
       .then(r => r.ok ? r.json() : null).then(j => (j && j.dir) ? String(j.dir) : '').catch(() => '');
     _wsDirCache.set(aid, p);
@@ -2810,7 +2810,7 @@ const Chat = (() => {
     b.addEventListener('click', () => {
       const core = tauriCore();
       if (core && core.invoke) {
-        Promise.resolve(core.invoke('starnet_reveal_path', { path: String(relPath || ''), agentId: agentId || 'agent' })).then(() => {
+        Promise.resolve(core.invoke('eyehold_reveal_path', { path: String(relPath || ''), agentId: agentId || 'agent' })).then(() => {
           lbl.textContent = 'opened'; setTimeout(() => resetFeedbackLabel(b), 1400);
         }).catch(err => {
           if (/declined at the host/i.test(String(err || ''))) { resetFeedbackLabel(b); return; }   // native-prompt Cancel: no reveal, no clipboard fallback
@@ -2853,7 +2853,7 @@ const Chat = (() => {
       img.src = u;
       // once the <img> has decoded (or failed) it no longer needs the object URL — the decoded bitmap
       // survives revocation, so the thumbnail keeps rendering. Revoke to avoid leaking one URL per image
-      // deliverable on a long-running station (mirrors voice.js freeing its audio blob after use).
+      // deliverable on a long-running keep (mirrors voice.js freeing its audio blob after use).
       const free = () => { try { URL.revokeObjectURL(u); } catch (_) {} };
       img.addEventListener('load', free, { once: true });
       img.addEventListener('error', free, { once: true });
@@ -2876,14 +2876,14 @@ const Chat = (() => {
   // Base: on desktop the page runs
   // on the tauri.localhost origin and the shell rewrites ONLY window.fetch to the sidecar — a relative
   // href would navigate into the bundled-asset protocol and vanish (the same trap cloudsave's unload
-  // beacon hit), so native loads carry the ABSOLUTE loopback base (window.__STARNET_API__); in a
+  // beacon hit), so native loads carry the ABSOLUTE loopback base (window.__EYEHOLD_API__); in a
   // browser the base is '' and the URL stays same-origin relative.
   // Auth (2026-09-25): a FILE-SCOPED 5-minute ticket (ApiTicket.fileUrl), never the master token — this href reaches
   // OS-browser history, Referer and copied links. wireFileOpen re-mints it right before any use.
   function fileUrl(title, agentId) {
     if (typeof ApiTicket !== 'undefined' && ApiTicket.fileUrl) return ApiTicket.fileUrl(agentId || 'agent', String(title));
     let base = '';
-    try { base = (typeof window !== 'undefined' && window.__STARNET_API__) ? String(window.__STARNET_API__) : ''; } catch (_) {}
+    try { base = (typeof window !== 'undefined' && window.__EYEHOLD_API__) ? String(window.__EYEHOLD_API__) : ''; } catch (_) {}
     return base + '/api/file?agent=' + encodeURIComponent(agentId || 'agent') + '&path=' + encodeURIComponent(title);
   }
   // append a small "open in a new tab" fallback link — shown when an inline player can't decode the file
@@ -3073,13 +3073,13 @@ const Chat = (() => {
   function glance(s, n) { const one = String(s == null ? '' : s).replace(/\s+/g, ' ').trim(); n = n || 96; return one.length > n ? one.slice(0, n - 1) + '…' : one; }
   function requestArgs(s) { try { const o = JSON.parse(String(s || '')); return o && typeof o === 'object' && !Array.isArray(o) ? o : null; } catch (_) { return null; } }
   // what a consent card's INSPECT panel holds: { label, text } or null. A file change shows the mutation, a routine what
-  // it runs each time; any other request shows its arguments in full. Cards the sidecar words itself (station build /
+  // it runs each time; any other request shows its arguments in full. Cards the sidecar words itself (keep build /
   // control, folder trust, a login host, a question) and a bare short value the phrase already shows get no panel.
   function consentInspect(p) {
     const t = String((p && p.tool) || ''), raw = String((p && p.argsSummary) || '');
     if (/^fs[._](?:write|append|edit|patch)$/.test(t)) return { label: 'Inspect proposed change (secret patterns redacted)', text: raw || '(payload unavailable)' };
     if (/^routine[._](?:create|manage)$/.test(t)) { const o = requestArgs(raw); return { label: 'What it will do each run', text: (o && o.prompt) ? String(o.prompt) : raw || '(payload unavailable)' }; }
-    if (!raw.trim() || /^station[._]/.test(t) || /^(?:path\.trust|browser\.login(?:\.done)?|brief\.ask)$/.test(t)) return null;
+    if (!raw.trim() || /^keep[._]/.test(t) || /^(?:path\.trust|browser\.login(?:\.done)?|brief\.ask)$/.test(t)) return null;
     const o = requestArgs(raw), label = 'Inspect complete request (secret patterns redacted)';
     if (!o) return glance(raw) === raw.trim() ? null : { label, text: raw };
     // read as written, not as JSON: a Windows path shows C:\Users, never C:\\Users, and a command is the exact text
@@ -3137,16 +3137,16 @@ const Chat = (() => {
       const act = pick('action'), ref = pick('id');
       return (act || 'change') + ' the routine' + (ref ? ' “' + ref + '”' : '') + (when ? ' — ' + when : '');
     }
-    // THE STATION BUILDER (2026-09-29): the card IS the plan — what gets built, where, who works each step. The sidecar
-    // sends the plan's own summary (its dry run on a copy of the station), never the model's words.
-    if (/^station[._]build$/.test(t)) { const plan = String(ev.argsSummary || '').split('\n')[0] || 'a planned change'; return 'build this on your station: ' + plan + (/\bUNDO\b/.test(plan) ? '' : ' One UNDO in Build mode takes it back.'); }
-    // MAKE A PROP (2026-10-01): the card names the object and what it costs in StarNet credits (the sidecar's own words)
-    if (/^station[._]make_prop$/.test(t)) return 'make a new prop: ' + (String(ev.argsSummary || '').split('\n')[0] || 'a new prop');
+    // THE KEEP BUILDER (2026-09-29): the card IS the plan — what gets built, where, who works each step. The sidecar
+    // sends the plan's own summary (its dry run on a copy of the keep), never the model's words.
+    if (/^keep[._]build$/.test(t)) { const plan = String(ev.argsSummary || '').split('\n')[0] || 'a planned change'; return 'build this on your keep: ' + plan + (/\bUNDO\b/.test(plan) ? '' : ' One UNDO in Build mode takes it back.'); }
+    // MAKE A PROP (2026-10-01): the card names the object and what it costs in Eyehold credits (the sidecar's own words)
+    if (/^keep[._]make_prop$/.test(t)) return 'make a new prop: ' + (String(ev.argsSummary || '').split('\n')[0] || 'a new prop');
     // TEST A LINE (2026-10-01): the card names the line and the job it will send (the sidecar's own words)
-    if (/^station[._]test_line$/.test(t)) return 'test ' + (String(ev.argsSummary || '').split('\n')[0] || 'a workflow line');
-    if (/^station[._]start_line$/.test(t)) return 'set what starts ' + (String(ev.argsSummary || '').split('\n')[0] || 'a workflow line');
-    // STATION CONTROL (2026-10-02): a settings change asked for in chat — the sidecar's catalog sentence, never raw JSON
-    if (/^station[._](?:control|power)$/.test(t)) return String(ev.argsSummary || 'change a station setting').split('\n')[0];
+    if (/^keep[._]test_line$/.test(t)) return 'test ' + (String(ev.argsSummary || '').split('\n')[0] || 'a workflow line');
+    if (/^keep[._]start_line$/.test(t)) return 'set what starts ' + (String(ev.argsSummary || '').split('\n')[0] || 'a workflow line');
+    // KEEP CONTROL (2026-10-02): a settings change asked for in chat — the sidecar's catalog sentence, never raw JSON
+    if (/^keep[._](?:control|power)$/.test(t)) return String(ev.argsSummary || 'change a keep setting').split('\n')[0];
     return t.replace(/_/g, '.') + (ev.argsSummary ? ' ' + glance(ev.argsSummary) : '');
   }
 
@@ -3200,7 +3200,7 @@ const Chat = (() => {
     const btns = document.createElement('span'); btns.className = 'consent-btns';
     let decided = false;
     function answer(text, doneLabel) {
-      if (ws && typeof StationUI !== 'undefined' && StationUI.settleNotifs) StationUI.settleNotifs('needs:' + ws.id);   // answered: leaves NEEDS YOU
+      if (ws && typeof KeepUI !== 'undefined' && KeepUI.settleNotifs) KeepUI.settleNotifs('needs:' + ws.id);   // answered: leaves NEEDS YOU
       if (decided) return; decided = true;
       const rid = (ws && typeof Channels !== 'undefined') ? Channels.runIdOf(ws.id) : null;
       Harness.consentAnswer(rid, p.promptId, text);
@@ -3272,7 +3272,7 @@ const Chat = (() => {
       btns.appendChild(rest);
     }
     r.body.appendChild(btns);
-    // STARNET REMOTE: a paired phone can answer this question too (the sidecar then puts permission.response on this
+    // EYEHOLD REMOTE: a paired phone can answer this question too (the sidecar then puts permission.response on this
     // run's stream, as for an approval). Settle the card to what happened — it used to keep live options and "awaiting
     // your answer…" after the run had moved on, and a tap then did nothing while the card claimed it answered.
     if (typeof U !== 'undefined' && U.bus && U.bus.on && U.bus.off) {
@@ -3297,8 +3297,8 @@ const Chat = (() => {
     r.d.tabIndex = -1;
     r.d.addEventListener('keydown', e => { if (e.key === 'Escape') { e.preventDefault(); answer('use your judgment', '✓ your call'); } });
     status('awaiting your answer…');
-    if (ws && !announcedPrompt(p.promptId, ws) && typeof StationUI !== 'undefined') StationUI.notify(name + ' has a quick question for you' + sessionNote(ws), 'warn', 'needsApproval', { kind: 'needs', go: { ws: ws.id }, key: 'needs:' + ws.id, prompt: p.promptId });
-    else if (!ws && typeof StationUI !== 'undefined') StationUI.notify(name + ' has a quick question for you' + sessionNote(ws), 'warn', 'needsApproval');
+    if (ws && !announcedPrompt(p.promptId, ws) && typeof KeepUI !== 'undefined') KeepUI.notify(name + ' has a quick question for you' + sessionNote(ws), 'warn', 'needsApproval', { kind: 'needs', go: { ws: ws.id }, key: 'needs:' + ws.id, prompt: p.promptId });
+    else if (!ws && typeof KeepUI !== 'undefined') KeepUI.notify(name + ' has a quick question for you' + sessionNote(ws), 'warn', 'needsApproval');
     autoscroll();
     const composerBusy = !!(input && (document.activeElement === input || (input.value && input.value.trim())));
     if (!composerBusy) { try { r.d.focus({ preventScroll: true }); } catch (_) { try { r.d.focus(); } catch (_) {} } }
@@ -3325,22 +3325,22 @@ const Chat = (() => {
       });
       detail.appendChild(label); detail.appendChild(payload); detail.appendChild(copy); r.body.appendChild(detail);
     }
-    // the station builder's card: every step's instructions, one click away (the summary line is in the phrase above)
-    if (/^station[._]build$/.test(String(p.tool || '')) && String(p.argsSummary || '').indexOf('\n') > 0) {
+    // the keep builder's card: every step's instructions, one click away (the summary line is in the phrase above)
+    if (/^keep[._]build$/.test(String(p.tool || '')) && String(p.argsSummary || '').indexOf('\n') > 0) {
       const detail = document.createElement('details'); detail.className = 'consent-payload';
       const label = document.createElement('summary'); label.textContent = 'What each step will be told';
       const payload = document.createElement('pre'); payload.textContent = String(p.argsSummary).split('\n').slice(1).join('\n');
       detail.appendChild(label); detail.appendChild(payload); r.body.appendChild(detail);
     }
     // …and draws the plan: where it goes and what goes where, before anything is built (the page's own parked plan)
-    if (/^station[._]build$/.test(String(p.tool || '')) && typeof StationCommands !== 'undefined' && StationCommands.previewFor && typeof PlanPreview !== 'undefined') {
-      const fig = PlanPreview.el(StationCommands.previewFor(String(p.argsSummary || '').split('\n')[0]));
+    if (/^keep[._]build$/.test(String(p.tool || '')) && typeof KeepCommands !== 'undefined' && KeepCommands.previewFor && typeof PlanPreview !== 'undefined') {
+      const fig = PlanPreview.el(KeepCommands.previewFor(String(p.argsSummary || '').split('\n')[0]));
       if (fig) r.body.appendChild(fig);
     }
     const btns = document.createElement('span'); btns.className = 'consent-btns';
     let decided = false;
     async function decide(decision, doneLabel, isDeny) {
-      if (ws && typeof StationUI !== 'undefined' && StationUI.settleNotifs) StationUI.settleNotifs('needs:' + ws.id);   // decided: leaves NEEDS YOU
+      if (ws && typeof KeepUI !== 'undefined' && KeepUI.settleNotifs) KeepUI.settleNotifs('needs:' + ws.id);   // decided: leaves NEEDS YOU
       if (decided) return; decided = true;
       for (const b of btns.querySelectorAll('button')) b.disabled = true;
       const rid = (ws && typeof Channels !== 'undefined') ? Channels.runIdOf(ws.id) : null;
@@ -3390,8 +3390,8 @@ const Chat = (() => {
     } else if (p.tool === 'browser.login.done') {
       mk('Done — I\'ve logged in', 'once', '', '✓ done', false);
       mk('Cancel', 'deny', 'deny', '✕ cancelled', true);
-    } else if (p.tool === 'station.power') {
-      // widening the station's leash is answered fresh every time (permissions.js tier 1.5): no Always, no Full access
+    } else if (p.tool === 'keep.power') {
+      // widening the keep's leash is answered fresh every time (permissions.js tier 1.5): no Always, no Full access
       mk('Approve once', 'once', '', '✓ approved once', false);
       mk('Deny', 'deny', 'deny', '✕ denied', true);
     } else {
@@ -3401,7 +3401,7 @@ const Chat = (() => {
       mk('Deny', 'deny', 'deny', '✕ denied', true);
     }
     r.body.appendChild(btns);
-    // STARNET REMOTE: a paired phone can answer this same prompt. The sidecar then puts permission.response on
+    // EYEHOLD REMOTE: a paired phone can answer this same prompt. The sidecar then puts permission.response on
     // this run's own stream (harness re-emits it on U.bus). Settle the card to what actually happened, so the
     // desk never keeps live buttons on a question that was already answered elsewhere. The desk's own answer
     // also emits permission.response, but by then `decided` is set and this listener just unsubscribes.
@@ -3428,8 +3428,8 @@ const Chat = (() => {
     r.d.tabIndex = -1;
     r.d.addEventListener('keydown', e => { if (e.key === 'Escape') { e.preventDefault(); decide('deny', '✕ denied', true); } });
     status('awaiting your approval…');
-    if (ws && !announcedPrompt(p.promptId, ws) && typeof StationUI !== 'undefined') StationUI.notify(name + ' needs approval to ' + actionPhrase(p), 'warn', 'needsApproval', { kind: 'needs', go: { ws: ws.id }, key: 'needs:' + ws.id, prompt: p.promptId });
-    else if (!ws && typeof StationUI !== 'undefined') StationUI.notify(name + ' needs approval to ' + actionPhrase(p), 'warn', 'needsApproval');   // P1-8 category: consent prompt
+    if (ws && !announcedPrompt(p.promptId, ws) && typeof KeepUI !== 'undefined') KeepUI.notify(name + ' needs approval to ' + actionPhrase(p), 'warn', 'needsApproval', { kind: 'needs', go: { ws: ws.id }, key: 'needs:' + ws.id, prompt: p.promptId });
+    else if (!ws && typeof KeepUI !== 'undefined') KeepUI.notify(name + ' needs approval to ' + actionPhrase(p), 'warn', 'needsApproval');   // P1-8 category: consent prompt
     // FOCUS-STEAL GUARD (P0): a consent prompt must NEVER hijack focus from a Commander who is mid-typing or holds
     // a draft — a stolen focus + a reflexive Enter could approve a file write they never read. Only follow the
     // scroll when they were already at the bottom (honor stick), and only take focus (onto the row CONTAINER, so
@@ -3460,12 +3460,12 @@ const Chat = (() => {
   }
   if (typeof U !== 'undefined' && U.bus && U.bus.on) U.bus.on('permission.response', (resp) => {
     const key = resp && resp.promptId != null ? promptNeeds.get(String(resp.promptId)) : null;
-    if (key && typeof StationUI !== 'undefined' && StationUI.settleNotifs) StationUI.settleNotifs(key);
+    if (key && typeof KeepUI !== 'undefined' && KeepUI.settleNotifs) KeepUI.settleNotifs(key);
   });
   function backgroundPermissionNotify(ev, ws) {
     const who = (typeof App !== 'undefined' && App.agentName && App.agentName(ws.agentId || 'agent')) || ws.agentId || 'an agent';
-    if (!announcedPrompt(ev && ev.promptId, ws) && typeof StationUI !== 'undefined' && StationUI.notify) {
-      StationUI.notify(who + ' needs approval to ' + actionPhrase(ev) + sessionNote(ws), 'warn', 'needsApproval',
+    if (!announcedPrompt(ev && ev.promptId, ws) && typeof KeepUI !== 'undefined' && KeepUI.notify) {
+      KeepUI.notify(who + ' needs approval to ' + actionPhrase(ev) + sessionNote(ws), 'warn', 'needsApproval',
         { kind: 'needs', go: { ws: ws.id }, key: 'needs:' + ws.id, prompt: ev && ev.promptId });
     }
     try { if (typeof App !== 'undefined' && App.refreshRail) App.refreshRail(); } catch (_) {}
@@ -3586,7 +3586,7 @@ const Chat = (() => {
     } catch (_) { return Promise.resolve(null); }
   }
   // render the rate-the-work control into `host` (a span/div). onSettle fires after the verdict flashes.
-  const WORKRATE_COACH_KEY = 'starnet.workrate.seen';
+  const WORKRATE_COACH_KEY = 'eyehold.workrate.seen';
   function workRateControl(host, agentId, runId, onSettle) {
     host.setAttribute('data-rate-run', runId);
     // one-time explainer: the FIRST rate surface a Commander ever sees gets one honest line about what a
@@ -3622,7 +3622,7 @@ const Chat = (() => {
       if (!accepted || !accepted.ok) {
         done = false;
         buttons.forEach(b => { b.disabled = false; });
-        try { if (typeof StationUI !== 'undefined' && StationUI.notify) StationUI.notify((accepted && accepted.error) || 'Rating was not saved — try again.', 'bad'); } catch (_) {}
+        try { if (typeof KeepUI !== 'undefined' && KeepUI.notify) KeepUI.notify((accepted && accepted.error) || 'Rating was not saved — try again.', 'bad'); } catch (_) {}
         return;
       }
       btns.remove();
@@ -3855,9 +3855,9 @@ const Chat = (() => {
     const foot = document.createElement('div'); foot.className = 'turnin-rate';
     // the ONE door that always works, prop or no prop on the floor: open the OUTBOX window — every listed
     // run readable + rateable in one place (2026-07-16; a floor with no OUTBOX placed had no other path).
-    if (typeof StationUI !== 'undefined' && StationUI.openTerm) {
+    if (typeof KeepUI !== 'undefined' && KeepUI.openTerm) {
       const ob = document.createElement('button'); ob.className = 'consent-btn'; ob.textContent = '▸ review it in DELIVERABLES';
-      ob.onclick = () => StationUI.openTerm('outbox');
+      ob.onclick = () => KeepUI.openTerm('outbox');
       foot.appendChild(ob);
     }
     const dis = document.createElement('button'); dis.className = 'consent-btn deny'; dis.textContent = 'dismiss';
@@ -3932,7 +3932,7 @@ const Chat = (() => {
        the learning loop records). The card still posts below it, so SAY where it went: a silent click read as a dead INBOX
        (2026-09-28 retest, the goal-path question covering COMMS). */
     const covered = () => { try { return typeof Dialogue !== 'undefined' && Dialogue.isOpen && Dialogue.isOpen(); } catch (_) { return false; } };
-    const sayCovered = () => { if (covered() && typeof StationUI !== 'undefined' && StationUI.notify) StationUI.notify('The INBOX card is in COMMS, under the question your agent is asking. Answer it, and the card is right there.', 'info', undefined, { transient: true }); };
+    const sayCovered = () => { if (covered() && typeof KeepUI !== 'undefined' && KeepUI.notify) KeepUI.notify('The INBOX card is in COMMS, under the question your agent is asking. Answer it, and the card is right there.', 'info', undefined, { transient: true }); };
     if (sampleCardEl && sampleCardEl.isConnected) { autoscroll(); sayCovered(); return; }   // one live card at a time
     const r = row('agent'); r.d.classList.add('tool'); r.d.classList.add('turnin'); r.d.classList.add('sample-card');
     sampleCardEl = r.d;
@@ -3956,7 +3956,7 @@ const Chat = (() => {
     later.onclick = () => vanish(r.d);
     btns.appendChild(run); btns.appendChild(later);
     if (opts.schedOff) {
-      // a schedule IS saved; the station's scheduling is off — the fix is one click, right here (R3)
+      // a schedule IS saved; the keep's scheduling is off — the fix is one click, right here (R3)
       const arm = document.createElement('button'); arm.className = 'consent-btn'; arm.textContent = '▸ TURN SCHEDULING ON';
       arm.onclick = () => {
         arm.disabled = true; arm.textContent = '… turning on';
@@ -3969,10 +3969,10 @@ const Chat = (() => {
       };
       btns.appendChild(arm);
     }
-    if (opts.fed === false && !opts.schedOff && typeof StationUI !== 'undefined' && StationUI.openTerm) {
+    if (opts.fed === false && !opts.schedOff && typeof KeepUI !== 'undefined' && KeepUI.openTerm) {
       // the floor PROVABLY has no feed wired (server-answered, never guessed) — keep the promised door here
       const feed = document.createElement('button'); feed.className = 'consent-btn'; feed.textContent = '▸ WIRE A REAL FEED — CHANNELS';
-      feed.onclick = () => StationUI.openTerm('messaging');
+      feed.onclick = () => KeepUI.openTerm('messaging');
       btns.appendChild(feed);
     }
     const fail = (msg) => {
@@ -3987,7 +3987,7 @@ const Chat = (() => {
       run.textContent = '⌛ the job is riding the line…';   // honest: the POST is genuinely open until the line delivers
       note.textContent = '';
       Harness.api.post('/api/routing/sample', job ? Object.assign({}, job.text ? { text: job.text } : {}, job.line ? { line: job.line } : {}) : {}).then(res => {
-        if (!res.ok) return fail(String((res.j && res.j.error) || ('the station refused (http ' + res.status + ')')));   // the server's reason, VERBATIM
+        if (!res.ok) return fail(String((res.j && res.j.error) || ('the keep refused (http ' + res.status + ')')));   // the server's reason, VERBATIM
         const j = res.j || {};
         btns.remove();
         // TRUTHFUL VERDICT: "delivered" may only be claimed for a run that finished clean ('done' is the
@@ -4012,9 +4012,9 @@ const Chat = (() => {
           note.appendChild(out);
         }
         const acts = document.createElement('div'); acts.className = 'turnin-rate';
-        if (folded && typeof StationUI !== 'undefined' && StationUI.openTerm) {
+        if (folded && typeof KeepUI !== 'undefined' && KeepUI.openTerm) {
           const ob = document.createElement('button'); ob.className = 'consent-btn'; ob.textContent = '▸ review it in DELIVERABLES';
-          ob.onclick = () => StationUI.openTerm('outbox');
+          ob.onclick = () => KeepUI.openTerm('outbox');
           acts.appendChild(ob);
         }
         const done = document.createElement('button'); done.className = 'consent-btn quiet'; done.textContent = 'done';
@@ -4022,7 +4022,7 @@ const Chat = (() => {
         acts.appendChild(done);
         note.appendChild(acts);
         autoscroll();
-      }).catch(() => fail('the station didn’t answer — is the sidecar running?'));
+      }).catch(() => fail('the keep didn’t answer — is the sidecar running?'));
     };
     autoscroll();
     sayCovered();
@@ -4078,17 +4078,17 @@ const Chat = (() => {
       ? ((htmlFiles.find(f => /(^|\/)index\.html?$/i.test(f.path)) || htmlFiles[0]).path)
       : '';
     const openRunTab = (relPath) => {
-      // a web page runs in the station's BROWSER window (same sandboxed /workshop-run/ bytes, OPEN OUTSIDE there)
+      // a web page runs in the keep's BROWSER window (same sandboxed /workshop-run/ bytes, OPEN OUTSIDE there)
       if (typeof OutputBrowser !== 'undefined' && OutputBrowser.isHtml && OutputBrowser.isHtml(relPath)) {
         OutputBrowser.open({ agentId, runId: m.runId, path: relPath, source: 'workshop' });
         return;
       }
       const url = opts.runUrl ? opts.runUrl(relPath) : '';
-      const warn = (msg) => { if (typeof StationUI !== 'undefined' && StationUI.notify) StationUI.notify(msg, 'warn'); };
-      if (!url) { warn('could not open that — the station may be unreachable'); return; }
+      const warn = (msg) => { if (typeof KeepUI !== 'undefined' && KeepUI.notify) KeepUI.notify(msg, 'warn'); };
+      if (!url) { warn('could not open that — the keep may be unreachable'); return; }
       // Desktop (Tauri): a raw window.open silently fails under the window policy — hand the absolute
       // sidecar URL to the OS default browser and report a real failure if it doesn't open (same law as
-      // stationui.js openSignIn: never pretend a tab exists). Browser: window.open, where null = popup-blocked.
+      // keepui.js openSignIn: never pretend a tab exists). Browser: window.open, where null = popup-blocked.
       const invoke = (typeof window !== 'undefined' && window.__TAURI__ && window.__TAURI__.core) ? window.__TAURI__.core.invoke : null;
       if (invoke) {
         invoke('open_external_url', { url }).catch(() => warn('could not open your browser — open this in one yourself: ' + url));
@@ -4096,7 +4096,7 @@ const Chat = (() => {
       }
       let win = null;
       try { win = window.open(url, '_blank', 'noopener'); } catch (_) {}
-      if (!win) warn('your browser blocked the new tab — allow popups for the station, then try again');
+      if (!win) warn('your browser blocked the new tab — allow popups for the keep, then try again');
     };
     const r = row('agent'); r.d.classList.add('tool'); r.d.classList.add('turnin'); r.d.classList.add('workshop-return');
     try { r.d.setAttribute('data-wsrun', String(m.runId)); } catch (_) {}   // the re-present dedupe key (above)
@@ -4263,7 +4263,7 @@ const Chat = (() => {
     // ── the files — every row's click ACTUALLY WORKS (2026-07-15 UX audit: the old "open in your default
     // app" affordance was a guaranteed dead end — OS-launch is deliberately impossible from a run). Now:
     //   .html and browser-renderable media → the jailed /workshop-run/ tab (runs/renders read-only);
-    //   everything else → the inline reader, right here in the card. No promise the station can't keep.
+    //   everything else → the inline reader, right here in the card. No promise the keep can't keep.
     const TAB_RE = /\.(html?|png|jpe?g|gif|webp|svg|mp4|webm|mp3|wav|txt|csv|log|json)$/i;
     const fb = document.createElement('div'); fb.className = 'ws-pane ws-files';
     const fhead = document.createElement('div'); fhead.className = 'ws-fhead'; fhead.textContent = 'files' + (files.length ? ' · ' + files.length : '');
@@ -4382,7 +4382,7 @@ const Chat = (() => {
           const core = tauriCore();   // desktop shell only — a real Explorer/Finder reveal exists there
           if (core && core.invoke) {
             const rv = document.createElement('button'); rv.className = 'consent-btn'; rv.textContent = '📂 open folder';
-            rv.onclick = () => { Promise.resolve(core.invoke('starnet_reveal_path', { path: destPath })).catch(err => { if (/declined at the host/i.test(String(err || ''))) return; rv.textContent = 'could not open'; setTimeout(() => { rv.textContent = '📂 open folder'; }, 1600); }); };
+            rv.onclick = () => { Promise.resolve(core.invoke('eyehold_reveal_path', { path: destPath })).catch(err => { if (/declined at the host/i.test(String(err || ''))) return; rv.textContent = 'could not open'; setTimeout(() => { rv.textContent = '📂 open folder'; }, 1600); }); };
             chips.appendChild(rv);
           }
           // UNDO KEEP (EL-11 #8) — reverse the copy-out: delete exactly the files Implement wrote to destPath and
@@ -4400,12 +4400,12 @@ const Chat = (() => {
             let j = null;
             try {
               const tok = (typeof Harness !== 'undefined' && Harness.apiToken) ? String(Harness.apiToken() || '') : '';
-              const headers = { 'Content-Type': 'application/json' }; if (tok) headers['X-StarNet-Token'] = tok;
+              const headers = { 'Content-Type': 'application/json' }; if (tok) headers['X-Eyehold-Token'] = tok;
               const rr = await fetch('/api/workshop/undo', { method: 'POST', headers, body: JSON.stringify({ agentId: agentId, runId: m.runId, destPath: destPath }) });
               j = await rr.json().catch(() => null);
               if (!rr.ok || !j || j.ok === false) j = null;
             } catch (_) { j = null; }
-            if (!j) { un.disabled = false; unArmed = false; un.textContent = 'undo keep'; localLine('Could not undo this keep: the station kept the files.'); return; }
+            if (!j) { un.disabled = false; unArmed = false; un.textContent = 'undo keep'; localLine('Could not undo this keep: the keep kept the files.'); return; }
             // honest resulting state, straight from server truth.
             const nRemoved = (j.removed || []).length, nMissing = (j.missing || []).length;
             let done;
@@ -4447,21 +4447,21 @@ const Chat = (() => {
     implBtn.title = (plan && plan.action === 'apply') ? ('applies this patch to a new branch in ' + plan.root)
       : patchSaveOnly ? 'saves the .patch file only — it will NOT be applied to your project'
       : buildable ? ('has ' + who + ' BUILD what this describes — nothing is copied to a folder')
-      : ('saves the files to ' + ((plan && plan.dest) || 'your StarNet deliverables folder'));
+      : ('saves the files to ' + ((plan && plan.dest) || 'your Eyehold deliverables folder'));
     // why a build can be refused, in the Commander's words — never a raw reason code.
     const implFailCopy = (reason) => {
       const r = String(reason || '');
       if (r === 'no-capability') return 'no model or key is available for unattended runs — set one in KEYS, then press ' + implLabel + ' again';
       if (r === 'source-gone') return 'this deliverable’s files are no longer on disk';
-      if (r === 'queue-refused') return 'this work was discarded before, so the station won’t rebuild it';
+      if (r === 'queue-refused') return 'this work was discarded before, so the keep won’t rebuild it';
       if (r === 'already-implemented') return 'this plan has already been built — its build is in your rail';
       if (r === 'already-an-implementation') return 'this build IS an implementation already — there is nothing further to build from it';
       if (r === 'no-manifest' || r === 'run-failed') return 'the build ran but produced nothing reviewable';
-      if (r === 'manifest-stamp-failed') return 'the files landed, but the station could not durably prove their link to this plan';
-      if (r === 'registration-failed') return 'the files landed, but the station could not durably register a reviewable build';
-      if (r === 'built-source-retire-failed') return 'the build landed, but the station could not durably retire this source plan';
-      if (r === 'unreachable' || r.indexOf('http') === 0) return 'the station couldn’t be reached';
-      return r || 'the station refused';
+      if (r === 'manifest-stamp-failed') return 'the files landed, but the keep could not durably prove their link to this plan';
+      if (r === 'registration-failed') return 'the files landed, but the keep could not durably register a reviewable build';
+      if (r === 'built-source-retire-failed') return 'the build landed, but the keep could not durably retire this source plan';
+      if (r === 'unreachable' || r.indexOf('http') === 0) return 'the keep couldn’t be reached';
+      return r || 'the keep refused';
     };
     implBtn.onclick = async () => {
       if (implBtn.disabled) return;
@@ -4498,14 +4498,14 @@ const Chat = (() => {
       let res = null; try { res = await onDecide('keep'); } catch (_) { res = { ok: false }; }
       if (!(res && res.ok)) {
         implBtn.disabled = false; implBtn.textContent = implLabel;
-        localLine('Could not implement this: ' + ((res && res.error) || 'the station refused') + '.');
+        localLine('Could not implement this: ' + ((res && res.error) || 'the keep refused') + '.');
         return;
       }
       const saved = res.applied
         ? ('✓ implemented — applied to branch ' + (res.branch || '?') + (res.root ? (' in ' + res.root) : ''))
         : res.savedOnly
-          ? ('⚠ patch file saved to ' + (res.destPath || 'your StarNet deliverables folder') + ' — NOT applied to your project')
-          : ('✓ implemented — files saved to ' + (res.destPath || 'your StarNet deliverables folder'));
+          ? ('⚠ patch file saved to ' + (res.destPath || 'your Eyehold deliverables folder') + ' — NOT applied to your project')
+          : ('✓ implemented — files saved to ' + (res.destPath || 'your Eyehold deliverables folder'));
       decideNote(saved); sendNote(); settle(saved, false, res.applied ? '' : (res.destPath || ''));
     };
     acts.appendChild(implBtn);
@@ -4526,7 +4526,7 @@ const Chat = (() => {
       discardBtn.disabled = true;
       let res = null; try { res = await onDecide('discard'); } catch (_) { res = { ok: false }; }
       if (res && res.ok) { const done = '✕ discarded — this idea won’t be rebuilt or re-proposed'; decideNote(done); sendNote(); settle(done, true); }
-      else { discardBtn.disabled = false; armed = false; discardBtn.textContent = 'Discard'; localLine('Could not discard this: ' + ((res && res.error) || 'the station kept it') + '.'); }
+      else { discardBtn.disabled = false; armed = false; discardBtn.textContent = 'Discard'; localLine('Could not discard this: ' + ((res && res.error) || 'the keep kept it') + '.'); }
     };
     acts.appendChild(discardBtn);
 
@@ -4662,7 +4662,7 @@ const Chat = (() => {
         if (decided) return; decided = true;
         const r = await Harness.memoryTurnin({ agentId: batch.agentId, runId: batch.runId, id: prop.id, verdict, content });
         if (r && r.ok) settle(label, isDeny);
-        else { decided = false; if (typeof StationUI !== 'undefined') StationUI.notify('could not save that ' + (prop.kind === 'skill' ? 'skill' : 'memory') + ' - try again', 'warn'); }
+        else { decided = false; if (typeof KeepUI !== 'undefined') KeepUI.notify('could not save that ' + (prop.kind === 'skill' ? 'skill' : 'memory') + ' - try again', 'warn'); }
       }
       function mkBtn(label, cls, onClick) {
         const b = document.createElement('button'); b.className = 'consent-btn' + (cls ? ' ' + cls : ''); b.textContent = label; b.onclick = onClick; btns.appendChild(b); return b;
@@ -4743,17 +4743,17 @@ const Chat = (() => {
     const onActive = originWs ? (activeWs && activeWs.id === originWs.id) : (activeWs && (activeWs.agentId || 'agent') === agentId);
 
     if (onActive && saved.length) renderReceipts({ runId, agentId, proposals: saved });   // passive — no beat slot
-    else if (saved.length && typeof StationUI !== 'undefined') {
+    else if (saved.length && typeof KeepUI !== 'undefined') {
       // origin stream not displayed (or gone): don't lose the transparency signal — the memories ARE saved, so
       // surface a soft notify instead of a receipt (Memory Core shows the records; ✕ undo lives there too).
-      StationUI.notify('an agent remembered ' + saved.length + ' ' + (saved.length > 1 ? 'things' : 'thing'), 'gold');
+      KeepUI.notify('an agent remembered ' + saved.length + ' ' + (saved.length > 1 ? 'things' : 'thing'), 'gold');
     }
     if (pending.length) {
       const deck = { runId, agentId, proposals: pending };
       if (onActive) proposalCard(deck, activeWs);
       else {
         slotMemoryEmpty(runId);   // release the reserved claim — no deck renders on a non-displayed stream
-        if (typeof StationUI !== 'undefined') StationUI.notify('an agent has ' + pending.length + ' ' + (pending.length > 1 ? 'memories' : 'memory') + ' to review', 'gold');
+        if (typeof KeepUI !== 'undefined') KeepUI.notify('an agent has ' + pending.length + ' ' + (pending.length > 1 ? 'memories' : 'memory') + ' to review', 'gold');
         maybeStandaloneRate(agentId, runId);
       }
     } else {
@@ -4804,7 +4804,7 @@ const Chat = (() => {
           forgotten += 1; capText();
         } else {
           busy = false; veto.disabled = false;
-          if (typeof StationUI !== 'undefined') StationUI.notify('could not forget that ' + (prop.kind === 'skill' ? 'skill' : 'memory') + ' - try again', 'warn');
+          if (typeof KeepUI !== 'undefined') KeepUI.notify('could not forget that ' + (prop.kind === 'skill' ? 'skill' : 'memory') + ' - try again', 'warn');
         }
       };
       item.appendChild(kind); item.appendChild(text); item.appendChild(veto);
@@ -5111,7 +5111,7 @@ const Chat = (() => {
   }
 
   // R4 PAYOFF RECEIPT: one provable line at the exact moment an answer/observation lands in the dossier, so
-  // feeding the station visibly pays off. Truthful by construction: the dossier block folds into EVERY agent's
+  // feeding the keep visibly pays off. Truthful by construction: the dossier block folds into EVERY agent's
   // system prompt (DossierStore.composeBlock), so "every agent now knows" states the wiring, not a wish. Same
   // passive gold-inset receipt family as renderReceipts — never claims the beat slot, carries no input. No veto:
   // the dossier belief it points at is edited/forgotten in the COMMANDER panel, which stays the one owner of undo.
@@ -5123,7 +5123,7 @@ const Chat = (() => {
       const item = document.createElement('div'); item.className = 'receipt-item';
       const kind = document.createElement('span'); kind.className = 'turnin-kind'; kind.textContent = 'BRIEFING';
       const text = document.createElement('span'); text.className = 'receipt-text';
-      text.textContent = '◈ briefing updated — every agent on this station now knows your ' + label + '.';
+      text.textContent = '◈ briefing updated — every agent on this keep now knows your ' + label + '.';
       item.appendChild(kind); item.appendChild(text);
       head.body.appendChild(item);
       autoscroll();
@@ -5191,7 +5191,7 @@ const Chat = (() => {
      Seven proactive channels grew seven card shapes. Every proactive CONSENT offer now reads the same way,
      in this order, so the Commander learns the grammar once:
 
-        ◈ NOTICED               the eyebrow — the station SAW something; it is not making this up
+        ◈ NOTICED               the eyebrow — the keep SAW something; it is not making this up
         because you said “…”    the EVIDENCE, in the Commander's own words (Recommend.whyLine — the exact
                                 grammar the FOR YOU shelf speaks, so COMMS and the shelf never disagree)
         <the proposal>          what it wants to do about it, tagged with its KIND
@@ -5373,7 +5373,7 @@ const Chat = (() => {
       if (beatCards) beatCards.scheduleExpire('study', 900);
       setTimeout(flushStudyPending, 900);
     });
-    // USER-STUDY LOOP — WHAT THE STATION LEARNED WHILE YOU WERE AWAY. Study also runs after cron, channel and
+    // USER-STUDY LOOP — WHAT THE KEEP LEARNED WHILE YOU WERE AWAY. Study also runs after cron, channel and
     // night-shift runs, but this lane only ever asked about the run it had just watched end, so those batches
     // were never offered and aged out of the stash. On open and on return, queue every undecided batch through
     // the SAME consent card (FIFO, deduped by run, one card per moment, the session cap still binds): nothing
@@ -5404,7 +5404,7 @@ const Chat = (() => {
   }
 
   /* GROWTH Tier 2 — THE GOAL-ARC CONFIRM BEAT (understanding → direction). When a goals-dim belief exists with no
-     goal tree, the station proposes a decomposition (3-5 milestones) and asks the Commander to Confirm / Edit /
+     goal tree, the keep proposes a decomposition (3-5 milestones) and asks the Commander to Confirm / Edit /
      Not-now — a focused Dialogue panel, exactly like the First Pitch. It is staged as an 'arc' CANDIDATE by the
      one collection pass (recommendPass) and speaks only if the spine ranks it first (memory > study > arc), and
      only into a WHOLLY FREE beat slot (slotCanArc() === 'free'), obeying the SAME stand-down guards as the
@@ -5472,7 +5472,7 @@ const Chat = (() => {
              loop keeps for every outcome the harness cannot name. */
           if (g) {
             if (typeof SFX !== 'undefined' && SFX.quest) { try { SFX.quest(); } catch (_) {} }
-            // NO StationUI.notify (notification diet): the Commander just SET this path in a card they were
+            // NO KeepUI.notify (notification diet): the Commander just SET this path in a card they were
             // reading — the sting confirms; the goal tree is where they were told it lives (⚑ QUESTS).
             recAccept('arc', 'goals', false);
           }
@@ -5507,7 +5507,7 @@ const Chat = (() => {
   }
 
   /* GROWTH Tier 3 — THE EARNED-AUTONOMY OFFER BEAT (track record → trust). After a clean run, if the demonstrated
-     track record has crossed the thresholds (TrustStore/trust.js), the station offers to raise the autonomy dial
+     track record has crossed the thresholds (TrustStore/trust.js), the keep offers to raise the autonomy dial
      ONE rung (or pre-bless a GRANTABLE capability) — a one-tap consent card, NEVER a silent escalation. It is staged
      as a 'trust' CANDIDATE by the one collection pass (recommendPass), cited by the REAL track record, and takes
      only a WHOLLY FREE beat slot (slotCanTrust() === 'free' — memory, study and the arc all outrank it), obeying
@@ -5570,9 +5570,9 @@ const Chat = (() => {
           settle(offer.kind === 'grant' ? '✓ granted' : '✓ ' + String(offer.to).toLowerCase(), false);
           recAccept('trust', '', false);   // recorded only on the VERIFIED apply — never on an attempt
           if (typeof SFX !== 'undefined' && SFX.level) { try { SFX.level(); } catch (_) {} }
-          if (typeof StationUI !== 'undefined' && StationUI.notify) StationUI.notify(offer.kind === 'grant' ? '◈ earned — it may write files on its own now (revoke any time in Settings)' : '◈ earned — autonomy raised to ' + String(offer.to).toUpperCase() + ' (adjust any time in Settings)', 'gold');
+          if (typeof KeepUI !== 'undefined' && KeepUI.notify) KeepUI.notify(offer.kind === 'grant' ? '◈ earned — it may write files on its own now (revoke any time in Settings)' : '◈ earned — autonomy raised to ' + String(offer.to).toUpperCase() + ' (adjust any time in Settings)', 'gold');
           // if the Settings AUTONOMY panel is open, repaint its EARNED badge live (fail-open no-op otherwise).
-          if (typeof StationUI !== 'undefined' && StationUI.repaintAutonomy) { try { StationUI.repaintAutonomy(); } catch (_) {} }
+          if (typeof KeepUI !== 'undefined' && KeepUI.repaintAutonomy) { try { KeepUI.repaintAutonomy(); } catch (_) {} }
         }).catch(() => { if (card.isCurrent()) settle('✕ couldn’t apply', true); });
         return;
       }
@@ -5761,7 +5761,7 @@ const Chat = (() => {
     }, 300);
   }
 
-  /* JUST-IN-TIME CURIOSITY (Commander Dossier, Phase B slice 2): after a clean run, the station may ask
+  /* JUST-IN-TIME CURIOSITY (Commander Dossier, Phase B slice 2): after a clean run, the keep may ask
      about ONE thing it still doesn't know about its Commander — gentle, budgeted (curiosity.js caps it at
      one per session), never after a stop/error. Mirrors the wireProposals turn-in beat. A "sure" launches a
      one-question intake interview for just that dimension; "not now" dismisses it for good. */
@@ -5806,7 +5806,7 @@ const Chat = (() => {
         postCorrection(runId, item.label, false, 'chip');   // the chip rides into the held skill review too (non-final: the typed message may still follow)
         DossierStore.upsert(b.dim, { text: b.text, source: b.source, weight: b.weight, observedAt: b.observedAt, sourceRunId: String(runId) });
         briefingReceipt(b.dim);   // the answer visibly pays off — the same receipt the curiosity path earns
-        try { if (typeof StationUI !== 'undefined' && StationUI.rerender) StationUI.rerender('commander'); } catch (_) {}
+        try { if (typeof KeepUI !== 'undefined' && KeepUI.rerender) KeepUI.rerender('commander'); } catch (_) {}
       });
       const beat = beatCards && beatCards.claim({ kind: 'nudge', node: r.d, data: { verdictFollowup: runId } });
       if (!beat) { if (choiceRow) { activeChoiceRows.delete(choiceRow); choiceRow.remove(); } vanish(r.d); return false; }
@@ -5832,7 +5832,7 @@ const Chat = (() => {
         Intake.start({
           skip: skip,
           onCommit: b => { if (typeof DossierStore !== 'undefined') DossierStore.upsert(b.dim, { text: b.text, source: 'curiosity', weight: b.weight }); if (typeof CuriosityStore !== 'undefined' && CuriosityStore.markAnswered) CuriosityStore.markAnswered(b.dim); briefingReceipt(b.dim); },   // R4: the answer visibly pays off — one provable "now in every agent's briefing" line (this was the ONE commit path with zero acknowledgment). V3: b.weight rides through (a canned chip stays 'seed' — never opens the readiness gate)
-          onDone: () => { if (typeof StationUI !== 'undefined' && StationUI.rerender) StationUI.rerender('commander'); },
+          onDone: () => { if (typeof KeepUI !== 'undefined' && KeepUI.rerender) KeepUI.rerender('commander'); },
           // LEAVING the curiosity-launched interview = the same "not now" wave-off: mark the dimension dismissed so it
           // isn't raised again this session (existing store, no new persistence — mirrors the choice-row "not now").
           onLeave: () => { if (typeof CuriosityStore !== 'undefined') CuriosityStore.markDismissed(dim); }
@@ -5859,7 +5859,7 @@ const Chat = (() => {
     Intake.start({
       skip: Dossier.DIM_KEYS.filter(k => k !== dim),   // exactly this one question
       onCommit: b => { if (typeof DossierStore !== 'undefined') DossierStore.upsert(b.dim, { text: b.text, source: 'curiosity', weight: b.weight }); if (typeof CuriosityStore !== 'undefined' && CuriosityStore.markAnswered) CuriosityStore.markAnswered(b.dim); briefingReceipt(b.dim); },
-      onDone: () => { if (typeof StationUI !== 'undefined' && StationUI.rerender) StationUI.rerender('commander'); },
+      onDone: () => { if (typeof KeepUI !== 'undefined' && KeepUI.rerender) KeepUI.rerender('commander'); },
       onLeave: () => { if (typeof CuriosityStore !== 'undefined') CuriosityStore.markDismissed(dim); }
     });
   }
@@ -5950,7 +5950,7 @@ const Chat = (() => {
 
   /* INTENT OFFER — the discovery seam. The bay holds 38 preconfigured classes and the library ~50 ready-made
      jobs, and BOTH live two clicks deep inside a bottom-bar popover, so most Commanders never learn they exist.
-     Rather than move those doors, the station answers from the side the Commander is already on: when what they
+     Rather than move those doors, the keep answers from the side the Commander is already on: when what they
      just typed is plainly a class's or a recipe's job, it says so ONCE, inline, and the accept deep-links
      straight to it.
 
@@ -6065,7 +6065,7 @@ const Chat = (() => {
        WITHHELD by the sidecar (skillstore provenance ask) until the Commander approves those bytes — so this aside
        is no longer a fleeting FYI: when the sidecar reports the skill as approvable-and-unapproved, the card
        carries the decision (use it / discard), exactly like the memory turn-in card. Popup law: the chips
-       appear only when a real decision is pending, and each tap changes station state (gate or archive).
+       appear only when a real decision is pending, and each tap changes keep state (gate or archive).
        When nothing is pending (an in-run agent write, already approved) the aside stays the old fleeting line. */
     let decided = false;
     const fade = () => { if (!decided) { decided = true; try { vanish(r.d); } catch (_) {} } };
@@ -6082,13 +6082,13 @@ const Chat = (() => {
           { label: '✖ discard', value: 'discard', skip: true },
           { label: 'read it first', value: 'read', quiet: true }
         ], async item => {
-          if (item.value === 'read') { try { if (typeof StationUI !== 'undefined' && StationUI.openTerm) StationUI.openTerm('skills'); } catch (_) {} return; }   // 'skills' aliases into ABILITIES ▸ SKILL LIBRARY, where the body + approve controls live
+          if (item.value === 'read') { try { if (typeof KeepUI !== 'undefined' && KeepUI.openTerm) KeepUI.openTerm('skills'); } catch (_) {} return; }   // 'skills' aliases into ABILITIES ▸ SKILL LIBRARY, where the body + approve controls live
           decided = true;
           let ok = false, flash = '';
           if (item.value === 'allow') { const res = await Harness.agentSkillAllow({ agentId: agentId || 'agent', id: skillId, allow: true }); ok = !!(res && res.ok); flash = ok ? '✔ in every briefing from now on' : 'could not approve — open ABILITIES › SKILLS'; }
           else { const res = Harness.agentSkillManage ? await Harness.agentSkillManage({ agentId: agentId || 'agent', action: 'archive', target: skillId, force: true }) : null; ok = !!(res && res.ok); flash = ok ? 'discarded' : 'could not discard — open ABILITIES › SKILLS'; }
           r.body.textContent = '◈ skill “' + brief(String(sk.name || skillName)) + '” — ' + flash;
-          if (!ok) { try { if (typeof StationUI !== 'undefined' && StationUI.notify) StationUI.notify(flash, 'warn'); } catch (_) {} }
+          if (!ok) { try { if (typeof KeepUI !== 'undefined' && KeepUI.notify) KeepUI.notify(flash, 'warn'); } catch (_) {} }
           setTimeout(() => { try { vanish(r.d); } catch (_) {} }, 2500);
         });
         void choiceRow;
@@ -6152,7 +6152,7 @@ const Chat = (() => {
   /* E6 — shell.bg.exit consumer. The sidecar announces when a background/long-running shell process
      (shell.exec background:true — a dev server, a watcher) ends, riding the durable SSE bus. That event
      existed SOLELY for the UI yet had zero listeners, so a crashed dev server kept reading as alive with
-     no surface anywhere. Give it a minimal honest system line in COMMS: a terse station broadcast (not a
+     no surface anywhere. Give it a minimal honest system line in COMMS: a terse keep broadcast (not a
      beat-slot card — never competes for the post-run slot). Renders directly (no coalesce/screen gate),
      because a process fault must never be silently dropped. Scoped to the owning agent's name when
      resolvable. Truthful telemetry: it states what the harness proved — the process exited, with its code. */
@@ -6171,7 +6171,7 @@ const Chat = (() => {
         const codeStr = killed ? '' : (code == null ? '' : ' (code ' + code + ')');
         const who = nm ? nm + '’s ' : '';
         const line = who + 'background process ' + String(p.bgId) + ' ' + verb + codeStr;
-        // render as a station system line (broadcast register) — dim, centered, hairline; NOT a card.
+        // render as a keep system line (broadcast register) — dim, centered, hairline; NOT a card.
         const d = document.createElement('div');
         d.className = 'cmsg broadcast' + (killed || code === 0 ? '' : ' broadcast-warn');
         d.setAttribute('role', 'status');
@@ -6241,7 +6241,7 @@ const Chat = (() => {
      own ten channels; the OFF-SPINE proactive consent beats — the First Pitch, the north-star confirm, the
      night-shift "review?" nudge — each kept a private anti-nag and their SUM was unbounded on top of the spine's
      four. spendAsk/askBudgetSpent are exported so those beats spend the SAME budget: five polite systems are
-     still one loud station. What does NOT spend it, stated: the reports (morning night report, the away digest)
+     still one loud keep. What does NOT spend it, stated: the reports (morning night report, the away digest)
      — an absence's work earns its summary the same way a run earns its rating — and each beat's own once-ever /
      per-session floors remain untouched underneath. */
   function spendAsk() { sessionAsks += 1; }
@@ -6254,12 +6254,12 @@ const Chat = (() => {
   }
   /* ── EVIDENCE STRENGTH (quality loop, Q1) ────────────────────────────────────────────────────────────
      The spine asks "can this candidate cite?". These ask "how STRONG is that citation?" — read from state the
-     station already holds (recquality.js: dimension confidence, belief freshness, a real repeat counter), never
+     keep already holds (recquality.js: dimension confidence, belief freshness, a real repeat counter), never
      computed fresh and never fabricated. recommend.js turns the reading into a bounded WITHIN-TIER discount, so
      thin evidence speaks later — it can never move a candidate across a priority band.
 
      Fail-open at every step: no module / no store / nothing to read → null → NO adjustment at all, and the
-     station ranks exactly as it did before the quality loop existed.
+     keep ranks exactly as it did before the quality loop existed.
 
      WHO REPORTS, AND WHY THAT MATTERS. Strength only ever SUBTRACTS, so a channel that reports one is the only
      kind that can be down-ranked by it — silence is a relative advantage. Every channel with honest data to read
@@ -6283,7 +6283,7 @@ const Chat = (() => {
      STRENGTH_MAX (recommend.js) — never a band crossing.
 
      Fail-open at every step: no module / no store / nothing to read → null → NO adjustment at all, and the
-     station ranks exactly as it did before the quality loop existed. */
+     keep ranks exactly as it did before the quality loop existed. */
   function recStrengthOfBelief(belief, dim) {
     try {
       if (typeof RecQuality !== 'undefined' && RecQuality.beliefStrength) return RecQuality.beliefStrength(belief, Date.now(), recUnderstanding(), dim);
@@ -6300,7 +6300,7 @@ const Chat = (() => {
     try { if (typeof RecQuality !== 'undefined' && RecQuality.dimStrength) return RecQuality.dimStrength(recUnderstanding(), dim); } catch (_) {}
     return null;
   }
-  // a 0..100 PERCENTAGE the station already computed (trust's provenance confidence) as a 0..1 strength. A
+  // a 0..100 PERCENTAGE the keep already computed (trust's provenance confidence) as a 0..1 strength. A
   // non-numeric / absent percentage is no reading at all — never 0, which would be the full thin-evidence penalty.
   function recStrengthOfPercent(pct) {
     const n = Number(pct);
@@ -6308,7 +6308,7 @@ const Chat = (() => {
     return n > 100 ? 1 : n / 100;
   }
   /* ── THE OUTCOME LOOP (quality loop, Q2) ─────────────────────────────────────────────────────────────
-     The station's own suggestions are held to the standard everything else here is: what did they actually
+     The keep's own suggestions are held to the standard everything else here is: what did they actually
      PRODUCE? recQualityOf reads the channel's earned weight (recqualitystore.js) for the scorer; recAccept /
      recDecline record what the Commander really did with the card. An accept that spawns a run records
      NOTHING yet — the run's own outcome is the evidence, and a click is not a result. Fail-open everywhere:
@@ -6329,7 +6329,7 @@ const Chat = (() => {
      their own stores (RecLedger.OWN_LEDGER — note() refuses them, so the ledger call below is a deliberate
      no-op for those two); seed and routine answer their spine rows from their own stores (seedstore.js /
      routinenudgestore.js), which call the ledger beside their quality-store writes.
-     Both stores are fail-open and neither is load-bearing for the card itself: a station with no ledger
+     Both stores are fail-open and neither is load-bearing for the card itself: a keep with no ledger
      reachable keeps behaving exactly as it did. recAccept/recDecline stay the ONE choke point for the rest. */
   function recAccept(channel, dim, spawnsWork, id) {
     try { if (typeof RecQualityStore !== 'undefined' && RecQualityStore.noteAccept) RecQualityStore.noteAccept({ channel: channel, dim: dim || '', spawnsWork: !!spawnsWork, id: id || '' }); } catch (_) {}
@@ -6349,7 +6349,7 @@ const Chat = (() => {
     try { if (typeof RecQualityStore !== 'undefined' && RecQualityStore.noteDecline) RecQualityStore.noteDecline({ channel: channel, dim: dim || '' }, !!deferred); } catch (_) {}
     try {
       if (typeof RecLedger !== 'undefined' && RecLedger.declined) {
-        // a REAL decline changes what the whole station may propose next, so re-read the shared memory; a
+        // a REAL decline changes what the whole keep may propose next, so re-read the shared memory; a
         // deferral ("not now") changes nothing about what is allowed and earns no request.
         if (RecLedger.declined(channel, !!deferred) && !deferred && RecLedger.refresh) RecLedger.refresh(true);
       }
@@ -6378,11 +6378,11 @@ const Chat = (() => {
   }
   /* ── THE STALENESS GUARD (quality loop, Q3) ──────────────────────────────────────────────────────────
      A belief that is OLD and UNCORROBORATED may not be ASSERTED in an offer ("because you said X") — the
-     station would be claiming something the Commander last confirmed a season ago as if it were current. But
+     keep would be claiming something the Commander last confirmed a season ago as if it were current. But
      it is a perfectly good QUESTION ("still true that X?"). These read the state; the transformation happens
      in the candidate builder, and the ask rides the SAME slot, the same session budget and the same card
      grammar as the offer it replaces — no new surface, no new concept. Fail-open: no module, no reading, no
-     claim of staleness (a station that cannot prove a belief is stale treats it as fresh). */
+     claim of staleness (a keep that cannot prove a belief is stale treats it as fresh). */
   function recStale(belief, dim) {
     try { if (typeof RecQuality !== 'undefined' && RecQuality.staleness) return RecQuality.staleness(belief, Date.now(), recUnderstanding(), dim); } catch (_) {}
     return null;
@@ -6428,7 +6428,7 @@ const Chat = (() => {
       label: 'STILL TRUE',
       proposal: 'is that still where you’re heading?',
       /* the CONSEQUENCE line: a real measured age (never a vague "a while back") and the ACTUAL cost of "no".
-         Deny does not merely stop the station treating it as a goal — DossierStore.forget denylists the text so
+         Deny does not merely stop the keep treating it as a goal — DossierStore.forget denylists the text so
          the study loop can never re-learn it from work. That is the honest thing to disclose, in one aside. */
       note: 'unconfirmed for ~' + weeks + ' week' + (weeks === 1 ? '' : 's') + ' — drop it and i won’t re-learn it from your work'
     });
@@ -6468,7 +6468,7 @@ const Chat = (() => {
          with an unknown id does NOT update anything — it PUSHES A BRAND-NEW belief, stamped commander/stated,
          inventing a Commander assertion that never happened. (forget on a gone id is a harmless no-op, but the
          -1 evidence would still land on a dimension for a belief that no longer exists.) Settle quietly instead:
-         the question was overtaken by events, and the station has nothing honest to record about it. */
+         the question was overtaken by events, and the keep has nothing honest to record about it. */
       const live = liveBelief();
       if (!live) { settle('✓ already handled', false); return; }
       const confirmed = answer === 'confirm';
@@ -6489,7 +6489,7 @@ const Chat = (() => {
              THE WEIGHT UPGRADE IS DELIBERATE, INCLUDING THE seed→stated JUMP: answering "still true?" with "still
              true" IS a statement of the CONTENT, not merely of the paraphrase, so 'stated' is the truthful weight
              and it is the only thing that ends the three-weekly re-ask. What it is NOT is a claim that these were
-             the Commander's WORDS — a station-authored belief was paraphrased by the station. So the confirmation
+             the Commander's WORDS — a keep-authored belief was paraphrased by the keep. So the confirmation
              also stamps evidenceRef.kind='confirmed', and beliefCiteKind reads that FIRST, so every later card
              cites it as `you confirmed "…"` rather than `you said "…"`. Affirmation and authorship, kept apart. */
           DossierStore.upsert(dim, { id: belief.id, text: live.text, source: 'commander', weight: 'stated', evidenceRef: { kind: 'confirmed' } });
@@ -6502,11 +6502,11 @@ const Chat = (() => {
       } catch (_) {}
       /* THE CHANNEL LEARNS THE REAL ANSWER. This used to fold 'engaged' (a positive) on BOTH answers, on the
          theory that any answer is the ask doing its job — which made the arc channel a one-way ratchet that could
-         only ever rate itself up. A "no" here means the station built an ask on a belief that was not true: that
+         only ever rate itself up. A "no" here means the keep built an ask on a belief that was not true: that
          is a decline, and the loop is worth nothing if it cannot hear one. */
       if (confirmed) recAccept('arc', dim, false); else recDecline('arc', dim, false);
       settle(confirmed ? '✓ still true' : '✕ dropped it', !confirmed);
-      if (typeof StationUI !== 'undefined' && StationUI.rerender) { try { StationUI.rerender('commander'); } catch (_) {} }
+      if (typeof KeepUI !== 'undefined' && KeepUI.rerender) { try { KeepUI.rerender('commander'); } catch (_) {} }
     }
     const mk = (lbl, cls, fn) => { const b = document.createElement('button'); b.className = 'consent-btn' + (cls ? ' ' + cls : ''); b.textContent = lbl; b.onclick = fn; btns.appendChild(b); };
     mk('Still true', '', () => commit('confirm'));
@@ -6530,7 +6530,7 @@ const Chat = (() => {
      Commander's own speech is the app asserting something the harness cannot prove. So each source gets its own
      honest phrasing, and anything unlabelled falls back to a neutral quote that claims nothing about who spoke.
        verbatim     — words the Commander really typed (a located, grounded quote)
-       confirmed    — the station's OWN wording, which the Commander then affirmed out loud (the re-confirm card).
+       confirmed    — the keep's OWN wording, which the Commander then affirmed out loud (the re-confirm card).
                       Affirming a paraphrase is real evidence about the CONTENT and no evidence at all about the
                       authorship, so it gets its own verb: `you confirmed "…"`, never `you said "…"`.
        directive    — the task text that drove the run; it may have been composed for them
@@ -6545,16 +6545,16 @@ const Chat = (() => {
     return 'from “' + t + '”';
   }
   /* A DOSSIER BELIEF'S OWN CITATION KIND (truthful telemetry, 2026-08-04). The arc and the re-confirm card cited
-     every goals belief as `you said "…"` — but the dossier holds beliefs the STATION observed from work (study
+     every goals belief as `you said "…"` — but the dossier holds beliefs the KEEP observed from work (study
      writes source:'study', weight:'observed') and beliefs synthesised during onboarding, and quoting those back as
      the Commander's speech is the card asserting something the harness cannot prove. So the belief's OWN recorded
      provenance picks the phrasing recCite already has: only Commander-authored evidence may be rendered as speech;
      an observed belief cites the work it was observed from; anything unlabelled claims no speaker at all. */
   function beliefCiteKind(b) {
     const ref = String((b && b.evidenceRef && b.evidenceRef.kind) || '');
-    /* CONFIRMED BEATS STATED, AND IS CHECKED FIRST (2026-08-04). The re-confirm card upgrades a station-authored
+    /* CONFIRMED BEATS STATED, AND IS CHECKED FIRST (2026-08-04). The re-confirm card upgrades a keep-authored
        belief to commander/stated — truthfully, because affirming "still true?" IS a statement of the content. But
-       the WORDS are still the station's paraphrase, so falling through to the 'stated' clause below would have
+       the WORDS are still the keep's paraphrase, so falling through to the 'stated' clause below would have
        every later card quote the Commander saying something they never said. The confirmation stamp is the more
        specific fact, so it wins. */
     if (ref === 'confirmed') return 'confirmed';
@@ -6562,7 +6562,7 @@ const Chat = (() => {
     const src = String((b && b.source) || '');
     // NB: NOT source:'curiosity'. A curiosity answer is 'stated' when the Commander TYPED it (caught by the weight
     // clause) and 'seed' when they tapped a canned chip (interview.js beliefFromAnswer) — and a canned chip is the
-    // station's own sentence, which this clause was rendering back at them as `you said "…"`.
+    // keep's own sentence, which this clause was rendering back at them as `you said "…"`.
     if (w === 'stated' || src === 'commander') return 'verbatim';
     if (ref === 'verbatim' || ref === 'directive' || ref === 'conversation') return ref;
     return '';   // observed / study / onboarding-synth / seed → the neutral 'from "…"' quote (claims no speaker)
@@ -6595,7 +6595,7 @@ const Chat = (() => {
     if (!text) return null;                                  // nothing to cite → the arc stays silent
     if (arcSeen(runId)) return null;                         // one confirm per run — READ only (see the once law below)
     /* THE STALENESS GUARD (quality loop, Q3). Before building an arc on this belief, is it still true? A goal
-       the Commander stated a month ago that nothing since has corroborated is not something the station may
+       the Commander stated a month ago that nothing since has corroborated is not something the keep may
        ASSERT ("because you said X") — decomposing it into a milestone tree would be building a plan on a memory
        we cannot stand behind. So the SAME slot carries a QUESTION instead: "still true?". Confirm re-stamps the
        belief (and the arc proposal returns naturally at a later run, now grounded); deny retires it and is
@@ -6661,7 +6661,7 @@ const Chat = (() => {
              fire: () => { maybeStandaloneRate(agentId, runId); } };
   }
 
-  // ONGOING SUGGESTION — cited by what the Commander has actually told the station about themselves. An
+  // ONGOING SUGGESTION — cited by what the Commander has actually told the keep about themselves. An
   // idea with nothing learned behind it cannot cite, so it stays quiet.
   function suggestCandidate() {
     if (typeof SuggestStore === 'undefined' || !SuggestStore.willSuggest || !SuggestStore.fire) return null;
@@ -6751,7 +6751,7 @@ const Chat = (() => {
       : (prop.kind === 'retire' ? String(prop.text || '').trim() : '');
     if (!why) return null;
     // STRENGTH: the CONFIDENCE the understanding engine already holds for the dimension this proposal targets —
-    // an assertion aimed at a dimension the station barely understands is a thinner thing to raise. Not a
+    // an assertion aimed at a dimension the keep barely understands is a thinner thing to raise. Not a
     // freshness read: a RETIRE proposal is most valuable exactly when its belief is oldest.
     return { kind: 'study', dim: prop.dim, why: why, strength: recStrengthOfDim(prop.dim),
              fire: () => { if (beatCards.once('study', runId)) studyCard(prop, agentId, runId); } };
@@ -6770,7 +6770,7 @@ const Chat = (() => {
     if (!why) return null;
     // NO STRENGTH, and not for a convenient reason: a mined idea targets no dossier dimension (no dim → no
     // confidence to read) and its quote comes from the run that just ended (no age to read). There is nothing
-    // here the station holds, and inventing a reading would be worse than the small structural edge neutrality
+    // here the keep holds, and inventing a reading would be worse than the small structural edge neutrality
     // buys it — see the strength block above, which states that residual tradeoff rather than hiding it.
     return { kind: 'thread', why: why, title: String(prop.spec || '').trim(),
              fire: () => { if (beatCards.once('thread', runId)) threadCard(prop, agentId, batch.runId || runId); } };
@@ -6809,7 +6809,7 @@ const Chat = (() => {
       if (turninOwnsMoment(runId)) return;
       const rate = rateCandidate(agentId, runId); if (rate) cands.push(rate);
     } else if (askBudgetSpent()) {
-      return;   // the session's proactive-ask budget is spent: the station stays quiet for every consent channel
+      return;   // the session's proactive-ask budget is spent: the keep stays quiet for every consent channel
     } else if (takeoverOnly) {
       if (!isHeroRun || turninOwnsMoment(runId) || typeof WorkflowTakeoverStore === 'undefined') return;
       await WorkflowTakeoverStore.refresh();
@@ -6834,7 +6834,7 @@ const Chat = (() => {
           // the accumulated-work floor. Consume the staged text exactly once on the slow post-run arm.
           const staged = meta && meta.intentOfferText; if (meta) meta.intentOfferText = null;
           // WORK-EARNED ASK FLOOR: a real task-run banks toward the session's ask budget, and no gentle
-          // unsolicited beat fires until the station has completed Curiosity.MIN_WORK task-runs this session.
+          // unsolicited beat fires until the keep has completed Curiosity.MIN_WORK task-runs this session.
           if (typeof CuriosityStore !== 'undefined' && CuriosityStore.noteWork) CuriosityStore.noteWork();
           const earned = !(typeof CuriosityStore !== 'undefined' && CuriosityStore.earned && !CuriosityStore.earned());
           // Three separate completed requests earn this specific offer even across browser sessions.
@@ -6918,7 +6918,7 @@ const Chat = (() => {
        their own rows (study, suggest) and the two that are not offers at all (rate, memory) are refused inside
        RecLedger.note, so this call is unconditional here and correct for every channel. */
     try { if (typeof RecLedger !== 'undefined' && RecLedger.note) RecLedger.note(winner); } catch (_) {}
-    // spend one unit of the session ask budget — but only for a card the station CHOSE to raise.
+    // spend one unit of the session ask budget — but only for a card the keep CHOSE to raise.
     if (Recommend.asksBudget && Recommend.asksBudget(winner.kind)) sessionAsks += 1;
   }
 
@@ -6935,7 +6935,7 @@ const Chat = (() => {
   }
   // IDLE-DRIVEN curiosity (the autopilot EARN-CONTEXT branch, autonomy Slice A): the SAME gentle get-to-know-you
   // ask the post-run slot makes, but triggered when the Commander goes IDLE with autonomy enabled — so turning the
-  // dial up makes the station proactively LEARN about them between tasks. Shares the curiosity anti-nag (the
+  // dial up makes the keep proactively LEARN about them between tasks. Shares the curiosity anti-nag (the
   // per-session CAP in CuriosityStore + the single activeNudge), so it can never stack with, or double-ask
   // alongside, the post-run nudge. Defined AFTER wireCuriosity so the post-run slot stays the first occurrence of
   // the suggestion→seed→curiosity precedence (beat-coordination.test locks that ordering by position). Returns
@@ -7218,12 +7218,12 @@ const Chat = (() => {
     interrupted.delete(id);
     const alive = (typeof Harness !== 'undefined' && Harness.pingEngine) ? Promise.resolve(Harness.pingEngine()).catch(() => null) : Promise.resolve(null);
     alive.then(engineAlive => {
-      const reason = (v && v.error) || 'no answer from the station';
+      const reason = (v && v.error) || 'no answer from the keep';
       const verdict = (v && v.transport && typeof Friendly !== 'undefined')
         ? Friendly.friendlyError(new Error(reason), null, { engineAlive: engineAlive }).userMessage
         : reason;
       if (activeWs && activeWs.id === id) {
-        localLine('⚠ STOP was not confirmed by the station — the run may still be working. ' + verdict);
+        localLine('⚠ STOP was not confirmed by the keep — the run may still be working. ' + verdict);
         status(isBusy() ? 'stopping… not confirmed' : 'online'); updateControls();
       }
     });
@@ -7234,7 +7234,7 @@ const Chat = (() => {
   // Commander to answer now rather than let it silently deny.
   function consentAckFailed(ws, ev, v) {
     if (!isActiveWs(ws)) return;
-    localLine('⚠ The station did not confirm it saw this approval card (' + ((v && v.error) || 'no answer') + '). Answer it now — an unseen prompt auto-denies on a timer.');
+    localLine('⚠ The keep did not confirm it saw this approval card (' + ((v && v.error) || 'no answer') + '). Answer it now — an unseen prompt auto-denies on a timer.');
   }
 
   // TYPE-AHEAD — a message typed while the stream is busy is QUEUED, not dropped, and auto-sent in order as the
@@ -7323,7 +7323,7 @@ const Chat = (() => {
   // The shared plain recovery action for an intentional Stop and unknown retryable faults. It delegates to the
   // same guarded retryLast path as `/retry`, so an inactive/busy stream cannot start a duplicate run.
   /* connector_required (beginner seam Lane 1, 2026-08-22). The MCP manager emits this on the run stream ALONGSIDE
-     its "connector X is not connected" throw — the model narrates the error as before, and the station ALSO
+     its "connector X is not connected" throw — the model narrates the error as before, and the keep ALSO
      drops one chip under the reply that opens ABILITIES pre-routed at that connector (Friendly.connectorDoor).
      Collected per run here; OFFERED at the run's end from send() (one post-run beat, the same choices() row
      offerRetry uses) — never mid-run, so it can't collide with a live tool rail or a task question. First
@@ -7395,7 +7395,7 @@ const Chat = (() => {
     // as its answer. Take the Commander back to the question instead; answering it continues with the connection.
     if (h.awaitingAnswer) {
       App.openWorkstream(streamId);
-      if (typeof StationUI !== 'undefined') StationUI.notify('Answer the open question in this task to continue with ' + h.connectorId + '.', 'info');
+      if (typeof KeepUI !== 'undefined') KeepUI.notify('Answer the open question in this task to continue with ' + h.connectorId + '.', 'info');
       return false;
     }
     const continuationFocusVersion = focusVersion;
@@ -7414,7 +7414,7 @@ const Chat = (() => {
       // Checking/refreshing a connection yields to the Commander. A later response must not
       // override new navigation, typing, or an attachment; leave the handoff available to retry.
       if (focusVersion !== continuationFocusVersion || isComposerEngaged() || Workstreams.get(streamId) !== ws) {
-        if (typeof StationUI !== 'undefined') StationUI.notify('Connection checked. Continue the task when you are ready.', 'info');
+        if (typeof KeepUI !== 'undefined') KeepUI.notify('Connection checked. Continue the task when you are ready.', 'info');
         return false;
       }
       App.openWorkstream(streamId);
@@ -7430,7 +7430,7 @@ const Chat = (() => {
       if (ws.runIds[ws.runIds.length - 1] === h.runId && !Channels.isBusy(streamId) && !Workstreams.connectorHandoff(streamId)) {
         Workstreams.setConnectorHandoff(streamId, h); App.persist();
       }
-      if (typeof StationUI !== 'undefined') StationUI.notify(e.message || 'Could not verify the connection. Try again.', 'warn');
+      if (typeof KeepUI !== 'undefined') KeepUI.notify(e.message || 'Could not verify the connection. Try again.', 'warn');
       return false;
     } finally { connectorContinuing.delete(streamId); }
   }
@@ -7443,22 +7443,22 @@ const Chat = (() => {
   function budgetStopLine(scope, capUsd, atBalance) {
     // only show the $ figure when it renders honestly at cent precision (a sub-cent test cap would read "$0.00")
     const cap = (typeof capUsd === 'number' && isFinite(capUsd) && capUsd >= 0.01) ? '$' + capUsd.toFixed(2).replace(/\.00$/, '') + ' ' : '';
-    // atBalance (agent.run.end budgetCapIsBalance, additive): admission clamped this StarNet run's ceiling to the
+    // atBalance (agent.run.end budgetCapIsBalance, additive): admission clamped this Eyehold run's ceiling to the
     // reported balance, so the run spent the wallet, not a cap the user chose — raising PER RUN would do nothing.
-    if (scope === 'run' && atBalance === true) return (cap ? 'used the ' + cap + 'left on your StarNet balance' : 'used what was left on your StarNet balance') + ' — add credits under SETTINGS → AI & MODELS to keep going';
+    if (scope === 'run' && atBalance === true) return (cap ? 'used the ' + cap + 'left on your Eyehold balance' : 'used what was left on your Eyehold balance') + ' — add credits under SETTINGS → AI & MODELS to keep going';
     const what = scope === 'run' ? 'hit the ' + cap + 'per-run spend cap'
       : scope === 'agent' ? 'this agent hit its ' + cap + 'lifetime spend cap'
       : scope === 'day' ? 'hit the ' + cap + 'daily spend cap'
       : scope === 'global' ? 'hit the ' + cap + 'all-time spend cap'
       : 'hit a spend cap';
-    // A per-RUN stop says "raise", never "remove": a StarNet-credit run with PER RUN at 0 still stops at the
+    // A per-RUN stop says "raise", never "remove": a Eyehold-credit run with PER RUN at 0 still stops at the
     // managed default (issue #53), so "remove it" would be an instruction that does nothing there.
     // the caps live in SETTINGS › SPENDING LIMITS (MISSION CONTROL is only a room label; there is no BUDGET tab)
     return what + (scope === 'run' ? ' — raise it' : ' — raise or remove it') + ' in SETTINGS › SPENDING LIMITS';
   }
   // the budget stop's door: open SETTINGS straight on the SPENDING LIMITS section (the same openTerm(key, section)
   // mechanism friendlyerror's doors use), with retry alongside for after the user has raised the cap. A stop at the
-  // StarNet balance gets the top-up door instead — Friendly's 'store' door, the one managed_credit already opens.
+  // Eyehold balance gets the top-up door instead — Friendly's 'store' door, the one managed_credit already opens.
   function offerBudgetDoor(atBalance) {
     const topUp = (atBalance === true && typeof Friendly !== 'undefined' && Friendly.actionButton) ? Friendly.actionButton({ action: 'store' }) : null;
     choices([
@@ -7467,7 +7467,7 @@ const Chat = (() => {
     ], it => {
       if (it && it.value === 'retry') { retryLast(); return; }
       if (topUp) { topUp.run(); return; }
-      try { if (typeof StationUI !== 'undefined' && StationUI.openTerm) StationUI.openTerm('settings', 'budget'); } catch (_) {}
+      try { if (typeof KeepUI !== 'undefined' && KeepUI.openTerm) KeepUI.openTerm('settings', 'budget'); } catch (_) {}
     });
   }
   // a one-tap recovery chip dropped under a failed turn (reuses the suggestion-pill row, which self-removes on
@@ -7540,7 +7540,7 @@ const Chat = (() => {
      runs immediately. ↑/↓ move, Enter/Tab run, Esc closes. */
   let slashItems = [], slashSel = 0;
   let slashServerCommands = null, slashCatalogLoading = null, slashCatalogLoaded = null;
-  /* ---------- /goal AUTONOMOUS LOOP (StarNet's "Ralph loop") ----------
+  /* ---------- /goal AUTONOMOUS LOOP (Eyehold's "Ralph loop") ----------
      The loop STATE (goal / status / turnsUsed / subgoals / …) rides on the workstream record as ws.goalLoop, so a
      standing goal survives a reload/switch exactly like the thread history (workstreams.js carries the field through
      serialize()). GoalLoop (goalloop.js) owns the PURE parse + state machine; here we own the aux JUDGE model call
@@ -7567,14 +7567,14 @@ const Chat = (() => {
     Object.freeze({ name: 'branch', aliases: ['fork'], desc: 'fork this conversation into a new workstream', argsHint: '[title]', action: 'branch' }),
     Object.freeze({ name: 'status', desc: 'show current stream and run state', action: 'status' }),
     // no local action by design — the sidecar owns the spend ledger (dispatch:'server')
-    Object.freeze({ name: 'usage', desc: 'show real spend from the station ledger', action: 'usage' }),
+    Object.freeze({ name: 'usage', desc: 'show real spend from the keep ledger', action: 'usage' }),
     Object.freeze({ name: 'queue', aliases: ['q'], desc: 'show or add queued follow-up text', argsHint: '[message]', action: 'queue' }),
     Object.freeze({ name: 'steer', desc: 'steer the running turn (nothing to steer when idle)', argsHint: '<guidance>', action: 'steer' }),
     Object.freeze({ name: 'undo', desc: 'remove the last local exchange', action: 'undo' }),
     Object.freeze({ name: 'compress', desc: 'show context compaction status', action: 'compress' }),
     Object.freeze({ name: 'title', desc: 'show or rename the current workstream', argsHint: '[name]', action: 'title' }),
     Object.freeze({ name: 'resume', aliases: ['sessions', 'switch'], desc: 'list or switch workstreams', argsHint: '[name|number]', action: 'resume' }),
-    Object.freeze({ name: 'save', desc: 'save the current station state', action: 'save' }),
+    Object.freeze({ name: 'save', desc: 'save the current keep state', action: 'save' }),
     Object.freeze({ name: 'agents', aliases: ['tasks'], desc: 'show active agents and running streams', action: 'agents' }),
     Object.freeze({ name: 'background', aliases: ['bg', 'btw'], desc: 'run a prompt in a new background workstream', argsHint: '<prompt>', action: 'background' }),
     // /away and /routine are dispatch:'server' commands — the sidecar executes them and returns the text. They
@@ -7602,7 +7602,7 @@ const Chat = (() => {
     Object.freeze({ name: 'reload-mcp', aliases: ['reload_mcp'], desc: 'refresh configured MCP connectors', argsHint: '[connector-id]', action: 'reload-mcp' }),
     Object.freeze({ name: 'reload-skills', aliases: ['reload_skills'], desc: 'refresh the slash skill catalog', action: 'reload-skills' }),
     Object.freeze({ name: 'debug', desc: 'show chat and slash debug state', action: 'debug' }),
-    Object.freeze({ name: 'version', aliases: ['v'], desc: 'show StarNet version information', action: 'version' })
+    Object.freeze({ name: 'version', aliases: ['v'], desc: 'show Eyehold version information', action: 'version' })
   ]);
   function isSlashOpen() { const p = el('chat-slash'); return !!(p && !p.hidden); }
   function copyLastReply() {
@@ -7610,11 +7610,11 @@ const Chat = (() => {
     const h = activeWs.history;
     for (let i = h.length - 1; i >= 0; i--) {
       if (h[i].role === 'assistant' && !h[i].error && (h[i].content || '').trim()) {
-        copyText(h[i].content).then(ok => { if (typeof StationUI !== 'undefined' && StationUI.notify) StationUI.notify(ok ? 'copied the last reply' : 'copy failed', ok ? 'good' : 'warn', undefined, { transient: true }); });
+        copyText(h[i].content).then(ok => { if (typeof KeepUI !== 'undefined' && KeepUI.notify) KeepUI.notify(ok ? 'copied the last reply' : 'copy failed', ok ? 'good' : 'warn', undefined, { transient: true }); });
         return;
       }
     }
-    if (typeof StationUI !== 'undefined' && StationUI.notify) StationUI.notify('no reply to copy yet', '', undefined, { transient: true });
+    if (typeof KeepUI !== 'undefined' && KeepUI.notify) KeepUI.notify('no reply to copy yet', '', undefined, { transient: true });
   }
   function refreshWorkflowViews() {
     try { if (typeof App !== 'undefined' && App.refreshUsage) App.refreshUsage(); } catch (_) {}
@@ -7667,7 +7667,7 @@ const Chat = (() => {
     localLine('Resumed ' + streamLabel(ws) + '.');
   }
   function saveCommand() {
-    try { if (typeof App !== 'undefined' && App.persist) { App.persist(); localLine('Saved the current station state.'); return; } } catch (_) {}
+    try { if (typeof App !== 'undefined' && App.persist) { App.persist(); localLine('Saved the current keep state.'); return; } } catch (_) {}
     localLine('Save is not available yet.');
   }
   function appAgents() {
@@ -7943,7 +7943,7 @@ const Chat = (() => {
     // user reads another stream would inject the prompt into the wrong conversation.
     // goalBlocked() is the SAME discipline the goal loop obeys: an interview, a live beat, an unanswered task
     // question, an open dialogue or a pending tool approval all own the input. Without it, send() routes the
-    // tick's text into interview(text)/TaskIntent.routeReply — the loop would answer the station's own question
+    // tick's text into interview(text)/TaskIntent.routeReply — the loop would answer the keep's own question
     // with "check the build" and count it as a run.
     if (!focused || isBusy() || goalBlocked(activeWs)) {
       rec.skipped++;
@@ -7979,7 +7979,7 @@ const Chat = (() => {
       }
       return localLine('Loop: every ' + cur.label + ', ' + cur.fired + '/' + LOOP_MAX_ITERS + ' runs done'
         + (cur.skipped ? ', ' + cur.skipped + ' tick' + (cur.skipped === 1 ? '' : 's') + ' skipped (a run, a question or another stream had the floor)' : '')
-        + ' — "' + String(cur.prompt).slice(0, 60) + '". It stops if you close StarNet; /routine makes it permanent.');
+        + ' — "' + String(cur.prompt).slice(0, 60) + '". It stops if you close Eyehold; /routine makes it permanent.');
     }
 
     const sp = raw.search(/\s/);
@@ -8197,7 +8197,7 @@ const Chat = (() => {
     } else localLine('Could not change approval mode.');
   }
   /* ---- reasoning effort — a REAL dial, not a status readout.
-     The old handler answered "Reasoning effort is not a separate StarNet toggle yet", which was simply false:
+     The old handler answered "Reasoning effort is not a separate Eyehold toggle yet", which was simply false:
      Harness stores it per PROVIDER, persists it, the model dock sets it alongside model+provider, and every run
      payload carries it (harness.js chat()). The command just never reached any of that. */
   const REASONING_LEVELS = ['none', 'minimal', 'low', 'medium', 'high', 'xhigh'];
@@ -8242,7 +8242,7 @@ const Chat = (() => {
       + '. Takes effect on your next message.' + reasoningModelNote());
   }
   /* ---- /fast — a shortcut onto that SAME dial.
-     StarNet has no separate "fast mode", and inventing one would be a lie — the old handler admitted as much and
+     Eyehold has no separate "fast mode", and inventing one would be a lie — the old handler admitted as much and
      then did nothing at all. Minimal reasoning effort IS what makes replies come back quickly and cheaply, so
      /fast drives the real control instead of pretending to be its own switch. */
   function fastCommand() {
@@ -8298,7 +8298,7 @@ const Chat = (() => {
       const key = slashCatalogKey();
       const r = await fetch('/api/skills?placed=' + encodeURIComponent(key), { cache: 'no-store' });
       // ⛔ AN ERRORED ENDPOINT IS NOT AN EMPTY ONE. A non-2xx used to collapse to `[]` and print the confirmed
-      // "No skill recipes are installed." — a station that could not be asked, reported as a station with none.
+      // "No skill recipes are installed." — a keep that could not be asked, reported as a keep with none.
       if (!r.ok) return localLine('Could not load skills from the sidecar (HTTP ' + r.status + ') — this is not a claim that you have none.');
       const j = await r.json();
       const skills = (j && Array.isArray(j.skills)) ? j.skills : [];
@@ -8435,7 +8435,7 @@ const Chat = (() => {
   function reloadSkillsCommand() {
     slashServerCommands = null; slashCatalogLoaded = null; slashCatalogLoading = null;
     warmSlashCatalog();
-    localLine('Refreshing slash skills and command catalog for this workstation.');
+    localLine('Refreshing slash skills and command catalog for this workkeep.');
   }
   async function versionCommand() {
     try {
@@ -8443,7 +8443,7 @@ const Chat = (() => {
       const j = r.ok ? await r.json() : null;
       if (j) {
         const bits = [];
-        if (j.app) bits.push('StarNet ' + j.app);
+        if (j.app) bits.push('Eyehold ' + j.app);
         if (j.harness && j.harness !== j.app) bits.push('harness ' + j.harness);
         if (j.node) bits.push('Node ' + j.node);
         return localLine('Version: ' + (bits.length ? bits.join(', ') : 'unknown') + '.');
@@ -8492,10 +8492,10 @@ const Chat = (() => {
   function slashPlacedTypes() {
     try {
       if (typeof World === 'undefined' || !World.heroCaps) return [];
-      // the agent's own room PLUS shared station gear — the same reading SKILL LIBRARY makes, so a skill that
+      // the agent's own room PLUS shared keep gear — the same reading SKILL LIBRARY makes, so a skill that
       // library shows READY is also offered here (profile / Full Access grants still need /api/toolsets)
       const caps = (World.heroCaps((activeWs && activeWs.agentId) || 'agent') || [])
-        .concat(World.stationCaps ? (World.stationCaps() || []) : []);
+        .concat(World.keepCaps ? (World.keepCaps() || []) : []);
       const out = [], seen = {};
       for (const c of caps) {
         const t = String((c && c.objectType) || c || '').trim();
@@ -8606,7 +8606,7 @@ const Chat = (() => {
      it builds a static completion list straight out of each command's args_hint by pulling the
      pipe-separated pattern out of it, so a command declaring "[on|off|status]" gets completion for free with
      no per-command wiring. We do the same against our own `argsHint`, then layer live providers over the top
-     for the sets only a running station knows (models, personalities, workstreams, recipes).
+     for the sets only a running keep knows (models, personalities, workstreams, recipes).
 
      ENTER STILL DISPATCHES THE COMMAND. Completion is bound to TAB only. The palette's Enter contract is
      load-bearing — a regressed Enter is exactly what fired "/personality direct" at the model as chat
@@ -8791,17 +8791,17 @@ const Chat = (() => {
         })
       });
       const j = await r.json().catch(() => null);
-      // the station ANSWERED no (a skill that was removed or pulled, gear not placed): remember its words, so the
-      // caller reports what the station said instead of blaming the connection
+      // the keep ANSWERED no (a skill that was removed or pulled, gear not placed): remember its words, so the
+      // caller reports what the keep said instead of blaming the connection
       slashDispatchRefusal = (!r.ok || !j || !j.ok) && j && j.error ? { status: r.status, error: String(j.error) } : null;
       return !!(r.ok && j && j.ok && applySlashDirective(j.directive));
     } catch (_) { slashDispatchRefusal = null; return false; }
   }
   let slashDispatchRefusal = null;
   // the palette's command list is cached per gear set; installing, removing or switching a skill changes it, so the
-  // ABILITIES window announces the change and the next "/" re-reads the station
+  // ABILITIES window announces the change and the next "/" re-reads the keep
   function invalidateSlashCatalog() { slashServerCommands = null; slashCatalogLoaded = null; slashCatalogLoading = null; }
-  try { window.addEventListener('starnet:skills-changed', () => { invalidateSlashCatalog(); warmSlashCatalog(); }); } catch (_) {}
+  try { window.addEventListener('eyehold:skills-changed', () => { invalidateSlashCatalog(); warmSlashCatalog(); }); } catch (_) {}
   async function runSlash(item) {
     if (!item) { closeSlash(); return; }
     const rawInput = input ? input.value : '';
@@ -8810,13 +8810,13 @@ const Chat = (() => {
     // Try the sidecar for anything server-backed OR anything with no local action at all. The second half
     // matters on a cold start: before the catalog fetch lands, /away and /routine are only known from the
     // FALLBACK list (serverBacked === false) and have no handler — without this they would refuse without ever
-    // having asked the station, which is a claim the browser cannot make honestly.
+    // having asked the keep, which is a claim the browser cannot make honestly.
     const needsServer = item.serverBacked || typeof item.run !== 'function';
     if (needsServer && await dispatchSlash(item, rawInput)) return;
     if (needsServer && slashDispatchRefusal && item.source === 'skill') {
-      // a skill command the station no longer offers: it was removed, pulled, or its gear isn't placed. Say that,
+      // a skill command the keep no longer offers: it was removed, pulled, or its gear isn't placed. Say that,
       // give the typed text back, and refresh the palette so the stale entry disappears.
-      const why = slashDispatchRefusal.status === 409 ? 'its gear isn\'t placed for this agent right now' : 'that skill is no longer installed on this station';
+      const why = slashDispatchRefusal.status === 409 ? 'its gear isn\'t placed for this agent right now' : 'that skill is no longer installed on this keep';
       localLine('/' + item.name + ' can\'t be used: ' + why + '. Type "/" to see the skills you have.');
       if (input && rawInput) { input.value = rawInput; autoGrowInput(); }
       invalidateSlashCatalog(); warmSlashCatalog();
@@ -8829,7 +8829,7 @@ const Chat = (() => {
     // A dispatch:'server' command has NO local action by design. When the sidecar can't be reached it used to
     // throw on a null run() inside a bare catch — the command silently did nothing at all. Say so instead.
     if (typeof item.run !== 'function') {
-      localLine('/' + item.name + ' runs on the station, and the station did not answer just now — check the UPLINK indicator, then try again.');
+      localLine('/' + item.name + ' runs on the keep, and the keep did not answer just now — check the UPLINK indicator, then try again.');
       return;
     }
     try { item.run(args); } catch (_) {}
@@ -8861,8 +8861,8 @@ const Chat = (() => {
   // (multi-bay, 2026-09-22) dockId = WHICH bay the asking stage ran at; the answer names the next bay (nextDock)
   async function nextStageOf(agentId, tag, lineId, dockId) {
     try {
-      const h = {}, tok = (typeof window !== 'undefined' && window.__STARNET_API_TOKEN__) || '';
-      if (tok) h['X-StarNet-Token'] = String(tok);
+      const h = {}, tok = (typeof window !== 'undefined' && window.__EYEHOLD_API_TOKEN__) || '';
+      if (tok) h['X-Eyehold-Token'] = String(tok);
       // `lineId` = the line this work ENTERED on (work belongs to a line, 2026-08-07). The sidecar's plan is
       // still the decider — it refuses any id that is not this dock's own line — so this only ever narrows.
       const r = await fetch('/api/routing/chain?agentId=' + encodeURIComponent(agentId) + '&tag=' + encodeURIComponent(tag || '')
@@ -8957,7 +8957,7 @@ const Chat = (() => {
           system: sys, messages: [{ role: 'user', content: prompt }], agentId: nx, isTask: true,
           signal: seed.signal, streamId: ws.id,
           placed: (typeof World !== 'undefined' && World.heroCaps) ? World.heroCaps(nx) : [],
-          stationPlaced: (typeof World !== 'undefined' && World.stationCaps) ? World.stationCaps() : [],
+          keepPlaced: (typeof World !== 'undefined' && World.keepCaps) ? World.keepCaps() : [],
           onRunId: id => { hopRunId = id; },
           onToken: d => { hopAcc += d; if (hopRow) hopRow.append(d); App.refreshUsage(); },
           onTerminalReset: () => { hopAcc = ''; },
@@ -9007,7 +9007,7 @@ const Chat = (() => {
     // own triggering turn — that loop simply wasn't running yet when the turn started.
     const goalActiveAtStart = !goalContinuation && typeof GoalLoop !== 'undefined' && (() => { const g = goalOf(activeWs); return !!(g && GoalLoop.isActive(g)); })();
     if (interview) { clearChoices(); interview(text); return; }   // THE AWAKENING owns the input: typed answers retire any stale chip row
-    // STATION SYSTEMS: asking for something on a schedule, or to be reached on a phone/chat app, is the moment
+    // KEEP SYSTEMS: asking for something on a schedule, or to be reached on a phone/chat app, is the moment
     // AUTOMATION / CHANNELS join a growing dock (a real user turn only — never a retry or a loop continuation)
     if (!retry && !goalContinuation && typeof Systems !== 'undefined' && Systems.noticeText) { try { Systems.noticeText(text); } catch (_) {} }
     const runFocusVersion = focusVersion;
@@ -9055,7 +9055,7 @@ const Chat = (() => {
     // INTENT OFFER: a real, fresh directive is the one moment the Commander has stated what they want in their
     // own words — the only honest place to say "there is a class built for exactly this". Gated to genuine new
     // work: never a retry (already offered on the original), never a recipe launch (they came FROM the library),
-    // never a goal-loop continuation (the station wrote that text, not the Commander), never a reply to a
+    // never a goal-loop continuation (the keep wrote that text, not the Commander), never a reply to a
     // pending task question. Stage it on this run's metadata so concurrent sessions can never consume each
     // other's offer; the slow post-run arm reads and clears it after the answer and its own choice rows settle.
     const intentOfferText = (isTask && !acceptedOffer && !retry && !fromRecipe && !goalContinuation && !pending) ? String(text || '') : null;
@@ -9081,7 +9081,7 @@ const Chat = (() => {
     // window (>10 min) is just a new task. Never on retry (the same text re-sent is not a second correction).
     let correctionOf = null;
     // the correction is the next message IN THE RATED RUN'S SESSION: matched by agent alone, a new request typed in
-    // another session to that agent within the window was saved station-wide as a DISLIKED correction (sweep 2026-10-02)
+    // another session to that agent within the window was saved keep-wide as a DISLIKED correction (sweep 2026-10-02)
     if (!retry && !pending && lastShortVerdict && (ws.agentId || 'agent') === lastShortVerdict.agentId && lastShortVerdict.streamId && lastShortVerdict.streamId === ws.id && Date.now() - lastShortVerdict.at < CORRECTION_WINDOW_MS) {
       correctionOf = lastShortVerdict.runId; lastShortVerdict = null;
       postCorrection(correctionOf, text, true, 'message');
@@ -9101,14 +9101,14 @@ const Chat = (() => {
       && typeof Voice !== 'undefined' && Voice.isOn && Voice.isOn();
     // REACTIVE DESK TRIP — the honest signal. We no longer pre-commit the walk on the classifier's GUESS:
     // every turn the agent first turns to face the Commander (listen), and it only gets up and walks to its
-    // workstation the instant it ACTUALLY reaches for a tool (web / files / terminal) — see walkToDesk(),
+    // workkeep the instant it ACTUALLY reaches for a tool (web / files / terminal) — see walkToDesk(),
     // fired from onToolCall / onPermission below. So a basic question, an opinion, or a one-word answer the
     // agent handles from its own knowledge NEVER runs to the PC; the desk trip now means "real tool-work is
     // happening", not "the Commander typed something". isTask still gates TOOL AVAILABILITY (so a genuine
     // task is never left tool-less) — it just no longer forces the walk. Voice/speaker state can't touch it.
     const turnAgentId = ws.agentId || 'agent';
     let walkedToDesk = false;
-    function walkToDesk() {   // idempotent: the FIRST real tool action of the turn sends THIS agent to its station
+    function walkToDesk() {   // idempotent: the FIRST real tool action of the turn sends THIS agent to its keep
       if (walkedToDesk) return; walkedToDesk = true;
       if (World.setActivityFor) World.setActivityFor(turnAgentId, 'task'); else World.setActivity('task');
       // TRUTHFUL TELEMETRY: 'working…' is only claimed once the sidecar has confirmed the run (runId set).
@@ -9119,7 +9119,7 @@ const Chat = (() => {
     }
     // turn to face the Commander and listen (no camera yank); a spoken CHAT also softly frames the agent.
     if (World.setActivityFor) World.setActivityFor(turnAgentId, 'talk'); else World.setActivity('talk');
-    // A TASK ALWAYS WORKS AT THE WORKSTATION (Andrew's ruling, 2026-07-05, supersedes the reactive-only
+    // A TASK ALWAYS WORKS AT THE WORKKEEP (Andrew's ruling, 2026-07-05, supersedes the reactive-only
     // rule): a turn the classifier reads as a task sends the agent to its desk IMMEDIATELY — even if the
     // model ends up answering without a tool. Pure chat still stays in place; walkToDesk stays idempotent
     // and still also fires on the first real tool call / permission prompt (covers a misclassified task).
@@ -9142,7 +9142,7 @@ const Chat = (() => {
     const callNames = {};   // callId -> tool name (the frozen agent.tool_result has no name field)
     const seenDeliv = {};   // title -> true (one openable row per produced file)
     let runToolsOk = 0, runDeliv = 0, thisRunId = null;   // per-run work tally → the "rate the work" beat's size + delivery gate
-    // this run's own station.control estop.engage came back OK (its result names the action): the halt it scheduled is what
+    // this run's own keep.control estop.engage came back OK (its result names the action): the halt it scheduled is what
     // cancels it a moment later, so its stop line says so and offers no TRY AGAIN (a retry would press the E-STOP again)
     let runPressedEstop = false;
     let runStartedAt = 0;   // P3.2: this lead run's start wall-clock → the window claimCrew uses to attribute forwarded worker spend
@@ -9243,7 +9243,7 @@ const Chat = (() => {
         recipeId: recipeId || undefined,   // provenance spine: the launching recipe rides to the durable run row (undefined for non-recipe runs)
         projectRoot: ws.projectRoot || undefined,   // project-anchored session: the sidecar injects the folder context ONLY if the root is still a standing blessed grant (truthful)
         placed: (typeof World !== 'undefined' && World.heroCaps) ? World.heroCaps(ws.agentId || 'agent') : [],   // THE MOAT: this run's TOOL reach = the agent's REAL placed props (dish→web · cabinet→files · workbench→terminal · …); compute is the freebie
-        stationPlaced: (typeof World !== 'undefined' && World.stationCaps) ? World.stationCaps() : [],   // Class Loadouts (shared-gear): station-wide gear for SKILL availability — a desk-only specialist still gets its class skills when the STATION has the gear (tools stay room-scoped via `placed`)
+        keepPlaced: (typeof World !== 'undefined' && World.keepCaps) ? World.keepCaps() : [],   // Class Loadouts (shared-gear): keep-wide gear for SKILL availability — a desk-only specialist still gets its class skills when the KEEP has the gear (tools stay room-scoped via `placed`)
         onRunId: id => { retirePriorRatings(ws.id); thisRunId = id; if (retryDirectiveTurn && !retryDirectiveTurn.sourceRunId) retryDirectiveTurn.sourceRunId = id; if (starterId) StarterStore.started(starterId, id); runStartedAt = Date.now(); try { RUN_META.set(id, { streamId: ws.id, focusVersion: runFocusVersion, isTask: !!isTask, title: (ws && ws.title) || '', directive: String(text || ''), correctionOf: correctionOf, intentOfferText: intentOfferText, fromRecipe: fromRecipe, recipeId: recipeId, agentId: ws.agentId || 'agent', rec: recClaimRun(id, ws.agentId || 'agent') }); if (RUN_META.size > 60) RUN_META.delete(RUN_META.keys().next().value); } catch (_) {} Channels.setRunId(ws.id, id, Date.now()); if (walkedToDesk && Channels.setStatus) Channels.setStatus(ws.id, 'working…'); if (isActiveWs(ws)) { syncStatus(); renderPresence(); } if (typeof Workstreams !== 'undefined') { Workstreams.appendRun(ws.id, id); if (typeof App !== 'undefined' && App.refreshRail) App.refreshRail(); } },
         onToken: d => { acc += d; Channels.appendToken(ws.id, d); if (isActiveWs(ws)) { if (activeLiveRow) activeLiveRow.append(d); if (!isTask) World.say(acc); } if (willSpeak) pushSpeech(false); App.refreshUsage(); },
         onTerminalReset: () => { clearTimeout(speechTimer); speechTimer = null; speechPendingSince = 0; acc = ''; spokenIdx = 0; Channels.setAcc(ws.id, ''); },
@@ -9260,11 +9260,11 @@ const Chat = (() => {
         // harness emit; this handler owns the transcript chips + desk walk + presence only.
         onToolCall: ev => { callNames[ev.callId] = ev.name; Channels.addToolCall(ws.id, { callId: ev.callId, name: ev.name, argsSummary: ev.argsSummary }); walkToDesk(); presenceToolCall(ws, ev.name); if (skillFlavor(ev)) recentInRunSkill = Date.now(); if (isActiveWs(ws)) { if (activeLiveRow && activeLiveRow.breakSeg) activeLiveRow.breakSeg(); toolChip(ev); } },
         // Re-emit the hero's tool RESULT onto U.bus so the world's per-prop capability surge fires on the REAL
-        // outcome. (The station SSE tee DOES carry tool_result now, but outcome-only and without `summary` —
+        // outcome. (The keep SSE tee DOES carry tool_result now, but outcome-only and without `summary` —
         // sse.js:runTeeView — so the in-band stream stays the richest source for the page that started the run.)
         // callId joins it to its tool_call; isError drives the success-vs-failure surge. `summary`/`ms` ride
         // along per the frozen event shape so any consumer sees the result's own words, never a bare 'error'.
-        onToolResult: ev => { if (!ev.isError) runToolsOk++; const nm = callNames[ev.callId] || 'tool'; if (!ev.isError && /^station[._]control$/.test(nm) && ev.summary === 'estop.engage') runPressedEstop = true; Channels.addToolResult(ws.id, { callId: ev.callId, name: nm, summary: ev.summary, isError: ev.isError, ms: ev.ms }); presenceToolResult(ws); if (isActiveWs(ws)) resolveChip(ev, nm); if (typeof U !== 'undefined' && U.bus && ev.callId) U.bus.emit('agent.tool_result', { name: nm, agentId: ws.agentId, runId: ev.runId, callId: ev.callId, ok: !ev.isError, isError: !!ev.isError, summary: ev.summary, ms: ev.ms }); },   // runId rides along: a runId-less copy reset xp.js's per-run buffer (freshRun(undefined)) and wiped buffered memory-reuse credit
+        onToolResult: ev => { if (!ev.isError) runToolsOk++; const nm = callNames[ev.callId] || 'tool'; if (!ev.isError && /^keep[._]control$/.test(nm) && ev.summary === 'estop.engage') runPressedEstop = true; Channels.addToolResult(ws.id, { callId: ev.callId, name: nm, summary: ev.summary, isError: ev.isError, ms: ev.ms }); presenceToolResult(ws); if (isActiveWs(ws)) resolveChip(ev, nm); if (typeof U !== 'undefined' && U.bus && ev.callId) U.bus.emit('agent.tool_result', { name: nm, agentId: ws.agentId, runId: ev.runId, callId: ev.callId, ok: !ev.isError, isError: !!ev.isError, summary: ev.summary, ms: ev.ms }); },   // runId rides along: a runId-less copy reset xp.js's per-run buffer (freshRun(undefined)) and wiped buffered memory-reuse credit
         onDeliverable: ev => {
           // BROWSER window: every write (not just the first per run) — it live-reloads the page on screen and, with
           // FOLLOW on, shows a new web page as it's made. Before the per-run dedupe on purpose.
@@ -9290,7 +9290,7 @@ const Chat = (() => {
             // visible in the on-screen transcript (inline row above + recap card below), the toast is a third
             // copy that also parks over the composer — suppress it. A BACKGROUND-stream deliverable isn't shown
             // anywhere on screen, so its toast is the only signal → keep it.
-            if (!isActiveWs(ws) && typeof StationUI !== 'undefined') { if (thisRunId) notedRuns.add(thisRunId); StationUI.notify(whoOf(ws) + (mk === 'file' ? ' saved ' : ' made ') + ev.title, 'gold', 'runComplete', { kind: 'result', go: { ws: ws.id } }); }   // P1-8 category: run produced a deliverable
+            if (!isActiveWs(ws) && typeof KeepUI !== 'undefined') { if (thisRunId) notedRuns.add(thisRunId); KeepUI.notify(whoOf(ws) + (mk === 'file' ? ' saved ' : ' made ') + ev.title, 'gold', 'runComplete', { kind: 'result', go: { ws: ws.id } }); }   // P1-8 category: run produced a deliverable
           }
         },
         // EL-11: EVERY prompt now reaches a human surface — the active stream renders the inline consent card;
@@ -9298,13 +9298,13 @@ const Chat = (() => {
         // paths then ACK the sidecar (consentAck) that the prompt is human-visible, earning the paused run its
         // one bounded extension of the fail-closed auto-deny timer.
         onPermission: ev => { Channels.setPending(ws.id, { promptId: ev.promptId, agentId: ev.agentId || ws.agentId, tool: ev.tool, argsSummary: ev.argsSummary, runId: Channels.runIdOf(ws.id) }, Date.now()); walkToDesk(); if (isActiveWs(ws)) { breakLive(); permissionRow(ev, ws); renderPresence(); } else { backgroundPermissionNotify(ev, ws); } try { Promise.resolve(Harness.consentAck(Channels.runIdOf(ws.id), ev.promptId)).then(v => { if (!(v && v.ok)) consentAckFailed(ws, ev, v); }, e => consentAckFailed(ws, ev, { ok: false, error: (e && e.message) || String(e) })); } catch (e) { consentAckFailed(ws, ev, { ok: false, error: (e && e.message) || String(e) }); } },
-        // the lead's team.summon tool asked the station to create a worker: run the REAL summon (App.summonForRequest
+        // the lead's team.summon tool asked the keep to create a worker: run the REAL summon (App.summonForRequest
         // → the Recruitment Bay's own summonAgent), then ack with the new id so the lead can delegate to it. The id
         // resolves only after the roster POST lands (App awaits it), so the lead's next team.dispatch finds the worker.
         onSummon: ev => {
           const rid = Channels.runIdOf(ws.id);
           Promise.resolve((typeof App !== 'undefined' && App.summonForRequest) ? App.summonForRequest(ev) : null)
-            // summonForRequest resolves { agentId, desk } — desk = where the new worker's seeded workstation
+            // summonForRequest resolves { agentId, desk } — desk = where the new worker's seeded workkeep
             // landed (blank if none). A legacy plain-id resolution still acks correctly.
             .then(r => { const o = (r && typeof r === 'object') ? r : { agentId: r || null, desk: '' }; return Harness.summonAck(rid, ev.requestId, o.agentId, o.desk); })
             .catch(() => Harness.summonAck(rid, ev.requestId, null));
@@ -9337,8 +9337,8 @@ const Chat = (() => {
         // the run DIED in flight — settle its outcome (task-board truth: a dead run can never wear the DONE
         // chip). Guarded on thisRunId: no run started → nothing was filed, nothing to settle.
         if (thisRunId && typeof Workstreams !== 'undefined' && Workstreams.noteRunEnd) Workstreams.noteRunEnd(ws.id, thisRunId, false);
-        if (typeof StationUI !== 'undefined') StationUI.notify(isActiveWs(ws) ? brief(v.userMessage) : whoOf(ws) + ' hit a problem' + sessionNote(ws) + ': ' + brief(v.userMessage), 'warn', undefined, isActiveWs(ws) ? undefined : { kind: 'alert', go: { ws: ws.id } });
-        if (typeof StationUI !== 'undefined' && StationUI.settleNotifs) StationUI.settleNotifs('needs:' + ws.id);   // the run is over: nothing is waiting on you any more
+        if (typeof KeepUI !== 'undefined') KeepUI.notify(isActiveWs(ws) ? brief(v.userMessage) : whoOf(ws) + ' hit a problem' + sessionNote(ws) + ': ' + brief(v.userMessage), 'warn', undefined, isActiveWs(ws) ? undefined : { kind: 'alert', go: { ws: ws.id } });
+        if (typeof KeepUI !== 'undefined' && KeepUI.settleNotifs) KeepUI.settleNotifs('needs:' + ws.id);   // the run is over: nothing is waiting on you any more
         if (isActiveWs(ws)) resolvePresence(ws, { error: true });   // COMMS-PREMIUM: presence card resolves red
         if (isActiveWs(ws)) offerRetry(v);   // RETRY: context-aware recovery chip (retry / Settings / SKILLS / none)
         }
@@ -9392,38 +9392,38 @@ const Chat = (() => {
             : 'stopped (' + endReason + ')';
           if (isActiveWs(ws)) { breakLive(); if (stopLine) toolLine('⏹ ' + stopLine); }
           markStoppedTurn(ws, replyText);
-          // a budget stop's honest door is SETTINGS › SPENDING LIMITS (the top-up door when the ceiling was the StarNet
+          // a budget stop's honest door is SETTINGS › SPENDING LIMITS (the top-up door when the ceiling was the Eyehold
           // balance), not a doomed retry (the same cap fires again immediately); every other stop keeps the plain retry chip.
           if (isActiveWs(ws) && !(endReason === 'cancelled' && runPressedEstop)) { if (endReason === 'budget') offerBudgetDoor(budgetCapIsBalance); else offerTryAgain(); }
-          if (typeof StationUI !== 'undefined') StationUI.notify(isActiveWs(ws) ? 'run stopped: ' + endReason
-            : whoOf(ws) + ' stopped' + sessionNote(ws) + ' — ' + (endReason === 'budget' ? (budgetCapIsBalance === true ? 'used the rest of your StarNet balance' : 'hit a spending limit') : endReason === 'max_iters' ? 'reached the step limit; say "continue" to keep going' : endReason === 'cancelled' ? 'cancelled' : endReason),
+          if (typeof KeepUI !== 'undefined') KeepUI.notify(isActiveWs(ws) ? 'run stopped: ' + endReason
+            : whoOf(ws) + ' stopped' + sessionNote(ws) + ' — ' + (endReason === 'budget' ? (budgetCapIsBalance === true ? 'used the rest of your Eyehold balance' : 'hit a spending limit') : endReason === 'max_iters' ? 'reached the step limit; say "continue" to keep going' : endReason === 'cancelled' ? 'cancelled' : endReason),
             'warn', undefined, isActiveWs(ws) || endReason === 'cancelled' ? undefined : { kind: 'alert', go: { ws: ws.id } });
         } else if (cutShort) {
           // distinct honest "cut short" recap: the reply is truncated/filtered, not a clean delivery.
           if (isActiveWs(ws)) breakLive(), toolLine('⏹ ' + (finishReason === 'content_filter'
             ? 'reply cut short — the model\'s output was filtered'
             : 'reply cut short — hit the response length limit; say "continue" for the rest'));
-          if (typeof StationUI !== 'undefined') StationUI.notify('reply cut short: ' + finishReason, 'warn');
+          if (typeof KeepUI !== 'undefined') KeepUI.notify('reply cut short: ' + finishReason, 'warn');
         } else if (postconditionUnmet) {
           if (isActiveWs(ws)) breakLive(), toolLine('⚠ completion was not proven — typed postconditions returned ' + (completionVerdict || 'not_assessed') + ' (' + (effectVerdict || 'no effect evidence') + ')');
-          if (typeof StationUI !== 'undefined') StationUI.notify(isActiveWs(ws) ? 'completion needs verification' : whoOf(ws) + ' finished but couldn’t prove it worked' + sessionNote(ws) + ' — check it', 'warn', undefined, isActiveWs(ws) ? undefined : { kind: 'alert', go: { ws: ws.id } });
+          if (typeof KeepUI !== 'undefined') KeepUI.notify(isActiveWs(ws) ? 'completion needs verification' : whoOf(ws) + ' finished but couldn’t prove it worked' + sessionNote(ws) + ' — check it', 'warn', undefined, isActiveWs(ws) ? undefined : { kind: 'alert', go: { ws: ws.id } });
         // (a run that already announced a file still says it has a QUESTION: "made X" alone never told you it waits on you)
-        } else if (!isActiveWs(ws) && (!endReason || endReason === 'done' || endReason === 'clarifying') && replyText.trim() && !(thisRunId && notedRuns.has(thisRunId) && !taskQuestion && endReason !== 'clarifying') && typeof StationUI !== 'undefined') {
+        } else if (!isActiveWs(ws) && (!endReason || endReason === 'done' || endReason === 'clarifying') && replyText.trim() && !(thisRunId && notedRuns.has(thisRunId) && !taskQuestion && endReason !== 'clarifying') && typeof KeepUI !== 'undefined') {
           const asks = !!taskQuestion || endReason === 'clarifying';
           // a BACKGROUND session finished (you were elsewhere) — the one beat you'd otherwise miss; the entry opens it
-          StationUI.notify(whoOf(ws) + (asks ? ' has a question for you' : ' finished') + sessionNote(ws), asks ? 'warn' : 'good', asks ? 'needsApproval' : 'runComplete',
+          KeepUI.notify(whoOf(ws) + (asks ? ' has a question for you' : ' finished') + sessionNote(ws), asks ? 'warn' : 'good', asks ? 'needsApproval' : 'runComplete',
             asks ? { kind: 'needs', go: { ws: ws.id }, key: 'needs:' + ws.id } : { kind: 'result', go: { ws: ws.id } });
         }
         // a CLEAN end that hit an unwired connector mid-run: the reply already says "not connected" — the chip is
         // the door. Only on a clean end: a stopped run owns the slot with its retry/budget chip above.
         if (thisRunId) notedRuns.delete(thisRunId);
-        if (!taskQuestion && endReason !== 'clarifying' && typeof StationUI !== 'undefined' && StationUI.settleNotifs) StationUI.settleNotifs('needs:' + ws.id);   // the run is over: its approvals/questions are no longer waiting
+        if (!taskQuestion && endReason !== 'clarifying' && typeof KeepUI !== 'undefined' && KeepUI.settleNotifs) KeepUI.settleNotifs('needs:' + ws.id);   // the run is over: its approvals/questions are no longer waiting
         if (!taskQuestion && (!endReason || endReason === 'done')) offerConnectorDoor(thisRunId, ws);
         if (taskQuestion || endReason === 'clarifying') holdConnectorDoor(thisRunId, ws);   // the question owns the slot (parsed here, or restored from the store below); its card carries the door
         // GOLDEN-RUN DRIFT (2026-08-22): a recipe-launched run is compared by the sidecar against that recipe's own
         // good history; a drifted run is a failure class, so it earns the bell ONCE (keyed by the run). The durable
         // row lands a beat after run end, so the read waits; it is advisory and never blocks the turn.
-        if (opts && opts.recipeId && typeof StationUI !== 'undefined') {
+        if (opts && opts.recipeId && typeof KeepUI !== 'undefined') {
           const rid = String(opts.recipeId);
           setTimeout(() => {
             fetch('/api/recipes/drift?recipeId=' + encodeURIComponent(rid), { cache: 'no-store' })
@@ -9431,12 +9431,12 @@ const Chat = (() => {
               .then(d => {
                 const drift = d && d.drift;
                 if (!drift || drift.status !== 'drift' || !drift.latestRunId) return;
-                let seen = []; try { seen = JSON.parse(localStorage.getItem('starnet.recipeDrift.notified') || '[]'); } catch (_) { seen = []; }
+                let seen = []; try { seen = JSON.parse(localStorage.getItem('eyehold.recipeDrift.notified') || '[]'); } catch (_) { seen = []; }
                 if (seen.indexOf(drift.latestRunId) >= 0) return;
-                seen.push(drift.latestRunId); try { localStorage.setItem('starnet.recipeDrift.notified', JSON.stringify(seen.slice(-50))); } catch (_) {}
+                seen.push(drift.latestRunId); try { localStorage.setItem('eyehold.recipeDrift.notified', JSON.stringify(seen.slice(-50))); } catch (_) {}
                 const name = (typeof Recipes !== 'undefined' && Recipes.get && Recipes.get(rid)) ? Recipes.get(rid).name : rid;
                 const first = drift.signals[0];
-                StationUI.notify('⚠ recipe drift: ' + name + ' — ' + (first ? first.detail : 'this run differs from its last ' + drift.baselineRuns), 'bad', undefined, { kind: 'alert', go: { ws: ws.id } });
+                KeepUI.notify('⚠ recipe drift: ' + name + ' — ' + (first ? first.detail : 'this run differs from its last ' + drift.baselineRuns), 'bad', undefined, { kind: 'alert', go: { ws: ws.id } });
               })
               .catch(() => {});
           }, 1500);
@@ -9521,7 +9521,7 @@ const Chat = (() => {
       } else {
         // A throw that is NOT a deliberate Stop: an unexpected disconnect or a hard fetch/network error. Persist
         // whatever streamed FIRST — before the await below (ordering locked by test/comms-presence.test.js).
-        // NEVER synthesize 'cannot reach the STARNET sidecar' here again (2026-07-29): it forced the "restart the
+        // NEVER synthesize 'cannot reach the EYEHOLD sidecar' here again (2026-07-29): it forced the "restart the
         // app" copy onto every abort, including a dead PROVIDER stream on a healthy install. Say only what we
         // witnessed and let Harness.pingEngine measure the rest — full rationale in harness.js + friendlyerror.js.
         persistPartial(ws, acc);
@@ -9543,7 +9543,7 @@ const Chat = (() => {
       // a THROWN teardown (abort/cancel/disconnect/network drop) means agent.run.end was LOST on the bus, so the
       // crew HUD would stick at WORKING — clear this run's count here. Normal + in-band-error completions deliver
       // run.end (decremented by the bus listener), so we must NOT clear there or a concurrent sibling under-counts.
-      if (typeof StationUI !== 'undefined' && StationUI.clearRunning) StationUI.clearRunning(ws.agentId || 'agent');
+      if (typeof KeepUI !== 'undefined' && KeepUI.clearRunning) KeepUI.clearRunning(ws.agentId || 'agent');
     } finally {
       aborters.delete(ws.id);
       interrupted.delete(ws.id);   // consume the stop flag (whether or not it fired)
@@ -9562,7 +9562,7 @@ const Chat = (() => {
       const stayFacing = typeof Voice !== 'undefined' && Voice.inVoiceMode && Voice.inVoiceMode();
       // OVERLAP GUARD (the black-screen fix): this stream's run is over, but the SAME agent may still be
       // working another live run (a scheduled routine, a channel run, another workstream). Extinguishing the
-      // pose then darkens the workstation screens of an agent that is provably still working. dropRun retires
+      // pose then darkens the workkeep screens of an agent that is provably still working. dropRun retires
       // THIS run from World's refcount (idempotent — the bus run.end usually already did; an aborted stream's
       // run.end was LOST so this is its cleanup) and the pose is only released when NO run remains live.
       const othersLive = (World.dropRun && World.agentRunsLive)
@@ -9819,8 +9819,8 @@ const Chat = (() => {
     const silent = !!(opts && opts.silent);
     if (typeof segments === 'string') segments = [{ text: segments }];
     if (!log || !Array.isArray(segments)) { if (onDone) onDone(); return () => {}; }
-    // DOOR LAW (systems.js): a scripted station line (the tour, the awakening) that names a dock system in capitals
-    // brings it online as it is said — the station never tells a newcomer to open a button it is still hiding
+    // DOOR LAW (systems.js): a scripted keep line (the tour, the awakening) that names a dock system in capitals
+    // brings it online as it is said — the keep never tells a newcomer to open a button it is still hiding
     if (typeof Systems !== 'undefined' && Systems.noticeReply) { try { Systems.noticeReply(segments.map(s => (s && s.text) || '').join(' ')); } catch (_) {} }
     const out = streamingAgent();
     let si = 0, ci = 0, finished = false, killed = false;

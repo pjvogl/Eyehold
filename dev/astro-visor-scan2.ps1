@@ -2,7 +2,7 @@
 # marked-up contact sheet (warm pixels inside the band painted magenta) so the
 # detector's idea of "visor" can be checked by eye before any repaint trusts it.
 Add-Type -AssemblyName System.Drawing
-$dir = Join-Path $PSScriptRoot "..\frontend\assets\sprites\astronaut"
+$dir = Join-Path $PSScriptRoot "..\frontend\assets\sprites\warden"
 $out = Join-Path $PSScriptRoot "..\dev\.astro-visor"
 New-Item -ItemType Directory -Force $out | Out-Null
 $bandRows = 18   # tighter: the visor sits in the upper helmet, above the shoulder rows

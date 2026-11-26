@@ -22,7 +22,7 @@ function bootSidecar(port, workspaces, attempts) {
     const appSandbox = path.join(workspaces, '_appdata');
     const child = spawn(process.execPath, [INDEX], {
       env: Object.assign({}, process.env, {
-        SKYNET_PORT: String(port), SKYNET_WORKSPACES: workspaces, SKYNET_DEV: '1', CONSENT_TIMEOUT_MS: '1000',
+        EYEHOLD_PORT: String(port), EYEHOLD_WORKSPACES: workspaces, EYEHOLD_DEV: '1', CONSENT_TIMEOUT_MS: '1000',
         LOCALAPPDATA: appSandbox, APPDATA: appSandbox, XDG_DATA_HOME: appSandbox
       }), stdio: ['ignore', 'pipe', 'pipe']
     });
@@ -135,9 +135,9 @@ function fakeProvider(argsRaw, browserFixture) {
 
   const provider = await fakeProvider(argsRaw, browserFixture);
   if (browserFixture) {
-    process.env.STARNET_DEFAULT_MODEL = 'fixture-model';
-    process.env.STARNET_OPENROUTER_KEY = 'fixture-key';
-    process.env.STARNET_OPENROUTER_BASE = 'http://' + HOST + ':' + provider.port + '/v1';
+    process.env.EYEHOLD_DEFAULT_MODEL = 'fixture-model';
+    process.env.EYEHOLD_OPENROUTER_KEY = 'fixture-key';
+    process.env.EYEHOLD_OPENROUTER_BASE = 'http://' + HOST + ':' + provider.port + '/v1';
   }
   let booted = await bootSidecar(browserFixture ? 8733 : (9000 + (process.pid % 200)), ws, browserFixture ? 0 : 30);
   let child = booted.child, port = booted.port, apiToken = '';
@@ -145,14 +145,14 @@ function fakeProvider(argsRaw, browserFixture) {
   async function refreshToken() { apiToken = await bootToken(base(), base()); }
   await refreshToken();
   async function request(method, route, body) {
-    const headers = { 'Content-Type': 'application/json' }; if (apiToken) headers['X-StarNet-Token'] = apiToken;
+    const headers = { 'Content-Type': 'application/json' }; if (apiToken) headers['X-Eyehold-Token'] = apiToken;
     const response = await fetch(base() + route, { method, headers, body: body == null ? undefined : JSON.stringify(body) });
     const text = await response.text(); let value; try { value = JSON.parse(text); } catch (_) { value = text; }
     return { status: response.status, body: value };
   }
   async function streamRun(body) {
     const response = await fetch(base() + '/api/run', {
-      method: 'POST', headers: { 'Content-Type': 'application/json', 'X-StarNet-Token': apiToken }, body: JSON.stringify(body)
+      method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Eyehold-Token': apiToken }, body: JSON.stringify(body)
     });
     if (!response.ok) return { status: response.status, events: [], text: await response.text() };
     const events = []; const reader = response.body.getReader(); const decoder = new TextDecoder(); let buf = '';

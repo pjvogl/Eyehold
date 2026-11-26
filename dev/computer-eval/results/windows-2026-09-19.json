@@ -1,6 +1,6 @@
 {
   "evaluatedAt": "2026-09-19",
-  "starnetCommit": "621bbf467",
+  "eyeholdCommit": "621bbf467",
   "driverVersion": "0.28.2",
   "nodeVersion": "22.23.0",
   "installedHermesCommit": "c9de69c6d",
@@ -9,7 +9,7 @@
     {
       "scenario": "notepad-background-edit-save",
       "passed": true,
-      "file": "starnet-cua-2a5b1427.txt",
+      "file": "eyehold-cua-2a5b1427.txt",
       "bytes": 57,
       "cursorUnchangedDuringEdit": true,
       "foregroundUnchangedDuringEdit": true,
@@ -47,7 +47,7 @@
     {
       "scenario": "notepad-background-edit-save",
       "passed": true,
-      "file": "starnet-cua-393e6c3d.txt",
+      "file": "eyehold-cua-393e6c3d.txt",
       "bytes": 57,
       "cursorUnchangedDuringEdit": true,
       "foregroundUnchangedDuringEdit": true,
@@ -85,7 +85,7 @@
     {
       "scenario": "notepad-background-edit-save",
       "passed": true,
-      "file": "starnet-cua-5d495b1f.txt",
+      "file": "eyehold-cua-5d495b1f.txt",
       "bytes": 57,
       "cursorUnchangedDuringEdit": true,
       "foregroundUnchangedDuringEdit": true,
@@ -123,7 +123,7 @@
     {
       "scenario": "notepad-background-edit-save",
       "passed": true,
-      "file": "starnet-cua-a9eb319b.txt",
+      "file": "eyehold-cua-a9eb319b.txt",
       "bytes": 57,
       "cursorUnchangedDuringEdit": true,
       "foregroundUnchangedDuringEdit": true,
@@ -276,31 +276,31 @@
       "blocked": null
     },
     {
-      "label": "starnet.cua-adapter.type.background",
+      "label": "eyehold.cua-adapter.type.background",
       "ms": 27,
       "error": null,
       "blocked": null
     },
     {
-      "label": "starnet.cua-adapter.background-proof",
+      "label": "eyehold.cua-adapter.background-proof",
       "ms": null,
       "error": null,
       "blocked": null
     },
     {
-      "label": "starnet.cua-adapter.file-menu",
+      "label": "eyehold.cua-adapter.file-menu",
       "ms": 55,
       "error": null,
       "blocked": null
     },
     {
-      "label": "starnet.cua-adapter.save",
+      "label": "eyehold.cua-adapter.save",
       "ms": 26,
       "error": null,
       "blocked": null
     },
     {
-      "label": "starnet.cua-adapter.handoff-saved",
+      "label": "eyehold.cua-adapter.handoff-saved",
       "ms": null,
       "error": null,
       "blocked": null
@@ -341,7 +341,7 @@
     "fullFastGate": {
       "status": "TIMEOUT",
       "limitMs": 900000,
-      "lastCompleted": "test/station-recovery.test.js",
+      "lastCompleted": "test/keep-recovery.test.js",
       "completedPrefix": 743,
       "totalSteps": 829
     },

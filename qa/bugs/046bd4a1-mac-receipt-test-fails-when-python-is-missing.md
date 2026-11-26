@@ -9,7 +9,7 @@ found: 2026-09-24
 lane: issue-40-investigation
 fix: 4847acd6751b5719f87dc3ef4e1d3683b2c62782
 origin: customer
-report: https://github.com/androoAGI/starnet/issues/40
+report: https://github.com/Eyehold/eyehold/issues/40
 affected: v0.12.4; Linux Node 22 container without Python
 family: test-portability
 installer: not-applicable
@@ -47,7 +47,7 @@ The canonical filtered fast runner passed both affected suites (`run-fast-tests:
 
 On 2026-09-24, candidate e5bb40b7a passed the complete fast gate (923/923) and customer journeys (38/38), including the previously timed-out sidecar HTTP suite. Merge 70c9236c2 exactly matched that candidate tree. The next independent integration, 726fdb2c7, preserved the issue fix.
 
-The post-merge gate on 726fdb2c7 stopped at step 599/923: `stationbake.connections.test.mjs` passed all 408 Canvas assertions but profile deletion failed with EBUSY on Chrome's debug log. The test passed unchanged when retried. To honor the merge gate without discarding the independent integration, f8faa548d reverted only merge 70c9236c2 on trunk; 34f820e40 reapplied it in the owned lane for revalidation.
+The post-merge gate on 726fdb2c7 stopped at step 599/923: `keepbake.connections.test.mjs` passed all 408 Canvas assertions but profile deletion failed with EBUSY on Chrome's debug log. The test passed unchanged when retried. To honor the merge gate without discarding the independent integration, f8faa548d reverted only merge 70c9236c2 on trunk; 34f820e40 reapplied it in the owned lane for revalidation.
 
 The separate test-cleanup repair e23a88609 waits for graceful Chrome exit before a Windows process-tree fallback, requires parent exit, and bounds retries of transient profile-deletion errors. Rendering assertions are unchanged. The real Canvas test passed 408 assertions after the repair; a forced-shutdown probe executed the actual stop helper against a live browser and proved process exit plus profile deletion (4,107 ms). Full combined gates remain required before reintegration.
 

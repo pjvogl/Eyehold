@@ -4,7 +4,7 @@
         corrupt file (no .bak), while an absent store still answers 200 + [].
      2. fail-loud-but-safe: POST /api/dev/fault (DEV-only) raises a real uncaught exception → /api/health flips to
         503 "degraded: …", /api/diagnostics carries processFault, and the process EXITS 1 (the desktop watchdog's
-        respawn trigger) after the bounded delay. With STARNET_UNCAUGHT_KEEP_SERVING=1 it degrades but stays up.
+        respawn trigger) after the bounded delay. With EYEHOLD_UNCAUGHT_KEEP_SERVING=1 it degrades but stays up.
    Zero network, zero model spend. Registered in test/http.list (child-process boot tests don't gate test:fast). */
 'use strict';
 const A = require('./_assert.js');
@@ -22,11 +22,11 @@ function boot(port, workspaces, attemptsLeft, extraEnv) {
   return new Promise((resolve, reject) => {
     const child = spawn(process.execPath, [INDEX], {
       env: Object.assign({}, process.env, {
-        STARNET_PORT: String(port), STARNET_WORKSPACES: workspaces,
-        STARNET_DEV: '1', SKYNET_DEV: '1',                      // enables POST /api/dev/fault (404 otherwise)
-        STARNET_UNCAUGHT_EXIT_DELAY_MS: '3000',                 // widen the DEGRADED window so it is observable over sockets
-        STARNET_UNCAUGHT_KEEP_SERVING: '', SKYNET_UNCAUGHT_KEEP_SERVING: '',
-        SKYNET_CRON_ENABLED: '', STARNET_CRON_ENABLED: ''
+        EYEHOLD_PORT: String(port), EYEHOLD_WORKSPACES: workspaces,
+        EYEHOLD_DEV: '1', EYEHOLD_DEV: '1',                      // enables POST /api/dev/fault (404 otherwise)
+        EYEHOLD_UNCAUGHT_EXIT_DELAY_MS: '3000',                 // widen the DEGRADED window so it is observable over sockets
+        EYEHOLD_UNCAUGHT_KEEP_SERVING: '', EYEHOLD_UNCAUGHT_KEEP_SERVING: '',
+        EYEHOLD_CRON_ENABLED: '', EYEHOLD_CRON_ENABLED: ''
       }, extraEnv || {}),
       stdio: ['ignore', 'pipe', 'pipe']
     });
@@ -53,7 +53,7 @@ function exited(child, ms) {
 }
 
 (async () => {
-  const ws = fs.mkdtempSync(path.join(os.tmpdir(), 'starnet-route-honesty-'));
+  const ws = fs.mkdtempSync(path.join(os.tmpdir(), 'eyehold-route-honesty-'));
   // CORRUPT fixtures (no .bak → unrecoverable): the exact "torn store" shape the old routes rendered as 200 + [].
   fs.writeFileSync(path.join(ws, 'agent.notebook.json'), '{"notes": [ this is not json');
   fs.writeFileSync(path.join(ws, 'agent.declined.json'), 'not json either');
@@ -64,7 +64,7 @@ function exited(child, ms) {
     const B = 'http://' + HOST + ':' + b.port;
     const tok = await bootToken(B, B);
     A.ok(!!tok, 'boot token extracted');
-    const H = { 'X-StarNet-Token': tok, Origin: B };
+    const H = { 'X-Eyehold-Token': tok, Origin: B };
     const j = async (m, p, body) => { const r = await fetch(B + p, { method: m, headers: Object.assign({ 'Content-Type': 'application/json' }, H), body: body ? JSON.stringify(body) : undefined }); let out = null; try { out = await r.json(); } catch (_) {} return { status: r.status, body: out }; };
 
     // ---- 1. corrupt ≠ empty ----
@@ -112,11 +112,11 @@ function exited(child, ms) {
     child = null;
 
     // ---- 3. the test-only opt-out keeps the process alive but still degrades health ----
-    const b2 = await boot(b.port + 1, fs.mkdtempSync(path.join(os.tmpdir(), 'starnet-route-honesty-keep-')), 6, { STARNET_UNCAUGHT_KEEP_SERVING: '1' });
+    const b2 = await boot(b.port + 1, fs.mkdtempSync(path.join(os.tmpdir(), 'eyehold-route-honesty-keep-')), 6, { EYEHOLD_UNCAUGHT_KEEP_SERVING: '1' });
     child = b2.child;
     const B2 = 'http://' + HOST + ':' + b2.port;
     const tok2 = await bootToken(B2, B2);
-    const f2 = await fetch(B2 + '/api/dev/fault', { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-StarNet-Token': tok2, Origin: B2 }, body: '{}' });
+    const f2 = await fetch(B2 + '/api/dev/fault', { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Eyehold-Token': tok2, Origin: B2 }, body: '{}' });
     A.eq(f2.status, 202, 'keep-serving boot accepted the fault');
     let hs2 = 0;
     for (let i = 0; i < 40 && hs2 !== 503; i++) { await sleep(50); try { hs2 = (await fetch(B2 + '/api/health')).status; } catch (_) {} }
@@ -132,15 +132,15 @@ function exited(child, ms) {
     // the process stays alive QUIESCED, /api/health answers 503 "degraded: crash-loop: 3 faults in 10m — last: …",
     // the static recovery shell + diagnostics keep serving, and every other route fails closed. The ledger FILE
     // is the restart-survival proof.
-    const wsLoop = fs.mkdtempSync(path.join(os.tmpdir(), 'starnet-route-honesty-loop-'));
+    const wsLoop = fs.mkdtempSync(path.join(os.tmpdir(), 'eyehold-route-honesty-loop-'));
     let port3 = b2.port + 1;
     const lifeFault = async (life) => {
-      const bl = await boot(port3, wsLoop, 6, { STARNET_UNCAUGHT_EXIT_DELAY_MS: '300' });
+      const bl = await boot(port3, wsLoop, 6, { EYEHOLD_UNCAUGHT_EXIT_DELAY_MS: '300' });
       port3 = bl.port;
       child = bl.child;
       const BL = 'http://' + HOST + ':' + bl.port;
       const tokL = await bootToken(BL, BL);
-      const fl = await fetch(BL + '/api/dev/fault', { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-StarNet-Token': tokL, Origin: BL }, body: '{}' });
+      const fl = await fetch(BL + '/api/dev/fault', { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Eyehold-Token': tokL, Origin: BL }, body: '{}' });
       A.eq(fl.status, 202, 'life ' + life + ': fault accepted');
       let st = 0, body = '';
       for (let i = 0; i < 60 && st !== 503; i++) { await sleep(50); try { const r = await fetch(BL + '/api/health'); st = r.status; body = await r.text(); } catch (_) {} }
@@ -167,18 +167,18 @@ function exited(child, ms) {
       A.ok(/\[process-fault\] uncaughtException: CRASH LOOP — 3 fault exit/.test(bl.output()), 'life 3: boot log carries the crash-loop hold line');
       const shell = await fetch(BL + '/', { headers: { Origin: BL } });
       A.eq(shell.status, 200, 'life 3: static recovery shell remains reloadable');
-      const rd = await fetch(BL + '/api/skills?placed=cabinet', { headers: { 'X-StarNet-Token': tokL, Origin: BL } });
+      const rd = await fetch(BL + '/api/skills?placed=cabinet', { headers: { 'X-Eyehold-Token': tokL, Origin: BL } });
       A.eq(rd.status, 503, 'life 3: non-diagnostic API reads fail closed while held');
       const rosterFile = path.join(wsLoop, 'agent.roster.json');
       A.eq(fs.existsSync(rosterFile), false, 'life 3: no roster existed before the refused mutation');
-      const wr = await fetch(BL + '/api/roster', { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-StarNet-Token': tokL, Origin: BL }, body: JSON.stringify({ updatedAt: Date.now(), agents: [{ agentId: 'agent', system: 'audit', name: 'Audit', provider: 'openrouter' }] }) });
+      const wr = await fetch(BL + '/api/roster', { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Eyehold-Token': tokL, Origin: BL }, body: JSON.stringify({ updatedAt: Date.now(), agents: [{ agentId: 'agent', system: 'audit', name: 'Audit', provider: 'openrouter' }] }) });
       const wj = await wr.json();
       A.eq(wr.status, 503, 'life 3: mutations fail closed while held');
       A.eq(wj.code, 'EPROCESS_FAULT', 'life 3: refusal names the process-fault boundary');
       A.eq(fs.existsSync(rosterFile), false, 'life 3: refused mutation wrote no roster bytes');
       const v1 = await fetch(BL + '/v1/chat/completions', { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer fixture' }, body: '{}' });
       A.eq(v1.status, 503, 'life 3: external /v1 work also fails closed');
-      const dg3 = await fetch(BL + '/api/diagnostics', { headers: { 'X-StarNet-Token': tokL, Origin: BL } });
+      const dg3 = await fetch(BL + '/api/diagnostics', { headers: { 'X-Eyehold-Token': tokL, Origin: BL } });
       const d3 = await dg3.json();
       A.ok(d3.report && d3.report.processFault && d3.report.processFault.exiting === false && d3.report.processFault.loop && d3.report.processFault.loop.count === 3, 'life 3: diagnostics processFault says held + loop count 3');
       A.ok(d3.report.crashLoop && d3.report.crashLoop.tripped === true && d3.report.crashLoop.count === 3, 'life 3: diagnostics crashLoop tripped');
@@ -192,13 +192,13 @@ function exited(child, ms) {
     // A LIVE holder (this test process's own PID) owns the workspace, so every acquire is honestly refused. Lives 1+2
     // exit 73 as before; life 3 stays up on the port answering /api/health 503 "degraded: workspace owner unavailable…"
     // and 503 JSON elsewhere — with the owner file UNTOUCHED (no auto-reclaim).
-    const wsOwn = fs.mkdtempSync(path.join(os.tmpdir(), 'starnet-route-honesty-owner-'));
-    const ownerFile = path.join(wsOwn, '.starnet-workspace-owner.json');
+    const wsOwn = fs.mkdtempSync(path.join(os.tmpdir(), 'eyehold-route-honesty-owner-'));
+    const ownerFile = path.join(wsOwn, '.eyehold-workspace-owner.json');
     const ownerDoc = JSON.stringify({ version: 1, pid: process.pid, nonce: 'test-holder-nonce', startedAt: Date.now(), executable: process.execPath });
     fs.writeFileSync(ownerFile, ownerDoc);
     const bootAny = (port) => new Promise((resolve) => {
       const c = spawn(process.execPath, [INDEX], {
-        env: Object.assign({}, process.env, { STARNET_PORT: String(port), STARNET_WORKSPACES: wsOwn, STARNET_DEV: '1', SKYNET_DEV: '1', SKYNET_CRON_ENABLED: '', STARNET_CRON_ENABLED: '' }),
+        env: Object.assign({}, process.env, { EYEHOLD_PORT: String(port), EYEHOLD_WORKSPACES: wsOwn, EYEHOLD_DEV: '1', EYEHOLD_DEV: '1', EYEHOLD_CRON_ENABLED: '', EYEHOLD_CRON_ENABLED: '' }),
         stdio: ['ignore', 'pipe', 'pipe']
       });
       let out = '', done = false;
@@ -226,7 +226,7 @@ function exited(child, ms) {
       A.eq(h.status, 503, 'owner life 3: /api/health 503');
       A.ok(/^degraded: workspace owner unavailable — another process may own /.test(htxt) && /holder PID \d+/.test(htxt) && /crash-loop: 3 faults in 10m/.test(htxt), 'owner life 3: health carries the owner reason + recovery guidance + loop count: ' + htxt);
       const sv = await fetch(BO + '/api/save?agent=agent');
-      A.eq(sv.status, 503, 'owner life 3: every other route is 503 (the frontend lands on STATION DATA UNREACHABLE)');
+      A.eq(sv.status, 503, 'owner life 3: every other route is 503 (the frontend lands on KEEP DATA UNREACHABLE)');
       const svj = await sv.json();
       A.eq(svj.code, 'WORKSPACE_BUSY', 'owner life 3: JSON carries the safety code');
       A.eq(fs.readFileSync(ownerFile, 'utf8'), ownerDoc, 'owner life 3: the owner claim was NOT reclaimed or rewritten');

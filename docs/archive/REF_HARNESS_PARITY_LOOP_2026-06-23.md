@@ -1,9 +1,9 @@
-# StarNet → ref-parity Loop (H1 → H6)
+# Eyehold → ref-parity Loop (H1 → H6)
 
 > The durable brain for the self-paced ref-parity loop. Source: the 2026-06-23 adversarially-verified
-> StarNet-vs-the reference harnessAgent comparison (21-agent workflow `wf_f9c4308c-fd3`). 8 confirmed ON-MOAT gaps where
-> the reference harness excels and StarNet lacks; 2 off-moat non-goals (OpenAI-compat server/REPL, mixture-of-agents) excluded.
-> **Defining theme: most fixes are WIRING — StarNet already writes durable transcripts/telemetry/recall it never
+> Eyehold-vs-the reference harnessAgent comparison (21-agent workflow `wf_f9c4308c-fd3`). 8 confirmed ON-MOAT gaps where
+> the reference harness excels and Eyehold lacks; 2 off-moat non-goals (OpenAI-compat server/REPL, mixture-of-agents) excluded.
+> **Defining theme: most fixes are WIRING — Eyehold already writes durable transcripts/telemetry/recall it never
 > reads back. Consume what exists before building anything new. Smallest-leverage-first.**
 
 ## Operating protocol (obeyed every iteration — same discipline as the P0–P3 loop)
@@ -20,7 +20,7 @@
    `skill.*`) are ADDITIVE only — add + flag in the commit, never rename/remove. `loop.replay` must stay
    byte-identical for any loop.js change.
 7. **Sync before merge** (`sync-agent-tree hermes-parity`) so conflicts surface in the worktree.
-8. **Coordinate live collisions.** Before editing a FRONTEND file (esp. `world.js`, `stationui.js`,
+8. **Coordinate live collisions.** Before editing a FRONTEND file (esp. `world.js`, `keepui.js`,
    `app.js`), run `node scripts/board.mjs --files <path>` — `agent/workforce-zones` is live in world.js
    (eerie/idle) and `agent/onboarding-remaster` in app.js/voice.js. Don't race them.
 9. **No infinite walls.** Gate red after a real fix attempt → set item BLOCKED with the reason, move to the
@@ -38,7 +38,7 @@
 ---
 
 ## PHASE H1 — Bulletproof resume + agent recall (rank 1, highest leverage)  ·  STATUS: ✅ DONE (3/3)
-> StarNet fsyncs a durable transcript (`transcriptstore.js`) + serves `GET /api/transcript`, but NOTHING reads
+> Eyehold fsyncs a durable transcript (`transcriptstore.js`) + serves `GET /api/transcript`, but NOTHING reads
 > it back: resume rides the frontend `activeWs.history` (rendered/truncatable), the transcript stores only
 > title+final-text per run (no tool_calls/intermediate turns), and there's no agent recall over it.
 
@@ -110,7 +110,7 @@ model/credential switch is visible. **CHECK `board.mjs --files frontend/app/worl
 - **Notes:**
 
 ### H3.2 — Join run → transcript  ·  STATUS: ✅ DONE (trunk `3403394`)
-Thread the in-scope `streamId` into `runStore.record` (add the field in `runstore.js`); make `stationui.js` RUNS rows
+Thread the in-scope `streamId` into `runStore.record` (add the field in `runstore.js`); make `keepui.js` RUNS rows
 clickable to open that run's transcript via `GET /api/transcript?streamId=`.
 - **Acceptance:** `test/observability.test.js`: `runStore.record` persists `streamId`; a RUNS entry resolves to a
   non-empty transcript for that streamId. Gate green.
@@ -123,7 +123,7 @@ Fold runstore + spend ledger into per-model spend, tool-usage ranking, runs-over
 - **Notes:**
 
 ## PHASE H4 — Agent-authored skills library (rank 4, genuinely new)  ·  STATUS: ✅ DONE (2/2, trunk `1ea91d5`)
-> StarNet's thesis names "an owned compounding exportable library" as core, yet the only "skill" is a memory KIND
+> Eyehold's thesis names "an owned compounding exportable library" as core, yet the only "skill" is a memory KIND
 > (a one-line notebook fact); `notebook.js` even says "reusable procedures belong in a skill, not memory" with no
 > such artifact. Mirror the notebook plumbing. Keep it a plain titled document (defer the reference harness YAML/hub install).
 
@@ -242,7 +242,7 @@ tool call AND no assistant text (or a pure failover/compaction retry) with a har
   NEXT: H3.2 (join run→transcript: streamId into runStore.record + clickable RUNS rows).
 - **2026-06-23 · iter 9 · H3.2 ✅ DONE → trunk `3403394`.** runstore.record now stores `streamId` (threaded from
   runOnce); GET /api/runs surfaces it; a RUNS row in the LOGBOOK is clickable to lazily open that run's transcript
-  inline (GET /api/transcript?stream=). board-checked stationui.js clear before+after. runstore.test +3,
+  inline (GET /api/transcript?stream=). board-checked keepui.js clear before+after. runstore.test +3,
   e2e.run.test +1 (a real run's RUNS row carries streamId — join proven end-to-end). Gate green. NEXT: H3.3
   (GET /api/insights: per-model spend + tool-usage ranking + runs-over-time, as a LOGBOOK tab).
 - **2026-06-23 · iter 10 · H3.3 ✅ DONE → trunk `99aefc3`. 🏁 PHASE H3 COMPLETE (3/3).** New pure `insights.js`

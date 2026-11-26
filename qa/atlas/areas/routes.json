@@ -643,7 +643,7 @@
       "kind": "route",
       "area": "routes",
       "name": "GET /api/credits",
-      "purpose": "Managed-credit account balance surface — INERT (404s) unless STARNET_CREDITS_URL is configured (honesty law: a control that does nothing must not render).",
+      "purpose": "Managed-credit account balance surface — INERT (404s) unless EYEHOLD_CREDITS_URL is configured (honesty law: a control that does nothing must not render).",
       "promise": "GET returns 200 balance when managed credits are wired, else 404 (no surface).",
       "wiring": {
         "files": [
@@ -1573,7 +1573,7 @@
       "firstSeen": "2026-07-07T08:09:25.409Z",
       "lastSeen": "2026-07-18T00:54:02.711Z",
       "missing": false,
-      "notes": "LIVE :8964 @ HEAD 0a009ec2 — GET ?agent=agent → 200 {save:{schema:starnet.save,version:5,agent:{...}}} durable save envelope. Guarded by sidecar.http.test.js."
+      "notes": "LIVE :8964 @ HEAD 0a009ec2 — GET ?agent=agent → 200 {save:{schema:eyehold.save,version:5,agent:{...}}} durable save envelope. Guarded by sidecar.http.test.js."
     },
     {
       "id": "route/get-api-scout",
@@ -1613,7 +1613,7 @@
       "kind": "route",
       "area": "routes",
       "name": "GET /api/skills",
-      "purpose": "The bundled recipe library + per-workstation placement flags for the SKILLS panel.",
+      "purpose": "The bundled recipe library + per-workkeep placement flags for the SKILLS panel.",
       "promise": "GET (optionally ?placed=...) returns 200 with the library catalog + enabled/placed flags from the skill store.",
       "wiring": {
         "files": [
@@ -2049,7 +2049,7 @@
       "wiring": {
         "files": [
           "sidecar/index.js",
-          "sidecar/station-store.js"
+          "sidecar/keep-store.js"
         ],
         "events": []
       },
@@ -2207,7 +2207,7 @@
       "wiring": {
         "files": [
           "sidecar/index.js",
-          "sidecar/station-store.js"
+          "sidecar/keep-store.js"
         ],
         "events": []
       },
@@ -2920,7 +2920,7 @@
       "area": "routes",
       "name": "POST /api/channels/token",
       "purpose": "Desktop key-push of a channel bot token (TOKEN_EXEMPT; own IPC token gate).",
-      "promise": "POST {channel, token} guarded by STARNET_IPC_TOKEN persists the token server-side and returns 200; wrong token 403; never echoed back.",
+      "promise": "POST {channel, token} guarded by EYEHOLD_IPC_TOKEN persists the token server-side and returns 200; wrong token 403; never echoed back.",
       "wiring": {
         "files": [
           "sidecar/index.js",
@@ -2945,7 +2945,7 @@
       "firstSeen": "2026-07-07T08:09:25.409Z",
       "lastSeen": "2026-07-18T00:54:02.711Z",
       "missing": false,
-      "notes": "LIVE :8964 @ HEAD 0a009ec2 — wrong IPC token → 403 forbidden; correct STARNET_IPC_TOKEN → 200 {ok:true,channel:'telegram',configured:false} (empty token clears the runtime token); the token is never echoed. TOKEN_EXEMPT with its own IPC gate. Guarded by sidecar.http.test.js."
+      "notes": "LIVE :8964 @ HEAD 0a009ec2 — wrong IPC token → 403 forbidden; correct EYEHOLD_IPC_TOKEN → 200 {ok:true,channel:'telegram',configured:false} (empty token clears the runtime token); the token is never echoed. TOKEN_EXEMPT with its own IPC gate. Guarded by sidecar.http.test.js."
     },
     {
       "id": "route/post-api-checkpoint-restore",
@@ -2985,7 +2985,7 @@
       "kind": "route",
       "area": "routes",
       "name": "POST /api/config/export",
-      "purpose": "Station backup: export the durable config bundle.",
+      "purpose": "Keep backup: export the durable config bundle.",
       "promise": "POST returns 200 with the exportable config envelope (secrets excluded per config export rules).",
       "wiring": {
         "files": [
@@ -3010,14 +3010,14 @@
       "firstSeen": "2026-07-07T08:09:25.409Z",
       "lastSeen": "2026-07-18T00:54:02.711Z",
       "missing": false,
-      "notes": "LIVE :8964 @ HEAD 0a009ec2 — POST → 200 {starnetExport:1,exportedAt,sections:{budget:{perDay:25},fallback:{...}}} — config envelope with secrets excluded. Guarded by sidecar.http.test.js."
+      "notes": "LIVE :8964 @ HEAD 0a009ec2 — POST → 200 {eyeholdExport:1,exportedAt,sections:{budget:{perDay:25},fallback:{...}}} — config envelope with secrets excluded. Guarded by sidecar.http.test.js."
     },
     {
       "id": "route/post-api-config-import",
       "kind": "route",
       "area": "routes",
       "name": "POST /api/config/import",
-      "purpose": "Restore a station config bundle produced by export.",
+      "purpose": "Restore a keep config bundle produced by export.",
       "promise": "POST {bundle} validates and folds the config in, returning 200 on success or a shaped error.",
       "wiring": {
         "files": [
@@ -3042,14 +3042,14 @@
       "firstSeen": "2026-07-07T08:09:25.409Z",
       "lastSeen": "2026-07-18T00:54:02.711Z",
       "missing": false,
-      "notes": "LIVE :8964 @ HEAD 0a009ec2 — POST {bundle:'nope'} → 400 {error:'missing or invalid starnetExport version marker'} (honest shaped rejection). Happy fold-in guarded by sidecar.http.test.js."
+      "notes": "LIVE :8964 @ HEAD 0a009ec2 — POST {bundle:'nope'} → 400 {error:'missing or invalid eyeholdExport version marker'} (honest shaped rejection). Happy fold-in guarded by sidecar.http.test.js."
     },
     {
       "id": "route/post-api-config-reset",
       "kind": "route",
       "area": "routes",
       "name": "POST /api/config/reset",
-      "purpose": "Reset station config to defaults.",
+      "purpose": "Reset keep config to defaults.",
       "promise": "POST clears the config overrides and returns 200.",
       "wiring": {
         "files": [
@@ -3683,7 +3683,7 @@
       "wiring": {
         "files": [
           "sidecar/index.js",
-          "sidecar/station-store.js"
+          "sidecar/keep-store.js"
         ],
         "events": []
       },
@@ -3745,7 +3745,7 @@
       "area": "routes",
       "name": "POST /api/key",
       "purpose": "Update a provider's BYOK key/baseUrl in place (desktop key push) without restarting the sidecar.",
-      "promise": "POST guarded by its OWN IPC token (STARNET_IPC_TOKEN, header x-starnet-token): wrong/absent token → 403 forbidden; correct token → 200 {ok:true, configured:true} and /api/providers reflects configured:true.",
+      "promise": "POST guarded by its OWN IPC token (EYEHOLD_IPC_TOKEN, header x-eyehold-token): wrong/absent token → 403 forbidden; correct token → 200 {ok:true, configured:true} and /api/providers reflects configured:true.",
       "wiring": {
         "files": [
           "sidecar/index.js",
@@ -3772,7 +3772,7 @@
       "firstSeen": "2026-07-07T08:09:25.409Z",
       "lastSeen": "2026-07-18T00:54:02.711Z",
       "missing": false,
-      "notes": "LIVE :8964 @ HEAD 0a009ec2 — wrong IPC token → 403 forbidden; correct STARNET_IPC_TOKEN (x-starnet-token) → 200 {ok:true,provider:openrouter,configured:true}; the key is never echoed back (booleans only). TOKEN_EXEMPT from the API token by design (own IPC gate). Carries prior finding 6887ef72. Guarded by sidecar.http.test.js."
+      "notes": "LIVE :8964 @ HEAD 0a009ec2 — wrong IPC token → 403 forbidden; correct EYEHOLD_IPC_TOKEN (x-eyehold-token) → 200 {ok:true,provider:openrouter,configured:true}; the key is never echoed back (booleans only). TOKEN_EXEMPT from the API token by design (own IPC gate). Carries prior finding 6887ef72. Guarded by sidecar.http.test.js."
     },
     {
       "id": "route/post-api-memory-config",
@@ -4426,7 +4426,7 @@
       "wiring": {
         "files": [
           "sidecar/index.js",
-          "sidecar/station-store.js"
+          "sidecar/keep-store.js"
         ],
         "events": []
       },
@@ -4754,7 +4754,7 @@
       "area": "routes",
       "name": "POST /api/session",
       "purpose": "A token-gated liveness/handshake stub the client can POST to confirm its launch token is accepted before starting a session.",
-      "promise": "POST with a valid x-starnet-token returns 200 {ok:true}; a missing/bad token 403s at the auth seam.",
+      "promise": "POST with a valid x-eyehold-token returns 200 {ok:true}; a missing/bad token 403s at the auth seam.",
       "wiring": {
         "files": [
           "sidecar/index.js",
@@ -4788,7 +4788,7 @@
       "kind": "route",
       "area": "routes",
       "name": "POST /api/skills/toggle",
-      "purpose": "Persist a station-wide enable/disable choice for a library recipe.",
+      "purpose": "Persist a keep-wide enable/disable choice for a library recipe.",
       "promise": "POST {slug, enabled} persists the choice and returns 200; GET /api/skills reflects it.",
       "wiring": {
         "files": [
@@ -5250,7 +5250,7 @@
       "firstSeen": "2026-07-07T08:09:25.409Z",
       "lastSeen": "2026-07-18T00:54:02.711Z",
       "missing": false,
-      "notes": "LIVE :8964 @ HEAD 0a009ec2 — POST {path:'../../../etc/passwd'} → 403 {error:'Open this file manually; StarNet cannot launch desktop applications from a run.'} — the shell-open is refused for a non-interactive/escape request. Interactive jailed-open guarded by workshop.e2e.test.js."
+      "notes": "LIVE :8964 @ HEAD 0a009ec2 — POST {path:'../../../etc/passwd'} → 403 {error:'Open this file manually; Eyehold cannot launch desktop applications from a run.'} — the shell-open is refused for a non-interactive/escape request. Interactive jailed-open guarded by workshop.e2e.test.js."
     },
     {
       "id": "route/post-api-workshop-queue",

@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 /*
- * stage-website-deploy.mjs — build the exact directory that gets uploaded to starnetos.com
+ * stage-website-deploy.mjs — build the exact directory that gets uploaded to eyehold.com
  *
- * WHY THIS EXISTS. starnetos.com is Cloudflare Pages by DIRECT UPLOAD: it has no git integration,
+ * WHY THIS EXISTS. eyehold.com is Cloudflare Pages by DIRECT UPLOAD: it has no git integration,
  * so merging a website lane to trunk publishes nothing and the live site only moves when someone
  * runs `wrangler pages deploy`. That command takes a DIRECTORY, and the obvious directory —
  * website/ — is not the thing we want published: pricing.html is written and reviewed but
@@ -72,10 +72,10 @@ const HELD_BACK = new Set([
 const HELD_BACK_PREFIXES = ['app/assets/sprites/_assembly/'];
 
 /* Holding pricing back is not only about the pricing page: terms.html clause 2 and privacy.html
-   both describe the paid StarNet Credits program, and the terms cite the pricing page as forming
+   both describe the paid Eyehold Credits program, and the terms cite the pricing page as forming
    part of them. Publishing that while the page itself is hidden would announce a paid tier nobody
    can read the price of, via a citation that resolves to the homepage.
-   So the staged copies swap in variants carrying the wording ALREADY PUBLISHED on starnetos.com —
+   So the staged copies swap in variants carrying the wording ALREADY PUBLISHED on eyehold.com —
    no legal language invented for the hold. The repo keeps the full Credits versions, and the day
    pricing goes live the substitution simply stops applying and the real files publish untouched. */
 const SUBSTITUTIONS = PRICING_LIVE ? {} : {
@@ -86,7 +86,7 @@ const SUBSTITUTIONS = PRICING_LIVE ? {} : {
 // Anything the staged legal pages must not contain while the paid tier is unannounced.
 const CREDITS_WORDS = /credit|stripe|gateway|billing|subscription/i;
 
-const PROJECT = 'starnet-site';
+const PROJECT = 'eyehold-site';
 
 function walk(dir, acc = []) {
   for (const entry of readdirSync(dir)) {

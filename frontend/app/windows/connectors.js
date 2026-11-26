@@ -1,15 +1,15 @@
-/* STARNET — windows/connectors.js : the TOOLSETS & CONNECTORS window (extracted verbatim from stationui.js).
-   Loads AFTER stationui.js (see index.html) and registers itself via StationUI.registerWindow;
-   the only stationui internals it touches are the enumerated StationUI.h helper surface
+/* EYEHOLD — windows/connectors.js : the TOOLSETS & CONNECTORS window (extracted verbatim from keepui.js).
+   Loads AFTER keepui.js (see index.html) and registers itself via KeepUI.registerWindow;
+   the only keepui internals it touches are the enumerated KeepUI.h helper surface
    (esc/sfx/notify/fmtRel, mountConsole, and openSignIn for catalog OAuth flows). */
 'use strict';
 (() => {
-  if (typeof StationUI === 'undefined' || !StationUI.registerWindow) return;
-  const H = StationUI.h;
+  if (typeof KeepUI === 'undefined' || !KeepUI.registerWindow) return;
+  const H = KeepUI.h;
   const esc = H.esc, sfx = H.sfx, notify = H.notify, fmtRel = H.fmtRel;
   const mountConsole = H.mountConsole, openSignIn = H.openSignIn;
 
-  // CATALOG DEEP-LINK (tutorial lane 2, 2026-08-22): StationUI.connectorJump(id) opens ABILITIES on the CATALOG
+  // CATALOG DEEP-LINK (tutorial lane 2, 2026-08-22): KeepUI.connectorJump(id) opens ABILITIES on the CATALOG
   // rail and scrolls/flashes that connector's card (the same cc-jump flash the ▸ VIA action uses) — the
   // Commander still presses the card's OWN ▸ SIGN IN, so the existing OAuth path stays the only door. The id
   // parks here until ccRefresh has rendered the cards (the window builds async).
@@ -21,9 +21,9 @@
     target.classList.add('cc-jump');
     setTimeout(() => target.classList.remove('cc-jump'), 2500);
   }
-  StationUI.connectorJump = function (id) {
+  KeepUI.connectorJump = function (id) {
     ccJumpPending = String(id || '') || null;
-    if (typeof StationUI.openTerm === 'function') StationUI.openTerm('connectors', 'catalog');
+    if (typeof KeepUI.openTerm === 'function') KeepUI.openTerm('connectors', 'catalog');
   };
 
   /* ============== CONNECTORS — attach MCP servers so agents gain external tools ==============
@@ -199,11 +199,11 @@
         '<div class="mc-acts"><button class="bb sm" id="ky-add">+ SAVE KEY</button></div>' +
       '</div>' +
       '<div id="ky-msg" class="msg" role="status" aria-live="polite"></div>';
-    /* ---- EXTENSIONS: the Commander's OWN code, running inside the station ----
+    /* ---- EXTENSIONS: the Commander's OWN code, running inside the keep ----
        Sits in this console and not in SETTINGS because "MCP server", "hook" and "plugin" are one user intent —
-       things I plug into my station — and splitting them by which subsystem implements them is how a settings
+       things I plug into my keep — and splitting them by which subsystem implements them is how a settings
        screen becomes a junk drawer. The two lists stay SEPARATE inside the tab because they are not the same
-       promise: a hook is a script the station shells out to, a plugin is code loaded into the station itself.
+       promise: a hook is a script the keep shells out to, a plugin is code loaded into the keep itself.
 
        The PENDING rows are the reason this panel exists at all. Both gates are opt-in by design, so an
        unapproved extension is silently inert — and an extension you wrote that never ran, with nothing on
@@ -213,7 +213,7 @@
         <div class="ext-choices" aria-label="Add an extension">
           <button class="ext-choice" data-ext-editor="hook" aria-controls="hk-form" aria-expanded="false">
             <span class="ext-choice-icon" aria-hidden="true">⌁</span>
-            <span><b>Run a command automatically</b><small>Choose when StarNet runs your script.</small></span><span aria-hidden="true">＋</span>
+            <span><b>Run a command automatically</b><small>Choose when Eyehold runs your script.</small></span><span aria-hidden="true">＋</span>
           </button>
           <button class="ext-choice" data-ext-editor="plugin" aria-controls="pl-form" aria-expanded="false">
             <span class="ext-choice-icon" aria-hidden="true">⌘</span>
@@ -237,7 +237,7 @@
         </section>
         <section class="ext-editor mc-form" id="pl-form" aria-label="Create a plugin" hidden>
           <div class="ext-editor-head"><b>Create a plugin</b><button class="bb xs" data-ext-editor="">CANCEL</button></div>
-          <p class="mc-hint">Your starter comes with its own window, styled like the rest of the station, plus code that counts tool calls each run. Open the window, then edit its files to make it yours.</p>
+          <p class="mc-hint">Your starter comes with its own window, styled like the rest of the keep, plus code that counts tool calls each run. Open the window, then edit its files to make it yours.</p>
           <label for="pl-name">Plugin name</label>
           <input id="pl-name" class="key-input" placeholder="e.g. PR Radar" autocomplete="off" maxlength="60">
           <details class="ext-details" id="pl-options"><summary>Optional settings</summary>
@@ -260,7 +260,7 @@
 
     const frag = h => (el => { el.innerHTML = h; });
     // NAV CONDENSE 2 (2026-08-04): the standalone SKILLS window merged in here — one window owns
-    // the whole "what agents can do" axis. stationui.js pushes its skill-library/agent-skills lane
+    // the whole "what agents can do" axis. keepui.js pushes its skill-library/agent-skills lane
     // onto window.AbilityLanes ((body)=>({sections,wire}), the windows/automation.js shape); the
     // lanes' sections mount in THIS console and their wire() runs after ours, against the same body.
     const lanes = (window.AbilityLanes || []).map(fn => { try { return fn(body); } catch (_) { return null; } }).filter(l => l && Array.isArray(l.sections));
@@ -281,7 +281,7 @@
       { glyph: '⊞', to: 'catalog', title: 'Connect a service you use',
         blurb: 'Find services and platform APIs, including print-on-demand. See what they can do and follow their setup steps. <b>Start here.</b>' },
       { glyph: '⧉', to: 'mcp', title: 'Advanced: add a custom connection',
-        blurb: 'You already have an MCP endpoint and want to point the station at it.' },
+        blurb: 'You already have an MCP endpoint and want to point the keep at it.' },
       { glyph: '▤', to: 'toolsets', title: 'Switch a built-in on or off',
         blurb: 'Web, files, terminal, memory — inspect the selected agent’s tools and where its access comes from.' },
       // cross-window, and deliberately so: naming the wrong window is worse than naming none.
@@ -330,7 +330,7 @@
       { id: 'mcp', label: 'CONNECTED SERVICES', glyph: '⧉', desc: 'Manage service access, check connection status, and reconnect when needed.', build: frag(secMcp) },
       // (ONE DOOR EACH, 2026-10-01: the CREATE / ADVANCED router pane repeated the rail — custom MCP server → CONNECTED
       // SERVICES, custom API key → SAVED API CONNECTIONS, skill package → SKILL EXCHANGE, hooks/plugins → EXTENSIONS)
-      { id: 'extensions', label: 'EXTENSIONS', glyph: '⌥', desc: 'Automate a step or extend StarNet with your own code.', build: frag(secExt) }
+      { id: 'extensions', label: 'EXTENSIONS', glyph: '⌥', desc: 'Automate a step or extend Eyehold with your own code.', build: frag(secExt) }
     ].concat(lanes.reduce((acc, l) => acc.concat(l.sections), [])), {
       search: true,
       groups: [
@@ -436,7 +436,7 @@
         const j = await r.json().catch(() => ({}));
         if (!r.ok) { extSay((j && j.error) || ('request failed (' + r.status + ')'), true); return false; }
         return true;
-      } catch (e) { extSay('could not reach the station: ' + ((e && e.message) || e), true); return false; }
+      } catch (e) { extSay('could not reach the keep: ' + ((e && e.message) || e), true); return false; }
       finally { if (btn) { btn.disabled = false; btn.classList.remove('busy'); } }
     }
 
@@ -464,7 +464,7 @@
       const hits = Array.isArray(f.hits) && f.hits.length ? ' — ' + f.hits.map(h => esc(String(h))).join(', ') : '';
       return '<div class="mc-hint">scanner: <b>' + esc(String(f.level)) + '</b>' + hits + '</div>';
     }
-    // A plugin's TOOLS (what its process actually registered) and its terminal in the station — the tools reach an
+    // A plugin's TOOLS (what its process actually registered) and its terminal in the keep — the tools reach an
     // agent only through that terminal (object = capability), so the row says where it stands or offers to place it.
     function extTools(p) {
       const tools = Array.isArray(p.tools) ? p.tools : [];
@@ -472,8 +472,8 @@
       const host = typeof PluginHost !== 'undefined' ? PluginHost : null;
       const term = host && host.terminalOf ? host.terminalOf(p.id) : null;
       return '<div class="mc-hint">Tools: ' + tools.map(t => '<code>' + esc(t) + '</code>').join(' ') + '<br>' +
-        (term ? 'Its terminal stands in the station: agents in that room can use these. Each call asks you first unless you choose Always or Full access.'
-          : 'No terminal in the station yet, so no agent can use these. <button class="bb xs" data-ext="plugin-place" data-id="' + esc(p.id) + '">PLACE TERMINAL</button>') +
+        (term ? 'Its terminal stands in the keep: agents in that room can use these. Each call asks you first unless you choose Always or Full access.'
+          : 'No terminal in the keep yet, so no agent can use these. <button class="bb xs" data-ext="plugin-place" data-id="' + esc(p.id) + '">PLACE TERMINAL</button>') +
         '</div>';
     }
     // A plugin's windows (plugin.json `screens`), openable only while it is approved and live.
@@ -527,7 +527,7 @@
       const plugins = results[1].status === 'fulfilled' ? results[1].value : null;
       // nothing left to approve: the bell's "extensions awaiting your approval" leaves NEEDS YOU (it stayed lit for good)
       if (hooks && plugins && !((hooks.pending || []).length + plugins.plugins.filter(x => x && x.pending).length)
-        && typeof StationUI !== 'undefined' && StationUI.settleNotifs) StationUI.settleNotifs('extensions-pending');
+        && typeof KeepUI !== 'undefined' && KeepUI.settleNotifs) KeepUI.settleNotifs('extensions-pending');
       extPluginDir = plugins ? plugins.dir || '' : '';
       body.querySelector('#pl-where').hidden = !extPluginDir || !plugins.plugins.length;
       const unavailable = label => '<div class="mc-hint">Could not load ' + label + '. <button class="bb xs" data-ext="retry">TRY AGAIN</button></div>';
@@ -564,7 +564,7 @@
           '<p class="mc-hint">Folder: <code>' + esc(p.id) + '</code> · Version ' + esc(p.version || '0') +
           '<br>Open its folder to edit the code. Starters use <code>index.js</code> and <code>ui/index.html</code>.</p>' +
           (p.active ? extFindings(p.findings) : (p.hasCode === false
-            ? '<p class="mc-hint">Window-only plugin: its pages run sandboxed inside their windows, with no access to your station or computer.</p>'
+            ? '<p class="mc-hint">Window-only plugin: its pages run sandboxed inside their windows, with no access to your keep or computer.</p>'
             : '<p class="mc-hint">Enabling loads this code with your computer’s permissions.</p>')) +
           '<div class="mc-acts"><button class="bb xs" data-ext="plugin-where" data-id="' + esc(p.id) + '">COPY FOLDER PATH</button>' +
           '<button class="bb xs danger" data-ext-remove="' + esc(p.id) + '">DELETE PLUGIN</button></div>' +
@@ -647,7 +647,7 @@
         if (ok) { openAfter = newId; done = 'Plugin created and its window opened. Find its code under Details & code.'; id.value = ''; nm.value = ''; ds.value = ''; pluginIdEdited = false; extEditor('', false); }
       }
       else if (kind === 'plugin-where') {
-        if (!extPluginDir) { extSay('the station has not reported a plugins folder yet', true); return; }
+        if (!extPluginDir) { extSay('the keep has not reported a plugins folder yet', true); return; }
         const path = extPluginDir + (btn.dataset.id ? '/' + btn.dataset.id : '');
         try { await navigator.clipboard.writeText(path); extSay('Path copied to your clipboard.'); }
         catch (_) { extSay(path); }   // no clipboard permission — show it rather than fail silently
@@ -668,10 +668,10 @@
             // FIRST TIME ONLY: a terminal the Commander deliberately removed is not put back by a later re-approve
             // (that would quietly hand the tools back) — the row keeps offering PLACE TERMINAL instead
             let placedBefore = [];
-            try { placedBefore = JSON.parse(localStorage.getItem('starnet.pluginTerminalsPlaced') || '[]'); } catch (_) { placedBefore = []; }
+            try { placedBefore = JSON.parse(localStorage.getItem('eyehold.pluginTerminalsPlaced') || '[]'); } catch (_) { placedBefore = []; }
             if (p && p.active && Array.isArray(p.tools) && p.tools.length && placedBefore.indexOf(pid) < 0) {
               const r = PluginHost.placeTerminal(pid);
-              if (r && r.ok) { try { localStorage.setItem('starnet.pluginTerminalsPlaced', JSON.stringify(placedBefore.concat([pid]).slice(-200))); } catch (_) { /* per-browser memory only */ } }
+              if (r && r.ok) { try { localStorage.setItem('eyehold.pluginTerminalsPlaced', JSON.stringify(placedBefore.concat([pid]).slice(-200))); } catch (_) { /* per-browser memory only */ } }
               const n = p.tools.length + ' tool' + (p.tools.length === 1 ? '' : 's');
               const note = r && r.ok ? (r.existing ? '' : ' Its terminal now stands in the lead’s room, so the lead can use its ' + n + '.')
                 : ' Its terminal could not be placed (' + ((r && (r.msg || r.error)) || 'unknown') + ') — place a PLUGIN TERMINAL in BUILD MODE.';
@@ -784,7 +784,7 @@
     const tsAgentEl = body.querySelector('#ts-agent');
     const tsAuthorityEl = body.querySelector('#ts-authority');
     const agents = H.present || [];
-    tsAgentEl.innerHTML = agents.map(a => '<option value="' + esc(a.id) + '">' + esc(a.name || a.id) + '</option>').join('') || '<option value="">Station defaults</option>';
+    tsAgentEl.innerHTML = agents.map(a => '<option value="' + esc(a.id) + '">' + esc(a.name || a.id) + '</option>').join('') || '<option value="">Keep defaults</option>';
     if (agents[H.sel]) tsAgentEl.value = agents[H.sel].id;
     let tsRequest = 0;
     tsAgentEl.addEventListener('change', tsRefresh);
@@ -975,7 +975,7 @@
         '<details class="mc-inspect"><summary>' + (detail ? 'Error &amp; connection details' : 'Connection details') + (c.tools && c.tools.length ? ' · ' + c.tools.length + ' tools' : '') + '</summary>' +
           '<div class="mc-hint">Service ID: <code>' + esc(c.id) + '</code></div>' +
           '<div class="mc-url dim">' + where + timeout + '</div>' +
-          '<div class="mc-hint">' + (c.account && c.account.email ? '' : 'Account identity: not verified by StarNet. ') + 'Browser logins are separate from this connection.</div>' +
+          '<div class="mc-hint">' + (c.account && c.account.email ? '' : 'Account identity: not verified by Eyehold. ') + 'Browser logins are separate from this connection.</div>' +
           detail + tools +
         '</details>' +
         '<div class="mc-acts">' +
@@ -1014,7 +1014,7 @@
         if (storageError) {
           overview.textContent = 'Saved services unavailable';
           notices.innerHTML += '<div class="mc-notice"><b>Credential storage</b>' + esc(storageError) + '</div>';
-          listEl.innerHTML = '<div class="mc-detail">Your saved connections have not been erased. Unlock the credential store and restart StarNet.</div>';
+          listEl.innerHTML = '<div class="mc-detail">Your saved connections have not been erased. Unlock the credential store and restart Eyehold.</div>';
           return;
         }
         if (list.length) {
@@ -1033,17 +1033,17 @@
       } catch (_) {
         body.querySelector('#mc-overview').textContent = 'Service status unavailable';
         body.querySelector('#mc-notices').textContent = '';
-        listEl.innerHTML = '<div class="mc-detail">Could not read connections. Retry when the station is available.</div>';
+        listEl.innerHTML = '<div class="mc-detail">Could not read connections. Retry when the keep is available.</div>';
       }
     }
     const postJSON = (path, payload) => fetch(path, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
 
-    /* ⛔ AN ERRORED ENDPOINT IS NOT AN EMPTY ONE, AND A REFUSAL IS NOT AN OFFLINE STATION.
+    /* ⛔ AN ERRORED ENDPOINT IS NOT AN EMPTY ONE, AND A REFUSAL IS NOT AN OFFLINE KEEP.
        `(await fetch(u)).json()` resolves on 4xx/5xx: a JSON error body parses fine, `j.groups` comes back
        undefined, and the panel prints "no platform directory available" / "No keyed platform connected yet" —
        a CONFIRMED EMPTY over a read that never succeeded. A non-JSON error (the plain-text `forbidden token`
        a 403 returns) throws instead, and the catch printed "sidecar offline — start it", which is the opposite
-       of true: the station answered, it just refused. Both readings send a Commander to fix the wrong thing —
+       of true: the keep answered, it just refused. Both readings send a Commander to fix the wrong thing —
        or to re-add a key they already have.
 
        Returns {ok, json, status, offline} so a caller can say which of the three actually happened. */
@@ -1055,10 +1055,10 @@
       try { return { ok: true, offline: false, status: r.status, json: await r.json() }; }
       catch (_) { return { ok: false, offline: false, status: r.status, json: null }; }
     }
-    // the one honest sentence for a failed read: offline vs the station refusing/erroring.
+    // the one honest sentence for a failed read: offline vs the keep refusing/erroring.
     const readFailLine = (res, offlineMsg) => res.offline
       ? '<div class="mc-detail">' + esc(offlineMsg) + '</div>'
-      : '<div class="mc-detail">couldn\'t read this from the station' + (res.status ? ' (HTTP ' + res.status + ')' : '') + ' — it is running, so this is not a start-it problem. Retry, and check the station log if it persists.</div>';
+      : '<div class="mc-detail">couldn\'t read this from the keep' + (res.status ? ' (HTTP ' + res.status + ')' : '') + ' — it is running, so this is not a start-it problem. Retry, and check the keep log if it persists.</div>';
     async function removeConnector(id, btn) {
       if (btn) btn.disabled = true;
       try {
@@ -1225,7 +1225,7 @@
         ? ['', 'manual setup', 'var(--gold)']
         : e.appPassword ? ['', 'app password', 'var(--gold)']
         : (e.signInAvailable === false ? ['', e.releaseDeferred ? 'deferred' : 'sign-in unavailable', 'var(--gold)'] : (CC_CHIP[e.authType] || CC_CHIP.none));
-      const origin = e.googleApi ? '<span class="cc-badge cc-official" title="StarNet connector using Google’s APIs">STARNET · GOOGLE API</span>' : e.platformApi
+      const origin = e.googleApi ? '<span class="cc-badge cc-official" title="Eyehold connector using Google’s APIs">EYEHOLD · GOOGLE API</span>' : e.platformApi
         ? (e.apiVia ? '<span class="cc-badge cc-community" title="this vendor publishes no API of its own">via ' + esc(e.apiVia) + '</span>'
                     : '<span class="cc-badge cc-official" title="first-party REST API documented by the vendor">✓ official API</span>')
         : (e.official ? '<span class="cc-badge cc-official" title="first-party server, run by the vendor">✓ official</span>'
@@ -1250,20 +1250,20 @@
         : '<code>Authorization: Bearer &hellip;</code>';
       const keyField = e.appPassword
         ? '<div class="cc-key cc-apppw" style="display:none"><div class="mc-hint">1. Turn on 2-Step Verification for your Google account. <a href="https://myaccount.google.com/signinoptions/two-step-verification" target="_blank" rel="noopener">2-Step Verification ↗</a>' +
-            '<br>2. Create an app password (any name, for example StarNet). <a href="' + esc(e.homepage || 'https://myaccount.google.com/apppasswords') + '" target="_blank" rel="noopener">Create app password ↗</a>' +
+            '<br>2. Create an app password (any name, for example Eyehold). <a href="' + esc(e.homepage || 'https://myaccount.google.com/apppasswords') + '" target="_blank" rel="noopener">Create app password ↗</a>' +
             '<br>3. Enter your Gmail address and the 16-letter app password, then choose CONNECT.</div>' +
             '<input type="text" inputmode="email" class="key-input" data-cc-addr="' + esc(cardId) + '" aria-label="Gmail address" placeholder="you@gmail.com" autocomplete="off" spellcheck="false">' +
             '<input type="password" class="key-input" data-cc-key="' + esc(cardId) + '" aria-label="Google app password" placeholder="16-letter app password" autocomplete="off" spellcheck="false">' +
-            '<div class="mc-hint">This uses an app password, not Google sign-in. StarNet talks to Gmail directly from this computer (IMAP and SMTP); the password is saved with your other connector credentials on this computer and never shown again.' +
-            ' Mail read through this connection is never sent to StarNet Managed. On a work or school account, an administrator can turn app passwords off. Remove the connection or revoke the app password in your Google account at any time.</div></div>'
+            '<div class="mc-hint">This uses an app password, not Google sign-in. Eyehold talks to Gmail directly from this computer (IMAP and SMTP); the password is saved with your other connector credentials on this computer and never shown again.' +
+            ' Mail read through this connection is never sent to Eyehold Managed. On a work or school account, an administrator can turn app passwords off. Remove the connection or revoke the app password in your Google account at any time.</div></div>'
         : (e.authType === 'apikey' || e.deviceFlow) && !e.platformApi
         ? '<div class="cc-key" style="display:none"><div class="mc-hint">1. Open your ' + esc(e.name) + ' account and create an API key or token. ' + (e.homepage ? '<a href="' + esc(e.homepage) + '" target="_blank" rel="noopener">Open ' + esc(e.name) + ' ↗</a>' : '') + '<br>2. Paste it below, then choose CONNECT.</div><input type="password" class="key-input" data-cc-key="' + esc(cardId) + '" aria-label="' + esc(e.name) + ' API key or token" placeholder="' + esc(e.name) + ' API key / token" autocomplete="off" spellcheck="false">' +
             '<div class="mc-hint">Stored locally by the sidecar, sent as ' + keyDelivery + ', never displayed again.</div></div>'
         : '';
       const clientField = e.googleApi && e.signInAvailable === false
-        ? '<div class="mc-hint">' + esc(e.signInMessage || 'Google sign-in is not available in this build. StarNet needs to finish enabling it. No account setup is required from you.') + '</div>' : '';
+        ? '<div class="mc-hint">' + esc(e.signInMessage || 'Google sign-in is not available in this build. Eyehold needs to finish enabling it. No account setup is required from you.') + '</div>' : '';
       const home = e.homepage ? ' <a class="cc-home dim" href="' + esc(e.homepage) + '" target="_blank" rel="noopener">site ↗</a>' : '';
-      // data-search: the console search box (stationui.js doFilter) matches textContent + this attribute, so a
+      // data-search: the console search box (keepui.js doFilter) matches textContent + this attribute, so a
       // Commander typing "google drive" reaches the Google Workspace card even though those words are only in
       // its blurb by luck. Off-screen matching text only — never rendered.
       const alias = (Array.isArray(e.aliases) && e.aliases.length) ? ' data-search="' + esc(e.aliases.join(' ')) + '"' : '';
@@ -1417,7 +1417,7 @@
       const b = ev.target.closest('button[data-cc-filter]'); if (!b) return;
       ccSetFilter(b.dataset.ccFilter); sfx('tick');
     });
-    // SEARCH BEATS THE TIER FILTER. The console search (stationui doFilter) marks a matching card
+    // SEARCH BEATS THE TIER FILTER. The console search (keepui doFilter) marks a matching card
     // `.con-hit`, but a card this filter set `hidden` stays display:none — so searching "stripe" with
     // "▸ no setup" active lit the CATALOG rail and showed NOTHING (probed live: hit:true, painted:false).
     // The Commander who types a name has stated a stronger intent than a chip they clicked earlier, so
@@ -1462,9 +1462,9 @@
         notice.setAttribute('aria-label', 'Google connection and data use');
         notice.innerHTML = '<strong>CONNECT ' + esc(label.toUpperCase()) + '</strong>' +
           '<p>' + esc((e && e.blurb) || 'Connect the selected Google service using the permissions you approve in Google.') + '</p>' +
-          '<p>When an agent uses this connection, content from the Google service can be sent to your selected AI model provider. With StarNet Credits, those requests also pass through the StarNet credits gateway.</p>' +
+          '<p>When an agent uses this connection, content from the Google service can be sent to your selected AI model provider. With Eyehold Credits, those requests also pass through the Eyehold credits gateway.</p>' +
           '<p>Sign-in credentials are saved on this device. Conversations, files and memories may retain content from your requests. Removing the connection clears its saved credentials; it does not erase previous work or revoke access in your Google account.</p>' +
-          '<p><a class="bb sm" href="https://starnetos.com/legal/privacy#google-workspace" target="_blank" rel="noopener">Google data use and removal details ↗</a></p>' +
+          '<p><a class="bb sm" href="https://eyehold.com/legal/privacy#google-workspace" target="_blank" rel="noopener">Google data use and removal details ↗</a></p>' +
           '<div class="mc-acts"><button class="bb sm" data-google-continue>CONTINUE TO GOOGLE</button><button class="bb sm" data-google-cancel>CANCEL</button></div>';
         out.classList.remove('ok'); out.textContent = '';
         out.before(notice);
@@ -1541,8 +1541,8 @@
       notice.setAttribute('aria-label', 'Sign in with GitHub');
       notice.style.cssText = 'position:fixed;inset:0;margin:auto;width:min(520px,calc(100vw - 32px));max-height:calc(100vh - 32px);overflow:auto;padding:24px;background:#17140e;color:var(--ph,#ddbd83);border:1px solid var(--gold,#ac853e);z-index:10000;box-shadow:0 0 0 100vmax #0009';
       notice.innerHTML = '<strong>CONNECT GITHUB</strong><p>1. Copy this code: <code style="font-size:20px;user-select:all">' + esc(device.userCode) + '</code> <button class="bb sm" data-device-copy>COPY CODE</button></p>' +
-        '<p>2. Open GitHub, enter the code, and approve StarNet’s repository and organization access.</p>' +
-        '<p>3. Return here. StarNet will check and save your connection on this device.</p>' +
+        '<p>2. Open GitHub, enter the code, and approve Eyehold’s repository and organization access.</p>' +
+        '<p>3. Return here. Eyehold will check and save your connection on this device.</p>' +
         '<div class="mc-acts"><button class="bb sm" data-device-open>OPEN GITHUB</button><button class="bb sm" data-device-cancel>CANCEL</button></div><p data-device-status role="status"></p>';
       document.body.appendChild(notice); notice.showModal();
       notice.addEventListener('cancel', ev => { ev.preventDefault(); ccCancelSignIn(id); });
@@ -1555,7 +1555,7 @@
       const open = async () => {
         const result = await openSignIn(device.url);
         if (!result.opened) progress('Could not open GitHub. Allow pop-ups and choose OPEN GITHUB.');
-        else { ccPendingWin.set(id, result.win || null); progress('Waiting for you to enter the code and approve StarNet in GitHub…'); }
+        else { ccPendingWin.set(id, result.win || null); progress('Waiting for you to enter the code and approve Eyehold in GitHub…'); }
       };
       notice.querySelector('[data-device-open]').addEventListener('click', open);
       notice.querySelector('[data-device-cancel]').addEventListener('click', () => ccCancelSignIn(id));
@@ -1757,7 +1757,7 @@
     }
     async function kyRefresh() {
       // same law as readJSON's banner above: an errored read must never render as a CONFIRMED
-      // empty key list, and a refusal (403 plain-text) is not an offline station.
+      // empty key list, and a refusal (403 plain-text) is not an offline keep.
       const res = await readJSON('/api/servicekeys');
       if (!res.ok) { kyListEl.innerHTML = readFailLine(res, 'sidecar offline — start it to manage keys.'); return; }
       const list = (res.json && res.json.keys) || [];
@@ -1776,7 +1776,7 @@
         // handled below) even on a 500, so only a key-less answer is a refusal.
         const r = await postJSON('/api/servicekeys', { name, key, docsUrl });
         const j = await r.json().catch(() => ({}));
-        if (!j.key && (!r.ok || j.error)) { kyMsgEl.textContent = '✕ ' + (j.error || ('the station refused (HTTP ' + r.status + ') — the key was NOT saved')); sfx('bad'); return; }
+        if (!j.key && (!r.ok || j.error)) { kyMsgEl.textContent = '✕ ' + (j.error || ('the keep refused (HTTP ' + r.status + ') — the key was NOT saved')); sfx('bad'); return; }
         // saved:false still means LIVE this session — surface the persistence truth instead of a flat "saved".
         kyMsgEl.classList.toggle('ok', j.saved !== false);
         kyMsgEl.textContent = j.saved === false
@@ -1796,7 +1796,7 @@
         try {
           const r = await postJSON('/api/servicekeys/remove', { id });
           const j = await r.json().catch(() => ({}));
-          if (!r.ok || (j.error && !j.ok)) { kyMsgEl.classList.remove('ok'); kyMsgEl.textContent = '✕ ' + (j.error || ('the station refused (HTTP ' + r.status + ') — the key was NOT removed')); sfx('bad'); }
+          if (!r.ok || (j.error && !j.ok)) { kyMsgEl.classList.remove('ok'); kyMsgEl.textContent = '✕ ' + (j.error || ('the keep refused (HTTP ' + r.status + ') — the key was NOT removed')); sfx('bad'); }
           else { sfx('tick'); notify('Key removed'); }
         } catch (_) { kyMsgEl.classList.remove('ok'); kyMsgEl.textContent = '✕ could not reach the sidecar — the key was NOT removed'; sfx('bad'); }
         ccRefresh(); kyRefresh();
@@ -1808,7 +1808,7 @@
       const isAutonomy = cb.dataset.kyAct === 'autonomy';
       cb.disabled = true;
       try {
-        // the unattended-grant switch: a ticked box the station never recorded is a false grant
+        // the unattended-grant switch: a ticked box the keep never recorded is a false grant
         // readout, so any non-ok answer reverts the checkbox to the state the harness can prove.
         const r = isAutonomy
           ? await postJSON('/api/servicekeys/autonomy', { id, autonomous: cb.checked })
@@ -1819,7 +1819,7 @@
           // box truthful to the live state and surface the persistence gap instead of reverting.
           sfx('bad'); notify('⚠ the switch is live for this session, but saving to disk failed — it may not survive a restart', 'warn');
         }
-        else if (!r.ok || (j.error && !j.ok)) { cb.checked = !cb.checked; sfx('bad'); notify('✕ ' + (j.error || ('the station refused (HTTP ' + r.status + ') — nothing changed'))); }
+        else if (!r.ok || (j.error && !j.ok)) { cb.checked = !cb.checked; sfx('bad'); notify('✕ ' + (j.error || ('the keep refused (HTTP ' + r.status + ') — nothing changed'))); }
         else sfx('tick');
       } catch (_) { cb.checked = !cb.checked; sfx('bad'); }
       cb.disabled = false;
@@ -1900,14 +1900,14 @@
       try {
         const out = await Harness.api.post('/api/spotify/disconnect');
         if (!out.ok || !out.j || out.j.ok === false) {
-          const why = (out.j && out.j.error) || 'the station did not confirm the change';
+          const why = (out.j && out.j.error) || 'the keep did not confirm the change';
           msgEl.textContent = '✕ ' + why;
           notify('Spotify was NOT disconnected', 'warn'); sfx('bad');
           return;
         }
         clearInterval(pollTimer); msgEl.textContent = 'disconnected'; notify('Spotify disconnected'); sfx('click');
       } catch (_) {
-        msgEl.textContent = '✕ could not reach the station — Spotify was not disconnected';
+        msgEl.textContent = '✕ could not reach the keep — Spotify was not disconnected';
         notify('Spotify was NOT disconnected', 'warn'); sfx('bad');
       } finally {
         disconnectBtn.disabled = false;
@@ -1919,5 +1919,5 @@
 
   // The title must match the dock button that opens it — a window whose chrome disagrees with the button you
   // pressed reads as the wrong window, and this console now covers more than toolsets and connectors.
-  StationUI.registerWindow('connectors', 'ABILITIES', buildConnectors, { console: true });
+  KeepUI.registerWindow('connectors', 'ABILITIES', buildConnectors, { console: true });
 })();

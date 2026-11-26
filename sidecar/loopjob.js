@@ -1,6 +1,6 @@
 /* sidecar/loopjob.js — the PURE decision half of the LOOP subsystem (standing objectives, S1).
 
-   A LOOP is the fourth "keep going" mechanism in the station, and the only one that advances on a
+   A LOOP is the fourth "keep going" mechanism in the keep, and the only one that advances on a
    VERDICT instead of a clock:
 
      Routines (cron.js)      WHEN  — wall-clock cadence; an overrun occurrence is dropped, never chained.
@@ -173,7 +173,7 @@
     return Object.assign({}, loop, { budget: Object.assign({}, b, { day: day, spentTodayUsd: 0 }) });
   }
 
-  /* budgetLeft — remaining USD headroom for TODAY. null means ungoverned (no cap), matching the station's
+  /* budgetLeft — remaining USD headroom for TODAY. null means ungoverned (no cap), matching the keep's
      budgetcaps.js convention where 0/absent = "no cap" rather than "block everything". Never negative. */
   function budgetLeft(loop, ctx) {
     const now = (ctx && ctx.now) || 0;
@@ -191,7 +191,7 @@
      a bug, so binding is never null when fire is false.
 
      Ambient facts arrive on `inp`, never read here:
-       inp.halted        bool   — the durable station E-STOP (POST /api/halt), same flag night shift honors
+       inp.halted        bool   — the durable keep E-STOP (POST /api/halt), same flag night shift honors
        inp.agentBusy     bool   — the agent's run mutex is occupied by someone else
        inp.precheck      { ok, reason } | bool | undefined
                                 — a PURELY-LOCAL readiness gate (credential present, agent exists, workdir
@@ -208,7 +208,7 @@
     const out = (binding, detail) => ({ fire: !binding, binding: binding || null, pendingCount: pend.length, detail: detail || null });
 
     if (!loop) return out('disabled', 'no such loop');
-    if (inp.halted) return out('halted', 'station E-STOP engaged');
+    if (inp.halted) return out('halted', 'keep E-STOP engaged');
     // the SPECIFIC quiet states are checked before the generic `enabled` flag, because stop/dormant/pause all
     // clear `enabled` and "disabled" would tell the Commander nothing about WHY. A loop that converged reads
     // very differently from one the Commander stopped, and the UI must be able to say which.
@@ -343,7 +343,7 @@
       const red = lastRed.check;
       lines.push('', 'YOUR LAST CHANGE FAILED THE PROJECT\'S OWN CHECK (iteration #' + lastRed.n + '):');
       lines.push('  ' + (red.summary || 'the check failed'));
-      lines.push('Fix THAT before anything else. The check is run by the station, not by you — you cannot see');
+      lines.push('Fix THAT before anything else. The check is run by the keep, not by you — you cannot see');
       lines.push('or change the command, and editing the tests, their config, or the scripts that define them');
       lines.push('does NOT count as passing: it is detected, it stops the loop, and it wastes the Commander\'s time.');
     }
@@ -363,7 +363,7 @@
       // the machine decides this one — asking the model to self-declare completion would invite it to claim
       // a finish the check has not granted.
       lines.push('', 'You do not declare this task finished — the check does. Keep making real progress toward');
-      lines.push('a genuinely passing check; the station runs it after every pass and tells you the result.');
+      lines.push('a genuinely passing check; the keep runs it after every pass and tells you the result.');
     } else if (exitOn === 'empty-digests') {
       lines.push('', 'End this pass with one line in exactly this form:');
       lines.push('  DIGEST: <n> findings — <one sentence on what you did, or "nothing new">');

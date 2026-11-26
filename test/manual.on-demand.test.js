@@ -4,13 +4,13 @@
    orientation/rule (ALWAYS inline — behaviour the agent must follow unprompted) or reference (product facts,
    named in an inline table of contents and served verbatim by the read-only manual.read tool). Project law:
    simplify = organization, never removal. This pins that
-     A. the WHOLE manual is byte-identical to the pre-split literal (hash) — starnetManual() is still the fallback
+     A. the WHOLE manual is byte-identical to the pre-split literal (hash) — eyeholdManual() is still the fallback
         and manual.read "all";
      B. the sections partition it: every line of the manual lives in a section, and joined they are the manual;
      C. the inline form carries every orientation/rule section VERBATIM, a TOC line per reference section, the
         rule excerpt that lives inside a reference section (never OS crontab), and no reference body;
      D. manual.read returns each section verbatim, "all" = the whole manual, and an unknown id lists the sections;
-     E. manual.read rides the always-present COMPUTER (capId stationinfo: read, no consent, no network), and
+     E. manual.read rides the always-present COMPUTER (capId keepinfo: read, no consent, no network), and
         index.js only uses the inline TOC form when manual.read is on the run's wire.
    Pure + deterministic. The live bytes are proven by test/prompt-on-demand.e2e.test.js. */
 'use strict';
@@ -22,8 +22,8 @@ const M = require('../sidecar/manual.js');
 const { makeManualReadTool } = require('../sidecar/tools/builtin/manual-read.js');
 const { CAP_REGISTRY } = require('../sidecar/capability/registry.js');
 
-const full = M.starnetManual();
-const index = M.starnetManualIndex();
+const full = M.eyeholdManual();
+const index = M.eyeholdManualIndex();
 const ids = M.MANUAL_SECTIONS.map(s => s.id);
 const reference = M.MANUAL_SECTIONS.filter(s => s.kind === 'reference');
 const inline = M.MANUAL_SECTIONS.filter(s => s.kind !== 'reference');
@@ -36,19 +36,19 @@ const inline = M.MANUAL_SECTIONS.filter(s => s.kind !== 'reference');
 // (MY WORK · AUTOMATE · QUESTS, BUILD MODE · CONNECT · NEW APP, ABILITIES tabs INSTALLED / DISCOVER / CREATE / ADVANCED) — the
 // agent was sending Commanders to 0.12.5 dock buttons that no longer exist.
 // Re-pinned 2026-10-04 (self-driving) for ONE deliberate change: the APPROVALS hotspot and its Alt+A are gone (approvals render
-// in COMMS where the agent paused), and NAVIGATION tells the agent to OPEN a place with station.show instead of describing clicks.
+// in COMMS where the agent paused), and NAVIGATION tells the agent to OPEN a place with keep.show instead of describing clicks.
 // Re-pinned 2026-10-05 (self-driving lane 2) for ONE deliberate addition: the agent learns EVERYTHING on demand — a CONCEPTS
-// reference section (every StarNet thing, its place, its tool, its trap), NAVIGATION's generated EVERY PLACE list (frontend/app/
+// reference section (every Eyehold thing, its place, its tool, its trap), NAVIGATION's generated EVERY PLACE list (frontend/app/
 // places.js), and the dossier's CAN DO replaces the gone SKILLS tab. All reference: the inline form got SHORTER.
-A.eq(full.length, 26279,'the whole manual keeps its length (+30: REFIT is named BUILD MODE; +2: SETTINGS › AI & MODELS; +308: the 0.13 dock, 2026-10-02; +494: station.show + approvals in COMMS, 2026-10-04; +13388: CONCEPTS + EVERY PLACE + the lane-3 actions + FIND, 2026-10-05; +1803: CONCEPTS learns the trunk since 10-04 (desk seats, SETTLE, held credits, browser reset, HINTS, ERASE EVERYTHING) + "conveyor" + the budget.set call shape, 2026-10-08; +287: NAVIGATION says changing is not opening, 2026-10-08; +143: never around the station tools via shell/files/web, 2026-10-08; +160: the SESSIONS rule (pin = a rail session, never a memory note) inline, 2026-10-08)');
-A.eq(crypto.createHash('sha256').update(full, 'utf8').digest('hex'), 'dc4932389a4d14728fd3ebbdf5cf1f44ad9e383909c389820a24d3f9aa4e837f',
-  'the whole manual is byte-identical to the literal that shipped before the split');
+A.eq(full.length, 26099,'the whole manual keeps its length after the keep rename');
+A.eq(crypto.createHash('sha256').update(full, 'utf8').digest('hex'), '10edf9e21aa424abc94870ac0c5aa022641e294fa72a8b73facd11dbcf8e1a2d',
+  'the whole manual is byte-identical to the Eyehold keep text');
 
 // ---- B. the sections partition the manual ----
 A.eq(ids, ['about', 'live-state', 'navigation', 'props', 'connectors', 'approval', 'connecting', 'troubleshooting', 'concepts'], 'sections in manual order');
 A.eq(reference.map(s => s.id), ['navigation', 'props', 'troubleshooting', 'concepts'], 'reference sections: navigation, props, troubleshooting, concepts');
 A.eq(inline.map(s => s.kind), ['orientation', 'rule', 'rule', 'rule', 'rule'], 'everything else is orientation or a behaviour rule');
-const body = full.replace('\n<starnet_operator_manual>\n', '').replace('</starnet_operator_manual>', '');
+const body = full.replace('\n<eyehold_operator_manual>\n', '').replace('</eyehold_operator_manual>', '');
 A.eq(ids.map(id => M.manualSection(id)).join('').replace(/\n/g, ''), body.replace(/\n/g, ''), 'the sections, joined in order, ARE the manual (only blank separator lines differ)');
 for (const line of body.split('\n').filter(Boolean)) {
   const homes = ids.filter(id => M.manualSection(id).split('\n').indexOf(line) >= 0);
@@ -56,7 +56,7 @@ for (const line of body.split('\n').filter(Boolean)) {
 }
 
 // ---- C. the inline form ----
-A.ok(index.indexOf('\n<starnet_operator_manual>\n') === 0 && index.endsWith('</starnet_operator_manual>'), 'inline form keeps the manual fence');
+A.ok(index.indexOf('\n<eyehold_operator_manual>\n') === 0 && index.endsWith('</eyehold_operator_manual>'), 'inline form keeps the manual fence');
 for (const s of inline) A.ok(index.indexOf(M.manualSection(s.id)) >= 0, s.id + ' (' + s.kind + ') rides inline VERBATIM');
 for (const s of reference) {
   A.ok(index.indexOf(M.manualSection(s.id)) < 0, s.id + ': the reference body is NOT inline');
@@ -69,16 +69,16 @@ for (const r of M.INLINE_RULE_EXCERPTS) {
 }
 A.ok(/call\s+manual\.read with the section id/.test(index) && /never from memory/.test(index), 'the TOC tells the model to call manual.read before naming a window/menu/prop');
 // the behaviour rules the manual test (test/manual.test.js) pins on the whole manual, still in the PROMPT form
-A.ok(/CALL station\.inspect first/.test(index), 'rule inline: live harness state -> station.inspect');
+A.ok(/CALL keep\.inspect first/.test(index), 'rule inline: live harness state -> keep.inspect');
 A.ok(/NEVER send the Commander to BUILD MODE to connect a platform/.test(index), 'rule inline: never BUILD MODE for a connector');
 A.ok(/Do not refuse in chat/.test(index), 'rule inline: approval mode -> just call the tool');
 A.ok(/HONESTY RULE/.test(index) && /If you have the connectors\.list tool, CALL IT/.test(index) && /not connected YET/.test(index), 'rule inline: the connect-a-platform honesty rules');
 A.ok(/Windows Task Scheduler/.test(index) && /OS crontab/.test(index), 'rule inline: routines never go to OS schedulers');
 A.ok(/capabilities_ground_truth/.test(index) && /NOT a list of your own powers/.test(index), 'the inline form still defers to <capabilities_ground_truth>');
-A.ok(/DISH → WEB/.test(index) && /INTEL CAB → FILES/.test(index) && /WORKBENCH → TERMINAL/.test(index) && /SERVER CART → MEMORY/.test(index) && /WORKSTATION → COMPUTE/.test(index),
+A.ok(/DISH → WEB/.test(index) && /INTEL CAB → FILES/.test(index) && /WORKBENCH → TERMINAL/.test(index) && /SERVER CART → MEMORY/.test(index) && /WORKKEEP → COMPUTE/.test(index),
   'the props TOC line keeps the prop → power pairings in the live UI vocabulary');
 A.ok(full.length - index.length >= 2500, 'the inline form is materially smaller (' + index.length + ' vs ' + full.length + ' chars)');
-A.eq(M.starnetManualIndex(), index, 'deterministic: rides the cached prefix');
+A.eq(M.eyeholdManualIndex(), index, 'deterministic: rides the cached prefix');
 A.ok(!/undefined|null|\[object/.test(index), 'no junk leaks into the inline form');
 
 // ---- D. manual.read ----
@@ -95,17 +95,17 @@ A.ok(!/undefined|null|\[object/.test(index), 'no junk leaks into the inline form
   A.ok(/No manual section "secrets"/.test(bad.content) && /navigation, props, troubleshooting/.test(bad.content), 'an unknown section lists the real ones');
   A.ok(/Name a section/.test(tool.run({}).content), 'no section -> the list, not an error');
   A.eq(tool.schema.properties.section.enum, ids.concat(['all']), 'the schema enumerates the real section ids');
-  A.eq([tool.name, tool.capability, tool.scope, tool.requiresConsent], ['manual.read', 'stationinfo', 'read', false], 'a read-only, consent-free self-knowledge tool');
+  A.eq([tool.name, tool.capability, tool.scope, tool.requiresConsent], ['manual.read', 'keepinfo', 'read', false], 'a read-only, consent-free self-knowledge tool');
 }
 
 // ---- E. granted everywhere a run has compute; the prompt only points at it when it is on the wire ----
 {
   const g = CAP_REGISTRY.computer.filter(x => x.tool === 'manual.read');
   A.eq(g.length, 1, 'manual.read is granted by the COMPUTER object');
-  A.eq([g[0].capId, g[0].scope, g[0].requiresConsent, g[0].network, !!g[0].deferred], ['stationinfo', 'read', false, false, false],
-    'same grant class as station.inspect, and never deferred (the TOC must point at an advertised tool)');
+  A.eq([g[0].capId, g[0].scope, g[0].requiresConsent, g[0].network, !!g[0].deferred], ['keepinfo', 'read', false, false, false],
+    'same grant class as keep.inspect, and never deferred (the TOC must point at an advertised tool)');
   const idx = fs.readFileSync(path.join(__dirname, '..', 'sidecar', 'index.js'), 'utf8');
-  A.eq(idx.split("(coreNames.indexOf('manual.read') >= 0 ? starnetManualIndex() : starnetManual())").length - 1, 1,
+  A.eq(idx.split("(coreNames.indexOf('manual.read') >= 0 ? eyeholdManualIndex() : eyeholdManual())").length - 1, 1,
     'index.js uses the TOC form only when manual.read is advertised, else the whole manual stays inline');
   A.eq(idx.split('makeManualReadTool().register(registry);').length - 1, 1, 'the run registers manual.read');
 }

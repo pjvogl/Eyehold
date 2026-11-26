@@ -1,7 +1,7 @@
 /* node test/skills.on-demand.test.js — INSTALLED SKILLS on demand (progressive disclosure, 2026-09-23).
 
    The enabled library recipe BODIES were the largest block of every task prompt (~12.4K of ~37K on a default
-   station, re-sent on every model call). The prompt now carries one index line per enabled recipe (name + its
+   keep, re-sent on every model call). The prompt now carries one index line per enabled recipe (name + its
    "use when" line + the library:<slug> name to load it by) and skill.view serves the exact body. Project law:
    simplify = organization, never removal — so this pins that
      A. the index lists EVERY offered recipe (name, [library:slug], description) and carries NO body;
@@ -29,9 +29,9 @@ const bySlug = {}; for (const s of LIB) bySlug[s.slug] = s;
 
 // ---- A. the index: one line per offered recipe, no bodies ----
 {
-  const opts = { overrides: {}, placedTypes: [] };   // a fresh station: the default-on, no-gear recipes
+  const opts = { overrides: {}, placedTypes: [] };   // a fresh keep: the default-on, no-gear recipes
   const offered = C.live(LIB, opts);
-  A.eq(offered.map(s => s.slug).sort(), ['ascii-art', 'creative-ideation', 'decision-1-3-1', 'humanizer', 'plan'], 'a fresh station is offered the five default recipes');
+  A.eq(offered.map(s => s.slug).sort(), ['ascii-art', 'creative-ideation', 'decision-1-3-1', 'humanizer', 'plan'], 'a fresh keep is offered the five default recipes');
   const idx = C.composeIndex(LIB, opts);
   A.ok(idx.indexOf('\n\n## INSTALLED SKILLS\n') === 0, 'the index keeps the INSTALLED SKILLS section header');
   A.ok(/FOLLOW its recipe instead of improvising/.test(idx), 'the original "follow the recipe" instruction is kept');
@@ -157,7 +157,7 @@ function makeStore() {
     'index.js composes the recipe INDEX only when skill.view is advertised on this run, else the bodies stay inline');
   once('if (isTask) runRecipes = skillsCatalog.live(skillLibrary(), recipeOpts);', 'the run records exactly the recipes its prompt offered');
   once('const recipe = skillsCatalog.find(runRecipes, name);', 'the per-run skill.view resolves recipes against that same list');
-  const seam = idx.slice(idx.indexOf('const sRoom = station.rooms'), idx.indexOf('const sRoom = station.rooms') + 2600);
+  const seam = idx.slice(idx.indexOf('const sRoom = keep.rooms'), idx.indexOf('const sRoom = keep.rooms') + 2600);
   A.ok(/skillBlock = isTask/.test(seam), 'the recipe block stays gated on isTask (chat diet)');
 }
 

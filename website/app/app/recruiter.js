@@ -1,7 +1,7 @@
-/* STARNET — recruiter.js : the PURE adaptive-recruitment matcher (the "which teammate to recruit NEXT" brain).
+/* EYEHOLD — recruiter.js : the PURE adaptive-recruitment matcher (the "which teammate to recruit NEXT" brain).
 
    Given what the Commander ACTUALLY does (the worksignal capability histogram), what they're interested in (the
-   profile affinity vector), what they've told the station (the dossier goals/pain/ambition beliefs), and who's
+   profile affinity vector), what they've told the keep (the dossier goals/pain/ambition beliefs), and who's
    already on the crew (the roster), rank the catalog classes NOT yet rostered and return the single best NEW hire
    with an HONEST, counter-derived reason.
 
@@ -185,7 +185,7 @@
      eligible if the Commander's work ALREADY touched the lanes its kit covers. That wall is load-bearing — it is
      what stops the curated shelf inventing a workflow reason — but it also means the bay can only ever recommend
      MORE OF WHAT YOU ALREADY DO. It can never say the most valuable thing a recruiter can say: "you keep asking
-     about X and nobody here can do it." An echo chamber cannot grow the station.
+     about X and nobody here can do it." An echo chamber cannot grow the keep.
 
      So this is a SEPARATE path, not a loosening of that gate. recommend() is untouched, byte-for-byte. This one
      reads the LEARNED TOPIC histogram (sidecar/interests.js — folded only from real observed activity, each topic

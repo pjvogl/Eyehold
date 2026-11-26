@@ -23,7 +23,7 @@ Private `desktop-build` run 35476844504 on source `9cdfc0ba5` fails in the Linux
 
 ## Evidence
 
-[Original failing Linux job](https://github.com/androoAGI/starnet/actions/runs/35476844504/job/105987436179), 2026-09-19T23:50:46Z: `Failed to run ldd: exited with code 1`. `test/staging-development-closure.test.js` executes the real staging script against fresh and warm miniature package trees, covering scoped and nested development-only packages, shared production packages, optional dependencies and preservation of source dependencies. `test/desktop-voice-bundle.test.js` checks the actual lockfile Canvas variants and every production root. Real local Windows staging produced a 276.5 MB runtime closure with both required ONNX runtimes retained.
+[Original failing Linux job](https://github.com/Eyehold/eyehold/actions/runs/35476844504/job/105987436179), 2026-09-19T23:50:46Z: `Failed to run ldd: exited with code 1`. `test/staging-development-closure.test.js` executes the real staging script against fresh and warm miniature package trees, covering scoped and nested development-only packages, shared production packages, optional dependencies and preservation of source dependencies. `test/desktop-voice-bundle.test.js` checks the actual lockfile Canvas variants and every production root. Real local Windows staging produced a 276.5 MB runtime closure with both required ONNX runtimes retained.
 
 ## Verdict
 

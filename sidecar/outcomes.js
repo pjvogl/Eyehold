@@ -1,7 +1,7 @@
-/* STARNET — outcomes.js : THE TRACK RECORD (pure fold; run outcomes finally teach the user model).
+/* EYEHOLD — outcomes.js : THE TRACK RECORD (pure fold; run outcomes finally teach the user model).
 
    THE GAP THIS CLOSES (rec-system audit, 2026-08-28). The harness records, for every run, whether it finished
-   and why it failed — and routed NONE of it back into what the station proposes. The insights fold was consumed
+   and why it failed — and routed NONE of it back into what the keep proposes. The insights fold was consumed
    by nothing but two widgets; a task shape the Commander failed at five times in a row looked identical to a
    proven one on every proactive surface. This module folds the run history into a bounded TRACK RECORD the
    evidence composer, the night-shift context pack and the quest ranker can consult.
@@ -20,7 +20,7 @@
       self-talk) are excluded wholesale.
       THE COMMANDER'S VERDICT OUTRANKS THE HARNESS (2026-10-01): a 'done' run the Commander rated `miss` is a
       failure ('rated_missed') — finishing is not the same as landing, and a record that called rejected work
-      "proven" would steer the station toward exactly what they disliked. fold() takes the verdicts as an
+      "proven" would steer the keep toward exactly what they disliked. fold() takes the verdicts as an
       injected map (opts.verdicts: runId -> 'great'|'ok'|'miss'); absent = the harness reason alone, as before.
    4. PURE + DETERMINISM-CLEAN: rows in, plain object out; `now` injected; no IO, no clock, no rng. */
 'use strict';

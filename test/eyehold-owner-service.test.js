@@ -5,7 +5,7 @@
 const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path');
 const {SidecarFixture}=require('./helpers/sidecar-fixture.js');
 const {provision,authFile}=require('../sidecar/eyehold-owner-auth.js');
-const fixture=SidecarFixture.create({env:{SKYNET_BUDGET_GLOBAL:'0',SKYNET_BUDGET_PER_DAY:'0',SKYNET_LIVE_PRICES:'0'}});
+const fixture=SidecarFixture.create({env:{EYEHOLD_BUDGET_GLOBAL:'0',EYEHOLD_BUDGET_PER_DAY:'0',EYEHOLD_LIVE_PRICES:'0'}});
 const row={runId:'review-run',agentId:'deepforge',reason:'done',deliveryText:'Fixture only: readiness checks, measured acceptance criteria, and rollback plan.',ts:Date.now()};
 let key;
 const endpoint='/api/eyehold/review';
@@ -16,7 +16,7 @@ async function run(){
  assert(!fs.readFileSync(authFile(fixture.workspace),'utf8').includes(key),'only hash stored');
  assert.throws(()=>provision(fixture.workspace),{code:'EEXIST'},'existing owner cannot be replaced');
  await fixture.start();
- assert.equal((await fixture.request(endpoint,{headers:{'X-StarNet-Token':''}})).status,403,'existing host gate remains');
+ assert.equal((await fixture.request(endpoint,{headers:{'X-Eyehold-Token':''}})).status,403,'existing host gate remains');
  assert.equal((await fixture.json('GET',endpoint+'?runId=review-run')).status,422,'a current business goal is required');
  await fixture.json('POST','/api/goals',{goal:{id:'g1',text:'Prepare a verifiable release readiness pilot',milestones:[]}});
  let packet=(await fixture.json('GET',endpoint+'?runId=review-run')).body;

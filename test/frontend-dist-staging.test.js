@@ -45,7 +45,7 @@ const rd = (p) => fs.readFileSync(path.join(ROOT, p), 'utf8');
 
   // ---- 1. the rule: everything ships except industrial subfolders the runtime never loads from ----
   A.eq(KEEP_INDUSTRIAL.slice().sort(), ['approved-sheet', 'calibration', 'complete-sheet', 'projection-correction', 'remaster'], 'the kept industrial folders are exactly the runtime roots');
-  for (const p of ['index.html', 'app/chat.js', 'css/app.css', 'assets/sprites/manifest.json', 'assets/brand/starnet-logo.png', 'assets/fonts/vt323.woff2', 'assets/sfx/click.wav', 'prop-catalog-review.html']) {
+  for (const p of ['index.html', 'app/chat.js', 'css/app.css', 'assets/sprites/manifest.json', 'assets/brand/eyehold-logo.png', 'assets/fonts/vt323.woff2', 'assets/sfx/click.wav', 'prop-catalog-review.html']) {
     A.ok(shouldStage(p), 'ships verbatim: ' + p);
   }
   for (const p of ['assets/industrial/shell.png', 'assets/industrial/wall-acoustic.png', 'assets/industrial/floor-lunar.png', 'assets/industrial/SHELL-MATERIALS.md']) {
@@ -82,7 +82,7 @@ const rd = (p) => fs.readFileSync(path.join(ROOT, p), 'utf8');
     const rel = path.posix.normalize('assets/industrial/projection-correction/' + ref);
     A.ok(shouldStage(rel), 'every image the shipped projection manifest points at is staged: ' + rel);
   }
-  A.ok(shouldStage('assets/industrial/complete-sheet/starnet-props-full-sheet.png'), 'the full sheet the manifest reaches through ../complete-sheet ships');
+  A.ok(shouldStage('assets/industrial/complete-sheet/eyehold-props-full-sheet.png'), 'the full sheet the manifest reaches through ../complete-sheet ships');
 
   // ---- 3. wiring: the stage runs before every desktop build, locally and on both CI legs ----
   const pkg = JSON.parse(rd('package.json'));
@@ -104,16 +104,16 @@ const rd = (p) => fs.readFileSync(path.join(ROOT, p), 'utf8');
   A.ok(/"frontend-dist",/.test(rd('src-tauri/build.rs')), 'build.rs reruns provenance when the staged folder changes');
 
   // Exercise staging, including a second build after a file was removed.
-  const temp = fs.mkdtempSync(path.join(require('node:os').tmpdir(), 'starnet-embed-'));
+  const temp = fs.mkdtempSync(path.join(require('node:os').tmpdir(), 'eyehold-embed-'));
   try {
     const staged = path.join(temp, 'staged'), embed = path.join(temp, 'embed');
     fs.mkdirSync(path.join(staged, 'assets', 'nested'), { recursive: true });
     fs.mkdirSync(path.join(staged, 'app'), { recursive: true });
-    fs.writeFileSync(path.join(staged, 'index.html'), '<html>station</html>');
+    fs.writeFileSync(path.join(staged, 'index.html'), '<html>keep</html>');
     fs.writeFileSync(path.join(staged, 'app', 'boot.js'), 'boot();');
     fs.writeFileSync(path.join(staged, 'assets', 'nested', 'image.png'), 'image');
     const receipt = mod.stageEmbedded(staged, embed);
-    A.eq(fs.readFileSync(path.join(embed, 'index.html'), 'utf8'), '<html>station</html>', 'HTML remains available for Tauri CSP transformation');
+    A.eq(fs.readFileSync(path.join(embed, 'index.html'), 'utf8'), '<html>keep</html>', 'HTML remains available for Tauri CSP transformation');
     A.ok(!fs.existsSync(path.join(embed, 'assets')), 'media has no embedded copy');
     A.eq(JSON.parse(fs.readFileSync(path.join(embed, 'loose-assets.json'))), ['/assets/nested/image.png'], 'compiled allowlist names only staged media');
     A.eq(receipt.mediaBytes, 5, 'receipt accounts for the bytes removed from embedding');

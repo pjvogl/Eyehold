@@ -124,14 +124,15 @@ const K = require('../sidecar/servicekeys.js');
 
 // ---- G2. reserved provider env vars: a KEYS paste must never become billing credentials ----
 {
-  const reserved = ['OPENROUTER_API_KEY', 'ANTHROPIC_API_KEY', 'SKYNET_OPENROUTER_API_KEY'];
+  const reserved = ['OPENROUTER_API_KEY', 'ANTHROPIC_API_KEY', 'EYEHOLD_OPENROUTER_API_KEY', 'SKYNET_OPENROUTER_API_KEY'];
   // 'OpenRouter' derives OPENROUTER_API_KEY — exactly what providerRuntimeKey reads from process.env
   const r1 = K.upsert([], { name: 'OpenRouter', key: 'sk-or-x' }, 1, { reservedEnv: reserved });
   A.ok(r1.error && /model provider/i.test(r1.error), 'provider-shaped name refused with a pointer to SETTINGS');
   A.ok(/OpenRouter Maps/.test(r1.error), 'the refusal suggests a product-specific name that saves (a Google Maps key is not a model key)');
   A.ok(!K.upsert([], { name: 'OpenRouter Maps', key: 'k' }, 1, { reservedEnv: reserved }).error, 'the suggested name actually saves');
-  // the scoped desktop form is reserved too ('Skynet OpenRouter' -> SKYNET_OPENROUTER_API_KEY)
-  A.ok(K.upsert([], { name: 'Skynet OpenRouter', key: 'k' }, 1, { reservedEnv: reserved }).error, 'scoped provider var refused');
+  // the scoped desktop form is reserved too ('Skynet OpenRouter' -> EYEHOLD_OPENROUTER_API_KEY)
+  A.ok(K.upsert([], { name: 'Skynet OpenRouter', key: 'k' }, 1, { reservedEnv: reserved }).error, 'legacy scoped provider var refused');
+  A.ok(K.upsert([], { name: 'Eyehold OpenRouter', key: 'k' }, 1, { reservedEnv: reserved }).error, 'Eyehold scoped provider var refused');
   // a Set works as well as an array, and a non-reserved name still passes with the option present
   A.ok(!K.upsert([], { name: 'Resend', key: 'k' }, 1, { reservedEnv: new Set(reserved) }).error, 'non-provider name unaffected by the guard');
   // applyEnv belt: a PRE-GUARD persisted record with a reserved var is skipped, never written
@@ -155,7 +156,7 @@ const K = require('../sidecar/servicekeys.js');
 
 // ---- H. watched-only integrations cannot silently acquire unattended authority ----
 {
-  const reason = 'StarNet does not yet manage Etsy OAuth refresh.';
+  const reason = 'Eyehold does not yet manage Etsy OAuth refresh.';
   const add = K.upsert([], {
     name: 'Etsy', key: 'etsy-key', unattendedSupported: false, unattendedReason: reason
   }, 1);

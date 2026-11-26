@@ -21,8 +21,8 @@ const fresh = fs => makeJourneyStore({ fs: fs || memFs(), path, workspaces: '/ws
 (async () => {
   A.eq(normalize(null), { goals: [], achievements: [], achievementKeys: [], commanderPoints: 0, v: 1, seq: 0, commanderEpoch: 0, startedAt: 0, metrics: [], outcomes: [], outcomeKeys: [], mastery: [], receipts: [], goalsReached: [], suppressed: {} }, 'missing journey state hydrates safely');
   A.eq([tierFor(0), tierFor(1), tierFor(3), tierFor(7)], ['unproven', 'tested', 'practiced', 'proven'], 'mastery tiers cross only on verified outcome counts');
-  A.eq(evolutionFor(['a', 'b']).name, 'ORBIT', 'station evolution is derived from distinct goals reached');
-  A.eq(evolutionFor(Array.from({ length: 9 }, (_, i) => String(i))).stage, 9, 'station evolution remains uncapped across a long Commander journey');
+  A.eq(evolutionFor(['a', 'b']).name, 'CIRCUIT', 'keep evolution is derived from distinct goals reached');
+  A.eq(evolutionFor(Array.from({ length: 9 }, (_, i) => String(i))).stage, 9, 'keep evolution remains uncapped across a long Commander journey');
 
   const fs = memFs();
   const s = fresh(fs);
@@ -31,7 +31,7 @@ const fresh = fs => makeJourneyStore({ fs: fs || memFs(), path, workspaces: '/ws
   A.ok(made.ok && made.metric.current === 100, 'a Commander metric starts at its explicit baseline');
   A.eq(s.snapshot({ id: 'goal:saas', text: 'Grow the SaaS', done: 1, total: 4, next: 'Find ten users' }).activeGoal.next, 'Find ten users', 'active goal context is projected without being inferred');
   A.ok((await s.updateMetric({ id: made.metric.id, current: 700, note: 'billing dashboard' }, 20)).ok, 'a current value can advance without claiming the target');
-  A.eq(s.snapshot().evolution.goalsReached, 0, 'station does not evolve before the real target is reached');
+  A.eq(s.snapshot().evolution.goalsReached, 0, 'keep does not evolve before the real target is reached');
   const reached = await s.updateMetric({ id: made.metric.id, current: 1000, note: 'verified in billing dashboard' }, 30);
   A.ok(reached.ok && reached.outcome && reached.outcome.verifiedBy === 'commander-client', 'reaching an explicit metric writes a provenance-bearing outcome');
   A.eq(s.snapshot().evolution.goalsReached, 0, 'a reached metric proves itself but cannot claim the whole goal complete');
@@ -74,7 +74,7 @@ const fresh = fs => makeJourneyStore({ fs: fs || memFs(), path, workspaces: '/ws
 
   const milestone = { goalId: 'goal:game', milestoneId: 'm:launch', milestoneText: 'Launch the playable game', evidence: 'Release build linked in the task', agentId: 'builder', domain: 'building', goalDone: true };
   A.ok((await s.recordMilestone(milestone, 400)).ok, 'a final work milestone records the completed action');
-  A.ok((await s.recordMilestone(milestone, 401)).duplicate, 'milestone replay cannot evolve the station twice');
+  A.ok((await s.recordMilestone(milestone, 401)).duplicate, 'milestone replay cannot evolve the keep twice');
   A.eq(s.snapshot().evolution.goalsReached, 0, 'finishing every planned milestone cannot claim a life goal');
   await s.registerGoal({ id: 'goal:game', text: 'Launch a game', successCondition: 'Five people play the release' }, 402);
   await s.confirmGoal({ id: 'goal:game', evidence: 'Five people played the release at the meetup' }, 403);
@@ -107,7 +107,7 @@ const fresh = fs => makeJourneyStore({ fs: fs || memFs(), path, workspaces: '/ws
     await long.registerGoal({ id: 'goal:long-' + n, text: 'Goal ' + n, successCondition: 'Explicit success ' + n }, 3100 + n);
     await long.confirmGoal({ id: 'goal:long-' + n, evidence: 'Commander report ' + n }, 3200 + n);
   }
-  A.eq(long.snapshot().evolution.goalsReached, 45, 'station evolution counts all explicitly confirmed goals');
+  A.eq(long.snapshot().evolution.goalsReached, 45, 'keep evolution counts all explicitly confirmed goals');
 
   const metricFs = memFs(), metricStore = fresh(metricFs), createdMetrics = [];
   for (let n = 0; n < 40; n++) createdMetrics.push(await metricStore.createMetric({ label: 'Active metric ' + n, baseline: 0, target: 1 }, 4000 + n));

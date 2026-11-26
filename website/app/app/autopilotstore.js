@@ -1,4 +1,4 @@
-/* STARNET — autopilotstore.js : the thin live wiring around the pure idle self-direction engine (autopilot.js).
+/* EYEHOLD — autopilotstore.js : the thin live wiring around the pure idle self-direction engine (autopilot.js).
    Slice A of the autonomy layer — the thing that makes the posture dial actually drive the floor.
 
    It is the EDGE the pure engine isn't allowed to be: it owns the live clock, the "Commander is interacting"
@@ -21,7 +21,7 @@
    digest). lastActivity/armed/acting are ephemeral session state. */
 'use strict';
 const AutopilotStore = (() => {
-  const KEY = 'starnet.autopilot.v1';
+  const KEY = 'eyehold.autopilot.v1';
   let deps = {};
   let state = null;         // persisted: { v, day, acted, drafts:[{title,archetype,at,body}] }
   let lastActivity = 0;     // wall-clock of the Commander's last interaction (set by noteActivity)
@@ -283,7 +283,7 @@ const AutopilotStore = (() => {
   function init(opts) {
     deps = opts || {};
     state = hydrate(load());
-    lastActivity = now();   // a freshly-entered station starts ACTIVE (no instant idle fire on load)
+    lastActivity = now();   // a freshly-entered keep starts ACTIVE (no instant idle fire on load)
     armed = false; acting = false;
     if (!deps || deps.install !== false) install();
   }

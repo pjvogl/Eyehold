@@ -24,7 +24,7 @@ The Mac boot-catalog reporter says purchased credits were partially consumed whi
 
 ## Repro
 
-Correlate the affected account's authoritative charge/run ledger with boot-failure timestamps, other linked stations and any scheduled work. A screenshot balance or inability to use one window alone does not establish whether charges were valid.
+Correlate the affected account's authoritative charge/run ledger with boot-failure timestamps, other linked keeps and any scheduled work. A screenshot balance or inability to use one window alone does not establish whether charges were valid.
 
 ## Evidence
 

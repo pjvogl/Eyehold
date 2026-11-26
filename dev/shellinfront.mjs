@@ -2,12 +2,12 @@
 // dev/shellinfront.mjs — ANDREW'S REPRO: build a room IN FRONT of a clad wall.
 //
 // "It works perfectly fine, unless u place something in front of the shell, then it will glitch and
-// destroy the texture, but if there is nothing in front of it the station wall will remain intact."
+// destroy the texture, but if there is nothing in front of it the keep wall will remain intact."
 //
 // A clad room's skirt is cropped BEFORE and AFTER a second room is placed to its south, in the same
 // columns. The pixels that survive (the ones the new room's plate does not cover) must be
 // IDENTICAL — the wall behind cannot change because something was built in front of it.
-// Run against trunk too, via the StationBakeBefore shim, so the difference is attributable.
+// Run against trunk too, via the KeepBakeBefore shim, so the difference is attributable.
 //
 //   node dev/shellinfront.mjs
 import { mkdtempSync, mkdirSync, writeFileSync } from 'node:fs';
@@ -23,13 +23,13 @@ const URL = `http://127.0.0.1:${PORT}/`;
 
 const PROBE = `(() => {
   const mk = (w, h) => { const c = document.createElement('canvas'); c.width = w; c.height = h; const g = c.getContext('2d'); g.imageSmoothingEnabled = false; return { c, g }; };
-  const SKINS = [['brick','rust'],['timber','walnut'],['shingle','ember'],['stone','sterile'],['clapboard','bone'],['stucco','amber'],['hedge','fern'],['curtain','cobalt'],['station',null]];
+  const SKINS = [['brick','rust'],['timber','walnut'],['shingle','ember'],['stone','sterile'],['clapboard','bone'],['stucco','amber'],['hedge','fern'],['curtain','cobalt'],['keep',null]];
 
   function shot(Bake, mat, style, inFront) {
     const st = WorldModel.create(WorldModel.defaultDoc());
     for (const id of st.doc().order.slice()) st.removeRoom(id);
     const A = st.addRoom({ kind: 'hab', rects: [{ x1: 20, y1: 20, x2: 33, y2: 27 }] });
-    if (mat !== 'station') st.setHull(A.id, { mat, style });
+    if (mat !== 'keep') st.setHull(A.id, { mat, style });
     if (inFront) st.addRoom({ kind: 'hab', rects: [{ x1: 22, y1: 32, x2: 31, y2: 38 }] });
     const geo = st.projectGeometry(), T = geo.TILE, bk = Bake.bake(geo);
     const o = mk(bk.W, bk.H);
@@ -50,12 +50,12 @@ const PROBE = `(() => {
   }
   const now = {}, before = {};
   for (const [mat, style] of SKINS) {
-    now[mat] = compare(StationBake, mat, style);
-    if (window.StationBakeBefore) before[mat] = compare(window.StationBakeBefore, mat, style);
+    now[mat] = compare(KeepBake, mat, style);
+    if (window.KeepBakeBefore) before[mat] = compare(window.KeepBakeBefore, mat, style);
   }
   // a picture of the worst case, both ways
   const pic = (Bake, tag) => {
-    const a = shot(Bake, 'station', null, false), b = shot(Bake, 'station', null, true);
+    const a = shot(Bake, 'keep', null, false), b = shot(Bake, 'keep', null, true);
     const z = mk(a.w * 6, a.h * 6 * 2 + 12);
     z.g.imageSmoothingEnabled = false;
     z.g.fillStyle = '#101014'; z.g.fillRect(0, 0, z.c.width, z.c.height);
@@ -63,8 +63,8 @@ const PROBE = `(() => {
     z.g.drawImage(b.img.c, b.x, b.y, b.w, b.h, 0, a.h * 6 + 12, b.w * 6, b.h * 6);
     return z.c.toDataURL('image/png').split(',')[1];
   };
-  const crops = { after: pic(StationBake) };
-  if (window.StationBakeBefore) crops.before = pic(window.StationBakeBefore);
+  const crops = { after: pic(KeepBake) };
+  if (window.KeepBakeBefore) crops.before = pic(window.KeepBakeBefore);
   return JSON.stringify({ skirtDiff_nothingInFront_vs_roomInFront: now, sameOnTrunk: before, crops });
 })()`;
 
@@ -83,8 +83,8 @@ if (!(await waitDevReady(cdp, evalJS, { url: URL }))) {
   try { proc.kill(); } catch {} try { side.kill(); } catch {}
   process.exit(2);
 }
-const beforeSrc = execFileSync('git', ['show', 'HEAD:frontend/app/stationbake.js'], { encoding: 'utf8', maxBuffer: 1 << 26 })
-  .replace('const StationBake = (() =>', 'window.StationBakeBefore = (() =>')
+const beforeSrc = execFileSync('git', ['show', 'HEAD:frontend/app/keepbake.js'], { encoding: 'utf8', maxBuffer: 1 << 26 })
+  .replace('const KeepBake = (() =>', 'window.KeepBakeBefore = (() =>')
   .replace(/if \(typeof module[\s\S]*$/, '');
 await evalJS(cdp, beforeSrc + '\n;"ok"');
 const data = JSON.parse(await evalJS(cdp, PROBE));

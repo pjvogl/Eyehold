@@ -88,7 +88,7 @@ export function assertGateReceiptHonesty(receipt) {
 
 export function buildGateReceipt(stepResults) {
   const receipt = {
-    schemaVersion: 'starnet.eval.gate-receipt.v1',
+    schemaVersion: 'eyehold.eval.gate-receipt.v1',
     kind: 'credential-free-eval-gate',
     generatedAt: new Date().toISOString(),
     // dirty excludes ONLY the receipt home: this receipt writes itself into qa/eval-receipts/,
@@ -102,7 +102,7 @@ export function buildGateReceipt(stepResults) {
     platform: { platform: process.platform, arch: process.arch, node: process.version },
     packs: Object.fromEntries(Object.entries(PACK_FILES).map(([name, file]) => [name, { path: file, sha256: sha256File(file) }])),
     expectedCounts: { faultScenarios: 10, faultRepeats: 100, faultRows: 1000, qualityRows: 13, parityScenarios: 32, parityProbes: 4 },
-    grader: { file: PACK_FILES.independentGrader, sha256: sha256File(PACK_FILES.independentGrader), gradeSchema: 'starnet.eval.independent-grade.v1' },
+    grader: { file: PACK_FILES.independentGrader, sha256: sha256File(PACK_FILES.independentGrader), gradeSchema: 'eyehold.eval.independent-grade.v1' },
     steps: stepResults.map(({ output, ...step }) => step),
     verdict: {
       pass: stepResults.length === STEPS.length && stepResults.every(step => step.pass),

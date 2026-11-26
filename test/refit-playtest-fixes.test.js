@@ -4,7 +4,7 @@
       Props-search away, and "inbox" found two different INBOX pieces. Now the tab carries a MACHINES shelf
       computed from the catalog (every cat:'workflow' entry, each with its one-line purpose), and the decor
       tray is the MAIL TRAY — one canonical INBOX (its id unchanged, so old saves keep rendering).
-   3. STALE HELP COPY: the guide named "PROPS → WORKSTATIONS & WORKFLOWS", "LAYOUTS (9)" and "PREVIEW"; the
+   3. STALE HELP COPY: the guide named "PROPS → WORKKEEPS & WORKFLOWS", "LAYOUTS (9)" and "PREVIEW"; the
       Field Manual said "PROPS › WORKFLOW", "TEST", and its BRANCHES entry had no JOINER/LOOP. Every name and
       count now comes from the UI's own tables (Build.refitNames), and the testing copy names the docked
       Workflow panel's STEP TEST.
@@ -53,7 +53,7 @@ const tutorialSrc = read('tutorial.js');
 /* ---------- 3. the guide + Field Manual read their names from the UI ---------- */
 {
   const guide = build.slice(build.indexOf('function showGuide()'), build.indexOf('function openStepCard'));
-  for (const stale of ['WORKSTATIONS &amp; WORKFLOWS', 'LAYOUTS (', '<b>PREVIEW</b>', '<b>Done</b>'])
+  for (const stale of ['WORKKEEPS &amp; WORKFLOWS', 'LAYOUTS (', '<b>PREVIEW</b>', '<b>Done</b>'])
     A.ok(guide.indexOf(stale) < 0, 'the REFIT guide no longer names "' + stale + '"');
   A.ok(/\$\{G\.lineCount\} ready-made layouts/.test(guide) && /\$\{esc\(G\.preview\)\}/.test(guide) && /\$\{esc\(G\.tab\)\}/.test(guide), 'the guide\'s tab, button and count are interpolated from guideNames()');
   A.ok(/STEP TEST/.test(guide) && /Workflow panel/.test(guide), 'the guide explains testing with the docked Workflow panel\'s STEP TEST');
@@ -102,7 +102,7 @@ const tutorialSrc = read('tutorial.js');
     root: { querySelector: () => null, querySelectorAll: () => [] }, cardTop: () => null, WorkflowPanel: { isOpen: () => false },
     performance: { now: () => s.now }, now: 1000, tipTimer: 0,
     showTip: t => { s.tipped = t; }, hideTip() {}, setTimeout: () => 0, clearTimeout() {}, sfx() {}, selectTool() {}, deselectTool() {}, fitCamera() {},
-    station: { undo: () => ({ ok: true }), redo: () => ({ ok: true }) } };
+    keep: { undo: () => ({ ok: true }), redo: () => ({ ok: true }) } };
   s.close = () => { s.closed++; };
   vm.createContext(s);
   vm.runInContext(between('  const ESC_EXIT_WINDOW_MS', 'function onKeyUp(ev)'), s);
@@ -121,7 +121,7 @@ const tutorialSrc = read('tutorial.js');
   const glow = build.slice(build.indexOf('function drawBeltEndpointGlow('), build.indexOf('function drawAgentTag('));
   A.ok(/if \(!isFrom && hoverPropId !== p\.id\) continue;\s*const pv = isFrom \? null : beltPreview\(connectFrom, p\.id\);\s*const role = isFrom \? 'FROM ▸ NOW CLICK A DESTINATION' : \(pv && !pv\.ok\) \? 'NO ROUTE — ' \+ \(NO_ROUTE\[pv\.error\] \|\| 'NO CLEAR PATH'\) : 'CLICK TO CONNECT';/.test(glow), 'mid-connect, CLICK TO CONNECT (or why there is no route) prints on the HOVERED target only (the rest keep the glow)');
   // conveyor links phase B: the hovered destination shows the very lane the click would lay
-  A.ok(/if \(pv && pv\.ok\) drawBeltPreview\(t, pv, '#7ee2a8'\);/.test(glow) && /station\.previewBelt\(from, to\)/.test(build), 'mid-connect, the hovered destination draws the lane the click would lay (station.previewBelt)');
+  A.ok(/if \(pv && pv\.ok\) drawBeltPreview\(t, pv, '#7ee2a8'\);/.test(glow) && /keep\.previewBelt\(from, to\)/.test(build), 'mid-connect, the hovered destination draws the lane the click would lay (keep.previewBelt)');
 
   // floor nags are short; the full sentences ride the hover card
   const vl = build.slice(build.indexOf('const VAL_LABEL = {'), build.indexOf('const VAL_WHY = {'));

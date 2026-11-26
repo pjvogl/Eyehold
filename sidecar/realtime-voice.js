@@ -1,7 +1,7 @@
 'use strict';
 
 const DEFAULT_MODEL = 'gpt-realtime-2.1';
-const DEFAULT_VOICE = 'ash';   // MALE by default: the station voice is written as a low American male, and the crew sprites read male
+const DEFAULT_VOICE = 'ash';   // MALE by default: the keep voice is written as a low American male, and the crew sprites read male
 /* The provider's own voice set. It was hardcoded to one name, which read as "you cannot change the voice" —
    that limit was OURS, not the provider's. Validated against this list rather than passed through, so a
    caller cannot push an arbitrary string into the session payload. */
@@ -17,25 +17,25 @@ const OPENAI_REALTIME_URL = 'https://api.openai.com/v1/realtime/calls';
 const TOOLS = [
   {
     type: 'function',
-    name: 'get_starnet_status',
-    description: 'Read the visible Starnet workstreams, active task state, and approval state.',
+    name: 'get_eyehold_status',
+    description: 'Read the visible Eyehold workstreams, active task state, and approval state.',
     parameters: { type: 'object', properties: {}, additionalProperties: false }
   },
   {
     type: 'function',
-    name: 'start_starnet_task',
-    description: 'Send a concrete instruction to Starnet. If its current workstream is busy, the instruction is queued as a follow-up.',
+    name: 'start_eyehold_task',
+    description: 'Send a concrete instruction to Eyehold. If its current workstream is busy, the instruction is queued as a follow-up.',
     parameters: {
       type: 'object',
-      properties: { instruction: { type: 'string', description: 'The complete instruction to send to the active Starnet agent.' } },
+      properties: { instruction: { type: 'string', description: 'The complete instruction to send to the active Eyehold agent.' } },
       required: ['instruction'],
       additionalProperties: false
     }
   },
   {
     type: 'function',
-    name: 'interrupt_starnet_task',
-    description: 'Stop the active Starnet task when the user explicitly asks to stop, cancel, or change direction.',
+    name: 'interrupt_eyehold_task',
+    description: 'Stop the active Eyehold task when the user explicitly asks to stop, cancel, or change direction.',
     parameters: {
       type: 'object',
       properties: { reason: { type: 'string', description: 'A short user-stated reason for the interruption.' } },
@@ -51,16 +51,16 @@ function sessionConfig(opts) {
     model: opts.model || DEFAULT_MODEL,
     output_modalities: ['audio'],
     /* PLACEHOLDER ONLY. The page replaces these over the data channel the instant it opens, with the selected
-       agent's own composed prompt and the live station context — only the page knows who is selected. Written
+       agent's own composed prompt and the live keep context — only the page knows who is selected. Written
        so that even this first second does not claim a separate identity: the previous text opened with "You
-       are Starnet Voice, a control layer", which is exactly the separate-entity feel being fixed. */
+       are Eyehold Voice, a control layer", which is exactly the separate-entity feel being fixed. */
     instructions: [
-      'You are the StarNet agent the Commander is currently speaking with. Fuller instructions, including your name and character, arrive immediately over the session channel — adopt them as your own identity when they do.',
+      'You are the Eyehold agent the Commander is currently speaking with. Fuller instructions, including your name and character, arrive immediately over the session channel — adopt them as your own identity when they do.',
       'Speak naturally and briefly. Let the user interrupt you.',
-      'For requests that require research, coding, file changes, tools, or sustained work, call start_starnet_task instead of claiming you performed the work yourself.',
-      'Use get_starnet_status for progress questions. Never invent task state, tool results, approvals, or files.',
-      'Use interrupt_starnet_task only after the user clearly asks to stop or redirect current work.',
-      'After starting or queuing work, confirm in one short sentence and explain that progress remains visible in Starnet.',
+      'For requests that require research, coding, file changes, tools, or sustained work, call start_eyehold_task instead of claiming you performed the work yourself.',
+      'Use get_eyehold_status for progress questions. Never invent task state, tool results, approvals, or files.',
+      'Use interrupt_eyehold_task only after the user clearly asks to stop or redirect current work.',
+      'After starting or queuing work, confirm in one short sentence and explain that progress remains visible in Eyehold.',
       'Do not ask for credentials or repeat secrets aloud.'
     ].join(' '),
     audio: {
@@ -83,7 +83,7 @@ function sessionConfig(opts) {
 
 function safetyIdentifier(seed) {
   const crypto = require('node:crypto');
-  return crypto.createHash('sha256').update(String(seed || 'starnet-local')).digest('hex').slice(0, 64);
+  return crypto.createHash('sha256').update(String(seed || 'eyehold-local')).digest('hex').slice(0, 64);
 }
 
 /* THE CONNECTED PROVIDER IS THE CREDENTIAL. Live voice must never ask for a second, voice-only key: the

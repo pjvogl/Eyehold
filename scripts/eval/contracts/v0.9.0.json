@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "starnet.eval.comparison-contract.v1",
+  "schemaVersion": "eyehold.eval.comparison-contract.v1",
   "release": "0.9.0",
   "frozenAt": "2026-08-02",
   "reference": {
@@ -10,7 +10,7 @@
     "tagObject": "d25e2dbdbc40b49808c0a0e9cfed21cc90cffab3",
     "commit": "cc4cab2f592e60a197e796506de9168f74baf3ea",
     "sourceTree": "fcdc6093750ed0a3a556e20927799d7245ba65e4",
-    "role": "failure-class and shared-workload oracle, not StarNet design authority"
+    "role": "failure-class and shared-workload oracle, not Eyehold design authority"
   },
   "claimLedger": {
     "path": "qa/product-perfect/claims.json",
@@ -34,7 +34,7 @@
     "required": "blocks v0.9 until proved or removed from the advertised surface",
     "experimental": "must be labelled where used and must fail safely",
     "excluded": "must not be advertised or included in parity scoring",
-    "differentiator": "StarNet-specific behavior graded on its own truthful contract"
+    "differentiator": "Eyehold-specific behavior graded on its own truthful contract"
   },
   "promises": [
     { "id": "first-boot-onboarding", "classification": "required", "releaseTreatment": "Prove the clean installed under-ten-minute journey." },
@@ -69,7 +69,7 @@
     { "id": "no-phone-home", "classification": "excluded", "releaseTreatment": "Remove the blanket claim; publish the exact boot-egress inventory instead." },
     { "id": "secrets-keychain-never-render", "classification": "required", "releaseTreatment": "Complete verified desktop coverage or narrow the advertised scope before freeze." },
     { "id": "crash-safe-forward-corrupt-recovery", "classification": "required", "releaseTreatment": "Prove protected stores and explicitly exclude unprotected browser state from blanket wording." },
-    { "id": "full-backup-export-restore", "classification": "required", "releaseTreatment": "Expose and prove the full secret-free path or narrow the claim to station backup." },
+    { "id": "full-backup-export-restore", "classification": "required", "releaseTreatment": "Expose and prove the full secret-free path or narrow the claim to keep backup." },
     { "id": "three-platform-release-pipeline", "classification": "required", "releaseTreatment": "Prove Windows and macOS artifacts from one immutable candidate; do not claim Linux." },
     { "id": "self-update-verified", "classification": "required", "releaseTreatment": "Prove signed Windows update and state macOS manual re-download exactly." },
     { "id": "free-no-markup-budget-caps", "classification": "required", "releaseTreatment": "Keep BYOK and managed-credit economics separate and prove cap enforcement." },

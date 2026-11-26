@@ -7,7 +7,7 @@ const {fit}=require('../../frontend/app/propremaster.js');
  const records=JSON.parse(fs.readFileSync(at('frontend/assets/industrial/batch03/communications/export-checks.json'))).records;
  const floor=await loadImage(at('frontend/assets/industrial/remaster/floors/plate.png'));
  const sheet=createCanvas(1440,800),g=sheet.getContext('2d');g.fillStyle='#10191a';g.fillRect(0,0,1440,800);
- g.fillStyle='#c8bd9a';g.font='22px sans-serif';g.fillText('STARNET · COMMUNICATIONS · NATIVE FOOTPRINT PROOF',24,35);
+ g.fillStyle='#c8bd9a';g.font='22px sans-serif';g.fillText('EYEHOLD · COMMUNICATIONS · NATIVE FOOTPRINT PROOF',24,35);
  const checks=[];
  for(const [index,a]of records.entries()){
   const spec=geometry.props[a.id].views.s,im=await loadImage(at(a.output)),box=fit(spec.bounds,{width:im.width,height:im.height});
@@ -20,7 +20,7 @@ const {fit}=require('../../frontend/app/propremaster.js');
   g.fillStyle='#b8b2a0';g.font='16px sans-serif';g.fillText(a.id+' · '+spec.footprint.w+' × '+spec.footprint.h+' tiles',left,top+270);
   checks.push({id:a.id,footprint:spec.footprint,bounds:spec.bounds,actualUniformFit:box,sourceRgbChanges:a.subjectRgbChanges,sourceOnly:true});
  }
- const out='docs/station-remaster/batch03/communications/';
+ const out='docs/keep-remaster/batch03/communications/';
  fs.writeFileSync(at(out+'native-scale.png'),await sheet.encode('png'));
  fs.writeFileSync(at(out+'geometry-review.json'),JSON.stringify(checks,null,2)+'\n');
  console.log('Six sources rendered with shared uniform fit and native footprint outlines.');

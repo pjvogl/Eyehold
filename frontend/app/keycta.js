@@ -1,4 +1,4 @@
-/* STARNET — keycta.js : the honest "your agent is awake but has no working brain" call-to-action.
+/* EYEHOLD — keycta.js : the honest "your agent is awake but has no working brain" call-to-action.
 
    THE ASYMMETRY THIS CLOSES: a Commander can complete the ENTIRE awakening with no key configured — the
    ceremony degrades to its scripted spine (no live model), the agent ends up "ready" on screen, yet the
@@ -9,7 +9,7 @@
    IFF the active provider genuinely needs a key AND `Harness.hasStoredCredential` reports none is stored
    (never fabricated by DEVMODE, unlike configured()). The instant a key lands it re-evaluates and vanishes —
    it can never assert a missing connection that actually exists, nor linger once one does. A Codex (OAuth)
-   or ollama/custom (keyless-by-design) station never trips it. */
+   or ollama/custom (keyless-by-design) keep never trips it. */
 'use strict';
 
 const KeyCTA = (() => {
@@ -39,9 +39,9 @@ const KeyCTA = (() => {
   }
   // Setup gaps only: a missing credential/link or an empty model selection. A null result does not prove
   // endpoint reachability, catalog availability, account balance or a successful inference call.
-  // Answers WHAT is missing, not just whether: { kind: 'unlinked' } for the STARNET managed provider on a
-  // station with no linked account (its bearer is the device token, never a key the user can paste — issue #6:
-  // an unlinked station kept asking for a "STARNET key" that does not exist), or { kind: 'nokey', provider }
+  // Answers WHAT is missing, not just whether: { kind: 'unlinked' } for the EYEHOLD managed provider on a
+  // keep with no linked account (its bearer is the device token, never a key the user can paste — issue #6:
+  // an unlinked keep kept asking for a "EYEHOLD key" that does not exist), or { kind: 'nokey', provider }
   // for a keyed provider with nothing stored; 'nomodel' means the selection is empty.
   function gapOf() {
     // only once the awakening has actually landed (a fully onboarded hero on the floor)
@@ -51,11 +51,11 @@ const KeyCTA = (() => {
     const p = activeProvider();
     const modelGap = () => (typeof Harness !== 'undefined' && Harness.getModel && !String(Harness.getModel() || '').trim())
       ? { kind: 'nomodel', provider: p } : null;
-    if (p === 'starnet') {
+    if (p === 'eyehold') {
       // managed credits are configured IFF the sidecar reports a linked account (Harness.configured mirrors
       // /api/credits) — no localStorage key can ever stand in for that.
       try {
-        if (typeof Harness !== 'undefined' && Harness.configured) return Harness.configured('starnet') ? modelGap() : { kind: 'unlinked', provider: p };
+        if (typeof Harness !== 'undefined' && Harness.configured) return Harness.configured('eyehold') ? modelGap() : { kind: 'unlinked', provider: p };
       } catch (_) {}
       return null;
     }
@@ -67,10 +67,10 @@ const KeyCTA = (() => {
   }
   function missingKey() { return !!gapOf(); }
 
-  // every door out of this banner lands on SETTINGS ▸ PROVIDERS — the one surface that owns keys, the STARNET
+  // every door out of this banner lands on SETTINGS ▸ PROVIDERS — the one surface that owns keys, the EYEHOLD
   // link, the provider switch and the Ollama endpoint. openTerm's section arg is the console-rail deep link.
   function openSettings() {
-    if (typeof StationUI !== 'undefined' && StationUI.openTerm) { StationUI.openTerm('settings', 'providers'); return; }
+    if (typeof KeepUI !== 'undefined' && KeepUI.openTerm) { KeepUI.openTerm('settings', 'providers'); return; }
     const b = document.querySelector('.bb[data-term="settings"]'); if (b) b.click();
   }
 
@@ -92,7 +92,7 @@ const KeyCTA = (() => {
     spokenState = state;
   }
 
-  /* THE FREE LOCAL DOOR — Ollama. TRUTHFUL TELEMETRY: the station may only say "run free locally" once the
+  /* THE FREE LOCAL DOOR — Ollama. TRUTHFUL TELEMETRY: the keep may only say "run free locally" once the
      SIDECAR has proven Ollama answers on this machine (Harness.probeProvider → POST /api/providers/probe →
      a live model list from 127.0.0.1:11434). Until then the same button honestly reads "set up ollama" and
      opens the settings entry — it never claims a brain that isn't there. ollamaReady: null = not probed yet. */
@@ -116,12 +116,12 @@ const KeyCTA = (() => {
     const b = el('key-cta'); if (!b) return;
     const f = b.querySelector('.key-cta-free'); if (f) f.textContent = freeLabel();
   }
-  // Switch the station's brain to Ollama — but only on a FRESH proof, never on a cached one. An offline
+  // Switch the keep's brain to Ollama — but only on a FRESH proof, never on a cached one. An offline
   // Ollama routes to the settings entry with the honest reason instead of silently selecting a dead endpoint.
   function useOllama() {
     return probeOllama(true).then(ok => {
       if (!ok) {
-        try { if (typeof StationUI !== 'undefined' && StationUI.notify) StationUI.notify('ollama isn’t answering on this machine yet — install it from ollama.com, pull a model, then pick OLLAMA here', 'bad'); } catch (_) {}
+        try { if (typeof KeepUI !== 'undefined' && KeepUI.notify) KeepUI.notify('ollama isn’t answering on this machine yet — install it from ollama.com, pull a model, then pick OLLAMA here', 'bad'); } catch (_) {}
         openSettings();
         return false;
       }
@@ -131,8 +131,8 @@ const KeyCTA = (() => {
         if (typeof ModelDock !== 'undefined' && ModelDock.reconcile) ModelDock.reconcile().catch(() => ModelDock.reflect && ModelDock.reflect());
         else if (typeof ModelDock !== 'undefined' && ModelDock.reflect) ModelDock.reflect();
       } catch (_) {}
-      try { if (typeof StationUI !== 'undefined' && StationUI.notify) StationUI.notify('brain → OLLAMA (local, free) — no key, no bill. local models run smaller than cloud ones; expect slower, rougher work.', 'good'); } catch (_) {}
-      try { if (typeof StationUI !== 'undefined' && StationUI.rerender) StationUI.rerender('settings'); } catch (_) {}
+      try { if (typeof KeepUI !== 'undefined' && KeepUI.notify) KeepUI.notify('brain → OLLAMA (local, free) — no key, no bill. local models run smaller than cloud ones; expect slower, rougher work.', 'good'); } catch (_) {}
+      try { if (typeof KeepUI !== 'undefined' && KeepUI.rerender) KeepUI.rerender('settings'); } catch (_) {}
       render();
       return true;
     });
@@ -158,9 +158,9 @@ const KeyCTA = (() => {
     if (gap.kind === 'nomodel') {
       spokenLine = Chat.localLine(who + 'no model is selected for ' + label + '. choose a model to send a message.');
     } else if (gap.kind === 'unlinked') {
-      spokenLine = Chat.localLine(who + 'i’m awake, but no brain is wired: this station isn’t linked to a STARNET account, so i can’t actually run anything yet. link one, wire a different provider, or run me free on a local model.');
+      spokenLine = Chat.localLine(who + 'i’m awake, but no brain is wired: this keep isn’t linked to a EYEHOLD account, so i can’t actually run anything yet. link one, wire a different provider, or run me free on a local model.');
     } else {
-      spokenLine = Chat.localLine(who + 'i’m awake, but no brain is wired: there’s no ' + label + ' key on the station, so i can’t actually run anything yet. add one, wire a different provider, or run me free on a local model.');
+      spokenLine = Chat.localLine(who + 'i’m awake, but no brain is wired: there’s no ' + label + ' key on the keep, so i can’t actually run anything yet. add one, wire a different provider, or run me free on a local model.');
     }
     spokenChoices = Chat.choices([
       { label: primaryLabel(gap), value: 'primary' },
@@ -174,12 +174,12 @@ const KeyCTA = (() => {
   // ONE label per anchor: the primary door names exactly the thing that is missing.
   function primaryLabel(gap) {
     if (gap && gap.kind === 'nomodel') return '◇ CHOOSE MODEL';
-    if (gap && gap.kind === 'unlinked') return '🔗 LINK STARNET';
+    if (gap && gap.kind === 'unlinked') return '🔗 LINK EYEHOLD';
     return '⚙ ADD ' + ((gap && gap.provider) || activeProvider()).toUpperCase() + ' KEY';
   }
   function bannerText(gap) {
     if (gap.kind === 'nomodel') return 'no model selected for ' + gap.provider.toUpperCase() + ' — choose a model to send a message.';
-    if (gap.kind === 'unlinked') return 'your agent is awake — but this station isn’t linked to a STARNET account, so it can’t run a task yet.';
+    if (gap.kind === 'unlinked') return 'your agent is awake — but this keep isn’t linked to a EYEHOLD account, so it can’t run a task yet.';
     return 'your agent is awake — but it has no ' + gap.provider.toUpperCase() + ' key, so it can’t run a task yet.';
   }
 
@@ -197,7 +197,7 @@ const KeyCTA = (() => {
       '<span class="key-cta-glyph" aria-hidden="true">⚠</span>' +
       '<span class="key-cta-txt"></span>' +
       // THREE DOORS, not one: name the missing thing (key / link), offer any other provider, offer the free
-      // local path. Issue #6: a single "ADD IN SETTINGS" left an unlinked STARNET pick with no way out.
+      // local path. Issue #6: a single "ADD IN SETTINGS" left an unlinked EYEHOLD pick with no way out.
       '<span class="key-cta-acts">' +
         '<button type="button" class="key-cta-act">⚙ ADD IN SETTINGS</button>' +
         '<button type="button" class="key-cta-alt">⇄ USE A DIFFERENT PROVIDER</button>' +

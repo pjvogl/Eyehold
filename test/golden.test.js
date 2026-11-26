@@ -91,7 +91,7 @@ for (const states of [{ 'settings': sig(0) }, {}]) {
 
 // A pinned checkout must be able to read Guardian's explicitly supplied operational ledger.
 {
-  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'starnet-golden-ledger-'));
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'eyehold-golden-ledger-'));
   const findingsDir = path.join(dir, 'findings');
   const knownFile = path.join(dir, 'KNOWN_ISSUES.md');
   fs.mkdirSync(findingsDir);
@@ -110,7 +110,7 @@ for (const states of [{ 'settings': sig(0) }, {}]) {
 // Source lock the composition root: the immutable pin cannot infer ignored operational files.
 {
   const guardian = fs.readFileSync(path.join(__dirname, '..', 'scripts', 'qa', 'guardian.mjs'), 'utf8');
-  A.ok(/STARNET_QA_FINDINGS_DIR/.test(guardian) && /STARNET_QA_KNOWN_FILE/.test(guardian),
+  A.ok(/EYEHOLD_QA_FINDINGS_DIR/.test(guardian) && /EYEHOLD_QA_KNOWN_FILE/.test(guardian),
     'Guardian passes operational findings + known-issues paths into the pinned golden gate');
 }
 
@@ -155,7 +155,7 @@ for (const states of [{ 'settings': sig(0) }, {}]) {
   function captureNotifs(initial, broken = false) {
     let count = initial, list = null;
     const context = {
-      StationUI: { notify() { count++; } },
+      KeepUI: { notify() { count++; } },
       KeyboardEvent: function () {},
       document: {
         body: { classList: { remove() {} } },
@@ -173,7 +173,7 @@ for (const states of [{ 'settings': sig(0) }, {}]) {
   A.eq(empty.result, 'opened:NOTIFS', 'fresh empty notification store reaches the fixture list');
   A.eq(empty.list && empty.list.innerHTML, populated.list && populated.list.innerHTML,
     'empty and populated notification stores capture identical fixture rows');
-  A.ok(!!empty.list && /Station layout saved/.test(empty.list.innerHTML), 'notification fixture is actually rendered');
+  A.ok(!!empty.list && /Keep layout saved/.test(empty.list.innerHTML), 'notification fixture is actually rendered');
   A.eq(captureNotifs(0, true).result, 'DRIVE_ERR:notification-list-missing',
     'broken notification renderer fails capture instead of producing a false green');
 }

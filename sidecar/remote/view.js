@@ -1,15 +1,15 @@
-/* sidecar/remote/view.js — the station picture a phone sees.
+/* sidecar/remote/view.js — the keep picture a phone sees.
 
-   The sidecar has no renderer: the station is drawn by the desk page. So the desk page draws a still of the
-   whole station with its own renderer (World.renderStill) and hands it here; a phone reads it through the
+   The sidecar has no renderer: the keep is drawn by the desk page. So the desk page draws a still of the
+   whole keep with its own renderer (World.renderStill) and hands it here; a phone reads it through the
    gateway's `view` verb. This module only HOLDS the latest still and remembers whether a phone is looking.
 
    Truth rules:
      · the picture is always stamped with when the desk drew it (`at`). A phone shows that age; it never calls
        an old picture live.
-     · nothing is kept on disk. A station that restarts has no picture until a desk page draws one.
+     · nothing is kept on disk. A keep that restarts has no picture until a desk page draws one.
      · the desk only draws while a phone is looking (wanted()), plus one picture when it opens, so an idle
-       station does no extra work.
+       keep does no extra work.
 
      const view = makeRemoteView({ now })
      view.put({ mime, w, h, bodies, data })  -> { ok } | { ok:false, error }     (data = base64 image bytes)

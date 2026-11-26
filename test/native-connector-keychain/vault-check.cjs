@@ -1,12 +1,12 @@
 'use strict';
 const fs = require('node:fs'), path = require('node:path'), assert = require('node:assert/strict');
 const { makeConnectorVault, FORMAT } = require('../../sidecar/connector-vault.js');
-const keyHex = process.env.STARNET_CONNECTOR_ENCRYPTION_KEY;
-delete process.env.STARNET_CONNECTOR_ENCRYPTION_KEY;
+const keyHex = process.env.EYEHOLD_CONNECTOR_ENCRYPTION_KEY;
+delete process.env.EYEHOLD_CONNECTOR_ENCRYPTION_KEY;
 assert.equal(process.env.GITHUB_ACTIONS, 'true');
-assert.equal(process.env.STARNET_DISPOSABLE_KEYCHAIN, '1');
+assert.equal(process.env.EYEHOLD_DISPOSABLE_KEYCHAIN, '1');
 assert.ok(process.env.RUNNER_TEMP);
-const dir = path.join(process.env.RUNNER_TEMP, 'starnet-connector-keychain-acceptance');
+const dir = path.join(process.env.RUNNER_TEMP, 'eyehold-connector-keychain-acceptance');
 const file = path.join(dir, 'state.json'), legacy = path.join(dir, 'oauth.json');
 const state = {version:2,configs:[{id:'google-files'},{id:'custom-service'}],oauth:{byId:{'google-files':{accessToken:'SYNTHETIC_ACCESS',refreshToken:'SYNTHETIC_REFRESH'}},clients:{}}};
 const make = extra => makeConnectorVault({fs,path,keyHex,required:true,...extra});

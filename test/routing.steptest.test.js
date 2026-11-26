@@ -7,7 +7,7 @@
    money stays spent); a verdict LOOP revise -> back -> approved with pass counting; the LINE BUDGET over the
    whole session (re-runs included) ending in 'stopped'; single (try-this-step) with a preview; the next dock
    resolved at CONTINUE time from the current plan; the restart round-trip (paused stays paused, running comes
-   back failed and can be re-run); one active session per station. */
+   back failed and can be re-run); one active session per keep. */
 'use strict';
 const A = require('./_assert.js');
 const { makeStepTest, normPause } = require('../sidecar/routing/steptest.js');
@@ -105,7 +105,7 @@ const settle = async (R, id) => { for (let i = 0; i < 50; i++) { await R.st.sett
     A.eq(r0.session.state, 'running', 'the session starts running (the route answers at once; the panel polls)');
     A.eq(r0.session.running.agentId, 'research', 'the ENTRY dock (router.resolveTarget scoped to the line) is working');
     const again = R.st.start({ line: R.lineId, text: 'second' });
-    A.eq(again.ok, false, 'ONE active session per station: a second start is refused');
+    A.eq(again.ok, false, 'ONE active session per keep: a second start is refused');
     A.ok(/already running/.test(again.error), 'the refusal says why: ' + again.error);
     let s = await settle(R, r0.session.id);
     A.eq(s.state, 'paused', 'pause:every pauses after the first dock');
@@ -131,7 +131,7 @@ const settle = async (R, id) => { for (let i = 0; i < 50; i++) { await R.st.sett
     A.eq(R.calls[1].entry, false);
     A.ok(/PIPELINE HANDOFF/.test(R.calls[1].text) && R.calls[1].text.indexOf('findings A — plus my note') >= 0, 'the handoff turn (Pipeline.handoffPrompt) carries the edited text');
     A.ok(R.calls[1].text.indexOf('The original request was:\nresearch sleep') >= 0, 'and the original request');
-    A.ok(R.calls[1].text.indexOf('YOUR STANDING BRIEF FOR THIS STATION:\nPress style.') >= 0, 'and the RECEIVING dock\'s standing brief');
+    A.ok(R.calls[1].text.indexOf('YOUR STANDING BRIEF FOR THIS KEEP:\nPress style.') >= 0, 'and the RECEIVING dock\'s standing brief');
     A.eq(s.hops[1].input, 'findings A — plus my note', 'the next hop\'s input is the post-edit text');
     A.eq(s.state, 'paused', 'paused again after the writer');
     A.eq(s.paused.next, { kind: 'outbox' }, 'the writer ships to the OUTBOX');
@@ -193,7 +193,7 @@ const settle = async (R, id) => { for (let i = 0; i < 50; i++) { await R.st.sett
     A.ok(R.st.stop(s.id).ok, 'stop while paused');
     s = R.st.get(s.id).session;
     A.eq(s.state, 'stopped'); A.eq(s.error, null, 'an owner stop is not an error'); A.eq(s.paused, null);
-    A.ok(R.st.start({ line: R.lineId, text: 'next' }).ok, 'a stopped test frees the station for a new one');
+    A.ok(R.st.start({ line: R.lineId, text: 'next' }).ok, 'a stopped test frees the keep for a new one');
   }
 
   /* ---- THE NEXT DOCK IS RESOLVED AT CONTINUE TIME: a bay added while paused receives the crate ---- */

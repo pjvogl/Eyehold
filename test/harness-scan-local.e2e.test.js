@@ -12,12 +12,12 @@ const A = require('./_assert.js');
 const { SidecarFixture } = require('./helpers/sidecar-fixture.js');
 
 (async () => {
-  const scratch = fs.mkdtempSync(path.join(os.tmpdir(), 'starnet-harness-scan-'));
+  const scratch = fs.mkdtempSync(path.join(os.tmpdir(), 'eyehold-harness-scan-'));
   const ws = path.join(scratch, 'openclaw-state', 'workspace');
   fs.mkdirSync(ws, { recursive: true });
   fs.writeFileSync(path.join(ws, 'SOUL.md'), '# Soul\nA careful local agent.\n');
   fs.writeFileSync(path.join(ws, 'IDENTITY.md'), '- **Name:** Localbot\n');
-  const fixture = SidecarFixture.create({ prefix: 'starnet-harness-scan-', timeoutMs: 20000, env: {
+  const fixture = SidecarFixture.create({ prefix: 'eyehold-harness-scan-', timeoutMs: 20000, env: {
     HERMES_HOME: path.join(scratch, 'hermes-home'), OPENCLAW_STATE_DIR: path.join(scratch, 'openclaw-state')
   } });
   try {
@@ -28,8 +28,8 @@ const { SidecarFixture } = require('./helpers/sidecar-fixture.js');
     A.eq(local.status, 200, 'a local workspace still scans (' + JSON.stringify(local.body).slice(0, 160) + ')');
 
     const refusals = [
-      ['\\\\starnet-unc-probe.invalid\\share\\workspace', /network \(UNC\)/],
-      ['//starnet-unc-probe.invalid/share/workspace', /network \(UNC\)/],
+      ['\\\\eyehold-unc-probe.invalid\\share\\workspace', /network \(UNC\)/],
+      ['//eyehold-unc-probe.invalid/share/workspace', /network \(UNC\)/],
       ['\\\\?\\' + ws, /device paths/],
       ['\\\\.\\' + ws, /device paths/]
     ];

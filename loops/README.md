@@ -1,4 +1,4 @@
-# StarNet 24/7 loop suite — the machine that keeps the machine improving
+# Eyehold 24/7 loop suite — the machine that keeps the machine improving
 
 Each loop is a self-contained prompt file. Launch one per Claude Code session with `/loop`:
 
@@ -20,7 +20,7 @@ Every loop obeys AGENTS.md (worktree protocol) and appends a terse dated digest 
 | L6 | Adversarial Reviewer | adversarial-reviewer.md | 6h | own worktree | half-baked happy-path features |
 | L7 | Debt Burner | debt-burner.md | daily | own worktree | complexity creep in hotfiles |
 | L8 | Security Sweep | security-sweep.md | weekly | own worktree | leaked secrets/PII, unsafe surfaces |
-| L9 | Perfectionist | perfectionist.md | self-paced | own worktree | un-mapped/imperfect surface (drives the Station Atlas to `perfected`) |
+| L9 | Perfectionist | perfectionist.md | self-paced | own worktree | un-mapped/imperfect surface (drives the Keep Atlas to `perfected`) |
 | L10 | Dogfood | dogfood.md | daily / self-paced (RC-soak driver) | own worktree | seam bugs that only appear when the product is USED like a real user (recruit→assign→interrupt→restart→open); the reason Andrew is the first tester |
 | L11 | Red→Green Closer | red-green-closer.md | self-paced (per open finding) | own worktree | the gap between DETECTED and FIXED — fans repair agents at one red finding and crowns only the patch a script proved on a clean tree |
 

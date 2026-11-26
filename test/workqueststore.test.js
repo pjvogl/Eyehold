@@ -43,8 +43,8 @@ global.U = {
   }
 };
 const rerenders = [];
-const notifs = [];   // capture the honest stalled-build beat (StationUI.notify) — must be the neutral WARN family, never gold
-global.StationUI = { rerender: k => rerenders.push(k), notify: (txt, cls) => notifs.push({ txt, cls }) };
+const notifs = [];   // capture the honest stalled-build beat (KeepUI.notify) — must be the neutral WARN family, never gold
+global.KeepUI = { rerender: k => rerenders.push(k), notify: (txt, cls) => notifs.push({ txt, cls }) };
 global.SlagLog = require('../frontend/app/slaglog.js');   // the REAL post-mortem copy the stalled beat reuses
 
 const { WorkQuestStore } = require('../frontend/app/workqueststore.js');
@@ -154,7 +154,7 @@ A.eq(WorkQuestStore.quests().some(q => q.id === wId), false, 'a dismissed build 
 WorkQuestStore.init();   // reload
 A.eq(WorkQuestStore.isDismissed(wId), true, 'dismissal survives a reload');
 WorkQuestStore.reset();
-A.eq(global.localStorage.getItem('starnet.workquests.v1'), null, 'reset removes the self-persisted key');
+A.eq(global.localStorage.getItem('eyehold.workquests.v1'), null, 'reset removes the self-persisted key');
 A.eq(WorkQuestStore.quests().length, 0, 'a reset store has no quests until the next init');
 
 /* ---------- source-level locks: the acceptance-path wiring ---------- */

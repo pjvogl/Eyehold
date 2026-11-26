@@ -41,7 +41,7 @@ import { pathToFileURL, fileURLToPath } from 'node:url';
 
 /* ─────────────────────────────── PURE CORE ─────────────────────────────── */
 
-export const RECEIPT_SCHEMA = 'starnet.soak-receipt.v1';
+export const RECEIPT_SCHEMA = 'eyehold.soak-receipt.v1';
 export const MOCK_MODEL = 'soak/mock';
 export const SOAK_AGENT = 'soak_agent';
 export const SOAK_STREAM = 'soak-stream';
@@ -83,7 +83,7 @@ export const RULES = Object.freeze({
   routine: {
     title: 'scheduled routine fired',
     minFires: 1,
-    why: 'the cron driver is the seam a long-running station depends on most; zero fires across the whole soak means the scheduler never ran',
+    why: 'the cron driver is the seam a long-running keep depends on most; zero fires across the whole soak means the scheduler never ran',
   },
   swallowed: {
     title: 'swallowed-error pressure (failopen tally)',
@@ -118,7 +118,7 @@ export const RULES = Object.freeze({
   tick: {
     title: 'scheduler tick latency with N routines (whole-store verified write per advance)',
     maxP95Ms: 300,
-    why: 'the cron tick runs SYNCHRONOUSLY under the process lock: planTick over every job, then saveCronJobs — a full-envelope fsync write + read-back verification of ALL routines — for each advance, and again in markRun for each result. That cost is O(routines) per tick and blocks the event loop while it runs. p95 of (lastSuccessAt − lastTickAt) sampled from GET /api/cron over the LAST HALF must stay under 300 ms at the scale the product claims (50 routines); above that the tick is visibly stalling every run and chat in the station. The first tick after a boot (the post-outage catch-up burst: every missed routine fires at once) is reported as catchUpMs and excluded from p95 — it is a one-time cost, not the steady one. A breach here is a finding against the store write model (index.js saveCronJobs), not a tuning knob',
+    why: 'the cron tick runs SYNCHRONOUSLY under the process lock: planTick over every job, then saveCronJobs — a full-envelope fsync write + read-back verification of ALL routines — for each advance, and again in markRun for each result. That cost is O(routines) per tick and blocks the event loop while it runs. p95 of (lastSuccessAt − lastTickAt) sampled from GET /api/cron over the LAST HALF must stay under 300 ms at the scale the product claims (50 routines); above that the tick is visibly stalling every run and chat in the keep. The first tick after a boot (the post-outage catch-up burst: every missed routine fires at once) is reported as catchUpMs and excluded from p95 — it is a one-time cost, not the steady one. A breach here is a finding against the store write model (index.js saveCronJobs), not a tuning knob',
   },
 });
 
@@ -555,7 +555,7 @@ export function buildReceipt(input) {
 
 export function renderSummary(r) {
   const L = [];
-  L.push(`# StarNet soak — ${r.verdict}`);
+  L.push(`# Eyehold soak — ${r.verdict}`);
   L.push('');
   L.push(`- schema: ${r.schema}`);
   L.push(`- sidecar head: ${r.sidecarHead || 'unknown'}`);
@@ -975,17 +975,17 @@ async function main() {
   const cronLib = require(path.join(repo, 'sidecar', 'cron.js'));
   const mock = await startMockProvider({ slowRunMs: opts.slowRunMs });
   const env = {
-    SKYNET_OPENROUTER_BASE: mock.baseUrl, STARNET_OPENROUTER_BASE: mock.baseUrl,
-    SKYNET_OPENROUTER_KEY: 'sk-or-v1-soak-mock', STARNET_OPENROUTER_KEY: 'sk-or-v1-soak-mock',
-    SKYNET_DEFAULT_MODEL: MOCK_MODEL, STARNET_DEFAULT_MODEL: MOCK_MODEL,
-    SKYNET_CRON_ENABLED: '1', STARNET_CRON_ENABLED: '1',
-    SKYNET_CRON_TICK_MS: String(DEFAULTS.cronTickMs), STARNET_CRON_TICK_MS: String(DEFAULTS.cronTickMs),
-    SKYNET_CRON_TZ: 'UTC', STARNET_CRON_TZ: 'UTC',                     // the accounting enumerates occurrences in UTC
+    SKYNET_OPENROUTER_BASE: mock.baseUrl, EYEHOLD_OPENROUTER_BASE: mock.baseUrl,
+    SKYNET_OPENROUTER_KEY: 'sk-or-v1-soak-mock', EYEHOLD_OPENROUTER_KEY: 'sk-or-v1-soak-mock',
+    SKYNET_DEFAULT_MODEL: MOCK_MODEL, EYEHOLD_DEFAULT_MODEL: MOCK_MODEL,
+    SKYNET_CRON_ENABLED: '1', EYEHOLD_CRON_ENABLED: '1',
+    SKYNET_CRON_TICK_MS: String(DEFAULTS.cronTickMs), EYEHOLD_CRON_TICK_MS: String(DEFAULTS.cronTickMs),
+    SKYNET_CRON_TZ: 'UTC', EYEHOLD_CRON_TZ: 'UTC',                     // the accounting enumerates occurrences in UTC
     SKYNET_CONSENT_TIMEOUT_MS: '2000',
   };
-  if (opts.maxParallel > 0) { env.SKYNET_CRON_MAX_PARALLEL = String(opts.maxParallel); env.STARNET_CRON_MAX_PARALLEL = String(opts.maxParallel); }
-  if (!opts.aux) { env.SKYNET_AUX_BUDGET = '0'; env.STARNET_AUX_BUDGET = '0'; }   // aux passes off by default: deterministic mock answers feed them garbage
-  const fixture = SidecarFixture.create({ prefix: 'starnet-soak-', timeoutMs: 20000, env });
+  if (opts.maxParallel > 0) { env.SKYNET_CRON_MAX_PARALLEL = String(opts.maxParallel); env.EYEHOLD_CRON_MAX_PARALLEL = String(opts.maxParallel); }
+  if (!opts.aux) { env.SKYNET_AUX_BUDGET = '0'; env.EYEHOLD_AUX_BUDGET = '0'; }   // aux passes off by default: deterministic mock answers feed them garbage
+  const fixture = SidecarFixture.create({ prefix: 'eyehold-soak-', timeoutMs: 20000, env });
   const drivers = makeRealDrivers({ fixture, logFile, cronLib });
   let interrupted = false;
   process.on('SIGINT', () => { interrupted = true; });

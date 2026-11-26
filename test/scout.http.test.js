@@ -21,7 +21,7 @@ const { SidecarFixture } = require('./helpers/sidecar-fixture.js');
 (async () => {
   const fixture = SidecarFixture.create({
     prefix: 'sk-scout-',
-    env: { OPENROUTER_KEY: '', STARNET_OPENROUTER_KEY: '', SKYNET_OPENROUTER_KEY: '' }
+    env: { OPENROUTER_KEY: '', EYEHOLD_OPENROUTER_KEY: '', EYEHOLD_OPENROUTER_KEY: '' }
   });
   const ws = fixture.workspace;
   const now = Date.now();
@@ -55,7 +55,7 @@ const { SidecarFixture } = require('./helpers/sidecar-fixture.js');
   let apiToken = '';
   const j = async (m, p, body) => {
     const headers = { 'Content-Type': 'application/json' };
-    if (apiToken) headers['X-StarNet-Token'] = apiToken;
+    if (apiToken) headers['X-Eyehold-Token'] = apiToken;
     const r = await fetch(B + p, { method: m, headers, body: body ? JSON.stringify(body) : undefined });
     const t = await r.text(); let v; try { v = JSON.parse(t); } catch (_) { v = t; }
     return { status: r.status, body: v };

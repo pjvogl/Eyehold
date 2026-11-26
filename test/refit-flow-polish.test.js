@@ -9,14 +9,14 @@ function fixture() {
     edits:0,releases:0,closed:0,focused:false,selectedPropId:null,movingPropId:null,
     root:{querySelectorAll:()=>[],querySelector:()=>null},
     window:{matchMedia:()=>({matches:false})}, BUILD_GROUPS:[['props','Props',['prop']],['workflow','Conveyors',['line','belt']]],
-    station:{propById:()=>({id:'placed',t:'chair',r:0,x:0,y:0,w:1,h:1})},
+    keep:{propById:()=>({id:'placed',t:'chair',r:0,x:0,y:0,w:1,h:1})},
     cv:{}, FACE_WORD:['south','west','north','east'],
     orientEv:()=>({}), canTurn:()=>true, canFlip:()=>true, nextFace:(t,r,d)=>(r+d)&3,
     propBox:()=>({w:1,h:1}), propLabel:t=>t, cardTop:()=>null,
     hideTip(){},hidePropCard(){},toggleKit(){},renderPalette(){},repaintIcons(){},setHint(){},setCursor(){},renderFinCard(){},frameBlueprint(){},fitCamera(){},sfx(){},
     renderPropPreview(){},renderEquipmentInfo(){},renderSelection(){},flashTip(){},pushFlash(){},feedback(){}
   };
-  s.station.faceProp=()=>{s.edits++;return{ok:true};}; s.station.mirrorProp=s.station.faceProp;
+  s.keep.faceProp=()=>{s.edits++;return{ok:true};}; s.keep.mirrorProp=s.keep.faceProp;
   s.cv.releasePointerCapture=()=>s.releases++;
   s.close=()=>s.closed++;
   vm.createContext(s);

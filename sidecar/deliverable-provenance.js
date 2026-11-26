@@ -15,7 +15,7 @@
    - contributorsOf(runId) -> [{ agentId, role:'lead'|'worker', identityFallback }] — the lead run plus every
                               non-internal child run that named a different agent. Deduped by agentId (three
                               dispatches to the same specialist is one contributor), lead always first.
-                              `identityFallback` rides along because a run that fell back to the station persona
+                              `identityFallback` rides along because a run that fell back to the keep persona
                               was NOT the named specialist — the UI has to be able to say so.
 
    PURE: given rows in, answers out. No ambient IO/time, so it unit-tests headlessly. `isInternal` is injected

@@ -3,8 +3,10 @@ const assert = require('node:assert/strict');
 global.IndustrialTextures = { isRemaster: () => true, enabled: () => true, ready: Promise.resolve() };
 const P = require('../../frontend/app/propsprites.js'), M = require('../../frontend/app/worldmodel.js');
 const F = require('../../frontend/app/prop-catalog-fixture.js'), data = require('../../frontend/app/prop-catalog-data.js');
-const expected = P.CATALOG.flatMap(s => P.facings(s.id).map(r => s.id + ':' + ['s', 'w', 'n', 'e'][r]));
-assert.equal(data.catalogTypes, 161);   // + plugin_terminal (2026-09-29, wears the dispatch pylon art)
+// Eyehold keep props are original procedural art with no projection sheet.
+const reviewCatalog = P.CATALOG.filter(s => !String(s.id).startsWith('eyehold_'));
+const expected = reviewCatalog.flatMap(s => P.facings(s.id).map(r => s.id + ':' + ['s', 'w', 'n', 'e'][r]));
+assert.equal(data.catalogTypes, reviewCatalog.length);   // + plugin_terminal (2026-09-29, wears the dispatch pylon art)
 assert.deepEqual(data.views.map(v => v.key).sort(), expected.sort());
 assert.equal(new Set(data.views.map(v => v.key)).size, data.views.length);
 assert.equal(data.supportedViews, 209);
@@ -24,8 +26,8 @@ for (const category of ['', ...data.categories.map(c => c.id)]) {
       if (!prop.r) assert.deepEqual({ w: prop.w, h: prop.h }, { w: P.spec(prop.t).w, h: P.spec(prop.t).h }, 'South footprint changed');
       if (entry.placement === 'wall') assert.equal(prop.y, 0);
       if (entry.placement === 'surface') {
-        assert.equal(room.station.mountOf(prop), 'surface', entry.key);
-        assert.ok(room.supports.some(h => h.id === room.station.surfaceHostOf(prop))); mounted++;
+        assert.equal(room.keep.mountOf(prop), 'surface', entry.key);
+        assert.ok(room.supports.some(h => h.id === room.keep.surfaceHostOf(prop))); mounted++;
       }
     }
     // Every room is a disposable model; constructing it cannot mutate the starter document.

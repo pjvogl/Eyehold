@@ -1,6 +1,6 @@
-/* node test/browser-minimized-window.e2e.test.js — the in-app picture stays alive when the station's Chrome WINDOW is
+/* node test/browser-minimized-window.e2e.test.js — the in-app picture stays alive when the keep's Chrome WINDOW is
    minimized (Andrew 2026-10-02: "I can't interact with the browser whatsoever from the built in browser, I have to
-   manually 'show window' and then I can control it"). Real headed Chromium: open the station window, start the in-app
+   manually 'show window' and then I can control it"). Real headed Chromium: open the keep window, start the in-app
    picture, MINIMIZE the window (what a user does to get it out of the way), then click and type through the in-app
    path. Before the fix the page was hidden and the picture sat at 0 frames/s while typing — a frozen mirror. Now the
    window is put back to normal (behind the active app) and the picture updates as you type. */
@@ -29,7 +29,7 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
   const server = http.createServer((q, r) => { r.writeHead(200, { 'Content-Type': 'text/html' }); r.end('<!doctype html><body style="margin:0"><input id="f" style="position:absolute;left:50px;top:50px;width:400px;height:40px;font-size:20px"></body>'); });
   await new Promise(r => server.listen(0, '127.0.0.1', r));
   const base = 'http://127.0.0.1:' + server.address().port + '/';
-  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'starnet-minimized-'));
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'eyehold-minimized-'));
   const d = T.makeCdpDriver({ chrome: full.path, headed: true, syntheticInputOnly: true, cdpPort: 0, profileDir: dir, timeoutMs: 20000, env: {} });
   d.allowLocal(base);
   let browser = null;
@@ -56,7 +56,7 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
     await d.streamStart(() => { frames++; });
     await browser.send('Browser.setWindowBounds', { windowId, bounds: { windowState: 'minimized' } });
     await sleep(500);
-    A.eq(await winState(), 'minimized', 'the user minimized the station window');
+    A.eq(await winState(), 'minimized', 'the user minimized the keep window');
     // they click into the in-app picture and type
     await d.humanInput({ type: 'mouse', action: 'down', x: 250, y: 70, button: 'left', clickCount: 1 });
     await d.humanInput({ type: 'mouse', action: 'up', x: 250, y: 70, button: 'left', clickCount: 1 });

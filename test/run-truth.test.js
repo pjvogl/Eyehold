@@ -2,7 +2,7 @@
    terminal" escape, twice user-visible).
 
    The escape, both rounds: the app asserted a per-agent WORKING state the harness could not prove.
-   Round 1 — stationui's runningAgents was a bare event counter (no TTL, no reconcile): a lost
+   Round 1 — keepui's runningAgents was a bare event counter (no TTL, no reconcile): a lost
    agent.run.end stuck the crew manifest at "working at the terminal" while the sprite honestly idled.
    Round 2 — three residual holes: the TTL sweep was AGENT-keyed (one leaked runId on a busy agent
    never staled), the snapshot reconcile fired only on SSE reopen (a lost end inside a healthy link
@@ -11,7 +11,7 @@
 
    THE LAW these asserts pin: any UI asserting per-agent run state must read World's truth-netted
    refcount (event-fed + per-run TTL swept + 30s snapshot reconciled), never a bare event counter.
-   stationui/world are not headless-loadable, so these are source-level locks (same convention as
+   keepui/world are not headless-loadable, so these are source-level locks (same convention as
    test/consent-visibility.test.js / settings-p1-backend.test.js). */
 'use strict';
 const A = require('./_assert.js');
@@ -19,12 +19,12 @@ const fs = require('fs');
 const path = require('path');
 const F = p => fs.readFileSync(path.join(__dirname, '..', p), 'utf8');
 
-const sui = F('frontend/app/stationui.js');
+const sui = F('frontend/app/keepui.js');
 const wld = F('frontend/app/world.js');
 
-/* ---------- 1 · stationui: ONE predicate, deferring to World's truth-netted refcount ---------- */
+/* ---------- 1 · keepui: ONE predicate, deferring to World's truth-netted refcount ---------- */
 {
-  A.ok(/function agentLive\(id\)/.test(sui), 'stationui: the single agentLive(id) predicate exists');
+  A.ok(/function agentLive\(id\)/.test(sui), 'keepui: the single agentLive(id) predicate exists');
   const body = (sui.split('function agentLive(id)')[1] || '').slice(0, 1200);
   A.ok(/World\.agentRunsLive/.test(body), 'agentLive: consults World.agentRunsLive (the truth-netted refcount)');
   A.ok(/return worldN > 0/.test(body), 'agentLive: an untracked agent lights when the WORLD proves a live run (reconnect-mid-run inverse lie)');
@@ -32,7 +32,7 @@ const wld = F('frontend/app/world.js');
   A.ok(/runSeenAt/.test(body), 'agentLive: the veto honors a start-grace (same-emit listener order must not flash idle)');
   // every consumer reads the predicate — a bare .has() outside agentLive is the round-1 bug reborn
   const bareHas = sui.split('runningAgents.has(').length - 1;
-  A.eq(bareHas, 1, 'stationui: runningAgents.has() appears ONLY inside agentLive (found ' + bareHas + ' use(s)) — all consumers go through the predicate');
+  A.eq(bareHas, 1, 'keepui: runningAgents.has() appears ONLY inside agentLive (found ' + bareHas + ' use(s)) — all consumers go through the predicate');
   A.ok(/const live = agentLive\(a\.id\)/.test(sui), 'crewTick: the crew manifest row reads agentLive');
   A.ok(/isAgentRunning:\s*\(id\)\s*=>\s*agentLive\(id\)/.test(sui), 'export: isAgentRunning (warroom dots) is agentLive');
 }

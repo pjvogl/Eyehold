@@ -30,11 +30,11 @@ const AuthoredFurnitureMotion=(()=>{
         if(hit){if(raw.data[i])selected++;raw.data[i]=0;}else moving.data[i]=0;
       }
       if(!selected)return false;
-      const stationary=make(width,height),part=make(width,height);
-      for(const [canvas,data]of [[stationary,raw],[part,moving]]){
+      const keepary=make(width,height),part=make(width,height);
+      for(const [canvas,data]of [[keepary,raw],[part,moving]]){
         const g=canvas.getContext('2d');if(!g)return false;sg.putImageData(data,0,0);g.imageSmoothingEnabled=true;g.imageSmoothingQuality='high';g.drawImage(source,0,0,width,height);
       }
-      const config=JSON.parse(JSON.stringify(c));entries.set(id,{config,original,stationary,part,cost,selected});
+      const config=JSON.parse(JSON.stringify(c));entries.set(id,{config,original,keepary,part,cost,selected});
       cachedPixels+=cost-(previous?previous.cost:0);return true;
     }catch(_){return false;}
   }
@@ -64,7 +64,7 @@ const AuthoredFurnitureMotion=(()=>{
     try{
       ctx.imageSmoothingEnabled=true;ctx.imageSmoothingQuality='high';ctx.globalCompositeOperation='source-over';
       if(Math.abs(angle)<1e-10){ctx.drawImage(e.original,s.x,s.y,s.width,s.height);return true;}
-      ctx.drawImage(e.stationary,s.x,s.y,s.width,s.height);
+      ctx.drawImage(e.keepary,s.x,s.y,s.width,s.height);
       const px=s.x+e.config.pivot[0]*s.width,py=s.y+e.config.pivot[1]*s.height;ctx.translate(px,py);ctx.rotate(angle);
       ctx.drawImage(e.part,s.x-px,s.y-py,s.width,s.height);return true;
     }catch(_){return false;}finally{ctx.restore();}

@@ -1,17 +1,17 @@
 {
-  "schema": "starnet.intel-macos-installed-acceptance.v1",
+  "schema": "eyehold.intel-macos-installed-acceptance.v1",
   "generatedAt": "2026-09-20T00:49:26.351545+00:00",
   "machine": {
     "architecture": "x86_64",
     "runner": "macos-15-intel"
   },
   "artifact": {
-    "path": "StarNet_0.12.3_x64.dmg",
+    "path": "Eyehold_0.12.3_x64.dmg",
     "sha256": "97668c40c4305167f384f3013fa44b3ff9f13c5f35c3557238a1d3bea173d03c",
     "notarizedRequired": true
   },
   "install": {
-    "path": "/Applications/StarNet.app",
+    "path": "/Applications/Eyehold.app",
     "finderLaunch": true,
     "sidecarListening": true,
     "portObserved": true

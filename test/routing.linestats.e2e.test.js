@@ -70,7 +70,7 @@ function startMockOpenRouter(script) {
 function boot(port, env, attemptsLeft) {
   return new Promise((resolve, reject) => {
     const child = spawn(process.execPath, [INDEX], {
-      env: Object.assign({}, process.env, env, { SKYNET_PORT: String(port), STARNET_PORT: String(port) }),
+      env: Object.assign({}, process.env, env, { EYEHOLD_PORT: String(port), EYEHOLD_PORT: String(port) }),
       stdio: ['ignore', 'pipe', 'pipe']
     });
     let out = '', settled = false;
@@ -122,18 +122,18 @@ function twoStagePlan() {
   const ws = fs.mkdtempSync(path.join(os.tmpdir(), 'sk-linestats-'));
   const hermes = fs.mkdtempSync(path.join(os.tmpdir(), 'sk-linestats-hermes-'));
   const env = {
-    SKYNET_WORKSPACES: ws, STARNET_WORKSPACES: ws, HERMES_HOME: hermes,
-    STARNET_DEV: '', SKYNET_DEV: '',
-    SKYNET_OPENROUTER_BASE: mock.base,
-    SKYNET_OPENROUTER_KEY: 'sk-or-v1-linestats-fake',
-    SKYNET_DEFAULT_MODEL: 'test/model'
+    EYEHOLD_WORKSPACES: ws, EYEHOLD_WORKSPACES: ws, HERMES_HOME: hermes,
+    EYEHOLD_DEV: '', EYEHOLD_DEV: '',
+    EYEHOLD_OPENROUTER_BASE: mock.base,
+    EYEHOLD_OPENROUTER_KEY: 'sk-or-v1-linestats-fake',
+    EYEHOLD_DEFAULT_MODEL: 'test/model'
   };
   const { child, port } = await boot(9220 + (process.pid % 40), env, 20);
   const B = 'http://' + HOST + ':' + port;
   try {
     const token = await bootToken(B, B);
     A.ok(token.length >= 32, 'got a session API token');
-    const headers = { 'Content-Type': 'application/json', 'X-StarNet-Token': token, Origin: B };
+    const headers = { 'Content-Type': 'application/json', 'X-Eyehold-Token': token, Origin: B };
     const call = (method, p, body) => fetch(B + p, { method, headers, body: body === undefined ? undefined : JSON.stringify(body) })
       .then(r => r.text().then(t => { let j = null; try { j = JSON.parse(t); } catch (_) { j = null; } return { status: r.status, j }; }));
     const t0 = Date.now() - 1;

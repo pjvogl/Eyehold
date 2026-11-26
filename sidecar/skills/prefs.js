@@ -1,7 +1,7 @@
 /* sidecar/skills/prefs.js — persistence of the user's ENABLE/DISABLE choices for bundled library skills.
 
    Append-only JSONL folded to latest-per-slug — same discipline as skillstore.js (the host owns the fsync'd disk
-   append via an injected `io`). STATION-WIDE: a choice applies to every agent. Per-AGENT availability is NOT here
+   append via an injected `io`). KEEP-WIDE: a choice applies to every agent. Per-AGENT availability is NOT here
    — that's the capability gate (catalog.isAvailable, derived from placed objects), kept deliberately separate so
    "is this recipe turned on" and "can this desk run it" stay orthogonal. Fail-open: a persistence hiccup never
    crashes a run; the in-memory mirror still answers. PURE given io+clock (no Date/Math.random/fs of its own). */

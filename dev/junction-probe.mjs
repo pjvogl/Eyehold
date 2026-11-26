@@ -5,13 +5,13 @@ let proc,cdp;
 try{
   ({proc}=launchChrome({cdpPort:9352,profileDir:'.worldshots/junction-profile'}));cdp=await connectCDP(9352);
   await cdp.send('Page.enable');await cdp.send('Page.navigate',{url:'http://127.0.0.1:9177/'});
-  for(let i=0;i<60;i++){if(await evalJS(cdp,"typeof StationBake!=='undefined'&&typeof WorldModel!=='undefined'"))break;await sleep(200);}
-  const doc=JSON.parse(readFileSync('dev/.scratch-workspace/agent.save.json','utf8')).doc.station;
-  const old=execFileSync('git',['show','14f7ac19a:frontend/app/stationbake.js'],{encoding:'utf8'});
+  for(let i=0;i<60;i++){if(await evalJS(cdp,"typeof KeepBake!=='undefined'&&typeof WorldModel!=='undefined'"))break;await sleep(200);}
+  const doc=JSON.parse(readFileSync('dev/.scratch-workspace/agent.save.json','utf8')).doc.keep;
+  const old=execFileSync('git',['show','14f7ac19a:frontend/app/keepbake.js'],{encoding:'utf8'});
   const result=await evalJS(cdp,`(()=>{
     const geo=WorldModel.create(${JSON.stringify(doc)}).projectGeometry();
-    const prior=new Function(${JSON.stringify(old)}+';return StationBake;')();
-    const a=prior.bake(geo),b=StationBake.bake(geo);
+    const prior=new Function(${JSON.stringify(old)}+';return KeepBake;')();
+    const a=prior.bake(geo),b=KeepBake.bake(geo);
     const pixels=c=>c.getContext('2d').getImageData(0,0,c.width,c.height).data;
     const expected=[];
     for(const [ax,ay,bx,by] of geo.doorDefs){
@@ -34,7 +34,7 @@ try{
       if(!placed.ok)throw Error('Hallway fixture failed');
       const g=s.projectGeometry(),r=g.allRects.find(r=>g.isCorridor(r.z)),x=r.x1*12,Y=(r.y2+1)*12;
       const walkBefore=g.canStep(r.x1,r.y2,r.x1,r.y2+1);
-      const before=prior.bake(g),after=StationBake.bake(g),bp=pixels(before.interiorCv),ap=pixels(after.interiorCv);
+      const before=prior.bake(g),after=KeepBake.bake(g),bp=pixels(before.interiorCv),ap=pixels(after.interiorCv);
       const alpha=(p,px,py)=>p[(py*after.interiorCv.width+px)*4+3];
       const recovered=alpha(ap,x-3,Y-20),oldReceiver=alpha(bp,x-3,Y-20);
       const centre=Math.floor(x+width*6),centreAlpha=alpha(pixels(after.baseCv),centre,Y);
@@ -43,7 +43,7 @@ try{
     }
     const render=bake=>{const b=bake.bake(geo),c=document.createElement('canvas');c.width=600;c.height=650;
       const g=c.getContext('2d');g.fillStyle='#0a111a';g.fillRect(0,0,c.width,c.height);g.imageSmoothingEnabled=false;g.scale(5,5);g.translate(-600,-550);g.drawImage(b.baseCv,0,0);g.drawImage(b.lightCv,0,0);return c.toDataURL().split(',')[1];};
-    return {before:render(prior),after:render(StationBake),report:{outsideChanges,totalChanges,matrix}};
+    return {before:render(prior),after:render(KeepBake),report:{outsideChanges,totalChanges,matrix}};
   })()`);
   for(const name of ['before','after'])writeFileSync('.worldshots/junction-'+name+'.png',Buffer.from(result[name],'base64'));
   console.log(JSON.stringify(result.report));

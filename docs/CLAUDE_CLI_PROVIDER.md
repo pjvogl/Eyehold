@@ -1,7 +1,7 @@
 # Claude Code provider (`claude-cli`)
 
-StarNet can use the **Claude Code CLI already installed on this computer** (`claude`) as an agent's brain,
-with whatever Claude account or API key that CLI is signed in with. No key is stored in StarNet.
+Eyehold can use the **Claude Code CLI already installed on this computer** (`claude`) as an agent's brain,
+with whatever Claude account or API key that CLI is signed in with. No key is stored in Eyehold.
 Implementation: `sidecar/providers/claude-cli.js` (adapter), a `claude-cli` profile in
 `sidecar/providers/registry.js`, one adapter case in `sidecar/providers/factory.js`; the Connect-a-brain tile and
 Settings card are labelled **CLAUDE CODE** and are keyless: the CLI's own sign-in is the credential.
@@ -13,16 +13,16 @@ Settings card are labelled **CLAUDE CODE** and are keyless: the CLI's own sign-i
   itself every 5 s so installing flips it without a restart.
 - Signed in — see **Sign in** below (or an `ANTHROPIC_API_KEY` the CLI can see).
 - The sidecar finds `claude` on `PATH`, then `%USERPROFILE%\.local\bin\claude.exe` on Windows. An npm
-  `claude.cmd` shim is run as `node <…>/@anthropic-ai/claude-code/cli.js`. Override with `STARNET_CLAUDE_BIN`.
+  `claude.cmd` shim is run as `node <…>/@anthropic-ai/claude-code/cli.js`. Override with `EYEHOLD_CLAUDE_BIN`.
 
 ## Sign in (SIGN IN WITH CLAUDE)
 
-StarNet never holds the Claude credential. `sidecar/providers/claude-cli-login.js` runs the user's own
+Eyehold never holds the Claude credential. `sidecar/providers/claude-cli-login.js` runs the user's own
 `claude auth login --claudeai` (it works with no terminal attached): the CLI opens the browser, finishes OAuth and
 stores the token in its own credential store. Routes: `GET /api/auth/claude-cli/status`,
 `POST /api/auth/claude-cli/{start,poll,code,cancel}`.
 
-- The brain-screen tile (app.js) and the Settings → PROVIDERS card (stationui.js, via `ClaudeCliSignIn` in
+- The brain-screen tile (app.js) and the Settings → PROVIDERS card (keepui.js, via `ClaudeCliSignIn` in
   codexsignin.js) show: not installed · signed out (⏼ SIGN IN) · signing in (↗ OPEN SIGN-IN PAGE, a paste box for the
   code the fallback page shows — relayed to the CLI's stdin, never logged — and CANCEL, which kills the child) ·
   signed in, **only** once `claude auth status` proves it.
@@ -39,14 +39,14 @@ claude -p --output-format stream-json --verbose --include-partial-messages
        --tools "" --strict-mcp-config --mcp-config {"mcpServers":{}}
        --disable-slash-commands --setting-sources "" --no-session-persistence
        --model <sonnet|opus|haiku> [--effort <level>] --system-prompt-file <tmp file>
-# env: the station-free child env (child-env.js) + CLAUDE_CODE_DISABLE_AUTO_MEMORY=1
+# env: the keep-free child env (child-env.js) + CLAUDE_CODE_DISABLE_AUTO_MEMORY=1
 ```
 
 - The leading system messages go to a temporary system-prompt file (deleted after the turn); the transcript goes
   on stdin. `text_delta` stream events become `text` events.
 - **Every CLI tool is off** (built-ins, MCP connectors, skills, settings, session file). The CLI never acts on
   the machine by itself.
-- StarNet's own tools are described in the system prompt. The model asks for one with
+- Eyehold's own tools are described in the system prompt. The model asks for one with
   `<tool_call>{"name": …, "arguments": {…}}</tool_call>`; the adapter turns each block into
   `tool_start` / `tool_args` / `tool_done`, so `loop.js` runs it through the normal capability gate and consent
   broker. Results return on the next turn as `<tool_result>` blocks.

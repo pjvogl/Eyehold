@@ -66,7 +66,7 @@ function startProvider() {
           return res.end(anthropicSse([
             // 140k > 65% of Anthropic's 200k default context: the next loop iteration must compact.
             { type: 'message_start', message: { usage: { input_tokens: 140000, output_tokens: 0 } } },
-            { type: 'content_block_start', index: 0, content_block: { type: 'tool_use', id: 'inspect_1', name: 'station_inspect', input: {} } },
+            { type: 'content_block_start', index: 0, content_block: { type: 'tool_use', id: 'inspect_1', name: 'keep_inspect', input: {} } },
             { type: 'content_block_delta', index: 0, delta: { type: 'input_json_delta', partial_json: '{}' } },
             { type: 'content_block_stop', index: 0 },
             { type: 'message_delta', delta: { stop_reason: 'tool_use' }, usage: { output_tokens: 4 } },
@@ -99,14 +99,14 @@ async function eventsOf(response) {
 (async () => {
   const provider = await startProvider();
   const sidecar = SidecarFixture.create({
-    prefix: 'starnet-provider-recovery-',
+    prefix: 'eyehold-provider-recovery-',
     env: {
       // The request supplies both credentials and the loopback base URL. Clear ambient credentials so no
       // unrelated background path can escape the fixture.
       OPENROUTER_KEY: '', OPENROUTER_API_KEY: '', ANTHROPIC_API_KEY: '',
-      SKYNET_BUDGET_PER_RUN: '10', SKYNET_BUDGET_PER_AGENT: '0',
-      SKYNET_BUDGET_PER_DAY: '0.30', SKYNET_BUDGET_GLOBAL: '0',
-      SKYNET_EDGE_TTS: '0', STARNET_EDGE_TTS: '0'
+      EYEHOLD_BUDGET_PER_RUN: '10', EYEHOLD_BUDGET_PER_AGENT: '0',
+      EYEHOLD_BUDGET_PER_DAY: '0.30', EYEHOLD_BUDGET_GLOBAL: '0',
+      EYEHOLD_EDGE_TTS: '0', EYEHOLD_EDGE_TTS: '0'
     }
   });
   const ws = sidecar.workspace;
@@ -121,7 +121,7 @@ async function eventsOf(response) {
   const token = sidecar.token;
   const api = async (method, route, body) => fetch(base + route, {
     method,
-    headers: Object.assign({ 'Content-Type': 'application/json' }, token ? { 'X-StarNet-Token': token } : {}),
+    headers: Object.assign({ 'Content-Type': 'application/json' }, token ? { 'X-Eyehold-Token': token } : {}),
     body: body === undefined ? undefined : JSON.stringify(body)
   });
 
@@ -134,7 +134,7 @@ async function eventsOf(response) {
 
     const history = [];
     for (let i = 0; i < 8; i++) history.push({ role: i % 2 ? 'assistant' : 'user', content: 'history turn ' + i + ' with enough content to fold' });
-    history.push({ role: 'user', content: 'finish this after inspecting the station' });
+    history.push({ role: 'user', content: 'finish this after inspecting the keep' });
     const request = {
       provider: 'anthropic', model: 'claude-test', key: PRIMARY, keyPool: [BACKUP],
       baseUrl: provider.baseUrl, internal: true, isTask: false, messages: history

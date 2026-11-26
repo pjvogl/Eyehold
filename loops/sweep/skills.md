@@ -1,7 +1,7 @@
 # SWEEP · skills — skills, recipes, routines, the guard, the marketplace
 
 Read `loops/sweep/README.md` first; it carries the protocol. Surface key: `skills`.
-**Rank 6 of 10** — this surface accepts content from outside the station and hands it to a
+**Rank 6 of 10** — this surface accepts content from outside the keep and hands it to a
 model, which makes it the one place a content bug becomes a security bug.
 
 ## What you own

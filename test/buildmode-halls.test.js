@@ -1,24 +1,24 @@
-/* test/buildmode-halls.test.js — Build Mode keeps the hallway rule the station builder keeps (sweep 2026-10-02).
+/* test/buildmode-halls.test.js — Build Mode keeps the hallway rule the keep builder keeps (sweep 2026-10-02).
 
-   A hallway joins two rooms. The station builder refuses an edit that leaves one leading nowhere (strandedHalls), but Build
+   A hallway joins two rooms. The keep builder refuses an edit that leaves one leading nowhere (strandedHalls), but Build
    Mode's own room MOVE / nudge / RESIZE / DELETE went straight to the world model and stranded hallways freely. build.js now
    runs each of them through keepsHalls: the edit happens inside one transact, a hallway it newly strands rolls it back, and a
-   hallway already stranded before is not its doing. This drives that exact rule against a real station. */
+   hallway already stranded before is not its doing. This drives that exact rule against a real keep. */
 'use strict';
 const A = require('./_assert.js');
 const fs = require('fs');
 const path = require('path');
 const WM = require('../frontend/app/worldmodel.js');
-const SB = require('../frontend/app/stationbuilder.js');
+const SB = require('../frontend/app/keepbuilder.js');
 
-A.ok(typeof SB.strandedHalls === 'function', 'StationBuilder exports strandedHalls');
+A.ok(typeof SB.strandedHalls === 'function', 'KeepBuilder exports strandedHalls');
 
-// the same wrapper build.js runs (keepsHalls), against a real station
-function keepsHalls(station, op) {
-  const before = new Set(SB.strandedHalls(station));
-  return station.transact(() => {
+// the same wrapper build.js runs (keepsHalls), against a real keep
+function keepsHalls(keep, op) {
+  const before = new Set(SB.strandedHalls(keep));
+  return keep.transact(() => {
     const r = op(); if (!r || !r.ok) return r;
-    const now = SB.strandedHalls(station).filter(id => !before.has(id));
+    const now = SB.strandedHalls(keep).filter(id => !before.has(id));
     if (!now.length) return r;
     return { ok: false, error: 'STRANDS_HALL' };
   });
@@ -61,8 +61,8 @@ function fresh() {
 
 // Build Mode runs all four room edits through keepsHalls
 const src = fs.readFileSync(path.join(__dirname, '..', 'frontend', 'app', 'build.js'), 'utf8');
-A.ok(/function keepsHalls\(op\) \{[\s\S]{0,400}StationBuilder\.strandedHalls\(station\)[\s\S]{0,300}error: 'STRANDS_HALL'/.test(src), 'build.js has the hallway guard');
-for (const [what, re] of [['delete', /keepsHalls\(\(\) => station\.removeRoom\(roomId\)\)/], ['drag move', /keepsHalls\(\(\) => station\.moveRoom\(d\.roomId, s\.dx, s\.dy\)\)/],
-  ['nudge', /keepsHalls\(\(\) => station\.moveRoom\(rm\.id, dx, dy\)\)/], ['resize', /keepsHalls\(\(\) => station\.resizeRoom\(rm\.id, nr\)\)/]]) A.ok(re.test(src), 'Build Mode ' + what + ' keeps the hallway rule');
+A.ok(/function keepsHalls\(op\) \{[\s\S]{0,400}KeepBuilder\.strandedHalls\(keep\)[\s\S]{0,300}error: 'STRANDS_HALL'/.test(src), 'build.js has the hallway guard');
+for (const [what, re] of [['delete', /keepsHalls\(\(\) => keep\.removeRoom\(roomId\)\)/], ['drag move', /keepsHalls\(\(\) => keep\.moveRoom\(d\.roomId, s\.dx, s\.dy\)\)/],
+  ['nudge', /keepsHalls\(\(\) => keep\.moveRoom\(rm\.id, dx, dy\)\)/], ['resize', /keepsHalls\(\(\) => keep\.resizeRoom\(rm\.id, nr\)\)/]]) A.ok(re.test(src), 'Build Mode ' + what + ' keeps the hallway rule');
 
 A.report('buildmode-halls.test');

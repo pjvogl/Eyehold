@@ -1,4 +1,4 @@
-/* sidecar/slash.js -- StarNet slash-command registry.
+/* sidecar/slash.js -- Eyehold slash-command registry.
 
    Pure command metadata + resolution. The sidecar owns the catalog so every UI surface can discover
    the same commands, while the browser still executes local view actions such as retry/stop/copy. */
@@ -56,7 +56,7 @@ const BUILTIN_COMMANDS = Object.freeze([
   Object.freeze({
     name: 'usage',
     category: 'Info',
-    desc: 'show real spend from the station ledger',
+    desc: 'show real spend from the keep ledger',
     action: 'usage',
     dispatch: 'server'
   }),
@@ -106,7 +106,7 @@ const BUILTIN_COMMANDS = Object.freeze([
   Object.freeze({
     name: 'save',
     category: 'Session',
-    desc: 'save the current station state',
+    desc: 'save the current keep state',
     action: 'save'
   }),
   Object.freeze({
@@ -307,7 +307,7 @@ const BUILTIN_COMMANDS = Object.freeze([
     name: 'version',
     aliases: ['v'],
     category: 'Info',
-    desc: 'show StarNet version information',
+    desc: 'show Eyehold version information',
     action: 'version'
   })
 ]);

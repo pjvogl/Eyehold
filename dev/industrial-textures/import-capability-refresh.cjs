@@ -1,7 +1,7 @@
 'use strict';
 // Import generated art without changing retained RGBA pixels or native footprints.
 const fs=require('node:fs'),sharp=require('sharp'),crypto=require('node:crypto');
-const root='frontend/assets/industrial/capability-refresh',docs='docs/station-remaster/capability-refresh';
+const root='frontend/assets/industrial/capability-refresh',docs='docs/keep-remaster/capability-refresh';
 const hash=b=>crypto.createHash('sha256').update(b).digest('hex');
 (async()=>{
  fs.mkdirSync(root+'/sources',{recursive:true});fs.mkdirSync(root+'/before',{recursive:true});
@@ -30,7 +30,7 @@ const hash=b=>crypto.createHash('sha256').update(b).digest('hex');
   records.push({id,view:'s',source,before,sourceSha256:hash(bytes),repoPath,outputSha256:hash(output),sourceCrop,sourceWidth:sourceCrop.width,sourceHeight:sourceCrop.height,footprint:v.footprint,bounds:v.bounds,exposure:1,contact:{x:.5,y:(foot+1-t)/sourceCrop.height},retained,verification:{genuineAlpha:true,rgbaMismatches:mismatches,worldSize:[+(sourceCrop.width*fit).toFixed(2),+(sourceCrop.height*fit).toFixed(2)],pixelsPerWorldPixel:+(1/fit).toFixed(2)},status:'generated redesign; live review pending'});
  }
  fs.writeFileSync(docs+'/integration.json',JSON.stringify({records},null,2)+'\n');
- const gp='docs/station-remaster/projection-correction/catalog-groups.json',groups=JSON.parse(fs.readFileSync(gp));
+ const gp='docs/keep-remaster/projection-correction/catalog-groups.json',groups=JSON.parse(fs.readFileSync(gp));
  groups.groups=groups.groups.filter(g=>g.name!=='capability-refresh');groups.groups.push({name:'capability-refresh',file:docs+'/integration.json'});fs.writeFileSync(gp,JSON.stringify(groups,null,2)+'\n');
  console.log(records.map(r=>({id:r.id,pixels:[r.sourceWidth,r.sourceHeight],world:r.verification.worldSize,alpha:r.verification.genuineAlpha})));
 })().catch(e=>{console.error(e);process.exitCode=1;});

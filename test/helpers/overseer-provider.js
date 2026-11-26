@@ -27,7 +27,7 @@ async function startOverseerProvider(options = {}) {
     else if (String(user && user.content).includes('WORKER_PROOF')) { await sleep(options.workerDelay || 800); send({ content: 'WORKER_FINDINGS: two verified observations.' }); }
     else if (String(user && user.content).startsWith('Review the project brief and identify')) { await sleep(options.workerDelay || 800); send({ content: 'The project needs a clear audience and a small first milestone. Start with the core workflow, then test it with one user.' }); }
     else if (system.includes('[PROJECT WORKSPACE]')) {
-      if (!tools.includes('brief_proceed')) call('brief_proceed', { objective: 'Review this project with the station crew', deliverable: 'A concise project recommendation' });
+      if (!tools.includes('brief_proceed')) call('brief_proceed', { objective: 'Review this project with the keep crew', deliverable: 'A concise project recommendation' });
       else if (!tools.includes('team_dispatch')) call('team_dispatch', { workers: [{ agentId: workerId, prompt: 'Review the project brief and identify the two most useful next steps.' }], background: true });
       else send({ content: 'I’ve asked the crew to review the project. You can keep talking here while they work.' });
     }

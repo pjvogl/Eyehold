@@ -10,7 +10,7 @@ Failures are returned by subsystem with HTTP 503 and ok:false. The endpoint does
 write the autonomy posture, workshop grants, cron arm intent or individual job settings.
 Existing stopped conversations and individually paused jobs remain individually controlled.
 
-System now contains a stop/resume toggle. A stopped station exposes Resume Automation
+System now contains a stop/resume toggle. A stopped keep exposes Resume Automation
 in the top bar after boot. Hydration and polling only read. Every action re-reads all
 three backend flags before reporting success; partial failures stay visible in System.
 The retired stop-only hotkey remains absent. Desktop and website source mirrors agree.
@@ -32,7 +32,7 @@ This is a real sidecar and real frontend; the HTTP endpoints were not mocked.
    GET /api/halt showed cron:false, nightshift:false, loops:true. No success toast.
 5. Restored that scratch file, clicked Resume in System, and verified the recovery control
    disappeared and System returned to STOP AUTOMATION. No production data was changed.
-6. Computed styles showed the System control using the station palette (background
+6. Computed styles showed the System control using the keep palette (background
    rgb(12,7,4), border rgb(185,121,28)); hidden recovery/retry controls had display:none.
    This caught and fixed the existing .bb display rule overriding the hidden attribute.
 

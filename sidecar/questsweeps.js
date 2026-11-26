@@ -5,9 +5,9 @@
    live" or "does this committed memory cover that fact" — and this module
    holds it as pure, node-testable functions so sidecar/index.js only wires call sites (composition-root law).
 
-   The three real sweeps (each caller passes questStore.openForAgent(agentId) — its own + station-wide quests):
+   The three real sweeps (each caller passes questStore.openForAgent(agentId) — its own + keep-wide quests):
 
-     • prop     — livePropKeys(quests, agentId, station, resolved): the run-admission seam is where the sidecar
+     • prop     — livePropKeys(quests, agentId, keep, resolved): the run-admission seam is where the sidecar
                   PROVES a capability is live — resolveTools projects the placed office into real grants, fresh
                   every run. A prop key may name a placeable objectType (dish/cabinet/workbench/…), a capId
                   family (web/cabinet/workbench/…), a resolved tool name (covers live MCP connector tools), or
@@ -30,7 +30,7 @@
                   shift builds ride the same runOnce host, so their manifests land under the same sweep.
 
    PURE: no fs / clock / rng / network (lint-determinism.js scans sidecar/). Every function is defensive about
-   its inputs (junk quests/absent fields never throw) and re-checks visibility (open + own-or-station-wide)
+   its inputs (junk quests/absent fields never throw) and re-checks visibility (open + own-or-keep-wide)
    rather than trusting the caller's read. */
 'use strict';
 
@@ -39,7 +39,7 @@ const MIN_FACT_KEY = 4;   // a normalized fact key shorter than this can never s
 // normalized comparison key: lowercase, collapse whitespace, trim (the quest-store normTitle idiom).
 function norm(s) { return String(s == null ? '' : s).toLowerCase().replace(/\s+/g, ' ').trim(); }
 
-// is this quest open with a contract of `type`, and visible to `agentId` (its own or station-wide)?
+// is this quest open with a contract of `type`, and visible to `agentId` (its own or keep-wide)?
 function openFor(q, type, agentId) {
   return !!(q && q.status === 'open' && q.contract && q.contract.type === type
     && (q.agentId == null || q.agentId === String(agentId == null ? '' : agentId)));
@@ -48,13 +48,13 @@ function openFor(q, type, agentId) {
 // ---- prop: which open prop-contract keys does THIS run's resolved capability set prove live? ----
 // live vocabulary = placed objectTypes in the agent's room + resolved capId families + resolved tool names
 // (+ 'compute' when the gate is open). Returns the ORIGINAL contract keys (completeByContract is exact-key).
-function livePropKeys(quests, agentId, station, resolved) {
+function livePropKeys(quests, agentId, keep, resolved) {
   const live = new Set();
   try {
-    const agent = station && station.agents && station.agents[String(agentId == null ? '' : agentId)];
-    const room = agent && station.rooms && station.rooms[agent.room];
+    const agent = keep && keep.agents && keep.agents[String(agentId == null ? '' : agentId)];
+    const room = agent && keep.rooms && keep.rooms[agent.room];
     for (const o of ((room && room.objects) || [])) { const t = norm(o && o.objectType); if (t) live.add(t); }
-  } catch (_) { /* a malformed station proves nothing — never throws */ }
+  } catch (_) { /* a malformed keep proves nothing — never throws */ }
   for (const g of ((resolved && resolved.grants) || [])) { const c = norm(g && g.capId); if (c) live.add(c); }
   for (const t of ((resolved && resolved.tools) || [])) { const n = norm(t); if (n) live.add(n); }
   if (resolved && resolved.hasCompute) live.add('compute');

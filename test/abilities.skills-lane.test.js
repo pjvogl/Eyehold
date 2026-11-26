@@ -9,7 +9,7 @@ const path = require('path');
 const vm = require('vm');
 const A = require('./_assert.js');
 
-const source = fs.readFileSync(path.join(__dirname, '../frontend/app/stationui.js'), 'utf8');
+const source = fs.readFileSync(path.join(__dirname, '../frontend/app/keepui.js'), 'utf8');
 const laneMatch = source.match(/function abilitySkillsLane\(body\) \{[\s\S]*?\n  \}\n  window\.AbilityLanes/);
 A.ok(laneMatch, 'the ABILITIES Skills lane is present');
 
@@ -49,7 +49,7 @@ async function checkAvailability() {
     const host = { innerHTML:'', closest:() => null };
     vm.runInNewContext(loader + '\nloadSkillLibrary("agent");', {
       $: () => host, Harness:{api:{get:async () => view}},
-      World:{heroCaps:() => [],stationCaps:() => shared.map(objectType => ({objectType}))},
+      World:{heroCaps:() => [],keepCaps:() => shared.map(objectType => ({objectType}))},
       fetch:async url => { requested = url; return {ok:true,json:async () => ({skills:[]})}; },
       renderSkillLibrary:(_host,_skills,_id,placed) => { rendered = Array.from(placed); },
       requestAnimationFrame:() => {}, encodeURIComponent
@@ -60,9 +60,9 @@ async function checkAvailability() {
   const full = await run(effectiveToolsets({fullAccess:true}));
   A.ok(full.rendered.includes('cabinet') && full.requested.includes('cabinet'), 'Full Access projects FILES into skill availability without a placed cabinet');
   const profile = await run(effectiveToolsets({agent:{executionProfile:'safe-cell',approvalMode:'ask'}}), ['dish']);
-  A.ok(profile.rendered.includes('cabinet') && profile.rendered.includes('dish'), 'profile objects and shared station gear follow the runtime skill context');
-  const restricted = await run(effectiveToolsets({agent:{executionProfile:'station-gear',approvalMode:'ask'}}));
-  A.ok(!restricted.rendered.includes('cabinet'), 'restricted station without FILES does not invent that ability');
+  A.ok(profile.rendered.includes('cabinet') && profile.rendered.includes('dish'), 'profile objects and shared keep gear follow the runtime skill context');
+  const restricted = await run(effectiveToolsets({agent:{executionProfile:'keep-gear',approvalMode:'ask'}}));
+  A.ok(!restricted.rendered.includes('cabinet'), 'restricted keep without FILES does not invent that ability');
   const unavailable = await run(null);
   A.eq(unavailable.requested, '', 'unavailable authority never produces a guessed skill query');
   A.ok(unavailable.host.innerHTML.includes('Could not load'), 'unavailable authority renders recovery instead of missing-prop advice');

@@ -28,8 +28,8 @@ const COLS = Number(arg('cols', 7));
 const ONLY = (arg('skins', '') || '').split(',').filter(Boolean);   // spot-check a shortlist at a bigger scale
 
 const PLACE = `(() => {
-  const st = (typeof Build !== 'undefined' && Build.__test__) ? Build.__test__.station() : null;
-  if (!st) return { error: 'no live station (Build.__test__ unavailable)' };
+  const st = (typeof Build !== 'undefined' && Build.__test__) ? Build.__test__.keep() : null;
+  if (!st) return { error: 'no live keep (Build.__test__ unavailable)' };
   const b = st.bounds();
   const x1 = b.maxTx + 1, y1 = b.minTy + 1;
   const room = st.addRoom({ kind: 'hab', rects: [{ x1, y1, x2: x1 + 9, y2: y1 + 7 }] });
@@ -52,11 +52,11 @@ const SHOT = (skin, t, hero) => `(async () => {
   SPRITES.ensureSkin(set);
   for (let i = 0; i < 40 && !SPRITES.isSkinReady(set); i++) await new Promise(r => setTimeout(r, 100));
   World.setSkin(${JSON.stringify(hero)}, ${JSON.stringify(skin)});
-  const p = (Build.__test__.station().projectGeometry().props || []).find(q => q.t === ${JSON.stringify(t)});
+  const p = (Build.__test__.keep().projectGeometry().props || []).find(q => q.t === ${JSON.stringify(t)});
   if (!p) return { err: 'no prop' };
   const seated = World._dbgCouchSit(${JSON.stringify(hero)}, p.id);
   await new Promise(r => setTimeout(r, 900));
-  const geo = Build.__test__.station().projectGeometry(), T = geo.TILE, cam = World.cameraDbg();
+  const geo = Build.__test__.keep().projectGeometry(), T = geo.TILE, cam = World.cameraDbg();
   const g2 = (geo.props || []).find(q => q.t === ${JSON.stringify(t)});
   const cv = document.getElementById('stage');
   const PAD = 1.6;

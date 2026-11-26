@@ -138,7 +138,7 @@ async function fireAndSettle(s, reply) {
   {
     const s = setup({ stageBriefFor: (aid) => (aid === 'researcher' ? 'Dig three primary sources, cite them.' : null) });
     await fireAndSettle(s, 'stage one output');
-    A.eq(s.runs[0].opts.system, 'PERSONA\n\nYOUR STANDING BRIEF FOR THIS STATION:\nDig three primary sources, cite them.',
+    A.eq(s.runs[0].opts.system, 'PERSONA\n\nYOUR STANDING BRIEF FOR THIS KEEP:\nDig three primary sources, cite them.',
       "the entry run's system carries the dock's standing brief under the hub's exact section header");
     A.eq(s.runs[0].opts.messages[0].content, 'research the thing', 'the brief rides SYSTEM — the user message is untouched');
     A.eq(s.runs[0].opts.unattendedGrants, [], 'and a brief never smuggles grants');

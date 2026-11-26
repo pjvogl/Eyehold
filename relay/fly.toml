@@ -1,7 +1,7 @@
-# StarNet Remote relay — DEPLOYED 2026-09-30 as Fly app starnet-relay at https://remote.starnetos.com (DNS-only A/AAAA in
+# Eyehold Remote relay — DEPLOYED 2026-09-30 as Fly app eyehold-relay at https://remote.eyehold.com (DNS-only A/AAAA in
 # Cloudflare + a Fly cert). Deploy with --ha=false: the routing table lives in one process, so it must be ONE machine.
-# One small always-on machine: phones and stations hold WebSockets open, so nothing may auto-stop it.
-app = "starnet-relay"
+# One small always-on machine: phones and keeps hold WebSockets open, so nothing may auto-stop it.
+app = "eyehold-relay"
 primary_region = "iad"
 kill_signal = "SIGTERM"
 kill_timeout = 10
@@ -15,7 +15,7 @@ kill_timeout = 10
   auto_stop_machines = "off"
   auto_start_machines = false
   min_machines_running = 1
-  # count CONNECTIONS, not requests: every phone and station is one long-lived socket
+  # count CONNECTIONS, not requests: every phone and keep is one long-lived socket
   [http_service.concurrency]
     type = "connections"
     soft_limit = 4000

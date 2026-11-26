@@ -1,6 +1,6 @@
-/* STARNET — topbar.css : the TOPBAR INSTRUMENT CLUSTER.
+/* EYEHOLD — topbar.css : the TOPBAR INSTRUMENT CLUSTER.
    One coherent cockpit gauge group in #topbar, right of the logo:
-   STATION (level + XP sliver) · UPLINK · ONLINE · save.
+   KEEP (level + XP sliver) · UPLINK · ONLINE · save.
    Built in the premium CRT hardware language (recessed wells, hairline separators,
    small dim labels over bright values — the dossier stat-well vocabulary in a
    compact horizontal form). Additive layer over style.css/app.css/motion.css.
@@ -37,30 +37,30 @@
   text-shadow: 0 0 8px var(--ph-glow2); white-space: nowrap;
 }
 
-/* ---- STATION chip: keep its gold-ringed identity, add an XP progress sliver ---- */
-/* .tb-stat.station is styled in app.css (gold border + gold value + lvup pulse). We
+/* ---- KEEP chip: keep its gold-ringed identity, add an XP progress sliver ---- */
+/* .tb-stat.keep is styled in app.css (gold border + gold value + lvup pulse). We
    only add the XP sliver underneath and tighten the vertical layout to fit it. */
-#tb-station { position: relative; gap: 3px; }
-#tb-station .tb-xp {
-  /* a thin recessed groove: station XP toward the next level. Mirrors the ctx-gauge
+#tb-keep { position: relative; gap: 3px; }
+#tb-keep .tb-xp {
+  /* a thin recessed groove: keep XP toward the next level. Mirrors the ctx-gauge
      engraving language (dark groove, top inner-shadow, faint lower lip). */
   position: relative; width: 100%; min-width: 74px; height: 4px; border-radius: 2px; overflow: hidden;
   background: rgba(0,0,0,0.55);
   box-shadow: inset 0 1px 2px rgba(0,0,0,0.9), inset 0 -1px 0 rgba(255,255,255,0.05);
 }
-#tb-station .tb-xp-fill {
+#tb-keep .tb-xp-fill {
   display: block; height: 100%; width: 0%;
   background: var(--gold); box-shadow: 0 0 6px rgba(var(--gold-rgb),0.5);
   transition: width var(--t-slow, 400ms) var(--ease-out, ease);
 }
-/* level-up: the app.css .lvup pulse fires on #tb-station; give the sliver a matching
+/* level-up: the app.css .lvup pulse fires on #tb-keep; give the sliver a matching
    brief bright sweep (opacity only) so the whole chip celebrates as a unit. */
-#tb-station.lvup .tb-xp-fill { animation: tb-xp-pop 1.2s var(--ease-out, ease); }
+#tb-keep.lvup .tb-xp-fill { animation: tb-xp-pop 1.2s var(--ease-out, ease); }
 @keyframes tb-xp-pop { 0% { filter: brightness(2.2); } 100% { filter: brightness(1); } }
 
 /* ---- the moved-up STATUS group: UPLINK meter · ONLINE pill · save dot ----
    These carry their ORIGINAL ids (#sig / #status-pill / #save-dot) so their existing
-   writers (main.js save(), stationui.js tick()/flashSave()) keep working untouched.
+   writers (main.js save(), keepui.js tick()/flashSave()) keep working untouched.
    style.css / app.css already style #sig and #status-pill; we only lay them out here
    inside the topbar cluster (their own rules were written screen-agnostic). */
 #topbar .tb-status { display: flex; align-items: center; gap: 10px; flex: 0 0 auto; padding: 0 12px; }
@@ -90,7 +90,7 @@
   #topbar .tb-sep { margin: 0; }
 }
 /* extreme: the logo subtitle is already hidden by style.css here; keep only the core
-   STATION number + the ONLINE pill so nothing overflows. */
+   KEEP number + the ONLINE pill so nothing overflows. */
 @media (max-width: 860px) {
   #topbar #sig { display: none; }
 }
@@ -99,7 +99,7 @@
 @media (max-width: 600px) {
   #topbar { padding-inline: 8px; }
   #topbar #wr-top,
-  #topbar #tb-station,
+  #topbar #tb-keep,
   #topbar .tb-sep { display: none; }
   #topbar .tb-stats { flex: 0 0 auto; padding-inline: 6px; }
   #topbar .tb-status { gap: 4px; padding: 0; }
@@ -107,6 +107,6 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  #tb-station.lvup .tb-xp-fill,
-  #tb-station .tb-xp-fill { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+  #tb-keep.lvup .tb-xp-fill,
+  #tb-keep .tb-xp-fill { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
 }

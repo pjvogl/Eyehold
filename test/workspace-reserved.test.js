@@ -1,6 +1,6 @@
-/* node test/workspace-reserved.test.js — an agent id must never turn a station-owned directory into its jail.
+/* node test/workspace-reserved.test.js — an agent id must never turn a keep-owned directory into its jail.
 
-   The regression: agent jails are WORKSPACES/<agentId>/, and the station keeps credentials at undotted names
+   The regression: agent jails are WORKSPACES/<agentId>/, and the keep keeps credentials at undotted names
    under the same root (codex/tokens.json, channels/secrets.json, connectors/servicekeys.json, plugins/). A
    custom agent named "Codex" slugged to `codex`, so fs.read tokens.json handed that agent the ChatGPT OAuth
    tokens, and /api/file?agent=codex served them. Proven here against a REAL temp directory holding a canary. */
@@ -16,7 +16,7 @@ const { safeAgentId: envSafeAgentId } = require('../sidecar/environment.js');
 const { makePathTrust } = require('../sidecar/pathtrust.js');
 const AgentId = require('../frontend/app/agentid.js');
 
-const ROOT = path.join(os.tmpdir(), 'starnet-reserved-ws-' + process.pid);
+const ROOT = path.join(os.tmpdir(), 'eyehold-reserved-ws-' + process.pid);
 const CANARY = 'canary-refresh-token-DO-NOT-LEAK-' + process.pid;
 
 async function rejects(promise, msg, re) {
@@ -73,18 +73,18 @@ async function rejects(promise, msg, re) {
   A.eq(AgentId.alloc('coder', new Set()), 'coder', 'ordinary class ids are unchanged');
   A.eq(AgentId.alloc('Skill Market', new Set()), 'skill-market-2', 'an agent named "Skill Market" never owns the market install folder (sweep 10-02)');
   A.ok(Reserved.RESERVED.has('skill-market') && /path\.join\(WORKSPACES, 'skill-market'\)/.test(fs.readFileSync(path.join(__dirname, '..', 'sidecar', 'index.js'), 'utf8')),
-    'the market install folder (WORKSPACES/skill-market) is a reserved station folder');
+    'the market install folder (WORKSPACES/skill-market) is a reserved keep folder');
   A.eq(Array.from(AgentId.RESERVED).sort(), Array.from(Reserved.RESERVED).sort(), 'frontend RESERVED mirrors sidecar/workspace-reserved.js');
   for (const id of AgentId.RESERVED) A.ok(AgentId.RE.test(id) || /^_/.test(id), 'reserved id is expressible in the id grammar: ' + id);
 
   // ---- agent delete archives WORKSPACES/<id>: a reserved id is still deletable (the recovery path for an agent
-  // named before the rule), but the station directory is NEVER moved into the archive ----
+  // named before the rule), but the keep directory is NEVER moved into the archive ----
   {
     const src = fs.readFileSync(path.join(__dirname, '..', 'sidecar', 'index.js'), 'utf8');
     const start = src.indexOf('async function handleAgentDelete');
     const body = src.slice(start, src.indexOf('ORPHANED-AUTOMATION CLEANUP', start));
     A.ok(/const reservedId = WorkspaceReserved\.isReservedWorkspaceId\(agentId\);/.test(body), 'agent delete classifies a reserved id');
-    A.ok(/if \(!reservedId\) move\(path\.join\(WORKSPACES, agentId\), agentId\);/.test(body), 'a reserved id never archives WORKSPACES/<id> (the station directory stays put)');
+    A.ok(/if \(!reservedId\) move\(path\.join\(WORKSPACES, agentId\), agentId\);/.test(body), 'a reserved id never archives WORKSPACES/<id> (the keep directory stays put)');
     A.eq((body.match(/move\(path\.join\(WORKSPACES, agentId\), agentId\)/g) || []).length, 1, 'there is exactly one workspace-dir archive move, and it is guarded');
     let msg = '';
     try { Reserved.assertWorkspaceId('Grok'); } catch (e) { msg = String(e.message); }

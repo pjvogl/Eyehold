@@ -1,5 +1,5 @@
 
-> starnet-harness@0.12.4 golden
+> eyehold-harness@0.12.4 golden
 > node scripts/golden.mjs
 
 sidecar: booting SEEDED SKYNET_DEV on :19740 (model=anthropic/claude-sonnet-4.6) ...
@@ -17,7 +17,7 @@ navigating + booting to the floor...
   ok   work-recipes      788KB  opened:RECIPES
   ok   work-automation   924KB  opened:AUTOMATION
   ok   work-quests       949KB  opened:QUESTS:refresh-fixture-settled
-  ok   build-station    1554KB  opened:REFIT STATION
+  ok   build-keep    1554KB  opened:REFIT KEEP
   ok   build-connectors  945KB  opened:ABILITIES
   ok   sys-messaging     911KB  opened:CHANNELS
   ok   build-manual      904KB  opened:FIELD MANUAL
@@ -36,7 +36,7 @@ DONE (all states ok) → C:\Users\andro\gen-trees\release-audit-0124-0920\.qa_tm
   CHANGED work-recipes     diff=6.53 (thr 1.5)
   CHANGED work-automation  diff=5.58 (thr 1.5)
   CHANGED work-quests      diff=5.54 (thr 1.5)
-  ok      build-station    diff=0.05 (thr 1.5)
+  ok      build-keep    diff=0.05 (thr 1.5)
   CHANGED build-connectors diff=5.83 (thr 1.5)
   CHANGED sys-messaging    diff=5.60 (thr 1.5)
   CHANGED build-manual     diff=5.84 (thr 1.5)

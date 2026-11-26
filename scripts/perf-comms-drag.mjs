@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // perf-comms-drag.mjs — measure how smooth a COMMS seam drag is.
 //
-// Boots a SEEDED dev sidecar (or reuses one on the port), opens the station in Chrome WITH the GPU
+// Boots a SEEDED dev sidecar (or reuses one on the port), opens the keep in Chrome WITH the GPU
 // (the shoot harness runs --disable-gpu; this one must not — compositing cost is what we measure),
 // fills COMMS with a realistic conversation, then drags #comms-resizer back and forth with real
 // CDP mouse events at ~60 Hz. Reports frame intervals (rAF) plus where the main thread spent the
@@ -24,7 +24,7 @@ const wantTrace = process.argv.includes('--trace');
 const shots = process.argv.includes('--shots');
 const after = arg('--after', ''), before = arg('--before', '');
 const W = 1600, H = 900;
-const OUT = join(tmpdir(), 'starnet-perf-comms');
+const OUT = join(tmpdir(), 'eyehold-perf-comms');
 mkdirSync(OUT, { recursive: true });
 const APP_URL = `http://127.0.0.1:${port}/`;
 
@@ -57,7 +57,7 @@ try {
   results.filled = await evalJS(cdp, `(() => {
     const log = document.getElementById('chat-log');
     if (!log) return 'no log';
-    const md = '## Findings\\nChecked the **build pipeline** and the \`sidecar/loop.js\` retry path. Three things stand out:\\n\\n- The **cache** is cold on every run.\\n- Retries double-count tokens.\\n- The deploy step never reports its exit code.\\n\\n\`\`\`\\nnpm run test:fast\\n  1036 passing\\n\`\`\`\\n\\nNext I would fix the retry accounting first, since it skews every cost readout on the station.';
+    const md = '## Findings\\nChecked the **build pipeline** and the \`sidecar/loop.js\` retry path. Three things stand out:\\n\\n- The **cache** is cold on every run.\\n- Retries double-count tokens.\\n- The deploy step never reports its exit code.\\n\\n\`\`\`\\nnpm run test:fast\\n  1036 passing\\n\`\`\`\\n\\nNext I would fix the retry accounting first, since it skews every cost readout on the keep.';
     for (let i = 0; i < ${msgs}; i++) {
       const u = document.createElement('div'); u.className = 'cmsg user';
       u.innerHTML = '<span class="cmsg-head"><span class="who">COMMANDER</span><span class="cmsg-ts">12:0' + (i % 10) + '</span></span><span class="body">check the build pipeline and tell me what is slow</span>';

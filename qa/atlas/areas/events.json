@@ -8,11 +8,11 @@
       "area": "events",
       "name": "agent.compact",
       "purpose": "Reports context was compacted mid-run (tokens before/after, items removed) so the UI can note the compaction.",
-      "promise": "On a mid-run compaction agent.compact carries {agentId,runId,beforeTokens,afterTokens,removed,reason}; stationui marks it and world.js tickers it.",
+      "promise": "On a mid-run compaction agent.compact carries {agentId,runId,beforeTokens,afterTokens,removed,reason}; keepui marks it and world.js tickers it.",
       "wiring": {
         "files": [
           "sidecar/loop.js",
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "frontend/app/world.js",
           "shared/events.js"
         ],
@@ -192,7 +192,7 @@
           "sidecar/index.js",
           "frontend/app/world.js",
           "frontend/js/audio.js",
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "shared/events.js"
         ],
         "events": [
@@ -236,7 +236,7 @@
           "sidecar/loop.js",
           "sidecar/index.js",
           "frontend/app/world.js",
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "frontend/app/tutorial.js",
           "frontend/app/workqueststore.js",
           "shared/events.js"
@@ -326,13 +326,13 @@
       "area": "events",
       "name": "agent.tool_call",
       "purpose": "Signals the agent invoked a tool, so the world can show a work glyph and adaptive-recruitment/quest stores can learn what the agent does.",
-      "promise": "On each tool invocation, agent.tool_call carries {agentId,runId,callId,name,argsSummary?}; world.js paints a work glyph and worksignalstore/stationqueststore fold it.",
+      "promise": "On each tool invocation, agent.tool_call carries {agentId,runId,callId,name,argsSummary?}; world.js paints a work glyph and worksignalstore/keepqueststore fold it.",
       "wiring": {
         "files": [
           "sidecar/loop.js",
           "frontend/app/world.js",
           "frontend/app/worksignalstore.js",
-          "frontend/app/stationqueststore.js",
+          "frontend/app/keepqueststore.js",
           "shared/events.js"
         ],
         "events": [
@@ -380,7 +380,7 @@
           "sidecar/loop.js",
           "frontend/app/world.js",
           "frontend/js/audio.js",
-          "frontend/app/stationqueststore.js",
+          "frontend/app/keepqueststore.js",
           "shared/events.js"
         ],
         "events": [
@@ -507,12 +507,12 @@
       "area": "events",
       "name": "channel.connect",
       "purpose": "Adapter transport health: poll up / network down / fatal token error.",
-      "promise": "On a health change channel.connect carries {channel,state:'up|down|error',detail?}; stationui refreshes the Telegram/Discord status lines in the Messaging panel.",
+      "promise": "On a health change channel.connect carries {channel,state:'up|down|error',detail?}; keepui refreshes the Telegram/Discord status lines in the Messaging panel.",
       "wiring": {
         "files": [
           "sidecar/channels/hub.js",
           "sidecar/index.js",
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "shared/events.js"
         ],
         "events": [
@@ -796,7 +796,7 @@
       "kind": "event",
       "area": "events",
       "name": "crew.summon.request",
-      "purpose": "A backend->frontend COMMAND: the orchestrator's team.summon tool asks the live station to create a new worker agent (mirrors permission.prompt).",
+      "purpose": "A backend->frontend COMMAND: the orchestrator's team.summon tool asks the live keep to create a new worker agent (mirrors permission.prompt).",
       "promise": "On team.summon crew.summon.request carries {requestId,agentId,name?,specId?,...}; harness runs the real summonAgent() and POSTs /api/summon/ack with the new agentId.",
       "wiring": {
         "files": [
@@ -1053,7 +1053,7 @@
       "area": "events",
       "name": "deliverable",
       "purpose": "A real deliverable was produced (skill/file/image/notebook) — opens the skill aside and plays a ship SFX.",
-      "promise": "On a produced deliverable it carries {id,agentId?,room?,kind?,title?}; chat.js opens a skill aside (kind:'skill'), stationui refreshes skills, world.js tallies dels, audio.js plays SFX.ship().",
+      "promise": "On a produced deliverable it carries {id,agentId?,room?,kind?,title?}; chat.js opens a skill aside (kind:'skill'), keepui refreshes skills, world.js tallies dels, audio.js plays SFX.ship().",
       "wiring": {
         "files": [
           "sidecar/index.js",
@@ -1062,7 +1062,7 @@
           "sidecar/tools/builtin/notebook.js",
           "sidecar/tools/builtin/skills.js",
           "frontend/app/chat.js",
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "frontend/app/world.js",
           "frontend/js/audio.js",
           "shared/events.js"
@@ -1291,7 +1291,7 @@
           "sidecar/tools/builtin/notebook.js",
           "frontend/app/truststore.js",
           "frontend/app/confbeats.js",
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "frontend/app/xp.js",
           "shared/events.js"
         ],
@@ -1334,11 +1334,11 @@
       "area": "events",
       "name": "memory.forget",
       "purpose": "Reports a memory record was removed (forget pressed or proposal discarded) so the UI drops it.",
-      "promise": "On a forget memory.forget carries {agentId,id,reason?}; stationui bumps and world.js hudNotes '✕ memory forgotten'.",
+      "promise": "On a forget memory.forget carries {agentId,id,reason?}; keepui bumps and world.js hudNotes '✕ memory forgotten'.",
       "wiring": {
         "files": [
           "sidecar/index.js",
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "frontend/app/world.js",
           "shared/events.js"
         ],
@@ -1469,11 +1469,11 @@
       "area": "events",
       "name": "memory.used",
       "purpose": "Reports a stored record was actually surfaced into a prompt this run (drives useCount/trust).",
-      "promise": "Per surfaced record memory.used carries {agentId,runId,id}; stationui bumps and xp folds it (zero XP by design).",
+      "promise": "Per surfaced record memory.used carries {agentId,runId,id}; keepui bumps and xp folds it (zero XP by design).",
       "wiring": {
         "files": [
           "sidecar/index.js",
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "frontend/app/xp.js",
           "shared/events.js"
         ],
@@ -1512,13 +1512,13 @@
       "area": "events",
       "name": "memory.write",
       "purpose": "Reports a memory record was committed (after approval or notebook.write) so the notebook prop glows and stores refresh.",
-      "promise": "On a memory commit memory.write carries {agentId,runId,id,kind,scope?,streamId?}; chat.js/stationui refresh and world.js glows the notebook.",
+      "promise": "On a memory commit memory.write carries {agentId,runId,id,kind,scope?,streamId?}; chat.js/keepui refresh and world.js glows the notebook.",
       "wiring": {
         "files": [
           "sidecar/index.js",
           "sidecar/tools/builtin/notebook.js",
           "frontend/app/chat.js",
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "frontend/app/world.js",
           "shared/events.js"
         ],
@@ -1556,12 +1556,12 @@
       "kind": "event",
       "area": "events",
       "name": "notify",
-      "purpose": "A bare-string toast pushed onto the durable SSE bus so a station HUD notice can surface it (used by the night-shift immediate-visibility path).",
-      "promise": "notify carries a bare string payload; sidecar chanEmit('notify', str) fires it (e.g. a night-shift draft landing while the app is open) and stationui.js wires U.bus.on('notify') to toast it gold.",
+      "purpose": "A bare-string toast pushed onto the durable SSE bus so a keep HUD notice can surface it (used by the night-shift immediate-visibility path).",
+      "promise": "notify carries a bare string payload; sidecar chanEmit('notify', str) fires it (e.g. a night-shift draft landing while the app is open) and keepui.js wires U.bus.on('notify') to toast it gold.",
       "wiring": {
         "files": [
           "sidecar/index.js",
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "shared/events.js"
         ],
         "events": [
@@ -1591,7 +1591,7 @@
       "firstSeen": "2026-07-07T08:09:25.409Z",
       "lastSeen": "2026-07-18T00:54:02.711Z",
       "missing": false,
-      "notes": "[wave-2 events-H @ HEAD c06bdef7: STALE-NOTE CORRECTED — prior mapping claimed \"no bus emitter and no bus consumer\". At HEAD it IS wired: emit sidecar/index.js:3665 (night-shift draft toast), consumer frontend/app/stationui.js:6996 (U.bus.on notify → gold toast). Payload guarded by contract.test.js. KNOWN: the specific live emit lacks a dedicated gate assertion → audited.]"
+      "notes": "[wave-2 events-H @ HEAD c06bdef7: STALE-NOTE CORRECTED — prior mapping claimed \"no bus emitter and no bus consumer\". At HEAD it IS wired: emit sidecar/index.js:3665 (night-shift draft toast), consumer frontend/app/keepui.js:6996 (U.bus.on notify → gold toast). Payload guarded by contract.test.js. KNOWN: the specific live emit lacks a dedicated gate assertion → audited.]"
     },
     {
       "id": "event/object-place",
@@ -1860,13 +1860,13 @@
       "area": "events",
       "name": "provider.fallback",
       "purpose": "Makes a mid-run provider/model failover or credential rotation VISIBLE telemetry (previously only inferable from the switched cost model).",
-      "promise": "When the loop advances its failover chain, provider.fallback carries {agentId,runId,fromModel,toModel,reason,...}; FloorStats increments failovers and stationui surfaces it (H3.1).",
+      "promise": "When the loop advances its failover chain, provider.fallback carries {agentId,runId,fromModel,toModel,reason,...}; FloorStats increments failovers and keepui surfaces it (H3.1).",
       "wiring": {
         "files": [
           "sidecar/loop.js",
           "frontend/app/floorstats.js",
           "frontend/app/world.js",
-          "frontend/app/stationui.js",
+          "frontend/app/keepui.js",
           "shared/events.js"
         ],
         "events": [

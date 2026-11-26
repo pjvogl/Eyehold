@@ -1,17 +1,17 @@
 //! #65 ERASE EVERYTHING: what a full "start over from scratch" removes, and the guarded deletion itself.
 //!
 //! The reporter (macOS) deleted the app and reinstalled, and "everything remained": uninstalling removes only the
-//! program, while StarNet's data lives in a separate per-user app-data folder, the WebView keeps its own storage,
-//! and credentials sit in the OS keychain. START FRESH (fresh_start.rs) deliberately keeps the old station in a
+//! program, while Eyehold's data lives in a separate per-user app-data folder, the WebView keeps its own storage,
+//! and credentials sit in the OS keychain. START FRESH (fresh_start.rs) deliberately keeps the old keep in a
 //! quarantine folder. This module is the other door: it DELETES.
 //!
 //! Safety rules (each one is tested below):
-//!   * Only StarNet-owned locations are ever targets: every target must sit under a path component named
-//!     `ai.skynet.harness`, `StarNet`, `Skynet` or `starnet` and be at least three components deep. A user's project
+//!   * Only Eyehold-owned locations are ever targets: every target must sit under a path component named
+//!     `ai.skynet.harness`, `Eyehold`, `Skynet` or `eyehold` and be at least three components deep. A user's project
 //!     folder, home folder or a filesystem root can never qualify, whatever a caller passes.
 //!   * Links are never followed: a symlink/junction inside a target (or a target that is itself a link) is removed
-//!     as a link; whatever it points at is untouched. Trusted project folders are recorded by PATH in the station
-//!     data, never stored inside it, so erasing the station never reaches them.
+//!     as a link; whatever it points at is untouched. Trusted project folders are recorded by PATH in the keep
+//!     data, never stored inside it, so erasing the keep never reaches them.
 //!   * The install folder is never touched (on macOS it is the signed app bundle); the bundled first-run seed is
 //!     sealed off by the fresh generation's migration marker instead.
 //!   * Every removal is verified (the path must be gone afterwards); failures are returned, never swallowed, so the
@@ -20,10 +20,10 @@
 use std::fs;
 use std::path::{Component, Path, PathBuf};
 
-const OWNED_NAMES: [&str; 3] = ["ai.skynet.harness", "starnet", "skynet"];
+const OWNED_NAMES: [&str; 3] = ["ai.skynet.harness", "eyehold", "skynet"];
 
-/// True when `path` is one StarNet owns outright (see the module rules).
-pub fn is_starnet_owned(path: &Path) -> bool {
+/// True when `path` is one Eyehold owns outright (see the module rules).
+pub fn is_eyehold_owned(path: &Path) -> bool {
     let normal: Vec<String> = path
         .components()
         .filter_map(|c| match c {
@@ -40,7 +40,7 @@ pub fn is_starnet_owned(path: &Path) -> bool {
         .any(|name| OWNED_NAMES.iter().any(|owned| name == owned))
 }
 
-/// The WebView's live profile may sit beside the station data on some platforms; deleting its files under a
+/// The WebView's live profile may sit beside the keep data on some platforms; deleting its files under a
 /// running window corrupts it. It is cleared through the WebView's own API instead (clear_all_browsing_data).
 fn is_webview_dir(name: &str) -> bool {
     let lower = name.to_lowercase();
@@ -49,10 +49,10 @@ fn is_webview_dir(name: &str) -> bool {
 
 /// Everything the erase deletes, in order. `app_data` is the parent of the active `workspaces` (the
 /// `ai.skynet.harness` app-data folder); its every entry except the fresh `workspaces` and a WebView folder is
-/// StarNet's (logs, lifecycle prefs, update snapshots, START FRESH quarantines, migration/erase leftovers).
+/// Eyehold's (logs, lifecycle prefs, update snapshots, START FRESH quarantines, migration/erase leftovers).
 /// `set_aside` is the old generation moved aside by fresh_start::set_aside_for_erase. `legacy_roots` are older
-/// StarNet data roots (only those under app-data bases are passed in; never the install folder). `extra` holds
-/// other StarNet caches (the local voice-model download).
+/// Eyehold data roots (only those under app-data bases are passed in; never the install folder). `extra` holds
+/// other Eyehold caches (the local voice-model download).
 pub fn plan_targets(
     app_data: &Path,
     active_workspaces: &Path,
@@ -99,7 +99,7 @@ pub fn plan_targets(
             push(p.clone());
         }
     }
-    out.into_iter().filter(|p| is_starnet_owned(p)).collect()
+    out.into_iter().filter(|p| is_eyehold_owned(p)).collect()
 }
 
 #[derive(Debug, Default)]
@@ -136,16 +136,16 @@ fn is_reparse_point(_meta: &fs::Metadata) -> bool {
     false
 }
 
-/// Delete every target that exists. Refuses (reports as failed) any target that is not StarNet-owned, so a caller
+/// Delete every target that exists. Refuses (reports as failed) any target that is not Eyehold-owned, so a caller
 /// mistake can never widen the erase. A short retry covers a just-exited process still releasing its files.
 pub fn remove_all(targets: &[PathBuf]) -> RemovalReport {
     let mut report = RemovalReport::default();
     for target in targets {
         let shown = target.to_string_lossy().to_string();
-        if !is_starnet_owned(target) {
+        if !is_eyehold_owned(target) {
             report
                 .failed
-                .push((shown, "refused: not a StarNet-owned location".to_string()));
+                .push((shown, "refused: not a Eyehold-owned location".to_string()));
             continue;
         }
         if fs::symlink_metadata(target).is_err() {
@@ -178,7 +178,7 @@ pub fn remove_all(targets: &[PathBuf]) -> RemovalReport {
 }
 
 /// Numeric ids of the agent-bound Telegram bots whose tokens the desktop keychains under `channel:telegram:<id>`.
-/// Read BEFORE the station files go, so those keychain slots can be cleared too.
+/// Read BEFORE the keep files go, so those keychain slots can be cleared too.
 pub fn telegram_bot_ids(workspaces: &Path) -> Vec<String> {
     let file = workspaces.join("channels").join("secrets.json");
     let Some(json) = fs::read_to_string(file)
@@ -223,7 +223,7 @@ pub const PROVIDER_IDS: [&str; 18] = [
     "claude-cli",
 ];
 
-/// Every keychain account (service `ai.skynet.harness`) StarNet's desktop shell can have created.
+/// Every keychain account (service `ai.skynet.harness`) Eyehold's desktop shell can have created.
 pub fn keychain_accounts(channels: &[&str], telegram_bots: &[String]) -> Vec<String> {
     let mut out = Vec::new();
     for id in PROVIDER_IDS {
@@ -252,7 +252,7 @@ mod tests {
 
     fn scratch(name: &str) -> PathBuf {
         std::env::temp_dir().join(format!(
-            "starnet-erase-test-{name}-{}-{}",
+            "eyehold-erase-test-{name}-{}-{}",
             std::process::id(),
             std::time::SystemTime::now()
                 .duration_since(std::time::UNIX_EPOCH)
@@ -262,22 +262,22 @@ mod tests {
     }
 
     #[test]
-    fn ownership_guard_admits_only_starnet_locations() {
-        assert!(is_starnet_owned(Path::new(
+    fn ownership_guard_admits_only_eyehold_locations() {
+        assert!(is_eyehold_owned(Path::new(
             "/Users/a/Library/Application Support/ai.skynet.harness/workspaces"
         )));
-        assert!(is_starnet_owned(Path::new(
-            "C:/Users/a/AppData/Local/StarNet/models"
+        assert!(is_eyehold_owned(Path::new(
+            "C:/Users/a/AppData/Local/Eyehold/models"
         )));
-        assert!(is_starnet_owned(Path::new(
+        assert!(is_eyehold_owned(Path::new(
             "/home/a/.local/share/Skynet/workspaces"
         )));
-        assert!(!is_starnet_owned(Path::new("/Users/a/Projects/my-app")));
-        assert!(!is_starnet_owned(Path::new("/Users/a")));
-        assert!(!is_starnet_owned(Path::new("/")));
-        assert!(!is_starnet_owned(Path::new("/StarNet")));
-        assert!(!is_starnet_owned(Path::new(
-            "C:/Users/a/Desktop/StarNet deliverables/report"
+        assert!(!is_eyehold_owned(Path::new("/Users/a/Projects/my-app")));
+        assert!(!is_eyehold_owned(Path::new("/Users/a")));
+        assert!(!is_eyehold_owned(Path::new("/")));
+        assert!(!is_eyehold_owned(Path::new("/Eyehold")));
+        assert!(!is_eyehold_owned(Path::new(
+            "C:/Users/a/Desktop/Eyehold deliverables/report"
         )));
     }
 
@@ -291,18 +291,18 @@ mod tests {
             app.join("workspace-quarantine"),
             app.join("update-snapshots"),
             app.join("EBWebView"),
-            app.join(".erasing-station-1"),
+            app.join(".erasing-keep-1"),
         ] {
             fs::create_dir_all(d).unwrap();
         }
         fs::write(app.join("startup.log"), b"x").unwrap();
         fs::write(app.join("lifecycle.json"), b"{}").unwrap();
         let user_project = root.join("Projects").join("my-app");
-        let legacy = root.join("StarNet").join("workspaces");
+        let legacy = root.join("Eyehold").join("workspaces");
         let plan = plan_targets(
             &app,
             &ws,
-            Some(&app.join(".erasing-station-1")),
+            Some(&app.join(".erasing-keep-1")),
             &[legacy.clone(), user_project.clone()],
             &[],
         );
@@ -322,24 +322,24 @@ mod tests {
         );
         assert_eq!(
             plan[0],
-            app.join(".erasing-station-1"),
-            "the old station goes first"
+            app.join(".erasing-keep-1"),
+            "the old keep goes first"
         );
         let _ = fs::remove_dir_all(root);
     }
 
     #[test]
-    fn removal_is_verified_and_never_follows_a_link_out_of_starnet_data() {
+    fn removal_is_verified_and_never_follows_a_link_out_of_eyehold_data() {
         let root = scratch("remove");
         let app = root.join("ai.skynet.harness");
-        let aside = app.join(".erasing-station-1");
+        let aside = app.join(".erasing-keep-1");
         fs::create_dir_all(aside.join("agent-1").join("deep")).unwrap();
         fs::write(
             aside.join("agent-1").join("deep").join("save.json"),
-            b"station",
+            b"keep",
         )
         .unwrap();
-        // the user's project folder, linked INTO the station data
+        // the user's project folder, linked INTO the keep data
         let project = root.join("Projects").join("my-app");
         fs::create_dir_all(&project).unwrap();
         fs::write(project.join("main.rs"), b"fn main() {}").unwrap();
@@ -358,7 +358,7 @@ mod tests {
             assert!(made, "test setup: could not create a junction");
         }
         let report = remove_all(&[aside.clone(), project.clone()]);
-        assert!(!aside.exists(), "the station tree is gone");
+        assert!(!aside.exists(), "the keep tree is gone");
         assert_eq!(report.removed, vec![aside.to_string_lossy().to_string()]);
         assert!(
             project.join("main.rs").is_file(),
@@ -369,7 +369,7 @@ mod tests {
             1,
             "the foreign target is refused, not deleted"
         );
-        assert!(report.failed[0].1.contains("not a StarNet-owned"));
+        assert!(report.failed[0].1.contains("not a Eyehold-owned"));
         let _ = fs::remove_dir_all(root);
     }
 
@@ -393,7 +393,7 @@ mod tests {
     }
 
     #[test]
-    fn bot_ids_are_read_from_the_station_and_validated() {
+    fn bot_ids_are_read_from_the_keep_and_validated() {
         let root = scratch("bots");
         let ws = root.join("workspaces");
         fs::create_dir_all(ws.join("channels")).unwrap();

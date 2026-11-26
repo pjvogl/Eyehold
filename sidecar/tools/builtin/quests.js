@@ -1,5 +1,5 @@
 /* sidecar/tools/builtin/quests.js — the QUEST capability write half: a single `quest.update` tool
-   (QUEST V2, plan §B — agent awareness). The read half is questinject.js (the STATION QUESTS prompt block);
+   (QUEST V2, plan §B — agent awareness). The read half is questinject.js (the KEEP QUESTS prompt block);
    this lets the agent ACT on those quests. It is the ONLY way an agent touches the ledger.
 
    Ops (op-routed like the todo tool):
@@ -8,9 +8,9 @@
                          lets run-end completion settle that quest.
      • progress        — tick a NAMED open step with a short note (questStore.tickStep). Agent-scoped: the quest
                          must be OPEN FOR THIS agent (openForAgent) — an agent can't tick a step on a quest that
-                         isn't its own / station-wide. Progress is display only; it NEVER completes a quest.
+                         isn't its own / keep-wide. Progress is display only; it NEVER completes a quest.
      • attest_complete — PROPOSE a quest done with concrete evidence (questStore.attest). Agent-scoped like
-                         progress (openForAgent — its own + station-wide quests only; sequential quest ids are
+                         progress (openForAgent — its own + keep-wide quests only; sequential quest ids are
                          guessable, so an unscoped attest would let any agent file a completion proposal on
                          another agent's quest). Evidence REQUIRED. This
                          NEVER completes the quest — it sets a pending attest the Commander confirms (rate-the-work
@@ -25,7 +25,7 @@
    capability: 'quest' — a FREEBIE family carried by the `computer` object, the one object present in BOTH the
    interactive baseline office (compute-only) and the full default office, so quest.update rides EVERY task surface.
    (It rode capId 'memory'/the `notebook` object originally, but the interactive floor has no placed notebook, so the
-   tool was ABSENT while the STATION QUESTS prompt commanded it — a truthful-telemetry break; see CAP_REGISTRY.computer.)
+   tool was ABSENT while the KEEP QUESTS prompt commanded it — a truthful-telemetry break; see CAP_REGISTRY.computer.)
    A quest is the agent's own standing objective — reading/updating it is part of being able to think at all, the same
    freebie class as compute: no filesystem reach, no network, no outward mutation until the Commander confirms an
    attest. So, like todo, NO consent gate.
@@ -61,7 +61,7 @@
 
     const questUpdateTool = {
       name: 'quest.update', capability: 'quest', scope: 'write', requiresConsent: false, timeoutMs: 8000,
-      description: 'Act on your STATION QUESTS (listed in your prompt). op:"start" binds the named run quest to '
+      description: 'Act on your KEEP QUESTS (listed in your prompt). op:"start" binds the named run quest to '
         + 'this run; use it before doing that quest so an unrelated run can never complete it. op:"progress" ticks a named step of a quest '
         + '(pass id, stepKey, and a short note on what you did) — progress is display only and never completes a '
         + 'quest. op:"attest_complete" PROPOSES a quest is done (pass id and concrete evidence of what was '
@@ -104,7 +104,7 @@
         // ---- start: explicitly bind the named mechanical run quest to THIS run ----
         if (op === 'start') {
           const id = str(args.id);
-          if (!id) return { content: 'Pass the quest id to start (from your STATION QUESTS list).', summary: 'noop' };
+          if (!id) return { content: 'Pass the quest id to start (from your KEEP QUESTS list).', summary: 'noop' };
           if (!runId) return { content: 'Starting a run quest needs the current run. No live runId was available.', summary: 'noop' };
           const mine = store.openForAgent(agentId, now()).find(q => q.id === id);
           if (!mine) return { content: 'Quest ' + id + ' is not one of your open quests. Only quests listed for you can be started.', summary: 'not yours' };
@@ -118,9 +118,9 @@
         if (op === 'progress') {
           const id = str(args.id);
           const stepKey = str(args.stepKey);
-          if (!id) return { content: 'Pass the quest id to progress (from your STATION QUESTS list).', summary: 'noop' };
+          if (!id) return { content: 'Pass the quest id to progress (from your KEEP QUESTS list).', summary: 'noop' };
           if (!stepKey) return { content: 'Pass the stepKey of the step to tick.', summary: 'noop' };
-          // AGENT SCOPING: only a quest OPEN FOR THIS agent (its own or station-wide) can be progressed here.
+          // AGENT SCOPING: only a quest OPEN FOR THIS agent (its own or keep-wide) can be progressed here.
           const mine = store.openForAgent(agentId, now()).find(q => q.id === id);
           if (!mine) return { content: 'Quest ' + id + ' is not one of your open quests. Only work quests listed for you can be updated.', summary: 'not yours' };
           const ok = await store.tickStep(id, stepKey, args.note, now());
@@ -128,7 +128,7 @@
           // QUEST V2 §A — RUN-contract binding at the tool seam: a successful progress tick during run R is the
           // agent PROVABLY working this quest in this run, so bind R (store.bindRun) — the run-end settle hook's
           // completeByContract('run', runId) then completes it on 'done' (non-done stalls it). This is the ONLY
-          // binding path for a STATION-WIDE run quest (the prompt-injection seam binds only agent-OWNED ones —
+          // binding path for a KEEP-WIDE run quest (the prompt-injection seam binds only agent-OWNED ones —
           // an unrelated agent's next run must never claim a shared quest it did no work on). Fail-open.
           if (mine.contract && mine.contract.type === 'run' && runId) { try { await store.bindRun(id, runId, agentId); } catch (_) {} }
           return { content: 'Ticked step "' + stepKey + '" on ' + id + '.', summary: 'progress ' + id };
@@ -138,12 +138,12 @@
         if (op === 'attest_complete') {
           const id = str(args.id);
           const evidence = str(args.evidence);
-          if (!id) return { content: 'Pass the quest id to attest complete (from your STATION QUESTS list).', summary: 'noop' };
+          if (!id) return { content: 'Pass the quest id to attest complete (from your KEEP QUESTS list).', summary: 'noop' };
           if (!evidence) return { content: 'attest_complete needs concrete evidence of what was accomplished — attesting without proof is not allowed.', summary: 'noop' };
-          // AGENT SCOPING (mirrors op:"progress"): only a quest OPEN FOR THIS agent (its own or station-wide —
+          // AGENT SCOPING (mirrors op:"progress"): only a quest OPEN FOR THIS agent (its own or keep-wide —
           // openForAgent, the store's own visibility rule) may be attested. Quest ids are sequential and guessable;
           // without this gate any agent could file a completion proposal on ANOTHER agent's quest and put a
-          // false "reports this quest complete" beat in front of the Commander. A station-wide (agentId:null)
+          // false "reports this quest complete" beat in front of the Commander. A keep-wide (agentId:null)
           // quest stays attestable by any agent — shared by the store's design, exactly like progress.
           const attestable = store.openForAgent(agentId, now()).some(q => q.id === id);
           if (!attestable) return { content: 'Quest ' + id + ' is not one of your open quests. Only quests listed for you can be attested.', summary: 'not yours' };

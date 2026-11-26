@@ -68,7 +68,7 @@ function startMockOpenRouter() {
             // the THREAD-MINING aux pass → one grounded+substantive thread, one INVENTED (grounding veto), and one
             // grounded-but-BANTER candidate at medium confidence (substance veto — the 2026-07-08 escape class).
             text('THREAD: ' + IDEA_TITLE + '\nQUOTE: ' + IDEA_QUOTE + '\nDO: a price-poller script that alerts at MSRP\nCONFIDENCE: high\n' +
-                 'THREAD: Invented spaceship\nQUOTE: please build me a spaceship\nDO: a spaceship design doc\nCONFIDENCE: high\n' +
+                 'THREAD: Invented carrack\nQUOTE: please build me a carrack\nDO: a carrack design doc\nCONFIDENCE: high\n' +
                  'THREAD: Future chaos\nQUOTE: ' + BANTER_QUOTE + '\nDO: prepare for chaotic requests\nCONFIDENCE: medium');
           } else if (/durable profile|belief changes/i.test(system)) {
             text('NONE');   // the study pass — stand down
@@ -111,7 +111,7 @@ function startMockOpenRouter() {
 
 function boot(port, env, attemptsLeft) {
   return new Promise((resolve, reject) => {
-    const child = spawn(process.execPath, [INDEX], { env: Object.assign({}, process.env, env, { SKYNET_PORT: String(port) }), stdio: ['ignore', 'pipe', 'pipe'] });
+    const child = spawn(process.execPath, [INDEX], { env: Object.assign({}, process.env, env, { EYEHOLD_PORT: String(port) }), stdio: ['ignore', 'pipe', 'pipe'] });
     let out = '', settled = false;
     const onData = d => {
       out += d.toString();
@@ -153,16 +153,16 @@ function seedLogs(ws, now) {
   const mock = await startMockOpenRouter();
   const ws = fs.mkdtempSync(path.join(os.tmpdir(), 'sk-threads-e2e-'));
   seedLogs(ws, Date.now());
-  // SKYNET_AUX_BUDGET='0' disables the aux-spend joint ceiling for this suite: it exercises the thread-mining
+  // EYEHOLD_AUX_BUDGET='0' disables the aux-spend joint ceiling for this suite: it exercises the thread-mining
   // pass IN ISOLATION alongside reflection+study on ONE tool-heavy run, so all three must fire. Under the default
   // budget (2) the governor would (correctly) defer thread-mine behind higher-priority reflection+study — the
   // aggregate bound itself is proven separately in test/auxbudget.e2e.test.js.
-  const env = { SKYNET_WORKSPACES: ws, SKYNET_DEV: '1', SKYNET_OPENROUTER_BASE: mock.base, SKYNET_OPENROUTER_KEY: 'sk-or-v1-threads-fake', SKYNET_DEFAULT_MODEL: 'test/model', SKYNET_AUX_BUDGET: '0' };
+  const env = { EYEHOLD_WORKSPACES: ws, EYEHOLD_DEV: '1', EYEHOLD_OPENROUTER_BASE: mock.base, EYEHOLD_OPENROUTER_KEY: 'sk-or-v1-threads-fake', EYEHOLD_DEFAULT_MODEL: 'test/model', EYEHOLD_AUX_BUDGET: '0' };
   const { child, port } = await boot(8930 + (process.pid % 25), env, 20);
   const B = 'http://' + HOST + ':' + port;
   try {
     const token = await bootToken(B, B);
-    const headers = { 'Content-Type': 'application/json', 'X-StarNet-Token': token, Origin: B };
+    const headers = { 'Content-Type': 'application/json', 'X-Eyehold-Token': token, Origin: B };
 
     // ===== 1. MINE + STASH (never auto-commit) — a real task run floats the idea, never acts on it. =====
     const directive = 'Please wire up the belt-router retry loop for me. Unrelated thought while I remember it: ' +
@@ -179,7 +179,7 @@ function seedLogs(ws, now) {
     const prop = stash.proposals.find(p => p.title.indexOf(IDEA_TITLE) >= 0) || stash.proposals[0];
     A.ok(prop && prop.title.indexOf(IDEA_TITLE) >= 0, 'the stashed candidate is the floated idea');
     A.ok(prop.spec && prop.spec.indexOf('GPU price watcher someday') >= 0, 'the candidate carries the VERBATIM evidence quote');
-    A.ok(!stash.proposals.some(p => /spaceship/i.test(p.title)), 'the INVENTED idea (quote not in the conversation) was vetoed, never stashed');
+    A.ok(!stash.proposals.some(p => /carrack/i.test(p.title)), 'the INVENTED idea (quote not in the conversation) was vetoed, never stashed');
     A.ok(!stash.proposals.some(p => /chaos/i.test(p.title)), 'ESCAPE REGRESSION 2026-07-08: grounded BANTER below the substance bar was vetoed, never stashed');
     const ledger0 = await (await fetch(B + '/api/threads?state=all', { headers })).json();
     A.eq(ledger0.threads.length, 0, 'STASH-NOT-AUTOCOMMIT: the ledger is still EMPTY before turn-in');

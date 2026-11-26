@@ -58,9 +58,9 @@
       "ok": true
     },
     {
-      "name": "build-station",
+      "name": "build-keep",
       "kb": 795,
-      "driveResult": "opened:REFIT STATION",
+      "driveResult": "opened:REFIT KEEP",
       "ok": true
     },
     {

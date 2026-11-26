@@ -14,12 +14,12 @@ origin: audit
 
 ## Symptom
 
-P1: a review decision can delete work the station says was approved. Reject and Approve from two clients, or overlapping requests from one review panel, both succeed. The files are reverted but the authoritative iteration remains approved. Further review is refused because the iteration already has a verdict.
+P1: a review decision can delete work the keep says was approved. Reject and Approve from two clients, or overlapping requests from one review panel, both succeed. The files are reverted but the authoritative iteration remains approved. Further review is refused because the iteration already has a verdict.
 
 ## Repro
 
 1. Boot an isolated seeded sidecar with the local mock in dev/audit-mock.cjs.
-2. Run node dev/audit-loop-verdict.cjs. It creates a disposable Git project, grants only that project, starts one real loop iteration, provides a known file change while the mock run is held, and lets StarNet harvest a real candidate commit.
+2. Run node dev/audit-loop-verdict.cjs. It creates a disposable Git project, grants only that project, starts one real loop iteration, provides a known file change while the mock run is held, and lets Eyehold harvest a real candidate commit.
 3. POST /api/loops/verdict with rejected; 25 ms later POST approved for the same loop and iteration.
 4. Both responses are HTTP 200 and ok:true. The rejection reports undone:[1]; the final record reports approvedCount:1, rejectedCount:0, verdict:approved. candidate.txt no longer exists.
 5. Open WORK > AUTOMATION > Goal loops. The live UI says 'pass 1/1 · 1 approved · 0 rejected'. Restart with --keep: the contradiction remains.

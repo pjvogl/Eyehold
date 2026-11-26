@@ -6,7 +6,7 @@
    can watch the top rung refuse to stop there and chain straight into the build.
 
    What it sets up:
-     • a scratch workspace copied from the golden seed (never the real station),
+     • a scratch workspace copied from the golden seed (never the real keep),
      • autonomy posture = FREE (initiative 'free'),
      • two queued jobs: one is fired automatically so a finished build is already waiting when you open the
        app, the other is left so you can press BUILD NOW in AGENTS ▸ AWAY and watch the chain live.
@@ -81,7 +81,7 @@ function startMock() {
             if (turns === 0) tool('w1', 'fs_write', { path: dir + '/automation-backlog.md', content: PLAN_MD });
             else if (turns === 1) tool('w2', 'fs_write', { path: dir + '/deliverable.json', content: JSON.stringify({
               v: 1, runId, agentId: 'agent', backlogId: 'x', title: 'Recent-work automation backlog', kind: 'doc', planOnly: true,
-              summary: 'A backlog turning repeated workstation questions into automation candidates.',
+              summary: 'A backlog turning repeated workkeep questions into automation candidates.',
               files: [{ path: 'automation-backlog.md', bytes: PLAN_MD.length }], howToUse: 'Open automation-backlog.md.',
               notVerified: ['choose which candidate to build first'] }) });
             else text('Wrote the backlog.');
@@ -125,7 +125,7 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
   for (let i = 0; i < 60 && boot.indexOf(HOST) < 0; i++) await sleep(500);
   const { bootToken } = require(path.join(REPO, 'test', '_httpToken.js'));
   const tok = await bootToken(HOST, HOST);
-  const H = { 'Content-Type': 'application/json', 'X-StarNet-Token': tok, Origin: HOST };
+  const H = { 'Content-Type': 'application/json', 'X-Eyehold-Token': tok, Origin: HOST };
   const post = (p, body) => fetch(HOST + p, { method: 'POST', headers: H, body: JSON.stringify(body) });
 
   await post('/api/autonomy/posture', { posture: { initiative: 'free', reach: 'sandbox' } });

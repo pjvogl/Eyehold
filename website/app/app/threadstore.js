@@ -1,4 +1,4 @@
-/* STARNET — threadstore.js : the live wiring around the NS-6 THREAD turn-in (the frontend hop that makes the
+/* EYEHOLD — threadstore.js : the live wiring around the NS-6 THREAD turn-in (the frontend hop that makes the
    thread ledger real).
 
    The sidecar MINES a finished task run for "threads" — ideas the Commander floated but never acted on, each
@@ -17,7 +17,7 @@
      slot at the LOWEST priority — memory > study > arc > trust > thread) lives in chat.js. */
 'use strict';
 const ThreadStore = (() => {
-  const KEY = 'starnet.threadturnin.v1';
+  const KEY = 'eyehold.threadturnin.v1';
   const SESSION_CAP = 1;        // at most ONE thread turn-in card SHOWN per session (anti-nag; mirrors study's trim)
   const IGNORE_LIMIT = 2;       // ignore a mined idea this many times → stop offering it (stop-forever, client-side)
   const RESOLVED_CAP = 300;     // decided-proposal fingerprints (FIFO) — a kept/discarded idea never re-offers here
@@ -62,7 +62,7 @@ const ThreadStore = (() => {
     sessionShown = 0;
   }
   // a brand-new hero starts clean (mirrors the other stores' reset on commission). The server-side ledger +
-  // denylist are station-wide and owned there; only the client gate state resets here.
+  // denylist are keep-wide and owned there; only the client gate state resets here.
   function reset() { state = hydrate(null); sessionShown = 0; try { localStorage.removeItem(KEY); } catch (_) {} }
 
   // ---- the gate the chat beat consults ----

@@ -1,4 +1,4 @@
-/* STARNET — recipe-catalog/general.js : the UNIVERSAL STANDING WATCHES.
+/* EYEHOLD — recipe-catalog/general.js : the UNIVERSAL STANDING WATCHES.
 
    Registered in index.js by the aggregator — this file only EXPORTS the array. Same UMD-light module
    pattern as its siblings: a `RecipeCatalogGeneral` global in the browser, module.exports under node.
@@ -7,7 +7,7 @@
    ══ WHAT BELONGS HERE ══
    Every record clears THE RECIPE BAR in core.js — and this module is where bar 6 (NON-OBVIOUS or
    UNIVERSAL) is load-bearing. These are the recipes whose whole reason to exist is that the Commander
-   would never have thought to ask for them: a station that remembers what it saw last week can notice
+   would never have thought to ask for them: a keep that remembers what it saw last week can notice
    things a person cannot, because the noticing depends on a record nobody was keeping.
 
    The shape they share: each one holds STATE ACROSS RUNS and reports only the DELTA. That is why they
@@ -56,7 +56,7 @@
       blurb: 'Watches the pricing and terms pages of the services you rely on, and reports only what actually changed.',
       tags: { research: 0.6, general: 0.4 },
       params: [{ key: 'services', label: 'What you depend on', placeholder: 'the tools / services / providers you pay for or rely on' }],
-      task: 'Watch the pricing, terms and policy pages for {services}. On this run, fetch each one, and compare against the text you recorded on the previous run. THE RECORD IS THE ENTIRE POINT: nobody reads these pages twice, so a change made quietly in March is discovered in December when it costs something, and that gap is exactly what a station with a memory closes. Report only genuine changes, and for each: which service, what the wording was before, what it is now, and — the part that matters — what it means for someone in my position. Sort by consequence: price rises, a free tier narrowing, usage limits, a change to who owns what I put in, a new right for them to use my data, a shortened notice period, or a term that now permits something previously forbidden. Explicitly separate substantive changes from a page merely being reworded or reorganized, because reorganization is common and reporting it as a change trains me to ignore you. Where something changed, say whether there is an action with a deadline attached. If you could not fetch a page, say so plainly — that is completely different from no change, and confusing the two is how this watch quietly fails. Nothing moved, one line. Record every page for next time.',
+      task: 'Watch the pricing, terms and policy pages for {services}. On this run, fetch each one, and compare against the text you recorded on the previous run. THE RECORD IS THE ENTIRE POINT: nobody reads these pages twice, so a change made quietly in March is discovered in December when it costs something, and that gap is exactly what a keep with a memory closes. Report only genuine changes, and for each: which service, what the wording was before, what it is now, and — the part that matters — what it means for someone in my position. Sort by consequence: price rises, a free tier narrowing, usage limits, a change to who owns what I put in, a new right for them to use my data, a shortened notice period, or a term that now permits something previously forbidden. Explicitly separate substantive changes from a page merely being reworded or reorganized, because reorganization is common and reporting it as a change trains me to ignore you. Where something changed, say whether there is an action with a deadline attached. If you could not fetch a page, say so plainly — that is completely different from no change, and confusing the two is how this watch quietly fails. Nothing moved, one line. Record every page for next time.',
       category: 'general', gear: ['dish', 'notebook'], skills: ['feed-watch'], cadence: 'weekly',
       source: 'builtin', forkedFrom: null
     },

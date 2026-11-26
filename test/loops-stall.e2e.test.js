@@ -2,11 +2,11 @@
 
    The incident: a customer's agent ("Pops") ran 98 overnight passes on a full-access loop. Every pass
    re-confirmed that the previous pass's files existed, reported it as work, and was auto-approved. Nothing
-   changed, ~$98 was spent, and nothing in the station stood between the loop and the card: every spend cap
+   changed, ~$98 was spent, and nothing in the keep stood between the loop and the card: every spend cap
    shipped at 0 (ungoverned), and the loop's only convergence signal was the model choosing to say NOTHING-TO-DO.
 
    This walks the REAL sidecar against a mock OpenRouter and proves, end to end:
-     · a fresh station (no env, nothing saved) reports the shipped $25/day rail on /api/budget/status, marked
+     · a fresh keep (no env, nothing saved) reports the shipped $25/day rail on /api/budget/status, marked
        as an environment default (not a saved value) — and it is a soft rail the Commander can dial to 0
      · a full-access loop whose passes keep reporting the same "verified the files exist" text parks itself
        PAUSED after stallStopAfter passes, with the reason in words, and then spends NOTHING more
@@ -64,7 +64,7 @@ function startMockOpenRouter(defaultReply) {
 function boot(port, env, attemptsLeft) {
   return new Promise((resolve, reject) => {
     const child = spawn(process.execPath, [INDEX], {
-      env: Object.assign({}, process.env, env, { SKYNET_PORT: String(port) }),
+      env: Object.assign({}, process.env, env, { EYEHOLD_PORT: String(port) }),
       stdio: ['ignore', 'pipe', 'pipe']
     });
     let out = '', settled = false;
@@ -100,17 +100,17 @@ async function until(B, headers, pred, label, ms) {
   const POPS = 'Verified that all the project files exist and everything is in place. The structure is confirmed and ready.';
   const mock = await startMockOpenRouter(POPS);
   const ws = fs.mkdtempSync(path.join(os.tmpdir(), 'sk-loops-stall-e2e-'));
-  // NOTE: no SKYNET_BUDGET_* in this env — the point is what a fresh install ships with.
+  // NOTE: no EYEHOLD_BUDGET_* in this env — the point is what a fresh install ships with.
   const env = {
-    SKYNET_WORKSPACES: ws,
-    SKYNET_OPENROUTER_BASE: mock.base,
-    SKYNET_OPENROUTER_KEY: 'sk-or-v1-stall-fake',
-    SKYNET_DEFAULT_MODEL: 'test/model',
-    SKYNET_LOOP_TICK_MS: '1000',
-    SKYNET_FULL_ACCESS: '1'
+    EYEHOLD_WORKSPACES: ws,
+    EYEHOLD_OPENROUTER_BASE: mock.base,
+    EYEHOLD_OPENROUTER_KEY: 'sk-or-v1-stall-fake',
+    EYEHOLD_DEFAULT_MODEL: 'test/model',
+    EYEHOLD_LOOP_TICK_MS: '1000',
+    EYEHOLD_FULL_ACCESS: '1'
   };
   // scrub any inherited budget env so the assertion is about the shipped default, not this machine's shell
-  for (const k of Object.keys(process.env)) if (/^(SKYNET|STARNET)_BUDGET_/.test(k)) env[k] = '';
+  for (const k of Object.keys(process.env)) if (/^(SKYNET|EYEHOLD)_BUDGET_/.test(k)) env[k] = '';
   let child, port;
   try {
     const OBJ = 'keep the release folder complete and correct';
@@ -119,7 +119,7 @@ async function until(B, headers, pred, label, ms) {
     ({ child, port } = await boot(9040 + (process.pid % 25), env, 20));
     let B = 'http://' + HOST + ':' + port;
     let token = await bootToken(B, B);
-    let headers = { 'Content-Type': 'application/json', 'X-StarNet-Token': token, Origin: B };
+    let headers = { 'Content-Type': 'application/json', 'X-Eyehold-Token': token, Origin: B };
 
     // ---- RAIL 1: the shipped day cap is real, visible, honest about its source, and dial-able --------------
     const bs = await (await fetch(B + '/api/budget/status', { headers })).json();
@@ -184,7 +184,7 @@ async function until(B, headers, pred, label, ms) {
     await sleep(600);
     ({ child, port } = await boot(port, env, 20));
     B = 'http://' + HOST + ':' + port;
-    token = await bootToken(B, B); headers = { 'Content-Type': 'application/json', 'X-StarNet-Token': token, Origin: B };
+    token = await bootToken(B, B); headers = { 'Content-Type': 'application/json', 'X-Eyehold-Token': token, Origin: B };
     const revived = (await (await fetch(B + '/api/loops', { headers })).json()).loops[0];
     A.eq(revived.state, 'paused', 'a restart does not quietly resume a parked loop');
     A.eq(revived.stallStreak, 3, 'the streak is durable');

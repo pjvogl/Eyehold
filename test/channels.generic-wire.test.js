@@ -52,20 +52,20 @@ const ids = () => { let i = 0; return () => 'r' + (++i); };
   A.ok(/notifyAutonomous/.test(statusBody), 'status surfaces the shared autonomous-ping opt-in');
 
   // ---------- 1b. FRONTEND source-guard: the CHANNELS panel renders all five platforms from ONE catalog ----------
-  const station = fs.readFileSync(path.join(__dirname, '..', 'frontend', 'app', 'windows', 'messaging.js'), 'utf8');
-  A.ok(/CHANNEL_CATALOG/.test(station), 'the panel is catalog-driven (adding a platform is a catalog row)');
-  for (const t of ['TELEGRAM', 'DISCORD', 'SLACK', 'MATRIX', 'SIGNAL']) A.ok(new RegExp("title: '" + t + "'").test(station), t + ' card present in the catalog');
+  const keep = fs.readFileSync(path.join(__dirname, '..', 'frontend', 'app', 'windows', 'messaging.js'), 'utf8');
+  A.ok(/CHANNEL_CATALOG/.test(keep), 'the panel is catalog-driven (adding a platform is a catalog row)');
+  for (const t of ['TELEGRAM', 'DISCORD', 'SLACK', 'MATRIX', 'SIGNAL']) A.ok(new RegExp("title: '" + t + "'").test(keep), t + ' card present in the catalog');
   // masked secrets: slack's two tokens + matrix's access token are password inputs; endpoints/account are plain text.
-  A.ok(/id="sl-bot-token"[^>]*type="password"/.test(station) && /id="sl-app-token"[^>]*type="password"/.test(station), 'both Slack tokens are masked inputs');
-  A.ok(/id="mx-token"[^>]*type="password"/.test(station), 'the Matrix access token is a masked input');
-  A.ok(/id="mx-endpoint"[^>]*type="text"/.test(station) && /id="sg-endpoint"[^>]*type="text"/.test(station), 'endpoints are plain-text config fields (non-secret)');
+  A.ok(/id="sl-bot-token"[^>]*type="password"/.test(keep) && /id="sl-app-token"[^>]*type="password"/.test(keep), 'both Slack tokens are masked inputs');
+  A.ok(/id="mx-token"[^>]*type="password"/.test(keep), 'the Matrix access token is a masked input');
+  A.ok(/id="mx-endpoint"[^>]*type="text"/.test(keep) && /id="sg-endpoint"[^>]*type="text"/.test(keep), 'endpoints are plain-text config fields (non-secret)');
   // honest setup guidance for each new platform
-  A.ok(/Socket Mode/.test(station) && /connections:write/.test(station), 'Slack setup guide covers Socket Mode + the app-level token scope');
-  A.ok(/Access Token/.test(station) && /homeserver/i.test(station), 'Matrix setup guide covers homeserver + access token');
-  A.ok(/signal-cli-rest-api/.test(station), 'Signal setup guide points at the signal-cli REST bridge');
+  A.ok(/Socket Mode/.test(keep) && /connections:write/.test(keep), 'Slack setup guide covers Socket Mode + the app-level token scope');
+  A.ok(/Access Token/.test(keep) && /homeserver/i.test(keep), 'Matrix setup guide covers homeserver + access token');
+  A.ok(/signal-cli-rest-api/.test(keep), 'Signal setup guide points at the signal-cli REST bridge');
   // the panel paints all cards from the one bulk poll and the shared notify opt-in exists exactly once
-  A.ok(/fetch\('\/api\/channels\/status'\)/.test(station), 'the panel paints from GET /api/channels/status');
-  A.eq((station.match(/id="ch-notify"/g) || []).length, 1, 'exactly ONE shared autonomous-ping opt-in');
+  A.ok(/fetch\('\/api\/channels\/status'\)/.test(keep), 'the panel paints from GET /api/channels/status');
+  A.eq((keep.match(/id="ch-notify"/g) || []).length, 1, 'exactly ONE shared autonomous-ping opt-in');
 
   // ---------- 2. BEHAVIOUR: each descriptor wires into a startable adapter on the SAME hub/runOnce path ----------
   const CASES = [

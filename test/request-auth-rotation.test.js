@@ -2,7 +2,7 @@
 const assert=require('node:assert/strict'),http=require('node:http'),fs=require('node:fs'),os=require('node:os'),path=require('node:path');
 const {makeOpenAiCompat}=require('../sidecar/openai-compat');const {makeRequestReservations}=require('../sidecar/request-reservations');
 (async()=>{
- const root=fs.mkdtempSync(path.join(os.tmpdir(),'starnet-rotation-'));let key='old-principal-test-key',calls=0,release,started;
+ const root=fs.mkdtempSync(path.join(os.tmpdir(),'eyehold-rotation-'));let key='old-principal-test-key',calls=0,release,started;
  const ready=new Promise(r=>started=r),hold=new Promise(r=>release=r);
  const api=makeOpenAiCompat({now:()=>1000,newId:()=>String(calls),apiKey:()=>key,requestReservations:makeRequestReservations({fs,path,workspaces:root,now:()=>1000}),readBody:async req=>{let s='';for await(const c of req)s+=c;return s;},runOnce:async o=>{calls++;started();await hold;o.emit('agent.token',{delta:'PRIVATE_RESULT'});o.emit('agent.run.end',{reason:'done'});}});
  const server=http.createServer((req,res)=>api.handle(req,res));await new Promise(r=>server.listen(0,'127.0.0.1',r));

@@ -1,6 +1,6 @@
 {
   "date": "2026-09-15",
-  "url": "http://127.0.0.1:18814/agent-station-demo.html?propSet=projection",
+  "url": "http://127.0.0.1:18814/agent-keep-demo.html?propSet=projection",
   "method": "CUA screenshots and rendered data-motion attributes after publishing, reload and Cadet colors selection",
   "standingHeight": 19,
   "browserErrors": [],
@@ -12,5 +12,5 @@
     {"skin":"blank_amber","walkFramesObserved":40,"maxFacingError":18.4,"backwardFrames":0}
   ],
   "speechPose": {"skin":"approved_android","standingHeight":19,"groundGap":0.25},
-  "limits": "Live observation sampled normal station movement; all directional, seated and typing artwork was additionally inspected in the 400-frame contact sheets. Full test gate recorded separately."
+  "limits": "Live observation sampled normal keep movement; all directional, seated and typing artwork was additionally inspected in the 400-frame contact sheets. Full test gate recorded separately."
 }

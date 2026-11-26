@@ -26,7 +26,7 @@ for (const id of STARTER) {
 
 /* ---- 3. the shelf is CAPABILITY GRANTS ONLY: the tutorial kit + studio ----
    Andrew's scope call (2026-08-18): no BAY (conveyor equipment, not a necessity) and no seat
-   workstation — every tile must be a prop that grants a real power, because the shelf's whole
+   workkeep — every tile must be a prop that grants a real power, because the shelf's whole
    claim is "these are the powers an agent needs" and its satisfied-tick logic keys on the grant.
    tutorial.js KIT_SPEC is the other authority on "what a first agent needs"; read its prop ids
    from source (it is a browser script, not a require()-able module) and require every one to be
@@ -34,7 +34,7 @@ for (const id of STARTER) {
 const WM = require('../frontend/app/worldmodel.js');
 A.ok(!STARTER.includes('bay'), 'STARTER has NO bay (conveyor gear, not a necessity)');
 A.ok(!STARTER.some(id => { const c = PS.spec(id); return c && c.seat; }),
-  'STARTER has no seat workstation');
+  'STARTER has no seat workkeep');
 A.ok(STARTER.includes('studio'), 'STARTER carries the STUDIO (the power users miss)');
 for (const id of STARTER) {
   A.ok(!!(WM.grantLabelForProp && WM.grantLabelForProp(id)),
@@ -50,7 +50,7 @@ for (const p of kitProps) {
 }
 
 /* ---- 4. the card actually renders it, from THIS list ----
-   Presentation (Andrew 2026-08-18): the STARTER checklist REPLACED the STATION ORDERS card —
+   Presentation (Andrew 2026-08-18): the STARTER checklist REPLACED the KEEP ORDERS card —
    the floating REFIT card slot, not a shelf inside the prop palette (that v1/v2 shelf is gone).
    The deep locks on the card's mechanics (grant-keyed done, self-retire without burning the
    dismiss key) live in refit-card-stack.test.js next to the rest of the card-slot laws. */

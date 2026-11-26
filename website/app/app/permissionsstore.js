@@ -1,5 +1,5 @@
-/* STARNET — permissionsstore.js : the thin live wiring around the pure Permissions Panel engine (permissions.js).
-   Autonomy Stage B / B1 — the OS-style trust panel where the Commander dials the station never→fully-autonomous
+/* EYEHOLD — permissionsstore.js : the thin live wiring around the pure Permissions Panel engine (permissions.js).
+   Autonomy Stage B / B1 — the OS-style trust panel where the Commander dials the keep never→fully-autonomous
    and sees / revokes every standing capability grant.
 
    It is the EDGE the pure engine isn't: it owns the api round-trips (the standing grants live SERVER-side in the
@@ -158,7 +158,7 @@ const PermissionsStore = (() => {
     if (deps.load !== false) { try { refresh(); } catch (_) {} }
   }
 
-  // a brand-new hero starts LOCKED DOWN: revoke the curated autonomous grants before the fresh station commits.
+  // a brand-new hero starts LOCKED DOWN: revoke the curated autonomous grants before the fresh keep commits.
   // A revoke failure must preserve the last confirmed cache and REJECT — clearing first made the UI claim lockdown
   // while the server still held cabinet:write. Non-curated grants remain visible and untouched.
   async function reset() {

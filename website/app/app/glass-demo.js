@@ -1,4 +1,4 @@
-/* Station glass window controller. Uses the existing windows, controls and real data. */
+/* Keep glass window controller. Uses the existing windows, controls and real data. */
 (() => {
   'use strict';
   if (!document.body.classList.contains('glass-demo')) return;
@@ -69,7 +69,7 @@
     s.exiting = !showing;
     w.inert = !showing;
     if (showing) seat(w,s);
-    // a ONE MENU tab switch (stationui switchFamilyTab) swaps windows in place: no sheet travel either way
+    // a ONE MENU tab switch (keepui switchFamilyTab) swaps windows in place: no sheet travel either way
     const famSwitch = typeof document !== 'undefined' && !!document.body && document.body.hasAttribute('data-fam-switch');
     if (reducedMotion.matches || famSwitch) { done(); return; }
     const style = getComputedStyle(w);

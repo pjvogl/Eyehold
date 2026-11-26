@@ -10,14 +10,14 @@ Unchecked means owed. Each completed row needs candidate SHA, artifact identity 
 - [ ] Record final owner-selected overhaul tips and confirm their changes in the combined tree. Reconcile overlapping prop/sprite/starter branches by content.
 - [ ] Record one final combined SHA and stop counting moving previews as acceptance.
 
-## Existing 0.11.2 station → 0.12.0
+## Existing 0.11.2 keep → 0.12.0
 
 - [ ] Start from an actual signed public 0.11.2 installation with a representative populated save; take and verify a closed backup. Record roster IDs, layouts/props/rotation/materials, conversations, projects, capabilities, routines/loops, goals/XP, settings and credential state without exporting secrets.
 - [ ] Upgrade through Update Center. Confirm exact source/executable version, embedded frontend and bundled sidecar identity. A repo patch is not installed proof.
-- [ ] Existing stations retain their chosen layout and state. New default/furnished presets do not silently replace old saves. Any intentional migration must be named and verified.
+- [ ] Existing keeps retain their chosen layout and state. New default/furnished presets do not silently replace old saves. Any intentional migration must be named and verified.
 - [ ] Test old prop IDs/rotations, occupied seats, mounted objects, corridors/door openings, saved zoom/CRT settings and old skin selections under the new renderer; verify floor contact, click geometry and room containment.
 - [ ] Restart normally and compare saved state again. Open old conversations, completed outputs, routines, goals and ratings; exercise fresh writes and prove persistence.
-- [ ] Exercise update-check outage/retry, cancellation, interrupted download/install, backup/recovery and queued writes through the existing lifecycle harness. No destructive trial on the personal station.
+- [ ] Exercise update-check outage/retry, cancellation, interrupted download/install, backup/recovery and queued writes through the existing lifecycle harness. No destructive trial on the personal keep.
 
 ## New aesthetic and product flow
 
@@ -27,7 +27,7 @@ Unchecked means owed. Each completed row needs candidate SHA, artifact identity 
 - [ ] Remastered agents: all shipped skins, all walk directions, turns, idle/talk/sit cycles, crowded collisions and foot anchors; legacy settings and selections continue to work.
 - [ ] Structural art: room/corridor joins, ceiling/wall masks, labels, seated/standing depth, object hitboxes, maximum zoom-out and enlarged UI. Review GPU/memory/frame performance on representative modest hardware.
 - [ ] World truth: zones contain agents; gaze does not secretly move them; placed grants and capability displays reconcile; work/idle/approval/error states match backend events.
-- [ ] Fresh screenshot set on the final candidate: hero/default station, furnished alternative, active real task + output, Build, and personal progress. Replace website/manual screenshots and terminology only with final observed behavior.
+- [ ] Fresh screenshot set on the final candidate: hero/default keep, furnished alternative, active real task + output, Build, and personal progress. Replace website/manual screenshots and terminology only with final observed behavior.
 - [ ] Website demo remains generated from frontend; final marketing/manual links, mobile layout and platform download targets work. Do not advertise pending gallery/AI-building features.
 
 ## Bug and regression campaign

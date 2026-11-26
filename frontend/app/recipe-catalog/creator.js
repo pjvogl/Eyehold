@@ -1,4 +1,4 @@
-/* STARNET — recipe-catalog/creator.js : CREATOR recipes — audience, publishing, and the archive.
+/* EYEHOLD — recipe-catalog/creator.js : CREATOR recipes — audience, publishing, and the archive.
 
    Registered in index.js by the aggregator — this file only EXPORTS the array. Same UMD-light module
    pattern as recipes.js: a `RecipeCatalogCreator` global in the browser, module.exports under node.
@@ -13,7 +13,7 @@
 
    That reframing is also what makes these NON-OBVIOUS (bar 6). "Write me a hook" is a request anyone
    thinks of. "Go through everything I have published and tell me which claims have since become false"
-   is not — and it is only possible on a station that can read the archive and the live web together.
+   is not — and it is only possible on a keep that can read the archive and the live web together.
 
    Content contract: every record clears THE RECIPE BAR documented in core.js, all six points.
 

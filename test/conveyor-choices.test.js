@@ -60,7 +60,7 @@ const splitOf = plan => Object.keys(plan.junctions).find(k => plan.junctions[k].
   A.ok(/function splitModeInfo\(splitId\)/.test(build) && /Pipeline\.rejoinOf\(plan, lk\)\.lanes/.test(build) && /const plan = probePlanOnceCrewed\(\);/.test(build), 'the switch reads the once-crewed plan (a fresh stamp answers like a crewed one)');
   A.ok(/meet && meet\.kind === 'merge' && propAt\(meet\.at\) \? \{ ok: true, swap: \[propAt\(meet\.at\)\] \}/.test(build), 'COPY swaps the one MERGER where every branch meets');
   A.ok(/the branches never meet at one MERGER/.test(build), '…and says why when there is none');
-  A.ok(/station\.swapJoinerMerger\(step\.swap\[0\]\)/.test(build) && /splitModeInfo: id => splitModeInfo\(id\)/.test(build) && /setSplitMode: \(id, mode\) => setSplitMode\(id, mode\)/.test(build), 'the panel reaches it through the host');
+  A.ok(/keep\.swapJoinerMerger\(step\.swap\[0\]\)/.test(build) && /splitModeInfo: id => splitModeInfo\(id\)/.test(build) && /setSplitMode: \(id, mode\) => setSplitMode\(id, mode\)/.test(build), 'the panel reaches it through the host');
   A.ok(/pick\('copy', 'COPY TO EACH'/.test(panel) && /pick\('turns', 'TAKE TURNS'/.test(panel) && /H\.setSplitMode\(p\.id, b\.dataset\.smode\)/.test(panel), 'the SPLITTER section carries the switch');
   A.ok(/aria-disabled="true" data-tip="' \+ esc\(\(step && step\.msg\)/.test(panel), 'a choice the floor cannot make is greyed with its reason');
 }
@@ -102,7 +102,7 @@ const splitOf = plan => Object.keys(plan.junctions).find(k => plan.junctions[k].
 /* ---------- 4b: save, and turn scheduling on ---------- */
 {
   A.ok(/\(S\.cron && !S\.cron\.enabled && !S\.cron\.halted\)/.test(panel) && /id="trg-create" data-arm="1"/.test(panel) && /▸ SAVE · TURN SCHEDULING ON/.test(panel) && /id="trg-create-only"/.test(panel), 'scheduling off: the save button turns it on too, SAVE ONLY beside it');
-  A.ok(/Turning it on lets every saved schedule run at its time\./.test(panel), '…and says the switch is station-wide');
+  A.ok(/Turning it on lets every saved schedule run at its time\./.test(panel), '…and says the switch is keep-wide');
   A.ok(/if \(arm && !armedNow && !cur\.halted && saved\.enabled\) \{/.test(panel) && /api\('\/api\/cron\/arm', 'POST', \{ enabled: true \}\)/.test(panel), 'it arms on the same route the switch uses, never lifting an E-STOP');
   A.ok(/'✓ schedule saved and scheduling is on — fires at '/.test(panel) && /could not be turned on: press TURN SCHEDULING ON above/.test(panel), 'the result is said as it happened');
   A.ok(/\$\('#trg-create'\)\.onclick = \(\) => create\(!!\$\('#trg-create'\)\.dataset\.arm\);/.test(panel) && /createOnly\.onclick = \(\) => create\(false\)/.test(panel), 'both buttons share one save path');
@@ -117,7 +117,7 @@ const splitOf = plan => Object.keys(plan.junctions).find(k => plan.junctions[k].
   }
   A.ok(/for \(const bp of \(\(typeof WorldModel !== 'undefined' && WorldModel\.BLUEPRINTS\) \|\| \[\]\)\) \{ if \(bp\.plain\) LINE_PLAIN\[bp\.id\] = bp\.plain; if \(bp\.work\) LINE_WORK\[bp\.id\] = bp\.work; \}/.test(build), 'the shelf reads the names and kinds from the catalog');
   A.ok(/LINE_WORK_GROUPS\.some\(g => g\.id === LINE_WORK\[bp\.id\]\)/.test(build), 'the shelf groups by kind of work (an unknown line falls into the last section)');
-  A.ok(/station\.stampBlueprint\(bp\.id, o\.x, o\.y, lineStampOpts\(bp\)\)/.test(build), 'placing a line carries the card\'s cap and tries INTO the one stamp');
+  A.ok(/keep\.stampBlueprint\(bp\.id, o\.x, o\.y, lineStampOpts\(bp\)\)/.test(build), 'placing a line carries the card\'s cap and tries INTO the one stamp');
   A.ok(/if \(tool === 'line' && bp\.id === lineType\) grid\.appendChild\(linePrefsEl\(bp\)\)/.test(build), 'the armed card shows its settings right under it');
 }
 

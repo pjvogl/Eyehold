@@ -1,12 +1,12 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://starnet.local/schemas/eval-receipt-v1.json",
-  "title": "StarNet candidate-bound evaluation receipt v1",
+  "$id": "https://eyehold.local/schemas/eval-receipt-v1.json",
+  "title": "Eyehold candidate-bound evaluation receipt v1",
   "type": "object",
   "additionalProperties": true,
   "required": ["schemaVersion", "kind", "generatedAt", "contract", "subject", "candidateBound", "result", "evidence", "limitations"],
   "properties": {
-    "schemaVersion": { "const": "starnet.eval.receipt.v1" },
+    "schemaVersion": { "const": "eyehold.eval.receipt.v1" },
     "kind": { "enum": ["fault", "parity", "performance"] },
     "generatedAt": { "type": "string" },
     "candidateBound": { "type": "boolean" },

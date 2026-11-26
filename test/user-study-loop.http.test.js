@@ -16,7 +16,7 @@ const plan = status => ({
 });
 
 (async () => {
-  const host = SidecarFixture.create({ env: { SKYNET_DEV: '1', SKYNET_CRON_ENABLED: '0', SKYNET_QUEST_REFRESH: '0' } });
+  const host = SidecarFixture.create({ env: { EYEHOLD_DEV: '1', EYEHOLD_CRON_ENABLED: '0', EYEHOLD_QUEST_REFRESH: '0' } });
   const active = async () => (await host.json('GET', '/api/journey')).body.journey.activeGoal;
   const mint = async (title, milestoneId) => {
     const r = await host.json('POST', '/api/quests/mint', { title, desc: 'a step', contract: { type: 'attest' }, kind: 'generated',
@@ -55,7 +55,7 @@ const plan = status => ({
     const stale = await host.json('POST', '/api/goals', { goal: plan('open') });
     assert.equal(stale.body.goal.milestoneId, 'g_news:m2', 'a stale webview push can never walk the plan backwards');
 
-    // What the station learned while the window was closed: study batches from runs the browser never watched
+    // What the keep learned while the window was closed: study batches from runs the browser never watched
     // (a cron run on a crew agent, a channel run on the hero) are listed for the consent card, oldest first.
     await host.stop();
     const studyFile = require('node:path').join(host.workspace, 'study.state.json');

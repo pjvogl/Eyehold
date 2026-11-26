@@ -1,8 +1,8 @@
-# StarNet interface finish audit
+# Eyehold interface finish audit
 
 Audit date: September 12–13, 2026. Baseline: `091d6e7f3`. Implementation: `0054a3d7a` on `agent/interface-finish-0913`. Environment: isolated worktree, keyless `node dev/seed.js --keep`, browser at `127.0.0.1:9237`. Findings below concern the actual seeded UI unless explicitly labelled **code inference**. This is a broad interface audit, not certification of every account, platform, or lifecycle state.
 
-The strongest opportunity is to carry StarNet's existing readable glass-console patterns into secondary forms. Preserve the station artwork, VT323 type, phosphor palette, inset controls, restrained borders, status language, and shared window chrome. The largest defects came from fixed layout dimensions and older text rules, rather than the visual identity itself.
+The strongest opportunity is to carry Eyehold's existing readable glass-console patterns into secondary forms. Preserve the keep artwork, VT323 type, phosphor palette, inset controls, restrained borders, status language, and shared window chrome. The largest defects came from fixed layout dimensions and older text rules, rather than the visual identity itself.
 
 ## Prioritized findings and implementation
 
@@ -37,7 +37,7 @@ P1 here is audit impact, while the combined engineering register entry retains P
 - **Feedback:** distinguish no data from no matches; provide an action that resolves the current condition. Use the existing inline validation, next-run preview, notification cards and save toast rather than adding a new alert style.
 - **Truth:** preserve “not linked,” “no key,” “offline,” scheduler-off explanations, and browser-unavailable messages. A saved setup must not imply a proven connection.
 
-The existing [missing-key COMMS error](comms-missing-key.png) is another useful standard: a real request in the disposable keyless station returned HTTP 400, displayed “No model is connected yet,” and provided an Add a key button. That action was verified to open Settings → Providers. No provider inference ran.
+The existing [missing-key COMMS error](comms-missing-key.png) is another useful standard: a real request in the disposable keyless keep returned HTTP 400, displayed “No model is connected yet,” and provided an Add a key button. That action was verified to open Settings → Providers. No provider inference ran.
 
 ## Coverage and receipts
 
@@ -45,19 +45,19 @@ The existing [missing-key COMMS error](comms-missing-key.png) is another useful 
 
 | Surface | Inspected states/workflows | Limits |
 | --- | --- | --- |
-| Main station, CREW, COMMS, rails | Idle/empty station; long saved title; dock dropdowns; Add agents modal with unavailable additions; Projects empty; model picker and offline catalog labels; resized panels/windows | No real streamed run, attachments, crowded many-agent station or voice session |
+| Main keep, CREW, COMMS, rails | Idle/empty keep; long saved title; dock dropdowns; Add agents modal with unavailable additions; Projects empty; model picker and offline catalog labels; resized panels/windows | No real streamed run, attachments, crowded many-agent keep or voice session |
 | Settings — all 10 sections | Providers, Autonomy, Night shift, Permissions, Spending limits, Model defaults, Live voice, Appearance, Alerts, App & Backup; blank inline key editor; disabled desktop controls; text presets; test notification | No credentials, billing, OAuth, actual backup/restore, installer update or microphone/speaker test |
 | Tasks and Deliverables | Empty board/library; long task creation and More actions; search/status no matches; loading after reset; cleanup preview with disabled zero-record action | No populated file preview, cleanup deletion or task execution |
 | Automation — all 5 sections | Scheduled jobs off/empty; new schedule, alternate timing controls and inline required-fields error; goal loops empty; new-goal choices; away work off/empty | No scheduled execution, completed/failed loop, permission grant or account delivery |
 | Abilities | Installed built-ins; keys empty; services empty; custom connection form; Add an ability; discovery catalog; 74-skill library and instruction disclosure; advanced creation choices; plugin editor opened/cancelled; extensions empty | No installation, real auth, plugin execution or every service setup detail |
 | Channels | Overview plus Telegram, Discord, Slack, Matrix and Signal setup tabs; setup copy/controls | No pairing, external message, connected service or actual network failure |
 | Agent dossier | Brief, Growth, Record, Memory, Config; empty runs/issues/insights/restore points; expanded window | Not every deep configuration editor or run detail |
-| Commander | About you, Goals, Preferences, Agent briefing, Sources, Station record; wrapping seeded text and empty records | No external document import or live progression |
+| Commander | About you, Goals, Preferences, Agent briefing, Sources, Keep record; wrapping seeded text and empty records | No external document import or live progression |
 | Recruitment / Recipes | Class/appearance catalog, empty class search, crowded recipe categories and Plan Trip form | No hire or recipe launch |
 | Quests | Quests, Goals, Progress, Completed including three completed entries | No new goal execution |
 | System | Field manual first mission/navigation; browser Updates unavailable; notifications empty, populated test event, mark-all-read and badge removal | Remaining manual chapters and installed updater not exercised |
 | Refit | Quick-guide modal, prop categories/details, toolbar at two sizes, DONE success toast after unchanged layout | Other editing modes, placement failures and every prop not exercised |
-| Widgets | Your widgets empty, Connected apps, available StarNet entry | No widget generation or connected third-party data |
+| Widgets | Your widgets empty, Connected apps, available Eyehold entry | No widget generation or connected third-party data |
 
 Window checks: 800×600, 1024×768, 1280×720, 1440×900, 1920×1080. Text presets: STANDARD 100%, X-LARGE 130%, HUGE 145%. Provider checks covered all 18 cards via live geometry, with representative visual screenshots. Abilities/catalog repairs were rechecked at 1280×720 / 130% and 1920×1080 / 100%. Automation was checked at 1280×720 and 1024×768 / 100%. [Green-theme Autonomy](after-autonomy-green.png) was visually checked at 1280×720; the original amber theme and AUTO text preference were restored afterward. This is a targeted matrix, not every screen at every combination. Temporary viewport overrides were reset after verification.
 

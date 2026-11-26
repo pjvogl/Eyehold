@@ -83,7 +83,7 @@ lastNudge.onPick({ value: 'again' });
 A.eq(prefills.length, 1, 'RUN IT AGAIN pre-fills exactly one fresh run');
 A.eq(prefills[0].directive, 'brief me on X', 'the pre-fill carries the run\'s directive verbatim (the Commander edits + sends)');
 A.eq(prefills[0].agentId, 'agent', 'the pre-fill targets the run\'s agent');
-A.ok(/"run-A":"again"/.test(mem['starnet.resummon.v1'] || ''), 'the re-summon decision is persisted (never re-offered)');
+A.ok(/"run-A":"again"/.test(mem['eyehold.resummon.v1'] || ''), 'the re-summon decision is persisted (never re-offered)');
 lastNudge = null;
 ResummonStore.onVerdict('run-A', 'great', 'agent'); flush();
 A.eq(lastNudge, null, 'a re-summoned run is never re-offered');
@@ -104,7 +104,7 @@ ResummonStore.onVerdict('run-E', 'great', 'agent'); flush();
 A.ok(lastNudge, 'a qualifying run offers');
 lastNudge.onPick({ value: 'dismiss' });
 A.eq(prefills.length, 0, 'dismissing pre-fills nothing (no run is seeded)');
-A.ok(/"run-E":"dismissed"/.test(mem['starnet.resummon.v1'] || ''), 'a dismissal is persisted');
+A.ok(/"run-E":"dismissed"/.test(mem['eyehold.resummon.v1'] || ''), 'a dismissal is persisted');
 lastNudge = null;
 ResummonStore.onVerdict('run-E', 'great', 'agent'); flush();
 A.eq(lastNudge, null, 'a dismissed run is never re-offered in the same session');
@@ -118,14 +118,14 @@ initStore(() => info({ directive: 'do Y' }));
 slotLive = true;   // a rate/turn-in/nudge beat is live in the feed
 ResummonStore.onVerdict('run-F', 'great', 'agent'); flush();
 A.eq(lastNudge, null, 'a busy beat slot defers the offer (no stacked ask)');
-A.ok(!/run-F/.test(mem['starnet.resummon.v1'] || ''), 'a deferred run is not yet decided (it can still offer once the slot frees)');
+A.ok(!/run-F/.test(mem['eyehold.resummon.v1'] || ''), 'a deferred run is not yet decided (it can still offer once the slot frees)');
 slotLive = false;   // slot frees → the queued retry now offers
 flush();
 A.ok(lastNudge, 'once the slot frees, the deferred offer fires');
 
 // 3f. reset() clears the denylist — a fresh hero re-earns every offer.
 ResummonStore.reset();
-A.eq(mem['starnet.resummon.v1'], undefined, 'reset() drops the persisted denylist key');
+A.eq(mem['eyehold.resummon.v1'], undefined, 'reset() drops the persisted denylist key');
 
 global.setTimeout = realSetTimeout;
 A.report('resummonstore.test');

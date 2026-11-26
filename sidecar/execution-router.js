@@ -6,10 +6,10 @@
 
    A requested sandbox is HONORED or REFUSED, never faked. resolveBackend() returns the full resolution
    ({ id, requested, matched, reason }); when the requested backend (docker for Safe Cell, ssh for Remote SSH)
-   is not registered, `matched` is false. Under the default policy (STARNET_SANDBOX_FALLBACK=refuse) forAgent()
+   is not registered, `matched` is false. Under the default policy (EYEHOLD_SANDBOX_FALLBACK=refuse) forAgent()
    then hands back a REFUSING proxy: describe/status/workspace methods still answer, but every execute-class
    method rejects with a typed { code:'sandbox_unavailable' } error that the tools surface as a precondition.
-   STARNET_SANDBOX_FALLBACK=allow keeps the old silent-local behaviour, but describeAgent still reports
+   EYEHOLD_SANDBOX_FALLBACK=allow keeps the old silent-local behaviour, but describeAgent still reports
    backendMatched:false so the UI can never claim a sandbox the harness is not running.
 */
 'use strict';
@@ -19,12 +19,12 @@ function makeExecutionRouter(deps) {
   deps = deps || {};
   const environments = deps.environments || {};
   const defaultBackendId = String(deps.defaultBackendId || 'local');
-  const profileForAgent = typeof deps.profileForAgent === 'function' ? deps.profileForAgent : (() => 'station-gear');
+  const profileForAgent = typeof deps.profileForAgent === 'function' ? deps.profileForAgent : (() => 'keep-gear');
   const forceLocalForAgent = typeof deps.forceLocalForAgent === 'function' ? deps.forceLocalForAgent : (() => false);
   if (!environments[defaultBackendId]) throw new Error('execution router missing default backend "' + defaultBackendId + '"');
 
   const envSrc = deps.env || process.env;
-  const fallbackPolicy = String(deps.sandboxFallback || envSrc.STARNET_SANDBOX_FALLBACK || envSrc.SKYNET_SANDBOX_FALLBACK || 'refuse')
+  const fallbackPolicy = String(deps.sandboxFallback || envSrc.EYEHOLD_SANDBOX_FALLBACK || envSrc.SKYNET_SANDBOX_FALLBACK || 'refuse')
     .trim().toLowerCase() === 'allow' ? 'allow' : 'refuse';
 
   // A registered manager is not the same as a usable one: the sidecar registers local+docker+ssh at boot
@@ -41,7 +41,7 @@ function makeExecutionRouter(deps) {
   }
   const UNUSABLE = { absent: true, unavailable: true, 'configuration-required': true };
   function resolveBackend(profileId, agentId) {
-    profileId = String(profileId || 'station-gear');
+    profileId = String(profileId || 'keep-gear');
     const want = profileId === 'safe-cell' ? 'docker' : profileId === 'remote-ssh' ? 'ssh'
       : (profileId === 'trusted-project' || profileId === 'this-computer') ? 'local' : defaultBackendId;
     const avail = availabilityOf(want, agentId);
@@ -63,7 +63,7 @@ function makeExecutionRouter(deps) {
     const id = String(agentId || 'agent');
     try {
       if (environments.local && forceLocalForAgent(id) === true) {
-        return { id: 'local', requested: 'local', matched: true, reason: null, profileId: String(profileForAgent(id) || 'station-gear'), forcedLocal: true, availability: 'ready' };
+        return { id: 'local', requested: 'local', matched: true, reason: null, profileId: String(profileForAgent(id) || 'keep-gear'), forcedLocal: true, availability: 'ready' };
       }
     } catch (_) {}
     return resolveBackend(profileForAgent(id), id);
@@ -147,7 +147,7 @@ function makeExecutionRouter(deps) {
     const effectiveBackend = String(backend.backendId || backend.id || res.id);
     return Object.assign({}, backend.describe(agentId), {
       routed: true,
-      executionProfile: String(profileForAgent(String(agentId || 'agent')) || 'station-gear'),
+      executionProfile: String(profileForAgent(String(agentId || 'agent')) || 'keep-gear'),
       effectiveBackend,
       requestedBackend: res.requested,
       backendMatched: res.matched !== false,

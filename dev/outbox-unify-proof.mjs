@@ -38,7 +38,7 @@ const STAGE = `(async () => {
 })()`;
 
 const OPEN_OUTBOX = `(async () => {
-  StationUI.openTerm('outbox');
+  KeepUI.openTerm('outbox');
   await new Promise(r => setTimeout(r, 2500));
   const rows = document.querySelectorAll('#ob-list .ob-row').length;
   const lib = !!document.querySelector('#ob-library');

@@ -6,10 +6,10 @@ const path = require('node:path');
 const { SidecarFixture } = require('./helpers/sidecar-fixture.js');
 
 (async () => {
-  const fixture = SidecarFixture.create({ prefix: 'starnet-google-early-', timeoutMs: 30000, env: {
-    STARNET_GOOGLE_DESKTOP_CLIENT_JSON: JSON.stringify({ installed: { client_id: '123456-starnettest.apps.googleusercontent.com' } }),
-    STARNET_DEFAULT_MODEL: 'replay', STARNET_OPENROUTER_KEY: '',
-    STARNET_CONNECTOR_ENCRYPTION_KEY: '3a'.repeat(32),
+  const fixture = SidecarFixture.create({ prefix: 'eyehold-google-early-', timeoutMs: 30000, env: {
+    EYEHOLD_GOOGLE_DESKTOP_CLIENT_JSON: JSON.stringify({ installed: { client_id: '123456-eyeholdtest.apps.googleusercontent.com' } }),
+    EYEHOLD_DEFAULT_MODEL: 'replay', EYEHOLD_OPENROUTER_KEY: '',
+    EYEHOLD_CONNECTOR_ENCRYPTION_KEY: '3a'.repeat(32),
     NODE_OPTIONS: '--require=' + path.join(__dirname, 'fixtures/google-early-access.cjs').replace(/\\/g, '/')
   } });
   try {
@@ -20,7 +20,7 @@ const { SidecarFixture } = require('./helpers/sidecar-fixture.js');
       assert.equal(c.releaseDeferred, false, c.id + ' is open in early access');
       assert.equal(c.signInAvailable, true, c.id + ' can sign in');
       assert.equal(c.earlyAccess, true, c.id + ' is flagged early access');
-      assert.match(c.blurb, /^Early access — Google has not finished verifying StarNet yet\. When Google says the app isn’t verified, choose Advanced, then Go to StarNet\. /, c.id + ' says so on the card, with the way through');
+      assert.match(c.blurb, /^Early access — Google has not finished verifying Eyehold yet\. When Google says the app isn’t verified, choose Advanced, then Go to Eyehold\. /, c.id + ' says so on the card, with the way through');
     }
     const files = (await fixture.json('GET', '/api/connectors/catalog')).body.connectors.find(c => c.id === 'google-files');
     assert.ok(files && !files.earlyAccess && !/^Early access/.test(files.blurb), 'Selected Google files is a verified surface, not early access');

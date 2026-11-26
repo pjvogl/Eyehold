@@ -5,20 +5,20 @@
 
 ## The idea (locked with Andrew)
 
-The North Star is **not** a one-time captured goal on a plaque. It is a *belief the station holds
+The North Star is **not** a one-time captured goal on a plaque. It is a *belief the keep holds
 about the Commander that sharpens over time*. Every bit of context — mostly **implicit signal from
 the work itself**, occasionally an **earned, non-annoying question** — refines the model of what the
 Commander actually wants. It **adapts** as their preferences and workflow drift. Ambition is the
 spine, but it is a *living estimate*, not a fixed target.
 
-The single engagement lever: make **"how well the station understands you"** a first-class, honest,
-adaptive quantity. Watching the station *get* you is intrinsically rewarding and gives a reason to
+The single engagement lever: make **"how well the keep understands you"** a first-class, honest,
+adaptive quantity. Watching the keep *get* you is intrinsically rewarding and gives a reason to
 feed it context. The north star is what that understanding *points at*, and it visibly sharpens from
 vague → crisp as the quantity climbs.
 
 > **Product law that governs this whole feature (truthful telemetry):** understanding is derived
-> ONLY from beliefs the station actually holds, decayed by staleness. A cold station reads 0. A
-> station whose beliefs have gone stale reads *down*. It never fabricates certainty the harness
+> ONLY from beliefs the keep actually holds, decayed by staleness. A cold keep reads 0. A
+> keep whose beliefs have gone stale reads *down*. It never fabricates certainty the harness
 > can't prove.
 
 ## Grounded reality — what already exists (do NOT rebuild)
@@ -86,7 +86,7 @@ isolation via `test/understanding.test.js`.
 
 > **PIVOT (2026-07-03, locked by Andrew):** no dedicated visual surface. The ambient-star concept was
 > built, live-verified, and REJECTED — "it needs to be the daily usage and gameplay… that will better
-> improve the experience due to StarNet adapting to the user." The engine drives BEHAVIOR (question
+> improve the experience due to Eyehold adapting to the user." The engine drives BEHAVIOR (question
 > targeting, meter math), presented in the simplest way possible (the existing COMMANDER panel meter).
 > Do not rebuild a star/fog/gauge hero visual for this feature.
 
@@ -106,10 +106,10 @@ do not build without his go.)
 
 | # | Build | Status |
 |---|---|---|
-| **R2** | **Ratings → preference signal.** 👍/👌/👎 verdicts feed the style-model confidence via a direct `UnderstandingStore.noteRating` hand-off in `rateWork` (👍 +1, 👎 −1, 👌 nothing; clamped ±6, persisted `starnet.understanding.v1`, new-hero reset). Engine gained SIGNED corroboration (floored at 0). Complements the 3-streak taste beat (that mints a belief; this moves confidence). | ✅ SHIPPED (1bc80b85 + c366ab7c; live-verified: style 0.51 → two 👎 → 0, overall 0.383→0.34, restored by 👍) |
+| **R2** | **Ratings → preference signal.** 👍/👌/👎 verdicts feed the style-model confidence via a direct `UnderstandingStore.noteRating` hand-off in `rateWork` (👍 +1, 👎 −1, 👌 nothing; clamped ±6, persisted `eyehold.understanding.v1`, new-hero reset). Engine gained SIGNED corroboration (floored at 0). Complements the 3-streak taste beat (that mints a belief; this moves confidence). | ✅ SHIPPED (1bc80b85 + c366ab7c; live-verified: style 0.51 → two 👎 → 0, overall 0.383→0.34, restored by 👍) |
 | **R5** | **Rhythm → routine offers.** Pure engine over run history (tag × time-of-day × recurrence ≥3 distinct days) → ONE one-tap routine offer via existing seeds/cron + earned-beat gates. | own lane — spawned (agent/rhythm-routines brief) |
 | **R3** | **Suggestions as silent belief probes (realizes P4 drift).** `probeTarget()` names a north-star-critical belief whose conf sagged <0.45; suggeststore aims the next earned idea at it (additive `Pitch.buildDirective` probe line, silent aiming); accept/decline → `noteProbe` ±1. | ✅ SHIPPED (3f954cd1; store loop live-verified w/ 90-day clock shift; aimed beat through a live LLM not yet driven) |
-| **R4** | **Payoff receipts.** `Chat.briefingReceipt(dim)` — "◈ briefing updated — every agent on this station now knows your <dim>" at both commit sites (curiosity answer = previously zero acknowledgment; kept study observation). No veto (COMMANDER panel owns undo). | ✅ SHIPPED (ff6f3b48; live-verified render) |
+| **R4** | **Payoff receipts.** `Chat.briefingReceipt(dim)` — "◈ briefing updated — every agent on this keep now knows your <dim>" at both commit sites (curiosity answer = previously zero acknowledgment; kept study observation). No veto (COMMANDER panel owns undo). | ✅ SHIPPED (ff6f3b48; live-verified render) |
 | **R1** | **Mid-task preference forks** (un-parked by Andrew 2026-07-03 — "will help produce much better output"). Fork directive rides the system prompt ONLY while style conf < 0.45 (self-retiring; prompt recomposes on gate FLIP via understanding subscription + persist); agent may end a reply with one `FORK: q \|\| a \| b` marker; chips at the run boundary; pick banks a Commander-authored style belief + R4 receipt + continues the conversation. Fail-closed everywhere. | ✅ SHIPPED (803a6130; pure engine fork.js 24 assertions; full loop live-verified incl. both gate flips in the persisted prompt; live-LLM marker emission not yet observed) |
 
 **Still open after this branch:** P2 implicit corroboration from run CONTENT (runs consistent with a belief
@@ -119,6 +119,6 @@ attended live-LLM check of the aimed suggestion beat; merge to trunk (full `test
 ## Verification (per doctrine)
 - **P1 done** = `node test/understanding.test.js` green + the module appended to `test:fast:raw` and
   the full gate green before merge. Pure engine, no live-app surface yet.
-- Later phases: live-app DOM round-trip proof per `starnet-verify` before any "done" claim.
+- Later phases: live-app DOM round-trip proof per `eyehold-verify` before any "done" claim.
 - **Ownership:** never edit `shared/events.js`/`shared/schema.js` (owned, additive-only by request).
   P2's corroboration event, if needed, is requested from the `cortex-memory` workstream.

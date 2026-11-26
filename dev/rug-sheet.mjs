@@ -1,7 +1,7 @@
 /* dev/rug-sheet.mjs — RENDER SHEET for the rug candidates (taste dial: show renders, then decide).
  *
  * Drives the already-running dev server over CDP and draws each rug variant into a scratch canvas at
- * 6x nearest-neighbour, on the station's own deck colour, so the choice is made on pixels rather than
+ * 6x nearest-neighbour, on the keep's own deck colour, so the choice is made on pixels rather than
  * on a description. Writes .rugbed-shots/rug-sheet.png.
  *
  * node dev/rug-sheet.mjs           (env: RUG_SHEET_URL, SKYNET_CDP_PORT)

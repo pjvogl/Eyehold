@@ -31,7 +31,7 @@
 })(typeof globalThis !== 'undefined' ? globalThis : this, function () {
   'use strict';
 
-  const LEDGER_CAP = 100;                 // FIFO ceiling — a long-lived station keeps the last N mints, not forever
+  const LEDGER_CAP = 100;                 // FIFO ceiling — a long-lived keep keeps the last N mints, not forever
   const SIM_THRESHOLD = 0.6;              // near-dup cutoff — SAME value as reflect.js so behavior matches memory dedup
   // stopwords for token-jaccard — mirrors reflect.js SIM_STOP so a paraphrased routine name is caught the same way.
   const SIM_STOP = new Set(('a an the of to in on for and or but is are was were be been it its this that with as at by from your you i we they daily every each').split(/\s+/));

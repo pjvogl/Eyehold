@@ -222,12 +222,12 @@ body.glass-demo #stage-wrap .cam-mode {
 /* Fine viewfinder marks over the picture, with no header plate. */
 body.glass-demo #left .ws-tab { font-size: 14px; letter-spacing: .5px; padding: 6px 3px; }
 body.glass-demo #left .ws-tab.on { text-shadow: none; }
-/* Keep the station view free of decorative targeting marks. */
+/* Keep the keep view free of decorative targeting marks. */
 body.glass-demo #stage-wrap .cam-hud::before,
 body.glass-demo #stage-wrap .cam-hud::after { content: none; display: none; }
 /* CAMERA OVERLAY, 09-30 (Andrew: the four corners were ugly → "keep only the cinema button"). The picture
    carries no camera words or frame marks: the link state already reads in the top bar (UPLINK) and the
-   station's activity lives in COMMS, so the label, LIVE / FEED, AUTO CAM, the event ticker and the ┌┐└┘
+   keep's activity lives in COMMS, so the label, LIVE / FEED, AUTO CAM, the event ticker and the ┌┐└┘
    marks are hidden here (world.js still writes their text; hiding is presentation only). CINEMA stays, as
    one small glass key (the Build Library sheet glass) in the bottom-right corner.
    !important: warroom.js sets .cam-mode's display inline every tick. */
@@ -311,7 +311,7 @@ body.glass-demo #left :is(#workstreams .ws-row,#projects .proj-sess-full) > .ws-
   body.glass-demo #left :is(#workstreams .ws-row,#projects .proj-sess-full) > .ws-dot::before { animation: none; }
   body.glass-demo #left :is(#workstreams .ws-row,#projects .proj-sess-full) > .ws-dot.working::before { transform: translateY(3px); opacity: 1; }
 }
-/* Small, familiar window glyphs on station glass. */
+/* Small, familiar window glyphs on keep glass. */
 body.glass-demo .gd-sheet .gd-controls { gap: 4px; }
 body.glass-demo .gd-sheet :is(.gd-window-button,.term-x) {
   width: 27px; height: 25px; min-width: 27px; padding: 0; display: inline-flex;
@@ -393,7 +393,7 @@ body.glass-demo #stage-wrap {
 body.glass-demo .term:not(.pw) > .term-resize,
 body.glass-demo .term:not(.pw) .term-foot-grip { display: none; }
 
-/* Widget rails and their library share the station's smoked glass and readable controls. */
+/* Widget rails and their library share the keep's smoked glass and readable controls. */
 body.glass-demo #screen-game .widget-rail .wg-add {
   width: 28px; height: 28px; min-width: 28px; padding: 0; gap: 0;
   border: 1px solid var(--gd-edge); border-radius: 4px;

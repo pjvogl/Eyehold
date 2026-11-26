@@ -1,4 +1,4 @@
-# StarNet Remote relay. Build from the REPO ROOT so the phone app and font come from their real homes:
+# Eyehold Remote relay. Build from the REPO ROOT so the phone app and font come from their real homes:
 #   fly deploy --config relay/fly.toml --dockerfile relay/Dockerfile .
 FROM node:22-bookworm-slim
 WORKDIR /srv

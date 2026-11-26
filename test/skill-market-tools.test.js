@@ -1,12 +1,12 @@
 /* node test/skill-market-tools.test.js — market skills only name tools that exist (2026-09-30).
 
    A skill is instructions to an agent. A skill that says "call fs.delete" or "use calendar.create_event" sends the
-   agent after a tool the station does not have — the agent then reports it missing, or improvises. The first batch
+   agent after a tool the keep does not have — the agent then reports it missing, or improvises. The first batch
    of originals shipped four such false claims. This reads every skill published to the Skill Market (bundled
    originals + skills-catalog/skills) and checks each tool-shaped name in its text against the real registry
    (sidecar/capability/registry.js):
      - a name in a real tool family (fs., browser., routine., task., team., notebook., skill., channel., loop.,
-       shell., terminal., station., session., tool., code., connectors., web_*, image_*, voice_*) must be a real tool
+       shell., terminal., keep., session., tool., code., connectors., web_*, image_*, voice_*) must be a real tool
      - the family wildcard (fs.*, task.*) is fine
    Connector tools (Google, GitHub, Notion…) are named by their server, so a skill must not invent them either:
    a dotted name in an unknown family that looks like a tool call is reported for a human to allow or fix. */
@@ -18,12 +18,12 @@ const path = require('path');
 const ROOT = path.join(__dirname, '..');
 const registry = fs.readFileSync(path.join(ROOT, 'sidecar', 'capability', 'registry.js'), 'utf8');
 const TOOLS = new Set([...registry.matchAll(/tool: '([A-Za-z0-9_.]+)'/g)].map(m => m[1]));
-A.ok(TOOLS.size > 100 && TOOLS.has('fs.write') && TOOLS.has('routine.create'), 'the registry lists the station\'s tools (' + TOOLS.size + ')');
+A.ok(TOOLS.size > 100 && TOOLS.has('fs.write') && TOOLS.has('routine.create'), 'the registry lists the keep\'s tools (' + TOOLS.size + ')');
 const FAMILIES = new Set([...TOOLS].filter(t => t.indexOf('.') > 0).map(t => t.split('.')[0]));
 const UNDERSCORE = /^(web|image|voice)_[a-z_]+$/;
 
 // every published skill: the 46 bundled originals + the market-only folders
-const index = JSON.parse(fs.readFileSync(path.join(ROOT, 'website', '.well-known', 'starnet-skills.json'), 'utf8'));
+const index = JSON.parse(fs.readFileSync(path.join(ROOT, 'website', '.well-known', 'eyehold-skills.json'), 'utf8'));
 const sources = [];
 for (const s of index.skills) {
   const bundled = s.librarySlug ? path.join(ROOT, 'sidecar', 'skills', 'library', s.librarySlug + '.md') : '';
@@ -64,6 +64,6 @@ for (const src of sources) {
     if (UNDERSCORE.test(m[1]) && !TOOLS.has(m[1]) && !seen.has(m[1])) { seen.add(m[1]); unknown.push(src.slug + ': ' + m[1]); }
   }
 }
-A.eq(unknown, [], 'every tool a market skill names is a real station tool');
+A.eq(unknown, [], 'every tool a market skill names is a real keep tool');
 
 A.report('skill-market-tools.test');

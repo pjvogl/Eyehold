@@ -1,11 +1,11 @@
 /* KeepAwake: desktop bridge for the Settings toggle that prevents idle system
-   sleep while StarNet is open. Browser previews expose the same API as a no-op
+   sleep while Eyehold is open. Browser previews expose the same API as a no-op
    so the settings panel can stay truthful without branching everywhere. */
 'use strict';
 
 const KeepAwake = (() => {
-  const SET_COMMAND = 'starnet_set_keep_awake';
-  const STATUS_COMMAND = 'starnet_keep_awake_status';
+  const SET_COMMAND = 'eyehold_set_keep_awake';
+  const STATUS_COMMAND = 'eyehold_keep_awake_status';
 
   let lastRequested = null;
   let lastStatus = { desktop: false, supported: false, enabled: false, message: null };
@@ -36,7 +36,7 @@ const KeepAwake = (() => {
       desktop: false,
       supported: false,
       enabled: false,
-      message: 'Keep Computer Awake is available in the StarNet desktop app.',
+      message: 'Keep Computer Awake is available in the Eyehold desktop app.',
       requested: !!requested
     };
   }

@@ -1,6 +1,6 @@
 # Skill library and distribution ecosystem — 9/10 release contract
 
-StarNet already has unusually strong **skillbuilding**: agents distill procedures from completed work,
+Eyehold already has unusually strong **skillbuilding**: agents distill procedures from completed work,
 load them progressively, track use, patch and curate them, and withhold risky content behind an exact-byte
 approval gate. The weak side of the comparison with Hermes Agent is **distribution**. Before this lane,
 there was no supported path from an open `SKILL.md` into that lifecycle.
@@ -27,7 +27,7 @@ claims trust, readiness, or currency it cannot prove.
 ### S1 — trustworthy direct distribution (implemented in `agent/skill-ecosystem-9`)
 
 - Accept a public HTTPS `SKILL.md` or a pasted GitHub file URL.
-- Reuse StarNet's URL and DNS guards, revalidating every redirect; cap documents and stages.
+- Reuse Eyehold's URL and DNS guards, revalidating every redirect; cap documents and stages.
 - Parse the open Agent Skills `name` + `description` contract.
 - Show source URL, SHA-256, full instructions, and sanitized guard findings before install.
 - Freeze reviewed bytes in a bounded ten-minute stage so install cannot re-fetch different content.
@@ -72,10 +72,10 @@ S1 closes the dangerous architectural gap and raises the distribution subsystem 
 - Skills remain **HOW**; Recipes remain **WHAT**; Routines remain **WHEN**.
 - Installing never grants missing tools or gear. A procedure and a capability are separate truths.
 - No grind, level, or XP gate controls skill access.
-- No registry badge substitutes for StarNet's own scan and exact-content review.
-  **Amended 2026-09-29 (Andrew, Skill Market D2):** the first-party StarNet catalog is the one exception.
+- No registry badge substitutes for Eyehold's own scan and exact-content review.
+  **Amended 2026-09-29 (Andrew, Skill Market D2):** the first-party Eyehold catalog is the one exception.
   Its skills are reviewed by us and pinned by package digest, so an install whose bytes reproduce the pin
-  runs at the curated (`trusted`) tier in one click. StarNet's own scan still runs on every install and a
+  runs at the curated (`trusted`) tier in one click. Eyehold's own scan still runs on every install and a
   dangerous finding is still refused; every other registry stays community.
 - A failed fetch, scan, persistence write, or update check is unknown/refused — never “safe,” “installed,”
   or “up to date.”

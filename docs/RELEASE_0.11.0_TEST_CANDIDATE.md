@@ -1,10 +1,10 @@
-# StarNet 0.11.0 replacement owner-test candidate
+# Eyehold 0.11.0 replacement owner-test candidate
 
 The owner authorized fixing four issues from the first installer test and packaging another unpublished 0.11.0 installer. Publication waits for the owner's retest and release decision. The 48-hour soak duration waiver remains limited to duration.
 
 ## Artifact
 
-- Installer: `release/StarNet_0.11.0_x64-setup.exe` in the release-0110 worktree; Windows x64, version **0.11.0**.
+- Installer: `release/Eyehold_0.11.0_x64-setup.exe` in the release-0110 worktree; Windows x64, version **0.11.0**.
 - Size: **126520301 bytes**.
 - SHA-256: `989d45d3d791fba0333b9e50864d747bd81366343760a81cb5825639a325bf0e`.
 - Exact packaged source: `d611e156a314a8f8a8475a74a471fff0be33769d`; tree `9d34c0ea0d235da150df3a40f758826216a3a535`.
@@ -14,7 +14,7 @@ The owner authorized fixing four issues from the first installer test and packag
 
 ## Included repairs
 
-New group attachments appear on their exact sent message, with image thumbnails and full-image preview. Upload/send retries and restart preserve association, and branching does not expose later message files. Recipe Bay deep shelves retain equal readable card widths. Context extraction uses the existing theme surfaces without changing its interaction. Bay names stay readable in the station and REFIT, including long names and roster renames. The approved station colour grade is independent of the UI palette; existing room-lighting preferences remain intact.
+New group attachments appear on their exact sent message, with image thumbnails and full-image preview. Upload/send retries and restart preserve association, and branching does not expose later message files. Recipe Bay deep shelves retain equal readable card widths. Context extraction uses the existing theme surfaces without changing its interaction. Bay names stay readable in the keep and REFIT, including long names and roster renames. The approved keep colour grade is independent of the UI palette; existing room-lighting preferences remain intact.
 
 Source fixes: `fe5be77a9`, final cached-message identity correction `7755dd8b2`, and incorporated room-colour merge `cac60f4a990d84b49c734edb67d56cf1a384d307`. See [polish proof](RELEASE_0.11.0_POLISH.md) for the live observations and coverage limits.
 
@@ -32,7 +32,7 @@ Evidence: `package-0110-polish-final.log`, `gate-0110-polish-final-fast.log`, `g
 
 ## Acceptance and release boundary
 
-No installed application or personal station data was replaced by this task. The owner must install and retest this exact artifact. Previously shared historical uploads cannot be retroactively assigned to a message whose identity was never recorded; test with a newly sent image. A same-version 0.11.0 replacement requires manual installation; do not assume the updater replaces an equal version.
+No installed application or personal keep data was replaced by this task. The owner must install and retest this exact artifact. Previously shared historical uploads cannot be retroactively assigned to a message whose identity was never recorded; test with a newly sent image. A same-version 0.11.0 replacement requires manual installation; do not assume the updater replaces an equal version.
 
 Google Desktop registration, the repository build secret, five APIs and 11 scopes are configured. Google verification and real-account consent/refresh/revocation acceptance remain pending. See [Google activation](GOOGLE_RELEASE_ACTIVATION_0.11.0.md).
 

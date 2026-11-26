@@ -20,4 +20,4 @@ node output/agent-animation-study/motion-polish-19px/test-motion.cjs
 npm run test:fast
 ```
 
-Live verification belongs in the seeded station at http://127.0.0.1:18814/agent-station-demo.html?propSet=projection after publishing and reloading. Generation completion alone is not live proof.
+Live verification belongs in the seeded keep at http://127.0.0.1:18814/agent-keep-demo.html?propSet=projection after publishing and reloading. Generation completion alone is not live proof.

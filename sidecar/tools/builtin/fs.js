@@ -25,7 +25,7 @@ const { note: failNote } = require('../../failopen');
 
   function safeAgentId(id) {
     if (!/^[A-Za-z0-9_-]{1,40}$/.test(id || '')) throw new Error('bad agentId');
-    // An id equal to a station-owned directory (codex/, channels/, connectors/, plugins/ …) would make that
+    // An id equal to a keep-owned directory (codex/, channels/, connectors/, plugins/ …) would make that
     // credential/code directory this agent's private jail — refuse it (sidecar/workspace-reserved.js).
     return assertWorkspaceId(id);
   }
@@ -227,7 +227,7 @@ const { note: failNote } = require('../../failopen');
         const base = P.resolve(projectRoot);
         const abs = P.resolve(base, rel || '.');
         if (!pathInside(abs, base)) throw new Error('path escapes project root');
-        // Selecting a relative base is not authority: re-run the station grant and protected-file floor for
+        // Selecting a relative base is not authority: re-run the keep grant and protected-file floor for
         // every resolved target, just as an explicit absolute path would.
         await pathTrust(abs, { scope: opts.scope === 'write' ? 'write' : 'read', agentId: agentId, ctx: opts.ctx });
         const baseReal = await realpathExisting(base);
@@ -785,8 +785,8 @@ const { note: failNote } = require('../../failopen');
 
     /* CATASTROPHIC-BACKTRACKING FLOOR (measured 2026-07-26).
        `fs.search { regex: true }` compiles the MODEL's string and runs it synchronously over every line of
-       every candidate file. StarNet is ONE process — UI, API, SSE bus and every agent run — and a
-       backtracking blow-up pegs the event loop, so a single call froze the entire station indefinitely:
+       every candidate file. Eyehold is ONE process — UI, API, SSE bus and every agent run — and a
+       backtracking blow-up pegs the event loop, so a single call froze the entire keep indefinitely:
        `(a|a)+$` against a 41-character line never returned, and the tool's own timeoutMs could not help
        (registry withTimeout REJECTS the promise; it cannot stop synchronous work). Only killing the process
        recovered. This needs no adversary — `(\s+)+$` or `(.*)*foo` are patterns a model writes by accident
@@ -1047,7 +1047,7 @@ const { note: failNote } = require('../../failopen');
         let matcher;
         if (args.regex) {
           const risk = catastrophicRegex(q);
-          if (risk) throw new Error('that regex can backtrack catastrophically (' + risk + ') and would stall the station — ' +
+          if (risk) throw new Error('that regex can backtrack catastrophically (' + risk + ') and would stall the keep — ' +
             'rewrite it without nesting one repeat inside another (e.g. "\\s+" instead of "(\\s+)+"), or drop "regex" and search for a plain substring');
           let re; try { re = new RegExp(q, ic ? 'i' : ''); } catch (e) { throw new Error('invalid regex: ' + ((e && e.message) || e)); }
           // blow-up scales with input length, so a model-supplied pattern never sees a whole long line
@@ -1121,7 +1121,7 @@ const { note: failNote } = require('../../failopen');
           fileHits = [];
           /* Ceiling for the whole scan. The pattern floor above catches the exponential shapes; this bounds
              everything merely SLOW (a polynomial pattern over a large tree), so fs.search can never be the
-             reason the station stops answering. A TIMER, not a clock read — the determinism law bans ambient
+             reason the keep stops answering. A TIMER, not a clock read — the determinism law bans ambient
              time in backend logic, and browser.js's waitForSettle already sets this precedent. It works here
              because the check sits between files, with an `await fsp.readFile` in between, so the loop turns
              and the timer can fire. A partial answer that SAYS it is partial beats a frozen process. */

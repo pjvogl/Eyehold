@@ -1,6 +1,6 @@
-/* node test/autonomy-ui.test.js — source-lock for the AUTONOMY DIAL in the SETTINGS panel (stationui.js).
+/* node test/autonomy-ui.test.js — source-lock for the AUTONOMY DIAL in the SETTINGS panel (keepui.js).
 
-   stationui.js is browser-flow (DOM/terminal panels), not node-loadable, so — like harness-internal.test.js /
+   keepui.js is browser-flow (DOM/terminal panels), not node-loadable, so — like harness-internal.test.js /
    newhero-reset.test.js — we lock the dial's invariants by reading the source: it must offer every Initiative +
    Reach level the engine defines, WRITE through AutonomyStore (not ad-hoc state), and repaint the honest
    describe() posture line so the panel can never silently drift from the engine. */
@@ -10,7 +10,7 @@ const fs = require('fs');
 const path = require('path');
 const Au = require('../frontend/app/autonomy.js');
 
-const src = fs.readFileSync(path.join(__dirname, '../frontend/app/stationui.js'), 'utf8');
+const src = fs.readFileSync(path.join(__dirname, '../frontend/app/keepui.js'), 'utf8');
 
 // the dial offers a button for EVERY level on both axes (data-init / data-reach), matching the engine enums — so a
 // new rung added to autonomy.js can't be silently missing from the dial.

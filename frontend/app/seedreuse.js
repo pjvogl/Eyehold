@@ -1,9 +1,9 @@
-/* STARNET — seedreuse.js : the PURE seed-reuse AGGREGATE engine (Game session, Phase G3b / Layer 6).
+/* EYEHOLD — seedreuse.js : the PURE seed-reuse AGGREGATE engine (Game session, Phase G3b / Layer 6).
 
    G3a's SeedCredit is per-MOMENT ("this run reused the seed you saved"). This is the AGGREGATE half of the
    meta loop: it counts how often each Commander-saved seed genuinely ran, over a rolling 7-day window AND
-   over the station's lifetime, so:
-     • when a seed crosses N runs in the window (N=5), the station fires ONE gentle callout — "the seed you
+   over the keep's lifetime, so:
+     • when a seed crosses N runs in the window (N=5), the keep fires ONE gentle callout — "the seed you
        saved ran 5× this week" — fire-ONCE per window (it won't re-nag until the window rolls past that crest);
      • the lifetime counts live permanently on the TROPHY CASE's "living tools" shelf (livingTools()).
 

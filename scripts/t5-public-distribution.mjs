@@ -10,11 +10,11 @@ import { findCurrentNsisInstaller } from './lib/release-installer.mjs';
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const rawArgs = process.argv.slice(2);
 const LOOP_ARG = rawArgs.find(a => /^--loop(=|$)/.test(a));
-const LOOP_MAX = LOOP_ARG ? Math.max(1, Number(LOOP_ARG.split('=')[1] || process.env.STARNET_T5_LOOPS || 3) || 3) : 1;
+const LOOP_MAX = LOOP_ARG ? Math.max(1, Number(LOOP_ARG.split('=')[1] || process.env.EYEHOLD_T5_LOOPS || 3) || 3) : 1;
 const STAMP = new Date().toISOString().replace(/[-:]/g, '').replace('T', '-').replace('.', '-').replace(/Z$/, '') + '-' + process.pid;
-const OUT = resolve(process.env.STARNET_T5_PUBLIC_DISTRIBUTION_DIR || join(ROOT, '.dogfood', 't5-public-distribution-' + STAMP));
-const LATEST = resolve(process.env.STARNET_T5_PUBLIC_DISTRIBUTION_LATEST_DIR || join(ROOT, '.dogfood', 't5-public-distribution-latest'));
-const PROOF_SCHEMA = 'starnet.t5-public-distribution-proof.v1';
+const OUT = resolve(process.env.EYEHOLD_T5_PUBLIC_DISTRIBUTION_DIR || join(ROOT, '.dogfood', 't5-public-distribution-' + STAMP));
+const LATEST = resolve(process.env.EYEHOLD_T5_PUBLIC_DISTRIBUTION_LATEST_DIR || join(ROOT, '.dogfood', 't5-public-distribution-latest'));
+const PROOF_SCHEMA = 'eyehold.t5-public-distribution-proof.v1';
 const PLATFORM = 'windows-x86_64';
 
 function ensureDir(p) { mkdirSync(p, { recursive: true }); }
@@ -64,21 +64,21 @@ function argValue(name) {
   return idx >= 0 ? rawArgs[idx + 1] : '';
 }
 function installerPath() {
-  const raw = process.env.STARNET_T5_INSTALLER_EXE || process.env.STARNET_T4_INSTALLER_EXE || process.env.STARNET_T3_INSTALLER_EXE || '';
+  const raw = process.env.EYEHOLD_T5_INSTALLER_EXE || process.env.EYEHOLD_T4_INSTALLER_EXE || process.env.EYEHOLD_T3_INSTALLER_EXE || '';
   if (raw) return resolve(raw);
   return findCurrentNsisInstaller(ROOT);
 }
 function manifestPath() {
-  const raw = process.env.STARNET_T5_MANIFEST || argValue('--manifest') || '';
+  const raw = process.env.EYEHOLD_T5_MANIFEST || argValue('--manifest') || '';
   if (raw) return resolve(raw);
   return resolve(join(ROOT, 'release', 'latest.json'));
 }
 function distributionEvidencePath() {
-  const raw = process.env.STARNET_T5_DISTRIBUTION_EVIDENCE || argValue('--distribution-evidence') || '';
+  const raw = process.env.EYEHOLD_T5_DISTRIBUTION_EVIDENCE || argValue('--distribution-evidence') || '';
   return raw ? resolve(raw) : '';
 }
 function statusPath(label) {
-  const env = process.env['STARNET_T5_' + label + '_STATUS'];
+  const env = process.env['EYEHOLD_T5_' + label + '_STATUS'];
   if (env) return resolve(env);
   const map = {
     T0: join(ROOT, '.dogfood', 't0-clean-install-latest', 't0-clean-install-status.json'),
@@ -118,7 +118,7 @@ function readGate(label) {
   return { file, status: readJson(file) };
 }
 function checkPlan(loop) {
-  const file = join(ROOT, 'docs', 'STARNET_T5_PUBLIC_DISTRIBUTION.md');
+  const file = join(ROOT, 'docs', 'EYEHOLD_T5_PUBLIC_DISTRIBUTION.md');
   const text = readText(file).toLowerCase();
   const required = [PROOF_SCHEMA, 'publicdistributionready=true', 'authenticode', 'latest.json', 'single stable public channel', 'smartscreen'];
   const missing = required.filter(term => text.indexOf(term.toLowerCase()) < 0);
@@ -312,7 +312,7 @@ function currentManifest() {
 }
 function checkHosting(loop, proofState) {
   if (proofState.missing) {
-    return step('t5.3-public-hosting-proof', 'T5.3', 'Public update host evidence is imported', 'blocked', proofState.reason || 'No public distribution evidence was provided. Set STARNET_T5_DISTRIBUTION_EVIDENCE or pass --distribution-evidence.', { loop, evidenceFile: proofState.file || '' });
+    return step('t5.3-public-hosting-proof', 'T5.3', 'Public update host evidence is imported', 'blocked', proofState.reason || 'No public distribution evidence was provided. Set EYEHOLD_T5_DISTRIBUTION_EVIDENCE or pass --distribution-evidence.', { loop, evidenceFile: proofState.file || '' });
   }
   const v = proofState.validation;
   return step('t5.3-public-hosting-proof', 'T5.3', 'Public update host evidence is imported', v.hostingReady ? 'pass' : 'fail', v.hostingReady ? 'Hosted latest.json and installer proof match the current release.' : v.hostingErrors.join('; '), { loop, evidenceFile: proofState.file, hosting: v.proof && v.proof.hosting, errors: v.hostingErrors });
@@ -382,7 +382,7 @@ function writeSummary(allResults, loopsRun, stableIterations) {
   const publicDistributionReady = fail === 0 && blocked === 0 && latest.length > 0 && latest.every(r => r.status === 'pass');
   const verdict = fail ? 'red' : (blocked ? 'blocked' : 'green');
   const status = {
-    schema: 'starnet.t5-public-distribution-status.v1',
+    schema: 'eyehold.t5-public-distribution-status.v1',
     generatedAt: nowIso(),
     lane: 'T5-public-distribution',
     verdict,
@@ -397,7 +397,7 @@ function writeSummary(allResults, loopsRun, stableIterations) {
   };
   writeJson(join(OUT, 't5-public-distribution-status.json'), status);
 
-  let md = '# StarNet T5 Public Distribution Evidence\n\n';
+  let md = '# Eyehold T5 Public Distribution Evidence\n\n';
   md += '- Generated: `' + status.generatedAt + '`\n';
   md += '- Verdict: `' + status.verdict + '`\n';
   md += '- Public distribution ready: `' + status.publicDistributionReady + '`\n';

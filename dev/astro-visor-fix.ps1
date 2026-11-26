@@ -1,4 +1,4 @@
-# astro-visor-fix.ps1 — repair the astronaut's back-facing walk frames.
+# astro-visor-fix.ps1 — repair the warden's back-facing walk frames.
 #
 # Defect: the 8-direction rebuild (25bcb6c7e) regenerated walk.north and the two
 # new walk.north-* diagonals with the gold FRONT VISOR painted on several frames,
@@ -13,7 +13,7 @@
 #   walk_north-west  any warm <- donor rot_north-west (clean back, same facing)
 #   walk_north-east  any warm <- donor rot_north-east
 Add-Type -AssemblyName System.Drawing
-$dir = Join-Path $PSScriptRoot "..\frontend\assets\sprites\astronaut"
+$dir = Join-Path $PSScriptRoot "..\frontend\assets\sprites\warden"
 $BAND = 16
 
 function ContentTop($bmp) {

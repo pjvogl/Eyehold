@@ -1,5 +1,5 @@
 # UX Confusion Audit — Skills / Toolsets / Recipes / Routines / Tasks / Quests / Channels
-2026-07-15 · branch `claude/starnet-ux-confusion-audit-a6a1fe` · method: code sweep (3 explorers) + live walkthrough of a fresh seeded station (`dev/seed.js`, port 9031). All UI quotes below were confirmed live in the running app unless marked (code).
+2026-07-15 · branch `claude/eyehold-ux-confusion-audit-a6a1fe` · method: code sweep (3 explorers) + live walkthrough of a fresh seeded keep (`dev/seed.js`, port 9031). All UI quotes below were confirmed live in the running app unless marked (code).
 
 ## Verdict
 The features are individually sound, but the **vocabulary layer collapses for a first-time user**. Seven nouns are presented as peers in two dock menus with one-line subtitles, the glossary defines only 3 of them, the locked doctrine (Skills=HOW / Recipes=WHAT / Routines=WHEN) appears nowhere in the UI, and several features can produce each other's artifacts with no signpost.
@@ -7,18 +7,18 @@ The features are individually sound, but the **vocabulary layer collapses for a 
 ---
 
 ## Finding 1 — SKILLS vs TOOLSETS: the same 7 capability families, two panels, two vocabularies (SEVERITY: highest)
-- SKILLS→CAPABILITIES (read-only, `stationui.js:1651-1698`) and TOOLSETS (toggles, `stationui.js:4348+`, `sidecar/capability/toolsets.js`) render the **same CAP_REGISTRY families** under different names:
+- SKILLS→CAPABILITIES (read-only, `keepui.js:1651-1698`) and TOOLSETS (toggles, `keepui.js:4348+`, `sidecar/capability/toolsets.js`) render the **same CAP_REGISTRY families** under different names:
   - `web` = "WEB SEARCH"/"WEB FETCH" (SKILLS) vs "WEB & BROWSER" (TOOLSETS)
   - `cabinet` = "READ FILES"/"WRITE FILES" vs "FILE CABINET"
   - `workbench` = "TERMINAL" vs "WORKBENCH (CODE EXECUTION)"
   - `memory` = "MEMORY" vs "MEMORY NOTEBOOK"
-- Live-verified failure path: fresh user opens **SKILLS** ("what agents are equipped to do" — the more capability-sounding button), sees "1 of 7 live", six greyed rows saying "○ NO DISH AT DESK ▸ PLACE IN REFIT" — and **no pointer to TOOLSETS** where the actual kill-switches live. The code already admits they're one thing: SKILLS fetches `/api/toolsets` to dim perks (`stationui.js:1724-1734`; `app.css:2546` "honesty parity").
-- One name mismatch compounds it: SKILLS says "place a DISH", TOOLSETS says "no dish on station" but titles the family "WEB & BROWSER" — a user can't connect prop-noun to family-noun.
+- Live-verified failure path: fresh user opens **SKILLS** ("what agents are equipped to do" — the more capability-sounding button), sees "1 of 7 live", six greyed rows saying "○ NO DISH AT DESK ▸ PLACE IN REFIT" — and **no pointer to TOOLSETS** where the actual kill-switches live. The code already admits they're one thing: SKILLS fetches `/api/toolsets` to dim perks (`keepui.js:1724-1734`; `app.css:2546` "honesty parity").
+- One name mismatch compounds it: SKILLS says "place a DISH", TOOLSETS says "no dish on keep" but titles the family "WEB & BROWSER" — a user can't connect prop-noun to family-noun.
 
 **Fix direction:** merge into one panel (CAPABILITIES with a per-row switch), or at minimum (a) each greyed SKILLS row links to its TOOLSETS switch and REFIT prop, (b) unify names — one label per family everywhere, (c) rename the dock pair so they stop competing: SKILLS→"PLAYBOOKS" or fold CAPABILITIES tab into TOOLSETS.
 
 ## Finding 2 — the word "skill" means four things
-(a) capability readout (CAPABILITIES tab), (b) bundled SKILL LIBRARY recipes (`sidecar/skills/library`), (c) AGENT SKILLS the agent writes at runtime (`sidecar/skillstore.js`), (d) class-loadout `skills:[...]` (`shared/specialties.js`). Three of these sit as sibling tabs in one panel. And "SKILL LIBRARY" describes its entries as "**recipes**" (`stationui.js:1700,1710`) while RECIPES is a different dock feature — the two nouns are swapped inside each other's panels.
+(a) capability readout (CAPABILITIES tab), (b) bundled SKILL LIBRARY recipes (`sidecar/skills/library`), (c) AGENT SKILLS the agent writes at runtime (`sidecar/skillstore.js`), (d) class-loadout `skills:[...]` (`shared/specialties.js`). Three of these sit as sibling tabs in one panel. And "SKILL LIBRARY" describes its entries as "**recipes**" (`keepui.js:1700,1710`) while RECIPES is a different dock feature — the two nouns are swapped inside each other's panels.
 
 **Fix direction:** stop calling library entries "recipes" (call them procedures/playbooks); rename the CAPABILITIES tab out of the "skills" word entirely (it's gear, not skill).
 
@@ -29,12 +29,12 @@ The features are individually sound, but the **vocabulary layer collapses for a 
 
 ## Finding 4 — TASKS vs QUESTS: same unit of work, two windows
 - A launched recipe → workstream `kind:'task'` → TASK BOARD. An accepted agent idea → WORK QUEST → QUEST LOG (`workquests.js`). Same primitive (directive → run), two surfaces, chosen by entry path.
-- QUEST LOG folds 6+ quest kinds (ledger/work/maintenance/station-gap/arc/dossier/milestone) and even shows routine language live: "SKIPPED no provider credential — connect a OPENROUTER API key to run this **routine**".
+- QUEST LOG folds 6+ quest kinds (ledger/work/maintenance/keep-gap/arc/dossier/milestone) and even shows routine language live: "SKIPPED no provider credential — connect a OPENROUTER API key to run this **routine**".
 - Glossary defines **neither** "task" nor "quest".
 **Fix direction:** position QUESTS purely as "progress & suggestions" (never a place work lives); when a work-quest run starts, mirror a card on the TASK BOARD (one home for in-flight work); add task+quest glossary entries.
 
 ## Finding 5 — CHANNELS vs CONNECTORS: inbound vs outbound, presented as siblings
-- Semantically opposite (CHANNELS = how *you* reach the agent; CONNECTORS = tools the *agent* reaches out with) but adjacent in BUILD with rhyming subtitles ("wire external tools in" / "reach your agents from your messaging apps"), and **Slack appears in both** (channel card `stationui.js:3941`; connector example `:4358`).
+- Semantically opposite (CHANNELS = how *you* reach the agent; CONNECTORS = tools the *agent* reaches out with) but adjacent in BUILD with rhyming subtitles ("wire external tools in" / "reach your agents from your messaging apps"), and **Slack appears in both** (channel card `keepui.js:3941`; connector example `:4358`).
 - TOOLSETS button subtitle "wire external tools in" describes the MCP tab, not the toolsets tab the panel is named for — and the panel opens on CATALOG (connector storefront), so a user clicking "TOOLSETS" first sees connectors (live-verified).
 - The connector portal prop editor points to "the ⇄ CONNECTORS panel" (`build.js:677`) — a label that doesn't exist (button says TOOLSETS). Quest log calls it a third thing: "Bind a live **tool portal**".
 **Fix direction:** subtitle by direction — CHANNELS "talk to your agents from Slack/Telegram/Discord", TOOLSETS "give agents tools & external services (MCP)"; fix the `build.js:677` label; unify portal/connector wording; open the panel on the TOOLSETS tab, not CATALOG.

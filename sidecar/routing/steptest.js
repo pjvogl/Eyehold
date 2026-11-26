@@ -11,7 +11,7 @@
      • the loop gate             -> loopDecision       (THE ONE LOOP RULE: passes, max, verdict/tag, escalation)
      • the pre-hop guards        -> preHopRefusal      (re-visit, hop ceiling, $ ceiling, daily cap, empty crate)
      • the line gate's refusal   -> lineRefusalNote
-     • the ceilings              -> effectiveLimits    (the line's LINE BUDGET clamped to the station's pool)
+     • the ceilings              -> effectiveLimits    (the line's LINE BUDGET clamped to the keep's pool)
    and the routing reads are the router's (chainStep to advance, chainPeek to PREVIEW without moving a splitter's
    round-robin). The only thing this module adds is the PAUSE between hops, and the bookkeeping that makes a
    pause, an edit, a re-run and a rewind honest.
@@ -29,7 +29,7 @@
      (index.js: steptest.sessions.json via the durable single-file helpers, last 10 kept). After a restart a paused
      session comes back paused; one that was RUNNING comes back 'failed' with an honest error — its run died with
      the process and its result is lost (RE-RUN STEP re-runs that dock).
-   • ONE ACTIVE SESSION (running or paused) PER STATION. A second start answers a refusal.
+   • ONE ACTIVE SESSION (running or paused) PER KEEP. A second start answers a refusal.
    • FAN-OUT / JOINER lines are refused honestly mid-walk: the step test carries ONE crate at a time, and a
      parallel branch set cannot pause hop by hop without inventing an order the floor does not have.
 
@@ -130,7 +130,7 @@ function makeStepTest(o) {
           /* ITS SPEND IS NOT FORGOTTEN (sweep 2026-09-25): the step's cost used to be noted only after the run returned,
              so a restart mid-run dropped it from the session's LINE BUDGET and the line's day ledger. The running
              step persisted its run id; if that run's row recorded a cost, it is counted now. An interrupted run's
-             spend is unknown to the row (the station settles it separately) — the session says so, never $0. */
+             spend is unknown to the row (the keep settles it separately) — the session says so, never $0. */
           const rid = s.running && s.running.runId;
           let row = null;
           if (rid && runRow) { try { row = runRow(rid); } catch (e) { failNote('steptest.runRow', e); row = null; } }
@@ -345,7 +345,7 @@ function makeStepTest(o) {
   function otherActive(s) { const a = active(); return a && a !== s ? a : null; }
   // a stopped step whose run is still unwinding (the abort is in flight) owns the session until it lands
   const unwinding = s => inflight.has(s.id) ? refuse('the stopped step is still winding down — try again in a moment.') : null;
-  const busy = a => 'a step-through test is already ' + (a.state === 'paused' ? 'paused' : 'running') + ' on this station — continue or stop it first.';
+  const busy = a => 'a step-through test is already ' + (a.state === 'paused' ? 'paused' : 'running') + ' on this keep — continue or stop it first.';
 
   function start(body) {
     const b = body && typeof body === 'object' ? body : {};

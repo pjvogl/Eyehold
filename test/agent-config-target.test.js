@@ -10,7 +10,7 @@
    silently overwritten in the same stroke, with the toast still claiming the save landed.
 
    app.js is a browser-flow IIFE (not node-loadable), so — following roster-clause.test.js — applyAgentConfig is
-   extracted from the source and EXECUTED against a stub station. Its collaborators are either injected here or
+   extracted from the source and EXECUTED against a stub keep. Its collaborators are either injected here or
    left undefined so the module's own `typeof X !== 'undefined'` guards skip them.
 
    Locked: the patch lands on the named agent · bystanders are never written · an omitted/unknown id still means
@@ -21,9 +21,9 @@
 const A = require('./_assert.js');
 const fs = require('fs'); const path = require('path');
 const appjs = fs.readFileSync(path.join(__dirname, '..', 'frontend', 'app', 'app.js'), 'utf8');
-const stationui = fs.readFileSync(path.join(__dirname, '..', 'frontend', 'app', 'stationui.js'), 'utf8');
+const keepui = fs.readFileSync(path.join(__dirname, '..', 'frontend', 'app', 'keepui.js'), 'utf8');
 
-// ---- extract applyAgentConfig and run it against a stub station ----
+// ---- extract applyAgentConfig and run it against a stub keep ----
 const m = appjs.match(/function applyAgentConfig\(patch, agentId\) \{[\s\S]*?\n  \}/);
 A.ok(m, 'applyAgentConfig(patch, agentId) found in app.js — the target id is part of the signature');
 // no signature, no behaviour to test: report the one real failure instead of crashing the runner on an
@@ -31,11 +31,11 @@ A.ok(m, 'applyAgentConfig(patch, agentId) found in app.js — the target id is p
 if (!m) A.report('agent-config-target.test');
 const SRC = m[0];
 
-// build a two-agent station focused on `focusId`; returns the callable + the live objects + side-effect spies.
+// build a two-agent keep focused on `focusId`; returns the callable + the live objects + side-effect spies.
 // composeSystemPrompt models the ONE structural thing that matters here: an orchestrator's prompt embeds the
 // live crew's roles (real rosterClause + rosterRole, which read each specialist's purpose), so a stale lead
 // prompt is observable. recomposeOrchestrators mirrors app.js's own focused-follows behaviour.
-function station(focusId) {
+function keep(focusId) {
   const mk = (id, name) => ({ id, name, role: id === 'agent' ? 'orchestrator' : 'specialist',
     purpose: '', systemPrompt: 'SYS:' + id + ':', docs: { identity: 'ID-' + id, purpose: '', manual: '', context: '' } });
   const agents = new Map([['agent', mk('agent', 'NOVA')], ['scout', mk('scout', 'SCOUT')]]);
@@ -74,7 +74,7 @@ function station(focusId) {
 
 /* ---------- A. THE REPORTED BUG: a specialist's doc edit lands on the specialist ---------- */
 {
-  const s = station('agent');   // hero focused, dossier open on SCOUT
+  const s = keep('agent');   // hero focused, dossier open on SCOUT
   s.apply({ context: 'SCOUT-ONLY CONTEXT' }, 'scout');
   A.eq(s.scout.docs.context, 'SCOUT-ONLY CONTEXT', 'the context.md edit lands on the agent whose dossier is open');
   A.eq(s.hero.docs.context, '', 'the FOCUSED agent\'s context.md is not overwritten by a bystander\'s edit');
@@ -84,7 +84,7 @@ function station(focusId) {
 
 /* ---------- B. the reverse direction: editing the hero while a specialist is focused ---------- */
 {
-  const s = station('scout');   // SCOUT focused, dossier open on the hero
+  const s = keep('scout');   // SCOUT focused, dossier open on the hero
   s.apply({ purpose: '  HERO PURPOSE  ' }, 'agent');
   A.eq(s.hero.docs.purpose, '  HERO PURPOSE  ', 'purpose.md lands on the hero, verbatim');
   A.eq(s.hero.purpose, 'HERO PURPOSE', 'the agent.purpose mirror (BRIEF tab / summon copy) is trimmed onto the SAME agent');
@@ -94,7 +94,7 @@ function station(focusId) {
 
 /* ---------- C. back-compat: no id (or an unknown one) still means THE FOCUSED AGENT ---------- */
 {
-  const s = station('scout');
+  const s = keep('scout');
   s.apply({ manual: 'HOUSE RULES' });                       // the awakening / deploySpecialty / slash shape
   A.eq(s.scout.docs.manual, 'HOUSE RULES', 'an omitted agentId re-specs the focused agent (every existing caller)');
   A.eq(s.hero.docs.manual, '', 'and only the focused agent');
@@ -104,7 +104,7 @@ function station(focusId) {
 
 /* ---------- D. every doc key is targeted (the bug hit all four, not just context.md) ---------- */
 {
-  const s = station('agent');
+  const s = keep('agent');
   s.apply({ identity: 'I', purpose: 'P', manual: 'M', context: 'C' }, 'scout');
   A.eq([s.scout.docs.identity, s.scout.docs.purpose, s.scout.docs.manual, s.scout.docs.context], ['I', 'P', 'M', 'C'], 'identity/purpose/operating-manual/context all land on the named agent');
   A.eq([s.hero.docs.identity, s.hero.docs.purpose, s.hero.docs.manual, s.hero.docs.context], ['ID-agent', '', '', ''], 'the focused agent keeps all four of its own docs');
@@ -112,7 +112,7 @@ function station(focusId) {
 
 /* ---------- E. non-doc fields are targeted too (they ride the same patch) ---------- */
 {
-  const s = station('agent');
+  const s = keep('agent');
   s.apply({ model: 'anthropic/claude-sonnet-4-5', approvalMode: 'full', workshop: true }, 'scout');
   A.eq(s.scout.model, 'anthropic/claude-sonnet-4-5', 'a model in the patch pins the named agent');
   A.eq(s.scout.approvalMode, 'full', 'approval posture is per-agent');
@@ -123,14 +123,14 @@ function station(focusId) {
 
 /* ---------- F. LIVE side effects belong to the focused agent only ---------- */
 {
-  const away = station('agent');
+  const away = keep('agent');
   away.apply({ context: 'C' }, 'scout');
   A.eq(away.spy.chatSystem, [], 'a bystander\'s prompt is never pushed into the running COMMS session');
   A.eq(away.spy.syncChannels, 0, 'nor re-points a connected Telegram bot at the wrong identity');
   A.eq(away.spy.pushRoster, 1, 'the sidecar roster still learns the new prompt (delegation + cron runs read it)');
   A.eq(away.spy.persist, 1, 'and the edit is persisted');
 
-  const live = station('agent');
+  const live = keep('agent');
   live.apply({ context: 'C' }, 'agent');
   A.eq(live.spy.chatSystem, ['SYS:agent:C|CREW:SCOUT=general'], 'editing the FOCUSED agent hands the recomposed prompt to the live chat');
   A.eq(live.spy.syncChannels, 1, 'and re-syncs its channels');
@@ -142,7 +142,7 @@ function station(focusId) {
    this was wired, a purpose.md edit on a specialist left the orchestrator briefing itself — and the sidecar —
    on a job that specialist no longer had. */
 {
-  const s = station('agent');
+  const s = keep('agent');
   A.eq(s.hero.systemPrompt, 'SYS:agent:', 'baseline: the lead carries its stored prompt');
   s.apply({ purpose: 'hunts flaky tests' }, 'scout');
   A.eq(s.spy.recompose, 1, 'a specialist re-purpose recomposes the orchestrators');
@@ -152,24 +152,24 @@ function station(focusId) {
 }
 {
   // …and only when the crew line can actually move: a doc that is not part of rosterRole costs nothing.
-  const quiet = station('agent');
+  const quiet = keep('agent');
   quiet.apply({ context: 'C', manual: 'M', identity: 'I' }, 'scout');
   A.eq(quiet.spy.recompose, 0, 'context/manual/identity edits do not touch the crew line, so no needless recompose');
-  const own = station('agent');
+  const own = keep('agent');
   own.apply({ purpose: 'P' }, 'agent');
   A.eq(own.spy.recompose, 0, 'the orchestrator editing its OWN purpose is already recomposed in place — no second pass');
 }
 
 /* ---------- H. the dossier SAVE button names the agent it is showing ---------- */
-A.ok(stationui.indexOf('access.config.apply({ [key]: val }, a && a.id)') >= 0, 'the .md SAVE handler passes the selected agent\'s id');
-A.ok(stationui.indexOf('access.config.apply({ [key]: val })') === -1, 'the id-less call (the erase) is gone');
-A.ok(/function wireConfig\(body\) \{[\s\S]{0,600}const a = present\[sel\];/.test(stationui), 'wireConfig resolves the selected agent BEFORE wiring the .md editors');
+A.ok(keepui.indexOf('access.config.apply({ [key]: val }, a && a.id)') >= 0, 'the .md SAVE handler passes the selected agent\'s id');
+A.ok(keepui.indexOf('access.config.apply({ [key]: val })') === -1, 'the id-less call (the erase) is gone');
+A.ok(/function wireConfig\(body\) \{[\s\S]{0,600}const a = present\[sel\];/.test(keepui), 'wireConfig resolves the selected agent BEFORE wiring the .md editors');
 // parity: no per-agent control on the dossier may go back to being id-less.
-A.eq((stationui.match(/access\.config\.(apply|setModel|setPersona|setApproval|setWorkshop|setName|setSkin)\(/g) || []).length,
+A.eq((keepui.match(/access\.config\.(apply|setModel|setPersona|setApproval|setWorkshop|setName|setSkin)\(/g) || []).length,
      // accepted id-carrying shapes: the dossier's `a && a.id`, setSkin's `a.id`, and the settings
      // PERMISSIONS pane's approval rows (`setApproval(id, …)` from the row's data attr / `setApproval(a.id, …)`
-     // in the whole-station loops) — every shape still passes an explicit agent id as the first argument.
-     (stationui.match(/access\.config\.(apply|setModel|setPersona|setApproval|setWorkshop|setName|setSkin)\([^)]*a(?:gent)?\s*&&\s*a\.id|access\.config\.setSkin\(a\.id|access\.config\.setApproval\((?:id|a\.id),/g) || []).length,
+     // in the whole-keep loops) — every shape still passes an explicit agent id as the first argument.
+     (keepui.match(/access\.config\.(apply|setModel|setPersona|setApproval|setWorkshop|setName|setSkin)\([^)]*a(?:gent)?\s*&&\s*a\.id|access\.config\.setSkin\(a\.id|access\.config\.setApproval\((?:id|a\.id),/g) || []).length,
      'every per-agent dossier control passes the selected agent\'s id');
 
 A.report('agent-config-target.test');

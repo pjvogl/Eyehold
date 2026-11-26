@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-/* scripts/qa/janitor.mjs — the Self-Testing Station's hygiene sweep (lane Q4).
+/* scripts/qa/janitor.mjs — the Self-Testing Keep's hygiene sweep (lane Q4).
  *
  * WHY THIS EXISTS: ~120 worktrees pile up (most stale/merged), loose PNGs litter the
  * repo root, branches strand half-done work, and docs rot into referencing files that
@@ -326,7 +326,7 @@ function renderReport(s) {
   const p = (x) => L.push(x);
   p('# Janitor sweep — ' + s.date);
   p('');
-  p('> Hygiene report for the Self-Testing Station. **Propose-only**: the Janitor never');
+  p('> Hygiene report for the Self-Testing Keep. **Propose-only**: the Janitor never');
   p('> deletes, prunes, or edits anything — it reports commands for a human to run.');
   p('> Watched trunk: `' + s.trunk + '`. Stranded threshold: ' + s.staleDays + ' days.');
   p('');

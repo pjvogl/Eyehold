@@ -16,7 +16,7 @@ export const KINDS = Object.freeze({
 
 export const OFFICIAL_EVIDENCE_SCHEMA = 1;
 
-const VERIFIED_OFFICIAL = Symbol('starnet.verifiedOfficialEvidence');
+const VERIFIED_OFFICIAL = Symbol('eyehold.verifiedOfficialEvidence');
 const SHA40 = /^[0-9a-f]{40}$/;
 const SHA256 = /^[0-9a-f]{64}$/;
 
@@ -47,7 +47,7 @@ export function normalizeOfficialEvidence(value) {
 }
 
 /* Ask a caller-supplied external verifier to authenticate official evidence. The verifier
- * may consult a signed release attestation, CI identity, or another release authority, but it
+ * may consult a signed release attekeep, CI identity, or another release authority, but it
  * must return a stable authority + verification id. A boolean or a JSON `verified:true` field
  * is intentionally insufficient. This function is synchronous so READY's read-only inspector
  * can be called from any host without top-level async/process mutation.

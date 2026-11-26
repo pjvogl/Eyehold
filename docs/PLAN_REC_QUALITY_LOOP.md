@@ -95,7 +95,7 @@ strength-weighted grounding in, outcome-verified quality back.
 - `docs/BRAIN.md` one-paragraph note; claims re-lock (code first, `--refresh-surface`
   applied, lock-only commit); `npm run sync:website` rides every source commit.
 
-## Verification bar (starnet-verify)
+## Verification bar (eyehold-verify)
 - `npm run test:fast` green per slice (LOG not exit code; voice.button flake; 3221225773 =
   RAM). Live on a fresh-port worktree seed: a strength-reordered pick observable via
   wrapped `Recommend.pick` inputs; an accepted offer's stamp visible on the spawned run;

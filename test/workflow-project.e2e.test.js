@@ -26,10 +26,10 @@ const Pipeline = require('../frontend/app/pipeline.js');
   await new Promise(r => server.listen(0, '127.0.0.1', r));
   const base = 'http://127.0.0.1:' + server.address().port;
   const fixture = SidecarFixture.create({ timeoutMs: 30000, env: {
-    STARNET_OPENROUTER_KEY: 'fixture', SKYNET_OPENROUTER_KEY: 'fixture',
-    STARNET_OPENROUTER_BASE: base + '/v1', SKYNET_OPENROUTER_BASE: base + '/v1',
-    STARNET_CRON_TICK_MS: '5000', SKYNET_CRON_TICK_MS: '5000',
-    STARNET_FULL_ACCESS: '0', SKYNET_FULL_ACCESS: '0', SKYNET_AUX_BUDGET: '0'
+    EYEHOLD_OPENROUTER_KEY: 'fixture', EYEHOLD_OPENROUTER_KEY: 'fixture',
+    EYEHOLD_OPENROUTER_BASE: base + '/v1', EYEHOLD_OPENROUTER_BASE: base + '/v1',
+    EYEHOLD_CRON_TICK_MS: '5000', EYEHOLD_CRON_TICK_MS: '5000',
+    EYEHOLD_FULL_ACCESS: '0', EYEHOLD_FULL_ACCESS: '0', EYEHOLD_AUX_BUDGET: '0'
   } });
   const project = fs.mkdtempSync(path.join(os.tmpdir(), 'workflow-project-'));
   try {

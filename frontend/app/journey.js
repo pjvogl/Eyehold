@@ -1,5 +1,5 @@
-/* STARNET — journey.js: pure presentation helpers for the Commander journey.
-   Journey progress is separate from agent XP and from station-size tier. It never gates capabilities. */
+/* EYEHOLD — journey.js: pure presentation helpers for the Commander journey.
+   Journey progress is separate from agent XP and from keep-size tier. It never gates capabilities. */
 'use strict';
 (function (root, factory) {
   const api = factory();

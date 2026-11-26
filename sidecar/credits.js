@@ -8,7 +8,7 @@
    cache immediately and POST the truth to the backend in the background. The backend ledger stays the
    source of truth; refresh() reconciles the cache to it.
 
-   HONESTY LAW: when STARNET_CREDITS_URL is unset, configured() is false and NOTHING here is live — no
+   HONESTY LAW: when EYEHOLD_CREDITS_URL is unset, configured() is false and NOTHING here is live — no
    payment client is built, beginRun/finishRun are inert pass-throughs, and the host renders no STORE UI
    and exposes no /api/credits surface. A managed-credit account only exists when the operator wires it.
 
@@ -80,7 +80,7 @@
     //   valid       — the backend accepted the bearer for this account
     //   invalid     — a definitive 401/403; the device was revoked or belongs to another account
     //   unavailable — transport/5xx failure; do not mislabel it as revocation
-    // The distinction matters for linked stations: the account page can revoke a device while this app
+    // The distinction matters for linked keeps: the account page can revoke a device while this app
     // still has its old keychain token. Local presence must never keep painting "LINKED" after the cloud
     // has rejected it.
     const cache = { balanceUsd: null, at: 0, observedBalanceUsd: null, observedAt: 0, subscription: null, manageUrl: '', authStatus: 'unknown', lastErrorStatus: 0 };
@@ -102,7 +102,7 @@
 
        TWO LEVELS, SEPARATE LATCHES: 'low' (you should top up) and 'exhausted' (<= 0, work WILL be
        refused). Exhausted must be able to fire even when low already did, or the one that actually
-       stops the station is the one that stays silent. */
+       stops the keep is the one that stays silent. */
     const REARM = 1.25;
     const warned = { low: false, exhausted: false };
     // Local reservations are already subtracted from cache.balanceUsd. Add them back only when deciding whether
@@ -253,8 +253,8 @@
         return b;
       } catch (e) {
         // Never keep a stale dollar amount after an authoritative refresh failed. This was the 0.10.8
-        // escape: a station revoked on the account site kept its cached $0, so the app asserted both
-        // "LINKED" and "no credits" while the real account held $22 and listed no linked stations.
+        // escape: a keep revoked on the account site kept its cached $0, so the app asserted both
+        // "LINKED" and "no credits" while the real account held $22 and listed no linked keeps.
         const status = Number(e && e.status) || 0;
         if (seq === authoritySeq) {
           setBalance(null);
@@ -358,7 +358,7 @@
       accountId() { return accountId; },
       purchaseUrl() { return purchaseUrl; },
       beginRun, finishRun, refresh, history,
-      // StarNet runs this station has in flight and what they reserve (only runs still working: an ended run's hold is
+      // Eyehold runs this keep has in flight and what they reserve (only runs still working: an ended run's hold is
       // not counted, settled or not). `counted`: the backend books those reservations against the balance (see
       // holdsCounted), so a $0 it reports can be a hold.
       held() {

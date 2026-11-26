@@ -96,7 +96,7 @@
     {
       "id": "scout",
       "name": "CANARY SCOUT",
-      "executionProfile": "station-gear"
+      "executionProfile": "keep-gear"
     }
   ],
   "props": [
@@ -130,7 +130,7 @@
   ],
   "workstream": {
     "id": "ws_mtw2kgvjl70b",
-    "projectRoot": "C:\\Users\\andro\\AppData\\Local\\Temp\\starnet-release-0112-project-CBEzlC",
+    "projectRoot": "C:\\Users\\andro\\AppData\\Local\\Temp\\eyehold-release-0112-project-CBEzlC",
     "lastRunOk": true,
     "runIds": [
       "22477b46-eb33-437c-8ca8-2715fbf61235"
@@ -140,7 +140,7 @@
         "streamId": "ws_mtw2kgvjl70b",
         "agentId": "agent",
         "role": "user",
-        "content": "Create C:\\Users\\andro\\AppData\\Local\\Temp\\starnet-release-0112-project-CBEzlC\\index.html in this trusted project. It must be a complete standalone HTML page with a button labeled Verify and a visible result element with id result. Clicking Verify must set result text to RELEASE_0112_TOOL_OK. Use real file tools to write the file and read it back. Keep the page under 50 lines. Do not browse or run any commands. Report only what the read-back proves; clearly say you did not execute the page.",
+        "content": "Create C:\\Users\\andro\\AppData\\Local\\Temp\\eyehold-release-0112-project-CBEzlC\\index.html in this trusted project. It must be a complete standalone HTML page with a button labeled Verify and a visible result element with id result. Clicking Verify must set result text to RELEASE_0112_TOOL_OK. Use real file tools to write the file and read it back. Keep the page under 50 lines. Do not browse or run any commands. Report only what the read-back proves; clearly say you did not execute the page.",
         "ts": 1789077623593,
         "sourceRunId": "22477b46-eb33-437c-8ca8-2715fbf61235",
         "rowId": 29
@@ -170,7 +170,7 @@
         "role": "assistant",
         "content": "Fair point. Let me run the narrowest real check available — validating the HTML is well-formed.",
         "ts": 1789077623659,
-        "toolCalls": "[{\"id\":\"toolu_01VwQzWE73qJU2b79DtLp84F\",\"type\":\"function\",\"function\":{\"name\":\"shell_exec\",\"arguments\":\"{\\\"cmd\\\": \\\"python3 -c \\\\\\\"\\\\nfrom html.parser import HTMLParser\\\\nimport sys\\\\n\\\\nclass Checker(HTMLParser):\\\\n    def __init__(self):\\\\n        super().__init__()\\\\n        self.has_button_verify = False\\\\n        self.has_result_div = False\\\\n        self.has_release_string = False\\\\n        self.in_button = False\\\\n\\\\n    def handle_starttag(self, tag, attrs):\\\\n        attrs_dict = dict(attrs)\\\\n        if tag == 'button':\\\\n            self.in_button = True\\\\n            onclick = attrs_dict.get('onclick', '')\\\\n            if 'RELEASE_0112_TOOL_OK' in onclick:\\\\n                self.has_release_string = True\\\\n        if tag == 'div' and attrs_dict.get('id') == 'result':\\\\n            self.has_result_div = True\\\\n\\\\n    def handle_endtag(self, tag):\\\\n        if tag == 'button':\\\\n            self.in_button = False\\\\n\\\\n    def handle_data(self, data):\\\\n        if self.in_button and data.strip() == 'Verify':\\\\n            self.has_button_verify = True\\\\n\\\\nwith open('index.html', 'r') as f:\\\\n    content = f.read()\\\\n\\\\nlines = content.splitlines()\\\\nprint(f'Line count: {len(lines)}')\\\\n\\\\nchecker = Checker()\\\\nchecker.feed(content)\\\\n\\\\nprint(f'Button labeled Verify: {checker.has_button_verify}')\\\\nprint(f'Element with id=result: {checker.has_result_div}')\\\\nprint(f'RELEASE_0112_TOOL_OK in onclick: {checker.has_release_string}')\\\\n\\\\nall_pass = checker.has_button_verify and checker.has_result_div and checker.has_release_string and len(lines) <= 50\\\\nprint(f'All checks pass: {all_pass}')\\\\nsys.exit(0 if all_pass else 1)\\\\n\\\\\\\"\\\\n\\\", \\\"cwd\\\": \\\"C:\\\\\\\\Users\\\\\\\\andro\\\\\\\\AppData\\\\\\\\Local\\\\\\\\Temp\\\\\\\\starnet-release-0112-project-CBEzlC\\\"}\"}}]",
+        "toolCalls": "[{\"id\":\"toolu_01VwQzWE73qJU2b79DtLp84F\",\"type\":\"function\",\"function\":{\"name\":\"shell_exec\",\"arguments\":\"{\\\"cmd\\\": \\\"python3 -c \\\\\\\"\\\\nfrom html.parser import HTMLParser\\\\nimport sys\\\\n\\\\nclass Checker(HTMLParser):\\\\n    def __init__(self):\\\\n        super().__init__()\\\\n        self.has_button_verify = False\\\\n        self.has_result_div = False\\\\n        self.has_release_string = False\\\\n        self.in_button = False\\\\n\\\\n    def handle_starttag(self, tag, attrs):\\\\n        attrs_dict = dict(attrs)\\\\n        if tag == 'button':\\\\n            self.in_button = True\\\\n            onclick = attrs_dict.get('onclick', '')\\\\n            if 'RELEASE_0112_TOOL_OK' in onclick:\\\\n                self.has_release_string = True\\\\n        if tag == 'div' and attrs_dict.get('id') == 'result':\\\\n            self.has_result_div = True\\\\n\\\\n    def handle_endtag(self, tag):\\\\n        if tag == 'button':\\\\n            self.in_button = False\\\\n\\\\n    def handle_data(self, data):\\\\n        if self.in_button and data.strip() == 'Verify':\\\\n            self.has_button_verify = True\\\\n\\\\nwith open('index.html', 'r') as f:\\\\n    content = f.read()\\\\n\\\\nlines = content.splitlines()\\\\nprint(f'Line count: {len(lines)}')\\\\n\\\\nchecker = Checker()\\\\nchecker.feed(content)\\\\n\\\\nprint(f'Button labeled Verify: {checker.has_button_verify}')\\\\nprint(f'Element with id=result: {checker.has_result_div}')\\\\nprint(f'RELEASE_0112_TOOL_OK in onclick: {checker.has_release_string}')\\\\n\\\\nall_pass = checker.has_button_verify and checker.has_result_div and checker.has_release_string and len(lines) <= 50\\\\nprint(f'All checks pass: {all_pass}')\\\\nsys.exit(0 if all_pass else 1)\\\\n\\\\\\\"\\\\n\\\", \\\"cwd\\\": \\\"C:\\\\\\\\Users\\\\\\\\andro\\\\\\\\AppData\\\\\\\\Local\\\\\\\\Temp\\\\\\\\eyehold-release-0112-project-CBEzlC\\\"}\"}}]",
         "sourceRunId": "22477b46-eb33-437c-8ca8-2715fbf61235",
         "rowId": 39
       },
@@ -178,7 +178,7 @@
         "streamId": "ws_mtw2kgvjl70b",
         "agentId": "agent",
         "role": "assistant",
-        "content": "Shell execution was denied. Here is what that means plainly:\n\n**What was verified:**\n- The file exists at the correct path (write tool confirmed 478 bytes written and read-back matched sha256 `3d5c8b0b26ac73720bd04976cd0c512d55e66a724a00350b51572c8d390ad56a`).\n- Static read-back confirmed: `<button onclick=\"...RELEASE_0112_TOOL_OK...\">Verify</button>` and `<div id=\"result\"></div>` are present in the file, 17 lines long.\n\n**What was NOT verified:**\n- The HTML was not parsed by an external validator or runtime.\n- The `onclick` handler was not executed in a browser — runtime behavior (the button actually setting `result.textContent`) remains unconfirmed by live execution.\n\nThe file's static content matches every stated requirement. Runtime execution in a browser is the one thing I cannot prove from this workstation in this run.",
+        "content": "Shell execution was denied. Here is what that means plainly:\n\n**What was verified:**\n- The file exists at the correct path (write tool confirmed 478 bytes written and read-back matched sha256 `3d5c8b0b26ac73720bd04976cd0c512d55e66a724a00350b51572c8d390ad56a`).\n- Static read-back confirmed: `<button onclick=\"...RELEASE_0112_TOOL_OK...\">Verify</button>` and `<div id=\"result\"></div>` are present in the file, 17 lines long.\n\n**What was NOT verified:**\n- The HTML was not parsed by an external validator or runtime.\n- The `onclick` handler was not executed in a browser — runtime behavior (the button actually setting `result.textContent`) remains unconfirmed by live execution.\n\nThe file's static content matches every stated requirement. Runtime execution in a browser is the one thing I cannot prove from this workkeep in this run.",
         "ts": 1789077623672,
         "sourceRunId": "22477b46-eb33-437c-8ca8-2715fbf61235",
         "rowId": 41

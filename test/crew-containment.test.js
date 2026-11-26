@@ -1,6 +1,6 @@
 /* node test/crew-containment.test.js — agent-in-the-void escape (2026-07-12) containment locks.
 
-   THE BUG: rederive() re-framed only the HERO across a station origin shift (a room added/removed
+   THE BUG: rederive() re-framed only the HERO across a keep origin shift (a room added/removed
    at the north/west edge moves the whole local pixel frame), so every crew body kept old-frame
    px/py + an old-frame path — rendering it adrift in the void until the next task seized it back.
    Two more holes compounded it: syncCrewFromPlan's no-bays early return skipped the stranded

@@ -1,13 +1,13 @@
-/* STARNET — backup.js : export/import the whole local agent as one portable JSON file.
+/* EYEHOLD — backup.js : export/import the whole local agent as one portable JSON file.
 
    Browser localStorage is the FRAGILE store. A cache wipe, a different browser, or a different
    machine loses the agent the user built up — identity, XP/level/confidence, personalization
-   (dossier docs + persona), workstreams (chat history) and the station layout all live in
-   localStorage under the `starnet.*` keys. This module is the safety net: one click bundles the
-   nonsecret starnet.* records plus a read-only snapshot of the agent's backend memory (notebook) into a
+   (dossier docs + persona), workstreams (chat history) and the keep layout all live in
+   localStorage under the `eyehold.*` keys. This module is the safety net: one click bundles the
+   nonsecret eyehold.* records plus a read-only snapshot of the agent's backend memory (notebook) into a
    downloadable file, and import restores the local half on any browser. Back-compat: a backup
-   exported BEFORE the Skynet→StarNet rename holds `skynet.*` keys + a `skynet.backup` schema; both
-   import fine and are mapped forward to `starnet.*` on restore.
+   exported BEFORE the Skynet→Eyehold rename holds `skynet.*` keys + a `skynet.backup` schema; both
+   import fine and are mapped forward to `eyehold.*` on restore.
 
    v1 restores the browser-side state (which is what a wipe destroys). The notebook lives on the
    sidecar's own disk and is preserved IN the file for portability + a future restore route, but is
@@ -16,33 +16,33 @@
 'use strict';
 
 const Backup = (() => {
-  const SCHEMA = 'starnet.backup';
-  const LEGACY_SCHEMA = 'skynet.backup';   // backups exported before the Skynet→StarNet rename
+  const SCHEMA = 'eyehold.backup';
+  const LEGACY_SCHEMA = 'skynet.backup';   // backups exported before the Skynet→Eyehold rename
   const VERSION = 1;
 
-  // every key we own lives under this prefix (starnet.save, starnet.specialties.v1, starnet.refit.seen,
+  // every key we own lives under this prefix (eyehold.save, eyehold.specialties.v1, eyehold.refit.seen,
   // theme/CRT prefs, ...). Capturing by prefix is future-proof: new keys ride along automatically
   // instead of needing this list kept in sync. LEGACY_PREFIX is the pre-rename name — still accepted on
   // IMPORT (an old backup file) and mapped forward, never written by a fresh export.
-  const PREFIX = 'starnet.';
+  const PREFIX = 'eyehold.';
   const LEGACY_PREFIX = 'skynet.';
-  const SAVE_KEY = 'starnet.save';
+  const SAVE_KEY = 'eyehold.save';
   const SECRET_POLICY = 'credentials-excluded';
   // BYOK is default-deny: only these known, nonsecret selections are portable. This keeps a future credential
   // field from silently entering a plaintext backup just because its storage key was added after this code.
   const SAFE_BYOK_KEYS = new Set([
-    'starnet.byok.model',
-    'starnet.byok.prov',
-    'starnet.byok.reasoningEffort'
+    'eyehold.byok.model',
+    'eyehold.byok.prov',
+    'eyehold.byok.reasoningEffort'
   ]);
-  const SECRET_NAMESPACE_RE = /^starnet\.(?:channels?|oauth|auth|credentials?|secrets?)(?:[._:-]|$)/i;
+  const SECRET_NAMESPACE_RE = /^eyehold\.(?:channels?|oauth|auth|credentials?|secrets?)(?:[._:-]|$)/i;
   const SECRET_SEGMENT_RE = /(?:^|[._:-])(?:api[-_]?key|apikey|key|keys|token|tokens|secret|secrets|credential|credentials|password|passwd|pwd|authorization|bearer)(?:$|[._:-])/i;
-  // map any captured key forward to its StarNet name (old backups hold skynet.* keys; new ones already starnet.*).
+  // map any captured key forward to its Eyehold name (old backups hold skynet.* keys; new ones already eyehold.*).
   function toCurrentKey(k) { return (k.indexOf(LEGACY_PREFIX) === 0) ? (PREFIX + k.slice(LEGACY_PREFIX.length)) : k; }
 
   function isCredentialKey(rawKey) {
     const key = toCurrentKey(String(rawKey || ''));
-    if (key.indexOf('starnet.byok.') === 0) return !SAFE_BYOK_KEYS.has(key);
+    if (key.indexOf('eyehold.byok.') === 0) return !SAFE_BYOK_KEYS.has(key);
     return SECRET_NAMESPACE_RE.test(key) || SECRET_SEGMENT_RE.test(key);
   }
 
@@ -85,7 +85,7 @@ const Backup = (() => {
 
   async function build() {
     return {
-      schema: SCHEMA, version: VERSION, app: 'starnet',
+      schema: SCHEMA, version: VERSION, app: 'eyehold',
       exportedAt: Date.now(),
       agentName: agentName(),
       secretsIncluded: false,
@@ -108,7 +108,7 @@ const Backup = (() => {
 
   async function exportAll() {
     const bundle = await build();
-    const file = 'starnet-' + slug(bundle.agentName) + '-' + stamp(new Date()) + '.json';
+    const file = 'eyehold-' + slug(bundle.agentName) + '-' + stamp(new Date()) + '.json';
     const ok = triggerDownload(file, JSON.stringify(bundle, null, 2));
     const records = Object.keys(bundle.store).length;
     return { ok, file, records, keys: records, secretsIncluded: false, notes: bundle.notebook ? bundle.notebook.length : 0 };
@@ -117,11 +117,11 @@ const Backup = (() => {
   // validate a parsed bundle WITHOUT mutating anything — callers decide whether to apply.
   function validate(doc) {
     if (!doc || typeof doc !== 'object') return 'not a JSON object';
-    if (doc.schema !== SCHEMA && doc.schema !== LEGACY_SCHEMA) return 'not a StarNet backup file';
+    if (doc.schema !== SCHEMA && doc.schema !== LEGACY_SCHEMA) return 'not a Eyehold backup file';
     // FORWARD-VERSION GUARD (P0.3): a backup file whose envelope version is NEWER than this build understands
-    // was exported by a later StarNet. Its store may carry key shapes/save schemas this code can't restore
+    // was exported by a later Eyehold. Its store may carry key shapes/save schemas this code can't restore
     // faithfully, so refuse rather than importing a half-understood bundle. The import UI surfaces this string.
-    if (Number(doc.version || 0) > VERSION) return 'backup was made by a newer StarNet (v' + Number(doc.version) + ') — update the app to import it';
+    if (Number(doc.version || 0) > VERSION) return 'backup was made by a newer Eyehold (v' + Number(doc.version) + ') — update the app to import it';
     if (!doc.store || typeof doc.store !== 'object') return 'backup has no data';
     if (typeof doc.store[SAVE_KEY] !== 'string' && typeof doc.store['skynet.save'] !== 'string') return 'backup has no agent';
     return null;   // ok
@@ -139,7 +139,7 @@ const Backup = (() => {
         if (!Object.prototype.hasOwnProperty.call(store, k) || typeof store[k] !== 'string') continue;
         if (k.indexOf(PREFIX) !== 0 && k.indexOf(LEGACY_PREFIX) !== 0) continue;   // ours (or a legacy ours) only
         if (isCredentialKey(k)) continue;                                        // portable files never grant credential authority
-        localStorage.setItem(toCurrentKey(k), store[k]); n++;                       // map skynet.* -> starnet.* on the way in
+        localStorage.setItem(toCurrentKey(k), store[k]); n++;                       // map skynet.* -> eyehold.* on the way in
       }
     } catch (e) { return { ok: false, error: (e && e.message) || 'write failed' }; }
     return { ok: true, records: n, keys: n, agentName: doc.agentName || agentName(), memories: Array.isArray(doc.notebook) ? doc.notebook.length : 0 };
@@ -174,11 +174,11 @@ const Backup = (() => {
     if (res.ok) {
       // A portable backup is an explicit restore, unlike an ordinary page load.
       // Restore its autonomy through the durable writer before claiming success.
-      const posture = doc.store && (doc.store['starnet.autonomy.v1'] || doc.store['skynet.autonomy.v1']);
+      const posture = doc.store && (doc.store['eyehold.autonomy.v1'] || doc.store['skynet.autonomy.v1']);
       if (posture && typeof AutonomyStore !== 'undefined' && AutonomyStore.importState) {
         try {
           const result = await AutonomyStore.importState(JSON.parse(posture));
-          if (!result.ok) return { ok: false, error: 'Backup partly restored; autonomy was not confirmed. ' + (result.error || 'Try again when the station is connected.') };
+          if (!result.ok) return { ok: false, error: 'Backup partly restored; autonomy was not confirmed. ' + (result.error || 'Try again when the keep is connected.') };
         } catch (_) { return { ok: false, error: 'Backup partly restored; its autonomy setting could not be restored.' }; }
       }
     }

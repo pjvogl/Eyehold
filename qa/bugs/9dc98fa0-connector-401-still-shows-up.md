@@ -9,7 +9,7 @@ found: 2026-08-25
 lane: reliability-followup
 fix: 6adda1348
 origin: customer
-report: https://github.com/androoAGI/starnet/issues/5
+report: https://github.com/Eyehold/eyehold/issues/5
 affected: Exact affected build/platform not recorded in sanitized evidence
 family: recovery-truth
 installer: unverified

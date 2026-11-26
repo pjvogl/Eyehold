@@ -1,4 +1,4 @@
-# StarNet power-user findings — complete fix plan
+# Eyehold power-user findings — complete fix plan
 
 Plan date: 2026-07-16
 Audit source: `75cad9e8`
@@ -8,7 +8,7 @@ Finding source: `docs/POWERUSER_AUDIT_2026-07-15.md`
 ## Objective
 
 Close all 14 newly confirmed power-user defects and the product gaps reconfirmed by the audit,
-without losing StarNet's truthful-telemetry, persistence, sandbox, or one-sidecar invariants.
+without losing Eyehold's truthful-telemetry, persistence, sandbox, or one-sidecar invariants.
 
 Completion is behavioral, not code-shaped: every original reproduction must pass in the live app,
 each defect must gain an EL-3 regression, restart-sensitive state must survive a real sidecar
@@ -31,7 +31,7 @@ those files inside a feature lane.
 2. Every lane begins with an automated reproduction that fails for the audited reason.
 3. Make the smallest fix, then run the original live reproduction. Do not combine unrelated
    cosmetic cleanup.
-4. `sidecar/index.js` lanes merge one at a time. `frontend/app/stationui.js` lanes also merge one
+4. `sidecar/index.js` lanes merge one at a time. `frontend/app/keepui.js` lanes also merge one
    at a time. `chat.js` has one owner for the full COMMS wave.
 5. Commit tests separately before the fix where practical, but never merge a red test-only commit
    to trunk.
@@ -56,13 +56,13 @@ Ownership:
 
 Implementation shape:
 
-- Replace “all `starnet.*` keys” collection with an explicit export allowlist or explicit secret
+- Replace “all `eyehold.*` keys” collection with an explicit export allowlist or explicit secret
   denylist backed by tests. Exclude all provider/BYOK/channel/OAuth/token/key material, including
-  scoped keys such as `starnet.byok.key.<provider>`.
+  scoped keys such as `eyehold.byok.key.<provider>`.
 - Add a bundle metadata field that states `secretsIncluded:false`; import remains compatible with
   older bundles but never writes excluded credential keys from an untrusted bundle without the
   existing consent/recovery boundary.
-- Make recovery EXPORT AGENT and Settings STATION BACKUP use the same secret-exclusion contract and
+- Make recovery EXPORT AGENT and Settings KEEP BACKUP use the same secret-exclusion contract and
   copy.
 
 EL-3 regression:
@@ -146,7 +146,7 @@ Done means:
 
 Ownership:
 
-- the generic window positioning/drag/restore block in `frontend/app/stationui.js`
+- the generic window positioning/drag/restore block in `frontend/app/keepui.js`
 - focused pure position-clamp test plus a live responsive journey
 
 Implementation shape:
@@ -171,14 +171,14 @@ Done means:
 
 ### Wave 2 — Remaining truthful-state and data-loss defects
 
-Wave 2A owns `stationui.js` after 1D. Wave 2B owns `chat.js` exclusively and takes its small
+Wave 2A owns `keepui.js` after 1D. Wave 2B owns `chat.js` exclusively and takes its small
 `sidecar/index.js` age-copy hunk only after lanes 1B/1C merge.
 
 #### Lane 2A — Provider/channel claim honesty — PU-06 and PU-07
 
 Ownership:
 
-- provider and channel sections of `frontend/app/stationui.js`
+- provider and channel sections of `frontend/app/keepui.js`
 - `frontend/app/harness.js`
 - Signal disconnect/config route only if removing configuration requires backend support
 - `test/provider-connections-ui.test.js`
@@ -235,7 +235,7 @@ EL-3 regression:
 - Run in A → open B: B reports the same agent busy, send is unavailable, VIEW ACTIVE RUN returns to A.
 - Force the race after preflight and assert the backend refusal is friendly and nonduplicating.
 - Kill sidecar after streamed tokens: partial text plus disconnect marker survives restart/reload;
-  error is classified as station unreachable, not unknown.
+  error is classified as keep unreachable, not unknown.
 - Age boundaries: 0s, 59s, 60s, and multi-minute.
 
 Done means:
@@ -361,9 +361,9 @@ Closes: routines and channels dying when the desktop window exits.
 This is a genuine product decision checkpoint. Recommended direction for approval:
 
 - a Tauri tray supervisor owns the one sidecar;
-- closing the window keeps the station running only when routines/channels/autonomy require it and
+- closing the window keeps the keep running only when routines/channels/autonomy require it and
   makes that state explicit;
-- Quit StarNet stops the sidecar after a bounded drain;
+- Quit Eyehold stops the sidecar after a bounded drain;
 - launch-at-login is opt-in;
 - tray/status UI shows armed work and provides Open, Pause Automation, and Quit;
 - no hidden daemon and no claim of 24/7 work while the supervisor is absent.
@@ -382,13 +382,13 @@ Required proof after direction is approved:
 | 1A export | `backup.js` | 1B, 1D | current trunk |
 | 1B focus | `index.js`, `nightfocus.js` | 1A, 1D | current trunk |
 | 1C MCP | `index.js` | 1A, 1D | 1B |
-| 1D windows | `stationui.js` window core | 1A, 1B/1C | current trunk |
-| 2A provider/channel | `stationui.js`, `harness.js` | 2B, 2C | 1C and 1D |
+| 1D windows | `keepui.js` window core | 1A, 1B/1C | current trunk |
+| 2A provider/channel | `keepui.js`, `harness.js` | 2B, 2C | 1C and 1D |
 | 2B COMMS | `chat.js`, small `index.js` hunk | 2A, 2C | 1C |
 | 2C recruit | recruit UI, summon seam | 2A, 2B | Wave 1 |
 | 3A sessions | `app.js`, `workstreams.js`, `chat.js` | none touching `chat.js` | 2B |
 | 4A session tools | session/transcript UI | 4B, 4C | 3A |
-| 4B resize | `stationui.js` window core | 4A, 4C | 2A |
+| 4B resize | `keepui.js` window core | 4A, 4C | 2A |
 | 4C deliverables | workshop/returns/UI/routes | 4A, 4B | Waves 1–3 |
 | 4D lifecycle | Tauri shell, sidecar ownership | 4A–4C | owner decision |
 

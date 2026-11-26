@@ -1,7 +1,7 @@
 # Computer-control evaluation
 
 The original `cua-driver.js` here remains a development prototype. It evaluates
-Cua Driver through StarNet's MCP client and injected `computer.use` driver seam.
+Cua Driver through Eyehold's MCP client and injected `computer.use` driver seam.
 The separate production implementation and its setup are documented in
 [Computer Control](../../docs/COMPUTER_CONTROL.md). `production-smoke.js`,
 `runtime-smoke.js`, and `app-survival.js` exercise that production implementation.
@@ -39,7 +39,7 @@ other tabs or document contents. The browser export uses real headless Chromium
 with a local fixture and a private browser profile, not an authenticated service.
 
 `live-loop.js` selects a screenshot using a replay provider but dispatches a real
-CUA capture through the real StarNet loop. It checks the screenshot reaches the
+CUA capture through the real Eyehold loop. It checks the screenshot reaches the
 model transcript and restricted contexts cannot execute it. It is not a test of
 LLM planning, the installed app, or production HTTP registration of CUA.
 

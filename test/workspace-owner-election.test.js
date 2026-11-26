@@ -6,7 +6,7 @@ const path = require('node:path');
 const { spawnSync, spawn } = require('node:child_process');
 const { makeWorkspaceOwner } = require('../sidecar/workspace-owner.js');
 const modulePath = require.resolve('../sidecar/workspace-owner.js');
-const sandbox = fs.mkdtempSync(path.join(os.tmpdir(), 'starnet-election-'));
+const sandbox = fs.mkdtempSync(path.join(os.tmpdir(), 'eyehold-election-'));
 const children = [];
 const childSource = `
 const fs=require('node:fs'),path=require('node:path');
@@ -15,8 +15,8 @@ const root=process.argv[2],stage=process.argv[3];
 const proxy=Object.create(fs);
 if(stage==='ticket')proxy.linkSync=(...a)=>{fs.linkSync(...a);process.exit(91)};
 if(stage==='pending')proxy.writeSync=(...a)=>{fs.writeSync(...a);process.exit(91)};
-if(stage==='primary')proxy.linkSync=(f,to)=>{fs.linkSync(f,to);if(to.endsWith('.starnet-workspace-owner.json'))process.exit(91)};
-if(stage==='readback')proxy.readFileSync=(f,...a)=>{const v=fs.readFileSync(f,...a);if(f.endsWith('.starnet-workspace-owner.json'))process.exit(91);return v};
+if(stage==='primary')proxy.linkSync=(f,to)=>{fs.linkSync(f,to);if(to.endsWith('.eyehold-workspace-owner.json'))process.exit(91)};
+if(stage==='readback')proxy.readFileSync=(f,...a)=>{const v=fs.readFileSync(f,...a);if(f.endsWith('.eyehold-workspace-owner.json'))process.exit(91);return v};
 const owner=makeWorkspaceOwner({fs:proxy,path,now:Date.now});
 const go=()=>{const r=owner.acquire(root);process.stdout.write(JSON.stringify({ok:r.ok,code:r.code,pid:process.pid})+'\\n');if(r.ok){if(stage==='held')process.exit(91);setInterval(()=>{},1000)}};
 if(stage==='race'){process.stdout.write('ready\\n');const t=setInterval(()=>{if(fs.existsSync(path.join(root,'go'))){clearInterval(t);go()}},5)}else go();
@@ -25,7 +25,7 @@ if(stage==='race'){process.stdout.write('ready\\n');const t=setInterval(()=>{if(
   // Exact original stale-read interleaving: reentrant A must be refused while
   // B holds its generation, instead of both returning ownership.
   const interleave = path.join(sandbox, 'interleave'); fs.mkdirSync(interleave);
-  const primary = path.join(interleave, '.starnet-workspace-owner.json');
+  const primary = path.join(interleave, '.eyehold-workspace-owner.json');
   fs.writeFileSync(primary, JSON.stringify({ version: 1, pid: 101, nonce: 'dead', startedAt: 1 }));
   const deps = { fs, path, now: () => 100, pidAlive: pid => pid !== 101 };
   const a = makeWorkspaceOwner({ ...deps, pid: 201, nonce: () => 'a' });
@@ -66,7 +66,7 @@ if(stage==='race'){process.stdout.write('ready\\n');const t=setInterval(()=>{if(
   }
 
   const race = path.join(sandbox, 'race'); fs.mkdirSync(race);
-  fs.writeFileSync(path.join(race, '.starnet-workspace-owner.json'), JSON.stringify({ version: 1, pid: 2147483647, nonce: 'stale', startedAt: 1 }));
+  fs.writeFileSync(path.join(race, '.eyehold-workspace-owner.json'), JSON.stringify({ version: 1, pid: 2147483647, nonce: 'stale', startedAt: 1 }));
   const records = [];
   for (let i = 0; i < 8; i++) {
     const child = spawn(process.execPath, ['-e', childSource, modulePath, race, 'race'], { windowsHide: true, stdio: ['ignore', 'pipe', 'pipe'] });

@@ -1,4 +1,4 @@
-/* STARNET — cloudsave.js : write the agent through to the durable sidecar, and pull it back on boot.
+/* EYEHOLD — cloudsave.js : write the agent through to the durable sidecar, and pull it back on boot.
 
    localStorage is a fast CACHE that a browser wipe can erase. The sidecar's <workspaces>/<id>.save.json is the
    DURABLE copy (app-data dir, survives a cache wipe / different browser). This module keeps them in sync:
@@ -33,9 +33,9 @@ const CloudSave = (() => {
   const activeFlushes = new Set();      // confirmable writes currently waiting on the sidecar
   let health = Core ? Core.freshHealth() : { lastPushOkAt: 0, lastPushFailAt: 0, consecutiveFailures: 0, nextRetryAt: 0 };
   let warnedStale = false;             // ONE console warn per failing↔healthy transition, never per attempt
-  // EL-11 FIX 1: the sidecar REFUSES writes when the workspace was stamped by a NEWER StarNet — as an HTTP 200
+  // EL-11 FIX 1: the sidecar REFUSES writes when the workspace was stamped by a NEWER Eyehold — as an HTTP 200
   // body { ok:false, degraded:true }. That refusal gets its OWN persistent state (the save-dot renders it and
-  // stationui explains it); it is NOT a transient network failure and must never stamp health OK.
+  // keepui explains it); it is NOT a transient network failure and must never stamp health OK.
   let degraded = false;
   // EL-11 FIX 2/3: the persisted quarantine/recovery marker the sidecar returned on the last pull (GET /api/save
   // carries `recovery`). The boot path reads it via recoveryNotice() and acks it after showing the honest notice.
@@ -48,10 +48,10 @@ const CloudSave = (() => {
 
   function now() { return Date.now(); }
   function num(v) { const n = Number(v); return Number.isFinite(n) ? n : 0; }
-  function isSave(d) { return !!(d && typeof d === 'object' && d.schema === 'starnet.save' && d.agent && typeof d.agent === 'object'); }
+  function isSave(d) { return !!(d && typeof d === 'object' && d.schema === 'eyehold.save' && d.agent && typeof d.agent === 'object'); }
 
   // this build's readable schema ceiling. A save/remote whose version exceeds this was written by a NEWER
-  // StarNet and MUST NOT be adopted into the cache (that would clobber the local doc with fields this code
+  // Eyehold and MUST NOT be adopted into the cache (that would clobber the local doc with fields this code
   // can't read). Mirror Save.CURRENT when available; fall back to a literal only if Save hasn't loaded yet.
   function currentVersion() { return (typeof Save !== 'undefined' && Number.isFinite(Save.CURRENT)) ? Save.CURRENT : 5; }
   function isFutureSave(d) { return isSave(d) && num(d.version) > currentVersion(); }
@@ -65,7 +65,7 @@ const CloudSave = (() => {
   // intact 200KB save). Distinct object, never a real save envelope.
   function unknownSentinel(reason) { return { __saveUnknown: true, reason: String(reason || 'unreachable') }; }
 
-  // NOTE: no `keepalive` here — browsers cap a keepalive body at 64KB, and a save with workstreams + station
+  // NOTE: no `keepalive` here — browsers cap a keepalive body at 64KB, and a save with workstreams + keep
   // can exceed that. The normal debounced flush is a plain fetch; the unload path uses sendBeacon instead.
   function postNow(doc) {
     const controller = new AbortController();
@@ -147,7 +147,7 @@ const CloudSave = (() => {
             revision = body.revision;
             if (pending) pending._saveRevision = revision;
             try {
-              const cached = JSON.parse(localStorage.getItem('starnet.save'));
+              const cached = JSON.parse(localStorage.getItem('eyehold.save'));
               // A preceding ACK advances the queued document's revision before it is sent. Its localStorage
               // twin still has the older revision. Compare the actual document, not that transport metadata,
               // or the final successful save stays dirty and creates a false conflict on the next restart.
@@ -155,7 +155,7 @@ const CloudSave = (() => {
               if (!pending && cached && payload(cached) === payload(doc)) {
                 cached._saveRevision = revision; cached._saveDirty = false;
                 if (Number.isFinite(body.updatedAt)) cached.updatedAt = body.updatedAt;
-                localStorage.setItem('starnet.save', JSON.stringify(cached));
+                localStorage.setItem('eyehold.save', JSON.stringify(cached));
               }
             } catch (_) {}
           }
@@ -218,10 +218,10 @@ const CloudSave = (() => {
   function pull() {
     // DEV-ONLY fault injection (stranded-user testing law): with a SKYNET_DEV seed loaded, a localStorage flag
     // forces the pull outcome so the save-unknown gate's failure states can be WALKED in the live app.
-    // Inert in production: __STARNET_DEV__ is only ever injected by a SKYNET_DEV=1 sidecar.
+    // Inert in production: __EYEHOLD_DEV__ is only ever injected by a SKYNET_DEV=1 sidecar.
     try {
-      if (typeof window !== 'undefined' && window.__STARNET_DEV__) {
-        const f = localStorage.getItem('starnet.dev.pullFault');
+      if (typeof window !== 'undefined' && window.__EYEHOLD_DEV__) {
+        const f = localStorage.getItem('eyehold.dev.pullFault');
         if (f === 'forbidden' || f === 'unreachable') { lastPullOutcome = f; return Promise.resolve(null); }
       }
     } catch (_) {}
@@ -237,7 +237,7 @@ const CloudSave = (() => {
           }
           return null;
         }
-        lastPullOutcome = 'unreachable'; // status alone cannot prove a readable or empty station
+        lastPullOutcome = 'unreachable'; // status alone cannot prove a readable or empty keep
         return r.json();
       })
       .then(j => {
@@ -285,12 +285,12 @@ const CloudSave = (() => {
     revision = num(remote._saveRevision);
     // The unload beacon may land after the old page can receive its ACK. On reload the
     // cache is still dirty, but an identical durable payload proves that exact edit landed.
-    // Ignore only transport metadata; any changed station, roster, or conversation still
+    // Ignore only transport metadata; any changed keep, roster, or conversation still
     // takes the conflict-preserving path below.
     const content = d => JSON.stringify({ ...d, updatedAt: undefined, _saveRevision: undefined, _saveClient: undefined, _saveDirty: undefined });
     if (isSave(local) && local._saveDirty && content(local) === content(remote)) {
       local = { ...local, updatedAt: remote.updatedAt, _saveRevision: revision, _saveDirty: false };
-      try { localStorage.setItem('starnet.save', JSON.stringify(local)); } catch (_) {}
+      try { localStorage.setItem('eyehold.save', JSON.stringify(local)); } catch (_) {}
       return local;
     }
     if (isSave(local) && local._saveDirty) {
@@ -305,12 +305,12 @@ const CloudSave = (() => {
       // The durable mirror is designed to outlive the cache and survive app updates, so it can legitimately be
       // an OLDER schema (v1/v2) than this build. resumeInto() assumes a current-schema doc (reads .workstreams,
       // expects .agent.stats); adopting a raw v1/v2 remote would silently drop history + skip the XP seed.
-      const priorLocalRaw = (() => { try { return localStorage.getItem('starnet.save'); } catch (_) { return null; } })();
+      const priorLocalRaw = (() => { try { return localStorage.getItem('eyehold.save'); } catch (_) { return null; } })();
       let adopted = false;
       try {
         const raw = JSON.stringify(remote);
-        localStorage.setItem('starnet.save', raw);
-        adopted = localStorage.getItem('starnet.save') === raw;
+        localStorage.setItem('eyehold.save', raw);
+        adopted = localStorage.getItem('eyehold.save') === raw;
       } catch (_) {}
       try {
         // re-validate through Save.load(): it re-checks the forward-version guard on the just-adopted doc and
@@ -321,7 +321,7 @@ const CloudSave = (() => {
       // adoption produced no readable current-schema doc (Save unavailable, or the re-read failed the guard).
       // NEVER return the raw, unmigrated remote — resumeInto() would misread it. Roll the cache back to the
       // prior local and prefer it. Without one, a failed adoption cannot justify first-run onboarding.
-      try { if (priorLocalRaw != null) localStorage.setItem('starnet.save', priorLocalRaw); else localStorage.removeItem('starnet.save'); } catch (_) {}
+      try { if (priorLocalRaw != null) localStorage.setItem('eyehold.save', priorLocalRaw); else localStorage.removeItem('eyehold.save'); } catch (_) {}
       try { console.warn('[cloudsave] adopted remote did not re-validate; kept prior local cache.'); } catch (_) {}
       // We kept the old document, so keep its causal revision too. Giving it the remote
       // revision would let the next autosave overwrite newer durable edits without conflict.
@@ -341,7 +341,7 @@ const CloudSave = (() => {
   //
   // DESKTOP REALITY (July-22 data-loss incident): the page runs on the tauri.localhost origin and the shell
   // rewrites ONLY window.fetch to the sidecar's real loopback URL — a relative sendBeacon posts into the
-  // bundled-asset protocol and VANISHES (and sendBeacon cannot set the X-StarNet-Token header anyway). The old
+  // bundled-asset protocol and VANISHES (and sendBeacon cannot set the X-Eyehold-Token header anyway). The old
   // code then treated sendBeacon's `true` ("queued for dispatch") as a confirmed 200: it nulled `pending` and
   // stamped health OK, so the newest save silently evaporated on EVERY desktop close/minimize while the
   // save-dot claimed "backed up". Three rules now:
@@ -355,7 +355,7 @@ const CloudSave = (() => {
   function beaconUrl() {
     if (typeof ApiTicket !== 'undefined' && ApiTicket.saveBeaconUrl) return ApiTicket.saveBeaconUrl();
     let base = '';
-    try { if (typeof window !== 'undefined' && window.__STARNET_API__) base = String(window.__STARNET_API__); } catch (_) {}
+    try { if (typeof window !== 'undefined' && window.__EYEHOLD_API__) base = String(window.__EYEHOLD_API__); } catch (_) {}
     return base + ENDPOINT;   // no ticket minter loaded: an unauthenticated beacon (refused) beats a leaked master token
   }
   function installUnloadFlush() {
@@ -382,7 +382,7 @@ const CloudSave = (() => {
     const s = Core ? Core.snapshot(health, now())
       : { lastPushOkAt: health.lastPushOkAt, lastPushFailAt: health.lastPushFailAt, consecutiveFailures: health.consecutiveFailures, nextRetryAt: 0, warn: false, stale: false };
     s.conflict = conflict;
-    s.degraded = degraded;   // EL-11 FIX 1: refused-by-newer-StarNet is its own persistent, renderable state
+    s.degraded = degraded;   // EL-11 FIX 1: refused-by-newer-Eyehold is its own persistent, renderable state
     return s;
   }
 
@@ -406,7 +406,7 @@ const CloudSave = (() => {
     const confirmed = await flush({ force: true });
     if (pending || activeFlushes.size) throw new Error('This window changed while saving. Try reloading again after your work finishes.');
     if (!confirmed && !conflict) throw new Error('Could not preserve this window. Download its save before reloading.');
-    localStorage.removeItem('starnet.save');
+    localStorage.removeItem('eyehold.save');
     location.reload();
   }
   return { localSnapshot: () => latestLocal, reloadCurrent, revision: () => revision, push, pull, reconcile, flush, flushForUpdate, installUnloadFlush, health: healthNow, isFutureSentinel, isUnknownSentinel, markDegraded, recoveryNotice, lineage, ackRecovery, pullOutcome: () => lastPullOutcome, _isSave: isSave, _isFutureSave: isFutureSave };

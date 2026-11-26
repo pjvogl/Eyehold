@@ -18,7 +18,7 @@ const ISO = '2026-07-07T12:00:00.000Z';
 const clock = { nowIso: () => ISO };
 const SHA = 'a'.repeat(40);
 const TREE = 'd'.repeat(40);
-const ARTIFACT = { path: 'C:/Program Files/StarNet/StarNet.exe', sha256: 'b'.repeat(64), size: 123456 };
+const ARTIFACT = { path: 'C:/Program Files/Eyehold/Eyehold.exe', sha256: 'b'.repeat(64), size: 123456 };
 const RUNTIME_EXECUTABLE = { sha256: ARTIFACT.sha256, size: ARTIFACT.size };
 const EVIDENCE = { path: 'qa/installed/run/probe.json', sha256: 'c'.repeat(64), size: 321 };
 const OFFICIAL_EVIDENCE = { schemaVersion: 1, candidateCommit: SHA, sourceTree: TREE, artifact: { sha256: ARTIFACT.sha256, size: ARTIFACT.size } };
@@ -32,7 +32,7 @@ async function runInPageProbe({ boardOpen, cards = [], busyIds = [] }) {
         sourceTree: TREE, provenanceKind: 'reproducible-source',
         executableSha256: RUNTIME_EXECUTABLE.sha256, executableSize: RUNTIME_EXECUTABLE.size
       }) } },
-      __STARNET_API_TOKEN__: 'test-token',
+      __EYEHOLD_API_TOKEN__: 'test-token',
       __world: {}
     },
     document: {
@@ -119,7 +119,7 @@ const GREEN_PROBE = {
 };
 
 /* ---- A0. SMOKE_PROBE auth-header contract (regression for ledger finding 4d9992d9) ----
-   The in-page probe MUST authenticate with X-StarNet-Token — the ONLY scheme the sidecar accepts (Authorization is
+   The in-page probe MUST authenticate with X-Eyehold-Token — the ONLY scheme the sidecar accepts (Authorization is
    rejected as "forbidden token") AND the only auth header in its CORS Access-Control-Allow-Headers. On the packaged
    desktop build the page origin (http://tauri.localhost) differs from the sidecar (http://127.0.0.1:<port>), so every
    /api/* call is cross-origin: a stray Authorization header makes the OPTIONS preflight request a header the sidecar
@@ -128,10 +128,10 @@ const GREEN_PROBE = {
    dev/headless never preflights, which is why this only ever surfaced on the installed exe. The probe is a string
    eval'd in a real browser, so this guards its source directly (it can't be exercised headlessly). */
 {
-  A.ok(/X-StarNet-Token/.test(SMOKE_PROBE), 'SMOKE_PROBE authenticates with the X-StarNet-Token header (sidecar auth + CORS allow-list)');
+  A.ok(/X-Eyehold-Token/.test(SMOKE_PROBE), 'SMOKE_PROBE authenticates with the X-Eyehold-Token header (sidecar auth + CORS allow-list)');
   A.ok(!/Authorization/i.test(SMOKE_PROBE), 'SMOKE_PROBE sends NO Authorization header (it trips the packaged build cross-origin preflight)');
   A.ok(!/Bearer/.test(SMOKE_PROBE), 'SMOKE_PROBE uses NO Bearer scheme (the sidecar rejects Bearer as forbidden token)');
-  A.ok(/starnet_build_info/.test(SMOKE_PROBE), 'SMOKE_PROBE obtains source identity from the running Tauri binary');
+  A.ok(/eyehold_build_info/.test(SMOKE_PROBE), 'SMOKE_PROBE obtains source identity from the running Tauri binary');
   A.ok(/executableSha256/.test(SMOKE_PROBE) && /executableSize/.test(SMOKE_PROBE), 'SMOKE_PROBE obtains content identity from the running executable');
   A.ok(/data-term="tasks"/.test(PREPARE_SMOKE_SURFACE) && /\.kb-cols/.test(PREPARE_SMOKE_SURFACE), 'installed smoke physically opens TASKS before asserting its rendered state');
   A.ok(REQUIRED_CHECKS.includes('desktop/tauri-origin') && REQUIRED_CHECKS.includes('desktop/build-info') && REQUIRED_CHECKS.includes('desktop/executable-identity'), 'desktop source + executable identity assertions are mandatory');
@@ -280,7 +280,7 @@ const GREEN_PROBE = {
   A.eq(io4.findings.length, 0, 'a GREEN run files NO ledger finding (nothing to report)');
 
   /* ---- H2. official is externally earned; custom can never be promoted ---- */
-  const verifier = () => ({ ok: true, authority: 'release-attestation-verifier', verificationId: 'attestation-123' });
+  const verifier = () => ({ ok: true, authority: 'release-attekeep-verifier', verificationId: 'attekeep-123' });
   const ioOfficial = memIo();
   const official = await makeSmoke({
     attach: async () => sessionWith(GREEN_PROBE), clock, expectedHead: SHA, expectedTree: TREE,
@@ -288,7 +288,7 @@ const GREEN_PROBE = {
   }).run();
   A.eq(official.result, RESULTS.GREEN, 'external official verification does not weaken installed behavior gates');
   A.eq(official.stamp.provenanceKind, 'official', 'exact externally verified commit/tree/artifact earns official');
-  A.ok(official.stamp.officialEvidence && official.stamp.officialEvidence.verificationId === 'attestation-123', 'official receipt records its external verification identity');
+  A.ok(official.stamp.officialEvidence && official.stamp.officialEvidence.verificationId === 'attekeep-123', 'official receipt records its external verification identity');
 
   const customProbe = Object.assign({}, GREEN_PROBE, { shell: Object.assign({}, GREEN_PROBE.shell, { provenanceKind: 'custom' }) });
   const custom = await makeSmoke({

@@ -1,4 +1,4 @@
-/* node test/routine-tools.test.js -- agent-facing StarNet ROUTINES tools.
+/* node test/routine-tools.test.js -- agent-facing Eyehold ROUTINES tools.
    Locks the bugfix for "cron" requests: the lead gets a real routine.create tool, it routes research/news
    routines to a research specialist, writes through the injected cron creator, and arms the scheduler by default. */
 'use strict';
@@ -65,7 +65,7 @@ const call = (name, args) => ({ id: 'c1', name, args: args || {}, argsRaw: JSON.
     A.eq(body.routedTo, 'researcher-2', 'tool result reports the routed agent');
     A.eq(body.schedulerArmed, true, 'tool result reports the scheduler armed state');
     A.eq(body.job.id, 'job_1', 'tool result carries the created routine');
-    A.eq(createdSpec.enabledToolsets, null, 'no toolset list means station defaults (null)');
+    A.eq(createdSpec.enabledToolsets, null, 'no toolset list means keep defaults (null)');
   }
 
   // ---- enabledToolsets: an explicit [] is NO restriction, never "restrict to nothing" (#58 class) ----
@@ -462,7 +462,7 @@ const call = (name, args) => ({ id: 'c1', name, args: args || {}, argsRaw: JSON.
   const out = JSON.parse((await listTool.run({}, {})).content);
   const row = (out.jobs || out.routines || [])[0] || {};
   A.eq(row.when, 'every Monday at 10:00 AM (America/New_York)', 'routine.list carries the cadence in words');
-  A.eq(row.nextRunLocal, 'Mon, Oct 5 at 10:00 AM', 'and the next fire on the station clock');
+  A.eq(row.nextRunLocal, 'Mon, Oct 5 at 10:00 AM', 'and the next fire on the keep clock');
   const bare = makeRoutineTools({ roster: () => new Map(), listJobs: () => [j] }).listTool;
   A.eq(((JSON.parse((await bare.run({}, {})).content).jobs || [])[0] || {}).when, undefined, 'no describer wired -> no invented words');
 }

@@ -24,4 +24,4 @@ jobs:
         run: |
           echo '## Eyehold in-game work board' >> "$GITHUB_STEP_SUMMARY"
           echo 'Static UI wiring and safe read-only rendering checks passed. No model calls or Crown awards.' >> "$GITHUB_STEP_SUMMARY"
-          echo 'To watch actual agents move, open the running station on a computer hosting the sidecar; CI is not a persistent game server.' >> "$GITHUB_STEP_SUMMARY"
+          echo 'To watch actual agents move, open the running keep on a computer hosting the sidecar; CI is not a persistent game server.' >> "$GITHUB_STEP_SUMMARY"

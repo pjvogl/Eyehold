@@ -1,14 +1,14 @@
 # Computer control: CUA evaluation, 2026-09-19
 
 **Recommendation: continue with an opt-in CUA native-app backend; do not replace
-StarNet's default driver yet.** The live Windows evaluation demonstrates useful
+Eyehold's default driver yet.** The live Windows evaluation demonstrates useful
 background editing, semantic targeting, explicit stale-reference rejection, and
-compatibility with StarNet's screenshot-to-model pipeline. It is not a complete
-Hermes-vs-StarNet task-success benchmark.
+compatibility with Eyehold's screenshot-to-model pipeline. It is not a complete
+Hermes-vs-Eyehold task-success benchmark.
 
 ## What was evaluated
 
-- StarNet source: `621bbf467`, isolated branch `agent/cua-evaluation-0919`.
+- Eyehold source: `621bbf467`, isolated branch `agent/cua-evaluation-0919`.
 - Windows, Node 22.23.0, pinned Cua Driver 0.28.2 binary (archive SHA256 in the
   [reproduction instructions](../dev/computer-eval/README.md)).
 - Hermes's architectural reference: its current public CUA integration. The
@@ -29,11 +29,11 @@ Hermes-vs-StarNet task-success benchmark.
 | Superseded element reference | Rejected in all 4 trials | Driver returned `stale_element_token`; no fallback click |
 | Closed-menu Ctrl+S in modern Notepad | Failed in exploratory test | Driver could not find an exposed UIA accelerator; disk unchanged |
 | Recovery through File → Save | Passed | Semantic menu actions followed by actual disk read-back |
-| Browser report export | Passed using StarNet's existing headless browser driver | Local export fixture; real Chromium download, exact 49-byte CSV checked |
-| Browser → native app handoff | Passed | CUA opened the exported CSV in Notepad; StarNet adapter appended a review row and saved it; disk checked |
-| Live StarNet agent loop | Passed with deterministic replay planning and real CUA capture | One tool result and one real image turn reached the model transcript; `agent.run.end` emitted |
+| Browser report export | Passed using Eyehold's existing headless browser driver | Local export fixture; real Chromium download, exact 49-byte CSV checked |
+| Browser → native app handoff | Passed | CUA opened the exported CSV in Notepad; Eyehold adapter appended a review row and saved it; disk checked |
+| Live Eyehold agent loop | Passed with deterministic replay planning and real CUA capture | One tool result and one real image turn reached the model transcript; `agent.run.end` emitted |
 | Restricted context | Rejected before native dispatch | Existing `computer.use` authority check preserved |
-| Seeded StarNet app smoke | Passed | Live UI exposed NOVA/COMMS; local fixture-provider HTTP run returned `agent.run.end` with reason `done` |
+| Seeded Eyehold app smoke | Passed | Live UI exposed NOVA/COMMS; local fixture-provider HTTP run returned `agent.run.end` with reason `done` |
 | Legacy physical-input task baseline | Incomplete | Foreground changed during setup; typing was withheld instead of risking a different window |
 
 The browser fixture is not an authenticated SaaS app. Notepad is a real native
@@ -85,9 +85,9 @@ Sanitized machine receipts: [Windows results](../dev/computer-eval/results/windo
 6. **Packaging and authority:** pin and verify the driver; detect prerequisites;
    tie private runtime mode to existing host-minted authority. Full Power must
    retain its current meaning. Do not copy Hermes's independent shortcut/text
-   denylists into StarNet or add a second permission ceremony.
+   denylists into Eyehold or add a second permission ceremony.
 7. **Concurrent use:** exact window/session ownership and task cancellation need
-   tests across multiple StarNet agents; native foreground input still needs
+   tests across multiple Eyehold agents; native foreground input still needs
    serialized ownership when an application requires it.
 
 ## Suggested next implementation slice
@@ -97,7 +97,7 @@ targets, truthful structured results, and a cancellable private runtime. Preserv
 the existing browser/connector routing. Prove the same workflows through the
 served app and model-visible schema, then extend to one Chromium/Electron app and
 one Office app before proposing a default switch. Voice already exists in
-StarNet; evaluate spoken steering and stop behavior after this control layer is
+Eyehold; evaluate spoken steering and stop behavior after this control layer is
 stable.
 
 ## Validation status
@@ -105,9 +105,9 @@ stable.
 Eight adapter regression tests passed. The real Notepad probes, native image
 loop and seeded app smoke passed as described above. `npm run test:fast` timed
 out at its 900,000 ms limit after 743/829 steps, last completed
-`test/station-recovery.test.js`. No assertion failure was reported in that
+`test/keep-recovery.test.js`. No assertion failure was reported in that
 prefix. This is **not a green full gate**. The remaining 86 steps were resumed
-separately, starting with `test/station-recovery-cli.test.js`, and passed:
+separately, starting with `test/keep-recovery-cli.test.js`, and passed:
 `cua-eval-fast-remainder: OK — 86 step(s) green`. All 829 steps completed across
 the split runs, but the standard single-run gate still timed out. The branch
 has not been merged. No production sidecar/route files changed, so

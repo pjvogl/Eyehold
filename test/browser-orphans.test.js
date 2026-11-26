@@ -1,4 +1,4 @@
-/* node test/browser-orphans.test.js — #61: the station browser recovers from an orphaned Chromium whose network proxy
+/* node test/browser-orphans.test.js — #61: the keep browser recovers from an orphaned Chromium whose network proxy
    died with an earlier sidecar, and a navigation that never loaded is no longer reported as an "unsafe redirect".
    Hermetic: a fake process table, fake kill, fake profile files and fake CDP sockets. Nothing real is listed or
    killed (every real effect in browser-orphans.js is injected here). */
@@ -14,7 +14,7 @@ const PROFILE_WIN = 'C:\\Users\\Ann Lee\\AppData\\Roaming\\ai.skynet.harness\\wo
 const CHROME = '"C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe"';
 const SELF = 100;
 
-// A process table shaped like the one the 0.12.5 report described: OUR live station browser, an ORPHAN on the same
+// A process table shaped like the one the 0.12.5 report described: OUR live keep browser, an ORPHAN on the same
 // profile whose parent sidecar is gone, the Commander's own Chrome, a look-alike profile path, and a bare Chrome.
 function table() {
   return [
@@ -48,7 +48,7 @@ function fakeFs(files) {
   A.eq(O.profileArg('chromium --user-data-dir=/tmp/p about:blank'), '/tmp/p', 'a trailing start URL is not part of the path');
   A.eq(O.profileArg('chrome --no-first-run'), null, 'no profile flag: no identity');
   A.ok(O.sameDir(PROFILE_WIN + '\\', PROFILE_WIN.toLowerCase(), 'win32'), 'Windows compare ignores case and a trailing separator');
-  A.ok(!O.sameDir(PROFILE_WIN + '-old', PROFILE_WIN, 'win32'), 'a look-alike profile path is NOT the station profile (no prefix match)');
+  A.ok(!O.sameDir(PROFILE_WIN + '-old', PROFILE_WIN, 'win32'), 'a look-alike profile path is NOT the keep profile (no prefix match)');
 
   /* ---- classify: ours vs orphans; the Commander's own Chrome never appears at all ---- */
   const c = O.classify(table(), PROFILE_WIN, { selfPid: SELF, platform: 'win32' });
@@ -79,7 +79,7 @@ function fakeFs(files) {
     const r = await O.sweep({ profileDir: PROFILE_WIN, platform: 'win32', selfPid: SELF, listProcesses: async () => rows, kill, sleep: async () => {}, fs: ffs });
     A.ok(r.ok, 'orphan ended');
     A.eq(r.locks.removed.sort(), ['DevToolsActivePort', 'SingletonLock', 'lockfile'], 'with nothing left on the profile its stale locks (and the dead DevTools port file) are cleared');
-    A.ok(/ended 3 of 3 orphaned station-browser processes/.test(O.describeSweep(r)), 'receipt text says what happened: ' + O.describeSweep(r));
+    A.ok(/ended 3 of 3 orphaned keep-browser processes/.test(O.describeSweep(r)), 'receipt text says what happened: ' + O.describeSweep(r));
   }
   {
     // a kill that does not take: the survivor is REPORTED, never assumed gone, and the locks are not touched
@@ -141,7 +141,7 @@ function fakeFs(files) {
       orphanSweep: async o => { order.push('sweep:' + path.basename(o.profileDir)); return { ok: true, found: 1, killed: [300], survivors: [], ours: [], locks: { removed: ['lockfile'], failed: [] }, error: null }; }
     }));
     await d.navigate('https://example.com/');
-    A.eq(order, ['sweep:' + path.basename(dir), 'spawn'], 'a held station profile is swept for orphans BEFORE the new browser is spawned');
+    A.eq(order, ['sweep:' + path.basename(dir), 'spawn'], 'a held keep profile is swept for orphans BEFORE the new browser is spawned');
     A.ok(d.lastOrphanSweep() && d.lastOrphanSweep().killed[0] === 300, 'the driver keeps the sweep receipt');
     await d.close();
     fs.rmSync(dir, { recursive: true, force: true });
@@ -192,13 +192,13 @@ function fakeFs(files) {
     });
     let err = null;
     try { await d.navigate('https://www.etsy.com/listing/123'); } catch (e) { err = e; }
-    A.ok(err && err.code === 'STATION_PROXY_DOWN', 'Page.navigate errorText is read: the proxy failure is named');
+    A.ok(err && err.code === 'KEEP_PROXY_DOWN', 'Page.navigate errorText is read: the proxy failure is named');
     A.ok(err && /could not load www\.etsy\.com: net::ERR_PROXY_CONNECTION_FAILED/.test(err.message), 'the message names the host and the real network error: ' + (err && err.message));
     A.ok(err && !/unsafe redirect|only http\(s\)/.test(err.message), 'and it is NOT reported as an unsafe redirect');
     A.ok(!d.alive(), 'a browser whose proxy is down reads as dead, so the session starts a fresh browser + proxy');
-    A.ok(err && !err.revealTools, 'StarNet restarts its own browser itself, so nothing is pointed at browser.reset');
+    A.ok(err && !err.revealTools, 'Eyehold restarts its own browser itself, so nothing is pointed at browser.reset');
     await d.close();
-    // a browser started by an EARLIER StarNet session is the one case told to run browser.reset - which is deferred,
+    // a browser started by an EARLIER Eyehold session is the one case told to run browser.reset - which is deferred,
     // so the error must also make it callable (the registry carries revealTools onto the error result)
     const earlier = T.makeCdpDriver({
       attachPort: 9373, syntheticInputOnly: false, timeoutMs: 400,
@@ -250,7 +250,7 @@ function fakeFs(files) {
       let dead = false;
       return {
         navigate: async url => {
-          if (n === 0) { dead = true; const e = new Error('could not load www.etsy.com: net::ERR_PROXY_CONNECTION_FAILED'); e.code = 'STATION_PROXY_DOWN'; throw e; }
+          if (n === 0) { dead = true; const e = new Error('could not load www.etsy.com: net::ERR_PROXY_CONNECTION_FAILED'); e.code = 'KEEP_PROXY_DOWN'; throw e; }
           return url;
         },
         alive: () => !dead, ownedPid: () => null, close: async () => {}
@@ -295,7 +295,7 @@ function fakeFs(files) {
     await tools.session.navigate('https://example.com/');
     const out = await reset.run({}, {});
     A.eq(closed.length, 1, "reset closed this run's own browser");
-    A.eq(swept, [PROFILE_WIN], 'and swept the STATION profile for orphans');
+    A.eq(swept, [PROFILE_WIN], 'and swept the KEEP profile for orphans');
     A.ok(/Closed this run's browser/.test(out.content) && /ended 1 of 1 orphaned/.test(out.content) && /cleared stale profile lock/.test(out.content), 'receipt text: ' + out.content);
     A.eq(out.summary, 'browser reset', 'summary says reset');
     const again = await tools.session.navigate('https://example.com/again');
@@ -310,7 +310,7 @@ function fakeFs(files) {
     });
     const out = await tools.tools.find(t => t.name === 'browser.reset').run({}, {});
     A.eq(out.summary, 'browser reset incomplete', 'a surviving orphan is never reported as a clean reset');
-    A.ok(/still running \(pid 300\)/.test(out.content) && /RESET STATION BROWSER/.test(out.content), 'and the agent is told the human recovery path: ' + out.content);
+    A.ok(/still running \(pid 300\)/.test(out.content) && /RESET KEEP BROWSER/.test(out.content), 'and the agent is told the human recovery path: ' + out.content);
   }
 
   A.report('browser-orphans.test');

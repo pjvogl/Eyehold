@@ -7,7 +7,7 @@
    only that this agent reported it at that time — truthful telemetry for external data.
 
    Pure, sandboxed, no filesystem path-escape surface, no network. Backed by an injected
-   store ({get,set,update} — the durable station-scoped store in the sidecar; in-memory in
+   store ({get,set,update} — the durable keep-scoped store in the sidecar; in-memory in
    tests), the notebook.js pattern. NEVER emits: the frozen shared/events.js contract has
    no widget event, and the poll transport needs none.
 
@@ -24,7 +24,7 @@
 })(typeof globalThis !== 'undefined' ? globalThis : this, function () {
   'use strict';
 
-  const KEY = 'station';          // ONE station-scoped record list (widgets are station chrome, not per-agent)
+  const KEY = 'keep';          // ONE keep-scoped record list (widgets are keep chrome, not per-agent)
   const MAX_WIDGETS = 12;         // the rails are small; a fleet of stale gauges is noise, not signal
   const ID_RE = /^[a-z0-9][a-z0-9-]{0,23}$/;
   const LIM = { label: 28, value: 24, sub: 28, listItem: 90, listLen: 5, sparkLen: 24 };
@@ -117,7 +117,7 @@
     }
 
     const setTool = {
-      // NO consent gate: a widget record is a sandboxed local write to the station's OWN chrome
+      // NO consent gate: a widget record is a sandboxed local write to the keep's OWN chrome
       // (no filesystem reach, no network, no outward effect) — the same trust class as notebook.write.
       name: 'widget.set', capability: 'memory', scope: 'write', requiresConsent: false,
       /* Trimmed 2026-07-26 (tool-schema cost pass; widest tool in the harness at 2,361 B on the wire). This
@@ -127,7 +127,7 @@
          max lengths this prose did not). What survives is what a per-field description structurally cannot
          say: what the instrument IS, the cross-turn freshness contract, the cross-field "only when the data
          has that shape" rule, and SKIP — which has no runtime guard behind it, so it stays spelled out. */
-      description: 'Publish or update a small named readout on the station’s widget rails — a live instrument the Commander can pin ' +
+      description: 'Publish or update a small named readout on the keep’s widget rails — a live instrument the Commander can pin ' +
         'on screen (e.g. app revenue, top AI headlines, subscriber count). The display always carries YOUR name and the time you ' +
         'set it, so a stale figure is attributable to you: re-set the same id whenever you have a newer one (a routine is the ' +
         'natural driver), and setting an existing id overwrites it. Reach for tone/spark/progress only when the data genuinely ' +
@@ -209,7 +209,7 @@
           } else if (args.version != null || args.error) throw new Error('The configured widget no longer exists.');
           if (idx >= 0) { const next = list.slice(); next[idx] = rec; return next; }
           // the cap binds NEW ids only — updating an existing readout must always work
-          if (list.filter(w => w && !w.deleted).length >= MAX_WIDGETS) throw new Error('the station already has ' + MAX_WIDGETS + ' widgets — clear one (widget.set {id, clear:true}) before adding another');
+          if (list.filter(w => w && !w.deleted).length >= MAX_WIDGETS) throw new Error('the keep already has ' + MAX_WIDGETS + ' widgets — clear one (widget.set {id, clear:true}) before adding another');
           created = true;
           return list.concat([rec]);
         });

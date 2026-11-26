@@ -1,7 +1,7 @@
 # HANDOFF — perf-lag fixes (2026-08-26)
 
 ## The report
-Andrew: StarNet turns laggy after ~5–10 min of runtime and after minimize/restore; an app
+Andrew: Eyehold turns laggy after ~5–10 min of runtime and after minimize/restore; an app
 restart clears it. Confirmed present in the SHIPPED builds — the trigger commit `57112a690`
 is inside both the v0.10.10 and v0.10.11 tags, and both tags are pushed (the train fired).
 
@@ -50,12 +50,12 @@ is inside both the v0.10.10 and v0.10.11 tags, and both tags are pushed (the tra
 
 ## NOT verified / open
 - The multi-minute de-acceleration itself — only a long real session can feel it gone.
-  **Andrew: run the station 15+ min, minimize/restore a few times, confirm.**
+  **Andrew: run the keep 15+ min, minimize/restore a few times, confirm.**
 - **Not shipped.** Trunk only. Users get it at the next cut (**v0.10.12**) — the v0.10.11
   checklist in `docs/HANDOFF_V01011_UPDATE_READINESS.md` applies (claims re-lock is already
   done for this surface; re-earn gates at the exact cut SHA as always).
 - The Explore sweep cleared everything else (all setInterval sites guarded, world.js
-  collections capped/swept, spacebg/asciifx/widgets/stationui/channels clean) — no second
+  collections capped/swept, spacebg/asciifx/widgets/keepui/channels clean) — no second
   wave expected, but if lag persists after this ships, profile before assuming.
 
 ## Standing laws minted (memory: `stage-heartbeat-readback-lag.md`)

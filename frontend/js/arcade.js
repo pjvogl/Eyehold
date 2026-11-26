@@ -1,9 +1,9 @@
-/* STARNET — arcade.js : "BREACH PROTOCOL" — the playable arcade cabinet.
+/* EYEHOLD — arcade.js : "BREACH PROTOCOL" — the playable arcade cabinet.
    Clicking an arcade cabinet in the quarters opens a real game: a phosphor
-   Space-Invaders descendant where rogue scraper-bots besiege the station and
+   Space-Invaders descendant where rogue scraper-bots besiege the keep and
    the Commander mans the point-defense turret. Renders into a low-res canvas
    inside a prop window (PROPTERM mounts/unmounts it), colors pulled live from
-   the active theme so it matches the terminal skin. A top-5 STATION RECORDS board
+   the active theme so it matches the terminal skin. A top-5 KEEP RECORDS board
    persists in localStorage — the house crew hold the seed scores until you take them. */
 'use strict';
 
@@ -16,8 +16,8 @@ const ARCADE = (() => {
      unreadable. Fix: give the canvas S x more device pixels and scale the draw transform,
      so every glyph rasterizes at 16 device px while ALL draw code keeps logical coords. */
   const S = 2;
-  const HI_KEY = 'starnet_arcade_hi';
-  const SCORES_KEY = 'starnet_arcade_scores';
+  const HI_KEY = 'eyehold_arcade_hi';
+  const SCORES_KEY = 'eyehold_arcade_scores';
   let cv = null, ctx = null, raf = 0, mounted = false, hidden = false;
   let last = 0, acc = 0, frameN = 0;
   let keys = {}, kd = null, ku = null;
@@ -86,9 +86,9 @@ const ARCADE = (() => {
     over: [
       'ULTRON> Simulation terminated. The crew will hear about this.',
       'ULTRON> Recorded. Filed. Judged.',
-      'ULTRON> The station survived. You did not.'
+      'ULTRON> The keep survived. You did not.'
     ],
-    hi: 'ULTRON> New station record. VYBES is going to sulk.'
+    hi: 'ULTRON> New keep record. VYBES is going to sulk.'
   };
   /* Never let the attract loop claim VYBES holds a record the Commander already took. */
   function attractQuip(board) {
@@ -121,7 +121,7 @@ const ARCADE = (() => {
       const a = JSON.parse(localStorage.getItem(SCORES_KEY));
       if (Array.isArray(a) && a.length) return a.filter(r => r && r.score >= 0).slice(0, 5);
     } catch (e) { }
-    // first run on this station — fold any legacy single hi-score into the seeded board
+    // first run on this keep — fold any legacy single hi-score into the seeded board
     const hi = loadHi(), b = HOUSE.map(r => ({ ...r }));
     if (hi.score && !b.some(r => r.name === hi.name && r.score === hi.score)) b.push({ name: hi.name, score: hi.score, wave: 0 });
     return b.sort((x, y) => y.score - x.score).slice(0, 5);
@@ -397,9 +397,9 @@ const ARCADE = (() => {
     text(st.quip, W / 2, H - 7, C.dim, 7, 'center');
   }
 
-  /* the station records ledger — the run you just played is the bright row */
+  /* the keep records ledger — the run you just played is the bright row */
   function drawBoard(y0, gap) {
-    text('STATION RECORDS', W / 2, y0, C.dim, 8, 'center');
+    text('KEEP RECORDS', W / 2, y0, C.dim, 8, 'center');
     st.board.forEach((r, i) => {
       const y = y0 + 12 + i * gap;
       const col = r.me ? C.bright : i === 0 ? C.ph : C.dim;

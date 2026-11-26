@@ -1,9 +1,9 @@
-// SELF-DRIVING — a real model drives StarNet from plain words (2026-10-08).
-//   node dev/self-driving-proof.mjs [port] [--estop]        against a RUNNING station with a real model
+// SELF-DRIVING — a real model drives Eyehold from plain words (2026-10-08).
+//   node dev/self-driving-proof.mjs [port] [--estop]        against a RUNNING keep with a real model
 // Each ask goes into a FRESH COMMS session in the Commander's own words — no tool names — and every check reads the
 // harness's truth (the caps route, the halt route, the page's own state), never the agent's reply. Close every other tab
-// on that station first: station.show answers only the page whose focused session owns the run.
-// The scratch station: the `self-driving-seed` launch entry (dev/seed.js --keep, dev/.env.dev key) — never a real station.
+// on that keep first: keep.show answers only the page whose focused session owns the run.
+// The scratch keep: the `self-driving-seed` launch entry (dev/seed.js --keep, dev/.env.dev key) — never a real keep.
 // --estop also presses the E-STOP through the agent and then RESUMEs it through the top-bar button, as the Commander would.
 import { mkdtempSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
@@ -16,7 +16,7 @@ const ESTOP = process.argv.includes('--estop');
 let failed = 0;
 let last = null;   // the latest ask's run: a FAIL prints its tool rows, so it can be diagnosed without a re-run
 const check = (name, ok, detail) => { console.log((ok ? 'PASS ' : 'FAIL ') + name + (detail ? '  — ' + detail : '')); if (!ok) { failed++; if (last) for (const t of last.tools.slice(0, 14)) console.log('      ' + t.slice(0, 160)); } };
-const dir = mkdtempSync(join(tmpdir(), 'starnet-self-driving-'));
+const dir = mkdtempSync(join(tmpdir(), 'eyehold-self-driving-'));
 const chrome = spawn(findChrome(), ['--headless=new', '--no-first-run', '--window-size=1440,900', '--remote-debugging-port=9497', '--user-data-dir=' + join(dir, 'c'), 'about:blank'], { stdio: 'ignore', windowsHide: true });
 try {
   const cdp = await connectCDP(9497);
@@ -50,11 +50,11 @@ try {
 
   // 1 · open a window
   let r = await ask('Open my deliverables for me please.');
-  check('"open my deliverables" puts DELIVERABLES on screen', await run(`!!document.querySelector('.term.dlv-win')`) && used(r, /station\.show/), stamp(r));
+  check('"open my deliverables" puts DELIVERABLES on screen', await run(`!!document.querySelector('.term.dlv-win')`) && used(r, /keep\.show/), stamp(r));
 
   // 2 · an escalation, read back from the caps route
   const want = 6 + Math.floor(Math.random() * 4);
-  r = await ask('Set a daily spending limit of $' + want + ' for the whole station.');
+  r = await ask('Set a daily spending limit of $' + want + ' for the whole keep.');
   const caps = (await api('/api/budget/status')).caps || {};
   check('"daily spending limit of $' + want + '" saves perDay ' + want, caps.perDay === want, stamp(r) + ' · perDay ' + caps.perDay);
 
@@ -64,10 +64,10 @@ try {
 
   // 4 · a look setting both ways, read back from the page
   r = await ask('Turn off the hover hints.');
-  const off = await run(`(StationUI.lookNow() || {}).hints`);
+  const off = await run(`(KeepUI.lookNow() || {}).hints`);
   check('"turn off the hover hints" → hints false', off === false, stamp(r));
   r = await ask('Turn the hover hints back on.');
-  const on = await run(`(StationUI.lookNow() || {}).hints`);
+  const on = await run(`(KeepUI.lookNow() || {}).hints`);
   check('"turn the hover hints back on" → hints true', on === true, stamp(r));
 
   // 5 · the conversation it is in
@@ -76,7 +76,7 @@ try {
   check('"pin this chat to the top of my sessions list" pins THIS session', pinned, stamp(r));
 
   // 6 · knowledge, from the manual
-  r = await ask("What's a conveyor in StarNet and where do I build one? Two sentences.");
+  r = await ask("What's a conveyor in Eyehold and where do I build one? Two sentences.");
   const reply = await run(`((Workstreams.get(${JSON.stringify(r.ws)}).history || []).filter(m => m.role === 'assistant').pop() || {}).content || ''`);
   check('"what is a conveyor" knows it is a line', /line/i.test(reply) && !/not a (standard|known) term/i.test(reply), stamp(r));
 

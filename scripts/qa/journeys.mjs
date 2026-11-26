@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-/* scripts/qa/journeys.mjs — the Self-Testing Station's JOURNEY CORPS (lane EL-1).  (`npm run qa:journeys`)
+/* scripts/qa/journeys.mjs — the Self-Testing Keep's JOURNEY CORPS (lane EL-1).  (`npm run qa:journeys`)
  *
  * WHY THIS EXISTS (and why it's a sibling of audit.mjs, not more scenarios inside it):
  * The Truth Auditor (scripts/audit.mjs) proves STATIC seeded states + a single-shot truthfulness
@@ -36,7 +36,7 @@
  *       /workshop-run jail actually SERVES it 200 + runnable html + opaque-origin sandbox CSP.
  *   J5  parityCheck(step) — the reusable sim↔truth sweep every journey calls (exported for reuse).
  *
- * LAWS (Charter Part 5 + StarNet task doctrine):
+ * LAWS (Charter Part 5 + Eyehold task doctrine):
  *   - NO-FAKE-GREEN: a journey that CANNOT run exits BLOCKED-nonzero; it never silently passes.
  *   - Scripts DETECT + ledger, never notify. This writes .bugloops/journeys-<stamp>/ evidence +
  *     a JSON report; the guardian/overseer file findings.
@@ -114,7 +114,7 @@ const KEEP = process.argv.includes('--keep');
 const SCRATCH = join(OUT_DIR, '_seed-workspace');
 const PROFILE = join(OUT_DIR, '_profile');
 // A FRESH BROWSER PER RUN (2026-09-23): the end-of-run wipe below fails silently while Chrome still holds
-// the profile, and a surviving profile carries a dirty `starnet.save` that cloudsave.reconcile() pushes over
+// the profile, and a surviving profile carries a dirty `eyehold.save` that cloudsave.reconcile() pushes over
 // the fresh seed (the audit gate inherited a placed prop every Guardian hour). Wipe before launch; fail loud.
 function freshProfile(dir) {
   rmSync(dir, { recursive: true, force: true, maxRetries: 5, retryDelay: 250 });
@@ -133,7 +133,7 @@ async function backendSnapshot() {
   if (!JOURNEY_API_TOKEN) return null;
   try {
     const r = await fetch(APP_URL + 'api/state/snapshot', {
-      headers: { 'X-StarNet-Token': JOURNEY_API_TOKEN, Origin: APP_URL.replace(/\/$/, '') },
+      headers: { 'X-Eyehold-Token': JOURNEY_API_TOKEN, Origin: APP_URL.replace(/\/$/, '') },
       cache: 'no-store'
     });
     return r.ok ? await r.json() : null;
@@ -725,7 +725,7 @@ async function journeyDoubleSend(cdp, A, mock, diag) {
  * same contract test/workshop.e2e.test.js locks, driven here as the terminal step of the summon→deliver
  * journey so a regression in the Open path is caught by the journey corps too.  */
 async function journeyDeliverableOpen(cdp, A, base, token, mock) {
-  const H = { 'Content-Type': 'application/json', 'X-StarNet-Token': token, Origin: base };
+  const H = { 'Content-Type': 'application/json', 'X-Eyehold-Token': token, Origin: base };
   const post = (p, b) => fetch(base + p, { method: 'POST', headers: H, body: JSON.stringify(b) });
   const agentId = 'agent';                                          // the seeded hero agent id
   // settle first: release any parked stream from a prior journey, HALT any sidecar-side run still executing
@@ -779,7 +779,7 @@ async function journeyDeliverableOpen(cdp, A, base, token, mock) {
   A.ok('J4/token-required', noTok && noTok.status === 403, 'no-token GET → ' + (noTok && noTok.status) + ' (must be 403)');
 
   // Open the real WORK-dock surface and prove the just-built backend row reaches its physical controls.
-  await evalJS(cdp, `(() => { StationUI.openTerm('deliverables'); return true; })()`).catch(() => false);
+  await evalJS(cdp, `(() => { KeepUI.openTerm('deliverables'); return true; })()`).catch(() => false);
   /* 2026-08-13 (deliverables-area): the library is now a glance + a details drawer, so the controls this
      journey exists to prove live one click down instead of on the row. Same INTENT, current DOM:
        .deliverable-row -> .dlv-card, title -> .dlv-title, and OPEN is an <a data-file> (a real href, since
@@ -815,7 +815,7 @@ async function journeyDeliverableOpen(cdp, A, base, token, mock) {
 }
 
 /* ═══════════════════════════ J6 — bay-bound crew idle life (desk-stuck escape) ═══════════════════════════
- * Andrew's 2026-07-07 escape: a PLAN-DERIVED (bay-bound) crew body walked to its workstation on a task and
+ * Andrew's 2026-07-07 escape: a PLAN-DERIVED (bay-bound) crew body walked to its workkeep on a task and
  * then STOOD THERE ETERNALLY — it never returned to idle life after the run ended — and idle bay bodies sat
  * frozen behind their bays. Root cause: stepCrew gated the per-body sentience engine on `b.summoned`, so
  * bay-bound bodies (which are never summoned) got NO idle life. This journey injects a real bay-bound body
@@ -834,8 +834,8 @@ async function journeyBayIdleLife(cdp, A) {
      so the belt is laid the way the BELT tool lays it: connectBelt, which makes the link. The INBOX takes the first
      clear spot west, north, south or east of the bay. */
   const inj = await evalJS(cdp, `(() => { try {
-    if (typeof Build==='undefined' || !Build.__test__ || !Build.__test__.station) return 'NO_BUILD_TEST';
-    const st = Build.__test__.station();
+    if (typeof Build==='undefined' || !Build.__test__ || !Build.__test__.keep) return 'NO_BUILD_TEST';
+    const st = Build.__test__.keep();
     const bay = st.addProp({ t:'bay', x:7, y:5, w:1, h:1, agentId:${J(PROBE)} });
     if (!bay || bay.ok === false) return JSON.stringify({ bay: false, why: bay && bay.error });
     let link = null;
@@ -884,19 +884,19 @@ async function journeyBayIdleLife(cdp, A) {
   A.ok('J6/task-seizes-body', worked, worked ? 'body went to work on the task' : 'body never entered the work pose');
   await evalJS(cdp, `World.setActivityFor(${J(PROBE)},'idle')`).catch(() => {});
   // THE ESCAPE ASSERTION: after the run ends the body must return to idle LIFE (the engine runs again) —
-  // it comes alive rather than freezing standing at the workstation forever. Baseline = its state the instant
+  // it comes alive rather than freezing standing at the workkeep forever. Baseline = its state the instant
   // the run ended (facing 'south', at its post); alive = it moves / picks a goal / glances / re-faces.
   const ended = await evalJS(cdp, bodyOf).catch(() => null);
   const aliveB = await aliveWithin({ tile: ended && ended.tile, dir: ended && ended.dir }, 75);   // up to ~30s
   const returned = !!(aliveB && !aliveB.working && !aliveB.sitting);
-  A.ok('J6/returns-to-idle-after-task', returned, returned ? ('body resumed idle life after run end (goal=' + aliveB.goal + ' tile=' + aliveB.tile.x + ',' + aliveB.tile.y + ')') : 'body STUCK at its workstation after the run ended (desk-stuck escape)');
+  A.ok('J6/returns-to-idle-after-task', returned, returned ? ('body resumed idle life after run end (goal=' + aliveB.goal + ' tile=' + aliveB.tile.x + ',' + aliveB.tile.y + ')') : 'body STUCK at its workkeep after the run ended (desk-stuck escape)');
 
   // 5) it stays caged to its own zone (the fix must not let a bay body roam the whole floor).
   const caged = await evalJS(cdp, bodyOf).catch(() => null);
   A.ok('J6/stays-in-own-zone', !caged || caged.inOwnZone !== false, caged ? ('inOwnZone=' + caged.inOwnZone + ' tile=' + caged.tile.x + ',' + caged.tile.y) : 'no body');
 
   // cleanup: remove the injected INBOX, bay and the belt that joined them so a shared-app follow-on sees the original floor.
-  await evalJS(cdp, `(() => { try { const st=Build.__test__.station();
+  await evalJS(cdp, `(() => { try { const st=Build.__test__.keep();
     const bay=(st.propsByAgent?st.propsByAgent(${J(PROBE)}):[]).find(pp=>pp.t==='bay'); if (!bay) return 'no bay';
     const mine=(st.links()||[]).filter(l=>l.to.prop===bay.id||l.from.prop===bay.id);
     const tiles=[]; for (const l of mine) for (const t of (l.path||[])) tiles.push([t.x,t.y]);
@@ -1064,7 +1064,7 @@ async function main() {
     if (await isUp(APP_URL)) { console.error(`BLOCKED: journey port :${PORT} already has a server; set SKYNET_JOURNEY_PORT to a free port`); return finish(2); }
     mock = await startControllableMock(DEFAULT_MODEL);
     process.env.SKYNET_OPENROUTER_BASE = mock.base;
-    process.env.STARNET_OPENROUTER_BASE = mock.base;
+    process.env.EYEHOLD_OPENROUTER_BASE = mock.base;
     console.log(`provider: controllable journey mock on ${mock.base}`);
     console.log(`sidecar: booting SEEDED SKYNET_DEV on :${PORT} (model=${DEFAULT_MODEL}) ...`);
     materializeSeedWorkspace(SCRATCH);
@@ -1080,7 +1080,7 @@ async function main() {
   let token = '';
   try {
     const html = await (await fetch(APP_URL)).text();
-    const m = html.match(/window\.__STARNET_API_TOKEN__=("(?:\\.|[^"])*")/);
+    const m = html.match(/window\.__EYEHOLD_API_TOKEN__=("(?:\\.|[^"])*")/);
     if (m) token = String(JSON.parse(m[1]) || '');
     JOURNEY_API_TOKEN = token;
   } catch (_) {}

@@ -15,7 +15,7 @@ origin: audit
 
 ## Symptom
 
-An otherwise passing merge candidate intermittently fails its seeded session lifecycle gate with WORKSPACE_BUSY. Independent automated campaigns can also inherit prior campaigns' durable station state.
+An otherwise passing merge candidate intermittently fails its seeded session lifecycle gate with WORKSPACE_BUSY. Independent automated campaigns can also inherit prior campaigns' durable keep state.
 
 ## Repro
 

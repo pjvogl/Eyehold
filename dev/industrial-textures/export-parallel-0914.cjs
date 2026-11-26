@@ -14,7 +14,7 @@ const list=[
  {id:'filter',source:base+'utility/filter.png',seeds:[[540,580]]},
  // Use the intact RGB generation to avoid the subsequent model extraction's
  // semiopaque body and distant faint alpha residue.
- {id:'tank',source:'docs/station-remaster/parallel-0914/utility/tank-source.png',seeds:[]}
+ {id:'tank',source:'docs/keep-remaster/parallel-0914/utility/tank-source.png',seeds:[]}
 ];
 const hash=b=>crypto.createHash('sha256').update(b).digest('hex');
 async function main(){

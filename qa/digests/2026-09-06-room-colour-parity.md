@@ -8,7 +8,7 @@ Source fix `ba3e66447` applies the approved camera filter directly to `#stage`, 
 
 Live browser proof after the fix:
 
-| UI theme | Panel phosphor | Station filter | Room level |
+| UI theme | Panel phosphor | Keep filter | Room level |
 | --- | --- | --- | --- |
 | Amber | #ffaa33 | saturate(1.06) contrast(1.1) brightness(0.94) | LOW |
 | Green | #3dff70 | same approved filter | LOW |
@@ -20,8 +20,8 @@ Live browser proof after the fix:
 
 LOW -> MEDIUM -> HIGH -> LOW preserves the same grade with the selected control changing correctly. Reload retains custom hue 92, saturation 100, LOW and the approved grade. Cinema view was visually inspected against the supplied two-room screenshot; warm furniture/floor colours and corridor pools are present. This is a colour-grade match, not a claim that changing viewport size, camera position, animated scenery or room exposure yields identical screenshots.
 
-Focused checks passed: simulation-lighting 84 assertions, custom-phosphor 36 assertions, room-lighting-settings, syntax and diff checks. Full merge-gate results are recorded below when complete. Exact installed-artifact verification belongs to the release task's rebuild; it must select LOW for the owner's reference comparison, preserve the custom UI colour, and verify the computed station grade after reload. Existing user-selected brightness levels are deliberately preserved by the code.
+Focused checks passed: simulation-lighting 84 assertions, custom-phosphor 36 assertions, room-lighting-settings, syntax and diff checks. Full merge-gate results are recorded below when complete. Exact installed-artifact verification belongs to the release task's rebuild; it must select LOW for the owner's reference comparison, preserve the custom UI colour, and verify the computed keep grade after reload. Existing user-selected brightness levels are deliberately preserved by the code.
 
-Release coordination: `Prepare StarNet 0.11.0 update` was informed of the defect, exact CSS rule and brightness difference and asked to include the merged fix before the next installer. No installed data or executable was modified by this lane.
+Release coordination: `Prepare Eyehold 0.11.0 update` was informed of the defect, exact CSS rule and brightness difference and asked to include the merged fix before the next installer. No installed data or executable was modified by this lane.
 
 Branch gate: `npm run test:fast` completed all 727 steps, exit 0, at source/claims HEAD `67db050e3`. Log: `.worldshots/room-colour-fast.log`. Subsequent lane changes only record this proof and close the source bug; installed verification and owner recovery remain pending.

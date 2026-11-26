@@ -22,7 +22,7 @@ function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
 function boot(port, env, attemptsLeft) {
   return new Promise((resolve, reject) => {
     const child = spawn(process.execPath, [INDEX], {
-      env: Object.assign({}, process.env, env, { SKYNET_PORT: String(port), STARNET_PORT: String(port) }),
+      env: Object.assign({}, process.env, env, { EYEHOLD_PORT: String(port), EYEHOLD_PORT: String(port) }),
       stdio: ['ignore', 'pipe', 'pipe']
     });
     let out = '', settled = false;
@@ -44,13 +44,13 @@ function boot(port, env, attemptsLeft) {
 
 (async () => {
   const ws = fs.mkdtempSync(path.join(os.tmpdir(), 'sk-chain-seam-'));
-  const env = { SKYNET_WORKSPACES: ws, STARNET_WORKSPACES: ws };
+  const env = { EYEHOLD_WORKSPACES: ws, EYEHOLD_WORKSPACES: ws };
   const { child, port } = await boot(9110 + (process.pid % 50), env, 20);
   const B = 'http://' + HOST + ':' + port;
   try {
     const token = await bootToken(B, B);
     A.ok(token.length >= 32, 'got a session API token');
-    const headers = { 'Content-Type': 'application/json', 'X-StarNet-Token': token, Origin: B };
+    const headers = { 'Content-Type': 'application/json', 'X-Eyehold-Token': token, Origin: B };
     /* `lineId` = the line the browser's work ENTERED on (work belongs to a line, 2026-08-07). Every ask
        below that expects a hop carries it, because only work fed in through a line's own trigger may run
        that line; the no-lineId case gets its own block (§6). */

@@ -1,7 +1,7 @@
 /* test/conveyor-first-line.test.js — getting a first-time builder to a first working line (2026-09-27 audit, lane 3).
 
    B1 — 8 of the 19 ready-made lines never fit the starter room: the card said NO ROOM and the red ghost still said
-        "CLICK TO STAMP". The card now offers MAKE ROOM FOR IT (a room big enough, touching the station, one undo),
+        "CLICK TO STAMP". The card now offers MAKE ROOM FOR IT (a room big enough, touching the keep, one undo),
         and a red ghost never invites the click.
    B2 — after a stamp the kit said "Nothing is selected yet"; the Workflow panel now opens on the line's first BAY.
    T1 — a saved schedule with scheduling OFF read as "no schedule". lineStarts names it apart (offSchedules), the
@@ -28,12 +28,12 @@ A.ok(/b\.after\(mk\)/.test(tiles), '…as a sibling button (never a button insid
 const mr = build.slice(build.indexOf('  function makeRoomFor(bpId, ev) {'), build.indexOf('  function stampLine(w, ev) {'));
 // (phase E: the line's size is the smaller of the drawn footprint and the engine's laid-out one)
 A.ok(/const W = Math\.min\(bp\.w, need\.w\) \+ 2, H = Math\.min\(bp\.h, need\.h\) \+ 2;/.test(mr), 'the room is the line plus a tile of walking room');
-// the room finder lives in worldmodel.roomSpots since 2026-09-29, shared with the agent's station builder
-A.ok(/station\.roomSpots\(W, H, 'hab'\)/.test(mr) && /station\.addRoom\(\{ kind: 'hab'/.test(mr), 'it builds a room from the station\'s own room finder');
+// the room finder lives in worldmodel.roomSpots since 2026-09-29, shared with the agent's keep builder
+A.ok(/keep\.roomSpots\(W, H, 'hab'\)/.test(mr) && /keep\.addRoom\(\{ kind: 'hab'/.test(mr), 'it builds a room from the keep\'s own room finder');
 {
   const st = WM.create(WM.starterDoc()), spots = st.roomSpots(12, 7, 'hab');
   const touches = r => { for (let y = r.y1; y <= r.y2; y++) if (st.roomAt(r.x1 - 1, y) || st.roomAt(r.x2 + 1, y)) return true; for (let x = r.x1; x <= r.x2; x++) if (st.roomAt(x, r.y1 - 1) || st.roomAt(x, r.y2 + 1)) return true; return false; };
-  A.ok(spots.length > 0 && spots.every(touches), 'it only offers a room that touches the station (auto-doors join it)');
+  A.ok(spots.length > 0 && spots.every(touches), 'it only offers a room that touches the keep (auto-doors join it)');
 }
 A.ok(/lineType = bp\.id; selectTool\('line'\)/.test(mr) && /UNDO removes the room/.test(mr), 'then arms the line over it and says how to take it back');
 // (phase E: a red ghost of a line that fits LAID OUT invites that click instead — never CLICK TO STAMP)
@@ -74,7 +74,7 @@ const on = W.lineStarts(f, { cron: { enabled: true, jobs: [job] }, human: () => 
 A.eq(on.schedules, ['every day at 9:00 AM'], 'scheduling ON: it starts the line');
 A.eq(on.offSchedules, [], '…and is not listed as off');
 const said = W.sentenceText(W.howItRuns(f, { triggers: off, nameOf: a => String(a).toUpperCase() }));
-// (the station.layout audit, 2026-09-28, folded this into ONE "paused starts" sentence — the fact it must carry is unchanged)
+// (the keep.layout audit, 2026-09-28, folded this into ONE "paused starts" sentence — the fact it must carry is unchanged)
 A.ok(/^Nothing starts it right now \(its routine "news" \(every day at 9:00 AM\) is saved but the scheduler is off\)/.test(said), 'the sentence says it is scheduled but the scheduler is OFF (' + said.slice(0, 110) + ')');
 A.ok(!/no schedule/.test(said), '…never "no schedule"');
 A.ok(/'SCHEDULE · OFF'/.test(panel) && /scheduling is off' : 'no trigger yet(: it runs when you send it a job)?'/.test(panel), 'the INBOX node says SCHEDULE · OFF');

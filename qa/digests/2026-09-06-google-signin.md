@@ -6,7 +6,7 @@ integration-tree work in `qa/STATUS.md` and `docs/HANDOFF_ROOMS_2026-09-04.md` w
 preserved. This separate receipt avoids editing the other session's active status file.
 
 Customers now use **Sign in with Google** for Gmail, Drive, Calendar, Docs and Sheets.
-The customer credential form and Google preview setup steps are removed. StarNet's
+The customer credential form and Google preview setup steps are removed. Eyehold's
 publisher-owned Desktop registration supplies the native PKCE flow; a local MCP
 adapter exposes 23 tools over stable Google APIs. Missing publisher configuration
 produces an unavailable state, never a request for customer developer credentials.
@@ -34,7 +34,7 @@ Verification:
 Logs remain in the isolated worktree under `dev/google-fast-integrated.log`,
 `dev/google-http-complete.log` and `dev/google-signin-integrated.log`.
 
-**Public activation remains unverified.** No StarNet Google Desktop registration
+**Public activation remains unverified.** No Eyehold Google Desktop registration
 was supplied, no real Google account consent was completed, and no signed installer
 was exercised. The owner report remains open. Publisher activation and Google review
 are described in [GOOGLE_SIGN_IN.md](../../docs/GOOGLE_SIGN_IN.md); customers never

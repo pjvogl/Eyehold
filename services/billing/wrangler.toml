@@ -1,0 +1,49 @@
+name = "eyehold"
+main = "../portal/src/worker.js"
+compatibility_date = "2026-11-10"
+compatibility_flags = ["nodejs_compat"]
+workers_dev = false
+preview_urls = false
+upload_source_maps = true
+
+# Same Worker as services/portal (name "eyehold", same script). Deploying from
+# either directory updates that one Worker.
+# Hosted billing is prepared for LIVE mode. STRIPE_MODE=live accepts only a live
+# secret or live restricted key, and livemode=true events. Do not add any other hostname.
+[[routes]]
+pattern = "eyehold.babelbook.net"
+custom_domain = true
+
+# Same schedule as services/portal. This file deploys that same Worker.
+[triggers]
+crons = ["17 */6 * * *"]
+
+[observability]
+enabled = true
+
+[observability.logs]
+enabled = true
+head_sampling_rate = 1
+
+[observability.traces]
+enabled = true
+head_sampling_rate = 0.01
+
+[vars]
+EYEHOLD_BASE_DOMAIN = "eyehold.babelbook.net"
+STRIPE_MODE = "live"
+
+# Names only. Set from this directory with `npx wrangler secret put`.
+# With STRIPE_MODE=live, STRIPE_SECRET_KEY must be a live secret or live restricted key.
+# Test keys are rejected at runtime in that mode.
+[secrets]
+required = ["STRIPE_SECRET_KEY", "STRIPE_WEBHOOK_SECRET", "EYEHOLD_ACCESS_EMAILS"]
+
+# Optional until the desktop updater needs a service token:
+# EYEHOLD_ACCESS_CLIENT_ID
+# EYEHOLD_ACCESS_CLIENT_SECRET
+
+# Eyehold billing ledger, namespace "eyehold-BILLING_KV", created 2026-11-25.
+[[kv_namespaces]]
+binding = "BILLING_KV"
+id = "c59822282bcf4f1294f4522c7f07a026"

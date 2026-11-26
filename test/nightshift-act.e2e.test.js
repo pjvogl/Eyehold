@@ -80,10 +80,10 @@ function startMockOpenRouter() {
             text([
               'JOB: Release checklist tool',
               'KIND: advance-goal',
-              'GROUNDS: ship the StarNet beta to 100 users',
+              'GROUNDS: ship the Eyehold beta to 100 users',
               'CONFIDENCE: high',
               'SPEC: a small script that helps ship the beta'
-            ].concat(keptBefore ? ['', 'JOB: Beta signup tracker', 'KIND: advance-goal', 'GROUNDS: ship the StarNet beta to 100 users', 'CONFIDENCE: high', 'SPEC: a tiny tracker of beta signups'] : []).join('\n'));
+            ].concat(keptBefore ? ['', 'JOB: Beta signup tracker', 'KIND: advance-goal', 'GROUNDS: ship the Eyehold beta to 100 users', 'CONFIDENCE: high', 'SPEC: a tiny tracker of beta signups'] : []).join('\n'));
           } else {
             text('ok');
           }
@@ -100,7 +100,7 @@ function startMockOpenRouter() {
 
 function boot(port, env, attemptsLeft) {
   return new Promise((resolve, reject) => {
-    const child = spawn(process.execPath, [INDEX], { env: Object.assign({}, process.env, env, { SKYNET_PORT: String(port) }), stdio: ['ignore', 'pipe', 'pipe'] });
+    const child = spawn(process.execPath, [INDEX], { env: Object.assign({}, process.env, env, { EYEHOLD_PORT: String(port) }), stdio: ['ignore', 'pipe', 'pipe'] });
     let out = '', settled = false;
     const onData = d => {
       out += d.toString();
@@ -127,10 +127,10 @@ function hotBeliefs(now) {
   return {
     known: ['goals', 'pain', 'stack', 'ambition'],
     beliefs: {
-      goals: b('ship the StarNet beta to 100 users'),
+      goals: b('ship the Eyehold beta to 100 users'),
       pain: b('manual release notes eat my fridays'),
       stack: b('node and a pixel-art canvas'),
-      ambition: b('a living agent station people watch')
+      ambition: b('a living agent keep people watch')
     }
   };
 }
@@ -160,13 +160,13 @@ async function recommendations(B, headers) {
 (async () => {
   const mock = await startMockOpenRouter();
   const ws = fs.mkdtempSync(path.join(os.tmpdir(), 'sk-nsact-e2e-'));
-  const env = { SKYNET_WORKSPACES: ws, SKYNET_DEV: '1', SKYNET_OPENROUTER_BASE: mock.base, SKYNET_OPENROUTER_KEY: 'sk-or-v1-nsact-fake', SKYNET_DEFAULT_MODEL: 'test/model' };
+  const env = { EYEHOLD_WORKSPACES: ws, EYEHOLD_DEV: '1', EYEHOLD_OPENROUTER_BASE: mock.base, EYEHOLD_OPENROUTER_KEY: 'sk-or-v1-nsact-fake', EYEHOLD_DEFAULT_MODEL: 'test/model' };
   const { child, port } = await boot(8930 + (process.pid % 30), env, 20);
   const B = 'http://' + HOST + ':' + port;
   try {
     const token = await bootToken(B, B);
     A.ok(token.length >= 32, 'got a session API token');
-    const headers = { 'Content-Type': 'application/json', 'X-StarNet-Token': token, Origin: B };
+    const headers = { 'Content-Type': 'application/json', 'X-Eyehold-Token': token, Origin: B };
     const now = Date.now();
     const beliefs = hotBeliefs(now);
 

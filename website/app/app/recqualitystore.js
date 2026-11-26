@@ -1,10 +1,10 @@
-/* STARNET — recqualitystore.js : THE OUTCOME LOOP (the live half of the recommendation quality loop).
+/* EYEHOLD — recqualitystore.js : THE OUTCOME LOOP (the live half of the recommendation quality loop).
 
    The spine picks the best-grounded offer it can cite. This store answers the question nobody was asking before
    it existed: DID THAT OFFER ACTUALLY HELP? A channel whose accepted offers produce work the Commander rates 👎
    — or work that never finishes — gets structurally quieter. A channel whose offers produce 👍 work earns a
    small, bounded edge. Nobody hand-tunes anything; the same earned-trust philosophy the autonomy dial already
-   uses, applied to the station's own suggestions.
+   uses, applied to the keep's own suggestions.
 
    HOW AN OUTCOME IS ATTRIBUTED (and why it can't be faked):
      1. The Commander ACCEPTS an offer, AND the launch that accept triggers really starts. Only then does the
@@ -22,13 +22,13 @@
 
    TRUTHFUL TELEMETRY, the version that matters here:
      · Weights start NEUTRAL and move ONLY on outcomes the harness can actually name and attribute. A run that
-       ended in a stop / an error / a budget limit folds NOTHING — the station cannot honestly blame the offer
+       ended in a stop / an error / a budget limit folds NOTHING — the keep cannot honestly blame the offer
        for that, so it says nothing about it.
      · The floor (recquality.js Q_FLOOR ≥ 0.5) means quality alone can never silence a channel. Silencing is the
-       job of the per-channel caps and the Commander's own declines — never of a number the station computed.
+       job of the per-channel caps and the Commander's own declines — never of a number the keep computed.
      · Nothing user-facing ever asserts a quality score. It orders offers; it does not narrate them.
      · TWO CHANNELS ARE EXEMPT BY DESIGN and record no outcomes: `memory` (the run's own reflection deck) and
-       `rate` (the rating of work just done). Neither is a suggestion the station CHOSE to make — the run earns
+       `rate` (the rating of work just done). Neither is a suggestion the keep CHOSE to make — the run earns
        them — which is the same reason recommend.js exempts both from the session ask budget. They sit permanently
        neutral, and that is correct: there is no "was this offer worth making?" to answer about them. Every
        channel that DOES choose to interrupt records both directions (accept and decline), so no recording
@@ -39,7 +39,7 @@
    key (no save.js change), node-exportable for its test. The pure arithmetic lives in recquality.js. */
 'use strict';
 const RecQualityStore = (() => {
-  const KEY = 'starnet.recquality.v1';
+  const KEY = 'eyehold.recquality.v1';
   const STAMP_CAP = 60;      // in-memory run→stamp memory, FIFO, mirroring chat.js's RUN_META ledger size
   const DENY_CAP = 100;      // re-confirm denial memory (FIFO) — bounded exactly like goalstore's offered set
   /* HOW LONG AN ARMED ACCEPT MAY WAIT FOR ITS RUN. The accept→run link is only honest while the two are the same
@@ -119,7 +119,7 @@ const RecQualityStore = (() => {
 
   /* ---------- the read the spine scores against ---------- */
   /* the quality multiplier for a candidate. Absent module / absent store / never-rated channel → NEUTRAL (the
-     engine's Q_START), so a cold station ranks exactly as the pre-quality spine did.
+     engine's Q_START), so a cold keep ranks exactly as the pre-quality spine did.
      THE DIMENSION BAG IS SHARED, AND IT IS WEIGHTED ACCORDINGLY (2026-08-04). Several channels target the same
      dimension, so a dimension's weight carries other channels' outcomes into this one — that sharing is
      deliberate (a dimension nobody wants to be asked about should quieten every ask aimed at it) but it is not

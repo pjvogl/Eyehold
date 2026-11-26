@@ -33,7 +33,7 @@ The release build stages the existing publisher Desktop registration for this li
 connector while `RELEASE_DEFERRED` remains true for the five broad services. The native
 review launcher now uses this same split without the future-release override.
 
-Google Picker API is enabled in `starnet-505202`, verified in the Cloud Console.
+Google Picker API is enabled in `eyehold-505202`, verified in the Cloud Console.
 The real native-client flow reached Google's per-file consent screen, without an
 unverified-app interstitial on the observed path. The user completed selection of the
 two dedicated verification fixtures. The callback connected 11 tools with the exact
@@ -56,7 +56,7 @@ Source: https://developers.google.com/workspace/drive/picker/guides/desktop-mobi
   button displayed; callback connected 11 tools; restart recovered the encrypted
   grant; the panel showed **1 connected · 5 deferred**; disable/re-enable worked.
 - Real Google Picker activation, consent, file selection, and callback completed.
-  Only dedicated StarNet verification files were used for acceptance.
+  Only dedicated Eyehold verification files were used for acceptance.
 - Initial acceptance was performed in isolation; the final merge is recorded above.
   Full public release readiness is not claimed.
 - Synced trunk into this branch at merge `41f8bc76c`; the sole conflict was the
@@ -73,7 +73,7 @@ Source: https://developers.google.com/workspace/drive/picker/guides/desktop-mobi
 - The user has no physical Mac access. Native keychain/migration acceptance instead
   ran on GitHub-hosted Intel and Apple Silicon macOS runners, using a disposable
   keychain and the production `src-tauri/src/credentials.rs` module. Both passed
-  on combined candidate `69794ac6d`: https://github.com/androoAGI/starnet/actions/runs/35477411495.
+  on combined candidate `69794ac6d`: https://github.com/Eyehold/eyehold/actions/runs/35477411495.
   Coverage: create/read-back; plaintext-to-encrypted migration; synthetic write failure
   preserves originals; both encrypted recovery copies survive a new native process;
   malformed key rejection without replacement; locked keychain fails closed; unlocking
@@ -81,12 +81,12 @@ Source: https://developers.google.com/workspace/drive/picker/guides/desktop-mobi
   This proves the keychain/migration seam, not signed-app installation or physical-Mac UI.
 - Real-account acceptance after restarting the native-keychain review preview: connector
   returned up with 11 tools, encrypted storage, and no storage error. Eight real Google
-  calls through StarNet's /api/run and MCP adapter succeeded: read the selected Doc;
+  calls through Eyehold's /api/run and MCP adapter succeeded: read the selected Doc;
   read selected Sheet cells; create/edit/read back a new Doc; create/write/read back a
   new Sheet. Exact marker text and cell values were asserted after writes.
 - A loopback-only scripted model drove those calls, with Google endpoints unmocked and
   no external model provider. Test artifacts remain as two files titled
-  `StarNet selected-file acceptance 2026-09-19`; existing fixtures were read only.
+  `Eyehold selected-file acceptance 2026-09-19`; existing fixtures were read only.
   Local ignored receipts: `.local/google-review/doc-readback.json`,
   `.local/google-review/sheet-readback.json`, and the local tool-check driver.
 - Real refresh-token renewal, revocation recovery, and signed-installer acceptance
@@ -96,7 +96,7 @@ Source: https://developers.google.com/workspace/drive/picker/guides/desktop-mobi
   combined source. Both previously written Doc and Sheet markers were read back and
   asserted again through real Google calls. No external model provider was used.
 - Combined source `01f13e470` passed native keychain/migration CI on both Intel and
-  Apple Silicon: https://github.com/androoAGI/starnet/actions/runs/35481435583.
+  Apple Silicon: https://github.com/Eyehold/eyehold/actions/runs/35481435583.
   The Windows native preview was restarted on that source, and exact Doc and Sheet
   marker read-back passed again through the real Google API.
 - The first local merge was rolled back after the 15-minute fast-gate watchdog

@@ -1,5 +1,5 @@
 {
-  "scope": "37 selected skins (completed Station Minion retained; unfinished duplicate excluded): full new-style motion contract, except user-approved Pikachu v0.11.2 release set verified byte-for-byte; file coverage, not a claim of visual perfection",
+  "scope": "37 selected skins (completed Keep Minion retained; unfinished duplicate excluded): full new-style motion contract, except user-approved Pikachu v0.11.2 release set verified byte-for-byte; file coverage, not a claim of visual perfection",
   "ready": true,
   "completeSets": 37,
   "totalSets": 37,
@@ -12,8 +12,8 @@
       "gaps": []
     },
     {
-      "id": "astronaut",
-      "name": "Astronaut",
+      "id": "warden",
+      "name": "Warden",
       "complete": true,
       "gaps": []
     },
@@ -120,8 +120,8 @@
       "gaps": []
     },
     {
-      "id": "station_minion",
-      "name": "Station Minion",
+      "id": "keep_minion",
+      "name": "Keep Minion",
       "complete": true,
       "gaps": []
     },

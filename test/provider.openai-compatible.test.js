@@ -25,7 +25,7 @@ module.exports = (async () => {
       A.eq(JSON.stringify(messages), original, model + ': durable history unchanged');
     }
   }
-  // Managed StarNet uses this adapter too. An interrupted history must get the same repair as
+  // Managed Eyehold uses this adapter too. An interrupted history must get the same repair as
   // direct OpenRouter, before it reaches a strict Chat Completions upstream.
   {
     const input = [
@@ -372,8 +372,8 @@ module.exports = (async () => {
   }
 
   /* ---- NO silent default endpoint (2026-08-25 stranded-user incident) ----
-     The adapter used to default an empty baseUrl to https://api.openai.com/v1. starnet's baseUrl resolves
-     dynamically from the device link, so the moment the link failed to resolve, a "starnet" run silently
+     The adapter used to default an empty baseUrl to https://api.openai.com/v1. eyehold's baseUrl resolves
+     dynamically from the device link, so the moment the link failed to resolve, a "eyehold" run silently
      left for OpenAI's real API — bearer token and all — and died with OpenAI's bare "invalid model ID".
      An endpointless provider must refuse at construction, loudly, naming the problem. ---- */
   {
@@ -385,7 +385,7 @@ module.exports = (async () => {
   }
 
   /* ---- routed-catalog id on a vendor endpoint gets a way back ----
-     A vendor API 400ing "invalid model ID" for a slash-prefixed id means a STARNET/OpenRouter catalog id
+     A vendor API 400ing "invalid model ID" for a slash-prefixed id means a EYEHOLD/OpenRouter catalog id
      (e.g. openai/gpt-…) reached a direct vendor endpoint — the provider/model pair crossed. The bare vendor
      message is a dead end; the error must name the mismatch and the fix (switch provider in the picker). ---- */
   {
@@ -407,7 +407,7 @@ module.exports = (async () => {
 
   /* ---- managed upstream failures retain safe diagnostic identity ----
      OpenRouter can answer only "Provider returned error" at the top level while carrying the provider, code,
-     and a StarNet correlation id separately. Those fields must survive into diagnostics; raw metadata must not. */
+     and a Eyehold correlation id separately. Those fields must survive into diagnostics; raw metadata must not. */
   {
     const fetchImpl = async () => new Response(JSON.stringify({
       error: {
@@ -415,8 +415,8 @@ module.exports = (async () => {
         provider: 'Anthropic', request_id: 'req_body_7',
         metadata: { raw: 'secret prompt-shaped upstream body' }
       }
-    }), { status: 400, headers: { 'x-starnet-request-id': 'req_header_ignored' } });
-    const p = makeOpenAICompatibleProvider({ fetch: fetchImpl, key: 'k', baseUrl: 'https://managed.test/v1', label: 'starnet' });
+    }), { status: 400, headers: { 'x-eyehold-request-id': 'req_header_ignored' } });
+    const p = makeOpenAICompatibleProvider({ fetch: fetchImpl, key: 'k', baseUrl: 'https://managed.test/v1', label: 'eyehold' });
     let err = null;
     try { await collect(p, { model: 'anthropic/claude-sonnet-5', messages: [{ role: 'user', content: 'hi' }] }); }
     catch (e) { err = e; }
@@ -432,12 +432,12 @@ module.exports = (async () => {
   // If the body has no request id, the managed proxy response header is retained; token-shaped strings redact.
   {
     const fetchImpl = async () => new Response(JSON.stringify({ error: { message: 'bad Bearer abcdefghijklmnop sk-secretsecret' } }), {
-      status: 400, headers: { 'x-starnet-request-id': 'starnet_req_9' }
+      status: 400, headers: { 'x-eyehold-request-id': 'eyehold_req_9' }
     });
     const p = makeOpenAICompatibleProvider({ fetch: fetchImpl, baseUrl: 'https://managed.test/v1' });
     let err = null;
     try { await collect(p, { model: 'm', messages: [] }); } catch (e) { err = e; }
-    A.ok(/request starnet_req_9/.test(err && err.message), 'proxy correlation header is retained');
+    A.ok(/request eyehold_req_9/.test(err && err.message), 'proxy correlation header is retained');
     A.ok(!/abcdefghijklmnop|sk-secretsecret/.test(err && err.message), 'obvious credential-shaped text is redacted');
   }
 

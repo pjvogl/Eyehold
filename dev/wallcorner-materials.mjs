@@ -26,11 +26,11 @@ const ZOOM = Number(process.env.SKYNET_ZOOM || 10);
 
 const savePath = join(process.env.APPDATA, 'ai.skynet.harness', 'workspaces', 'agent.save.json');
 const save = JSON.parse(readFileSync(savePath, 'utf8'));
-const stationDoc = save.doc && save.doc.station;
-if (!stationDoc) { console.error('no .doc.station in save'); process.exit(2); }
+const keepDoc = save.doc && save.doc.keep;
+if (!keepDoc) { console.error('no .doc.keep in save'); process.exit(2); }
 
 const PROBE = `(() => {
-  const doc = ${JSON.stringify(JSON.stringify(stationDoc))};
+  const doc = ${JSON.stringify(JSON.stringify(keepDoc))};
   const ZOOM = ${ZOOM};
   const MATS = ['plating','ribbed','panelled','viewport','pipework','wainscot','hedge','bulkhead','courses','service'];
   // corners to score: two TOP corners (the lifted-arc case the fix changed) and one BOTTOM corner
@@ -47,7 +47,7 @@ const PROBE = `(() => {
     const st = WorldModel.deserialize(JSON.parse(doc));
     const geo = st.projectGeometry();
     geo.wallMatOf = () => mat;                     // force EVERY room onto this recipe
-    const bk = StationBake.bake(geo);
+    const bk = KeepBake.bake(geo);
     const T = geo.TILE;
     const lit = mk(bk.W, bk.H);
     lit.g.drawImage(bk.baseCv, 0, 0); lit.g.drawImage(bk.lightCv, 0, 0);

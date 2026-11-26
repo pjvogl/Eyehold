@@ -1,9 +1,9 @@
 #!/usr/bin/env node
-/* dev/worldshot.mjs — the LIVE world frame on a FURNISHED station, for before/after art judgement.
+/* dev/worldshot.mjs — the LIVE world frame on a FURNISHED keep, for before/after art judgement.
  *
- * The seeded station is one nearly empty hab: a look comparison shot on it proves nothing. This
+ * The seeded keep is one nearly empty hab: a look comparison shot on it proves nothing. This
  * stages a furnished LOUNGE (oak plank + walnut wainscot — the shipped "deck is the room" choice),
- * a STOCK hab (the default hull/spine/bulkhead every new station starts on) with a desk and crew,
+ * a STOCK hab (the default hull/spine/bulkhead every new keep starts on) with a desk and crew,
  * and a corridor between them; loads it into the live World; forces an EXACT integer camera zoom
  * on each room; freezes the loop; and captures the full CRT frame (Page.captureScreenshot) plus
  * per-room crops. Everything the user sees — bake, props, lightmap, glows, barrel warp, scanlines,
@@ -55,7 +55,7 @@ const STAGE = `(() => {
     if (cy + c.h > 25) break;
     put(id, cx, cy); cx += c.w + 1; rowH = Math.max(rowH, c.h);
   }
-  World.loadStation(st);
+  World.loadKeep(st);
   const crew = [['nova2','VESTA','#7fe9c8'],['ork','ORACLE','#e9a87f'],['sable','SABLE','#a77fe9']];
   for (const [id,name,color] of crew) { try { World.spawnAgent({ id, name, color }); } catch (e) { skipped.push('crew:' + e.message); } }
   return { placed: placed.length, skipped, hab, lounge: lounge.id };
@@ -67,7 +67,7 @@ const FRAME = (x1, y1, x2, y2, zoom) => `(() => {
   const r = cv.getBoundingClientRect();
   const d = World.cameraDbg();
   const T = 16;
-  // world px of the rect centre (station-local frame = tile * T, origin already at 0 for a doc whose min tile is 0)
+  // world px of the rect centre (keep-local frame = tile * T, origin already at 0 for a doc whose min tile is 0)
   const wx = ((${x1} + ${x2} + 1) / 2) * T, wy = ((${y1} + ${y2} + 1) / 2) * T;
   // pan so the centre sits at the canvas centre at the TARGET zoom
   const sx = cv.width / r.width, sy = cv.height / r.height;
@@ -111,7 +111,7 @@ const staged = await evalJS(cdp, STAGE);
 console.log('staged:', JSON.stringify(staged));
 if (staged && staged.error) { proc.kill(); side.kill(); process.exit(2); }
 await sleep(2500);   // rebake + a few frames so bodies settle
-/* FRAME COST — how long World's own frame body takes on this station, sampled over ~3s by wrapping
+/* FRAME COST — how long World's own frame body takes on this keep, sampled over ~3s by wrapping
    requestAnimationFrame. Reports the mean and p95 of the rAF-to-rAF interval and of the time the
    frame callback itself spent (the render cost proper). SKYNET_WS_PERF=1 to enable; the number to
    compare across shots is `bodyMean` — the interval is capped by vsync and says little. */
@@ -141,8 +141,8 @@ const TAGV = V.tag || TAG;
 await evalJS(cdp, `(() => {
   const st = document.getElementById('ws-css') || Object.assign(document.createElement('style'), { id: 'ws-css' });
   st.textContent = ${JSON.stringify(V.css || '')}; document.head.appendChild(st);
-  if (${JSON.stringify(!!V.light)}) Object.assign(StationBake.LIGHT, ${JSON.stringify(V.light || {})});
-  if (${JSON.stringify(!!V.depth)}) Object.assign(StationBake.DEPTH, ${JSON.stringify(V.depth || {})});
+  if (${JSON.stringify(!!V.light)}) Object.assign(KeepBake.LIGHT, ${JSON.stringify(V.light || {})});
+  if (${JSON.stringify(!!V.depth)}) Object.assign(KeepBake.DEPTH, ${JSON.stringify(V.depth || {})});
   if (${JSON.stringify(!!V.crt)}) Object.assign(World.crt, ${JSON.stringify(V.crt || {})});
   ${V.js || ''}
   World.rebake(); return 'variant';

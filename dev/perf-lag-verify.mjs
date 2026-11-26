@@ -79,7 +79,7 @@ async function main() {
   materializeSeedWorkspace(join(scratch, 'ws'), MODEL);
   const side = bootSeededSidecar({
     port: PORT, model: MODEL, key: 'sk-or-v1-perf-lag-mock', scratchDir: join(scratch, 'ws'),
-    env: { SKYNET_OPENROUTER_BASE: mock.base, STARNET_OPENROUTER_BASE: mock.base }
+    env: { SKYNET_OPENROUTER_BASE: mock.base, EYEHOLD_OPENROUTER_BASE: mock.base }
   });
   let chrome = null, cdp = null;
   const fails = [];

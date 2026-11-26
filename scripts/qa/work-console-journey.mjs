@@ -18,7 +18,7 @@
  * GET /api/cron / Workstreams globals). It is the same class of coverage the project already accepts
  * as `perfected` evidence for the shared window-chrome entries (scripts/qa/terminal-resize-journey.mjs).
  *
- * LAWS (Charter Part 5 + StarNet task doctrine):
+ * LAWS (Charter Part 5 + Eyehold task doctrine):
  *   - ZERO PAID CALLS: the only provider is a local quick-mock (streams a canned reply). A RECIPES
  *     RUN NOW dispatches a real kind:'task' workstream; its run completes against the mock.
  *   - NO-FAKE-GREEN: a setup that cannot run exits BLOCKED (2), never a silent pass.
@@ -106,7 +106,7 @@ async function waitFor(cdp, expr, tries = 50) {
 const closeAllTerms = (cdp) => evalJS(cdp, `(() => { document.querySelectorAll('.term .term-x').forEach(b => { try { b.click(); } catch(_){} }); const ov = document.querySelector('.mkt-close, .mkt-x'); if (ov) { try { ov.click(); } catch(_){} } return true; })()`).catch(() => {});
 
 /* ═══════════════════════════ JW-OUTBOX — task-board empty-state OUTBOX footnote (46cab512) ═══════════════════════════
- * The footnote is rendered ONLY when the board is empty (stationui.js buildTasks: `streams.length ? '' : …`)
+ * The footnote is rendered ONLY when the board is empty (keepui.js buildTasks: `streams.length ? '' : …`)
  * and clicking it runs openTerm('outbox'). Assert BOTH halves of the render condition plus the click seam:
  *   - empty board → #kb-outbox-link present with the "▸ OUTBOX" label,
  *   - click → the OUTBOX — FINISHED WORK window opens (openTerm('outbox') fired),
@@ -182,7 +182,7 @@ async function journeyRoutines(cdp, A) {
   const baseCount = base && base.json && Array.isArray(base.json.jobs) ? base.json.jobs.length : -1;
   A.ok('JW-routines/api-cron-readable', baseCount >= 0, 'GET /api/cron baseline jobs = ' + baseCount);
 
-  await evalJS(cdp, `(typeof StationUI !== 'undefined' && StationUI.openTerm) ? StationUI.openTerm('routines') : null`).catch(() => {});
+  await evalJS(cdp, `(typeof KeepUI !== 'undefined' && KeepUI.openTerm) ? KeepUI.openTerm('routines') : null`).catch(() => {});
   // NAV CONDENSE (2026-08-04): ROUTINES is a lane of the AUTOMATION console, so its tab ids carry the
   // console key — con-tab-automation-<section>. The pre-condense id this waited on ('#con-tab-routines-
   // create') stopped existing then, and because mountConsole mounts every pane up-front, every LATER
@@ -367,7 +367,7 @@ async function main() {
     if (await isUp(APP_URL)) { console.error(`BLOCKED: work-journey port :${PORT} already has a server; set SKYNET_WORK_PORT to a free port`); return finish(2); }
     mock = await startQuickMock(DEFAULT_MODEL);
     process.env.SKYNET_OPENROUTER_BASE = mock.base;
-    process.env.STARNET_OPENROUTER_BASE = mock.base;
+    process.env.EYEHOLD_OPENROUTER_BASE = mock.base;
     console.log(`provider: quick-mock on ${mock.base}`);
     console.log(`sidecar: booting SEEDED SKYNET_DEV on :${PORT} (model=${DEFAULT_MODEL}) ...`);
     materializeSeedWorkspace(SCRATCH);
@@ -391,7 +391,7 @@ async function main() {
     await cdp.send('Runtime.enable');
     await cdp.send('Page.navigate', { url: APP_URL });
     const floorReady = await waitDevReady(cdp, evalJS, { tries: 40, url: APP_URL });
-    const testReady = floorReady && await (async () => { for (let i = 0; i < 24; i++) { if (await evalJS(cdp, "typeof Workstreams === 'object' && typeof StationUI === 'object'").catch(() => false)) return true; await sleep(1000); } return false; })();
+    const testReady = floorReady && await (async () => { for (let i = 0; i < 24; i++) { if (await evalJS(cdp, "typeof Workstreams === 'object' && typeof KeepUI === 'object'").catch(() => false)) return true; await sleep(1000); } return false; })();
     if (!testReady) {
       console.error('BLOCKED: never reached in-game (floor + globals).');
       try { await capture(cdp, OUT_DIR, '_BLOCKED-not-in-game'); } catch (_) {}

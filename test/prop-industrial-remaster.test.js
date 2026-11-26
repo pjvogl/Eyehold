@@ -8,7 +8,7 @@ let clean = false, fitWhenReady;
 global.window = { addEventListener() {}, matchMedia: () => ({ matches: false, addEventListener() {} }) };
 global.document = { addEventListener() {}, documentElement: { style: { setProperty() {} } }, createElement: () => ({ getContext: () => null, style: {} }) };
 global.U = new Function(fs.readFileSync(path.join(__dirname, '../frontend/js/util.js'), 'utf8') + ';return U;')();
-global.IndustrialTextures = { isRemaster: () => clean, enabled: () => false, ready: { then(fn){fitWhenReady=fn;} }, workstation: () => false, chair: () => false, furniture: () => false };
+global.IndustrialTextures = { isRemaster: () => clean, enabled: () => false, ready: { then(fn){fitWhenReady=fn;} }, workkeep: () => false, chair: () => false, furniture: () => false };
 const PS = require('../frontend/app/propsprites.js');
 function paint(p, mode, r = 0) {
   clean = mode;
@@ -26,7 +26,8 @@ let checked=0;
 for(const p of PS.CATALOG) {
   const original = paint(p,false), remaster = paint(p,true);
   A.ok(original.length>0 && remaster.length>0,p.id+': both modes paint');
-  A.ok(original!==remaster,p.id+': industrial material/construction reaches this prop');
+  // Eyehold keep props are original procedural art. They do not take the industrial material pass.
+  if (!p.id.startsWith('eyehold_')) A.ok(original!==remaster,p.id+': industrial material/construction reaches this prop');
   A.eq(paint(p,false),original,p.id+': returning to classic restores the exact paint');
   const base = {w:p.w,h:p.h};
   clean=true;A.eq(PS.footprintAt(p.id,0),base,p.id+': finish never resizes the footprint');
@@ -47,7 +48,7 @@ A.eq(PS.facings('industrial_bench'),[0],'bench retains the existing south couch 
 A.eq(PS.spec('industrial_wallpanel').mount,'wall','service panel requires its real wall host');
 A.eq(PS.spec('industrial_toolcaddy').stack,true,'caddy supports floor and tabletop mounting');
 // Loaded directional assets are the sole functional-facing exception. The
-// generated workstation chair uses the same cardinal art as its operator.
+// generated workkeep chair uses the same cardinal art as its operator.
 for(const id of ['desk','desk2','seatchair']) {
   clean=false;A.eq(PS.facings(id),[0],id+': old pack retains south-only behavior');
   clean=true;A.eq(PS.facings(id),[0,1,2,3],id+': remaster offers four authored directions');
@@ -56,7 +57,7 @@ for(const id of ['desk','desk2','seatchair']) {
 }
 for(const id of ['bay','outbox','intake','console','consoleL','workbench']) A.eq(PS.facings(id),[0],id+': no unrelated functional rotation');
 const requested=[];
-global.IndustrialTextures.workstation=(ctx,x,y,w,h,face='s')=>{requested.push(face);return true;};
+global.IndustrialTextures.workkeep=(ctx,x,y,w,h,face='s')=>{requested.push(face);return true;};
 global.IndustrialTextures.chair=(ctx,x,y,w,h,face='s')=>{requested.push(face);return true;};
 for(const id of ['desk','desk2','seatchair']) for(const [r,face] of [[0,'s'],[1,'e'],[2,'n'],[3,'e']]){
   requested.length=0;PS.setCtx({save(){},restore(){},translate(){},scale(){}});PS.setNow(2400);
@@ -66,7 +67,7 @@ for(const id of ['desk','desk2','seatchair']) for(const [r,face] of [[0,'s'],[1,
 clean=false;
 // Screen centroids come from the same atlas-fit helper as the visible prop.
 const emitterCalls=[];
-global.IndustrialTextures.workstationEmitter=(x,y,w,h,facing)=>{
+global.IndustrialTextures.workkeepEmitter=(x,y,w,h,facing)=>{
   emitterCalls.push({x,y,w,h,facing});
   if(facing==='n')return null;
   return {x:x+w*(facing==='e'?.3:.6),y:y-(facing==='e'?7:6)};
@@ -85,7 +86,7 @@ for(const t of ['desk','desk2'])for(const w of [2,3])for(const mount of [undefin
   A.eq(PS.lightOf({t,x:4,y:7,w,h:1,r:2,mount},true,true),null,t+': rear has no forward monitor glow');
 }
 let before=emitterCalls.length;
-A.eq(PS.lightOf({t:'desk',x:1,y:1,w:3,h:1,r:3},false,true),null,'idle workstation still emits nothing');
+A.eq(PS.lightOf({t:'desk',x:1,y:1,w:3,h:1,r:3},false,true),null,'idle workkeep still emits nothing');
 A.eq(emitterCalls.length,before,'idle work gate runs before screen measurement');
 clean=false;
 A.eq(PS.lightOf({t:'desk',x:4,y:7,w:2,h:1,r:3},true,true).x,60,'classic retains old centered source');
@@ -95,11 +96,11 @@ for(const t of ['bay','intake','outbox','console','core','airlock']){
   const f={t,x:4,y:7,w:2,h:2,r:3};clean=false;const original=PS.lightOf(f,true,true);
   clean=true;A.eq(PS.lightOf(f,true,true),original,t+': unrelated status emitter unchanged');
 }
-global.IndustrialTextures.workstationEmitter=()=>null;
+global.IndustrialTextures.workkeepEmitter=()=>null;
 A.eq(PS.lightOf({t:'desk',x:4,y:7,w:2,h:1,r:3},true,true),null,'explicit no-screen result never falls back');
-global.IndustrialTextures.workstationEmitter=()=>({x:NaN,y:4});
+global.IndustrialTextures.workkeepEmitter=()=>({x:NaN,y:4});
 A.eq(PS.lightOf({t:'desk',x:4,y:7,w:2,h:1,r:3},true,true),null,'invalid measured source emits nothing');
-delete global.IndustrialTextures.workstationEmitter;
+delete global.IndustrialTextures.workkeepEmitter;
 A.eq(PS.lightOf({t:'desk',x:4,y:7,w:2,h:1,r:3},true,true).x,57,'missing helper gets an east-facing compatibility anchor');
 A.eq(PS.lightOf({t:'desk',x:4,y:7,w:2,h:1,r:1},true,true).x,63,'missing helper gets the reflected west-facing anchor');
 A.eq(PS.lightOf({t:'desk',x:4,y:7,w:2,h:1,r:2},true,true),null,'compatibility path never invents a rear screen');
@@ -163,7 +164,7 @@ for(const t of ['desk','desk2']){
   for(const r of [0,1,2,3])A.eq(PS.footprintAt(t,r),straight,t+': classic never re-tiles '+r);
   clean=true;
   for(const r of [0,1,2,3])A.eq(PS.footprintAt(t,r),r&1?side:straight,t+': remaster reserves rotated tabletop '+r);
-  // Existing compact workstations keep their physical length, as the builder's
+  // Existing compact workkeeps keep their physical length, as the builder's
   // before/after footprint relationship determines whether actual w/h swap.
   for(const length of [2,3])for(const r of [1,3]){
     const st=WM.create(WM.defaultDoc()),added=st.addProp({t,x:5,y:4,w:length,h:1,block:true});
@@ -177,7 +178,7 @@ for(const t of ['desk','desk2']){
     A.eq(st.propAt(6,4),null,t+': former wide tile is released for picking');
     const geo=st.projectGeometry(),local=geo.props.find(q=>q.id===p.id);
     A.eq([local.w,local.h,local.r],[1,length,r],t+': renderer receives actual rotated plan');
-    let drawn;global.IndustrialTextures.workstation=(ctx,x,y,w,h,face)=>{drawn={w,h,face};return true;};
+    let drawn;global.IndustrialTextures.workkeep=(ctx,x,y,w,h,face)=>{drawn={w,h,face};return true;};
     PS.setCtx({save(){},restore(){},translate(){},scale(){}});PS.draw(local,false);
     A.eq(drawn,{w:12,h:length*12,face:'e'},t+': side artwork receives actual depth and fixed narrow plan');
     A.ok(!geo.walkable(local.x,local.y+length-1),t+': pathfinding blocks the whole desk depth');

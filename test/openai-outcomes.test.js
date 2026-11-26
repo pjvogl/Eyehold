@@ -29,12 +29,12 @@ const { makeOpenAiCompat } = require('../sidecar/openai-compat');
         assert.equal(res.status,200);
         const raw=await res.text();
         const result=stream ? raw.split('\n').filter(l=>l.startsWith('data: {')).map(l=>JSON.parse(l.slice(6))).at(-1) : JSON.parse(raw);
-        assert.equal(result.starnet.status,status);
-        assert.equal(result.starnet.completed,reason==='done');
+        assert.equal(result.eyehold.status,status);
+        assert.equal(result.eyehold.completed,reason==='done');
         assert.equal(result.choices[0].finish_reason,finish);
         assert.equal(result.usage.total_tokens,10);
         assert.ok(raw.includes('partial evidence'));
-        if (reason==='done') assert.equal(result.starnet.error,null,'recovered failures cannot poison successful end');
+        if (reason==='done') assert.equal(result.eyehold.error,null,'recovered failures cannot poison successful end');
         if(stream) assert.ok(raw.endsWith('data: [DONE]\n\n'));
       }
       const run=await (await post('/v1/runs',{input:reason})).json();

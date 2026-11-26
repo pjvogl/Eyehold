@@ -1,6 +1,6 @@
 # Desktop app icon
 
-`../icon-source.png` is the approved StarNet desktop icon master (2026-09-23):
+`../icon-source.png` is the approved Eyehold desktop icon master (2026-09-23):
 the original hollow four-point amber star on a borderless circular CRT surface,
 with transparency outside the circle. Preserve this artwork when exporting sizes.
 

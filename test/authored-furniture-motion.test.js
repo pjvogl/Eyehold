@@ -21,7 +21,7 @@ for(const id of Configs.ids){
   A.eq(Motion.sample(id,box,{now:c.period/4,still:true}).angle,0,'reduced motion holds neutral key art '+id);
   A.eq(Motion.sample(id,box,{now:c.period/4,reducedMotion:true}).angle,0,'system reduced motion alias holds neutral key art '+id);
   A.eq(zero.pivot,quarter.pivot,'chain pivot does not drift '+id);
-  const b=Motion.bounds(id,box);A.ok(b.x<=box.x&&b.x+b.width>=box.x+box.width&&(b.x<box.x||b.x+b.width>box.x+box.width),'cache envelope includes outward swing and full stationary frame '+id);
+  const b=Motion.bounds(id,box);A.ok(b.x<=box.x&&b.x+b.width>=box.x+box.width&&(b.x<box.x||b.x+b.width>box.x+box.width),'cache envelope includes outward swing and full keepary frame '+id);
   const draw=recorder(),startReads=reads,startAllocations=allocations;
   for(let i=0;i<240;i++)A.ok(Motion.draw(draw.ctx,id,box,{now:i*25,work:true}),'cached frame '+id+' '+i);
   A.eq(reads,startReads,'no per-frame source readback '+id);A.eq(allocations,startAllocations,'no per-frame canvas allocation '+id);A.eq(draw.depth(),0,'all frame contexts restored '+id);

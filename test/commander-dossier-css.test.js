@@ -5,7 +5,7 @@ const path = require('node:path');
 const A = require('./_assert.js');
 
 const root = path.resolve(__dirname, '..');
-const ui = fs.readFileSync(path.join(root, 'frontend', 'app', 'stationui.js'), 'utf8');
+const ui = fs.readFileSync(path.join(root, 'frontend', 'app', 'keepui.js'), 'utf8');
 const css = fs.readFileSync(path.join(root, 'frontend', 'css', 'app.css'), 'utf8');
 
 // These components landed as one Commander Dossier redesign. A later merge kept the markup but

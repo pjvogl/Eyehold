@@ -1,6 +1,6 @@
-/* STARNET — curiosity.js : the PURE engine for JUST-IN-TIME CURIOSITY (Commander Dossier, Phase B slice 2).
+/* EYEHOLD — curiosity.js : the PURE engine for JUST-IN-TIME CURIOSITY (Commander Dossier, Phase B slice 2).
 
-   The gentle counterpart to the full intake interview: when the station notices it still doesn't know
+   The gentle counterpart to the full intake interview: when the keep notices it still doesn't know
    something about its Commander that shapes how it works, it asks about ONE thing — once, never naggy. This
    engine is the pure decision: given the dossier's still-blank dimensions, what the user has dismissed, and
    how many times we've already asked this session, pick the single dimension to ask about next (or nothing).
@@ -21,10 +21,10 @@
 
   const CAP = 1;        // at most one curiosity nudge per session (the rest of "getting to know you" is the opt-in interview)
   const ASK_LIMIT = 2;  // after this many asked-and-ignored sessions, stop raising a dimension FOR GOOD (anti-loop)
-  const MIN_WORK = 3;   // WORK-EARNED gate (beat-fat trim, 2026-07-03): the station must complete this many REAL
+  const MIN_WORK = 3;   // WORK-EARNED gate (beat-fat trim, 2026-07-03): the keep must complete this many REAL
                         // task-runs in a session before it has earned the right to ask a get-to-know-you question.
                         // An unearned ask is exactly the "fake and unprompted" texture the Commander flagged.
-  // HUNT MODE (ONBOARDING V3 §7): while the station is BELOW the readiness gate it may not recommend — so its
+  // HUNT MODE (ONBOARDING V3 §7): while the keep is BELOW the readiness gate it may not recommend — so its
   // standing job is closing the context gap. The hunt profile makes curiosity hungrier: the work-earned floor
   // is waived (the gap IS the reason to ask — there may be no work yet to earn with) and the session budget
   // doubles. Every anti-nag protection that involves the Commander's own signal stays fully in force:
@@ -54,7 +54,7 @@
   //   minWork   — the earned-ask floor (defaults to MIN_WORK)
   //   order     — OPTIONAL preferred ask order (dimension keys, best-first): the value-of-information ranking
   //               from the understanding engine, so the ONE earned question targets the dimension whose answer
-  //               most sharpens the station's model of the Commander. Only re-orders — every gate (cap, earned
+  //               most sharpens the keep's model of the Commander. Only re-orders — every gate (cap, earned
   //               floor, dismissed, stop-forever) applies unchanged, and a dim NOT in `order` still falls back
   //               to its canonical position after the ordered ones (never silently unaskable).
   function pick(opts) {

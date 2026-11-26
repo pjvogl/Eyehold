@@ -71,25 +71,25 @@ pub(crate) const KEYCHAIN_PROVIDERS: [&str; 13] = [
 // (signal-cli endpoint + registered number are non-secret config), so it has no row. The sidecar reads
 // these names in index.js CHANNEL_TOKEN_ENV — keep the two tables in step.
 pub(crate) const SIDECAR_CHANNEL_TOKEN_ENVS: [(&str, &str); 4] = [
-    ("telegram", "SKYNET_TELEGRAM_TOKEN"),
-    ("discord", "SKYNET_DISCORD_TOKEN"),
-    ("slack", "SKYNET_SLACK_TOKEN"),
-    ("matrix", "SKYNET_MATRIX_TOKEN"),
+    ("telegram", "EYEHOLD_TELEGRAM_TOKEN"),
+    ("discord", "EYEHOLD_DISCORD_TOKEN"),
+    ("slack", "EYEHOLD_SLACK_TOKEN"),
+    ("matrix", "EYEHOLD_MATRIX_TOKEN"),
 ];
 
 pub(crate) const SIDECAR_PROVIDER_KEY_ENVS: [(&str, &str); 12] = [
-    ("openai", "SKYNET_OPENAI_API_KEY"),
-    ("anthropic", "SKYNET_ANTHROPIC_API_KEY"),
-    ("gemini", "SKYNET_GEMINI_API_KEY"),
-    ("xai", "SKYNET_XAI_API_KEY"),
-    ("groq", "SKYNET_GROQ_API_KEY"),
-    ("mistral", "SKYNET_MISTRAL_API_KEY"),
-    ("deepseek", "SKYNET_DEEPSEEK_API_KEY"),
-    ("together", "SKYNET_TOGETHER_API_KEY"),
-    ("fireworks", "SKYNET_FIREWORKS_API_KEY"),
-    ("perplexity", "SKYNET_PERPLEXITY_API_KEY"),
-    ("cerebras", "SKYNET_CEREBRAS_API_KEY"),
-    ("custom", "SKYNET_CUSTOM_OPENAI_KEY"),
+    ("openai", "EYEHOLD_OPENAI_API_KEY"),
+    ("anthropic", "EYEHOLD_ANTHROPIC_API_KEY"),
+    ("gemini", "EYEHOLD_GEMINI_API_KEY"),
+    ("xai", "EYEHOLD_XAI_API_KEY"),
+    ("groq", "EYEHOLD_GROQ_API_KEY"),
+    ("mistral", "EYEHOLD_MISTRAL_API_KEY"),
+    ("deepseek", "EYEHOLD_DEEPSEEK_API_KEY"),
+    ("together", "EYEHOLD_TOGETHER_API_KEY"),
+    ("fireworks", "EYEHOLD_FIREWORKS_API_KEY"),
+    ("perplexity", "EYEHOLD_PERPLEXITY_API_KEY"),
+    ("cerebras", "EYEHOLD_CEREBRAS_API_KEY"),
+    ("custom", "EYEHOLD_CUSTOM_OPENAI_KEY"),
 ];
 
 pub(crate) fn normalize_provider(provider: &str) -> &'static str {
@@ -240,7 +240,7 @@ pub(crate) fn read_telegram_bot_tokens(workspaces: &Path) -> BTreeMap<String, St
         .collect()
 }
 
-// ---- StarNet Cloud device token (keychain account "credits:device") ----
+// ---- Eyehold Cloud device token (keychain account "credits:device") ----
 //
 // The device token is a BEARER CREDENTIAL THAT SPENDS MONEY: anyone holding it can bill the
 // linked account until the balance runs out. It is minted by the sidecar (which polls the cloud),
@@ -254,7 +254,7 @@ pub(crate) fn credits_keychain_entry() -> keyring::Result<keyring::Entry> {
     keyring::Entry::new(KEYCHAIN_SERVICE, "credits:device")
 }
 
-/// The stored StarNet Cloud device token, or `None` if unset/empty.
+/// The stored Eyehold Cloud device token, or `None` if unset/empty.
 pub(crate) fn read_credits_token() -> Option<String> {
     credits_keychain_entry()
         .ok()
@@ -266,7 +266,7 @@ pub(crate) fn read_credits_token() -> Option<String> {
 /// file without it. Returns whether a token now lives in the keychain (adopted just now or already
 /// there), so callers report the truth rather than assume success.
 ///
-/// Runs at every launch (migrating already-linked stations) AND on demand right after a link, so a
+/// Runs at every launch (migrating already-linked keeps) AND on demand right after a link, so a
 /// freshly minted token spends seconds on disk instead of until the next restart. Idempotent.
 pub(crate) fn migrate_credits_token_from_plaintext(workspaces: &Path) -> bool {
     let file = workspaces.join(".secrets").join("credits.json");
@@ -490,7 +490,7 @@ mod tests {
     }
 
     #[test]
-    #[ignore = "Requires an unlocked native OS credential store; creates the persistent StarNet connector key if absent"]
+    #[ignore = "Requires an unlocked native OS credential store; creates the persistent Eyehold connector key if absent"]
     fn connector_keychain_roundtrip() {
         let first = connector_encryption_key().expect("native connector key available");
         let second = connector_encryption_key().expect("native connector key readable again");
@@ -547,10 +547,10 @@ mod tests {
         assert_eq!(
             SIDECAR_CHANNEL_TOKEN_ENVS,
             [
-                ("telegram", "SKYNET_TELEGRAM_TOKEN"),
-                ("discord", "SKYNET_DISCORD_TOKEN"),
-                ("slack", "SKYNET_SLACK_TOKEN"),
-                ("matrix", "SKYNET_MATRIX_TOKEN"),
+                ("telegram", "EYEHOLD_TELEGRAM_TOKEN"),
+                ("discord", "EYEHOLD_DISCORD_TOKEN"),
+                ("slack", "EYEHOLD_SLACK_TOKEN"),
+                ("matrix", "EYEHOLD_MATRIX_TOKEN"),
             ]
         );
     }
@@ -602,7 +602,7 @@ mod tests {
     impl TempWorkspace {
         fn new(name: &str, secrets: &serde_json::Value) -> Self {
             let dir = std::env::temp_dir().join(format!(
-                "starnet-channel-migrate-{}-{name}",
+                "eyehold-channel-migrate-{}-{name}",
                 std::process::id()
             ));
             let _ = std::fs::remove_dir_all(&dir);

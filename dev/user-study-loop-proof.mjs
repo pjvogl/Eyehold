@@ -1,7 +1,7 @@
 // USER-STUDY LOOP live proof — real Chrome over CDP, a real seeded sidecar, a deterministic local mock model.
 //   interview → confirmed first path → quests planned for THAT step → START QUEST runs real work (a real fs.write
 //   tool call) → the artifact contract completes → the Commander reports the other quest → the sidecar settles the
-//   step and the plan moves on → restart → what the station learned while the window was closed is offered.
+//   step and the plan moves on → restart → what the keep learned while the window was closed is offered.
 // Owns only its child processes and a fresh scratch workspace. No paid service is called.
 import { spawn } from 'node:child_process';
 import { createServer } from 'node:http';
@@ -89,14 +89,14 @@ try {
   chrome = launchChrome({ cdpPort, profileDir: join(out, 'chrome') });
   cdp = await connectCDP(cdpPort); const diag = collectDiagnostics(cdp);
   await cdp.send('Runtime.enable'); await cdp.send('Page.enable'); await cdp.send('Page.navigate', { url });
-  assert(await waitDevReady(cdp, evalJS, { url }), 'dev station did not enter game');
+  assert(await waitDevReady(cdp, evalJS, { url }), 'dev keep did not enter game');
 
-  // STEP 4 — a new station proposes by default (the sidecar owns the posture).
+  // STEP 4 — a new keep proposes by default (the sidecar owns the posture).
   receipt.steps.defaultPosture = (await api('/api/autonomy/posture')).summary;
   assert.equal(receipt.steps.defaultPosture.initiative, 'propose'); assert.equal(receipt.steps.defaultPosture.actsUnattended, false);
 
   // STEP 2 — the real interview (the deferred-interview door runs the same runLeadMeeting the awakening uses).
-  await ev(`localStorage.setItem('starnet.interview.deferred.v1','1')`);
+  await ev(`localStorage.setItem('eyehold.interview.deferred.v1','1')`);
   await cdp.send('Page.reload'); assert(await waitDevReady(cdp, evalJS, { url }), 'reload failed');
   await until(`[...document.querySelectorAll('button')].some(b => /do it now/i.test(b.textContent))`, 'deferred interview offer did not appear', 320);
   await ev(`[...document.querySelectorAll('button')].find(b => /do it now/i.test(b.textContent)).click()`);
@@ -134,7 +134,7 @@ try {
   await until(`(async () => { const j = await (await fetch('/api/quests',{cache:'no-store'})).json(); return j.quests.filter(q => q.status === 'open' && q.goalId).length >= 2; })()`, 'the refresh did not plan the step');
   receipt.steps.plannerSawStep = requests.some(r => r.includes('THE STEP YOU ARE PLANNING NOW: ' + STEPS[0]));
   assert(receipt.steps.plannerSawStep, 'the planner was not told which step it is planning');
-  // the station studies the Commander, not itself: no internal self-talk reaches the planner's activity evidence.
+  // the keep studies the Commander, not itself: no internal self-talk reaches the planner's activity evidence.
   const plannerPrompt = requests.filter(r => r.includes('THE STEP YOU ARE PLANNING NOW')).map(r => { const m = JSON.parse(r).messages; return String(m[m.length - 1].content); }).pop() || '';
   const activity = (plannerPrompt.split('RECENT REAL ACTIVITY:')[1] || '').split('\n\n')[0];
   receipt.steps.plannerActivity = activity.trim().split('\n');
@@ -145,7 +145,7 @@ try {
   assert(quests.every(q => q.milestoneId === firstMilestone), 'every planned quest is bound to the current step');
 
   // STEP 5 — START QUEST on the agent quest runs real work in the quest's own session.
-  await ev(`StationUI.openTerm('quests')`); await ev(`QuestLedgerStore.init()`); await sleep(600); await ev(`StationUI.rerender('quests', false)`);
+  await ev(`KeepUI.openTerm('quests')`); await ev(`QuestLedgerStore.init()`); await sleep(600); await ev(`KeepUI.rerender('quests', false)`);
   const agentQ = quests.find(q => q.title === AGENT_Q), humanQ = quests.find(q => q.title === HUMAN_Q);
   const selectQuest = async id => { await until(`!!document.querySelector('[data-quest-select="${id}"]')`, 'quest ' + id + ' not listed'); await ev(`document.querySelector('[data-quest-select="${id}"]').click()`); await sleep(300); };
   await selectQuest(agentQ.id);
@@ -162,7 +162,7 @@ try {
   assert.equal(receipt.steps.questRun.session.title, 'quest: ' + AGENT_Q, 'START opened the quest session'); assert(receipt.steps.questRun.sentByStart, 'START QUEST did not send the work');
 
   // STEP 1 (cont.) — the Commander reports the other quest; the sidecar settles the step and the plan moves on.
-  await ev(`StationUI.openTerm('quests'); StationUI.rerender('quests', false)`);
+  await ev(`KeepUI.openTerm('quests'); KeepUI.rerender('quests', false)`);
   await selectQuest(humanQ.id);
   await until(`!!document.querySelector('.q-life-quest[data-qid="${humanQ.id}"] .q-quest-report')`, 'commander quest report control not rendered');
   await ev(`(() => { const e = document.querySelector('.q-life-quest[data-qid="${humanQ.id}"] .q-quest-evidence'); e.value = 'Messaged three readers; two picked indie games'; e.dispatchEvent(new Event('input', {bubbles:true})); document.querySelector('.q-life-quest[data-qid="${humanQ.id}"] .q-quest-report').click(); })()`);
@@ -170,12 +170,12 @@ try {
   const j1 = (await api('/api/journey')).journey;
   receipt.steps.settled = j1.milestones.find(m => m.milestoneId === firstMilestone);
   assert.equal(receipt.steps.settled.verifiedBy, 'harness-contract');
-  await ev(`JourneyStore.sync(true)`); await sleep(800); await ev(`GoalStore.sync(); StationUI.rerender('quests', false)`);
+  await ev(`JourneyStore.sync(true)`); await sleep(800); await ev(`GoalStore.sync(); KeepUI.rerender('quests', false)`);
   await until(`GoalStore.activeGoal().milestones[0].status === 'done'`, 'the page did not fold the settled step');
   receipt.steps.pageFold = await ev(`(() => { const g = GoalStore.activeGoal(); return { first: g.milestones[0].status, source: g.milestones[0].source, next: Goals.nextMilestone(g).text }; })()`);
   assert.equal(receipt.steps.pageFold.next, STEPS[1]);
 
-  // STEP 3 — close the window, the station learns something on an unwatched run, reopen: it is offered.
+  // STEP 3 — close the window, the keep learns something on an unwatched run, reopen: it is offered.
   await cdp.send('Page.navigate', { url: 'about:blank' }); await stopSeed();
   const studyFile = join(ws, 'study.state.json');
   const study = existsSync(studyFile) ? JSON.parse(readFileSync(studyFile, 'utf8')) : { v: 1, byRun: {}, latest: {}, lastAt: {}, declined: {} };

@@ -75,7 +75,7 @@ export function spawnAcpClient({ command, args = [], cwd, env = {}, permission =
       return this.updates(sessionId).filter(row => row.sessionUpdate === 'agent_message_chunk')
         .map(row => row.content?.text || '').join('');
     },
-    async initialize(clientName = 'starnet-parity-campaign') {
+    async initialize(clientName = 'eyehold-parity-campaign') {
       return request('initialize', { protocolVersion: 1, clientCapabilities: { fs: { readTextFile: false, writeTextFile: false } }, clientInfo: { name: clientName, version: '0.9.0' } }, 30000);
     },
     async newSession(projectRoot, mcpServers = []) {

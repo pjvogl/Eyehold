@@ -5,7 +5,7 @@ const path = require('node:path');
 const sharp = require('sharp');
 const root = path.resolve(__dirname, '../..');
 const source = path.resolve(process.argv[2] || path.join(__dirname, 'minion-source/base'));
-const out = path.join(root, 'frontend/assets/sprites/station_minion');
+const out = path.join(root, 'frontend/assets/sprites/keep_minion');
 const dirs = ['south', 'south-east', 'east', 'north-east', 'north', 'north-west', 'west', 'south-west'];
 const cardinal = ['south', 'east', 'north', 'west'];
 async function box(file) {
@@ -34,7 +34,7 @@ async function main() {
   const manifest=JSON.parse(fs.readFileSync(manifestPath,'utf8')), report=[];
   const south=await box(path.join(source,'Idle/rotations/south.png'));
   const scale=44/south.h;
-  const add=(key,files)=>{manifest.sprites['station_minion.'+key]=files.map(f=>'station_minion/'+f);};
+  const add=(key,files)=>{manifest.sprites['keep_minion.'+key]=files.map(f=>'keep_minion/'+f);};
   for(const d of dirs) {
     const idle=path.join(source,'Idle/rotations',d+'.png'), ib=await box(idle);
     report.push(await place(idle,scale,ib.cx,'rot_'+d+'.png'));add('rot.'+d,['rot_'+d+'.png']);

@@ -1,4 +1,4 @@
-/* node test/quest-store.test.js — the station-wide, harness-owned QUEST LEDGER (QUEST V2 §A).
+/* node test/quest-store.test.js — the keep-wide, harness-owned QUEST LEDGER (QUEST V2 §A).
 
    Proves THE CONTRACT RULE (no valid contract → mint rejected), title-dedup vs open + dismissed, the per-agent
    open-generated cap, the attest→confirm(yes) completion and attest→confirm(no) declineNote-stays-open paths,
@@ -191,15 +191,15 @@ const attestContract = () => ({ type: 'attest', key: '' });
     A.ok((await s.dismiss(r.id, 4)) === false, 'a second dismiss is a no-op');
   }
 
-  // ---- 11. openForAgent — own quests + station-wide (null agentId), open only ----
+  // ---- 11. openForAgent — own quests + keep-wide (null agentId), open only ----
   {
     const s = freshStore();
     const mine = await s.mint({ title: 'mine', contract: attestContract(), agentId: 'hero' }, 1);
-    const station = await s.mint({ title: 'station wide', contract: attestContract() }, 2);  // agentId null
+    const keep = await s.mint({ title: 'keep wide', contract: attestContract() }, 2);  // agentId null
     const theirs = await s.mint({ title: 'theirs', contract: attestContract(), agentId: 'other' }, 3);
     await s.dismiss(theirs.id, 4);
     const open = s.openForAgent('hero').map(q => q.id).sort();
-    A.eq(open, [mine.id, station.id].sort(), 'openForAgent returns own + station-wide open quests, not another agent\'s');
+    A.eq(open, [mine.id, keep.id].sort(), 'openForAgent returns own + keep-wide open quests, not another agent\'s');
   }
 
   // ---- 12. persistence round-trips a fresh store instance (restart-safe) ----
@@ -243,7 +243,7 @@ const attestContract = () => ({ type: 'attest', key: '' });
     for (let i = 1; i <= 299; i++) quests.push({ id: 'q:' + i, title: 'done ' + i, contract: runContract('r' + i), status: 'done', completedAt: i, createdAt: i });
     quests.push({ id: 'q:300', title: 'the open one', contract: runContract('rOpen'), status: 'open', createdAt: 300 });
     const fs = memFs();
-    fs.writeFileSync(path.join('/ws', '_station.quests.json'), JSON.stringify({ v: 1, seq: 300, quests, deniedTitles: [] }));
+    fs.writeFileSync(path.join('/ws', '_keep.quests.json'), JSON.stringify({ v: 1, seq: 300, quests, deniedTitles: [] }));
     const s = makeQuestStore({ fs, path, workspaces: '/ws', writeDurable });
     A.eq(s.list().length, 300, 'ledger loads at the cap');
     const r = await s.mint({ title: 'the new one', contract: runContract('rNew') }, 301);
@@ -259,7 +259,7 @@ const attestContract = () => ({ type: 'attest', key: '' });
     const quests = [];
     for (let i = 1; i <= 300; i++) quests.push({ id: 'q:' + i, title: 'open ' + i, contract: runContract('r' + i), status: 'open', createdAt: i });
     const fs = memFs();
-    fs.writeFileSync(path.join('/ws', '_station.quests.json'), JSON.stringify({ v: 1, seq: 300, quests, deniedTitles: [] }));
+    fs.writeFileSync(path.join('/ws', '_keep.quests.json'), JSON.stringify({ v: 1, seq: 300, quests, deniedTitles: [] }));
     const s = makeQuestStore({ fs, path, workspaces: '/ws', writeDurable });
     const r = await s.mint({ title: 'one more open', contract: runContract('rNew') }, 301);
     A.ok(r.ok, 'a new open quest still mints when the ledger is all-open at the cap');

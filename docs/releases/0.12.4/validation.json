@@ -190,7 +190,7 @@
       "fileVersion": "0.12.4"
     },
     {
-      "path": "C:\\Users\\andro\\gen-trees\\release-audit-0124-0920\\src-tauri\\target\\release\\bundle\\nsis\\StarNet_0.12.4_x64-setup.exe",
+      "path": "C:\\Users\\andro\\gen-trees\\release-audit-0124-0920\\src-tauri\\target\\release\\bundle\\nsis\\Eyehold_0.12.4_x64-setup.exe",
       "bytes": 640515736,
       "sha256": "0c755a955f309243eedc279e5bfc33e9860196c1b9eb9c6ea5c9adba0b01b568",
       "signature": "NotSigned",
@@ -241,8 +241,8 @@
           "result": "opened:QUESTS:refresh-fixture-settled"
         },
         {
-          "name": "build-station",
-          "result": "opened:REFIT STATION"
+          "name": "build-keep",
+          "result": "opened:REFIT KEEP"
         },
         {
           "name": "build-connectors",

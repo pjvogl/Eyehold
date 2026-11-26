@@ -17,10 +17,10 @@
 })(typeof globalThis !== 'undefined' ? globalThis : this, function () {
   'use strict';
 
-  const CP = require('../child-env.js').guardChildProcess(require('node:child_process'));   // the stdio child's env is built explicitly below; helpers get the station-free default
+  const CP = require('../child-env.js').guardChildProcess(require('node:child_process'));   // the stdio child's env is built explicitly below; helpers get the keep-free default
   const P = require('path');
   const JSONRPC = '2.0';
-  const LOCAL_ERROR = Symbol.for('starnet.mcp.localTransportError');   // read by client.js safeRpcError
+  const LOCAL_ERROR = Symbol.for('eyehold.mcp.localTransportError');   // read by client.js safeRpcError
   const DEFAULT_ALLOWED = [
     'node', 'node.exe',
     'npx', 'npx.cmd',
@@ -41,7 +41,7 @@
     return P.basename(s.replace(/\\/g, '/')).toLowerCase();
   }
   function normalizeAllowed(list) {
-    if (!Array.isArray(list)) list = String(process.env.STARNET_MCP_STDIO_ALLOW || '').split(/[;,]/).filter(Boolean);
+    if (!Array.isArray(list)) list = String(process.env.EYEHOLD_MCP_STDIO_ALLOW || '').split(/[;,]/).filter(Boolean);
     const out = list.length ? list : DEFAULT_ALLOWED;
     return out.map(commandBase).filter(Boolean);
   }
@@ -91,16 +91,16 @@
     // Host-owned safety pins always win over connector-supplied env. These are defense in
     // depth for a future isolated stdio worker; installed preserve mode refuses host stdio
     // entirely below.
-    out.STARNET_USER_CONTROL_MODE = 'preserve';
-    out.STARNET_COMPUTER_DRIVER = '0';
-    out.STARNET_BROWSER_HEADLESS = '1';
-    out.STARNET_MCP_STDIO = '0';
+    out.EYEHOLD_USER_CONTROL_MODE = 'preserve';
+    out.EYEHOLD_COMPUTER_DRIVER = '0';
+    out.EYEHOLD_BROWSER_HEADLESS = '1';
+    out.EYEHOLD_MCP_STDIO = '0';
     out.BROWSER = 'none';
     return out;
   }
   function hostStdioAllowed(deps, env) {
     env = env || {};
-    const explicit = String(env.STARNET_MCP_STDIO != null ? env.STARNET_MCP_STDIO : (env.SKYNET_MCP_STDIO || '')).trim();
+    const explicit = String(env.EYEHOLD_MCP_STDIO != null ? env.EYEHOLD_MCP_STDIO : (env.SKYNET_MCP_STDIO || '')).trim();
     if (/^(0|false|off|none)$/i.test(explicit)) return false;
     // Default deny everywhere, including dev/bare sidecar. Only a process broker that proves
     // a noninteractive execution cell may opt in; a user/env flag alone is insufficient.

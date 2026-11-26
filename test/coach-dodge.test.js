@@ -7,7 +7,7 @@
    brief 255-501 x 394-674, coach 121-441 x 441-664, ~186x223px buried).
 
    Unlike the rest of the tour's coverage this is a GENUINE unit, not a source regex: dodgeRect is pure
-   geometry hoisted out of the IIFE (the shape stationui.js uses for clampTerminalSize), so the gate can
+   geometry hoisted out of the IIFE (the shape keepui.js uses for clampTerminalSize), so the gate can
    actually run it — across viewports and anchor positions a live walk would never enumerate. */
 'use strict';
 const A = require('./_assert.js');

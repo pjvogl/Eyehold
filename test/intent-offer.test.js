@@ -2,7 +2,7 @@
 
    The Recruitment Bay + recipe library hold 38 classes and 50 ready-made jobs behind a bottom-bar popover,
    so most of that catalog is never discovered. The intent offer closes the gap from COMMS: when what the
-   Commander typed is plainly a class's or a recipe's job, the station says so once, inline.
+   Commander typed is plainly a class's or a recipe's job, the keep says so once, inline.
 
    The ONLY thing that makes that feature worth shipping is precision — a discovery card that fires on a
    vague match is noise in the one COMMS beat slot, which is strictly worse than the undiscovered feature.
@@ -94,7 +94,7 @@ for (const [q, id] of HITS) {
 }
 
 // Naming a class outright is the strongest possible signal — one term is enough when it IS the class's name.
-// NOTE these use the DISPLAY names, which are deliberately plain-English (2026-08-03: the station-flavour names
+// NOTE these use the DISPLAY names, which are deliberately plain-English (2026-08-03: the keep-flavour names
 // — paralegal, nightwatch, harvester — were renamed after Andrew reported they read as abstract). The catalog
 // ids stayed put, so a rename only ever moves what a user can SAY to reach a class, never a saved agent.
 for (const [q, id] of [['i need a legal assistant to check this', 'paralegal'], ['get me a ghostwriter', 'ghostwriter'], ['can I get a home manager', 'provisioner']]) {
@@ -170,7 +170,7 @@ function padded(subject) {
   const m = IO.match('tell me about zebrafish please', named);
   A.ok(!!m && m.id === 'solo', 'the same lone term DOES offer when it is the class\'s own name');
 }
-// 3c. AMBIGUITY MARGIN: two equally-good candidates mean the station does not know — it stays silent.
+// 3c. AMBIGUITY MARGIN: two equally-good candidates mean the keep does not know — it stays silent.
 A.eq(IO.match('i need a general helper assistant', SYN), null, 'two equally plausible candidates produce silence, never a coin flip');
 A.ok(IO.MARGIN > 1, 'the winner must beat the runner-up by a real margin');
 // 3d. an empty / absent corpus can never offer (a cold catalog is not an excuse to guess).

@@ -2,7 +2,7 @@
  *
  *   npm run eval:skills -- [--base http://127.0.0.1:8787] [--agent agent] [--skill <id>] [--repeat N] [--model id] [--provider id] [--token T] [--json out.json]
  *   (--model/--provider default to SKYNET_DEFAULT_MODEL / SKYNET_PROVIDER; /api/run needs a model. --token defaults to
- *    STARNET_API_TOKEN — every /api route is token-gated per launch; start the sidecar with a fixed token to script it)
+ *    EYEHOLD_API_TOKEN — every /api route is token-gated per launch; start the sidecar with a fixed token to script it)
  *
  * For every golden on record (GET /api/agent-skills/goldens — great-rated runs frozen per skill), drive the golden's
  * directive through the REAL run endpoint of a RUNNING sidecar, read the output off the run's NDJSON stream, and
@@ -22,7 +22,7 @@ const goldens = require('../../sidecar/skills/goldens.js');
 const PLUMBING_MODELS = /^(test\/model|replay\/model|mock\/|replay\/)/;
 
 export function parseArgs(argv) {
-  const o = { base: 'http://127.0.0.1:8787', agent: 'agent', skill: '', repeat: 1, token: process.env.STARNET_API_TOKEN || process.env.SKYNET_API_TOKEN || '', json: '', model: process.env.SKYNET_DEFAULT_MODEL || '', provider: process.env.SKYNET_PROVIDER || '' };
+  const o = { base: 'http://127.0.0.1:8787', agent: 'agent', skill: '', repeat: 1, token: process.env.EYEHOLD_API_TOKEN || process.env.SKYNET_API_TOKEN || '', json: '', model: process.env.SKYNET_DEFAULT_MODEL || '', provider: process.env.SKYNET_PROVIDER || '' };
   for (let i = 0; i < argv.length; i++) {
     const a = argv[i], v = argv[i + 1];
     if (a === '--base') { o.base = String(v || o.base).replace(/\/$/, ''); i++; }
@@ -63,7 +63,7 @@ export function render(sum) {
 }
 
 async function jget(base, path, token) {
-  const r = await fetch(base + path, { headers: Object.assign({ Origin: base }, token ? { 'X-StarNet-Token': token } : {}) });
+  const r = await fetch(base + path, { headers: Object.assign({ Origin: base }, token ? { 'X-Eyehold-Token': token } : {}) });
   if (!r.ok) throw new Error('GET ' + path + ' → ' + r.status);
   return r.json();
 }
@@ -73,7 +73,7 @@ async function jget(base, path, token) {
    `agent.run.end` carries reason + model. Returns { runId, text, model, reason }. */
 async function driveRun(base, token, agentId, text, o) {
   const r = await fetch(base + '/api/run', {
-    method: 'POST', headers: Object.assign({ 'Content-Type': 'application/json', Origin: base }, token ? { 'X-StarNet-Token': token } : {}),
+    method: 'POST', headers: Object.assign({ 'Content-Type': 'application/json', Origin: base }, token ? { 'X-Eyehold-Token': token } : {}),
     body: JSON.stringify(Object.assign({ agentId, isTask: true, messages: [{ role: 'user', content: text }] }, o && o.model ? { model: o.model } : {}, o && o.provider ? { provider: o.provider } : {}))
   });
   if (!r.ok || !r.body) throw new Error('POST /api/run → ' + r.status + ' ' + (await r.text().catch(() => '')).slice(0, 120));

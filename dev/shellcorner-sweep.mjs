@@ -1,10 +1,10 @@
 #!/usr/bin/env node
-// dev/shellcorner-sweep.mjs — every corner of a MULTI-ROOM station, before/after the shared corner
+// dev/shellcorner-sweep.mjs — every corner of a MULTI-ROOM keep, before/after the shared corner
 // profile, as one contact sheet.
 //
 // The lane that introduced SHAPE.cornerN closed with "corridors, stacked/multi-room layouts, and
 // rooms narrower than one lamp pitch have not been swept by eye — and corner work is precisely the
-// class that only misbehaves on a multi-room station". This is that sweep: a hab, a differently-clad
+// class that only misbehaves on a multi-room keep". This is that sweep: a hab, a differently-clad
 // neighbour, a corridor joining them, and a small room, baked at the shipped chamfer (cornerN 1) and
 // at the legacy fillet (cornerN 2), with every chamfer tile cropped and labelled.
 //
@@ -20,7 +20,7 @@ const CDP_PORT = Number(process.env.SKYNET_CDP_PORT || 9364);
 const URL = `http://127.0.0.1:${PORT}/`;
 
 const PROBE = `(() => {
-  const SB = StationBake;
+  const SB = KeepBake;
   const mk = (w, h) => { const c = document.createElement('canvas'); c.width = w; c.height = h; const g = c.getContext('2d'); g.imageSmoothingEnabled = false; return { c, g }; };
   const st = WorldModel.create(WorldModel.defaultDoc());
   const errs = [];
@@ -66,7 +66,7 @@ const PROBE = `(() => {
   return JSON.stringify({
     tile: T, W: cur.bk.W, H: cur.bk.H, placement_errors: errs,
     corners, cornerN: SB.SHAPE.cornerN,
-    crops: { CORNER_sweep: sheet.c.toDataURL('image/png').split(',')[1], STATION: full.c.toDataURL('image/png').split(',')[1] }
+    crops: { CORNER_sweep: sheet.c.toDataURL('image/png').split(',')[1], KEEP: full.c.toDataURL('image/png').split(',')[1] }
   });
 })()`;
 

@@ -1,6 +1,6 @@
-/* StarNet reference-authored industrial materials, September 2026.
+/* Eyehold reference-authored industrial materials, September 2026.
  * Image-authored albedo; geometry, lighting, seats and live activity remain owned
- * by the station renderer. The industrial set is the default; ?textures=classic
+ * by the keep renderer. The industrial set is the default; ?textures=classic
  * retains the original renderer for comparison and recovery.
  * A failed or pending asset keeps the complete existing material set visible.
  */
@@ -22,10 +22,10 @@ const IndustrialTextures = (() => {
     // 2026-09-22 key light (WorldLight KEY buffer): pools open further (cut) and then
     // carry a warm gain ON the surface (key), tighter than the cut; screens and beacons
     // splash their own colour (keyProps); unlit deck leans cool (shadeCool).
-    // RESTORED 2026-09-23 to the pre-key-light look (Andrew: the station before the key light
+    // RESTORED 2026-09-23 to the pre-key-light look (Andrew: the keep before the key light
     // was "literally almost perfect", every brighter step "TOO BRIGHT"). key 0 + shadeCool 0
     // keep the KEY buffer off entirely and cut 1 is the original pool size, so this renders the
-    // 29bb21d80 station. The KEY machinery stays in worldlight.js for opt-in use (crtlab).
+    // 29bb21d80 keep. The KEY machinery stays in worldlight.js for opt-in use (crtlab).
     // Tried and rejected: cut 2.2/key 2, cut 1.6/key 1.7, cut 1.3/key .85 — all too bright.
     cut: 1, key: 0, keyReach: .5, keyProps: 1, keyPropReach: 1.5, shadeCool: 0 };
   const plates = new WeakMap();
@@ -38,10 +38,10 @@ const IndustrialTextures = (() => {
   const floorArtName = id => 'remaster/floors/' + id + (floorArtRevision.has(id) ? '-v2' : '');
   const wallArtRevision = new Set(['bulkhead', 'courses', 'panelled', 'pipework', 'ribbed', 'service']);
   const wallArtName = id => 'remaster/walls/' + id + (wallArtRevision.has(id) ? '-v3' : '');
-  const names = ['floor', 'wall', 'shell', 'workstation', 'workstation-compact', 'chair-s', 'chair-e', 'chair-n',
+  const names = ['floor', 'wall', 'shell', 'workkeep', 'workkeep-compact', 'chair-s', 'chair-e', 'chair-n',
     'tactical-table', 'console-bank', 'equipment-bay', 'deck-perimeter',
     ...floorIds.map(floorArtName), ...wallIds.map(wallArtName),
-    'remaster/shell', 'remaster/crown', 'remaster/workstation-e', 'remaster/workstation-n', 'remaster/workstation-compact-n',
+    'remaster/shell', 'remaster/crown', 'remaster/workkeep-e', 'remaster/workkeep-n', 'remaster/workkeep-compact-n',
     'calibration/crate'];
   const shellMaterials = ['monocoque', 'timber', 'clapboard', 'shingle', 'brick', 'stone', 'stucco', 'curtain', 'hedge', 'thermal', 'heatsink', 'truss', 'louver', 'ceramic'];
   const floorMaterials = ['flightdeck', 'lunar', 'maggrid', 'habitat'];
@@ -51,7 +51,7 @@ const IndustrialTextures = (() => {
   const shellTints = new Map();
   // The references are already lit pictures. These measured albedo gains keep
   // the existing light simulation from applying a second exposure to the art.
-  const gain = { floor: 1.25, wall: 1.65, shell: 2.05, workstation: 1.5, 'workstation-compact': 1.5,
+  const gain = { floor: 1.25, wall: 1.65, shell: 2.05, workkeep: 1.5, 'workkeep-compact': 1.5,
     'chair-s': 1.3, 'chair-e': 1.3, 'chair-n': 1.3,
     'tactical-table': 1.5, 'console-bank': 1.5, 'equipment-bay': 1.5, 'deck-perimeter': 1.0,
     'calibration/crate': 1.5, 'remaster/crown': 2.0 };
@@ -91,7 +91,7 @@ const IndustrialTextures = (() => {
     const artName = name === 'remaster/shell' || shellNames.includes(name) ? name + '-v2' : name;
     img.src = 'assets/industrial/' + artName + '.png';
   }))).then(() => {
-    // Optional material failures fall back per material, without disabling the station pack.
+    // Optional material failures fall back per material, without disabling the keep pack.
     loaded = !failed.some(name => names.includes(name));
     document.documentElement.dataset.texturePack = loaded ? 'industrial' : 'fallback';
     document.documentElement.dataset.textureRevision = loaded ? 'bridge-remaster' : 'native';
@@ -321,7 +321,7 @@ const IndustrialTextures = (() => {
     const target = enabled() && detailTargets.get(ctx);
     if (!target || !strip || !strip.hi) return;
     const { g, scale } = target, hi = strip.hi, step = 1 / Math.ceil(scale);
-    // Chunk baking visits the whole station. Reject a patch wholly outside its
+    // Chunk baking visits the whole keep. Reject a patch wholly outside its
     // target before sampling thousands of texels which the canvas would clip.
     // Only the axis-aligned positive transform is culled; other transforms keep
     // the original painter and its sampling phase.
@@ -341,7 +341,7 @@ const IndustrialTextures = (() => {
     g.restore();
   }
   function shellImage(id, base) {
-    if (id === 'station') return material('remaster/shell', base);
+    if (id === 'keep') return material('remaster/shell', base);
     return materialImage('shell-' + id, base, 2.05);
   }
   function materialImage(name, base, exposure) {
@@ -368,7 +368,7 @@ const IndustrialTextures = (() => {
     if (shellTints.size >= 24) shellTints.delete(shellTints.keys().next().value);
     shellTints.set(key, cv); return cv;
   }
-  function shell(ctx, width, height, vx, vy, topOf, material = 'station', base = null) {
+  function shell(ctx, width, height, vx, vy, topOf, material = 'keep', base = null) {
     if (!enabled()) return false;
     const im = shellImage(material, base), period = 96;
     if (!im) return false;
@@ -389,7 +389,7 @@ const IndustrialTextures = (() => {
     }
     ctx.restore(); return true;
   }
-  function shellPlate(ctx, x, y, width, height, material = 'station', base = null) {
+  function shellPlate(ctx, x, y, width, height, material = 'keep', base = null) {
     if (!enabled()) return false;
     const im = shellImage(material, base);
     if (!im) return false;
@@ -409,11 +409,11 @@ const IndustrialTextures = (() => {
     ctx.drawImage(im, im.width * .035, im.height * .035, im.width * .18, im.height * .18, x, y, w, h);
     ctx.restore(); return true;
   }
-  function workstationFit(x, y, w, h, facing) {
+  function workkeepFit(x, y, w, h, facing) {
     const compact = Math.max(w, h) < 30, side = facing === 'e';
-    const name = side ? 'remaster/workstation-e' : facing === 'n'
-      ? 'remaster/workstation' + (compact ? '-compact' : '') + '-n'
-      : compact ? 'workstation-compact' : 'workstation';
+    const name = side ? 'remaster/workkeep-e' : facing === 'n'
+      ? 'remaster/workkeep' + (compact ? '-compact' : '') + '-n'
+      : compact ? 'workkeep-compact' : 'workkeep';
     const im = images[name];
     // The side cabinet occupies 75% of the source silhouette width. Its monitor
     // overhang is real height above the walkable footprint, not a wider base.
@@ -426,9 +426,9 @@ const IndustrialTextures = (() => {
   // A screen's authored cyan phosphor is the only mutable part of its raster.
   // Keep the bezel, brass controls, silhouette and camera projection untouched.
   // Three front/side sources are cached once; rear views have no visible glass.
-  const workstationScreens = new Map();
-  function workstationScreen(fit) {
-    if (workstationScreens.has(fit.name)) return workstationScreens.get(fit.name);
+  const workkeepScreens = new Map();
+  function workkeepScreen(fit) {
+    if (workkeepScreens.has(fit.name)) return workkeepScreens.get(fit.name);
     const im = fit.im, g = im.getContext('2d');
     if (!g || !g.getImageData) return null;
     const data = g.getImageData(0, 0, im.width, im.height);
@@ -451,9 +451,9 @@ const IndustrialTextures = (() => {
     }
     og.putImageData(dim, 0, 0);
     const value = { off, x: x0, y: y0, w: x1-x0+1, h: y1-y0+1, frames: new Map(), original };
-    workstationScreens.set(fit.name, value); return value;
+    workkeepScreens.set(fit.name, value); return value;
   }
-  function workstationSweep(screen, fit, phase) {
+  function workkeepSweep(screen, fit, phase) {
     if (screen.frames.has(phase)) return screen.frames.get(phase);
     const cv = document.createElement('canvas'); cv.width = screen.w; cv.height = screen.h;
     const g = cv.getContext('2d'), patch = g.createImageData(cv.width, cv.height), d = patch.data;
@@ -471,16 +471,16 @@ const IndustrialTextures = (() => {
     }
     g.putImageData(patch,0,0); screen.frames.set(phase,cv); return cv;
   }
-  function workstation(ctx, x, y, w, h, facing = 's', state) {
+  function workkeep(ctx, x, y, w, h, facing = 's', state) {
     if (!enabled()) return false;
-    const fit = workstationFit(x, y, w, h, facing);
+    const fit = workkeepFit(x, y, w, h, facing);
     ctx.save(); ctx.imageSmoothingEnabled = true; ctx.imageSmoothingQuality = 'high';
     const occupied = state ? (typeof state.occupied === 'boolean' ? state.occupied : !!state.work) : true;
-    const screen = facing === 'n' ? null : workstationScreen(fit);
+    const screen = facing === 'n' ? null : workkeepScreen(fit);
     ctx.drawImage(!occupied && screen ? screen.off : fit.im, fit.x, fit.y, fit.w, fit.h);
     if (state && occupied && screen && screen.w > 0 && screen.h > 0 && !(state && state.still)) {
       const phase = Math.floor((Math.max(0, Number(state && state.now) || 0) % 2800) / 175);
-      const patch = workstationSweep(screen, fit, phase);
+      const patch = workkeepSweep(screen, fit, phase);
       ctx.globalCompositeOperation = 'source-atop';
       ctx.globalAlpha *= state && state.work ? .8 + .2*Math.min(1, Math.max(0, state.heat || 0)) : .65;
       ctx.drawImage(patch, fit.x + screen.x / fit.im.width * fit.w, fit.y + screen.y / fit.im.height * fit.h,
@@ -488,9 +488,9 @@ const IndustrialTextures = (() => {
     }
     ctx.restore(); return true;
   }
-  function workstationEmitter(x, y, w, h, facing = 's') {
+  function workkeepEmitter(x, y, w, h, facing = 's') {
     if (!enabled() || facing === 'n') return null;
-    const fit = workstationFit(x, y, w, h, facing);
+    const fit = workkeepFit(x, y, w, h, facing);
     if (!emitters.has(fit.name)) {
       const d = fit.im.getContext('2d').getImageData(0, 0, fit.im.width, fit.im.height).data;
       let sx = 0, sy = 0, weight = 0;
@@ -541,7 +541,7 @@ const IndustrialTextures = (() => {
     ctx.drawImage(im, x + (w - dw) / 2, y + h - dh, dw, dh);
     ctx.restore(); return true;
   }
-  return Object.freeze({ ready, enabled, isRemaster, lighting, detailContext, baseLayers, discardBaseLayer, restoreMaterials, _dbgLoseMaterials, drawBase, floor, wall, wallStrip, wallPatch, crown, doorReturn, viewportFrame, shell, shellPlate, propPanel, workstation, workstationEmitter, chair, crate,
+  return Object.freeze({ ready, enabled, isRemaster, lighting, detailContext, baseLayers, discardBaseLayer, restoreMaterials, _dbgLoseMaterials, drawBase, floor, wall, wallStrip, wallPatch, crown, doorReturn, viewportFrame, shell, shellPlate, propPanel, workkeep, workkeepEmitter, chair, crate,
     furniture, supportsWall: id => enabled() && (wallIds.includes(id)||wallMaterials.includes(id)),
     status: () => ({ requested, loaded, failed: failed.slice(), assets: Object.keys(images) }) });
 })();

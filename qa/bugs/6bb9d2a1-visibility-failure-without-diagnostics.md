@@ -20,15 +20,15 @@ recovery: unconfirmed
 
 ## Symptom
 
-A customer reports being unable to see usable StarNet content. The message contains no screenshot, diagnostic, version or specific UI state.
+A customer reports being unable to see usable Eyehold content. The message contains no screenshot, diagnostic, version or specific UI state.
 
 ## Repro
 
-Exact reproduction is unavailable. Capture the screen, entry point, StarNet version, display scaling and Boot Guard or native diagnostics without resetting the station.
+Exact reproduction is unavailable. Capture the screen, entry point, Eyehold version, display scaling and Boot Guard or native diagnostics without resetting the keep.
 
 ## Evidence
 
-The September 13 private report and owner request for the running version were reviewed in the September 16 intake refresh. No later diagnostic reply was found by the scoped StarNet search. Investigation anchors: frontend/index.html and test/bootguard.test.js; these are investigation entry points, not evidence of this report's cause.
+The September 13 private report and owner request for the running version were reviewed in the September 16 intake refresh. No later diagnostic reply was found by the scoped Eyehold search. Investigation anchors: frontend/index.html and test/bootguard.test.js; these are investigation entry points, not evidence of this report's cause.
 
 ## Verdict
 

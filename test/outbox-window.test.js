@@ -7,7 +7,7 @@
    follow-up chat, prefilled composer), and the rate control (collecting the crate). The chute click
    opens THIS window; the digest beat carries a door to it; rating labels name the RUN's agent.
 
-   stationui.js/chat.js are browser-flow (DOM + live stores), not node-loadable — like
+   keepui.js/chat.js are browser-flow (DOM + live stores), not node-loadable — like
    chat-runmeta.test.js we lock the invariants by reading the shipped source. returns.js IS pure and
    node-loadable, so its streamId contract is asserted by execution. */
 'use strict';
@@ -17,7 +17,7 @@ const path = require('path');
 const vm = require('node:vm');
 
 const read = f => fs.readFileSync(path.join(__dirname, '..', f), 'utf8');
-const station = read('frontend/app/windows/outbox.js');   // the OUTBOX window extracted from stationui.js (BUILDERS split)
+const keep = read('frontend/app/windows/outbox.js');   // the OUTBOX window extracted from keepui.js (BUILDERS split)
 const chat = read('frontend/app/chat.js');
 const rstore = read('frontend/app/returnstore.js');
 const app = read('frontend/app/app.js');
@@ -26,18 +26,18 @@ const css = read('frontend/css/app.css');
 
 /* ---- ONE PLACE FOR FINISHED WORK (Andrew 10-02): the list is DELIVERABLES' TO REVIEW section, not a window ----
    Every old door (the digest, chat) still says openTerm('outbox'); the alias lands it in DELIVERABLES. The floor chute does NOT. */
-const stationui = read('frontend/app/stationui.js');
-A.ok(!/registerWindow\('outbox'/.test(station), 'OUTBOX is no longer a window of its own (no second place for finished work)');
-A.ok(/window\.OutboxView = \{[\s\S]{0,80}build: buildOutbox/.test(station), 'the list exports OutboxView.build for DELIVERABLES to mount');
-A.ok(/outbox:\s*\{ term: 'deliverables', section: 'review'/.test(stationui), "TERM_ALIAS routes 'outbox' to DELIVERABLES § review");
-A.ok(/deliverables:\['DELIVERABLES',[\s\S]{0,600}OutboxView\.build\(host\)/.test(stationui), 'the DELIVERABLES window mounts TO REVIEW above its library');
-A.ok(!/\{ id: 'outbox', k: 'outbox'/.test(stationui), 'MY WORK carries no OUTBOX tab');
+const keepui = read('frontend/app/keepui.js');
+A.ok(!/registerWindow\('outbox'/.test(keep), 'OUTBOX is no longer a window of its own (no second place for finished work)');
+A.ok(/window\.OutboxView = \{[\s\S]{0,80}build: buildOutbox/.test(keep), 'the list exports OutboxView.build for DELIVERABLES to mount');
+A.ok(/outbox:\s*\{ term: 'deliverables', section: 'review'/.test(keepui), "TERM_ALIAS routes 'outbox' to DELIVERABLES § review");
+A.ok(/deliverables:\['DELIVERABLES',[\s\S]{0,600}OutboxView\.build\(host\)/.test(keepui), 'the DELIVERABLES window mounts TO REVIEW above its library');
+A.ok(!/\{ id: 'outbox', k: 'outbox'/.test(keepui), 'MY WORK carries no OUTBOX tab');
 /* A FLOOR OUTBOX IS ITS OWN LINE'S (Andrew 10-03: "the outbox should only show output of the specific conveyor system, it
    should never link back to deliverables"): the chute click opens the workflow that ships into THAT outbox, never the
-   station-wide DELIVERABLES; its pallet stacks only that line's shipped jobs (the INBOX plate's own number). */
+   keep-wide DELIVERABLES; its pallet stacks only that line's shipped jobs (the INBOX plate's own number). */
 const onOb = (app.match(/World\.setOnOutbox\(([^\n]*)\);/) || [])[1] || '';
 A.ok(/WorkflowsWindow\.openOutbox\(ob && ob\.id\)/.test(onOb), "the world's OUTBOX click opens its own line (WorkflowsWindow.openOutbox with the clicked prop)");
-A.ok(!/openTerm\('outbox'\)|deliverables/i.test(onOb), 'the floor OUTBOX never opens DELIVERABLES / the station-wide TO REVIEW list');
+A.ok(!/openTerm\('outbox'\)|deliverables/i.test(onOb), 'the floor OUTBOX never opens DELIVERABLES / the keep-wide TO REVIEW list');
 const wfw = read('frontend/app/windows/workflows.js');
 const openOb = wfw.slice(wfw.indexOf('function openOutbox'), wfw.indexOf("UI().registerWindow('workflows'"));
 A.ok(/x\.outbox === propId \|\| \(x\.outboxes \|\| \[\]\)\.indexOf\(propId\)/.test(openOb), 'openOutbox finds the line by THIS outbox prop');
@@ -46,11 +46,11 @@ A.ok(!/deliverables|navigateWork/i.test(openOb.replace(/^\s*\/\*[\s\S]*?\*\//m, 
 A.ok(/openOutbox,/.test(wfw), 'WorkflowsWindow exports openOutbox');
 const pallet = world.slice(world.indexOf('function drawShippedPallet'), world.indexOf('function drawPallet'));
 A.ok(/routingPlan\.lineOfProp\[ob\.id\]/.test(pallet) && /lineStats\.byLine\[lid\]/.test(pallet) && /\.shipped/.test(pallet), "each OUTBOX's pallet = its own line's SHIPPED (the line plate's number)");
-A.ok(!/shipStats/.test(pallet), 'the pallet never stacks the station-wide shipped count');
+A.ok(!/shipStats/.test(pallet), 'the pallet never stacks the keep-wide shipped count');
 A.ok(!/reviewNext\(\)/.test(app), 'app.js no longer drives the one-crate-at-a-time review beat from the chute');
 
 /* ---- collapsed row = title + real-output description + meta, and NOTHING else ---- */
-const buildFn = station.slice(station.indexOf('function buildOutbox'), station.indexOf('window.OutboxView = {'));
+const buildFn = keep.slice(keep.indexOf('function buildOutbox'), keep.indexOf('window.OutboxView = {'));
 A.ok(buildFn.length > 200, 'buildOutbox body located');
 A.ok(/ReturnStore\.pendingRows/.test(buildFn) || /RS\.pendingRows/.test(buildFn), 'rows come only from the durable pending ledger (ReturnStore.pendingRows)');
 const headHtml = /'<div class="ob-head"[\s\S]*?<\/div>'\s*\+\s*'<div class="ob-body"/.exec(buildFn);
@@ -120,11 +120,11 @@ A.ok(!/returnCrates\(\)\s*<=\s*0/.test(outboxAtFn), 'outboxAt has NO crate-count
 A.ok(/function drawOutboxHoverTag/.test(world) && /drawOutboxHoverTag\(now\)/.test(world), 'the hover-glance tag draws each frame while a chute is hovered');
 A.ok(/TO REVIEW — CLICK/.test(world) && /THIS LINE’S RESULTS — CLICK/.test(world) && /NOT ON A WORKFLOW/.test(world), 'hover copy names the click in every state (its line’s crates pending / its line’s results / on no line)');
 const hoverFn = world.slice(world.indexOf('function drawOutboxHoverTag'), world.indexOf('function drawBeltHoverTag'));
-A.ok(/outboxCrateMap\(\)\[hoverOutbox\.id\]/.test(hoverFn) && !/returnCrates\(\)/.test(hoverFn), 'the hover count is THIS chute’s line crates, never the station-wide pending count');
+A.ok(/outboxCrateMap\(\)\[hoverOutbox\.id\]/.test(hoverFn) && !/returnCrates\(\)/.test(hoverFn), 'the hover count is THIS chute’s line crates, never the keep-wide pending count');
 // each chute stacks only its OWN line's waiting results (a pending row proven a line job's by its stream); the rest wait in DELIVERABLES
 const crateFn = world.slice(world.indexOf('function outboxCrateMap'), world.indexOf('function pollLineJobStreams'));
 A.ok(/lineJobStream\[r\.streamId\]/.test(crateFn) && /routingPlan\.lineOfProp\[p\.id\]/.test(crateFn), 'per-outbox crates join pending rows to a line through the line-job stream record');
-A.ok(/setOutboxCrates\(outboxCrateMap\(\)\)/.test(world) && !/setOutboxCrates\(returnCrates\(\)\)/.test(world), 'the chute sprites get the per-outbox map, never the station-wide count');
+A.ok(/setOutboxCrates\(outboxCrateMap\(\)\)/.test(world) && !/setOutboxCrates\(returnCrates\(\)\)/.test(world), 'the chute sprites get the per-outbox map, never the keep-wide count');
 const ps = read('frontend/app/propsprites.js');
 A.ok(/outboxCrates\[f\.id\]/.test(ps), 'PropSprites reads each outbox’s own crate count by prop id');
 // …and every finished workflow job is ALSO filed in DELIVERABLES (Andrew 10-03): one library row per job, text-only results included

@@ -1,7 +1,7 @@
 /* node test/browser.attach.test.js — DRIVING THE COMMANDER'S OWN CHROME.
 
    browser.attach connects to an already-running Chrome over its DevTools port instead of launching a
-   station browser. That buys the thing a fresh headless profile can never have — the Commander's real
+   keep browser. That buys the thing a fresh headless profile can never have — the Commander's real
    signed-in sessions, in a real browser with a real fingerprint — and it is the honest answer to sites
    that refuse automated profiles, as opposed to a fingerprint-spoofing engine.
 
@@ -10,7 +10,7 @@
      · consent is ALWAYS required (never defaulted away),
      · browser.eval stays refused for as long as the session is attached,
      · detaching NEVER closes their browser, and neither does close(),
-     · a mode switch can never silently swap their browser for a station one,
+     · a mode switch can never silently swap their browser for a keep one,
      · a bad port is discovered BEFORE the working session is torn down. */
 'use strict';
 const A = require('./_assert.js');
@@ -173,7 +173,7 @@ function fakeDriver() {
   {
     const B = makeBrowserTools({ driver: fakeDriver(), fetchImpl: devtoolsFetch() });
     const before = B.session.evalAllowed();
-    A.eq(before.ok, true, 'eval is allowed on an ordinary throwaway station browser');
+    A.eq(before.ok, true, 'eval is allowed on an ordinary throwaway keep browser');
 
     await B.session.attach(9222);
     const after = B.session.evalAllowed();
@@ -182,7 +182,7 @@ function fakeDriver() {
     await rejects(B.session.evalPublic('document.cookie'), /refused/, 'the refusal is enforced, not merely advertised');
   }
 
-  // ---- 8. THE ATTACHED STATE IS STICKY — no silent fallback to a station browser ----
+  // ---- 8. THE ATTACHED STATE IS STICKY — no silent fallback to a keep browser ----
   {
     const B = makeBrowserTools({ driver: fakeDriver(), fetchImpl: devtoolsFetch() });
     await B.session.attach(9222);
@@ -202,11 +202,11 @@ function fakeDriver() {
     A.ok(/still running/.test(msg), 'the answer states their browser was left alone');
     A.ok(/untouched/.test(msg), 'in words a human can check');
     A.eq(B.session.attachedToUser(), false, 'the session is no longer attached');
-    A.eq(B.session.evalAllowed().ok, true, 'and eval is available again on the station browser');
+    A.eq(B.session.evalAllowed().ok, true, 'and eval is available again on the keep browser');
     A.eq((await B.tools.find(t => t.name === 'browser.detach').run({}, {})).content, 'Not attached; nothing to detach.', 'a second detach is a no-op, not an error');
   }
 
-  // ---- 10. ATTACHING RELEASES THE STATION PROFILE LEASE ----
+  // ---- 10. ATTACHING RELEASES THE KEEP PROFILE LEASE ----
   {
     /* The persistent profile is single-owner. Holding its lease while driving a completely different
        browser would block a concurrent run out of a profile nobody is using. */
@@ -220,12 +220,12 @@ function fakeDriver() {
       persistentProfile: { dir: 'C:/tmp/profile', acquire: () => { acquired++; return true; }, release: () => { released++; } }
     });
     await B.session.navigate('https://example.com');   // takes the lease the ordinary way
-    A.ok(acquired >= 1, 'an ordinary run takes the station profile lease');
+    A.ok(acquired >= 1, 'an ordinary run takes the keep profile lease');
     await B.session.attach(9222);
-    A.eq(released, 1, 'attaching RELEASES it — the station profile is not in play while attached');
+    A.eq(released, 1, 'attaching RELEASES it — the keep profile is not in play while attached');
     const attachBuild = built[built.length - 1];
     A.eq(attachBuild.attachPort, 9222, 'the driver is rebuilt in ATTACH mode against the probed port');
-    A.eq(!!attachBuild.profileIsPersistent, false, 'and NOT flagged as the persistent station profile');
+    A.eq(!!attachBuild.profileIsPersistent, false, 'and NOT flagged as the persistent keep profile');
   }
 
   // ---- 11. REFS DO NOT SURVIVE THE SWITCH ----

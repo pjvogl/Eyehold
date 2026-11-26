@@ -2,7 +2,7 @@
 
    A spine nothing calls is decoration. These assertions pin WHERE each hook fires and, for pre_tool_call,
    the position that is the entire security argument: it sits AFTER the capability gate and the consent
-   broker, so a hook can only ever take away a permission the station had already granted — never add one. */
+   broker, so a hook can only ever take away a permission the keep had already granted — never add one. */
 'use strict';
 const A = require('./_assert.js');
 const events = require('../shared/events.js');

@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-/* StarNet product-perfection controller.
+/* Eyehold product-perfection controller.
  *
  * The tracked manifest defines goals; this program derives state from verifier receipts. A receipt
  * is valid only for an exact clean commit and the exact manifest/wave definition. Source or policy
@@ -59,7 +59,7 @@ export function validateManifest(manifest) {
   const errors = [];
   if (!manifest || typeof manifest !== 'object' || Array.isArray(manifest)) return { ok: false, errors: ['manifest must be an object'] };
   if (manifest.schemaVersion !== 1) errors.push('manifest schemaVersion must be 1');
-  if (manifest.campaign !== 'StarNet product perfection') errors.push('manifest campaign must be StarNet product perfection');
+  if (manifest.campaign !== 'Eyehold product perfection') errors.push('manifest campaign must be Eyehold product perfection');
   if (manifest.terminalVerdict !== 'PRODUCT PERFECT') errors.push('terminalVerdict must be PRODUCT PERFECT');
   if (stableJson(manifest.policy) !== stableJson(EXPECTED_POLICY)) errors.push('manifest policy does not match the locked non-publishing controller policy');
   if (!Array.isArray(manifest.waves) || manifest.waves.length !== EXPECTED_WAVES.length) {
@@ -104,7 +104,7 @@ export function validateManifest(manifest) {
 
 function receiptPayload(receipt) {
   const copy = Object.assign({}, receipt);
-  delete copy.attestation;
+  delete copy.attekeep;
   return stableJson(copy);
 }
 
@@ -118,9 +118,9 @@ export function sealReceipt(receipt, key) {
   const normalized = normalizeKey(key);
   if (!normalized) throw new Error('receipt HMAC key must contain at least 32 bytes');
   const unsigned = Object.assign({}, receipt);
-  delete unsigned.attestation;
+  delete unsigned.attekeep;
   return Object.assign(unsigned, {
-    attestation: {
+    attekeep: {
       algorithm: 'HMAC-SHA256',
       keyId: sha256(normalized).slice(0, 16),
       digest: crypto.createHmac('sha256', normalized).update(receiptPayload(unsigned)).digest('hex')
@@ -166,13 +166,13 @@ export function receiptValidity(receipt, context) {
   if (Number.isFinite(finishedMs) && nowMs - finishedMs > Number(context.wave.maxReceiptAgeMs)) errors.push('receipt is stale');
 
   const key = normalizeKey(context.key);
-  const attestation = receipt.attestation || {};
+  const attekeep = receipt.attekeep || {};
   if (!key) errors.push('receipt HMAC key unavailable');
-  else if (attestation.algorithm !== 'HMAC-SHA256' || attestation.keyId !== sha256(key).slice(0, 16) || !/^[0-9a-f]{64}$/i.test(str(attestation.digest))) {
-    errors.push('receipt attestation missing or invalid');
+  else if (attekeep.algorithm !== 'HMAC-SHA256' || attekeep.keyId !== sha256(key).slice(0, 16) || !/^[0-9a-f]{64}$/i.test(str(attekeep.digest))) {
+    errors.push('receipt attekeep missing or invalid');
   } else {
     const expected = crypto.createHmac('sha256', key).update(receiptPayload(receipt)).digest('hex');
-    const actual = str(attestation.digest).toLowerCase();
+    const actual = str(attekeep.digest).toLowerCase();
     if (!crypto.timingSafeEqual(Buffer.from(expected, 'hex'), Buffer.from(actual, 'hex'))) errors.push('receipt HMAC mismatch');
   }
 
@@ -614,9 +614,9 @@ export function runWaveVerifier(manifest, wave, candidate, runtimeDir = DEFAULT_
       timeout: Number(wave.verifier.timeoutMs),
       maxBuffer: 16 * 1024 * 1024,
       env: Object.assign({}, process.env, {
-        STARNET_PRODUCT_PERFECT_CANDIDATE_SHA: candidate.sha,
-        STARNET_PRODUCT_PERFECT_MANIFEST_HASH: manifestHash,
-        STARNET_PRODUCT_PERFECT_WAVE: wave.id
+        EYEHOLD_PRODUCT_PERFECT_CANDIDATE_SHA: candidate.sha,
+        EYEHOLD_PRODUCT_PERFECT_MANIFEST_HASH: manifestHash,
+        EYEHOLD_PRODUCT_PERFECT_WAVE: wave.id
       })
     });
     exitCode = Number.isInteger(child.status) ? child.status : null;

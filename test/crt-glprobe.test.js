@@ -95,7 +95,7 @@ function judge(pre, post) {
   return (!plausibleMag || mintedTint || ratioDrift) ? 'DIVERGENT' : 'clean';
 }
 
-// the healthy frame is this station's REAL measured whole-frame means (seed :9243, 2026-07-20)
+// the healthy frame is this keep's REAL measured whole-frame means (seed :9243, 2026-07-20)
 const healthy = [17.0, 17.1, 16.7];
 A.eq(judge(healthy, [16.8, 16.9, 16.5]), 'clean', 'GL out ≈ in (near-identity) passes');
 A.eq(judge(healthy, [13.5, 13.6, 13.2]), 'clean', 'uniform vignette dimming passes');

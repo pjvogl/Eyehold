@@ -11,9 +11,9 @@ Verified source candidate: 61eeac2b40c9fd0e2e0a5d2b342f44de74119078 on agent/her
 
 ## Evidence and limits
 
-The historical before-results remain unchanged in this directory. New starnet-partial-after.json and starnet-json_object-after.json / starnet-json_schema-after.json record actual source-sidecar calls with a controlled local provider. Zero usage in the fatal partial stream means the provider emitted no usage; it is not an estimate of free work. Failed JSON output records 40 tokens, accounting for both 20-token calls.
+The historical before-results remain unchanged in this directory. New eyehold-partial-after.json and eyehold-json_object-after.json / eyehold-json_schema-after.json record actual source-sidecar calls with a controlled local provider. Zero usage in the fatal partial stream means the provider emitted no usage; it is not an estimate of free work. Failed JSON output records 40 tokens, accounting for both 20-token calls.
 
-The installed OpenAI Python SDK completed sync and streaming requests and exposed the failed JSON response as finish_reason error with starnet.completed false. This used the isolated local provider, not a paid model.
+The installed OpenAI Python SDK completed sync and streaming requests and exposed the failed JSON response as finish_reason error with eyehold.completed false. This used the isolated local provider, not a paid model.
 
 Keyed streaming now shares incremental progress with matching callers; terminal frames wait until the complete response is durably saved. This prevents a disconnected retry from cancelling shared work and the actual caller-disconnect regression passes. Reservations left without a durable response return an explicit interrupted conflict; they do not automatically resume a task or repeat mutations. The existing /v1/runs store is still in-memory. A new regression ensures pre-dispatch 429 responses remain retryable. The first full fast run was intentionally stopped to fix this edge; it is not a passing gate receipt.
 

@@ -40,12 +40,12 @@ const { spawnSync } = require('node:child_process');
     const gold = { local: { agent: { id: 'agent', color: '#ffd34a' }, agents: [] } };
     A.eq(same(C.adoptAssignedSuitColors(leadless, gold), gold), true, 'a lead with no colour may take the gold suit');
     A.eq(same(C.adoptAssignedSuitColors(leadless, { local: { agent: { id: 'agent', color: '#123456' }, agents: [] } }), { local: { agent: { id: 'agent', color: '#123456' }, agents: [] } }), false, 'a lead given a non-palette colour still fails');
-    // the station schema 1 -> 2 step
-    const v1 = { local: { station: { version: 1, props: [{ id: 'd' }] } } };
-    const v2 = { local: { station: { version: 2, props: [{ id: 'd' }], links: [] } } };
-    A.eq(same(C.adoptStationSchemaV2(v1, v2), v2), true, 'station schema 1 -> 2 with an empty links list is the expected migration');
-    A.eq(same(C.adoptStationSchemaV2(v1, { local: { station: { version: 2, props: [], links: [] } } }), { local: { station: { version: 2, props: [], links: [] } } }), false, 'a station that lost a prop still fails');
-    A.eq(same(C.adoptStationSchemaV2(v1, { local: { station: { version: 2, props: [{ id: 'd' }], links: [{ from: 'a', to: 'b' }] } } }), { local: { station: { version: 2, props: [{ id: 'd' }], links: [{ from: 'a', to: 'b' }] } } }), false, 'invented links still fail');
+    // the keep schema 1 -> 2 step
+    const v1 = { local: { keep: { version: 1, props: [{ id: 'd' }] } } };
+    const v2 = { local: { keep: { version: 2, props: [{ id: 'd' }], links: [] } } };
+    A.eq(same(C.adoptKeepSchemaV2(v1, v2), v2), true, 'keep schema 1 -> 2 with an empty links list is the expected migration');
+    A.eq(same(C.adoptKeepSchemaV2(v1, { local: { keep: { version: 2, props: [], links: [] } } }), { local: { keep: { version: 2, props: [], links: [] } } }), false, 'a keep that lost a prop still fails');
+    A.eq(same(C.adoptKeepSchemaV2(v1, { local: { keep: { version: 2, props: [{ id: 'd' }], links: [{ from: 'a', to: 'b' }] } } }), { local: { keep: { version: 2, props: [{ id: 'd' }], links: [{ from: 'a', to: 'b' }] } } }), false, 'invented links still fail');
     const suits = /const SUITS = (\[[^\]]+\])/.exec(fs.readFileSync(path.join(__dirname, '../frontend/app/app.js'), 'utf8'));
     A.ok(suits, 'app.js still declares the crew SUITS palette');
     A.eq(suits ? JSON.parse(suits[1].replace(/'/g, '"')) : null, C.CREW_SUITS.slice(), 'verifier palette matches the app crew SUITS');
@@ -54,7 +54,7 @@ const { spawnSync } = require('node:child_process');
   const receipt = C.buildReceipt({
     before: snapshot, after: snapshot,
     beforeVersion: '1.2.3', targetVersion: '1.2.4', afterVersion: '1.2.4',
-    installerArtifact: 'StarNet_1.2.4_setup.exe', installerArtifactSha256: 'a'.repeat(64), installerGone: true,
+    installerArtifact: 'Eyehold_1.2.4_setup.exe', installerArtifactSha256: 'a'.repeat(64), installerGone: true,
     relaunched: true, installedExeSha256: 'b'.repeat(64)
   });
   A.eq(receipt.state.equal, true, 'timestamps are excluded while semantic state remains equal');
@@ -69,10 +69,10 @@ const { spawnSync } = require('node:child_process');
   noRelaunch.relaunch.observed = false;
   A.eq(C.validateReceipt(noRelaunch).ok, false, 'missing relaunch fails closed');
 
-  const temp = fs.mkdtempSync(path.join(os.tmpdir(), 'starnet-promotion-'));
+  const temp = fs.mkdtempSync(path.join(os.tmpdir(), 'eyehold-promotion-'));
   try {
     const dist = path.join(temp, 'dist'); fs.mkdirSync(dist);
-    const artifact = path.join(dist, 'StarNet_1.2.4_setup.exe'); fs.writeFileSync(artifact, 'exact-installer');
+    const artifact = path.join(dist, 'Eyehold_1.2.4_setup.exe'); fs.writeFileSync(artifact, 'exact-installer');
     const artifactHash = crypto.createHash('sha256').update(fs.readFileSync(artifact)).digest('hex');
     const make = updatePath => C.buildReceipt({
       path: updatePath, before: snapshot, after: snapshot,

@@ -1,5 +1,5 @@
 /* node test/pitch.test.js — the pure First Pitch engine (frontend/app/pitch.js).
-   Locks the keystone promises: shouldPitch() fires once, only after a real task, only when the station knows
+   Locks the keystone promises: shouldPitch() fires once, only after a real task, only when the keep knows
    enough to be confident; buildDirective() hard-constrains the agent to ONE buildable proposal in a strict
    parseable format; parsePitch() reads the reply back tolerantly; choices() is always the confident single
    pitch + a soft out (never a menu); present() carries the famous line. Pure + deterministic. */
@@ -126,7 +126,7 @@ A.eq(P.SUGGEST_SESSION_CAP, 1, 'default session cap is one idea');
 /* ---------- the STARTER — the guaranteed floor under the tutorial's close ---------- */
 const sd0 = P.buildStarterDirective({ capabilities: [] });
 A.ok(/INTERNAL/.test(sd0) && /Do not run any tools/.test(sd0), 'starter directive is internal + reason-only');
-A.ok(/NO placed tools yet — compute only/.test(sd0), 'a toolless station is stated honestly (no promised reach)');
+A.ok(/NO placed tools yet — compute only/.test(sd0), 'a toolless keep is stated honestly (no promised reach)');
 A.ok(/^MOVE:/m.test(sd0) && /^WHY:/m.test(sd0), 'starter directive demands MOVE/WHY');
 A.ok(/LEARNS the most/.test(sd0), 'a cold dossier steers the move toward learning-while-delivering');
 const sd1 = P.buildStarterDirective({ capabilities: [{ id: 'cabinet', label: 'FILES' }, { id: 'web', label: 'WEB' }] });

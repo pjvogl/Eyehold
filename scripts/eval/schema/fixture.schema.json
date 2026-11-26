@@ -1,10 +1,10 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "starnet.eval.fixture.v1",
+  "$id": "eyehold.eval.fixture.v1",
   "type": "object",
   "required": ["schemaVersion", "taskId", "fixtureId", "prompt", "setup", "oracle"],
   "properties": {
-    "schemaVersion": { "const": "starnet.eval.fixture.v1" },
+    "schemaVersion": { "const": "eyehold.eval.fixture.v1" },
     "taskId": { "type": "string", "pattern": "^[a-z0-9][a-z0-9._-]*$" },
     "fixtureId": { "type": "string", "pattern": "^[a-z0-9][a-z0-9._-]*$" },
     "prompt": { "type": "string", "minLength": 1 },

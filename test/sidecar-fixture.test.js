@@ -16,12 +16,12 @@ const { SidecarFixture, allocatePort, processAlive } = require('./helpers/sideca
   const occupiedPort = blocker.address().port;
   let allocationCalls = 0;
   const retrying = SidecarFixture.create({
-    prefix: 'starnet-fixture-bind-retry-',
+    prefix: 'eyehold-fixture-bind-retry-',
     timeoutMs: 9000,
     portAllocator: async () => (++allocationCalls === 1 ? occupiedPort : allocatePort())
   });
   try {
-    await retrying.start({ OPENROUTER_KEY: '', STARNET_OPENROUTER_KEY: '', SKYNET_OPENROUTER_KEY: '' });
+    await retrying.start({ OPENROUTER_KEY: '', EYEHOLD_OPENROUTER_KEY: '', EYEHOLD_OPENROUTER_KEY: '' });
     A.eq(allocationCalls, 2, 'fixture retries with a fresh OS port when the reserved port loses the bind race');
     A.ok(retrying.port !== occupiedPort, 'bind retry does not reuse the occupied port');
   } finally {
@@ -30,9 +30,9 @@ const { SidecarFixture, allocatePort, processAlive } = require('./helpers/sideca
     blocker.close();
   }
 
-  const healthy = SidecarFixture.create({ prefix: 'starnet-fixture-self-' });
+  const healthy = SidecarFixture.create({ prefix: 'eyehold-fixture-self-' });
   const healthyWorkspace = healthy.workspace;
-  await healthy.start({ OPENROUTER_KEY: '', STARNET_OPENROUTER_KEY: '', SKYNET_OPENROUTER_KEY: '' });
+  await healthy.start({ OPENROUTER_KEY: '', EYEHOLD_OPENROUTER_KEY: '', EYEHOLD_OPENROUTER_KEY: '' });
   const healthyPid = healthy.child.pid;
   A.ok(healthy.token.length >= 32, 'fixture waits for health and acquires the browser boot token');
   A.eq((await healthy.json('GET', '/api/health')).status, 200, 'authenticated JSON helper reaches the running sidecar');
@@ -40,7 +40,7 @@ const { SidecarFixture, allocatePort, processAlive } = require('./helpers/sideca
   A.ok(!processAlive(healthyPid), 'dispose waits for the sidecar process to exit');
   A.ok(!fs.existsSync(healthyWorkspace), 'dispose removes the owned temporary workspace');
 
-  const failing = SidecarFixture.create({ prefix: 'starnet-fixture-fail-', timeoutMs: 150, acquireToken: false });
+  const failing = SidecarFixture.create({ prefix: 'eyehold-fixture-fail-', timeoutMs: 150, acquireToken: false });
   const failingWorkspace = failing.workspace;
   const neverReady = path.join(failing.workspace, 'never-ready.js');
   fs.writeFileSync(neverReady, 'setInterval(() => {}, 1000);\n');

@@ -12,7 +12,7 @@ W.reset();
 const first = W.active();
 const opened = [];
 for (let i = 0; i < 5; i++) opened.push(W.startSession());
-A.eq(W.list().length, 1, 'five synchronous +NEW actions from a blank station leave one session row');
+A.eq(W.list().length, 1, 'five synchronous +NEW actions from a blank keep leave one session row');
 A.ok(opened.every(w => w === first), 'every rapid +NEW action focuses the same untouched session');
 A.eq(W.activeId(), first.id, 'the coalesced blank remains active');
 

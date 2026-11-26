@@ -10,7 +10,7 @@ lane: release-0120-prep-0915
 fix:
 origin: customer
 report: support-2026-09-13-product-line-workbench
-affected: StarNet 0.11.2 Windows 11; unattended Product Line; direct agent Workbench and standing execution approval enabled
+affected: Eyehold 0.11.2 Windows 11; unattended Product Line; direct agent Workbench and standing execution approval enabled
 family: unattended-workbench-policy
 installer: unverified
 recovery: unconfirmed

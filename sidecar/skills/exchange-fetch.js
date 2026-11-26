@@ -1,5 +1,5 @@
 /* Bounded public-HTTPS fetcher for Skill Exchange. Every redirect is revalidated through the
-   station's existing URL + DNS guards. Dependency-injected so security cases need no network. */
+   keep's existing URL + DNS guards. Dependency-injected so security cases need no network. */
 'use strict';
 
 const MAX_REDIRECTS = 4;

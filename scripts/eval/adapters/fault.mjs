@@ -58,7 +58,7 @@ function route(taskId) {
 function trajectory(taskId, attempt, observedRecovery, passed, detail = {}) {
   const [injectedAt] = EXPECTED[taskId];
   const at = new Date(Date.UTC(2026, 7, 3, 5, 0, attempt % 60)).toISOString();
-  return { schemaVersion: 'starnet.eval.trajectory.v1', taskId, attempt, runId: `${taskId}-${attempt}`,
+  return { schemaVersion: 'eyehold.eval.trajectory.v1', taskId, attempt, runId: `${taskId}-${attempt}`,
     startedAt: at, endedAt: at, finalText: passed ? 'boundary recovered' : 'boundary remains unproved',
     events: [{ seq: 1, at, type: 'fault.injected', data: { boundary: injectedAt } },
       { seq: 2, at, type: 'eval.assertion', data: { passed, observedRecovery, detail } }], artifacts: [],
@@ -82,7 +82,7 @@ async function observe(taskId, attempt) {
   }
 
   if (taskId === 'fault-compaction-rotation') {
-    const temp = mkdtempSync(join(tmpdir(), 'starnet-fault-compaction-'));
+    const temp = mkdtempSync(join(tmpdir(), 'eyehold-fault-compaction-'));
     const transcriptFile = join(temp, 'transcript.jsonl');
     try {
       const child = join(dirname(fileURLToPath(import.meta.url)), '..', 'fixtures', 'fault-compaction-child.mjs');
@@ -100,7 +100,7 @@ async function observe(taskId, attempt) {
     } finally { rmSync(temp, { recursive: true, force: true }); }
   }
   if (taskId === 'fault-routine-subagent-finalization') {
-    const temp = mkdtempSync(join(tmpdir(), 'starnet-fault-finalization-'));
+    const temp = mkdtempSync(join(tmpdir(), 'eyehold-fault-finalization-'));
     try {
       const subFile = join(temp, 'subagents.json');
       const subRunId = `sub-final-${attempt}`;

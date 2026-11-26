@@ -3,14 +3,14 @@
 ## The artifact
 
 ```
-C:\Users\andro\Desktop\gen\src-tauri\target\release\bundle\nsis\StarNet_0.7.0_x64-setup.exe
+C:\Users\andro\Desktop\gen\src-tauri\target\release\bundle\nsis\Eyehold_0.7.0_x64-setup.exe
 ```
 
 The candidate is built from the commit tagged `v0.7.0`, which is trunk HEAD. Print the exact
 identity rather than trusting a number pasted into a doc:
 
 ```bash
-git rev-parse HEAD && git describe --tags --exact-match HEAD && sha256sum src-tauri/target/release/bundle/nsis/StarNet_0.7.0_x64-setup.exe
+git rev-parse HEAD && git describe --tags --exact-match HEAD && sha256sum src-tauri/target/release/bundle/nsis/Eyehold_0.7.0_x64-setup.exe
 ```
 
 | | |
@@ -23,8 +23,8 @@ git rev-parse HEAD && git describe --tags --exact-match HEAD && sha256sum src-ta
 > *current* trunk head, so one extra commit — even a docs-only one — turns the smoke BLOCKED.
 > If trunk has moved since the build, rebuild before testing.
 
-It installs **over** your existing StarNet — `identifier` is `ai.skynet.harness`, unchanged from
-v0.6.8, so your crew, sessions, keys and station stay exactly where they are. `src-tauri/` is
+It installs **over** your existing Eyehold — `identifier` is `ai.skynet.harness`, unchanged from
+v0.6.8, so your crew, sessions, keys and keep stay exactly where they are. `src-tauri/` is
 byte-identical to v0.6.8 across all 217 commits, so nothing about where the app installs or where
 its data lives has moved.
 
@@ -34,11 +34,11 @@ This gate has been waived at v0.6.4, v0.6.5, v0.6.7 and v0.6.8. Your test is wha
 
 ```bash
 $env:WEBVIEW2_ADDITIONAL_BROWSER_ARGUMENTS='--remote-debugging-port=9333'
-$env:STARNET_SMOKE_EXPECTED_HEAD=(git rev-parse HEAD)
-$env:STARNET_SMOKE_ARTIFACT='C:\Users\andro\Desktop\gen\src-tauri\target\release\bundle\nsis\StarNet_0.7.0_x64-setup.exe'
+$env:EYEHOLD_SMOKE_EXPECTED_HEAD=(git rev-parse HEAD)
+$env:EYEHOLD_SMOKE_ARTIFACT='C:\Users\andro\Desktop\gen\src-tauri\target\release\bundle\nsis\Eyehold_0.7.0_x64-setup.exe'
 ```
 
-Relaunch StarNet from the Start menu with those set, then:
+Relaunch Eyehold from the Start menu with those set, then:
 
 ```bash
 npm run qa:smoke:installed
@@ -46,10 +46,10 @@ npm run qa:smoke:installed
 
 ## What to actually look at — the things the gate structurally cannot see
 
-**Behaviour changes that will hit your existing station first:**
+**Behaviour changes that will hit your existing keep first:**
 
 1. **A floor drawn `INBOX → A → B → OUTBOX` now runs BOTH agents.** It used to run only A and
-   treat everything downstream as scenery. This is the single biggest change for a station you
+   treat everything downstream as scenery. This is the single biggest change for a keep you
    already built. A lone bay, or `INBOX → bay → OUTBOX`, behaves exactly as before.
 2. **E-STOP mid-chain should stop every stage**, not just the one in flight. The 6-hop and $2
    chain caps are unit-proven but were **never live-tripped** — worth trying to hit one.
@@ -70,14 +70,14 @@ npm run qa:smoke:installed
 7. **The easel prop.** Redrawn v6, and it is the one prop from the ugly-six pass you never gave a
    verdict on. You approved the bar and crate; the bed, lockers and tables were redrawn top-down
    after your "you're looking at it at an angle, so it makes no sense whatsoever."
-8. **The wall crown on a MULTI-ROOM station.** Corner work leaked 148px on multi-room once, and a
+8. **The wall crown on a MULTI-ROOM keep.** Corner work leaked 148px on multi-room once, and a
    single room structurally cannot reproduce it.
 9. **The COMMS sound board at real volume.** Level-grading was tuned by ear, and only 10 of 36
    cues were mapped before this cut.
 
 **The one that matters most:**
 
-10. **Your own saved station, crew and sessions open intact.** This is the only real risk left —
+10. **Your own saved keep, crew and sessions open intact.** This is the only real risk left —
     217 commits of frontend and sidecar reading a save written by an older build. The installer
     layer is proven identical; the data layer is what your launch tests.
 

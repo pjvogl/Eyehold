@@ -18,7 +18,7 @@ const ProjectHome = (() => {
     if (panel) return;
     panel = el('section', 'project-home'); panel.hidden = true; panel.setAttribute('aria-label', 'Project controls');
     panel.innerHTML = '<div class="ph-view-head"><button class="btn ph-back">‹ Back to chat</button><span class="ph-view-title"></span></div>' +
-      '<p class="ph-notice" role="status"></p><section class="ph-crew"><p>Preferred crew <span class="ph-crew-count"></span></p><p class="ph-help">The orchestrator can also bring in other station agents.</p><div class="ph-crew-list"></div><button class="btn ph-save">SAVE CREW</button><span class="ph-crew-note" role="status"></span></section>' +
+      '<p class="ph-notice" role="status"></p><section class="ph-crew"><p>Preferred crew <span class="ph-crew-count"></span></p><p class="ph-help">The orchestrator can also bring in other keep agents.</p><div class="ph-crew-list"></div><button class="btn ph-save">SAVE CREW</button><span class="ph-crew-note" role="status"></span></section>' +
       '<section class="ph-history"><p class="ph-empty">No delegated work yet.</p><div class="ph-activity"></div></section>';
     document.getElementById('chat-panel').insertBefore(panel, document.getElementById('chat-log'));
     updates = el('div', 'ph-updates'); updates.setAttribute('aria-label', 'Agent updates');
@@ -47,7 +47,7 @@ const ProjectHome = (() => {
   function close() {
     ++epoch; clearTimeout(timer); root = homeId = '';
     if (panel) { showView(''); actions.hidden = true; updates.remove(); }
-    document.getElementById('comms-title').textContent = 'COMMS';
+    document.getElementById('comms-title').textContent = 'MISSIVES';
     document.getElementById('comms-idbar').classList.remove('ph-project');
   }
   async function open(projectRoot) {
@@ -87,10 +87,10 @@ const ProjectHome = (() => {
         input.onchange = () => { crewDirty = true; panel.querySelector('.ph-crew-note').textContent = 'Unsaved changes'; };
         label.append(input, el('span', '', agent.name)); crewList.appendChild(label);
       }
-      if (!crewList.children.length) crewList.appendChild(el('p', '', 'Recruit agents on the station to choose your preferred crew.'));
+      if (!crewList.children.length) crewList.appendChild(el('p', '', 'Recruit agents on the keep to choose your preferred crew.'));
     }
     panel.querySelector('.ph-save').disabled = !data.project.blessed;
-    panel.querySelector('.ph-crew-count').textContent = (data.project.preferredAgents || []).length ? '· ' + data.project.preferredAgents.length + ' selected' : '· Any station agent';
+    panel.querySelector('.ph-crew-count').textContent = (data.project.preferredAgents || []).length ? '· ' + data.project.preferredAgents.length + ' selected' : '· Any keep agent';
     const activity = data.activity || [], running = activity.filter(w => w.status === 'running').length;
     actions.querySelector('.ph-history-toggle').textContent = running ? 'ACTIVITY · ' + running : 'ACTIVITY';
     panel.querySelector('.ph-empty').hidden = activity.length > 0;

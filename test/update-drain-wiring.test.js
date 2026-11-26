@@ -47,7 +47,7 @@ function host() {
 /* ---- 1. the count: any live run anywhere holds the barrier; nothing live reads 0 ---- */
 {
   const h = host();
-  A.eq(h.fns.updateLiveRunCount(), 0, 'an idle station has no live runs');
+  A.eq(h.fns.updateLiveRunCount(), 0, 'an idle keep has no live runs');
   h.runsMeta.set('cron-run-1', { agentId: 'nova', source: 'cron' });
   A.eq(h.fns.updateLiveRunCount() > 0, true, 'a scheduled routine fire (runsMeta only) is a live run');
   h.runsMeta.clear();
@@ -82,7 +82,7 @@ function host() {
   A.eq(h.loopDriver.aborted, 1, 'loop iterations are aborted');
   A.eq(h.nightshiftDriver.aborted, 1, 'a night-shift beat is aborted');
   A.eq(h.subagents.interrupted, 1, 'background workers are interrupted (their manager owns their stop)');
-  A.eq(h.stamps, [], 'no durable E-STOP stand-down is stamped: after the upgrade or a cancel the station carries on');
+  A.eq(h.stamps, [], 'no durable E-STOP stand-down is stamped: after the upgrade or a cancel the keep carries on');
   const g = host();
   g.cronDriver.abortAllLeases = () => { throw new Error('boom'); };
   A.notThrows(() => g.fns.updateAbortLiveRuns(), 'one failing lane never stops the rest of the abort');

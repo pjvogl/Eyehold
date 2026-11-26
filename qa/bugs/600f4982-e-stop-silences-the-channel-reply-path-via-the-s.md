@@ -14,7 +14,7 @@ fix: 96fe108d
 
 ## Symptom
 
-Someone starts a long task from Telegram. The Commander hits E-STOP in the station. The typing bubble expires and the chat receives absolutely nothing — no reply, no partial, no "stopped". On the one surface with no floor, no browser and no other signal, a deliberate stop is byte-identical to a crashed bot. /stop typed from the phone, by contrast, answers "Stopped the run in progress."
+Someone starts a long task from Telegram. The Commander hits E-STOP in the keep. The typing bubble expires and the chat receives absolutely nothing — no reply, no partial, no "stopped". On the one surface with no floor, no browser and no other signal, a deliberate stop is byte-identical to a crashed bot. /stop typed from the phone, by contrast, answers "Stopped the run in progress."
 
 ## Repro
 

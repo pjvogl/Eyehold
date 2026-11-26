@@ -1,7 +1,7 @@
 ---
 fingerprint: 28dbd392
 slug: malformed-save-acknowledgements-claim-durability
-title: Malformed save acknowledgements claim durability and malformed reads claim an empty station
+title: Malformed save acknowledgements claim durability and malformed reads claim an empty keep
 surface: sessions
 severity: P1
 status: fixed
@@ -11,7 +11,7 @@ fix: d9b6fba04
 origin: audit
 ---
 
-# Malformed save acknowledgements claim durability and malformed reads claim an empty station
+# Malformed save acknowledgements claim durability and malformed reads claim an empty keep
 
 ## Symptom
 

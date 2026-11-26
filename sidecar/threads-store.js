@@ -23,7 +23,7 @@
    Pure over an injected durable store (makeDurableJsonStore) — crash-safe (fsync + .bak last-known-good),
    concurrency-safe (per-key async mutex + re-read-under-lock in update()), unit-testable against an in-memory fs.
    The Node host (index.js) injects the real fs/path + the WORKSPACES root. No ambient clock/rng: `now` is passed
-   in by the caller, matching the workshop-store / memory-store discipline. Station-GLOBAL (one key, one file):
+   in by the caller, matching the workshop-store / memory-store discipline. Keep-GLOBAL (one key, one file):
    threads are the Commander's ideas, consumed by the single night-shift persona — the same scope as the dossier
    and goal arc, not per-agent. */
 'use strict';

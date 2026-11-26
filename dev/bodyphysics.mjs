@@ -49,8 +49,8 @@ const MARKER = `(() => { try {
    Plus a belt run in room A (test 2 needs a conveyor to congregate at) and some leisure props so the
    idle engine has somewhere else it could have gone. */
 const BUILD = `(() => { try {
-  const st = (typeof Build !== 'undefined' && Build.__test__ && Build.__test__.station && Build.__test__.station()) || null;
-  if (!st) return { err: 'no station' };
+  const st = (typeof Build !== 'undefined' && Build.__test__ && Build.__test__.keep && Build.__test__.keep()) || null;
+  if (!st) return { err: 'no keep' };
   const rooms = st.rooms(); if (!rooms.length) return { err: 'no rooms' };
   const r0 = rooms[0].rects[0];
   const out = { home: r0, added: null, door: null, wallCol: r0.x2 + 1, belts: 0, props: [] };

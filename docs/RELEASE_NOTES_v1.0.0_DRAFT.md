@@ -3,21 +3,21 @@
      the scaffold, amend + re-tag per docs/RELEASE_RUNBOOK.md §1.2, then DELETE this file.
      Written 2026-07-09 (launch-polish session) against trunk 47fbc90a — re-verify claims
      against trunk at cut time; add anything the UI-finale sprint ships when it merges. -->
-# StarNet v1.0.0 — the first official release
+# Eyehold v1.0.0 — the first official release
 
-StarNet is a local-first AI-agent harness wrapped in a living pixel-art space
-station. You create agents, build the station, and the layout IS the org:
+Eyehold is a local-first AI-agent harness wrapped in a living pixel-art space
+keep. You create agents, build the keep, and the layout IS the org:
 rooms are capability scopes, placed objects are real tool grants, conveyor
-items are real work. The core law is **truthful telemetry** — the station
+items are real work. The core law is **truthful telemetry** — the keep
 never shows you a state the harness can't prove.
 
 This is the first public build. Everything below ships working, verified
 against the live app.
 
-## The station
-- **First-boot ceremony**: STARNET splash → CREATE YOUR OVERSEER (one full-screen
+## The keep
+- **First-boot ceremony**: EYEHOLD splash → CREATE YOUR OVERSEER (one full-screen
   console: name, brain, appearance, voice) → a live awakening with CRT speech
-  bubbles → Interview 2.0 → your station.
+  bubbles → Interview 2.0 → your keep.
 - **Object = capability**: place a prop, grant a power; remove it, revoke it.
   Undo/redo re-grants for real. The world renders only proven state.
 - A living crew: agents walk to their desks because they are actually using a
@@ -37,7 +37,7 @@ against the live app.
   history.
 
 ## Autonomy you can trust
-- **Night shift**: leave the station and it works — server-owned beats, real
+- **Night shift**: leave the keep and it works — server-owned beats, real
   jailed tool runs, an enforced leash, and a morning report of everything it
   did, built, and declined (with reasons). Every decision is ledgered.
 - **Project lens**: tell an agent a path in chat and it can work there after

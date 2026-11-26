@@ -1,0 +1,116 @@
+{
+  "groups": [
+    {
+      "name": "utility",
+      "file": "docs/keep-remaster/catalog-utility/integration.json"
+    },
+    {
+      "name": "storage",
+      "file": "docs/keep-remaster/catalog-storage/integration.json"
+    },
+    {
+      "name": "machinery",
+      "file": "docs/keep-remaster/catalog-machinery/integration.json"
+    },
+    {
+      "name": "crew",
+      "file": "docs/keep-remaster/catalog-crew/exports.json"
+    },
+    {
+      "name": "tables",
+      "file": "docs/keep-remaster/catalog-tables/integration.json"
+    },
+    {
+      "name": "glass-depth",
+      "file": "docs/keep-remaster/catalog-glass-fix/integration.json"
+    },
+    {
+      "name": "crew-facings",
+      "file": "docs/keep-remaster/catalog-crew-facings/exports.json"
+    },
+    {
+      "name": "command",
+      "file": "docs/keep-remaster/catalog-command/integration.json"
+    },
+    {
+      "name": "floor",
+      "file": "docs/keep-remaster/catalog-floor/integration.json"
+    },
+    {
+      "name": "club",
+      "file": "docs/keep-remaster/catalog-crew-rest-1/exports.json"
+    },
+    {
+      "name": "workflow",
+      "file": "docs/keep-remaster/catalog-utility-rest-1/integration.json"
+    },
+    {
+      "name": "craft-publishing",
+      "file": "docs/keep-remaster/catalog-utility-rest-2/integration.json"
+    },
+    {
+      "name": "fitness",
+      "file": "docs/keep-remaster/catalog-crew-rest-2/exports.json"
+    },
+    {
+      "name": "comms-optics",
+      "file": "docs/keep-remaster/catalog-utility-rest-3/integration.json"
+    },
+    {
+      "name": "storage-carts",
+      "file": "docs/keep-remaster/catalog-storage-rest-1/integration.json"
+    },
+    {
+      "name": "cameras-work",
+      "file": "docs/keep-remaster/catalog-storage-rest-4/integration.json"
+    },
+    {
+      "name": "walls-displays",
+      "file": "docs/keep-remaster/catalog-storage-rest-2/integration.json"
+    },
+    {
+      "name": "accessories",
+      "file": "docs/keep-remaster/catalog-crew-rest-3/exports.json"
+    },
+    {
+      "file": "docs/keep-remaster/catalog-utility-rest-4/integration.json",
+      "name": "treasury-war"
+    },
+    {
+      "file": "docs/keep-remaster/catalog-storage-rest-3/integration.json",
+      "name": "archive-tech"
+    },
+    {
+      "file": "docs/keep-remaster/catalog-storage-rest-5/integration.json",
+      "name": "desk-facings"
+    },
+    {
+      "name": "plants-decor",
+      "file": "docs/keep-remaster/catalog-crew-rest-4/exports.json"
+    },
+    {
+      "name": "camera-audit",
+      "file": "docs/keep-remaster/camera-audit/integration.json"
+    },
+    {
+      "name": "sharpness-restoration",
+      "file": "docs/keep-remaster/sharpness-restoration/integration.json"
+    },
+    {
+      "name": "dispatch-polish",
+      "file": "docs/keep-remaster/dispatch-polish/integration.json"
+    },
+    {
+      "name": "tactical-table-polish",
+      "file": "docs/keep-remaster/tactical-table-polish/integration.json"
+    },
+    {
+      "name": "capability-refresh",
+      "file": "docs/keep-remaster/capability-refresh/integration.json"
+    },
+    {
+      "name": "capability-v2",
+      "file": "docs/keep-remaster/capability-v2/integration.json"
+    }
+  ]
+}

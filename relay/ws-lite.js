@@ -49,7 +49,7 @@ function makeWsServer(opts) {
     socket.setNoDelay(true);
     const ws = new EventEmitter();
     ws.readyState = 1;
-    ws.maxPayload = maxPayload;   // the server may tighten this per connection (e.g. before a station proves its key)
+    ws.maxPayload = maxPayload;   // the server may tighten this per connection (e.g. before a keep proves its key)
     let frameTokens = FRAME_BURST, frameAt = Date.now();
     let buf = head && head.length ? Buffer.from(head) : Buffer.alloc(0);
     let frags = [], fragOp = 0, fragLen = 0, closeSent = false, closeEmitted = false;

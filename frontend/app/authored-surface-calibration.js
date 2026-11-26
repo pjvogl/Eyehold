@@ -4,7 +4,7 @@ const AuthoredSurfaceCalibration = {
   "version": 1,
   "coordinateSpace": "export-normalized",
   "cornerOrder": "TL,TR,BR,BL in screen coordinates before mirroring",
-  "qualification": "Measured painted tabletop support regions. Root owns live station acceptance.",
+  "qualification": "Measured painted tabletop support regions. Root owns live keep acceptance.",
   "props": {
     "industrial_roundtable": {
       "canMirror": true,
@@ -36,7 +36,7 @@ const AuthoredSurfaceCalibration = {
               0.43
             ]
           ],
-          "reference": "docs/station-remaster/batch03/crew/industrial_roundtable.export.json",
+          "reference": "docs/keep-remaster/batch03/crew/industrial_roundtable.export.json",
           "art": "frontend/assets/industrial/batch03/crew/industrial_roundtable.png",
           "measurement": "Manually inspected current PNG; conservative clear tabletop interior.",
           "bounds": {
@@ -78,7 +78,7 @@ const AuthoredSurfaceCalibration = {
               0.457
             ]
           ],
-          "reference": "docs/station-remaster/batch03/crew/sidetable.export.json",
+          "reference": "docs/keep-remaster/batch03/crew/sidetable.export.json",
           "art": "frontend/assets/industrial/batch03/crew/sidetable.png",
           "measurement": "Manually inspected current PNG; conservative clear tabletop interior.",
           "bounds": {
@@ -199,7 +199,7 @@ const AuthoredSurfaceCalibration = {
               0.367
             ]
           ],
-          "reference": "docs/station-remaster/batch03/crew/glasstable.export.json",
+          "reference": "docs/keep-remaster/batch03/crew/glasstable.export.json",
           "art": "frontend/assets/industrial/batch03/crew/glasstable.png",
           "measurement": "Crew authoredGeometry tableSupport from exact export receipt.",
           "bounds": {
@@ -236,7 +236,7 @@ const AuthoredSurfaceCalibration = {
               0.742
             ]
           ],
-          "reference": "docs/station-remaster/batch03/crew/glasstable-r3.export.json",
+          "reference": "docs/keep-remaster/batch03/crew/glasstable-r3.export.json",
           "art": "frontend/assets/industrial/batch03/crew/glasstable-r3.png",
           "measurement": "Crew authoredGeometry tableSupport from exact export receipt.",
           "bounds": {
@@ -278,7 +278,7 @@ const AuthoredSurfaceCalibration = {
               0.456
             ]
           ],
-          "reference": "docs/station-remaster/batch03/crew/loungetable.export.json",
+          "reference": "docs/keep-remaster/batch03/crew/loungetable.export.json",
           "art": "frontend/assets/industrial/batch03/crew/loungetable.png",
           "measurement": "Crew authoredGeometry tableSupport from exact export receipt.",
           "bounds": {
@@ -315,7 +315,7 @@ const AuthoredSurfaceCalibration = {
               0.702
             ]
           ],
-          "reference": "docs/station-remaster/batch03/crew/loungetable-r3.export.json",
+          "reference": "docs/keep-remaster/batch03/crew/loungetable-r3.export.json",
           "art": "frontend/assets/industrial/batch03/crew/loungetable-r3.png",
           "measurement": "Crew authoredGeometry tableSupport from exact export receipt.",
           "bounds": {
@@ -357,7 +357,7 @@ const AuthoredSurfaceCalibration = {
               0.37
             ]
           ],
-          "reference": "docs/station-remaster/batch03/crew/longtable.export.json",
+          "reference": "docs/keep-remaster/batch03/crew/longtable.export.json",
           "art": "frontend/assets/industrial/batch03/crew/longtable.png",
           "measurement": "Crew authoredGeometry tableSupport from exact export receipt.",
           "bounds": {
@@ -394,7 +394,7 @@ const AuthoredSurfaceCalibration = {
               0.657
             ]
           ],
-          "reference": "docs/station-remaster/batch03/crew/longtable-r3.export.json",
+          "reference": "docs/keep-remaster/batch03/crew/longtable-r3.export.json",
           "art": "frontend/assets/industrial/batch03/crew/longtable-r3.png",
           "measurement": "Crew authoredGeometry tableSupport from exact export receipt.",
           "bounds": {

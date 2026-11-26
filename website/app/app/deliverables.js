@@ -1,4 +1,4 @@
-/* STARNET deliverable library: safe preview helpers + backend-backed Workshop/artifact browser. */
+/* EYEHOLD deliverable library: safe preview helpers + backend-backed Workshop/artifact browser. */
 'use strict';
 (function (root, factory) {
   const api = factory();
@@ -36,7 +36,7 @@
   // master token never rides an href: these URLs reach OS-browser history, Referer and copied links.
   function openUrl(url) { return (typeof ApiTicket !== 'undefined' && ApiTicket.sign) ? ApiTicket.sign(url) : String(url || ''); }
   const fmtSize = n => n == null ? 'size unknown' : n < 1024 ? n + ' B' : n < 1048576 ? (n / 1024).toFixed(1) + ' KB' : (n / 1048576).toFixed(1) + ' MB';
-  const apiBase = () => typeof window !== 'undefined' ? String(window.__STARNET_API__ || '') : '';
+  const apiBase = () => typeof window !== 'undefined' ? String(window.__EYEHOLD_API__ || '') : '';
   const post = (url, body) => fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body || {}) }).then(async r => { const j = await r.json(); if (!r.ok) throw new Error(j.error || ('HTTP ' + r.status)); return j; });
 
   function fileHref(f) {
@@ -71,7 +71,7 @@
       return true;
     }
     try {
-      await core.invoke('starnet_open_artifact', { path: artifactPath(f), agentId: r.agentId || 'agent' });
+      await core.invoke('eyehold_open_artifact', { path: artifactPath(f), agentId: r.agentId || 'agent' });
     } catch (err) {
       // Cancel at the host confirmation is an answer. Falling through would bypass the user's refusal.
       if (/declined at the host/i.test(String(err || ''))) return true;
@@ -154,7 +154,7 @@
     const f = r && r.files && r.files[Number(link.dataset.file) || 0];
     if (!r || !f || !f.openUrl) return false;
 
-    // A web page opens RUNNING in the station's BROWSER window — a workshop page from its run folder, a workspace
+    // A web page opens RUNNING in the keep's BROWSER window — a workshop page from its run folder, a workspace
     // page through the sandboxed /view/ route (the window carries OPEN OUTSIDE for the OS browser).
     const page = browserTarget(r, f);
     if (page && typeof OutputBrowser !== 'undefined' && OutputBrowser.open) {
@@ -235,8 +235,8 @@
     const openState = { blobUrl: '', previewHost: null };
     const revoke = () => revokePreview(openState);
     // self-driving lane 5: no second DELIVERABLES heading under the MY WORK tab that already says it, and one short line where
-    // a four-line paragraph sat (TO REVIEW still lands right after this p.muted — stationui's deliverables builder)
-    body.innerHTML = '<div class="cfg dlv"><p class="muted dlv-lead" title="Previews open safely inside StarNet in a browser; desktop OPEN uses your file app.">Everything your crew made, filed by project — open one for the ask, the answer and every file.</p>' +
+    // a four-line paragraph sat (TO REVIEW still lands right after this p.muted — keepui's deliverables builder)
+    body.innerHTML = '<div class="cfg dlv"><p class="muted dlv-lead" title="Previews open safely inside Eyehold in a browser; desktop OPEN uses your file app.">Everything your crew made, filed by project — open one for the ask, the answer and every file.</p>' +
       '<div id="dl-head" class="dlv-head-strip"></div><div id="dl-run-scope" class="cfg-block" hidden></div>' +
       '<div class="deliverables-toolbar"><input id="dl-query" aria-label="Search deliverables" placeholder="search title, agent, project"><select id="dl-status" aria-label="Filter deliverables"><option value="">ALL</option><option value="pending">NEEDS A DECISION</option><option value="produced">DONE</option><option value="kept">KEPT</option><option value="implemented">IMPLEMENTED</option><option value="failed">FAILED</option><option value="discarded">DISCARDED</option></select><button class="bb sm" id="dl-refresh">REFRESH</button><button class="bb sm" id="dl-clean">CLEAN OLD RECORDS</button></div>' +
       '<div id="dl-kinds" class="dlv-kinds"></div>' +
@@ -421,11 +421,11 @@
       }
       catch (e) { say('Could not load the library: ' + e.message, true); }
     }
-    // DISCARD is irreversible (it deletes the Workshop files), so it asks — but with the station's own
+    // DISCARD is irreversible (it deletes the Workshop files), so it asks — but with the keep's own
     // 2-step arm/confirm, never `window.confirm`. A native dialog is OS chrome painted over the phosphor
     // terminal, which is exactly what armconfirm.js exists to stop ("no native dialogs inside the phosphor
     // terminal"). The permanence sentence the dialog used to carry moves into the live message line on arm,
-    // so nothing is claimed less loudly than before — it is just said in the station's voice.
+    // so nothing is claimed less loudly than before — it is just said in the keep's voice.
     async function decide(r, act, b) {
       if (b.disabled) return;   // belt to the once-wiring: a second confirm on an in-flight decide is never a second POST
       b.disabled = true;
@@ -481,8 +481,8 @@
           }
         } catch (_) { ok = false; }
         b.disabled = false;
-        if (!ok) return say('Could not read that conversation — its transcript is not on the station any more.', true);
-        if (typeof StationUI !== 'undefined') StationUI.h.workConversation('deliverables');
+        if (!ok) return say('Could not read that conversation — its transcript is not on the keep any more.', true);
+        if (typeof KeepUI !== 'undefined') KeepUI.h.workConversation('deliverables');
         return;
       }
       // a WORKFLOW job's row opens its own record in WORKFLOWS (its line, its steps, NEEDS CHANGES / SEND IT AGAIN)

@@ -3,7 +3,7 @@
 const fs = require('node:fs');
 const path = require('node:path');
 const read = fs.readFileSync.bind(fs);
-const root = process.env.SKYNET_WORKSPACES;
+const root = process.env.EYEHOLD_WORKSPACES;
 const control = path.join(root, 'save-read-fault.json');
 fs.readFileSync = function (file, ...args) {
   let fault;

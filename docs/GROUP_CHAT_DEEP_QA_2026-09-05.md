@@ -58,7 +58,7 @@ the complete green gates.
 
 ## Scope of assessment
 
-This is feature merge-readiness QA, not an installed desktop or station-wide release
+This is feature merge-readiness QA, not an installed desktop or keep-wide release
 certification. Watchdog long thresholds use deterministic fault injection. Provider
 outputs remain variable: tests prove routing, state and isolation, not universal model
 compliance. No merge to trunk or release performed. Preview remains on port 9137 with

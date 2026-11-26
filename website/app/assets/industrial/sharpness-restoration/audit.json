@@ -1,6 +1,6 @@
 {
   "date": "2026-09-15",
-  "method": "184 source views inspected on eight labeled plates, seven low-resolution sources additionally inspected individually. Alpha bounds measured for every PNG. Source pixel budget uses the actual uniform fit; 6x is the supported camera maximum. Resolution is triage, not an automatic visual pass. Restored sources receive a separate in-station check. CRT/grain retained.",
+  "method": "184 source views inspected on eight labeled plates, seven low-resolution sources additionally inspected individually. Alpha bounds measured for every PNG. Source pixel budget uses the actual uniform fit; 6x is the supported camera maximum. Resolution is triage, not an automatic visual pass. Restored sources receive a separate in-keep check. CRT/grain retained.",
   "cacheDensity": 6,
   "counts": {
     "source-inspected": 177,

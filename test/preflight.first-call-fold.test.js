@@ -14,7 +14,7 @@ const { makeCostEngine } = require('../sidecar/cost.js');
 
 const WINDOW = 200000;
 function seeded() {
-  const messages = [{ role: 'system', content: 'You are a station agent.' }];
+  const messages = [{ role: 'system', content: 'You are a keep agent.' }];
   for (let i = 0; i < 120; i++) messages.push({ role: i % 2 ? 'assistant' : 'user', content: 'turn ' + i + ' ' + 'z'.repeat(10000) });
   messages.push({ role: 'user', content: 'new question: what did turn 118 say?' });
   return messages;

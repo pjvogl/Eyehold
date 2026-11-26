@@ -1,4 +1,4 @@
-/* STARNET — launchmemory.js : LAST-USED RECIPE INPUTS — kill the retype tax on every launch.
+/* EYEHOLD — launchmemory.js : LAST-USED RECIPE INPUTS — kill the retype tax on every launch.
 
    The smallest possible practicality store (lane C of the recipe-system upgrade): every successful recipe
    launch (RUN NOW / RUN NOW INSTEAD / SCHEDULE IT) saves the param values the Commander actually filled, and
@@ -20,8 +20,8 @@
 })(typeof globalThis !== 'undefined' ? globalThis : this, function () {
   'use strict';
 
-  const KEY = 'starnet.launchvals.v1';
-  const MAX_RECIPES = 40;     // LRU ceiling — a long-lived station keeps its recent recipes' inputs
+  const KEY = 'eyehold.launchvals.v1';
+  const MAX_RECIPES = 40;     // LRU ceiling — a long-lived keep keeps its recent recipes' inputs
   const VALUE_MAX = 2000;     // per-value clip: a pasted wall of text is remembered by its head, never unbounded
   const KEY_MAX = 24;         // param keys are short identifiers (mirrors scout PARAM_KEY_RE's ceiling)
 

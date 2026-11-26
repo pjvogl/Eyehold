@@ -1,0 +1,47 @@
+name = "eyehold"
+main = "src/worker.js"
+compatibility_date = "2026-11-10"
+compatibility_flags = ["nodejs_compat"]
+workers_dev = false
+preview_urls = false
+upload_source_maps = true
+
+# Eyehold's own Worker.
+# Hosted billing is prepared for LIVE mode. STRIPE_MODE=live accepts only a live
+# secret or live restricted key, and livemode=true events. Do not add any other hostname.
+[[routes]]
+pattern = "eyehold.babelbook.net"
+custom_domain = true
+
+# One unattended research cycle every six hours. Spend stays inside the daily caps.
+[triggers]
+crons = ["17 */6 * * *"]
+
+[observability]
+enabled = true
+
+[observability.logs]
+enabled = true
+head_sampling_rate = 1
+
+[observability.traces]
+enabled = true
+head_sampling_rate = 0.01
+
+[vars]
+EYEHOLD_BASE_DOMAIN = "eyehold.babelbook.net"
+STRIPE_MODE = "live"
+
+# Names only. Values are set with `npx wrangler secret put` from this directory.
+# Never put key material in this file.
+[secrets]
+required = ["STRIPE_SECRET_KEY", "STRIPE_WEBHOOK_SECRET", "EYEHOLD_ACCESS_EMAILS"]
+
+# Optional, not required for the first login-gated deploy:
+# EYEHOLD_ACCESS_CLIENT_ID
+# EYEHOLD_ACCESS_CLIENT_SECRET
+
+# Eyehold billing ledger, namespace "eyehold-BILLING_KV", created 2026-11-25.
+[[kv_namespaces]]
+binding = "BILLING_KV"
+id = "c59822282bcf4f1294f4522c7f07a026"

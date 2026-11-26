@@ -170,7 +170,7 @@
        files:  [{ field, filename, contentType, buffer }] */
     let partSeq = 0;
     function encodeMultipart(fields, files, seq) {
-      const boundary = '----StarNetFormBoundary' + String(seq == null ? (++partSeq) : seq).padStart(12, '0');
+      const boundary = '----EyeholdFormBoundary' + String(seq == null ? (++partSeq) : seq).padStart(12, '0');
       const chunks = [];
       const push = (s) => chunks.push(Buffer.from(String(s), 'utf8'));
       for (const k in (fields || {})) {
@@ -225,7 +225,7 @@
             /* seesAllGroupMessages — Telegram's PRIVACY MODE, and the single most consequential fact about what
                this bot can hear. Default ON, which means that in a group Telegram delivers us only slash
                commands, @username mentions, and replies to our own messages. Ordinary chatter never arrives,
-               and neither does "StarNet, do X" — the bot's NAME is not an @mention. Two features depend on it
+               and neither does "Eyehold, do X" — the bot's NAME is not an @mention. Two features depend on it
                (wake words and observe-unmentioned), so the flag has to travel with the identity, or the product
                ends up promising to follow a room it is not being sent. */
             const out = { ok: true, id: String(data.result.id), username: String(data.result.username || ''), name: String(data.result.first_name || '') };
@@ -421,7 +421,7 @@
       },
 
       /* setShortDescription — the line under the bot's name in its profile. A Telegram BOT has no presence dot
-         (that is a user-account feature), so this is the closest thing to "the station is up". Off by default,
+         (that is a user-account feature), so this is the closest thing to "the keep is up". Off by default,
          exactly as in the reference harness, and for a good reason: it rewrites a PUBLIC profile field that the
          member may have written themselves, so it is opt-in or nothing. Capped at Telegram's 120 characters.
          NEVER throws — a status line is the least important thing this channel does. */

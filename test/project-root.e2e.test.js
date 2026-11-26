@@ -55,15 +55,15 @@ function startProvider() {
 
 (async () => {
   const provider = await startProvider();
-  const projectRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'starnet-project-root-'));
+  const projectRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'eyehold-project-root-'));
   fs.writeFileSync(path.join(projectRoot, 'incident.log'), 'PROJECT_RELATIVE_OK\n', 'utf8');
   fs.writeFileSync(path.join(projectRoot, 'package.json'), JSON.stringify({ scripts: { test: 'node -e "console.log(\'PROJECT_VERIFY_OK\')"' } }));
   const fixture = SidecarFixture.create({
-    prefix: 'starnet-project-root-sidecar-', timeoutMs: 15000,
+    prefix: 'eyehold-project-root-sidecar-', timeoutMs: 15000,
     env: {
-      SKYNET_OPENROUTER_BASE: provider.baseUrl, STARNET_OPENROUTER_BASE: provider.baseUrl,
-      SKYNET_OPENROUTER_KEY: 'sk-or-v1-project-root-fake', STARNET_OPENROUTER_KEY: 'sk-or-v1-project-root-fake',
-      SKYNET_DEFAULT_MODEL: 'test/project-root', STARNET_DEFAULT_MODEL: 'test/project-root'
+      EYEHOLD_OPENROUTER_BASE: provider.baseUrl, EYEHOLD_OPENROUTER_BASE: provider.baseUrl,
+      EYEHOLD_OPENROUTER_KEY: 'sk-or-v1-project-root-fake', EYEHOLD_OPENROUTER_KEY: 'sk-or-v1-project-root-fake',
+      EYEHOLD_DEFAULT_MODEL: 'test/project-root', EYEHOLD_DEFAULT_MODEL: 'test/project-root'
     }
   });
   try {
@@ -108,7 +108,7 @@ function startProvider() {
     /* ISSUE #60 — an INTERACTIVE session anchored to a folder that is NOT a standing grant (trust removed, or a path
        that never matched it). The run used to drop the anchor silently: a relative fs.write "verified" into the
        private workspace while the shell looked in the folder and found it MISSING. Now the run is told plainly. */
-    const lapsedRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'starnet-lapsed-root-'));
+    const lapsedRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'eyehold-lapsed-root-'));
     const before = provider.requests.length;
     const lapsedRun = await fixture.request('/api/run', {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
@@ -154,7 +154,7 @@ function startProvider() {
     A.eq(opened && opened.status === 200 ? await opened.text() : 'HTTP ' + (opened && opened.status), 'ROUTINE_IN_PROJECT', 'OPEN serves the project file, not the same-named one in the private workspace');
     const enc = encodeURIComponent(path.resolve(projectRoot));
     A.eq((await fixture.request('/api/file?agent=project-agent&path=..%2Fx&project=' + enc)).status, 403, 'a ".." path under a project is refused');
-    const stranger = fs.mkdtempSync(path.join(os.tmpdir(), 'starnet-not-blessed-')); fs.writeFileSync(path.join(stranger, 'secret.txt'), 'S');
+    const stranger = fs.mkdtempSync(path.join(os.tmpdir(), 'eyehold-not-blessed-')); fs.writeFileSync(path.join(stranger, 'secret.txt'), 'S');
     A.eq((await fixture.request('/api/file?agent=project-agent&path=secret.txt&project=' + encodeURIComponent(stranger))).status, 403, 'a folder that is not a blessed project serves nothing');
     try { fs.rmSync(stranger, { recursive: true, force: true }); } catch (_) {}
   } finally {

@@ -10,10 +10,10 @@ import { findCurrentNsisInstaller } from './lib/release-installer.mjs';
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const rawArgs = process.argv.slice(2);
 const LOOP_ARG = rawArgs.find(a => /^--loop(=|$)/.test(a));
-const LOOP_MAX = LOOP_ARG ? Math.max(1, Number(LOOP_ARG.split('=')[1] || process.env.STARNET_T0_LOOPS || 3) || 3) : 1;
+const LOOP_MAX = LOOP_ARG ? Math.max(1, Number(LOOP_ARG.split('=')[1] || process.env.EYEHOLD_T0_LOOPS || 3) || 3) : 1;
 const STAMP = new Date().toISOString().replace(/[-:]/g, '').replace('T', '-').replace('.', '-').replace(/Z$/, '') + '-' + process.pid;
-const OUT = resolve(process.env.STARNET_T0_CLEAN_INSTALL_DIR || join(ROOT, '.dogfood', 't0-clean-install-' + STAMP));
-const LATEST = resolve(process.env.STARNET_T0_CLEAN_INSTALL_LATEST_DIR || join(ROOT, '.dogfood', 't0-clean-install-latest'));
+const OUT = resolve(process.env.EYEHOLD_T0_CLEAN_INSTALL_DIR || join(ROOT, '.dogfood', 't0-clean-install-' + STAMP));
+const LATEST = resolve(process.env.EYEHOLD_T0_CLEAN_INSTALL_LATEST_DIR || join(ROOT, '.dogfood', 't0-clean-install-latest'));
 
 function ensureDir(p) { mkdirSync(p, { recursive: true }); }
 function nowIso() { return new Date().toISOString(); }
@@ -63,7 +63,7 @@ function tauriVersion() {
 }
 function artifactPaths() {
   const release = join(ROOT, 'src-tauri', 'target', 'release');
-  const installer = process.env.STARNET_T0_INSTALLER_EXE || findCurrentNsisInstaller(ROOT);
+  const installer = process.env.EYEHOLD_T0_INSTALLER_EXE || findCurrentNsisInstaller(ROOT);
   return {
     installer: installer ? resolve(installer) : '',
     version: tauriVersion()
@@ -76,7 +76,7 @@ function argValue(name) {
   return idx >= 0 ? rawArgs[idx + 1] : '';
 }
 function evidencePath() {
-  const raw = process.env.STARNET_T0_CLEAN_EVIDENCE || argValue('--evidence') || '';
+  const raw = process.env.EYEHOLD_T0_CLEAN_EVIDENCE || argValue('--evidence') || '';
   return raw ? resolve(raw) : '';
 }
 function windowsPath(p) {
@@ -84,14 +84,14 @@ function windowsPath(p) {
   return existsSync(p);
 }
 function detectCleanSurface() {
-  if (process.env.STARNET_T0_CLEAN_SURFACE_MOCK) return JSON.parse(process.env.STARNET_T0_CLEAN_SURFACE_MOCK);
+  if (process.env.EYEHOLD_T0_CLEAN_SURFACE_MOCK) return JSON.parse(process.env.EYEHOLD_T0_CLEAN_SURFACE_MOCK);
   const sandboxPaths = [
     'C:\\Windows\\System32\\WindowsSandbox.exe',
     'C:\\Windows\\Sysnative\\WindowsSandbox.exe'
   ];
   const vmTools = [
     'C:\\Program Files\\Oracle\\VirtualBox\\VBoxManage.exe',
-    'C:\\Program Files (x86)\\VMware\\VMware Workstation\\vmrun.exe',
+    'C:\\Program Files (x86)\\VMware\\VMware Workkeep\\vmrun.exe',
     'C:\\Program Files\\qemu\\qemu-system-x86_64.exe'
   ];
   const windowsSandboxPaths = sandboxPaths.filter(windowsPath);
@@ -133,7 +133,7 @@ function isSubPath(child, parent) {
   return !!c && !!p && (c === p || c.startsWith(p + '\\'));
 }
 function hasSmokeInstallMarker(value) {
-  return /starnett\d[^\\\/]*smoke/i.test(evidenceString(value));
+  return /eyeholdt\d[^\\\/]*smoke/i.test(evidenceString(value));
 }
 function isWindowsAppDataPath(value) {
   return /[\\\/]appdata[\\\/](local|roaming)[\\\/]/i.test(evidenceString(value));
@@ -142,7 +142,7 @@ function validateEvidence(parsed, installerInfo) {
   const errors = parsed.errors.slice();
   const doc = parsed.doc || {};
   if (!parsed.present || !doc) return { ready: false, errors, proof: null };
-  if (doc.schema !== 'starnet.clean-install-proof.v1') errors.push('Evidence schema must be starnet.clean-install-proof.v1.');
+  if (doc.schema !== 'eyehold.clean-install-proof.v1') errors.push('Evidence schema must be eyehold.clean-install-proof.v1.');
   if (!evidenceBool(doc.cleanMachine)) errors.push('Evidence must declare cleanMachine=true.');
   const installer = doc.installer || {};
   const gotHash = String(installer.sha256 || '').toLowerCase();
@@ -166,7 +166,7 @@ function validateEvidence(parsed, installerInfo) {
     ['launch.resourceDir', doc.launch && doc.launch.resourceDir]
   ].map(([label, value]) => [label, evidenceString(value)]).filter(([, value]) => value);
   const smokePath = hygienePaths.find(([, value]) => hasSmokeInstallMarker(value));
-  if (smokePath) errors.push('Evidence points at a StarNet smoke-test install path: ' + smokePath[0] + '.');
+  if (smokePath) errors.push('Evidence points at a Eyehold smoke-test install path: ' + smokePath[0] + '.');
   if (installLocation && workspaceRoot && isSubPath(workspaceRoot, installLocation)) errors.push('Evidence launch.workspaceRoot must not live under the installation directory.');
   if (workspaceRoot && !isWindowsAppDataPath(workspaceRoot)) errors.push('Evidence launch.workspaceRoot must live under Windows AppData.');
   const proof = {
@@ -193,7 +193,7 @@ function step(id, phase, title, status, reason, extra = {}) {
   return Object.assign({ id, phase, title, status, required: true, reason }, extra);
 }
 function checkPlan(loop) {
-  const file = join(ROOT, 'docs', 'STARNET_T0_CLEAN_INSTALL_PROOF.md');
+  const file = join(ROOT, 'docs', 'EYEHOLD_T0_CLEAN_INSTALL_PROOF.md');
   const text = readText(file).toLowerCase();
   const required = ['clean-machine', 'installer hash', 'install success', 'first launch', 'not a dev-box'];
   const missing = required.filter(term => text.indexOf(term) < 0);
@@ -222,7 +222,7 @@ function runOnce(loop) {
     results.push(step('t0.3-matching-clean-machine-evidence', 'T0.3', 'Clean-machine evidence matches the current installer', 'fail', validation.errors.join(' '), { loop, evidencePath: parsed.path, errors: validation.errors }));
     results.push(step('t0.4-install-launch-observed', 'T0.4', 'Install success and first launch were observed', 'fail', validation.errors.join(' '), { loop, evidencePath: parsed.path, errors: validation.errors }));
   } else {
-    results.push(step('t0.3-matching-clean-machine-evidence', 'T0.3', 'Clean-machine evidence matches the current installer', 'blocked', 'Run the current installer on a true clean Windows machine, then import the proof JSON with STARNET_T0_CLEAN_EVIDENCE or --evidence.', { loop, evidencePath: parsed.path, errors: validation.errors }));
+    results.push(step('t0.3-matching-clean-machine-evidence', 'T0.3', 'Clean-machine evidence matches the current installer', 'blocked', 'Run the current installer on a true clean Windows machine, then import the proof JSON with EYEHOLD_T0_CLEAN_EVIDENCE or --evidence.', { loop, evidencePath: parsed.path, errors: validation.errors }));
     results.push(step('t0.4-install-launch-observed', 'T0.4', 'Install success and first launch were observed', 'blocked', 'No clean-machine install and first-launch proof exists yet.', { loop, evidencePath: parsed.path, errors: validation.errors }));
   }
 
@@ -278,7 +278,7 @@ function writeSummary(allResults, loopsRun) {
   };
   writeJson(join(OUT, 't0-clean-install-status.json'), json);
 
-  let md = '# StarNet T0 Clean-Machine Install Evidence\n\n';
+  let md = '# Eyehold T0 Clean-Machine Install Evidence\n\n';
   md += '- Generated: `' + json.generatedAt + '`\n';
   md += '- Verdict: `' + json.verdict + '`\n';
   md += '- Clean install proof ready: `' + json.cleanInstallProofReady + '`\n\n';

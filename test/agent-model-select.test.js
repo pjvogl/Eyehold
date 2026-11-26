@@ -9,7 +9,7 @@
 const A = require('./_assert.js');
 const fs = require('fs'); const path = require('path');
 const app = (f) => fs.readFileSync(path.join(__dirname, '..', 'frontend', 'app', f), 'utf8');
-const appjs = app('app.js'), ui = app('stationui.js'), mkt = app('marketplace.js'), dock = app('modeldock.js'), world = app('world.js'), chat = app('chat.js');
+const appjs = app('app.js'), ui = app('keepui.js'), mkt = app('marketplace.js'), dock = app('modeldock.js'), world = app('world.js'), chat = app('chat.js');
 const html = fs.readFileSync(path.join(__dirname, '..', 'frontend', 'index.html'), 'utf8');
 const ModelDock = require('../frontend/app/modeldock.js');
 
@@ -30,7 +30,7 @@ A.ok(/toggle\.setAttribute\('aria-label',\s*selectorLabel\(current,\s*effort(?:,
 // ---- the shared picker component loads before its consumers ----
 A.ok(/app\/modelpicker\.js/.test(html), 'index.html loads the shared ModelPicker');
 A.ok(html.indexOf('app/modeldock.js') < html.indexOf('app/modelpicker.js'), 'modelpicker loads AFTER modeldock (its data source)');
-A.ok(html.indexOf('app/modelpicker.js') < html.indexOf('app/stationui.js'), 'modelpicker loads BEFORE the dossier that consumes it');
+A.ok(html.indexOf('app/modelpicker.js') < html.indexOf('app/keepui.js'), 'modelpicker loads BEFORE the dossier that consumes it');
 
 // ---- CREATION: the recruitment bay model picker → summon ----
 A.ok(/function summonModelBarHTML\(/.test(mkt), 'the bay renders a SUMMON model bar');
@@ -129,7 +129,7 @@ A.ok(/function setAgentModelPin[\s\S]{0,1500}Chat\.refreshIdBar\(\)/.test(appjs)
 
 // Execute the actual dossier handlers: a dropdown clear must not fall back to the
 // old pin in the collapsed advanced fields (v0.12.4 BYOK delegation escape).
-for (const file of ['frontend/app/stationui.js', 'website/app/app/stationui.js']) {
+for (const file of ['frontend/app/keepui.js', 'website/app/app/keepui.js']) {
   const source = fs.readFileSync(path.join(__dirname, '..', file), 'utf8');
   const start = source.indexOf("    const mSave = body.querySelector('#ag-model-save');");
   const end = source.indexOf('    // PERSONALITY chips', start);
@@ -140,14 +140,14 @@ for (const file of ['frontend/app/stationui.js', 'website/app/app/stationui.js']
       nodes['#' + id] = { value: '', listeners: {}, addEventListener(event, callback) { this.listeners[event] = callback; } };
     }
     nodes['#ag-model-in'].value = 'fixture/managed';
-    nodes['#ag-prov-in'].value = 'starnet';
-    let selection = { model: 'fixture/managed', provider: 'starnet', effort: 'high' }, change;
+    nodes['#ag-prov-in'].value = 'eyehold';
+    let selection = { model: 'fixture/managed', provider: 'eyehold', effort: 'high' }, change;
     const saves = [];
     new Function('body', 'ModelPicker', 'access', 'a', 'sfx', 'rerender', handlers)(
       { querySelector: id => nodes[id] || null },
       { populate: () => Promise.resolve(), read: () => selection, onChange: (_, callback) => { change = callback; } },
       { config: { setModel: (...args) => { saves.push(args); return true; } } },
-      { id: 'worker', model: 'fixture/managed', provider: 'starnet' }, () => {}, () => {}
+      { id: 'worker', model: 'fixture/managed', provider: 'eyehold' }, () => {}, () => {}
     );
     return { nodes, saves, pick(value) { selection = value; change(value); }, save() { nodes['#ag-model-save'].listeners.click(); } };
   }
@@ -172,7 +172,7 @@ for (const file of ['frontend/app/app.js', 'website/app/app/app.js']) {
     { id: 'inherited', model: null, provider: null, reasoningEffort: null },
     { id: 'legacy', model: '' },
     { id: 'pinned', model: 'fixture/byok', provider: 'openrouter', reasoningEffort: 'low' }
-  ]) + ');')(agents, { model: 'fixture/managed', provider: 'starnet', reasoningEffort: 'high' }, { DEFAULT_SKIN: 'default' }, () => 'local', () => {}, () => '', () => {});
+  ]) + ');')(agents, { model: 'fixture/managed', provider: 'eyehold', reasoningEffort: 'high' }, { DEFAULT_SKIN: 'default' }, () => 'local', () => {}, () => '', () => {});
   for (const id of ['inherited', 'legacy']) {
     A.eq(agents.get(id).model, null, file + ': ' + id + ' stays unpinned after reload');
     A.eq(agents.get(id).provider, null, file + ': ' + id + ' does not acquire the managed provider on reload');

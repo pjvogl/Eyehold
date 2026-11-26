@@ -1,13 +1,13 @@
-/* STARNET — save.js : local persistence for the agent + session.
+/* EYEHOLD — save.js : local persistence for the agent + session.
    A VERSIONED envelope so saves survive future changes. localStorage for now;
    the same shape + migration ladder moves to the SQLite sidecar later. */
 'use strict';
 
 const Save = (() => {
-  const KEY = 'starnet.save';
-  const PRE_MIGRATE_BACKUP_KEY = 'starnet.save.pre-migrate.backup';
-  const LEGACY_SCHEMA = 'skynet.save';   // Skynet→StarNet rename: saves written before the rename carry this schema tag (the
-  const SCHEMA = 'starnet.save';         // legacymigrate boot pass copies the OLD `skynet.save` localStorage KEY forward; load() still accepts the old TAG inside the value).
+  const KEY = 'eyehold.save';
+  const PRE_MIGRATE_BACKUP_KEY = 'eyehold.save.pre-migrate.backup';
+  const LEGACY_SCHEMA = 'skynet.save';   // Skynet→Eyehold rename: saves written before the rename carry this schema tag (the
+  const SCHEMA = 'eyehold.save';         // legacymigrate boot pass copies the OLD `skynet.save` localStorage KEY forward; load() still accepts the old TAG inside the value).
   // v6 belongs to the 0.9 line. v0.8.5 shipped save v5 and its Workstreams normalizer does not know the
   // candidate's persisted `titleStrong` provenance bit. Reusing v5 let a manual rollback accept the newer save,
   // silently strip that bit on persist, and make a re-upgraded session eligible for another automatic rename.
@@ -25,13 +25,13 @@ const Save = (() => {
         : { workstreams: [], activeId: null, generalId: null };
       return { agent: doc.agent, usage: doc.usage, workstreams: slice.workstreams, activeId: slice.activeId, generalId: slice.generalId };
     },
-    // v2 -> v3 (agent growth): seed the XP/level/confidence stats on the agent + a station-wide rollup.
+    // v2 -> v3 (agent growth): seed the XP/level/confidence stats on the agent + a keep-wide rollup.
     // Honest cold-start: fresh meters (confidence shows "calibrating" until real outcomes arrive). The
     // literal keeps save.js decoupled from xp.js load order; it mirrors Xp.fresh() exactly.
     2: doc => {
       const fresh = () => ({ xp: 0, level: 1, lifetimeXp: 0, confidence: 50, samples: 0, counters: {}, milestones: [] });
       if (doc.agent && typeof doc.agent === 'object' && (!doc.agent.stats || typeof doc.agent.stats !== 'object')) doc.agent.stats = fresh();
-      if (!doc.stationStats || typeof doc.stationStats !== 'object') doc.stationStats = fresh();
+      if (!doc.keepStats || typeof doc.keepStats !== 'object') doc.keepStats = fresh();
       return doc;
     },
     // v3 -> v4 (personalization): seed an empty, valid user-affinity profile slice. Cold-start-safe —
@@ -41,7 +41,7 @@ const Save = (() => {
       if (!doc.profile || typeof doc.profile !== 'object') doc.profile = { v: 1, tags: {}, seed: null, enabled: true, total: 0 };
       return doc;
     },
-    // v4 -> v5 (Commander Dossier): seed an empty, valid station-wide dossier slice. Cold-start-safe — an
+    // v4 -> v5 (Commander Dossier): seed an empty, valid keep-wide dossier slice. Cold-start-safe — an
     // older save (or one whose owner never finished the awakening) gets a learnable, all-empty dossier; it
     // then seeds from the agent's onboarding docs at DossierStore.init. The literal mirrors Dossier.fresh()
     // to keep save.js decoupled from dossier.js load order.
@@ -81,7 +81,7 @@ const Save = (() => {
 
   // FORWARD-VERSION GUARD (P0.3). loadStatus() is the honest verdict channel the boot path reads BEFORE
   // it decides resume-vs-onboard. A save whose version is GREATER than this build's CURRENT was written by
-  // a NEWER StarNet: this code cannot read the fields that version added, so migrating it (which would
+  // a NEWER Eyehold: this code cannot read the fields that version added, so migrating it (which would
   // re-stamp version = CURRENT and drop those fields) is silent contamination. We refuse: leave the stored
   // doc byte-for-byte UNTOUCHED and report { status:'future', version } so the boot path can raise an
   // honest "update the app" gate instead of either mangling the save or (worse) treating it as no-save and

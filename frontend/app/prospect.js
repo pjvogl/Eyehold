@@ -1,9 +1,9 @@
-/* STARNET — prospect.js : the PURE prospect generator (the station AUTHORS bespoke new agent specs beyond the
+/* EYEHOLD — prospect.js : the PURE prospect generator (the keep AUTHORS bespoke new agent specs beyond the
    curated catalog + archetype pool).
 
    Where recruiter.js (Slice 2) ranks EXISTING classes against the Commander's real workflow, this covers the gap
-   the catalog CAN'T fill: as the station learns, it drafts a brand-new specialist tailored to the observed work —
-   a "prospect". The station DRAFTS; the Commander CONFIRMS (never auto-save, never auto-summon) — the agent-analog
+   the catalog CAN'T fill: as the keep learns, it drafts a brand-new specialist tailored to the observed work —
+   a "prospect". The keep DRAFTS; the Commander CONFIRMS (never auto-save, never auto-summon) — the agent-analog
    of the R5 "bottle a run" flow.
 
    This module owns two pure, deterministic halves (no Date.now / Math.random — the clock is injected upstream):
@@ -40,7 +40,7 @@
     const catalog = (ctx.catalogSummary || []).map(c => '• ' + (c.id || '?') + ' — ' + (c.tagline || '')).join('\n') || '(none)';
     const top = ctx.topRecommendation ? String(ctx.topRecommendation) : '';
     const lines = [];
-    lines.push('You are the station\'s recruiter, drafting ONE brand-new specialist role tailored to how the Commander ACTUALLY works.');
+    lines.push('You are the keep\'s recruiter, drafting ONE brand-new specialist role tailored to how the Commander ACTUALLY works.');
     lines.push('A specialist is a REAL JOB with standing importance in the Commander\'s business, project, or craft — the kind of role they would hire for (think: retention editor, grant writer, community manager, supply buyer). Never a generalist assistant, never a vague "helper".');
     lines.push('');
     lines.push('WHAT YOU KNOW ABOUT THE COMMANDER:');

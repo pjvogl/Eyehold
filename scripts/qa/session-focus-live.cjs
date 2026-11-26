@@ -1,15 +1,15 @@
-/* Run against an ISOLATED dev/seed.js --keep station only.
- * STARNET_PLAYWRIGHT_MODULE may point to a bundled Playwright package.
- * STARNET_CHROME may point to a local Chrome executable. No microphone or paid model is used.
+/* Run against an ISOLATED dev/seed.js --keep keep only.
+ * EYEHOLD_PLAYWRIGHT_MODULE may point to a bundled Playwright package.
+ * EYEHOLD_CHROME may point to a local Chrome executable. No microphone or paid model is used.
  * We expose the unchanged voice callback for deterministic delivery and substitute only Harness.chat's
- * transport; session stores, composer, run metadata, station tool/handler, DOM, and saves run normally.
+ * transport; session stores, composer, run metadata, keep tool/handler, DOM, and saves run normally.
  */
 'use strict';
 const assert = require('node:assert/strict');
-const { chromium } = require(process.env.STARNET_PLAYWRIGHT_MODULE || 'playwright');
-const { makeStationTools } = require('../../sidecar/tools/builtin/station.js');
+const { chromium } = require(process.env.EYEHOLD_PLAYWRIGHT_MODULE || 'playwright');
+const { makeKeepTools } = require('../../sidecar/tools/builtin/keep.js');
 (async () => {
-  const browser = await chromium.launch({headless:true, ...(process.env.STARNET_CHROME ? {executablePath:process.env.STARNET_CHROME} : {})});
+  const browser = await chromium.launch({headless:true, ...(process.env.EYEHOLD_CHROME ? {executablePath:process.env.EYEHOLD_CHROME} : {})});
   try {
     const page = await browser.newPage();
     page.setDefaultTimeout(30000);
@@ -21,7 +21,7 @@ const { makeStationTools } = require('../../sidecar/tools/builtin/station.js');
       assert.ok(source.includes(marker));
       await route.fulfill({response, body:source.replace(marker, 'return { proofBind: bindSession, proofReply: onAssistant, init, start, end, isActive:')});
     });
-    await page.route('**/api/station/ack', async route => {
+    await page.route('**/api/keep/ack', async route => {
       acks.push(route.request().postDataJSON());
       await route.fulfill({status:200,contentType:'application/json',body:'{"ok":true}'});
     });
@@ -54,9 +54,9 @@ const { makeStationTools } = require('../../sidecar/tools/builtin/station.js');
       return page.evaluate(id=>({streamId:id,runId:Channels.runIdOf(id)}),id);
     }
     let seq=0;
-    const tools=makeStationTools({station:{request:async (verb,args)=>{
+    const tools=makeKeepTools({keep:{request:async (verb,args)=>{
       const id='focus-proof-command-'+(++seq);
-      await page.evaluate(({id,verb,args})=>StationCommands.run(id,verb,args),{id,verb,args});
+      await page.evaluate(({id,verb,args})=>KeepCommands.run(id,verb,args),{id,verb,args});
       return acks.find(a=>a.id===id);
     }}});
     await page.locator('#chat-send').click();

@@ -20,7 +20,7 @@ function apply(manifest,records){
 }
 module.exports={fits,apply};
 if(require.main===module){
-  const fs=require('node:fs'),m='frontend/assets/industrial/projection-correction/manifest.json',r='docs/station-remaster/projection-correction/exports.json';
+  const fs=require('node:fs'),m='frontend/assets/industrial/projection-correction/manifest.json',r='docs/keep-remaster/projection-correction/exports.json';
   const manifest=JSON.parse(fs.readFileSync(m)),receipt=JSON.parse(fs.readFileSync(r));
   apply(manifest,receipt.records);fs.writeFileSync(m,JSON.stringify(manifest,null,2)+'\n');fs.writeFileSync(r,JSON.stringify(receipt,null,2)+'\n');
 }

@@ -58,7 +58,7 @@ const toolFor = notes => makeDeliverableTool({ notes: notes }).deliverableTool;
     const out = await tool.run({ title: 'Q3 churn analysis', summary: 'Three cohorts.', kind: 'doc' }, { runId: 'r1' });
     A.eq(notes.get('r1').title, 'Q3 churn analysis', 'the note is filed under the run that made it');
     A.ok(/Recorded for the Deliverables library/.test(out.content), 'the agent is told what was kept');
-    A.ok(/status, cost and crew|status, cost/i.test(out.content) || /crew from this run/.test(out.content), 'the agent is told the station supplies the facts');
+    A.ok(/status, cost and crew|status, cost/i.test(out.content) || /crew from this run/.test(out.content), 'the agent is told the keep supplies the facts');
   }
   {
     const notes = bag(), tool = toolFor(notes);

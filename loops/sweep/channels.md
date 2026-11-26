@@ -26,12 +26,12 @@ browser and no way to tell a refusal from an absence.
    Prove `channel.send` and every sibling refuse an arbitrary target, and that the refusal is
    the whole call — not a truncation. A silently clipped payload delivered as success is a
    shipped bug class here (8,000-char ceiling, five partial messages, reported OK).
-5. **Multi-bot and multi-chat.** Two bots, two chats, one station. Does a reply reach the chat
+5. **Multi-bot and multi-chat.** Two bots, two chats, one keep. Does a reply reach the chat
    that asked? Run two concurrent chats and check for crossed identity, crossed transcripts,
    crossed approval prompts.
 6. **Interruption from a phone.** Start a long run from a channel, then: halt it, send a second
    message mid-run, restart the sidecar mid-run. Is the end state honest in the chat AND in the
-   station, or does one of them keep a forever-RUNNING claim?
+   keep, or does one of them keep a forever-RUNNING claim?
 7. **Inline keyboards and stale callbacks.** Press an approval button twice. Press one from a
    message whose run has already ended. Press one after a sidecar restart. Each must fail
    honestly, never silently approve.

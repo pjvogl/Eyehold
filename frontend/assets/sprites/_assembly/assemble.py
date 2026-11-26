@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# Assemble a Pixellab character (base + blink-state + sit-state) into the StarNet
+# Assemble a Pixellab character (base + blink-state + sit-state) into the Eyehold
 # 92x92 foot-anchored frame set: rot_<dir>, blink_<dir>, sit_<dir>, walk_<dir>_<n>.
 # Type animation is intentionally skipped (drawBody falls back to sit.north when working).
 import os, sys, io, zipfile, urllib.request

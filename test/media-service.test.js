@@ -19,7 +19,7 @@ const OGG_OPUS = Buffer.from(
 const roots = [];
 
 async function make(overrides) {
-  const workspaces = await fsp.mkdtemp(path.join(os.tmpdir(), 'starnet-media-'));
+  const workspaces = await fsp.mkdtemp(path.join(os.tmpdir(), 'eyehold-media-'));
   roots.push(workspaces);
   const opts = Object.assign({
     workspaces,
@@ -98,7 +98,7 @@ async function invokeTts(overrides, body) {
   // Multipart construction preserves the audio byte-for-byte and names the Whisper model/file parts.
   const audio = Buffer.from([0, 1, 2, 255, 13, 10]);
   const multipart = sttMultipartBody(audio, 'clip.webm', 'audio/webm', { model: 'whisper-test' }, n => Buffer.alloc(n, 7));
-  assert.match(multipart.contentType, /^multipart\/form-data; boundary=----StarNetSTT/);
+  assert.match(multipart.contentType, /^multipart\/form-data; boundary=----EyeholdSTT/);
   assert.ok(multipart.body.includes(Buffer.from('name="model"')));
   assert.ok(multipart.body.includes(Buffer.from('whisper-test')));
   assert.ok(multipart.body.includes(Buffer.from('name="file"; filename="clip.webm"')));

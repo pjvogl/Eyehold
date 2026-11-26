@@ -1,8 +1,8 @@
-/* STARNET — glossary.js : the one place the station explains its own words to a first-minute user.
+/* EYEHOLD — glossary.js : the one place the keep explains its own words to a first-minute user.
 
    A pure term -> one-sentence map, consumed by hint.js (data-hint="<term>" tooltips). Copy law:
-   lowercase station voice, eerie-not-cute, one plain sentence a beginner can act on. Every entry
-   is grounded in how the term is ACTUALLY used in the code (marketplace.js / autonomy.js / stationui.js
+   lowercase keep voice, eerie-not-cute, one plain sentence a beginner can act on. Every entry
+   is grounded in how the term is ACTUALLY used in the code (marketplace.js / autonomy.js / keepui.js
    / returnstore.js) — not an aspirational definition. Keys are lowercased on lookup, so
    data-hint="REFIT" and data-hint="refit" resolve the same entry.
 
@@ -18,7 +18,7 @@
   // term -> one beginner-facing sentence. Keep each to a single sentence; no jargon inside the definition.
   const TERMS = {
     agent:        'one working AI identity with its own model, chat, workspace, memory, and run history.',
-    crew:         'all agents currently on your station — each keeps its own identity and work.',
+    crew:         'all agents currently on your keep — each keeps its own identity and work.',
     model:        'the AI engine an agent uses to think and answer; you can change it per agent.',
     effort:       'the reasoning depth used for a run — higher effort may think longer and cost more.',
     voice:        'the speaking style and personality an agent uses; it does not change its authority.',
@@ -32,31 +32,31 @@
     verification: 'a fresh check performed after the work changed, so completion is proved instead of claimed.',
     context:      'the conversation and evidence currently visible to the model; older material can be compacted safely.',
     fallback:     'the next configured model or credential tried when the current provider cannot continue.',
-    settings:     'the station controls for providers, models, voice, budget, permissions, and saved data.',
-    update:       'a new StarNet build; the UPDATES panel shows the version and its verified delivery state.',
-    restore:      'return an agent’s workspace files to a saved restore point without rewriting unrelated station data.',
+    settings:     'the keep controls for providers, models, voice, budget, permissions, and saved data.',
+    update:       'a new Eyehold build; the UPDATES panel shows the version and its verified delivery state.',
+    restore:      'return an agent’s workspace files to a saved restore point without rewriting unrelated keep data.',
     logbook:      'this agent’s durable run history — what ran, how it ended, and what it cost.',
     notification: 'an agent waiting on you, work that finished while you were elsewhere, or something that stopped — click one to go there.',
     manual:       'the reopenable guide to first steps, the real work loop, gear, wiring, and growth.',
-    commander:    'you — the person who directs the station, grants authority, and judges its work.',
+    commander:    'you — the person who directs the keep, grants authority, and judges its work.',
     work:         'MY WORK, AUTOMATE and QUESTS — your jobs, the work that runs on its own, and your progress.',
-    build:        'the dock for shaping the station (BUILD MODE), connecting tools and messaging apps (CONNECT), and new apps.',
+    build:        'the dock for shaping the keep (BUILD MODE), connecting tools and messaging apps (CONNECT), and new apps.',
     system:       'the dock for the manual, settings, updates, and notifications. Agent history and restore points live in each agent’s Record tab.',
     workstream:   'the saved conversation behind a COMMS session; planned task conversations also appear as cards on the TASK BOARD.',
     orchestrator: 'the lead agent you talk to first — new agents inherit its model unless you pick another.',
-    overseer:     'the station itself — it holds shared gear that any specialist can draw on.',
-    refit:        'the station’s build mode — open it from the dock to place desks, furniture, gear, and workflow lines.',
+    overseer:     'the keep itself — it holds shared gear that any specialist can draw on.',
+    refit:        'the keep’s build mode — open it from the dock to place desks, furniture, gear, and workflow lines.',
     // the conveyor builder's own word (2026-09-27 audit F1): what a WORKFLOW is, in the order work meets it
     workflow:     'several agents chained on conveyor belts — work comes in at the INBOX, each BAY is one agent doing one step, and the result comes out at the OUTBOX.',
     clearance:    'how hard the agent’s model thinks — more diamonds mean deeper (slower) reasoning.',
     lane:         'the kind of work a class is built for: CODE, RESEARCH, or general OPS.',
-    dish:         'the WEB gear — with it on station, an agent can search and fetch live pages.',
-    cabinet:      'the FILES gear — with it on station, an agent can read, write, and search your workspace.',
+    dish:         'the WEB gear — with it on keep, an agent can search and fetch live pages.',
+    cabinet:      'the FILES gear — with it on keep, an agent can read, write, and search your workspace.',
     notebook:     'the MEMORY gear — a durable notebook the agent can save to and recall later.',
     workbench:    'the TERMINAL gear — lets an agent run and test real code (each run asks you first).',
     studio:       'the IMAGES gear — lets an agent generate and read visuals.',
     seed:         'a saved idea you can hand back to an agent later so it picks up right where you left off.',
-    drafted:      'written up by the station for you to review — nothing is summoned until you confirm it.',
+    drafted:      'written up by the keep for you to review — nothing is summoned until you confirm it.',
     sidecar:      'the small local program that actually runs your agents — the app talks to it in the background.',
     // the WORK vocabulary, each on ONE axis (UX confusion audit 2026-07-15: recipe=WHAT to run,
     // routine=WHEN it runs, task=WHERE live work sits, quest=progress/suggestions — never a place work lives).
@@ -68,8 +68,8 @@
     loop:         'one objective an agent keeps working at, stopping each time for your yes or no — UNTIL it is done, not on a clock. Your verdict is what starts the next pass; it costs nothing while it waits. Manage them under ∞ AUTOMATION.',
     recipe:       'a ready-made job an agent can run right now — WHAT to run; launching one lands it on MY WORK › TASKS.',
     task:         'a planned piece of work created on the board or launched from a recipe or goal — it appears on MY WORK › TASKS and opens as a COMMS session.',
-    quest:        'a suggestion or progress marker from the station — accepting one starts real work; it is never a second to-do list.',
-    skill:        'something an agent CAN do — some skills only switch on once their gear is on station. Browse them under CONNECT › ABILITIES ▸ SKILL LIBRARY.',
+    quest:        'a suggestion or progress marker from the keep — accepting one starts real work; it is never a second to-do list.',
+    skill:        'something an agent CAN do — some skills only switch on once their gear is on keep. Browse them under CONNECT › ABILITIES ▸ SKILL LIBRARY.',
     toolset:      'a family of tools you can switch on or off for agents (web, files, terminal…) — the switches live in CONNECT › ABILITIES › BUILT-IN ABILITIES.',
     capability:   'the same tool families as TOOLSETS, read-only — what an agent is equipped with right now; each agent’s readout is the SKILLS tab of its dossier.',
     connector:    'an outside service you plug IN so agents can use it as a tool (calendar, Slack actions, databases).',
@@ -82,12 +82,12 @@
     pace:         'how many small unattended jobs an agent may do per day at most.',
     xp:           'experience an agent earns from work you rate well — it levels up as it proves itself.',
     workspace:    'the folder on your machine where an agent’s files land (workspaces/<agent>/).',
-    desk:         'an agent’s own workstation — it needs one placed in BUILD MODE before it can take floor work.',
+    desk:         'an agent’s own workkeep — it needs one placed in BUILD MODE before it can take floor work.',
     recruit:      'summon a new agent class onto your crew, or re-spec the agent you already have.',
     slag:         'a post-mortem of a run that ended without producing anything — its cause, and the fix.',
     kudos:        'the good ratings you give an agent’s work — they raise its satisfaction and earn it XP.',
     leash:        'the cap on how many jobs an agent may do on its own before it stops and waits for you.',
-    beat:         'one small unattended job the station does while you’re away — the daily limit caps how many.',
+    beat:         'one small unattended job the keep does while you’re away — the daily limit caps how many.',
     'restore point': 'a saved snapshot of an agent’s workspace you can roll it back to.',
     uplink:       'the live link to your local sidecar — full bars while telemetry flows, red when it drops.'
   };

@@ -1,6 +1,6 @@
-# StarNet Build System v2 — polish the machine that builds the machine
+# Eyehold Build System v2 — polish the machine that builds the machine
 
-> 2026-07-02 retro on HOW StarNet gets built (Claude orchestrator + worktree lanes + Codex
+> 2026-07-02 retro on HOW Eyehold gets built (Claude orchestrator + worktree lanes + Codex
 > cron loops), mined from the merge memories, plan docs, and the live repo state. Each item
 > names the recurring failure it kills and the concrete mechanism. Ranked by payoff.
 
