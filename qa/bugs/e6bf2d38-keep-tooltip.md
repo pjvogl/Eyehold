@@ -1,5 +1,5 @@
 ---
-fingerprint: 01caed27
+fingerprint: e6bf2d38
 slug: keep-tooltip
 title: Keep tooltip: pointerout during the 320ms show delay cannot clear the pending timer (`if (!anchor) return` runs before hide()), so a ghost card pops up besid
 surface: world

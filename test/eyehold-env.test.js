@@ -1,11 +1,11 @@
 'use strict';
 const assert = require('node:assert/strict');
 const { readScopedEnv } = require('../sidecar/eyehold-env.js');
-const env = { EYEHOLD_PORT: '', SKYNET_PORT: '2', EYEHOLD_TOKEN: 'old', SKYNET_TOKEN: 'older' };
+const env = { EYEHOLD_PORT: '', EYEHOLD_TOKEN: 'old', SKYNET_PORT: '2' };
 assert.equal(readScopedEnv('PORT', env), '');
 assert.equal(readScopedEnv('TOKEN', env), 'old');
-assert.equal(readScopedEnv('ONLY', { SKYNET_ONLY: 'legacy' }), 'legacy');
+assert.equal(readScopedEnv('ONLY', { SKYNET_ONLY: 'legacy' }), undefined);
 assert.equal(readScopedEnv('MISSING', {}), undefined);
 const source = require('node:fs').readFileSync(require('node:path').join(__dirname, '../sidecar/index.js'), 'utf8');
 assert.match(source, /readScopedEnv/);
-console.log('Eyehold env names win and the old names still resolve');
+console.log('Eyehold env names are the only names read');

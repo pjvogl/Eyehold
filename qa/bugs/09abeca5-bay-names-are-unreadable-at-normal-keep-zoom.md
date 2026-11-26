@@ -1,5 +1,5 @@
 ---
-fingerprint: 0ff9dfc6
+fingerprint: 09abeca5
 slug: bay-names-are-unreadable-at-normal-keep-zoom
 title: Bay names are unreadable at normal keep zoom
 surface: world

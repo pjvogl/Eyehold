@@ -1,5 +1,5 @@
 ---
-fingerprint: 151c8d9a
+fingerprint: 3f5316cd
 slug: on-a-zero-key-keep-every-edge-blip-is-misclas
 title: On a zero-key keep every Edge blip is misclassified as 'no key': no retry, a 60s dead-voice cold-off, and a tooltip demanding a credential the keep never
 surface: voice

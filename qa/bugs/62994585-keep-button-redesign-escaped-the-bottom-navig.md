@@ -1,5 +1,5 @@
 ---
-fingerprint: d28ba8f4
+fingerprint: 62994585
 slug: keep-button-redesign-escaped-the-bottom-navig
 title: Keep button redesign escaped the bottom navigation
 surface: channels

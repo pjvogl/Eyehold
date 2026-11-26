@@ -1,5 +1,5 @@
 ---
-fingerprint: b3b8d28f
+fingerprint: 7bda3ca6
 slug: website-keep-preview-fails-when-hosting-beaco
 title: Website keep preview fails when hosting beacon is blocked
 surface: world

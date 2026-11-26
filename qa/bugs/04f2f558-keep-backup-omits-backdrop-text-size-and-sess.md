@@ -1,5 +1,5 @@
 ---
-fingerprint: f5a90439
+fingerprint: 04f2f558
 slug: keep-backup-omits-backdrop-text-size-and-sess
 title: Keep backup omits backdrop text size and session row preferences
 surface: world

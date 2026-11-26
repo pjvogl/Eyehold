@@ -1,5 +1,5 @@
 ---
-fingerprint: 72af29f4
+fingerprint: 7e70285f
 slug: funded-keep-false-zero-warning
 title: Funded working keep still displays a zero-credit warning
 surface: providers

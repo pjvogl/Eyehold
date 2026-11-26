@@ -1,5 +1,5 @@
 ---
-fingerprint: 0e3d3914
+fingerprint: 06bae787
 slug: follow-keep-default-retains-managed-model-pin
 title: Follow keep default retains managed model pin and blocks BYOK delegation
 surface: providers

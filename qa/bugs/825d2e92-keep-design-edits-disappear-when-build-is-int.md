@@ -1,5 +1,5 @@
 ---
-fingerprint: 996e399b
+fingerprint: 825d2e92
 slug: keep-design-edits-disappear-when-build-is-int
 title: Keep design edits disappear when Build is interrupted
 surface: world

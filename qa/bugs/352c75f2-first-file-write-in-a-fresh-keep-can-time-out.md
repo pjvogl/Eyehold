@@ -1,5 +1,5 @@
 ---
-fingerprint: e47efecf
+fingerprint: 352c75f2
 slug: first-file-write-in-a-fresh-keep-can-time-out
 title: First file write in a fresh keep can time out while the checkpoint runs inside its 10s budget
 surface: safecell

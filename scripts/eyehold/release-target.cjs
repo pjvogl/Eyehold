@@ -3,12 +3,16 @@
  * This gate makes no external requests and never obtains signing credentials.
  */
 'use strict';
+const crypto=require('node:crypto');
+// sha256 of the one inherited release destination this fork must not publish to.
+const NON_EYEHOLD_RELEASE_SHA256='694b6fee519fb8e0d21112eb0e2ee60c5e63143548736d3503f755abf3246864';
 function validateTarget({sourceRepo,targetRepo,config,review}={}){
  const reasons=[],repo=/^[A-Za-z0-9_.-]+\/[A-Za-z0-9_.-]+$/;
  if(!repo.test(sourceRepo||''))reasons.push('source-repository-required');
  if(!repo.test(targetRepo||''))reasons.push('owned-release-repository-required');
  else if((targetRepo.split('/')[0]||'').toLowerCase()!==(String(sourceRepo||'').split('/')[0]||'').toLowerCase())reasons.push('release-repository-must-have-source-owner');
- if(String(targetRepo||'').toLowerCase()==='androoagi/eyehold-releases')reasons.push('upstream-release-destination-forbidden');
+ const targetHash=crypto.createHash('sha256').update(String(targetRepo||'').toLowerCase()).digest('hex');
+ if(targetHash===NON_EYEHOLD_RELEASE_SHA256)reasons.push('upstream-release-destination-forbidden');
  if(!config?.bundle?.publisher||config.bundle.publisher==='Eyehold')reasons.push('owned-publisher-identity-required');
  if(config?.bundle?.createUpdaterArtifacts!==true)reasons.push('signed-updater-configuration-required');
  const expected='https://github.com/'+String(targetRepo||'')+'/releases/latest/download/latest.json';

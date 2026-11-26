@@ -1,5 +1,5 @@
 ---
-fingerprint: 34c58f4f
+fingerprint: fc54651a
 slug: unreadable-keep-save-is-reported-empty-and-it
 title: Unreadable keep save is reported empty and its sole backup can be eclipsed
 surface: onboarding
