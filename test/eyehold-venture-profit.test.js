@@ -11,7 +11,7 @@ const root = fs.mkdtempSync(path.join(os.tmpdir(), 'eyehold-profit-'));
 const finance = createFinanceStore({ file: path.join(root, 'finance.json'), now: () => 't' });
 const treasury = createTreasury({ file: path.join(root, 'treasury.json'), now: () => 't' });
 const score = createVentureScore({ file: path.join(root, 'score.json') });
-const sale = { id: 'stripe:pi_venture', verified: true, livemode: false, currency: 'USD', cents: 5000, computeCents: 250 };
+const sale = { id: 'stripe:pi_venture', verified: true, livemode: true, paid: true, currency: 'USD', cents: 5000, computeCents: 250 };
 assert.throws(() => settleVentureProfit({ finance, treasury, score, sale, agentId: 'moonleaf', ventureId: 'etsy-shop', confirmedReviewed: false }), /operator review/);
 assert.equal(treasury.snapshot().availableCents, 0);
 const booked = settleVentureProfit({ finance, treasury, score, sale, agentId: 'moonleaf', ventureId: 'etsy-shop', otherCostCents: 150, confirmedReviewed: true });
@@ -24,13 +24,20 @@ assert.equal(booked.ladder.unlockedMilestonesUSD.length, 0);
 assert.equal(booked.researcherCrowns, 0);
 const shared = settleVentureProfit({
   finance, treasury, score,
-  sale: { id: 'stripe:pi_shared', verified: true, livemode: false, currency: 'USD', cents: 2000, computeCents: 0 },
+  sale: { id: 'stripe:pi_shared', verified: true, livemode: true, paid: true, currency: 'USD', cents: 2000, computeCents: 0 },
   agentId: 'moonleaf', ventureId: 'etsy-shop',
   research: { researcherId: 'raven', sharePercent: 20 },
   confirmedReviewed: true
 });
 assert.equal(shared.netCents, 2000);
 assert.equal(score.board().find(item => item.agentId === 'raven').crowns, 4);
+assert.equal(score.board().find(item => item.agentId === 'moonleaf').crowns, 46 + 16);
+const practice = settleVentureProfit({
+  finance, treasury, score,
+  sale: { id: 'stripe:pi_test', verified: true, livemode: false, paid: true, currency: 'USD', cents: 900, computeCents: 0 },
+  agentId: 'moonleaf', ventureId: 'etsy-shop', confirmedReviewed: true
+});
+assert.equal(practice.crowns, 0, 'test-mode receipts do not earn Crowns');
 assert.equal(score.board().find(item => item.agentId === 'moonleaf').crowns, 46 + 16);
 fs.rmSync(root, { recursive: true, force: true });
 console.log('Verified venture profit funds the ladder, the treasury, and Crowns');

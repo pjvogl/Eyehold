@@ -13,6 +13,10 @@ upload_source_maps = true
 pattern = "eyehold.babelbook.net"
 custom_domain = true
 
+# One unattended research cycle every six hours. Spend stays inside the daily caps.
+[triggers]
+crons = ["17 */6 * * *"]
+
 [observability]
 enabled = true
 

@@ -81,7 +81,7 @@ cycle.start({ managerId: 'eye', researcherId: 'raven', question: 'What can earn 
   });
   const waiting = await resumed.tick();
   assert.equal(waiting.run.phase, 'awaiting-receipt');
-  resumed.noteReceipt({ id: 'stripe:cs_live_local', verified: true, livemode: true, currency: 'USD', cents: 2000, computeCents: 0 });
+  resumed.noteReceipt({ id: 'stripe:cs_live_local', verified: true, livemode: true, paid: true, currency: 'USD', cents: 2000, computeCents: 0 });
   const finished = await resumed.tick();
   assert.equal(finished.run.phase, 'done');
   assert.equal(finished.treasury.spentCents, 100);

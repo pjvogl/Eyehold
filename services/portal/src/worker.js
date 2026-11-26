@@ -1,5 +1,9 @@
+import { createRequire } from 'node:module';
 import { createMemoryLedger, safeEqual } from '../../billing/billing.mjs';
 import { allowedEmail, handleBilling, json, ledgerFor } from '../../billing/src/worker.js';
+
+const require = createRequire(import.meta.url);
+const { runScheduledCycle } = require('../../../sidecar/eyehold-openai.js');
 
 const ledger = createMemoryLedger();
 
@@ -16,8 +20,8 @@ function serviceToken(request, env) {
 function esc(s) { return String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
 function page(email, live) {
   const credits = live
-    ? 'Managed credits are separate from Crowns. A signed-in member can buy the spark or hearth pack. Auto-update stays off.'
-    : 'Managed credits are separate from Crowns. Purchases stay off while this host is in test mode.';
+    ? 'Managed credits are separate from Crowns. Crowns are only a leaderboard: they appear after a paid live Stripe receipt, never from a test, a mock, or paper. A signed-in member can buy the spark or hearth pack. Auto-update stays off.'
+    : 'Managed credits are separate from Crowns. Crowns are only a leaderboard and are not awarded in test mode. Purchases stay off while this host is in test mode.';
   return `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>The Eyehold</title>
 <style>
 body{margin:0;background:#140e16;color:#e6ac65;font-family:ui-monospace,monospace}
@@ -47,6 +51,11 @@ function feed() {
 }
 
 export default {
+  async scheduled(_event, env, ctx) {
+    ctx.waitUntil(runScheduledCycle(env).catch(error => {
+      console.log(JSON.stringify({ message: 'openai-cycle-failed', error: error.message }));
+    }));
+  },
   async fetch(request, env) {
     const url = new URL(request.url);
     if (!hostAllowed(url.hostname, env)) return json(404, { error: 'wrong-host' });

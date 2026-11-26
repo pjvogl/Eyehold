@@ -1,9 +1,12 @@
-/* One owner-confirmed sale updates the profit ladder, the treasury, and Crowns.
- * The ladder stores revenue and compute. The treasury receives the net only.
- * Practice points are not touched.
+/* One reviewed sale updates the profit ladder and the treasury.
+ * Crowns are a leaderboard only. They are credited only for a verified, paid,
+ * live Stripe receipt. Test, mock, and paper activity never earn Crowns.
  */
 'use strict';
 const { settleReviewedSale } = require('./eyehold-market-sales.js');
+function livePaidSale(sale) {
+  return !!(sale && sale.verified === true && sale.livemode === true && sale.paid === true && sale.currency === 'USD' && typeof sale.id === 'string' && sale.id.startsWith('stripe:'));
+}
 function settleVentureProfit({ finance, treasury, score, sale, agentId, ventureId, otherCostCents = 0, research = null, confirmedReviewed = false }) {
   if (confirmedReviewed !== true) throw new Error('Explicit local operator review required');
   if (!Number.isSafeInteger(otherCostCents) || otherCostCents < 0) throw new Error('other cost must be measured in cents');
@@ -21,21 +24,24 @@ function settleVentureProfit({ finance, treasury, score, sale, agentId, ventureI
     researcherShare = Math.floor(net * research.sharePercent / 100);
   }
   const workerNet = net - researcherShare;
-  const scored = score.creditVerified({
-    agentId, ventureId,
-    revenueCents: workerNet + sale.computeCents + otherCostCents,
-    computeCents: sale.computeCents,
-    otherCostCents
-  });
+  let scored = { crowns: 0, practicePoints: 0 };
   let researcher = null;
-  if (researcherShare > 0) {
-    researcher = score.creditVerified({
-      agentId: research.researcherId, ventureId, revenueCents: researcherShare, computeCents: 0, otherCostCents: 0
+  if (livePaidSale(sale)) {
+    scored = score.creditVerified({
+      agentId, ventureId,
+      revenueCents: workerNet + sale.computeCents + otherCostCents,
+      computeCents: sale.computeCents,
+      otherCostCents
     });
+    if (researcherShare > 0) {
+      researcher = score.creditVerified({
+        agentId: research.researcherId, ventureId, revenueCents: researcherShare, computeCents: 0, otherCostCents: 0
+      });
+    }
   }
   return {
     ladder: finance.snapshot(), crowns: scored.crowns, researcherCrowns: researcher ? researcher.crowns : 0,
-    netCents: net, treasury: treasury.snapshot(), practicePoints: scored.practicePoints
+    netCents: net, treasury: treasury.snapshot(), practicePoints: scored.practicePoints, crownsAreMoney: false
   };
 }
-module.exports = { settleVentureProfit };
+module.exports = { settleVentureProfit, livePaidSale };

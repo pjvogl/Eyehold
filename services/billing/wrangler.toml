@@ -14,6 +14,10 @@ upload_source_maps = true
 pattern = "eyehold.babelbook.net"
 custom_domain = true
 
+# Same schedule as services/portal. This file deploys that same Worker.
+[triggers]
+crons = ["17 */6 * * *"]
+
 [observability]
 enabled = true
 

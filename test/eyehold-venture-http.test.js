@@ -61,7 +61,7 @@ function request(method, body) {
   const job = await ask({ op: 'research-request', agentId: 'moonleaf', ventureId: 'etsy-shop', topic: 'competitor pricing' });
   const answered = await ask({ op: 'research-answer', requestId: job.request.id, researcherId: 'raven', findings: 'Price near 8 dollars.', sources: ['Shop listings'] });
   assert.equal(answered.request.ventureId, 'etsy-shop');
-  const settled = await ask({ op: 'settle', confirmedReviewed: true, agentId: 'moonleaf', ventureId: 'etsy-shop', sale: { id: 'stripe:pi_research', verified: true, livemode: false, currency: 'USD', cents: 1000, computeCents: 0 } });
+  const settled = await ask({ op: 'settle', confirmedReviewed: true, agentId: 'moonleaf', ventureId: 'etsy-shop', sale: { id: 'stripe:pi_research', verified: true, livemode: true, paid: true, currency: 'USD', cents: 1000, computeCents: 0 } });
   assert.equal(settled.researcherCrowns, 2);
   assert.equal(settled.crowns, 8);
   fs.rmSync(root, { recursive: true, force: true });
