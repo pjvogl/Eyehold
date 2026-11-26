@@ -138,7 +138,7 @@ const ENV = { perRun: 3, perAgent: 5, perDay: 40, global: 100 };   // a fully-go
   A.eq(bc.resolveCaps(shipped, {}), shipped, 'with nothing saved, the shipped defaults ARE the effective caps');
   A.eq(bc.resolveCaps(shipped, { perDay: 0 }).perDay, 0, 'a saved 0 dials the shipped rail OFF (the Commander\'s explicit choice wins)');
   A.eq(bc.resolveCaps(shipped, { perDay: 100 }).perDay, 100, 'a saved value raises it');
-  A.eq(bc.resolveCaps(Object.assign({}, shipped, { perDay: 40 }), {}).perDay, 40, 'an env value (SKYNET_BUDGET_PER_DAY) replaces the shipped default');
+  A.eq(bc.resolveCaps(Object.assign({}, shipped, { perDay: 40 }), {}).perDay, 40, 'an env value (EYEHOLD_BUDGET_PER_DAY) replaces the shipped default');
   // the governor actually blocks on it — this is the number that stops the overnight burn
   const B = require('../sidecar/budget.js');
   const ev = B.evaluate({ day: shipped.perDay }, { day: 25.5 });
@@ -177,7 +177,7 @@ const ENV = { perRun: 3, perAgent: 5, perDay: 40, global: 100 };   // a fully-go
   // Number(null) is 0: a failed refresh (null balance) must never be read as a reported $0 wallet
   A.ok(/const avail = \(snap && typeof snap\.balanceUsd === 'number' && isFinite\(snap\.balanceUsd\)\) \? snap\.balanceUsd : NaN;/.test(idx), 'admission reads only a REPORTED balance; null stays unknown');
   A.ok(!/runCapUsd = \(isFinite\(avail\) && avail > 0\) \? avail : 0/.test(idx), 'the reserve-the-whole-wallet line is gone');
-  A.ok(/MANAGED_PER_RUN_DEFAULT = num\(ENV\('BUDGET_MANAGED_PER_RUN'\), budgetCaps\.DEFAULT_MANAGED_PER_RUN_USD\)/.test(idx), 'the default is env-tunable (SKYNET_BUDGET_MANAGED_PER_RUN)');
+  A.ok(/MANAGED_PER_RUN_DEFAULT = num\(ENV\('BUDGET_MANAGED_PER_RUN'\), budgetCaps\.DEFAULT_MANAGED_PER_RUN_USD\)/.test(idx), 'the default is env-tunable (EYEHOLD_BUDGET_MANAGED_PER_RUN)');
   // truthful UI: "0 = no cap" must not be the whole story on Eyehold credits, and a run stop never says "remove"
   const keep = require('fs').readFileSync(require('path').join(__dirname, '..', 'frontend', 'app', 'keepui.js'), 'utf8');
   A.ok(/id="bg-managed-hint"/.test(keep) && /st\.managedRunDefaultUsd/.test(keep), 'the Budget panel paints the managed default from /api/budget/status');

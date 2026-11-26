@@ -98,8 +98,8 @@ function toolTurns(requests) {
 (async () => {
   const mock = await startMockOpenRouter();
   const fx = new SidecarFixture({ prefix: 'sk-trgfa-', timeoutMs: 20000, env: {
-    EYEHOLD_DEV: '', SKYNET_DEV: '',
-    SKYNET_OPENROUTER_BASE: mock.base, SKYNET_OPENROUTER_KEY: 'sk-or-v1-trgfa-fake', SKYNET_DEFAULT_MODEL: 'test/model'
+    EYEHOLD_DEV: '', EYEHOLD_DEV: '',
+    EYEHOLD_OPENROUTER_BASE: mock.base, EYEHOLD_OPENROUTER_KEY: 'sk-or-v1-trgfa-fake', EYEHOLD_DEFAULT_MODEL: 'test/model'
   } });
   const hermes = path.join(fx.profile, 'hermes');
   fs.mkdirSync(hermes, { recursive: true });

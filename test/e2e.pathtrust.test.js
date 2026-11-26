@@ -55,7 +55,7 @@ function startMockOpenRouter() {
 
 function boot(port, env, attemptsLeft) {
   return new Promise((resolve, reject) => {
-    const child = spawn(process.execPath, [INDEX], { env: Object.assign({}, process.env, env, { SKYNET_PORT: String(port) }), stdio: ['ignore', 'pipe', 'pipe'] });
+    const child = spawn(process.execPath, [INDEX], { env: Object.assign({}, process.env, env, { EYEHOLD_PORT: String(port) }), stdio: ['ignore', 'pipe', 'pipe'] });
     let out = '', settled = false;
     const onData = d => {
       out += d.toString();
@@ -94,7 +94,7 @@ function boot(port, env, attemptsLeft) {
   const subDir = path.join(repo2, 'src');       // a folder INSIDE the repo — bless it, the repo ROOT gets trusted
   const looseFile = path.join(repo2, 'index.js');
 
-  const env = { SKYNET_WORKSPACES: ws, SKYNET_OPENROUTER_BASE: mock.base, EYEHOLD_PROJECT_DISCOVERY_ROOTS: repo2 };   // NO FULL_ACCESS → the consent broker is live
+  const env = { EYEHOLD_WORKSPACES: ws, EYEHOLD_OPENROUTER_BASE: mock.base, EYEHOLD_PROJECT_DISCOVERY_ROOTS: repo2 };   // NO FULL_ACCESS → the consent broker is live
   let running = await boot(8760 + (process.pid % 40), env, 25);
   let B = 'http://' + HOST + ':' + running.port;
   let token;

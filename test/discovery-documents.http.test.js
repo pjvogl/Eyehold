@@ -9,7 +9,7 @@ const { SidecarFixture } = require('./helpers/sidecar-fixture.js');
   const root = fs.mkdtempSync(path.join(os.tmpdir(), 'eyehold-client-source-'));
   fs.writeFileSync(path.join(root, 'meeting.md'), '# Client meeting\nCompleted the launch milestone.\n');
   const fixture = SidecarFixture.create({ prefix: 'eyehold-document-http-', env: {
-    SKYNET_OPENROUTER_KEY: '', OPENROUTER_KEY: '', EYEHOLD_OPENROUTER_KEY: ''
+    EYEHOLD_OPENROUTER_KEY: '', OPENROUTER_KEY: '', EYEHOLD_OPENROUTER_KEY: ''
   } });
   const j = (m, p, b) => fixture.json(m, p, b);
   const staged = async () => (await j('GET', '/api/discovery')).body.staged.filter(f => f.kind === 'client-update');

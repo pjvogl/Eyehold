@@ -29,12 +29,12 @@ const AGENT = 'hist_agent';
 function bootSidecar(port, workspaces, attempts) {
   return new Promise((resolve, reject) => {
     const appSandbox = path.join(workspaces, '_appdata');
-    // ISOLATION: no inherited EYEHOLD_/SKYNET_/HERMES_ variable may point this sidecar at a real keep.
+    // ISOLATION: no inherited EYEHOLD_/EYEHOLD_/HERMES_ variable may point this sidecar at a real keep.
     const env = Object.assign({}, process.env);
-    for (const k of Object.keys(env)) if (/^(EYEHOLD_|SKYNET_|HERMES_)/i.test(k)) delete env[k];
+    for (const k of Object.keys(env)) if (/^(EYEHOLD_|EYEHOLD_|HERMES_)/i.test(k)) delete env[k];
     Object.assign(env, {
-      SKYNET_PORT: String(port), SKYNET_WORKSPACES: workspaces, SKYNET_DEV: '1', CONSENT_TIMEOUT_MS: '1000',
-      SKYNET_CLOUD_URL: '', SKYNET_CREDITS_URL: '', SKYNET_EDGE_TTS: '0', SKYNET_LIVE_PRICES: '0',
+      EYEHOLD_PORT: String(port), EYEHOLD_WORKSPACES: workspaces, EYEHOLD_DEV: '1', CONSENT_TIMEOUT_MS: '1000',
+      EYEHOLD_CLOUD_URL: '', EYEHOLD_CREDITS_URL: '', EYEHOLD_EDGE_TTS: '0', EYEHOLD_LIVE_PRICES: '0',
       LOCALAPPDATA: appSandbox, APPDATA: appSandbox, XDG_DATA_HOME: appSandbox
     });
     if (!path.resolve(workspaces).startsWith(path.resolve(os.tmpdir())) || port === 8787) throw new Error('refusing a non-isolated sidecar');

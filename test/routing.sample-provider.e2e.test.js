@@ -26,9 +26,9 @@ test('sample uses each dock provider and saved model without environment default
   await new Promise(resolve => server.listen(0, '127.0.0.1', resolve));
   const base = 'http://127.0.0.1:' + server.address().port;
   const fixture = SidecarFixture.create({ prefix: 'sample-provider-', timeoutMs: 20000, env: {
-    EYEHOLD_DEFAULT_MODEL: '', SKYNET_DEFAULT_MODEL: '',
-    EYEHOLD_OPENROUTER_KEY: '', SKYNET_OPENROUTER_KEY: '',
-    EYEHOLD_OPENROUTER_BASE: base + '/v1', SKYNET_OPENROUTER_BASE: base + '/v1',
+    EYEHOLD_DEFAULT_MODEL: '', EYEHOLD_DEFAULT_MODEL: '',
+    EYEHOLD_OPENROUTER_KEY: '', EYEHOLD_OPENROUTER_KEY: '',
+    EYEHOLD_OPENROUTER_BASE: base + '/v1', EYEHOLD_OPENROUTER_BASE: base + '/v1',
     EYEHOLD_CREDITS_URL: base, EYEHOLD_CREDITS_API_KEY: 'managed-fixture', EYEHOLD_CREDITS_ACCOUNT: 'fixture',
     CUSTOM_OPENAI_KEY: 'direct-fixture', CUSTOM_OPENAI_BASE_URL: base + '/v1'
   } });

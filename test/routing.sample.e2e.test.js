@@ -88,7 +88,7 @@ function startMockOpenRouter(script) {
 function boot(port, env, attemptsLeft) {
   return new Promise((resolve, reject) => {
     const child = spawn(process.execPath, [INDEX], {
-      env: Object.assign({}, process.env, env, { SKYNET_PORT: String(port), EYEHOLD_PORT: String(port) }),
+      env: Object.assign({}, process.env, env, { EYEHOLD_PORT: String(port), EYEHOLD_PORT: String(port) }),
       stdio: ['ignore', 'pipe', 'pipe']
     });
     let out = '', settled = false;
@@ -176,12 +176,12 @@ function twoStagePlan() {
   ]);
   const ws = fs.mkdtempSync(path.join(os.tmpdir(), 'sk-routing-sample-'));
   const env = {
-    SKYNET_WORKSPACES: ws, EYEHOLD_WORKSPACES: ws,
+    EYEHOLD_WORKSPACES: ws, EYEHOLD_WORKSPACES: ws,
     // deliberately NO dev mode: the sample seam is a first-class production route, not a DEV-gated one
-    EYEHOLD_DEV: '', SKYNET_DEV: '',
-    SKYNET_OPENROUTER_BASE: mock.base,
-    SKYNET_OPENROUTER_KEY: 'sk-or-v1-routing-sample-fake',
-    SKYNET_DEFAULT_MODEL: 'test/model'
+    EYEHOLD_DEV: '', EYEHOLD_DEV: '',
+    EYEHOLD_OPENROUTER_BASE: mock.base,
+    EYEHOLD_OPENROUTER_KEY: 'sk-or-v1-routing-sample-fake',
+    EYEHOLD_DEFAULT_MODEL: 'test/model'
   };
   const { child, port } = await boot(9130 + (process.pid % 50), env, 20);
   const B = 'http://' + HOST + ':' + port;

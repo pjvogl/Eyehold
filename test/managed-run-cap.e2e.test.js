@@ -46,9 +46,9 @@ const CALL_USD = 0.75;   // what the relay charges per completion in this fixtur
   await new Promise(r => server.listen(0, '127.0.0.1', r));
   const base = 'http://127.0.0.1:' + server.address().port;
   const fixture = SidecarFixture.create({ prefix: 'eyehold-managed-cap-', timeoutMs: 30000, env: {
-    EYEHOLD_CLOUD_URL: base, EYEHOLD_CREDITS_URL: '', SKYNET_CREDITS_URL: '',
-    SKYNET_BUDGET_PER_RUN: '', EYEHOLD_BUDGET_PER_RUN: '', SKYNET_BUDGET_MANAGED_PER_RUN: '', EYEHOLD_BUDGET_MANAGED_PER_RUN: '',
-    EYEHOLD_FULL_ACCESS: '1', SKYNET_FULL_ACCESS: '1', SKYNET_AUX_BUDGET: '0'
+    EYEHOLD_CLOUD_URL: base, EYEHOLD_CREDITS_URL: '', EYEHOLD_CREDITS_URL: '',
+    EYEHOLD_BUDGET_PER_RUN: '', EYEHOLD_BUDGET_PER_RUN: '', EYEHOLD_BUDGET_MANAGED_PER_RUN: '', EYEHOLD_BUDGET_MANAGED_PER_RUN: '',
+    EYEHOLD_FULL_ACCESS: '1', EYEHOLD_FULL_ACCESS: '1', EYEHOLD_AUX_BUDGET: '0'
   } });
   // never let the sidecar resolve the real user profile (the fixture leaves USERPROFILE alone on Windows)
   fixture.env.USERPROFILE = fixture.profile; fixture.env.HOME = fixture.profile;

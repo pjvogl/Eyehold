@@ -48,9 +48,9 @@ async function call(base, route, method, body) {
   const port = await freePort();
   const child = spawn(process.execPath, [INDEX], {
     env: Object.assign({}, process.env, {
-      SKYNET_WORKSPACES: workspace, SKYNET_PORT: String(port), SKYNET_API_TOKEN: TOKEN,
-      SKYNET_LIVE_PRICES: '0', SKYNET_QUEST_REFRESH: '0', SKYNET_CRON: '0',
-      SKYNET_OPENROUTER_KEY: '', EYEHOLD_OPENROUTER_KEY: ''
+      EYEHOLD_WORKSPACES: workspace, EYEHOLD_PORT: String(port), EYEHOLD_API_TOKEN: TOKEN,
+      EYEHOLD_LIVE_PRICES: '0', EYEHOLD_QUEST_REFRESH: '0', EYEHOLD_CRON: '0',
+      EYEHOLD_OPENROUTER_KEY: '', EYEHOLD_OPENROUTER_KEY: ''
     }),
     stdio: ['ignore', 'pipe', 'pipe']
   });

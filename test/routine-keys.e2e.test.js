@@ -59,11 +59,11 @@ const toolNames = call => ((call && call.body.tools) || []).map(t => (t && t.fun
 (async () => {
   const mock = await startMock();
   const blank = {};
-  for (const n of ['OPENROUTER_KEY', 'OPENROUTER_API_KEY']) { blank[n] = ''; blank['SKYNET_' + n] = ''; blank['EYEHOLD_' + n] = ''; }
+  for (const n of ['OPENROUTER_KEY', 'OPENROUTER_API_KEY']) { blank[n] = ''; blank['EYEHOLD_' + n] = ''; blank['EYEHOLD_' + n] = ''; }
   const fixture = SidecarFixture.create({ prefix: 'sk-routine-keys-', env: Object.assign(blank, {
-    SKYNET_OPENROUTER_BASE: mock.base, EYEHOLD_OPENROUTER_BASE: mock.base,
-    SKYNET_DEFAULT_MODEL: 'test/model', SKYNET_AUX_BUDGET: '0',
-    SKYNET_FULL_ACCESS: '0', EYEHOLD_FULL_ACCESS: '0', SKYNET_DESKTOP_SHELL: '', EYEHOLD_DESKTOP_SHELL: ''
+    EYEHOLD_OPENROUTER_BASE: mock.base, EYEHOLD_OPENROUTER_BASE: mock.base,
+    EYEHOLD_DEFAULT_MODEL: 'test/model', EYEHOLD_AUX_BUDGET: '0',
+    EYEHOLD_FULL_ACCESS: '0', EYEHOLD_FULL_ACCESS: '0', EYEHOLD_DESKTOP_SHELL: '', EYEHOLD_DESKTOP_SHELL: ''
   }) });
   const ws = fixture.workspace;
   const keysFile = path.join(ws, '.secrets', 'provider-keys.json');

@@ -11401,7 +11401,7 @@ const World = (() => {
       try { return planCouchSit(performance.now(), p, tvId || null, face || 'north', zoneFor(b)); }
       finally { self = keep; }
     },
-    // read-only body snapshot for the DEV test harness (window.__SKYNET_TEST__) — the Tier A/B/C substrate.
+    // read-only body snapshot for the DEV test harness (window.__EYEHOLD_TEST__) — the Tier A/B/C substrate.
     // Pure read, no side effects: the hero + every crew body, each with tile/zone/glance/goal/moving so the
     // floor invariants (idle stays in-zone · awareness is gaze-only · summoned walks to its OWN workkeep)
     // can be auto-asserted instead of eyeballed. Mirrors dbg()'s clock (fnow) and helpers (tileOf/zoneFor).

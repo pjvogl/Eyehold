@@ -31,7 +31,7 @@ function seedTokens(ws, envelope) {
 }
 
 (async () => {
-  const fixture = SidecarFixture.create({ prefix: 'sk-codexstat-ws-', env: { SKYNET_DEV: '1' } });
+  const fixture = SidecarFixture.create({ prefix: 'sk-codexstat-ws-', env: { EYEHOLD_DEV: '1' } });
   const ws = fixture.workspace;
 
   // ===== boot 1: a persisted DEAD marker (what a consumed-token refresh failure wrote before the restart) =====

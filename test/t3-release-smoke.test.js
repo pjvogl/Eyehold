@@ -14,10 +14,10 @@ const lint = path.join(ROOT, 'scripts', 'lint-evidence-secrets.mjs');
 
 function cleanEnv(extra) {
   const env = Object.assign({}, process.env, extra || {});
-  delete env.SKYNET_OPENROUTER_KEY;
+  delete env.EYEHOLD_OPENROUTER_KEY;
   delete env.EYEHOLD_OPENROUTER_KEY;
   delete env.OPENROUTER_API_KEY;
-  delete env.SKYNET_AUDIT_LIVE_PROVIDER;
+  delete env.EYEHOLD_AUDIT_LIVE_PROVIDER;
   delete env.EYEHOLD_T3_REQUIRE_LIVE;
   return env;
 }

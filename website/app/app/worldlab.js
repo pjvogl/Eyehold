@@ -38,7 +38,7 @@
         pixels = { meanLuminance: +(sum / 3072).toFixed(2), litSamples: lit, distinctColors: unique.size };
       }
       const d = world && world.keepDoc ? world.keepDoc() : null;
-      const api = window.__SKYNET_TEST__;
+      const api = window.__EYEHOLD_TEST__;
       const events = api && api.events ? api.events().filter(e => /agent.run|agent.tool|workitem|deliverable/.test(e.name)).slice(-20).map(e => ({name:e.name,runId:e.payload && e.payload.runId,status:e.payload && e.payload.status})) : [];
       output.textContent = JSON.stringify({ capturedAt: new Date().toISOString(),
         renderer: world && world.renderStats ? world.renderStats() : null,

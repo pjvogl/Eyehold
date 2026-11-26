@@ -68,7 +68,7 @@ function startMockOpenRouter() {
 
 function boot(port, env, attemptsLeft) {
   return new Promise((resolve, reject) => {
-    const child = spawn(process.execPath, [INDEX], { env: Object.assign({}, process.env, env, { SKYNET_PORT: String(port) }), stdio: ['ignore', 'pipe', 'pipe'] });
+    const child = spawn(process.execPath, [INDEX], { env: Object.assign({}, process.env, env, { EYEHOLD_PORT: String(port) }), stdio: ['ignore', 'pipe', 'pipe'] });
     let out = '', settled = false;
     const onData = d => {
       out += d.toString();
@@ -117,7 +117,7 @@ async function untilReady(check, label) {
   // ===== scenario 1: WAIT + FIFO HANDOFF (default 45s lease wait) =====
   {
     const ws = fs.mkdtempSync(path.join(os.tmpdir(), 'wlease-ws1-'));
-    const env = { SKYNET_WORKSPACES: ws, SKYNET_OPENROUTER_BASE: mock.base, SKYNET_FULL_ACCESS: '1' };
+    const env = { EYEHOLD_WORKSPACES: ws, EYEHOLD_OPENROUTER_BASE: mock.base, EYEHOLD_FULL_ACCESS: '1' };
     const { child, port } = await boot(8700 + (process.pid % 40), env, 25);
     const B = 'http://' + HOST + ':' + port;
     try {
@@ -141,7 +141,7 @@ async function untilReady(check, label) {
   // ===== scenario 2: BOUNDED TRUTHFUL REFUSAL (250ms lease wait) =====
   {
     const ws = fs.mkdtempSync(path.join(os.tmpdir(), 'wlease-ws2-'));
-    const env = { SKYNET_WORKSPACES: ws, SKYNET_OPENROUTER_BASE: mock.base, SKYNET_FULL_ACCESS: '1', EYEHOLD_WORKSPACE_LEASE_WAIT_MS: '250' };
+    const env = { EYEHOLD_WORKSPACES: ws, EYEHOLD_OPENROUTER_BASE: mock.base, EYEHOLD_FULL_ACCESS: '1', EYEHOLD_WORKSPACE_LEASE_WAIT_MS: '250' };
     const { child, port } = await boot(8745 + (process.pid % 40), env, 25);
     const B = 'http://' + HOST + ':' + port;
     try {

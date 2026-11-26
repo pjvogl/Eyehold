@@ -71,25 +71,25 @@ pub(crate) const KEYCHAIN_PROVIDERS: [&str; 13] = [
 // (signal-cli endpoint + registered number are non-secret config), so it has no row. The sidecar reads
 // these names in index.js CHANNEL_TOKEN_ENV — keep the two tables in step.
 pub(crate) const SIDECAR_CHANNEL_TOKEN_ENVS: [(&str, &str); 4] = [
-    ("telegram", "SKYNET_TELEGRAM_TOKEN"),
-    ("discord", "SKYNET_DISCORD_TOKEN"),
-    ("slack", "SKYNET_SLACK_TOKEN"),
-    ("matrix", "SKYNET_MATRIX_TOKEN"),
+    ("telegram", "EYEHOLD_TELEGRAM_TOKEN"),
+    ("discord", "EYEHOLD_DISCORD_TOKEN"),
+    ("slack", "EYEHOLD_SLACK_TOKEN"),
+    ("matrix", "EYEHOLD_MATRIX_TOKEN"),
 ];
 
 pub(crate) const SIDECAR_PROVIDER_KEY_ENVS: [(&str, &str); 12] = [
-    ("openai", "SKYNET_OPENAI_API_KEY"),
-    ("anthropic", "SKYNET_ANTHROPIC_API_KEY"),
-    ("gemini", "SKYNET_GEMINI_API_KEY"),
-    ("xai", "SKYNET_XAI_API_KEY"),
-    ("groq", "SKYNET_GROQ_API_KEY"),
-    ("mistral", "SKYNET_MISTRAL_API_KEY"),
-    ("deepseek", "SKYNET_DEEPSEEK_API_KEY"),
-    ("together", "SKYNET_TOGETHER_API_KEY"),
-    ("fireworks", "SKYNET_FIREWORKS_API_KEY"),
-    ("perplexity", "SKYNET_PERPLEXITY_API_KEY"),
-    ("cerebras", "SKYNET_CEREBRAS_API_KEY"),
-    ("custom", "SKYNET_CUSTOM_OPENAI_KEY"),
+    ("openai", "EYEHOLD_OPENAI_API_KEY"),
+    ("anthropic", "EYEHOLD_ANTHROPIC_API_KEY"),
+    ("gemini", "EYEHOLD_GEMINI_API_KEY"),
+    ("xai", "EYEHOLD_XAI_API_KEY"),
+    ("groq", "EYEHOLD_GROQ_API_KEY"),
+    ("mistral", "EYEHOLD_MISTRAL_API_KEY"),
+    ("deepseek", "EYEHOLD_DEEPSEEK_API_KEY"),
+    ("together", "EYEHOLD_TOGETHER_API_KEY"),
+    ("fireworks", "EYEHOLD_FIREWORKS_API_KEY"),
+    ("perplexity", "EYEHOLD_PERPLEXITY_API_KEY"),
+    ("cerebras", "EYEHOLD_CEREBRAS_API_KEY"),
+    ("custom", "EYEHOLD_CUSTOM_OPENAI_KEY"),
 ];
 
 pub(crate) fn normalize_provider(provider: &str) -> &'static str {
@@ -547,10 +547,10 @@ mod tests {
         assert_eq!(
             SIDECAR_CHANNEL_TOKEN_ENVS,
             [
-                ("telegram", "SKYNET_TELEGRAM_TOKEN"),
-                ("discord", "SKYNET_DISCORD_TOKEN"),
-                ("slack", "SKYNET_SLACK_TOKEN"),
-                ("matrix", "SKYNET_MATRIX_TOKEN"),
+                ("telegram", "EYEHOLD_TELEGRAM_TOKEN"),
+                ("discord", "EYEHOLD_DISCORD_TOKEN"),
+                ("slack", "EYEHOLD_SLACK_TOKEN"),
+                ("matrix", "EYEHOLD_MATRIX_TOKEN"),
             ]
         );
     }

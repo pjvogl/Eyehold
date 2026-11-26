@@ -33,10 +33,10 @@ const SERVICE_KEY = 'svcKeyCanaryPw4417Exported0Value';
   execFileSync('git', ['config', 'core.fsmonitor', hook.replace(/\\/g, '/')], { cwd: repo });
 
   const fixture = SidecarFixture.create({ prefix: 'eyehold-childenv-', timeoutMs: 20000, env: {
-    EYEHOLD_PLANTED_KEEP_SECRET: KEEP_CANARY, SKYNET_PLANTED_KEEP_SECRET: KEEP_CANARY,
+    EYEHOLD_PLANTED_KEEP_SECRET: KEEP_CANARY, EYEHOLD_PLANTED_KEEP_SECRET: KEEP_CANARY,
     HERMES_HOME: path.join(scratch, 'hermes-home'),
     MY_USER_VAR: 'user-value-keep-me', NPM_TOKEN: 'npm-user-own-token-keep-me',
-    SKYNET_ENV_DISCOVERY: '1'
+    EYEHOLD_ENV_DISCOVERY: '1'
   } });
   try {
     fs.writeFileSync(path.join(fixture.workspace, 'permissions.allow.json'), JSON.stringify({ allow: ['path:' + fs.realpathSync(repo)] }));
@@ -50,7 +50,7 @@ const SERVICE_KEY = 'svcKeyCanaryPw4417Exported0Value';
     const names = seen.split(/\r?\n/).map(l => l.split('=')[0]);
     A.ok(seen.indexOf(KEEP_CANARY) < 0, 'the planted keep secret never reached the repo');
     A.ok(seen.indexOf(SERVICE_KEY) < 0, 'the exported service key never reached the repo');
-    A.eq(names.filter(n => /^(EYEHOLD|SKYNET)_/i.test(n)), [], 'no EYEHOLD_/SKYNET_ variable reached the repo (API/IPC tokens, keys, workspace)');
+    A.eq(names.filter(n => /^(EYEHOLD|SKYNET)_/i.test(n)), [], 'no EYEHOLD_/EYEHOLD_ variable reached the repo (API/IPC tokens, keys, workspace)');
     A.ok(names.some(n => /^PATH$/i.test(n)), 'PATH is kept');
     A.ok(/MY_USER_VAR=user-value-keep-me/.test(seen), 'the user\'s own var is kept');
     A.ok(/NPM_TOKEN=npm-user-own-token-keep-me/.test(seen), 'the user\'s own NPM_TOKEN is kept (theirs, not the keep\'s)');

@@ -54,7 +54,7 @@ function startProvider() {
 
 function boot(port, env, attempts) {
   return new Promise((resolve, reject) => {
-    const child = spawn(process.execPath, [INDEX], { env: Object.assign({}, process.env, env, { SKYNET_PORT: String(port) }), stdio: ['ignore', 'pipe', 'pipe'] });
+    const child = spawn(process.execPath, [INDEX], { env: Object.assign({}, process.env, env, { EYEHOLD_PORT: String(port) }), stdio: ['ignore', 'pipe', 'pipe'] });
     let output = '', settled = false;
     const onData = d => {
       output += d.toString();
@@ -84,7 +84,7 @@ const toolNames = req => ((req && req.tools) || []).map(t => (t.function && t.fu
   const workspace = fs.mkdtempSync(path.join(os.tmpdir(), 'eyehold-resolve-e2e-'));
   fs.mkdirSync(path.join(workspace, 'editor', 'clips'), { recursive: true });
   fs.writeFileSync(path.join(workspace, 'editor', 'clips', 'a.mp4'), 'not really video');   // ffprobe refuses it -> honest note
-  const env = { SKYNET_WORKSPACES: workspace, SKYNET_FULL_ACCESS: '1', SKYNET_AUX_BUDGET: '0', EYEHOLD_OPENROUTER_KEY: '', OPENROUTER_API_KEY: '' };
+  const env = { EYEHOLD_WORKSPACES: workspace, EYEHOLD_FULL_ACCESS: '1', EYEHOLD_AUX_BUDGET: '0', EYEHOLD_OPENROUTER_KEY: '', OPENROUTER_API_KEY: '' };
   const { child, port } = await boot(8920 + (process.pid % 40), env, 20);
   const base = 'http://' + HOST + ':' + port;
   try {

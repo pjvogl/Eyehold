@@ -58,7 +58,7 @@ function makeFakeSpawn() {
         kill: () => ({ ok: true })
       };
       const env = makeEnvironmentManager({ spawn, fs, pathMod: path, root, bg, clock,
-        env: { PATH: 'safe-path', SKYNET_API_TOKEN: 'api-secret', EYEHOLD_IPC_TOKEN: 'ipc-secret', OPENAI_API_KEY: 'provider-secret', TELEGRAM_BOT_TOKEN: 'channel-secret', EYEHOLD_COMPUTER_DRIVER: '1', NODE_OPTIONS: '--require evil.js' },
+        env: { PATH: 'safe-path', EYEHOLD_API_TOKEN: 'api-secret', EYEHOLD_IPC_TOKEN: 'ipc-secret', OPENAI_API_KEY: 'provider-secret', TELEGRAM_BOT_TOKEN: 'channel-secret', EYEHOLD_COMPUTER_DRIVER: '1', NODE_OPTIONS: '--require evil.js' },
         config: { backend: 'local' } });
       A.eq(env.backendId, 'local', 'local backend selected');
       await env.execute({ agentId: 'a1', cmd: 'echo ok', timeoutMs: 1000 });
@@ -66,7 +66,7 @@ function makeFakeSpawn() {
       A.eq(spawn.calls[0].opts.shell, true, 'local uses shell:true');
       A.eq(spawn.calls[0].opts.cwd, path.join(root, 'a1'), 'local cwd is the per-agent workspace');
       A.eq(spawn.calls[0].opts.env.PATH, 'safe-path', 'safe build environment survives');
-      A.ok(!('SKYNET_API_TOKEN' in spawn.calls[0].opts.env) && !('EYEHOLD_IPC_TOKEN' in spawn.calls[0].opts.env), 'sidecar API/IPC tokens never reach task children');
+      A.ok(!('EYEHOLD_API_TOKEN' in spawn.calls[0].opts.env) && !('EYEHOLD_IPC_TOKEN' in spawn.calls[0].opts.env), 'sidecar API/IPC tokens never reach task children');
       A.ok(!('OPENAI_API_KEY' in spawn.calls[0].opts.env) && !('TELEGRAM_BOT_TOKEN' in spawn.calls[0].opts.env), 'provider/channel secrets never reach task children');
       A.ok(!('NODE_OPTIONS' in spawn.calls[0].opts.env), 'ambient execution hooks never reach task children');
       A.eq(spawn.calls[0].opts.env.EYEHOLD_COMPUTER_DRIVER, '0', 'physical-input disable is pinned in task children');
@@ -80,7 +80,7 @@ function makeFakeSpawn() {
       env.startBackground({ agentId: 'a1', cmd: 'npm run dev' });
       A.eq(bgCalls[0].cwd, path.join(root, 'a1', 'sub'), 'background local inherits backend cwd');
       A.eq(bgCalls[0].env.EYEHOLD_COMPUTER_DRIVER, '0', 'background processes receive the same safety pins');
-      A.ok(!('SKYNET_API_TOKEN' in bgCalls[0].env), 'background processes receive no sidecar token');
+      A.ok(!('EYEHOLD_API_TOKEN' in bgCalls[0].env), 'background processes receive no sidecar token');
     }
 
     // ---- docker backend: creates and reuses one hardened per-agent environment ----

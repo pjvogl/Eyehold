@@ -111,11 +111,14 @@ class SidecarFixture {
     // deliberately leave alone — node/npm subprocesses still need a sane Windows profile.
     if (process.platform !== 'win32') hermeticProfile.HOME = this.profile;
     const env = Object.assign({}, process.env, hermeticProfile, this.env, extraEnv || {}, {
-      SKYNET_PORT: String(this.port),
       EYEHOLD_PORT: String(this.port),
-      SKYNET_WORKSPACES: this.workspace,
       EYEHOLD_WORKSPACES: this.workspace
     });
+    for (const [name, value] of Object.entries(env)) {
+      if (name.startsWith('SKYNET_') && (env['EYEHOLD_' + name.slice('SKYNET_'.length)] == null || env['EYEHOLD_' + name.slice('SKYNET_'.length)] === '')) {
+        env['EYEHOLD_' + name.slice('SKYNET_'.length)] = value;
+      }
+    }
     const child = spawn(process.execPath, [this.entry].concat(this.args), {
       env,
       stdio: ['ignore', 'pipe', 'pipe']

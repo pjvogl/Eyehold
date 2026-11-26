@@ -17,10 +17,10 @@ const FIXTURE = join(REPO, 'dev', 'fixtures', 'seed-workspace');
 const SIDECAR = join(REPO, 'sidecar', 'index.js');
 
 // Mock UI tests only need a label, but live audit uses this model for a real provider call.
-export const DEFAULT_MODEL = process.env.SKYNET_DEFAULT_MODEL
-  || process.env.EYEHOLD_DEFAULT_MODEL
+export const DEFAULT_MODEL = process.env.EYEHOLD_DEFAULT_MODEL
+  || process.env.SKYNET_DEFAULT_MODEL
   || 'anthropic/claude-sonnet-4.6';
-export const PLACEHOLDER_KEY = process.env.SKYNET_OPENROUTER_KEY || 'sk-or-shoot-placeholder';
+export const PLACEHOLDER_KEY = process.env.EYEHOLD_OPENROUTER_KEY || process.env.SKYNET_OPENROUTER_KEY || 'sk-or-shoot-placeholder';
 
 // Copy the golden fixture into a fresh scratch dir and stamp a current timestamp + model so the
 // server save wins the boot-time reconcile against any stale localStorage on the same port.
@@ -50,17 +50,20 @@ export async function isUp(url) { try { const r = await fetch(url); return r.ok;
 
 // Boot the sidecar in DEV SEED mode. Returns the child process (caller owns teardown).
 export function bootSeededSidecar({ port, model = DEFAULT_MODEL, key = PLACEHOLDER_KEY, scratchDir, fullAccess = true, env: extraEnv = {} }) {
-  const env = {
-    ...process.env,
-    ...extraEnv,
-    SKYNET_DEV: '1',
-    SKYNET_WORKSPACES: scratchDir,
-    SKYNET_PORT: String(port),
-    SKYNET_DEFAULT_MODEL: model,
-    SKYNET_OPENROUTER_KEY: key,
-  };
-  if (fullAccess) env.SKYNET_FULL_ACCESS = '1';
-  else delete env.SKYNET_FULL_ACCESS;
+  const env = { ...process.env, ...extraEnv };
+  for (const [name, value] of Object.entries(env)) {
+    if (name.startsWith('SKYNET_')) {
+      const eyehold = 'EYEHOLD_' + name.slice('SKYNET_'.length);
+      if (env[eyehold] == null) env[eyehold] = value;
+    }
+  }
+  env.EYEHOLD_DEV = '1';
+  env.EYEHOLD_WORKSPACES = scratchDir;
+  env.EYEHOLD_PORT = String(port);
+  env.EYEHOLD_DEFAULT_MODEL = model;
+  env.EYEHOLD_OPENROUTER_KEY = key;
+  if (fullAccess) env.EYEHOLD_FULL_ACCESS = '1';
+  else delete env.EYEHOLD_FULL_ACCESS;
   return spawn(process.execPath, [SIDECAR], { cwd: REPO, env, stdio: 'ignore' });
 }
 

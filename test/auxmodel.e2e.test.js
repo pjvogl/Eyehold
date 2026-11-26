@@ -124,7 +124,7 @@ async function settle(state, stableMs, maxMs) {
   }
 }
 
-const COMMON = { SKYNET_QUEST_REFRESH: '0', SKYNET_FULL_ACCESS: '1' };
+const COMMON = { EYEHOLD_QUEST_REFRESH: '0', EYEHOLD_FULL_ACCESS: '1' };
 
 (async () => {
   // ---- ARM A — aux routing + effort + skill-review tool-capability fallback --------------------------------
@@ -132,9 +132,9 @@ const COMMON = { SKYNET_QUEST_REFRESH: '0', SKYNET_FULL_ACCESS: '1' };
     const mock = await startMock({});
     const fixture = SidecarFixture.create({
       prefix: 'sk-auxmodel-a-',
-      // SKYNET_SKILL_REVIEW_EVERY 1: the skill review rides the skill nudge (turns since the skillbase last changed),
+      // EYEHOLD_SKILL_REVIEW_EVERY 1: the skill review rides the skill nudge (turns since the skillbase last changed),
       // so a bar of 1 makes this one-turn run DUE and the review fork fires for the routing assertions below.
-      env: Object.assign({ SKYNET_OPENROUTER_BASE: mock.base, EYEHOLD_AUX_MODEL: AUX_MODEL, SKYNET_AUX_BUDGET: '0', SKYNET_SKILL_REVIEW_EVERY: '1' }, COMMON)
+      env: Object.assign({ EYEHOLD_OPENROUTER_BASE: mock.base, EYEHOLD_AUX_MODEL: AUX_MODEL, EYEHOLD_AUX_BUDGET: '0', EYEHOLD_SKILL_REVIEW_EVERY: '1' }, COMMON)
     });
     await fixture.start();
     try {
@@ -164,7 +164,7 @@ const COMMON = { SKYNET_QUEST_REFRESH: '0', SKYNET_FULL_ACCESS: '1' };
     const mock = await startMock({ runContext: 10, toolTurn: true });
     const fixture = SidecarFixture.create({
       prefix: 'sk-auxmodel-b-',
-      env: Object.assign({ SKYNET_OPENROUTER_BASE: mock.base, EYEHOLD_AUX_MODEL: AUX_MODEL }, COMMON)
+      env: Object.assign({ EYEHOLD_OPENROUTER_BASE: mock.base, EYEHOLD_AUX_MODEL: AUX_MODEL }, COMMON)
     });
     await fixture.start();
     try {
@@ -203,7 +203,7 @@ const COMMON = { SKYNET_QUEST_REFRESH: '0', SKYNET_FULL_ACCESS: '1' };
     const mock = await startMock({});
     const fixture = SidecarFixture.create({
       prefix: 'sk-auxmodel-c-',
-      env: Object.assign({ SKYNET_OPENROUTER_BASE: mock.base, SKYNET_AUX_BUDGET: '0' }, COMMON)
+      env: Object.assign({ EYEHOLD_OPENROUTER_BASE: mock.base, EYEHOLD_AUX_BUDGET: '0' }, COMMON)
     });
     await fixture.start();
     try {

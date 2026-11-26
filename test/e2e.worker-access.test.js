@@ -4,7 +4,7 @@
    assert the file actually landed on disk, proving the worker inherited the lead's full-access consent broker.
    No real key/model/browser. NOT in test:fast (child-process boot); run via `npm run test:http`.
 
-   HERMETIC (sec-taint2 09-25): this suite used to spawn index.js by hand with only SKYNET_WORKSPACES set, so the
+   HERMETIC (sec-taint2 09-25): this suite used to spawn index.js by hand with only EYEHOLD_WORKSPACES set, so the
    boot-time keep recovery scanned the REAL %APPDATA%/%LOCALAPPDATA%/~ roots — the exact path that once copied a
    real keep into a test workspace. It now boots through the shared SidecarFixture (scratch APPDATA/LOCALAPPDATA/
    XDG profile) and additionally points USERPROFILE/HOME at that scratch profile, so no profile root the sidecar
@@ -72,8 +72,8 @@ function findFile(dir, name) {
 
 (async () => {
   const mock = await startMockOpenRouter();
-  // SKYNET_FULL_ACCESS = the lead is in full-auto; the worker shares that broker → its fs.write is allowed.
-  const fx = new SidecarFixture({ prefix: 'sk-waccess-', env: { SKYNET_OPENROUTER_BASE: mock.base, SKYNET_FULL_ACCESS: '1' } });
+  // EYEHOLD_FULL_ACCESS = the lead is in full-auto; the worker shares that broker → its fs.write is allowed.
+  const fx = new SidecarFixture({ prefix: 'sk-waccess-', env: { EYEHOLD_OPENROUTER_BASE: mock.base, EYEHOLD_FULL_ACCESS: '1' } });
   // the fixture scrubs APPDATA/LOCALAPPDATA/XDG; USERPROFILE/HOME too, so ~/.local/share can never be a real keep
   fx.env.USERPROFILE = fx.profile; fx.env.HOME = fx.profile;
   const ws = fx.workspace;

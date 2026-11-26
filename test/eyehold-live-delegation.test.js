@@ -4,13 +4,13 @@
 'use strict';
 const fs=require('node:fs'),os=require('node:os'),path=require('node:path'),{spawn}=require('node:child_process');
 const {bootToken,sseQuery}=require('./_httpToken.js');
-const key=process.env.SKYNET_OPENROUTER_KEY||process.env.EYEHOLD_OPENROUTER_KEY||process.env.OPENROUTER_API_KEY;
+const key=process.env.EYEHOLD_OPENROUTER_KEY||process.env.EYEHOLD_OPENROUTER_KEY||process.env.OPENROUTER_API_KEY;
 const model=process.env.EYEHOLD_DELEGATION_MODEL||process.env.EYEHOLD_SMOKE_MODEL||'openai/gpt-4.1-mini';
 if(!key){console.error('Missing real provider key');process.exit(2);}
 const root=fs.mkdtempSync(path.join(os.tmpdir(),'eyehold-live-delegate-'));
 const port=12000+Math.floor(Math.random()*20000);
 const base='http://127.0.0.1:'+port;
-const child=spawn(process.execPath,[path.resolve(__dirname,'../sidecar/index.js')],{env:{...process.env,SKYNET_PORT:String(port),SKYNET_WORKSPACES:root,SKYNET_BUDGET_PER_RUN:'0.20',SKYNET_BUDGET_PER_AGENT:'0.40',SKYNET_BUDGET_PER_DAY:'1.00',SKYNET_BUDGET_GLOBAL:'1.00'},stdio:'ignore'});
+const child=spawn(process.execPath,[path.resolve(__dirname,'../sidecar/index.js')],{env:{...process.env,EYEHOLD_PORT:String(port),EYEHOLD_WORKSPACES:root,EYEHOLD_BUDGET_PER_RUN:'0.20',EYEHOLD_BUDGET_PER_AGENT:'0.40',EYEHOLD_BUDGET_PER_DAY:'1.00',EYEHOLD_BUDGET_GLOBAL:'1.00'},stdio:'ignore'});
 const sleep=n=>new Promise(r=>setTimeout(r,n));
 const wait=async()=>{for(let i=0;i<50;i++){try{const r=await fetch(base+'/api/health');if(r.ok)return;}catch{}await sleep(250);}throw Error('Sidecar did not become healthy');};
 let sseController;

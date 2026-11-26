@@ -6,7 +6,7 @@ const { SidecarFixture } = require('./helpers/sidecar-fixture.js');
 const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
 (async () => {
   const provider = await require('./helpers/overseer-provider.js').startOverseerProvider({ workerDelay: 2500 });
-  const fixture = SidecarFixture.create({ env: { SKYNET_OPENROUTER_BASE: 'http://127.0.0.1:' + provider.server.address().port + '/api/v1', SKYNET_OPENROUTER_KEY: 'sk-or-v1-local-proof', SKYNET_DEFAULT_MODEL: 'test/model', SKYNET_FULL_ACCESS: '1' } });
+  const fixture = SidecarFixture.create({ env: { EYEHOLD_OPENROUTER_BASE: 'http://127.0.0.1:' + provider.server.address().port + '/api/v1', EYEHOLD_OPENROUTER_KEY: 'sk-or-v1-local-proof', EYEHOLD_DEFAULT_MODEL: 'test/model', EYEHOLD_FULL_ACCESS: '1' } });
   try {
     const seed = JSON.parse(fs.readFileSync(path.join(__dirname, '../dev/fixtures/seed-workspace/agent.save.json'), 'utf8'));
     fs.writeFileSync(path.join(fixture.workspace, 'agent.save.json'), JSON.stringify(seed));

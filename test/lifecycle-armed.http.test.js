@@ -16,7 +16,7 @@
 
    NOT covered (honest): a channels-connected reason — connecting a real channel needs a live platform endpoint
    or a bespoke mock; channel connectivity is covered by channels.telegram.e2e.test.js, and the snapshot reads
-   the same channelStatusPayload those tests prove. Short tick (SKYNET_CRON_TICK_MS=300). NOT in test:fast
+   the same channelStatusPayload those tests prove. Short tick (EYEHOLD_CRON_TICK_MS=300). NOT in test:fast
    (child-process boot). Run via `npm run test:http`. Mirrors cron.arm.test.js. */
 'use strict';
 const A = require('./_assert.js');
@@ -33,7 +33,7 @@ function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
 function boot(port, workspaces, attemptsLeft, extraEnv) {
   return new Promise((resolve, reject) => {
     const child = spawn(process.execPath, [INDEX], {
-      env: Object.assign({}, process.env, { SKYNET_PORT: String(port), SKYNET_WORKSPACES: workspaces }, extraEnv || {}),
+      env: Object.assign({}, process.env, { EYEHOLD_PORT: String(port), EYEHOLD_WORKSPACES: workspaces }, extraEnv || {}),
       stdio: ['ignore', 'pipe', 'pipe']
     });
     let out = '', settled = false;
@@ -56,7 +56,7 @@ function boot(port, workspaces, attemptsLeft, extraEnv) {
   const ws = fs.mkdtempSync(path.join(os.tmpdir(), 'sk-lifecycle-'));
   const HALT_FILE = path.join(ws, 'cron.halt.json');
   const LOOPS_HALT_FILE = path.join(ws, 'loops.halt.json');
-  let booted = await boot(8990 + (process.pid % 40), ws, 20, { SKYNET_CRON_TICK_MS: '300' });
+  let booted = await boot(8990 + (process.pid % 40), ws, 20, { EYEHOLD_CRON_TICK_MS: '300' });
   let child = booted.child; let port = booted.port; let getOut = booted.out;
   const B = () => 'http://' + HOST + ':' + port;
   let apiToken = await bootToken(B(), B());
@@ -135,7 +135,7 @@ function boot(port, workspaces, attemptsLeft, extraEnv) {
     A.eq(pausedLife.body.armed, false, 'only a paused routine does not keep the desktop resident');
     A.eq(pausedLife.body.reasons, [], 'paused routine leaves no misleading tray reason');
     try { child.kill(); } catch (_) {} await sleep(250);
-    booted = await boot(port + 100, ws, 20, { SKYNET_CRON_TICK_MS: '300' });
+    booted = await boot(port + 100, ws, 20, { EYEHOLD_CRON_TICK_MS: '300' });
     child = booted.child; port = booted.port; getOut = booted.out;
     apiToken = await bootToken(B(), B());
     A.eq((await j('GET', '/api/lifecycle/armed')).body.armed, false, 'paused-only keep stays idle after restart');
@@ -180,7 +180,7 @@ function boot(port, workspaces, attemptsLeft, extraEnv) {
 
     // ---- RESTART: the halt is durable (armed intent kept, timer stays down) ----
     try { child.kill(); } catch (_) {} await sleep(250);
-    booted = await boot(port + 100, ws, 20, { SKYNET_CRON_TICK_MS: '300' });
+    booted = await boot(port + 100, ws, 20, { EYEHOLD_CRON_TICK_MS: '300' });
     child = booted.child; port = booted.port; getOut = booted.out;
     apiToken = await bootToken(B(), B());
     const rebootCron = await j('GET', '/api/cron');
@@ -241,7 +241,7 @@ function boot(port, workspaces, attemptsLeft, extraEnv) {
     try { child.kill(); } catch (_) {} await sleep(250);
     fs.rmdirSync(HALT_FILE); fs.writeFileSync(HALT_FILE, cronBeforeFault);
     fs.rmdirSync(LOOPS_HALT_FILE); fs.writeFileSync(LOOPS_HALT_FILE, loopsBeforeFault);
-    booted = await boot(port + 100, ws, 20, { SKYNET_CRON_TICK_MS: '300' });
+    booted = await boot(port + 100, ws, 20, { EYEHOLD_CRON_TICK_MS: '300' });
     child = booted.child; port = booted.port; getOut = booted.out;
     apiToken = await bootToken(B(), B());
     const failedRebootCron = await j('GET', '/api/cron');
@@ -280,7 +280,7 @@ function boot(port, workspaces, attemptsLeft, extraEnv) {
       schedule: { kind: 'once', runAt: new Date().toISOString() },
       finalization: { runId: 'completed-run', state: 'pending', deliver: 'local', nextAttemptAt: new Date(Date.now() + 3600000).toISOString() }
     }] }));
-    booted = await boot(port + 100, ws, 20, { SKYNET_CRON_TICK_MS: '300' });
+    booted = await boot(port + 100, ws, 20, { EYEHOLD_CRON_TICK_MS: '300' });
     child = booted.child; port = booted.port; getOut = booted.out;
     apiToken = await bootToken(B(), B());
     const pendingLife = await j('GET', '/api/lifecycle/armed');

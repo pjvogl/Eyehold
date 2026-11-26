@@ -11,9 +11,9 @@
         advanced by ~the spend.
 
    Requires a real key in the environment (the secret never touches the repo or a flag):
-     PowerShell:  $env:SKYNET_OPENROUTER_KEY="sk-or-v1-..."; node test/live.smoke.js
-     bash:        SKYNET_OPENROUTER_KEY="sk-or-v1-..." node test/live.smoke.js
-   Optional:  SKYNET_SMOKE_MODEL (default anthropic/claude-sonnet-4.6 — live + caching-capable). */
+     PowerShell:  $env:EYEHOLD_OPENROUTER_KEY="sk-or-v1-..."; node test/live.smoke.js
+     bash:        EYEHOLD_OPENROUTER_KEY="sk-or-v1-..." node test/live.smoke.js
+   Optional:  EYEHOLD_SMOKE_MODEL (default anthropic/claude-sonnet-4.6 — live + caching-capable). */
 'use strict';
 const { spawn } = require('child_process');
 const fs = require('fs');
@@ -21,10 +21,10 @@ const path = require('path');
 const os = require('os');
 const { bootToken } = require('./_httpToken.js');
 
-const KEY = process.env.SKYNET_OPENROUTER_KEY || process.env.OPENROUTER_API_KEY || '';
-const MODEL = process.env.SKYNET_SMOKE_MODEL
+const KEY = process.env.EYEHOLD_OPENROUTER_KEY || process.env.OPENROUTER_API_KEY || '';
+const MODEL = process.env.EYEHOLD_SMOKE_MODEL
   || process.env.EYEHOLD_SMOKE_MODEL
-  || process.env.SKYNET_DEFAULT_MODEL
+  || process.env.EYEHOLD_DEFAULT_MODEL
   || process.env.EYEHOLD_DEFAULT_MODEL
   || 'anthropic/claude-sonnet-4.6';
 const HOST = '127.0.0.1';
@@ -43,7 +43,7 @@ const BIG_SYSTEM = ('You are a meticulous operations assistant aboard a space ke
 function boot(port, ws, attemptsLeft) {
   return new Promise((resolve, reject) => {
     const child = spawn(process.execPath, [INDEX], {
-      env: Object.assign({}, process.env, { SKYNET_PORT: String(port), SKYNET_WORKSPACES: ws }),
+      env: Object.assign({}, process.env, { EYEHOLD_PORT: String(port), EYEHOLD_WORKSPACES: ws }),
       stdio: ['ignore', 'pipe', 'pipe']
     });
     let out = '', settled = false;
@@ -72,7 +72,7 @@ async function run(B, body, apiToken) {
 }
 
 (async () => {
-  if (!KEY) { console.log('SKIP: set SKYNET_OPENROUTER_KEY to run the live smoke test (a few ¢ of real spend).'); process.exit(2); }
+  if (!KEY) { console.log('SKIP: set EYEHOLD_OPENROUTER_KEY to run the live smoke test (a few ¢ of real spend).'); process.exit(2); }
   console.log('live.smoke — model ' + MODEL + '\n');
 
   const ws = fs.mkdtempSync(path.join(os.tmpdir(), 'sk-live-'));

@@ -64,7 +64,7 @@ function startMock() {
 function boot(port, env, attemptsLeft) {
   return new Promise((resolve, reject) => {
     const child = spawn(process.execPath, [INDEX], {
-      env: Object.assign({}, process.env, env, { SKYNET_PORT: String(port) }),
+      env: Object.assign({}, process.env, env, { EYEHOLD_PORT: String(port) }),
       stdio: ['ignore', 'pipe', 'pipe']
     });
     let output = '';
@@ -114,13 +114,13 @@ async function drive(B, token, marker) {
   const mock = await startMock();
   const workspace = fs.mkdtempSync(path.join(os.tmpdir(), 'eyehold-credrotate-'));
   const { child, port } = await boot(8940 + (process.pid % 30), {
-    SKYNET_WORKSPACES: workspace,
-    SKYNET_OPENROUTER_BASE: mock.base,
-    SKYNET_OPENROUTER_KEY: 'KEYA',
-    SKYNET_KEY_POOL_OPENROUTER: 'KEYB',
-    SKYNET_QUEST_REFRESH: '0',
-    SKYNET_SKILL_REVIEW: '0',
-    SKYNET_SKILL_CURATOR: '0'
+    EYEHOLD_WORKSPACES: workspace,
+    EYEHOLD_OPENROUTER_BASE: mock.base,
+    EYEHOLD_OPENROUTER_KEY: 'KEYA',
+    EYEHOLD_KEY_POOL_OPENROUTER: 'KEYB',
+    EYEHOLD_QUEST_REFRESH: '0',
+    EYEHOLD_SKILL_REVIEW: '0',
+    EYEHOLD_SKILL_CURATOR: '0'
   }, 20);
   const B = `http://${HOST}:${port}`;
   try {

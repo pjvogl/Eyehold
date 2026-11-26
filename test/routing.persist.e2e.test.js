@@ -29,10 +29,10 @@ function boot(port, env, attemptsLeft) {
   return new Promise((resolve, reject) => {
     const child = spawn(process.execPath, [INDEX], {
       env: Object.assign({}, process.env, env, {
-        SKYNET_PORT: String(port),
+        EYEHOLD_PORT: String(port),
         // zero network dependence: no provider keys → the catalog warm fails closed offline
-        OPENROUTER_KEY: '', OPENROUTER_API_KEY: '', EYEHOLD_OPENROUTER_KEY: '', SKYNET_OPENROUTER_KEY: '',
-        EYEHOLD_OPENROUTER_API_KEY: '', SKYNET_OPENROUTER_API_KEY: ''
+        OPENROUTER_KEY: '', OPENROUTER_API_KEY: '', EYEHOLD_OPENROUTER_KEY: '', EYEHOLD_OPENROUTER_KEY: '',
+        EYEHOLD_OPENROUTER_API_KEY: '', EYEHOLD_OPENROUTER_API_KEY: ''
       }),
       stdio: ['ignore', 'pipe', 'pipe']
     });
@@ -89,7 +89,7 @@ function cyclicPlan() {
 (async () => {
   const ws = fs.mkdtempSync(path.join(os.tmpdir(), 'sk-routing-persist-'));
   const FILE = path.join(ws, 'routing.plan.json');
-  const env = { SKYNET_WORKSPACES: ws };
+  const env = { EYEHOLD_WORKSPACES: ws };
   const readFile = () => JSON.parse(fs.readFileSync(FILE, 'utf8'));
   let b = await boot(8960 + (process.pid % 50), env, 20);
   try {

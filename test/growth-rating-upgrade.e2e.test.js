@@ -26,7 +26,7 @@ const mock = http.createServer((req,res) => {
 async function boot() {
   const socket=http.createServer();socket.listen(0,'127.0.0.1');await once(socket,'listening');const port=socket.address().port;await new Promise(r=>socket.close(r));
   base='http://127.0.0.1:'+port;
-  child=spawn(process.execPath,['sidecar/index.js'],{cwd:root,env:{...process.env,SKYNET_WORKSPACES:workspace,SKYNET_PORT:String(port),SKYNET_OPENROUTER_BASE:'http://127.0.0.1:'+mock.address().port+'/api/v1',SKYNET_OPENROUTER_KEY:'sk-or-v1-rating-fixture',SKYNET_EDGE_TTS:'0'},stdio:['ignore','pipe','pipe']});
+  child=spawn(process.execPath,['sidecar/index.js'],{cwd:root,env:{...process.env,EYEHOLD_WORKSPACES:workspace,EYEHOLD_PORT:String(port),EYEHOLD_OPENROUTER_BASE:'http://127.0.0.1:'+mock.address().port+'/api/v1',EYEHOLD_OPENROUTER_KEY:'sk-or-v1-rating-fixture',EYEHOLD_EDGE_TTS:'0'},stdio:['ignore','pipe','pipe']});
   await new Promise((resolve,reject)=>{let out='';const timer=setTimeout(()=>reject(new Error('rating server boot timeout: '+out.slice(-1200))),30000);const read=d=>{out+=d;if(out.includes('Open in your browser:')){clearTimeout(timer);resolve();}};child.stdout.on('data',read);child.stderr.on('data',read);child.once('exit',c=>{clearTimeout(timer);reject(new Error('boot exit '+c+out.slice(-1200)));});});
   headers={'Content-Type':'application/json','X-Eyehold-Token':await bootToken(base,base),Origin:base};
 }

@@ -17,7 +17,7 @@
      the grounding guard — ZERO quests minted, a visible 'rejected' ledger note (never a silent no-mint),
      and the cycle still spends the cadence (no tick-hammering).
 
-   ZERO network, zero real key (SKYNET_OPENROUTER_KEY is a fake routed to the mock). Part of test:http. */
+   ZERO network, zero real key (EYEHOLD_OPENROUTER_KEY is a fake routed to the mock). Part of test:http. */
 'use strict';
 
 const A = require('./_assert.js');
@@ -64,7 +64,7 @@ function startMock(refreshReply) {
 
 function boot(port, env, attemptsLeft) {
   return new Promise((resolve, reject) => {
-    const child = spawn(process.execPath, [INDEX], { env: Object.assign({}, process.env, env, { SKYNET_PORT: String(port) }), stdio: ['ignore', 'pipe', 'pipe'] });
+    const child = spawn(process.execPath, [INDEX], { env: Object.assign({}, process.env, env, { EYEHOLD_PORT: String(port) }), stdio: ['ignore', 'pipe', 'pipe'] });
     let out = '', settled = false;
     const onData = d => {
       out += d.toString();
@@ -108,9 +108,9 @@ async function pollRefresh(B, token, pred, label, ms) {
   throw new Error('timed out waiting for: ' + label + '\nlast /api/quests/refresh: ' + JSON.stringify(last));
 }
 
-const QUIET = { SKYNET_THREAD_MINE: '0', SKYNET_SKILL_REVIEW: '0', SKYNET_SKILL_CURATOR: '0', SKYNET_SCOUT: '0' };
+const QUIET = { EYEHOLD_THREAD_MINE: '0', EYEHOLD_SKILL_REVIEW: '0', EYEHOLD_SKILL_CURATOR: '0', EYEHOLD_SCOUT: '0' };
 // the cycle's standalone provider seam: env key + default model route the aux call to the mock.
-const CRED = { SKYNET_OPENROUTER_KEY: 'sk-or-v1-questrefresh-fake', SKYNET_DEFAULT_MODEL: 'test/model' };
+const CRED = { EYEHOLD_OPENROUTER_KEY: 'sk-or-v1-questrefresh-fake', EYEHOLD_DEFAULT_MODEL: 'test/model' };
 
 (async () => {
   // Automatic and manual auxiliary work share the keep's persisted spending pools.
@@ -123,8 +123,8 @@ const CRED = { SKYNET_OPENROUTER_KEY: 'sk-or-v1-questrefresh-fake', SKYNET_DEFAU
     let child = null;
     try {
       const up = await boot(9280 + (process.pid % 10), Object.assign({}, CRED, QUIET, {
-        SKYNET_WORKSPACES: ws, SKYNET_OPENROUTER_BASE: mock.base,
-        SKYNET_BUDGET_PER_DAY: scope !== 'global' ? '1' : '0', SKYNET_BUDGET_GLOBAL: scope === 'global' ? '1' : '0'
+        EYEHOLD_WORKSPACES: ws, EYEHOLD_OPENROUTER_BASE: mock.base,
+        EYEHOLD_BUDGET_PER_DAY: scope !== 'global' ? '1' : '0', EYEHOLD_BUDGET_GLOBAL: scope === 'global' ? '1' : '0'
       }), 20); child = up.child;
       const base = 'http://' + HOST + ':' + up.port, token = await bootToken(base, base);
       const headers = { Origin: base, 'X-Eyehold-Token': token, 'Content-Type': 'application/json' };
@@ -171,7 +171,7 @@ const CRED = { SKYNET_OPENROUTER_KEY: 'sk-or-v1-questrefresh-fake', SKYNET_DEFAU
     let token = '';
     try {
       for (let restart = 0; restart < 2; restart++) {
-        const up = await boot(8975 + (process.pid % 10), Object.assign({ SKYNET_WORKSPACES: ws, SKYNET_OPENROUTER_BASE: mock.base }, CRED, QUIET), 20);
+        const up = await boot(8975 + (process.pid % 10), Object.assign({ EYEHOLD_WORKSPACES: ws, EYEHOLD_OPENROUTER_BASE: mock.base }, CRED, QUIET), 20);
         child = up.child;
         B = 'http://' + HOST + ':' + up.port;
         token = await bootToken(B, B);
@@ -187,7 +187,7 @@ const CRED = { SKYNET_OPENROUTER_KEY: 'sk-or-v1-questrefresh-fake', SKYNET_DEFAU
         await sleep(200);
       }
 
-      const up = await boot(8975 + (process.pid % 10), Object.assign({ SKYNET_WORKSPACES: ws, SKYNET_OPENROUTER_BASE: mock.base }, CRED, QUIET), 20);
+      const up = await boot(8975 + (process.pid % 10), Object.assign({ EYEHOLD_WORKSPACES: ws, EYEHOLD_OPENROUTER_BASE: mock.base }, CRED, QUIET), 20);
       child = up.child;
       B = 'http://' + HOST + ':' + up.port;
       token = await bootToken(B, B);
@@ -212,7 +212,7 @@ const CRED = { SKYNET_OPENROUTER_KEY: 'sk-or-v1-questrefresh-fake', SKYNET_DEFAU
     seedEvidence(ws); seedAutonomy(ws, 'wait');
     let child = null;
     try {
-      let up = await boot(9125 + (process.pid % 10), Object.assign({ SKYNET_WORKSPACES: ws }, CRED, QUIET), 20);
+      let up = await boot(9125 + (process.pid % 10), Object.assign({ EYEHOLD_WORKSPACES: ws }, CRED, QUIET), 20);
       child = up.child;
       let base = 'http://' + HOST + ':' + up.port, token = await bootToken(base, base);
       const post = async (route, body) => (await fetch(base + route, { method: 'POST', headers: { Origin: base, 'X-Eyehold-Token': token, 'Content-Type': 'application/json' }, body: JSON.stringify(body) })).json();
@@ -223,7 +223,7 @@ const CRED = { SKYNET_OPENROUTER_KEY: 'sk-or-v1-questrefresh-fake', SKYNET_DEFAU
       const paused = await post('/api/quests/disposition', { id: minted.id, disposition: 'too_big', reason: 'Need a beginner class first' });
       A.ok(paused.ok && paused.quest.disposition.type === 'too_big', 'real route retains a too-big reason');
       child.kill(); await new Promise(resolve => child.once('exit', resolve)); child = null;
-      up = await boot(up.port, Object.assign({ SKYNET_WORKSPACES: ws }, CRED, QUIET), 20); child = up.child;
+      up = await boot(up.port, Object.assign({ EYEHOLD_WORKSPACES: ws }, CRED, QUIET), 20); child = up.child;
       base = 'http://' + HOST + ':' + up.port; token = await bootToken(base, base);
       const persisted = await (await fetch(base + '/api/quests', { headers: { Origin: base, 'X-Eyehold-Token': token } })).json();
       A.eq(persisted.quests.find(q => q.id === minted.id).disposition.reason, 'Need a beginner class first', 'pause survives sidecar restart');
@@ -233,7 +233,7 @@ const CRED = { SKYNET_OPENROUTER_KEY: 'sk-or-v1-questrefresh-fake', SKYNET_DEFAU
       const journey = await (await fetch(base + '/api/journey', { headers: { Origin: base, 'X-Eyehold-Token': token } })).json();
       A.ok(journey.journey.outcomes.some(o => o.questId === minted.id && o.verifiedBy === 'commander-confirmed'), 'life action folds into Journey with Commander-confirmed provenance');
       child.kill(); await new Promise(resolve => child.once('exit', resolve)); child = null;
-      up = await boot(up.port, Object.assign({ SKYNET_WORKSPACES: ws }, CRED, QUIET), 20); child = up.child;
+      up = await boot(up.port, Object.assign({ EYEHOLD_WORKSPACES: ws }, CRED, QUIET), 20); child = up.child;
       base = 'http://' + HOST + ':' + up.port; token = await bootToken(base, base);
       const final = await (await fetch(base + '/api/quests', { headers: { Origin: base, 'X-Eyehold-Token': token } })).json();
       const done = final.quests.find(q => q.id === minted.id);
@@ -255,7 +255,7 @@ const CRED = { SKYNET_OPENROUTER_KEY: 'sk-or-v1-questrefresh-fake', SKYNET_DEFAU
     seedEvidence(ws); seedAutonomy(ws, 'wait');
     let child = null;
     try {
-      const up = await boot(9165 + (process.pid % 10), Object.assign({ SKYNET_WORKSPACES: ws, SKYNET_OPENROUTER_BASE: mock.base }, CRED, QUIET), 20); child = up.child;
+      const up = await boot(9165 + (process.pid % 10), Object.assign({ EYEHOLD_WORKSPACES: ws, EYEHOLD_OPENROUTER_BASE: mock.base }, CRED, QUIET), 20); child = up.child;
       const base = 'http://' + HOST + ':' + up.port, token = await bootToken(base, base);
       const headers = { Origin: base, 'X-Eyehold-Token': token, 'Content-Type': 'application/json' };
       const post = async (route, body) => (await fetch(base + route, { method: 'POST', headers, body: JSON.stringify(body || {}) })).json();
@@ -316,7 +316,7 @@ const CRED = { SKYNET_OPENROUTER_KEY: 'sk-or-v1-questrefresh-fake', SKYNET_DEFAU
     const ws = fs.mkdtempSync(path.join(os.tmpdir(), 'sk-qrefresh-e2e-'));
     seedEvidence(ws);   // NO _keep.questrefresh.json: a never-cycled state is due at the boot look
     seedAutonomy(ws);
-    const { child, port } = await boot(8985 + (process.pid % 10), Object.assign({ SKYNET_WORKSPACES: ws, SKYNET_OPENROUTER_BASE: mock.base }, CRED, QUIET), 20);
+    const { child, port } = await boot(8985 + (process.pid % 10), Object.assign({ EYEHOLD_WORKSPACES: ws, EYEHOLD_OPENROUTER_BASE: mock.base }, CRED, QUIET), 20);
     const B = 'http://' + HOST + ':' + port;
     try {
       const token = await bootToken(B, B);
@@ -380,7 +380,7 @@ const CRED = { SKYNET_OPENROUTER_KEY: 'sk-or-v1-questrefresh-fake', SKYNET_DEFAU
     const ws = fs.mkdtempSync(path.join(os.tmpdir(), 'sk-qrefresh-e2e-'));
     seedEvidence(ws);
     seedAutonomy(ws);
-    const { child, port } = await boot(8995 + (process.pid % 10), Object.assign({ SKYNET_WORKSPACES: ws, SKYNET_OPENROUTER_BASE: mock.base }, CRED, QUIET), 20);
+    const { child, port } = await boot(8995 + (process.pid % 10), Object.assign({ EYEHOLD_WORKSPACES: ws, EYEHOLD_OPENROUTER_BASE: mock.base }, CRED, QUIET), 20);
     const B = 'http://' + HOST + ':' + port;
     try {
       const token = await bootToken(B, B);
@@ -406,7 +406,7 @@ const CRED = { SKYNET_OPENROUTER_KEY: 'sk-or-v1-questrefresh-fake', SKYNET_DEFAU
     const ws = fs.mkdtempSync(path.join(os.tmpdir(), 'sk-qrefresh-e2e-'));
     // NO dossier, NO goal, NO activity: the due boot-look cycle must SKIP before spending the model call.
     seedAutonomy(ws);
-    const { child, port } = await boot(9005 + (process.pid % 10), Object.assign({ SKYNET_WORKSPACES: ws, SKYNET_OPENROUTER_BASE: mock.base }, CRED, QUIET), 20);
+    const { child, port } = await boot(9005 + (process.pid % 10), Object.assign({ EYEHOLD_WORKSPACES: ws, EYEHOLD_OPENROUTER_BASE: mock.base }, CRED, QUIET), 20);
     const B = 'http://' + HOST + ':' + port;
     try {
       const token = await bootToken(B, B);
@@ -436,7 +436,7 @@ const CRED = { SKYNET_OPENROUTER_KEY: 'sk-or-v1-questrefresh-fake', SKYNET_DEFAU
       id: 'q:' + i, title: 'Seeded generated ' + i, kind: 'generated', agentId: null, createdBy: 'system:quest-refresh',
       contract: { type: 'attest', key: '' }, status: 'open', createdAt: 1
     })) }));
-    const { child, port } = await boot(9015 + (process.pid % 10), Object.assign({ SKYNET_WORKSPACES: ws, SKYNET_OPENROUTER_BASE: mock.base }, CRED, QUIET), 20);
+    const { child, port } = await boot(9015 + (process.pid % 10), Object.assign({ EYEHOLD_WORKSPACES: ws, EYEHOLD_OPENROUTER_BASE: mock.base }, CRED, QUIET), 20);
     const B = 'http://' + HOST + ':' + port;
     try {
       const token = await bootToken(B, B);
@@ -472,7 +472,7 @@ const CRED = { SKYNET_OPENROUTER_KEY: 'sk-or-v1-questrefresh-fake', SKYNET_DEFAU
     fs.writeFileSync(path.join(ws, '_commander.dossier.json'), JSON.stringify({
       block: 'COMMANDER DOSSIER\n- Goals: grow the youtube channel to sustainable income\n- Stack: davinci resolve, notion'
     }));
-    const { child, port } = await boot(9025 + (process.pid % 10), Object.assign({ SKYNET_WORKSPACES: ws, SKYNET_OPENROUTER_BASE: mock.base }, CRED, QUIET), 20);
+    const { child, port } = await boot(9025 + (process.pid % 10), Object.assign({ EYEHOLD_WORKSPACES: ws, EYEHOLD_OPENROUTER_BASE: mock.base }, CRED, QUIET), 20);
     const B = 'http://' + HOST + ':' + port;
     const post = (body) => fetch(B + '/api/quests/refresh/northstar', { method: 'POST', headers: { 'X-Eyehold-Token': token, Origin: B, 'Content-Type': 'application/json' }, body: JSON.stringify(body) }).then(r => r.json());
     let token;
@@ -548,7 +548,7 @@ const CRED = { SKYNET_OPENROUTER_KEY: 'sk-or-v1-questrefresh-fake', SKYNET_DEFAU
       threads: [{ id: 't:1', title: 'Publish episode 3', spec: '', state: 'declined', declineReason: 'not now', createdAt: 1, updatedAt: 1 }],
       declined: []
     }));
-    const { child, port } = await boot(9035 + (process.pid % 10), Object.assign({ SKYNET_WORKSPACES: ws, SKYNET_OPENROUTER_BASE: mock.base }, CRED, QUIET), 20);
+    const { child, port } = await boot(9035 + (process.pid % 10), Object.assign({ EYEHOLD_WORKSPACES: ws, EYEHOLD_OPENROUTER_BASE: mock.base }, CRED, QUIET), 20);
     const B = 'http://' + HOST + ':' + port;
     try {
       const token = await bootToken(B, B);

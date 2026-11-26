@@ -63,7 +63,7 @@ const ATTENDED = { surface: 'interactive', isTask: true, ownerTrusted: true, rem
   A.eq(driver.log[7].action, 'hotkey', 'hotkey action routed to driver');
   A.eq(T.win32DriverRequested({}), false, 'local win32 desktop driver is opt-in');
   A.eq(T.win32DriverRequested({ EYEHOLD_COMPUTER_DRIVER: 'win32' }), true, 'EYEHOLD_COMPUTER_DRIVER=win32 enables local desktop driver');
-  A.eq(T.win32DriverRequested({ SKYNET_COMPUTER_DRIVER: 'true' }), true, 'legacy SKYNET_COMPUTER_DRIVER=true enables local desktop driver');
+  A.eq(T.win32DriverRequested({ EYEHOLD_COMPUTER_DRIVER: 'true' }), true, 'legacy EYEHOLD_COMPUTER_DRIVER=true enables local desktop driver');
   A.eq(typeof C._internals.makeWin32DesktopDriver, 'function', 'computer tool exposes local desktop driver internals for tests');
 
   // driver activation: desktop-shell presence is NEVER authority. A reviewed explicit opt-in is

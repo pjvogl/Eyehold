@@ -94,7 +94,7 @@ function openaiTools(env, options) {
 
 async function chargeDailyCap(kv, env, tokens, now) {
   const cap = limits(env);
-  const key = dayKey(now || Date.now());
+  const key = dayKey(now);
   const raw = kv && await kv.get(key);
   const state = raw ? JSON.parse(raw) : { tokens: 0, cents: 0 };
   const addedCents = tokens > 0 ? Math.max(1, Math.ceil(tokens / 1000)) : 0;
@@ -112,7 +112,7 @@ async function chargeDailyCap(kv, env, tokens, now) {
 
 async function runScheduledCycle(env, options) {
   const opts = options || {};
-  const now = opts.now || Date.now();
+  const now = opts.now;
   const gate = await chargeDailyCap(env.BILLING_KV, env, 0, now);
   if (!gate.ok) return gate;
   const tools = openaiTools(env, {

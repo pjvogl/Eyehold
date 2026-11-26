@@ -1,7 +1,7 @@
 /* node test/skills.gate.prompt.e2e.test.js — the bytes that actually reach the provider.
 
    Everything else about this gate can be true while the one thing that matters is false: what the
-   MODEL is told. So this boots the real sidecar against a MOCK OpenRouter (SKYNET_OPENROUTER_BASE)
+   MODEL is told. So this boots the real sidecar against a MOCK OpenRouter (EYEHOLD_OPENROUTER_BASE)
    that captures each request, drives real runs through /api/run, and asserts on the composed system
    prompt itself:
      - a clean saved skill is indexed with its summary
@@ -60,7 +60,7 @@ function startMockOpenRouter() {
 function boot(port, env, attemptsLeft) {
   return new Promise((resolve, reject) => {
     const child = spawn(process.execPath, [INDEX], {
-      env: Object.assign({}, process.env, env, { SKYNET_PORT: String(port) }), stdio: ['ignore', 'pipe', 'pipe']
+      env: Object.assign({}, process.env, env, { EYEHOLD_PORT: String(port) }), stdio: ['ignore', 'pipe', 'pipe']
     });
     let out = '', settled = false;
     const onData = d => {
@@ -96,8 +96,8 @@ function seed(ws) {
   A.eq(risky.guardAction, 'ask', 'seed precondition: the risky skill carries an ask verdict');
 
   const { child, port } = await boot(8900 + (process.pid % 30), {
-    SKYNET_WORKSPACES: ws, SKYNET_OPENROUTER_BASE: mock.base,
-    SKYNET_SKILL_REVIEW: '0', SKYNET_SKILL_CURATOR: '0'
+    EYEHOLD_WORKSPACES: ws, EYEHOLD_OPENROUTER_BASE: mock.base,
+    EYEHOLD_SKILL_REVIEW: '0', EYEHOLD_SKILL_CURATOR: '0'
   }, 20);
   const B = 'http://' + HOST + ':' + port;
   try {

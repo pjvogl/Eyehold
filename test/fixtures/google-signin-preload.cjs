@@ -10,7 +10,7 @@ const catalog = require('../../sidecar/mcp/catalog.js');
 const hosts = new Set(['accounts.google.com', 'oauth2.googleapis.com', 'openidconnect.googleapis.com', 'gmail.googleapis.com', 'www.googleapis.com', 'docs.googleapis.com', 'sheets.googleapis.com']);
 const lookup = dns.promises.lookup;
 dns.promises.lookup = (host, options) => hosts.has(host) ? Promise.resolve([{ address: '142.250.1.1', family: 4 }]) : lookup(host, options);
-const root = () => process.env.EYEHOLD_WORKSPACES || process.env.SKYNET_WORKSPACES;
+const root = () => process.env.EYEHOLD_WORKSPACES || process.env.EYEHOLD_WORKSPACES;
 const marker = name => path.join(root(), name);
 const originalRename = fs.renameSync;
 fs.renameSync = function (from, to) {

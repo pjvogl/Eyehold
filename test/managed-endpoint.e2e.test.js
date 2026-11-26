@@ -25,9 +25,9 @@ test('managed chat ignores stale request endpoints and credentials across provid
   const stale = 'http://127.0.0.1:' + closed.address().port + '/v1';
   await new Promise(r => closed.close(r));
   const fixture = new SidecarFixture({ prefix: 'managed-endpoint-proof-', timeoutMs: 20000, env: {
-    EYEHOLD_CREDITS_URL: '', SKYNET_CREDITS_URL: '', EYEHOLD_CREDITS_TOKEN: '', SKYNET_CREDITS_TOKEN: '',
-    SKYNET_DEFAULT_MODEL: 'test/model', EYEHOLD_CLOUD_URL: cloud, EYEHOLD_OPENROUTER_KEY: '', SKYNET_OPENROUTER_KEY: '',
-    OPENROUTER_API_KEY: '', OPENROUTER_KEY: '', SKYNET_AUX_BUDGET: '0', SKYNET_FULL_ACCESS: '1'
+    EYEHOLD_CREDITS_URL: '', EYEHOLD_CREDITS_URL: '', EYEHOLD_CREDITS_TOKEN: '', EYEHOLD_CREDITS_TOKEN: '',
+    EYEHOLD_DEFAULT_MODEL: 'test/model', EYEHOLD_CLOUD_URL: cloud, EYEHOLD_OPENROUTER_KEY: '', EYEHOLD_OPENROUTER_KEY: '',
+    OPENROUTER_API_KEY: '', OPENROUTER_KEY: '', EYEHOLD_AUX_BUDGET: '0', EYEHOLD_FULL_ACCESS: '1'
   } });
   const savedPath = path.join(fixture.workspace, '.secrets/credits.json');
   fs.mkdirSync(path.dirname(savedPath), { recursive: true });
@@ -63,7 +63,7 @@ test('managed chat ignores stale request endpoints and credentials across provid
     }
     // Without a linked account, arbitrary request credentials must not impersonate managed access.
     fs.unlinkSync(savedPath);
-    await fixture.restart({ EYEHOLD_CREDITS_TOKEN: '', SKYNET_CREDITS_TOKEN: '' });
+    await fixture.restart({ EYEHOLD_CREDITS_TOKEN: '', EYEHOLD_CREDITS_TOKEN: '' });
     const beforeUnlinked = calls.length;
     const unlinked = await fixture.request('/api/run', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ provider: 'eyehold', key: 'fixture-custom-key', baseUrl: cloud + '/v1', model: 'test/model', messages: [{ role: 'user', content: 'hello' }] }) });
     assert.equal(unlinked.status, 400);

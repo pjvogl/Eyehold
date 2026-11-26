@@ -91,9 +91,9 @@ function startMockModel() {
   const llm = await startMockModel();
   const lanPort = await freePort();
   const fx = new SidecarFixture({ prefix: 'sn-remote-e2e-', timeoutMs: 15000, env: {
-    SKYNET_OPENROUTER_BASE: llm.base, EYEHOLD_OPENROUTER_BASE: llm.base,
-    SKYNET_OPENROUTER_KEY: 'sk-or-v1-remote-fake', EYEHOLD_OPENROUTER_KEY: 'sk-or-v1-remote-fake',
-    SKYNET_DEFAULT_MODEL: 'test/model', EYEHOLD_DEFAULT_MODEL: 'test/model',
+    EYEHOLD_OPENROUTER_BASE: llm.base, EYEHOLD_OPENROUTER_BASE: llm.base,
+    EYEHOLD_OPENROUTER_KEY: 'sk-or-v1-remote-fake', EYEHOLD_OPENROUTER_KEY: 'sk-or-v1-remote-fake',
+    EYEHOLD_DEFAULT_MODEL: 'test/model', EYEHOLD_DEFAULT_MODEL: 'test/model',
     EYEHOLD_REMOTE_PORT: String(lanPort), EYEHOLD_REMOTE_LAN: '1', EYEHOLD_REMOTE_RELAY: 'off',
     EYEHOLD_REMOTE_PUSH_HOSTS: '127.0.0.1'
   } });

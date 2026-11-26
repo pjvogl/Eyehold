@@ -9,7 +9,7 @@ const root=fs.mkdtempSync(path.join(os.tmpdir(),'eyehold-finance-http-'));
 const port=21000+Math.floor(Math.random()*16000),base='http://127.0.0.1:'+port;
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));let child;
 async function start(){
- const env={...process.env,SKYNET_PORT:String(port),SKYNET_WORKSPACES:root,SKYNET_BUDGET_GLOBAL:'0',SKYNET_BUDGET_PER_DAY:'0'};
+ const env={...process.env,EYEHOLD_PORT:String(port),EYEHOLD_WORKSPACES:root,EYEHOLD_BUDGET_GLOBAL:'0',EYEHOLD_BUDGET_PER_DAY:'0'};
  for(const name of Object.keys(env))if(/KEY|TOKEN|SECRET/.test(name))delete env[name];
  child=spawn(process.execPath,[path.resolve(__dirname,'../sidecar/index.js')],{env,stdio:'ignore'});
  for(let i=0;i<70;i++){try{if((await fetch(base+'/api/health')).ok)return;}catch{}await sleep(150);}throw Error('Sidecar failed to start');

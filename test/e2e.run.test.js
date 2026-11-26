@@ -1,5 +1,5 @@
 /* node test/e2e.run.test.js — TRUE end-to-end: boot the ACTUAL sidecar process and drive a streaming run over
-   HTTP through the real loop/provider/cost/SSE path, with the upstream LLM mocked via SKYNET_OPENROUTER_BASE.
+   HTTP through the real loop/provider/cost/SSE path, with the upstream LLM mocked via EYEHOLD_OPENROUTER_BASE.
    This is the gap the readiness sweep flagged: every other suite is unit/replay-level; nothing booted the real
    server AND streamed a run. Here we POST /api/run and assert the NDJSON carries agent.run.start, agent.token
    deltas, a reconciled agent.cost, and exactly one agent.run.end{reason:'done'} — no real key, no network. */
@@ -122,7 +122,7 @@ function startMockOpenRouter() {
 function boot(port, env, attemptsLeft) {
   return new Promise((resolve, reject) => {
     const child = spawn(process.execPath, [INDEX], {
-      env: Object.assign({}, process.env, env, { SKYNET_PORT: String(port) }), stdio: ['ignore', 'pipe', 'pipe']
+      env: Object.assign({}, process.env, env, { EYEHOLD_PORT: String(port) }), stdio: ['ignore', 'pipe', 'pipe']
     });
     let out = '', settled = false;
     const onData = d => {
@@ -140,7 +140,7 @@ function boot(port, env, attemptsLeft) {
 (async () => {
   const mock = await startMockOpenRouter();
   const ws = fs.mkdtempSync(path.join(os.tmpdir(), 'sk-e2e-'));
-  const env = { SKYNET_WORKSPACES: ws, SKYNET_OPENROUTER_BASE: mock.base, SKYNET_STREAM_KA_MS: '40' };   // fast heartbeat so the KA test observes it in ms, not 20s
+  const env = { EYEHOLD_WORKSPACES: ws, EYEHOLD_OPENROUTER_BASE: mock.base, EYEHOLD_STREAM_KA_MS: '40' };   // fast heartbeat so the KA test observes it in ms, not 20s
   const { child, port } = await boot(8840 + (process.pid % 50), env, 20);
   const B = 'http://' + HOST + ':' + port;
   try {

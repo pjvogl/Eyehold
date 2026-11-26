@@ -58,7 +58,7 @@ function startMock() {
   const mock = await startMock();
   const fixture = SidecarFixture.create({
     prefix: 'sk-market-e2e-',
-    env: { NODE_OPTIONS: PRELOAD, SKYNET_OPENROUTER_BASE: mock.base, SKYNET_SKILL_REVIEW: '0', SKYNET_SKILL_CURATOR: '0', SKYNET_QUEST_REFRESH: '0' },
+    env: { NODE_OPTIONS: PRELOAD, EYEHOLD_OPENROUTER_BASE: mock.base, EYEHOLD_SKILL_REVIEW: '0', EYEHOLD_SKILL_CURATOR: '0', EYEHOLD_QUEST_REFRESH: '0' },
     timeoutMs: 20000
   });
   await fixture.start();
@@ -130,7 +130,7 @@ function startMock() {
     const key = signing.generateKeyPair();
     const der = crypto.createPrivateKey(key.privateKeyPem).export({ format: 'der', type: 'pkcs8' }).toString('base64');
     await fixture.restart({
-      EYEHOLD_TEST_MARKET_REVOKE: TARGET, EYEHOLD_TEST_MARKET_KEY: der, SKYNET_SKILL_MARKET_PULL_MS: '1000',
+      EYEHOLD_TEST_MARKET_REVOKE: TARGET, EYEHOLD_TEST_MARKET_KEY: der, EYEHOLD_SKILL_MARKET_PULL_MS: '1000',
       EYEHOLD_SKILL_MARKET_KEYS: JSON.stringify([{ id: 'test-market', publicKey: key.publicKey }])
     });
     // no market request from the test: only the keep's own background check can find the pull
@@ -146,7 +146,7 @@ function startMock() {
     A.ok(again.body.ok === false && /was pulled from the skill market/.test(again.body.error || ''), 're-installing it is refused: ' + again.body.error);
 
     // ---- 8. a replayed older catalog can't bring it back ----
-    await fixture.restart({ SKYNET_SKILL_MARKET_PULL_MS: '1000' });   // the fixture serves the original, older serial again
+    await fixture.restart({ EYEHOLD_SKILL_MARKET_PULL_MS: '1000' });   // the fixture serves the original, older serial again
     m = await market();
     A.ok(m.ok === false && /older than one this keep already saw/.test(m.error || ''), 'the older catalog is refused: ' + m.error);
     await sleep(2500);   // two background checks against the older pulled list

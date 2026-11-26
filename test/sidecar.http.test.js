@@ -1,5 +1,5 @@
 /* node test/sidecar.http.test.js — boot-level end-to-end test of the real Node host (sidecar/index.js).
-   Spawns the actual server as a child process against an ISOLATED temp workspace (SKYNET_WORKSPACES) on an
+   Spawns the actual server as a child process against an ISOLATED temp workspace (EYEHOLD_WORKSPACES) on an
    ephemeral port, then drives the cost-spine HTTP surface over real sockets:
      - GET  /api/health
      - GET  /api/budget/status        (reads a PRE-SEEDED ledger -> pools reflect persisted spend)
@@ -32,76 +32,76 @@ function boot(port, workspaces, attemptsLeft, extraEnv) {
   return new Promise((resolve, reject) => {
     const child = spawn(process.execPath, [INDEX], {
       env: Object.assign({}, process.env, {
-        SKYNET_PORT: String(port),
-        SKYNET_WORKSPACES: workspaces,
+        EYEHOLD_PORT: String(port),
+        EYEHOLD_WORKSPACES: workspaces,
         // keep the managed-credits path OFF for the default boot so /api/credits proves the unconfigured 404 path
         // deterministically (a dev machine with these set in the ambient env would otherwise flip the assertion).
-        EYEHOLD_CREDITS_URL: '', SKYNET_CREDITS_URL: '',
-        EYEHOLD_CREDITS_API_KEY: '', SKYNET_CREDITS_API_KEY: '',
-        EYEHOLD_CREDITS_ACCOUNT: '', SKYNET_CREDITS_ACCOUNT: '',
-        SKYNET_IPC_TOKEN: IPC_TOKEN,
+        EYEHOLD_CREDITS_URL: '', EYEHOLD_CREDITS_URL: '',
+        EYEHOLD_CREDITS_API_KEY: '', EYEHOLD_CREDITS_API_KEY: '',
+        EYEHOLD_CREDITS_ACCOUNT: '', EYEHOLD_CREDITS_ACCOUNT: '',
+        EYEHOLD_IPC_TOKEN: IPC_TOKEN,
         // clear the OpenRouter key so the voice routes' no-key fallback path is deterministic (a dev machine
         // with the key in its ambient env would otherwise hit the network and flip the {text:''} assertions).
-        OPENROUTER_KEY: '', EYEHOLD_OPENROUTER_KEY: '', SKYNET_OPENROUTER_KEY: '',
-        OPENROUTER_API_KEY: '', EYEHOLD_OPENROUTER_API_KEY: '', SKYNET_OPENROUTER_API_KEY: '',
+        OPENROUTER_KEY: '', EYEHOLD_OPENROUTER_KEY: '', EYEHOLD_OPENROUTER_KEY: '',
+        OPENROUTER_API_KEY: '', EYEHOLD_OPENROUTER_API_KEY: '', EYEHOLD_OPENROUTER_API_KEY: '',
         ELEVENLABS_API_KEY: '',   // same determinism for the ElevenLabs TTS branch's no-key degrade
         // V-EDGE: disable the free Edge neural floor in the DEFAULT boot so the no-key TTS test degrades to
         // {fallback:true} deterministically without any network attempt. The dedicated edge-loopback boot below
-        // re-enables it (SKYNET_EDGE_TTS + host/port overrides) to prove the round-trip offline.
-        SKYNET_EDGE_TTS: '0', EYEHOLD_EDGE_TTS: '0',
+        // re-enables it (EYEHOLD_EDGE_TTS + host/port overrides) to prove the round-trip offline.
+        EYEHOLD_EDGE_TTS: '0', EYEHOLD_EDGE_TTS: '0',
         // /api/tts now resolves a CHAIN of credentials (openrouter → gemini → openai) — clear the Gemini
         // keys too, or an ambient dev key would hit the network and flip the no-key degrade assertions.
-        GEMINI_API_KEY: '', EYEHOLD_GEMINI_API_KEY: '', SKYNET_GEMINI_API_KEY: '',
-        GOOGLE_API_KEY: '', EYEHOLD_GOOGLE_API_KEY: '', SKYNET_GOOGLE_API_KEY: '',
-        GOOGLE_AI_API_KEY: '', EYEHOLD_GOOGLE_AI_API_KEY: '', SKYNET_GOOGLE_AI_API_KEY: '',
+        GEMINI_API_KEY: '', EYEHOLD_GEMINI_API_KEY: '', EYEHOLD_GEMINI_API_KEY: '',
+        GOOGLE_API_KEY: '', EYEHOLD_GOOGLE_API_KEY: '', EYEHOLD_GOOGLE_API_KEY: '',
+        GOOGLE_AI_API_KEY: '', EYEHOLD_GOOGLE_AI_API_KEY: '', EYEHOLD_GOOGLE_AI_API_KEY: '',
         OPENAI_API_KEY: '',
         EYEHOLD_OPENAI_API_KEY: '',
-        SKYNET_OPENAI_API_KEY: '',
+        EYEHOLD_OPENAI_API_KEY: '',
         CUSTOM_OPENAI_KEY: '',
         EYEHOLD_CUSTOM_OPENAI_KEY: '',
-        SKYNET_CUSTOM_OPENAI_KEY: '',
+        EYEHOLD_CUSTOM_OPENAI_KEY: '',
         XAI_API_KEY: '',
         EYEHOLD_XAI_API_KEY: '',
-        SKYNET_XAI_API_KEY: '',
+        EYEHOLD_XAI_API_KEY: '',
         X_AI_API_KEY: '',
         EYEHOLD_X_AI_API_KEY: '',
-        SKYNET_X_AI_API_KEY: '',
+        EYEHOLD_X_AI_API_KEY: '',
         GROQ_API_KEY: '',
         EYEHOLD_GROQ_API_KEY: '',
-        SKYNET_GROQ_API_KEY: '',
+        EYEHOLD_GROQ_API_KEY: '',
         MISTRAL_API_KEY: '',
         EYEHOLD_MISTRAL_API_KEY: '',
-        SKYNET_MISTRAL_API_KEY: '',
+        EYEHOLD_MISTRAL_API_KEY: '',
         DEEPSEEK_API_KEY: '',
         EYEHOLD_DEEPSEEK_API_KEY: '',
-        SKYNET_DEEPSEEK_API_KEY: '',
+        EYEHOLD_DEEPSEEK_API_KEY: '',
         TOGETHER_API_KEY: '',
         EYEHOLD_TOGETHER_API_KEY: '',
-        SKYNET_TOGETHER_API_KEY: '',
+        EYEHOLD_TOGETHER_API_KEY: '',
         FIREWORKS_API_KEY: '',
         EYEHOLD_FIREWORKS_API_KEY: '',
-        SKYNET_FIREWORKS_API_KEY: '',
+        EYEHOLD_FIREWORKS_API_KEY: '',
         PERPLEXITY_API_KEY: '',
         EYEHOLD_PERPLEXITY_API_KEY: '',
-        SKYNET_PERPLEXITY_API_KEY: '',
+        EYEHOLD_PERPLEXITY_API_KEY: '',
         CEREBRAS_API_KEY: '',
         EYEHOLD_CEREBRAS_API_KEY: '',
-        SKYNET_CEREBRAS_API_KEY: '',
+        EYEHOLD_CEREBRAS_API_KEY: '',
         CUSTOM_OPENAI_BASE_URL: '',
         EYEHOLD_CUSTOM_OPENAI_BASE_URL: '',
-        SKYNET_CUSTOM_OPENAI_BASE_URL: '',
+        EYEHOLD_CUSTOM_OPENAI_BASE_URL: '',
         // GROUND_UP_AUDIT P2: the packaged app injects its version via EYEHOLD_APP_VERSION (src-tauri/ isn't a
         // bundled resource, so /api/version's conf lookup returns blank there). Set it so /api/version proves the
         // Budget-legibility pass (2026-07-23): the SHIPPED defaults are now perRun $10 with every cross-run pool
         // UNGOVERNED (0). This suite's budget assertions prove ENFORCEMENT mechanics (status pools, one-click
         // resume), so pin the old governed caps via env — deterministic regardless of shipped defaults or a dev
-        // machine's ambient SKYNET_BUDGET_* values.
-        SKYNET_BUDGET_PER_RUN: '3', SKYNET_BUDGET_PER_AGENT: '5', SKYNET_BUDGET_PER_DAY: '40', SKYNET_BUDGET_GLOBAL: '100',
+        // machine's ambient EYEHOLD_BUDGET_* values.
+        EYEHOLD_BUDGET_PER_RUN: '3', EYEHOLD_BUDGET_PER_AGENT: '5', EYEHOLD_BUDGET_PER_DAY: '40', EYEHOLD_BUDGET_GLOBAL: '100',
         // env-first fallback + honest appSource='env' below.
         EYEHOLD_APP_VERSION: '9.9.9-http-test',
         // Clear any ambient build stamp so the DEFAULT boot deterministically exercises the harness git-describe
         // fallback (harnessSource='git'); a per-boot `extraEnv` (below) sets it to prove the env override wins.
-        EYEHOLD_BUILD_DESCRIBE: '', SKYNET_BUILD_DESCRIBE: ''
+        EYEHOLD_BUILD_DESCRIBE: '', EYEHOLD_BUILD_DESCRIBE: ''
       }, extraEnv || {}),
       stdio: ['ignore', 'pipe', 'pipe']
     });
@@ -724,7 +724,7 @@ function boot(port, workspaces, attemptsLeft, extraEnv) {
     const ckOk = await j('GET', '/api/checkpoint?agent=agent');
     A.eq(ckOk.status, 200, 'GET /api/checkpoint happy path stays 200');
     A.ok(Array.isArray(ckOk.body.snapshots), '/api/checkpoint 200 body carries {snapshots:[...]}');
-    A.eq(ckOk.body.enabled, true, 'checkpoints are ON by default (no EYEHOLD_/SKYNET_CHECKPOINTS set) — Lane C5');
+    A.eq(ckOk.body.enabled, true, 'checkpoints are ON by default (no EYEHOLD_/EYEHOLD_CHECKPOINTS set) — Lane C5');
     // the truthful-failure branch itself (structural: the catch now reports 500, never a masking 200-empty)
     const idxSrcHonesty = fs.readFileSync(INDEX, 'utf8');
     const serveRunsSrc = idxSrcHonesty.slice(idxSrcHonesty.indexOf('function serveRuns'), idxSrcHonesty.indexOf('function serveInsights'));
@@ -1416,8 +1416,8 @@ function boot(port, workspaces, attemptsLeft, extraEnv) {
       const edgeWs = fs.mkdtempSync(path.join(os.tmpdir(), 'sk-edge-'));
       const eb = await boot(port + 300, edgeWs, 20, {
         // re-enable the Edge floor (the base env disabled it) and aim it at our loopback WS server over plain http
-        SKYNET_EDGE_TTS: '1', EYEHOLD_EDGE_TTS: '1',
-        SKYNET_EDGE_TTS_HOST: '127.0.0.1', SKYNET_EDGE_TTS_PORT: String(wsPort), SKYNET_EDGE_TTS_INSECURE: '1'
+        EYEHOLD_EDGE_TTS: '1', EYEHOLD_EDGE_TTS: '1',
+        EYEHOLD_EDGE_TTS_HOST: '127.0.0.1', EYEHOLD_EDGE_TTS_PORT: String(wsPort), EYEHOLD_EDGE_TTS_INSECURE: '1'
       });
       const EB = 'http://' + HOST + ':' + eb.port;
       try {
@@ -1447,9 +1447,9 @@ function boot(port, workspaces, attemptsLeft, extraEnv) {
         {
           const shipWs = fs.mkdtempSync(path.join(os.tmpdir(), 'sk-ship-'));
           const sb = await boot(port + 350, shipWs, 20, {
-            EYEHOLD_LOCAL_VOICE: '0', SKYNET_LOCAL_VOICE: '0',
-            SKYNET_EDGE_TTS: '1', EYEHOLD_EDGE_TTS: '1',
-            SKYNET_EDGE_TTS_HOST: '127.0.0.1', SKYNET_EDGE_TTS_PORT: String(wsPort), SKYNET_EDGE_TTS_INSECURE: '1'
+            EYEHOLD_LOCAL_VOICE: '0', EYEHOLD_LOCAL_VOICE: '0',
+            EYEHOLD_EDGE_TTS: '1', EYEHOLD_EDGE_TTS: '1',
+            EYEHOLD_EDGE_TTS_HOST: '127.0.0.1', EYEHOLD_EDGE_TTS_PORT: String(wsPort), EYEHOLD_EDGE_TTS_INSECURE: '1'
           });
           const SB = 'http://' + HOST + ':' + sb.port;
           try {
@@ -1499,7 +1499,7 @@ function boot(port, workspaces, attemptsLeft, extraEnv) {
       await new Promise(r => groqMock.listen(0, '127.0.0.1', r));
       const groqPort = groqMock.address().port;
       const gWs = fs.mkdtempSync(path.join(os.tmpdir(), 'sk-groq-'));
-      const gb = await boot(port + 400, gWs, 20, { GROQ_API_KEY: 'test', SKYNET_GROQ_BASE: 'http://127.0.0.1:' + groqPort });
+      const gb = await boot(port + 400, gWs, 20, { GROQ_API_KEY: 'test', EYEHOLD_GROQ_BASE: 'http://127.0.0.1:' + groqPort });
       const GB = 'http://' + HOST + ':' + gb.port;
       try {
         const gtok = await bootToken(GB, GB);

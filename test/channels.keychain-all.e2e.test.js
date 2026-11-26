@@ -2,7 +2,7 @@
    Telegram/Discord keychain law on the desktop build (EYEHOLD_DESKTOP_SHELL=1).
 
    The shell (src-tauri/src/credentials.rs) migrates plaintext channel tokens into the OS keychain BEFORE the
-   sidecar spawns and injects them as SKYNET_<ID>_TOKEN. This test boots the REAL sidecar in the three states that
+   sidecar spawns and injects them as EYEHOLD_<ID>_TOKEN. This test boots the REAL sidecar in the three states that
    migration can leave behind and proves each one keeps the channel configured without ever destroying the last
    copy of a secret:
 
@@ -35,7 +35,7 @@ function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
 function boot(port, env, attemptsLeft) {
   return new Promise((resolve, reject) => {
     const child = spawn(process.execPath, [INDEX], {
-      env: Object.assign({}, process.env, env, { SKYNET_PORT: String(port), EYEHOLD_PORT: String(port) }),
+      env: Object.assign({}, process.env, env, { EYEHOLD_PORT: String(port), EYEHOLD_PORT: String(port) }),
       stdio: ['ignore', 'pipe', 'pipe']
     });
     let out = '', settled = false;
@@ -69,11 +69,11 @@ async function withSidecar(label, portBase, secrets, extraEnv, fn) {
   const file = path.join(ws, 'channels', 'secrets.json');
   fs.writeFileSync(file, JSON.stringify(secrets));
   const env = Object.assign({
-    SKYNET_WORKSPACES: ws, EYEHOLD_WORKSPACES: ws,
-    EYEHOLD_DESKTOP_SHELL: '1', SKYNET_DESKTOP_SHELL: '1',
-    SKYNET_IPC_TOKEN: IPC, EYEHOLD_IPC_TOKEN: IPC,
-    SKYNET_SLACK_TOKEN: '', EYEHOLD_SLACK_TOKEN: '', SKYNET_MATRIX_TOKEN: '', EYEHOLD_MATRIX_TOKEN: '',
-    SKYNET_OPENROUTER_KEY: '', EYEHOLD_OPENROUTER_KEY: '',
+    EYEHOLD_WORKSPACES: ws, EYEHOLD_WORKSPACES: ws,
+    EYEHOLD_DESKTOP_SHELL: '1', EYEHOLD_DESKTOP_SHELL: '1',
+    EYEHOLD_IPC_TOKEN: IPC, EYEHOLD_IPC_TOKEN: IPC,
+    EYEHOLD_SLACK_TOKEN: '', EYEHOLD_SLACK_TOKEN: '', EYEHOLD_MATRIX_TOKEN: '', EYEHOLD_MATRIX_TOKEN: '',
+    EYEHOLD_OPENROUTER_KEY: '', EYEHOLD_OPENROUTER_KEY: '',
     APPDATA: path.join(home, 'Roaming'), LOCALAPPDATA: path.join(home, 'Local'), USERPROFILE: home, HOME: home
   }, extraEnv);
   let child = null;
@@ -131,7 +131,7 @@ async function withSidecar(label, portBase, secrets, extraEnv, fn) {
 
   // ---- 2. migration SUCCEEDED: token-free file + keychain env -> configured, and nothing is written back ----
   await withSidecar('ok', 9410, baseRecords(false), {
-    SKYNET_SLACK_TOKEN: SLACK, EYEHOLD_SLACK_TOKEN: SLACK, SKYNET_MATRIX_TOKEN: MATRIX, EYEHOLD_MATRIX_TOKEN: MATRIX
+    EYEHOLD_SLACK_TOKEN: SLACK, EYEHOLD_SLACK_TOKEN: SLACK, EYEHOLD_MATRIX_TOKEN: MATRIX, EYEHOLD_MATRIX_TOKEN: MATRIX
   }, async ({ api, disk }) => {
     const st = (await api('GET', '/api/channels/status')).j;
     A.ok(st.slack.configured === true && st.slack.durable === true, 'migrated: Slack configured + durable from the keychain env');
@@ -145,7 +145,7 @@ async function withSidecar(label, portBase, secrets, extraEnv, fn) {
 
   // ---- 3. keychain written but the shell's strip-write failed: the sidecar finishes the strip at boot ----
   await withSidecar('strip', 9460, baseRecords(true), {
-    SKYNET_SLACK_TOKEN: SLACK, EYEHOLD_SLACK_TOKEN: SLACK, SKYNET_MATRIX_TOKEN: 'syt_DIFFERENT', EYEHOLD_MATRIX_TOKEN: 'syt_DIFFERENT'
+    EYEHOLD_SLACK_TOKEN: SLACK, EYEHOLD_SLACK_TOKEN: SLACK, EYEHOLD_MATRIX_TOKEN: 'syt_DIFFERENT', EYEHOLD_MATRIX_TOKEN: 'syt_DIFFERENT'
   }, async ({ api, disk }) => {
     const d = disk();
     A.ok(!('token' in d.slack), 'leftover: a plaintext copy matching the keychain env is stripped at boot');

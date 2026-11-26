@@ -29,7 +29,7 @@ const { isTaskDirective } = require('../frontend/app/classify.js');
   });
   await new Promise(resolve => upstream.listen(0, '127.0.0.1', resolve));
   const baseUrl = 'http://127.0.0.1:' + upstream.address().port + '/v1';
-  const fixture = new SidecarFixture({ env: { SKYNET_FULL_ACCESS: '1', EYEHOLD_FULL_ACCESS: '1', SKYNET_OLLAMA_MAX_CHAT_TOKENS: '512', SKYNET_OLLAMA_MAX_TOKENS: '4096' } });
+  const fixture = new SidecarFixture({ env: { EYEHOLD_FULL_ACCESS: '1', EYEHOLD_FULL_ACCESS: '1', EYEHOLD_OLLAMA_MAX_CHAT_TOKENS: '512', EYEHOLD_OLLAMA_MAX_TOKENS: '4096' } });
   try {
     const store = makeTaskBriefStore({ fs, path, workspaces: fixture.workspace });
     await store.prepare({ id: 'pending-brief', key: 'stream:pending-reply', text: 'Write a report', agentId: 'agent', streamId: 'pending-reply' }, Date.now());

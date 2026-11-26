@@ -10,7 +10,7 @@
      (f) POST /v1/runs                           -> 202 {run_id,status:started}; events SSE reaches run.completed
      (g) concurrency cap                         -> a 2nd run while one is in flight answers 429 (rate_limit_exceeded)
 
-   The upstream LLM is mocked via SKYNET_OPENROUTER_BASE (no real key, no network). Modeled on e2e.run.test.js. */
+   The upstream LLM is mocked via EYEHOLD_OPENROUTER_BASE (no real key, no network). Modeled on e2e.run.test.js. */
 'use strict';
 const A = require('./_assert.js');
 const http = require('http');
@@ -68,7 +68,7 @@ function startMockOpenRouter() {
 function boot(port, env, attemptsLeft) {
   return new Promise((resolve, reject) => {
     const child = spawn(process.execPath, [INDEX], {
-      env: Object.assign({}, process.env, env, { SKYNET_PORT: String(port) }), stdio: ['ignore', 'pipe', 'pipe']
+      env: Object.assign({}, process.env, env, { EYEHOLD_PORT: String(port) }), stdio: ['ignore', 'pipe', 'pipe']
     });
     let out = '', settled = false;
     const onData = d => {
@@ -92,12 +92,12 @@ async function drain(res) {
 
 (async () => {
   const mock = await startMockOpenRouter();
-  const baseEnv = { SKYNET_OPENROUTER_BASE: mock.base, OPENROUTER_KEY: 'sk-or-e2e-fake', EYEHOLD_DEFAULT_MODEL: 'test/model' };
+  const baseEnv = { EYEHOLD_OPENROUTER_BASE: mock.base, OPENROUTER_KEY: 'sk-or-e2e-fake', EYEHOLD_DEFAULT_MODEL: 'test/model' };
 
   // ---- (a) NO key configured -> /v1/* is disabled (403) ----------------------------------------------------
   {
     const ws = fs.mkdtempSync(path.join(os.tmpdir(), 'sk-v1-nokey-'));
-    const { child, port } = await boot(8940 + (process.pid % 40), Object.assign({ SKYNET_WORKSPACES: ws }, baseEnv), 20);
+    const { child, port } = await boot(8940 + (process.pid % 40), Object.assign({ EYEHOLD_WORKSPACES: ws }, baseEnv), 20);
     const B = 'http://' + HOST + ':' + port;
     try {
       const models = await fetch(B + '/v1/models');
@@ -115,7 +115,7 @@ async function drain(res) {
 
   // ---- keyed sidecar for (b)-(g). max-concurrent 1 so the 429 path is cheap to induce. ---------------------
   const ws = fs.mkdtempSync(path.join(os.tmpdir(), 'sk-v1-'));
-  const env = Object.assign({ SKYNET_WORKSPACES: ws, EYEHOLD_API_KEY: KEY, EYEHOLD_V1_MAX_CONCURRENT: '1' }, baseEnv);
+  const env = Object.assign({ EYEHOLD_WORKSPACES: ws, EYEHOLD_API_KEY: KEY, EYEHOLD_V1_MAX_CONCURRENT: '1' }, baseEnv);
   const { child, port } = await boot(8970 + (process.pid % 40), env, 20);
   const B = 'http://' + HOST + ':' + port;
   const auth = { Authorization: 'Bearer ' + KEY };
@@ -213,7 +213,7 @@ async function drain(res) {
     // review findings: /v1 keeps its pre-#96 admission and never shares a per-agent durable brief or fires paid aux passes
     A.ok(/const imageTask = isTask && !o\.toolsOptional \?/.test(core) && /const directDomainTask = isTask && !o\.toolsOptional \?/.test(core), 'a /v1 request is never classified as an image/domain task ("Image task blocked: no STUDIO" on a text model)');
     A.ok(/if \(isTask && o\.taskKey && !o\.toolsOptional\) \{/.test(core), 'a /v1 request never prepares the per-agent durable brief (one client\'s open question cannot swallow the next client\'s request)');
-    A.ok(/isTask && !o\.toolsOptional && !internal && _skillToolsOn/.test(core) && /SKYNET_SCOUT !== '0' && isTask && !o\.toolsOptional && _auxDone/.test(core), 'external /v1 traffic never fires skill review or scout on the user\'s key');
+    A.ok(/isTask && !o\.toolsOptional && !internal && _skillToolsOn/.test(core) && /EYEHOLD_SCOUT !== '0' && isTask && !o\.toolsOptional && _auxDone/.test(core), 'external /v1 traffic never fires skill review or scout on the user\'s key');
   }
   A.report('openai-compat.e2e');
 })().catch(e => { console.error(e); process.exit(1); });

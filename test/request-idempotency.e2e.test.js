@@ -13,7 +13,7 @@ const {SidecarFixture}=require('./helpers/sidecar-fixture');
  });
  await new Promise(r=>provider.listen(0,'127.0.0.1',r));
  const base='http://127.0.0.1:'+provider.address().port+'/api/v1';
- const fx=SidecarFixture.create({timeoutMs:20000,env:{EYEHOLD_OPENROUTER_BASE:base,SKYNET_OPENROUTER_BASE:base,EYEHOLD_OPENROUTER_KEY:'fake-retry',SKYNET_OPENROUTER_KEY:'fake-retry',EYEHOLD_DEFAULT_MODEL:'test/retry',EYEHOLD_API_KEY:'retry-probe-long-test-key'}});
+ const fx=SidecarFixture.create({timeoutMs:20000,env:{EYEHOLD_OPENROUTER_BASE:base,EYEHOLD_OPENROUTER_BASE:base,EYEHOLD_OPENROUTER_KEY:'fake-retry',EYEHOLD_OPENROUTER_KEY:'fake-retry',EYEHOLD_DEFAULT_MODEL:'test/retry',EYEHOLD_API_KEY:'retry-probe-long-test-key'}});
  const post=(key,stream=false,content='RETRY_PROBE same task')=>fetch(fx.baseUrl+'/v1/chat/completions',{method:'POST',headers:{Authorization:'Bearer retry-probe-long-test-key','Content-Type':'application/json','Idempotency-Key':key},body:JSON.stringify({stream,messages:[{role:'user',content}]})});
  try {
   await fx.start();

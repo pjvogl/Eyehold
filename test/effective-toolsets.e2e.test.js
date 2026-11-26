@@ -5,7 +5,7 @@ const path = require('path');
 const A = require('./_assert.js');
 const { SidecarFixture } = require('./helpers/sidecar-fixture.js');
 (async () => {
-  const fixture = SidecarFixture.create({ prefix: 'eyehold-effective-toolsets-', timeoutMs: 15000, env: { SKYNET_FULL_ACCESS: '0' } });
+  const fixture = SidecarFixture.create({ prefix: 'eyehold-effective-toolsets-', timeoutMs: 15000, env: { EYEHOLD_FULL_ACCESS: '0' } });
   try {
     fs.writeFileSync(path.join(fixture.workspace, 'agent.roster.json'), JSON.stringify({ version: 1, agents: [
       { agentId: 'ask', name: 'Ask agent', approvalMode: 'ask', executionProfile: 'trusted-project' },

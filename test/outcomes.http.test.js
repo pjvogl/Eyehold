@@ -16,7 +16,7 @@ const { SidecarFixture } = require('./helpers/sidecar-fixture.js');
 (async () => {
   const fixture = SidecarFixture.create({
     prefix: 'sk-outcomes-',
-    env: { OPENROUTER_KEY: '', EYEHOLD_OPENROUTER_KEY: '', SKYNET_OPENROUTER_KEY: '' }
+    env: { OPENROUTER_KEY: '', EYEHOLD_OPENROUTER_KEY: '', EYEHOLD_OPENROUTER_KEY: '' }
   });
   const ws = fixture.workspace;
   const now = Date.now();

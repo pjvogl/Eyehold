@@ -8,7 +8,7 @@
        already-migrated channel (keychain has it) is stripped but NOT re-imported; a tokenless config is a no-op.
      • the sidecar host resolves tokens from runtime/env and strips before writing under EYEHOLD_DESKTOP_SHELL,
        and exposes a token-gated /api/channels/token push that never echoes the token.
-     • the Rust shell injects SKYNET_<ID>_TOKEN from the keychain, migrates plaintext, and gates the command. */
+     • the Rust shell injects EYEHOLD_<ID>_TOKEN from the keychain, migrates plaintext, and gates the command. */
 'use strict';
 const A = require('./_assert.js');
 const fs = require('fs');
@@ -244,7 +244,7 @@ const root = path.resolve(__dirname, '..');
   A.ok(/channelTokenRuntime/.test(src), 'index.js has a runtime channel-token layer');
   A.ok(/TELEGRAM_BOT_TOKENS/.test(src) && /telegramBotSecretId/.test(src), 'index.js loads per-bot keychain tokens from the bounded JSON spawn payload');
   A.ok(/dynamicTelegram[\s\S]*?telegramBotSecretId/.test(src), 'the live token push uses the same closed numeric Telegram bot key namespace');
-  A.ok(/SKYNET_TELEGRAM_TOKEN|TELEGRAM_TOKEN/.test(src) && /DISCORD_TOKEN/.test(src), 'index.js seeds tokens from env');
+  A.ok(/EYEHOLD_TELEGRAM_TOKEN|TELEGRAM_TOKEN/.test(src) && /DISCORD_TOKEN/.test(src), 'index.js seeds tokens from env');
   A.ok(/DESKTOP_SHELL\s*\?\s*channelSecretsMod\.stripTokens\(obj,\s*isChannelTokenDurable\)/.test(src), 'saveChannelSecrets strips secrets DURABILITY-AWARE under the desktop shell (never the last copy)');
   A.ok(/migratePlaintext/.test(src), 'index.js runs the boot migration');
   A.ok(/'\/api\/channels\/token'/.test(src) && /handleSetChannelToken/.test(src), 'index.js wires the token-push route');
@@ -335,19 +335,19 @@ const root = path.resolve(__dirname, '..');
   const nativeRs = mainRs + '\n' + credentialsRs;
   A.ok(/mod credentials;/.test(mainRs), 'main.rs owns one focused native credential module');
   A.ok(/SIDECAR_CHANNEL_TOKEN_ENVS/.test(credentialsRs), 'credentials.rs declares the channel-token env table');
-  A.ok(/"telegram",\s*"SKYNET_TELEGRAM_TOKEN"/.test(credentialsRs) && /"discord",\s*"SKYNET_DISCORD_TOKEN"/.test(credentialsRs), 'credentials.rs maps both channels to their spawn env vars');
-  A.ok(/"slack",\s*"SKYNET_SLACK_TOKEN"/.test(credentialsRs) && /"matrix",\s*"SKYNET_MATRIX_TOKEN"/.test(credentialsRs), 'credentials.rs keychains the Slack pair and the Matrix access token too');
+  A.ok(/"telegram",\s*"EYEHOLD_TELEGRAM_TOKEN"/.test(credentialsRs) && /"discord",\s*"EYEHOLD_DISCORD_TOKEN"/.test(credentialsRs), 'credentials.rs maps both channels to their spawn env vars');
+  A.ok(/"slack",\s*"EYEHOLD_SLACK_TOKEN"/.test(credentialsRs) && /"matrix",\s*"EYEHOLD_MATRIX_TOKEN"/.test(credentialsRs), 'credentials.rs keychains the Slack pair and the Matrix access token too');
   // the Rust env names and the sidecar's CHANNEL_TOKEN_ENV must agree for every keychained channel
   const idx = fs.readFileSync(path.join(root, 'sidecar', 'index.js'), 'utf8');
   const envTable = /const CHANNEL_TOKEN_ENV = \{([^}]*)\}/.exec(idx);
   A.ok(!!envTable, 'index.js declares CHANNEL_TOKEN_ENV');
-  for (const m of credentialsRs.matchAll(/\("([a-z]+)",\s*"SKYNET_([A-Z_]+)"\)/g)) {
+  for (const m of credentialsRs.matchAll(/\("([a-z]+)",\s*"EYEHOLD_([A-Z_]+)"\)/g)) {
     if (!/_TOKEN$/.test(m[2])) continue;
     A.ok(new RegExp('\\b' + m[1] + ":\\s*'" + m[2] + "'").test(envTable ? envTable[1] : ''), 'sidecar reads the ' + m[1] + ' keychain env (' + m[2] + ')');
   }
   A.ok(/format!\("channel:\{channel\}"\)/.test(credentialsRs), 'credentials.rs uses the channel:<id> keychain account');
   A.ok(/read_channel_token\(channel\)/.test(nativeRs) && /set_sidecar_branded_env\(&mut cmd, env_name, token\)/.test(mainRs), 'main.rs injects module-owned keychain tokens into both branded sidecar env aliases at spawn');
-  A.ok(/fn read_telegram_bot_tokens/.test(credentialsRs) && /SKYNET_TELEGRAM_BOT_TOKENS/.test(mainRs), 'the shell injects saved agent-bot keychain tokens at every sidecar spawn');
+  A.ok(/fn read_telegram_bot_tokens/.test(credentialsRs) && /EYEHOLD_TELEGRAM_BOT_TOKENS/.test(mainRs), 'the shell injects saved agent-bot keychain tokens at every sidecar spawn');
   A.ok(/strip_prefix\("telegram:"\)/.test(credentialsRs) && /byte\.is_ascii_digit/.test(credentialsRs), 'the dynamic keychain namespace accepts numeric Telegram bot ids only');
   A.ok(/fn migrate_channel_tokens_from_plaintext/.test(credentialsRs), 'credentials.rs migrates plaintext channel tokens into the keychain');
   A.ok(/fn harness_store_channel_token/.test(mainRs) && /fn harness_has_channel_token/.test(mainRs), 'main.rs preserves the store/has channel-token commands');

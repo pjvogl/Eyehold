@@ -1,6 +1,6 @@
 /* node test/child-env.test.js — helper processes never inherit the keep's secrets (audit 2026-09-25 #13).
 
-   Plants keep secrets in THIS test process's env (the desktop-injected EYEHOLD_/SKYNET_ names, a service key
+   Plants keep secrets in THIS test process's env (the desktop-injected EYEHOLD_ names, a service key
    the sidecar exported, a held secret value re-exported under an innocent name), then spawns REAL node children
    through the guarded child_process and asserts each child cannot see them while it still sees PATH, HOME and the
    user's own vars (including the user's own NPM_TOKEN — theirs, not the keep's). Also pins the rule that every
@@ -14,13 +14,13 @@ const { sanitizeChildEnv } = require('../sidecar/environment.js');
 
 const HELD = 'held-provider-key-CANARY-0123456789';
 const PLANT = {
-  SKYNET_API_TOKEN: 'api-token-CANARY-abcdef',
   EYEHOLD_API_TOKEN: 'api-token-CANARY-abcdef',
-  SKYNET_IPC_TOKEN: 'ipc-token-CANARY-abcdef',
-  SKYNET_OPENAI_API_KEY: 'sk-desktop-injected-CANARY-1234',
-  SKYNET_KEY_POOL_OPENROUTER: 'pool-a-CANARY-123,pool-b-CANARY-456',
+  EYEHOLD_API_TOKEN: 'api-token-CANARY-abcdef',
+  EYEHOLD_IPC_TOKEN: 'ipc-token-CANARY-abcdef',
+  EYEHOLD_OPENAI_API_KEY: 'sk-desktop-injected-CANARY-1234',
+  EYEHOLD_KEY_POOL_OPENROUTER: 'pool-a-CANARY-123,pool-b-CANARY-456',
   EYEHOLD_CREDITS_TOKEN: 'credits-CANARY-7890abcd',
-  SKYNET_TELEGRAM_TOKEN: '123456:telegram-CANARY-abcdefgh',
+  EYEHOLD_TELEGRAM_TOKEN: '123456:telegram-CANARY-abcdefgh',
   ACME_API_KEY: 'service-key-CANARY-exported',     // a KEYS-tab service key the sidecar exported (owned name)
   INNOCENT_LOOKING: HELD,                            // a held secret value under a name that looks harmless
   NPM_TOKEN: 'npm-user-own-token-keep-me',           // the user's own credential: theirs, kept for host helpers
@@ -30,8 +30,8 @@ for (const k of Object.keys(PLANT)) process.env[k] = PLANT[k];
 if (!process.env.HOME && process.env.USERPROFILE) process.env.HOME = process.env.USERPROFILE;
 CE.setKeepSecretSource({ names: () => ['ACME_API_KEY'], values: () => [HELD, 'short'] });
 
-const STRIPPED = ['SKYNET_API_TOKEN', 'EYEHOLD_API_TOKEN', 'SKYNET_IPC_TOKEN', 'SKYNET_OPENAI_API_KEY', 'SKYNET_KEY_POOL_OPENROUTER',
-  'EYEHOLD_CREDITS_TOKEN', 'SKYNET_TELEGRAM_TOKEN', 'ACME_API_KEY', 'INNOCENT_LOOKING'];
+const STRIPPED = ['EYEHOLD_API_TOKEN', 'EYEHOLD_API_TOKEN', 'EYEHOLD_IPC_TOKEN', 'EYEHOLD_OPENAI_API_KEY', 'EYEHOLD_KEY_POOL_OPENROUTER',
+  'EYEHOLD_CREDITS_TOKEN', 'EYEHOLD_TELEGRAM_TOKEN', 'ACME_API_KEY', 'INNOCENT_LOOKING'];
 function checkEnv(env, label) {
   const names = Object.keys(env).map(k => k.toUpperCase());
   for (const k of STRIPPED) A.ok(names.indexOf(k) < 0, label + ': ' + k + ' is stripped');
@@ -57,7 +57,7 @@ function checkEnv(env, label) {
   // a throwing source degrades to the name rules, never a crash
   CE.setKeepSecretSource({ names: () => { throw new Error('boom'); }, values: () => { throw new Error('boom'); } });
   A.notThrows(() => CE.keepChildEnv(process.env), 'a throwing source does not crash the builder');
-  A.ok(!('SKYNET_API_TOKEN' in CE.keepChildEnv(process.env)), 'the name rule still strips with a broken source');
+  A.ok(!('EYEHOLD_API_TOKEN' in CE.keepChildEnv(process.env)), 'the name rule still strips with a broken source');
   CE.setKeepSecretSource({ names: () => ['ACME_API_KEY'], values: () => [HELD] });
 
   // ---- REAL children through the guarded child_process, with NO env option ----
@@ -78,7 +78,7 @@ function checkEnv(env, label) {
   // an explicit env is the caller's decision and passes through untouched
   const explicit = await new Promise((res, rej) => CP.execFile(process.execPath, ['-e', script], { env: Object.assign({}, process.env, { EXPLICIT: '1' }) }, (e, out) => e ? rej(e) : res(JSON.parse(out))));
   A.eq(explicit.EXPLICIT, '1', 'explicit env reaches the child');
-  A.eq(explicit.SKYNET_API_TOKEN, PLANT.SKYNET_API_TOKEN, 'an explicit env is not rewritten by the guard');
+  A.eq(explicit.EYEHOLD_API_TOKEN, PLANT.EYEHOLD_API_TOKEN, 'an explicit env is not rewritten by the guard');
 
   // ---- agent commands: sanitizeChildEnv is the shared strip PLUS the blanket secret-name strip ----
   const agent = sanitizeChildEnv(process.env);

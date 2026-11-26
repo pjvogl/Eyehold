@@ -64,7 +64,7 @@ function makeFakeClaude(root) {
 
 function boot(port, env, attemptsLeft) {
   return new Promise((resolve, reject) => {
-    const child = spawn(process.execPath, [INDEX], { env: Object.assign({}, process.env, env, { SKYNET_PORT: String(port) }), stdio: ['ignore', 'pipe', 'pipe'] });
+    const child = spawn(process.execPath, [INDEX], { env: Object.assign({}, process.env, env, { EYEHOLD_PORT: String(port) }), stdio: ['ignore', 'pipe', 'pipe'] });
     let output = '', settled = false;
     const onData = (data) => {
       output += data.toString();
@@ -88,10 +88,10 @@ function boot(port, env, attemptsLeft) {
   const logFile = path.join(fakeRoot, 'calls.log');
   fs.writeFileSync(logFile, '');
   const { child, port } = await boot(9010 + (process.pid % 30), {
-    SKYNET_WORKSPACES: workspace,
+    EYEHOLD_WORKSPACES: workspace,
     EYEHOLD_CLAUDE_BIN: makeFakeClaude(fakeRoot),
     FAKE_CLAUDE_LOG: logFile,
-    SKYNET_QUEST_REFRESH: '0', SKYNET_SKILL_REVIEW: '0', SKYNET_SKILL_CURATOR: '0'
+    EYEHOLD_QUEST_REFRESH: '0', EYEHOLD_SKILL_REVIEW: '0', EYEHOLD_SKILL_CURATOR: '0'
   }, 20);
   const B = `http://${HOST}:${port}`;
   const calls = () => fs.readFileSync(logFile, 'utf8').split('\n').filter(Boolean);

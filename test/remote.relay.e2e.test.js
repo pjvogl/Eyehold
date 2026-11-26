@@ -50,9 +50,9 @@ function startMockModel() {
   const relayPort = await relay.listen(0, HOST);
   const relayUrl = 'http://' + HOST + ':' + relayPort;
   const env = {
-    SKYNET_OPENROUTER_BASE: llm.base, EYEHOLD_OPENROUTER_BASE: llm.base,
-    SKYNET_OPENROUTER_KEY: 'sk-or-v1-relay-fake', EYEHOLD_OPENROUTER_KEY: 'sk-or-v1-relay-fake',
-    SKYNET_DEFAULT_MODEL: 'test/model', EYEHOLD_DEFAULT_MODEL: 'test/model'
+    EYEHOLD_OPENROUTER_BASE: llm.base, EYEHOLD_OPENROUTER_BASE: llm.base,
+    EYEHOLD_OPENROUTER_KEY: 'sk-or-v1-relay-fake', EYEHOLD_OPENROUTER_KEY: 'sk-or-v1-relay-fake',
+    EYEHOLD_DEFAULT_MODEL: 'test/model', EYEHOLD_DEFAULT_MODEL: 'test/model'
   };
   const fx = new SidecarFixture({ prefix: 'sn-relay-e2e-', timeoutMs: 15000, env: Object.assign({ EYEHOLD_REMOTE_RELAY: relayUrl }, env) });
   const bare = new SidecarFixture({ prefix: 'sn-relay-none-', timeoutMs: 15000, env: Object.assign({ EYEHOLD_REMOTE_RELAY: 'off' }, env) });

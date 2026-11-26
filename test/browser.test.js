@@ -274,9 +274,9 @@ function fakeDriver() {
     A.eq(made[2].headed, false, 'visible:false returns to headless');
 
     // a headless env pins the posture: even an explicit visible:true stays headless (CI/soak safety)
-    const s2 = mkSession({ SKYNET_BROWSER_HEADLESS: '1' });
+    const s2 = mkSession({ EYEHOLD_BROWSER_HEADLESS: '1' });
     await s2.navigate('https://example.com', { visible: true });
-    A.eq(made[made.length - 1].headed, false, 'SKYNET_BROWSER_HEADLESS=1 wins over visible:true');
+    A.eq(made[made.length - 1].headed, false, 'EYEHOLD_BROWSER_HEADLESS=1 wins over visible:true');
 
     const s3 = mkSession({}, { forceHeadless: true });
     await s3.navigate('https://example.com', { visible: true });

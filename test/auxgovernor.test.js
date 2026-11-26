@@ -4,7 +4,7 @@
    (reflection > study > threadmine > scout > skill-review > skill-curator) wins scarce slots;
    the budget cap is honored; 0 = unlimited (governor off); zero candidates → nothing spends;
    dups collapse; unknown passes deprioritize but stay eligible (never silently dropped);
-   SKYNET_AUX_BUDGET parsing is fail-safe (garbage/negative/blank → default, never unlimited);
+   EYEHOLD_AUX_BUDGET parsing is fail-safe (garbage/negative/blank → default, never unlimited);
    and the whole thing is DETERMINISTIC (same inputs → identical output, no clock/rng). The
    run-end BOUND itself is proven live in test/auxbudget.e2e.test.js — this file proves the math. */
 'use strict';

@@ -69,7 +69,7 @@ function startMockOpenRouter(script) {
 function boot(port, env, attemptsLeft) {
   return new Promise((resolve, reject) => {
     const child = spawn(process.execPath, [INDEX], {
-      env: Object.assign({}, process.env, env, { SKYNET_PORT: String(port), EYEHOLD_PORT: String(port) }),
+      env: Object.assign({}, process.env, env, { EYEHOLD_PORT: String(port), EYEHOLD_PORT: String(port) }),
       stdio: ['ignore', 'pipe', 'pipe']
     });
     let out = '', settled = false;
@@ -141,8 +141,8 @@ function twoStagePlan() {
   ]);
   const ws = fs.mkdtempSync(path.join(os.tmpdir(), 'sk-sample-stop-'));
   const env = {
-    SKYNET_WORKSPACES: ws, EYEHOLD_WORKSPACES: ws, EYEHOLD_DEV: '', SKYNET_DEV: '',
-    SKYNET_OPENROUTER_BASE: mock.base, SKYNET_OPENROUTER_KEY: 'sk-or-v1-sample-stop-fake', SKYNET_DEFAULT_MODEL: 'test/model'
+    EYEHOLD_WORKSPACES: ws, EYEHOLD_WORKSPACES: ws, EYEHOLD_DEV: '', EYEHOLD_DEV: '',
+    EYEHOLD_OPENROUTER_BASE: mock.base, EYEHOLD_OPENROUTER_KEY: 'sk-or-v1-sample-stop-fake', EYEHOLD_DEFAULT_MODEL: 'test/model'
   };
   const { child, port } = await boot(9180 + (process.pid % 50), env, 20);
   const B = 'http://' + HOST + ':' + port;

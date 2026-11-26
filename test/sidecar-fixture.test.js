@@ -21,7 +21,7 @@ const { SidecarFixture, allocatePort, processAlive } = require('./helpers/sideca
     portAllocator: async () => (++allocationCalls === 1 ? occupiedPort : allocatePort())
   });
   try {
-    await retrying.start({ OPENROUTER_KEY: '', EYEHOLD_OPENROUTER_KEY: '', SKYNET_OPENROUTER_KEY: '' });
+    await retrying.start({ OPENROUTER_KEY: '', EYEHOLD_OPENROUTER_KEY: '', EYEHOLD_OPENROUTER_KEY: '' });
     A.eq(allocationCalls, 2, 'fixture retries with a fresh OS port when the reserved port loses the bind race');
     A.ok(retrying.port !== occupiedPort, 'bind retry does not reuse the occupied port');
   } finally {
@@ -32,7 +32,7 @@ const { SidecarFixture, allocatePort, processAlive } = require('./helpers/sideca
 
   const healthy = SidecarFixture.create({ prefix: 'eyehold-fixture-self-' });
   const healthyWorkspace = healthy.workspace;
-  await healthy.start({ OPENROUTER_KEY: '', EYEHOLD_OPENROUTER_KEY: '', SKYNET_OPENROUTER_KEY: '' });
+  await healthy.start({ OPENROUTER_KEY: '', EYEHOLD_OPENROUTER_KEY: '', EYEHOLD_OPENROUTER_KEY: '' });
   const healthyPid = healthy.child.pid;
   A.ok(healthy.token.length >= 32, 'fixture waits for health and acquires the browser boot token');
   A.eq((await healthy.json('GET', '/api/health')).status, 200, 'authenticated JSON helper reaches the running sidecar');

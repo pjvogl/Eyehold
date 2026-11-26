@@ -67,7 +67,7 @@ function startMock() {
 
 function boot(port, env, attemptsLeft) {
   return new Promise((resolve, reject) => {
-    const child = spawn(process.execPath, [INDEX], { env: Object.assign({}, process.env, env, { SKYNET_PORT: String(port) }), stdio: ['ignore', 'pipe', 'pipe'] });
+    const child = spawn(process.execPath, [INDEX], { env: Object.assign({}, process.env, env, { EYEHOLD_PORT: String(port) }), stdio: ['ignore', 'pipe', 'pipe'] });
     let output = '', settled = false;
     const onData = (data) => {
       output += data.toString();
@@ -103,7 +103,7 @@ function boot(port, env, attemptsLeft) {
   fs.writeFileSync(path.join(grokDir, 'account.json'), JSON.stringify({ id: 'feed1234', seq: 1 }));
   fs.writeFileSync(path.join(grokDir, 'tokens.json'), JSON.stringify(Object.assign({ access_token: 'GROK-B', refresh_token: 'grok-rb' }, grokLife)));
 
-  let { child, port } = await boot(9050 + (process.pid % 30), { SKYNET_WORKSPACES: workspace, SKYNET_QUEST_REFRESH: '0', SKYNET_SKILL_REVIEW: '0', SKYNET_SKILL_CURATOR: '0' }, 20);
+  let { child, port } = await boot(9050 + (process.pid % 30), { EYEHOLD_WORKSPACES: workspace, EYEHOLD_QUEST_REFRESH: '0', EYEHOLD_SKILL_REVIEW: '0', EYEHOLD_SKILL_CURATOR: '0' }, 20);
   const B = () => `http://${HOST}:${port}`;
   try {
     let token = await bootToken(B(), B());
@@ -143,7 +143,7 @@ function boot(port, env, attemptsLeft) {
     A.eq((await post('/api/auth/codex/logout')).connected, false, 'the primary signs out');
     try { child.kill(); } catch (_) {}
     await new Promise(r => setTimeout(r, 300));
-    ({ child, port } = await boot(port + 1, { SKYNET_WORKSPACES: workspace, SKYNET_QUEST_REFRESH: '0', SKYNET_SKILL_REVIEW: '0', SKYNET_SKILL_CURATOR: '0' }, 20));
+    ({ child, port } = await boot(port + 1, { EYEHOLD_WORKSPACES: workspace, EYEHOLD_QUEST_REFRESH: '0', EYEHOLD_SKILL_REVIEW: '0', EYEHOLD_SKILL_CURATOR: '0' }, 20));
     token = await bootToken(B(), B());
     await run('STACK-OAUTH-THIRD');
     A.eq(whoRan('STACK-OAUTH-THIRD'), ['extra'], 'with the primary signed out, the run goes straight to the connected account');

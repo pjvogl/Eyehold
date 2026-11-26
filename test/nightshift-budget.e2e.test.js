@@ -32,11 +32,11 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
 
 // clear any AMBIENT OpenRouter key from the parent env so "no runnable provider" is deterministic (the dev seed holds
 // NO secret — the key lives only in runtimeKey, sourced from these envs; blanking them removes the credential).
-const NO_KEY = { OPENROUTER_KEY: '', OPENROUTER_API_KEY: '', SKYNET_OPENROUTER_KEY: '' };
+const NO_KEY = { OPENROUTER_KEY: '', OPENROUTER_API_KEY: '', EYEHOLD_OPENROUTER_KEY: '' };
 
 function boot(port, env, attemptsLeft, injectBudgetFault) {
   return new Promise((resolve, reject) => {
-    const child = spawn(process.execPath, injectBudgetFault ? ['-e', FAULT_BOOT] : [INDEX], { env: Object.assign({}, process.env, NO_KEY, env, { SKYNET_PORT: String(port) }), stdio: ['ignore', 'pipe', 'pipe'] });
+    const child = spawn(process.execPath, injectBudgetFault ? ['-e', FAULT_BOOT] : [INDEX], { env: Object.assign({}, process.env, NO_KEY, env, { EYEHOLD_PORT: String(port) }), stdio: ['ignore', 'pipe', 'pipe'] });
     let out = '', settled = false;
     const onData = d => {
       out += d.toString();
@@ -65,7 +65,7 @@ async function armAndStatus(B) {
   //         is reachable — declining here spends NO leash) =====
   {
     const ws = fs.mkdtempSync(path.join(os.tmpdir(), 'sk-nsbudget-noprov-'));
-    const env = { SKYNET_WORKSPACES: ws, SKYNET_DEV: '1', SKYNET_NIGHTSHIFT_AWAY_MS: '1' };
+    const env = { EYEHOLD_WORKSPACES: ws, EYEHOLD_DEV: '1', EYEHOLD_NIGHTSHIFT_AWAY_MS: '1' };
     let { child, port } = await boot(8940 + (process.pid % 25), env, 20);
     const B = 'http://' + HOST + ':' + port;
     try {
@@ -86,7 +86,7 @@ async function armAndStatus(B) {
     // UNGOVERNED (budget-legibility pass 2026-07-23), so the pools under test are pinned via env.
     const rec = { runId: 'seed-exhaust', agentId: 'agent', turns: 1, usd: 999, tokens: 1000, model: 'seed', ts: Date.now() };
     fs.writeFileSync(path.join(ws, 'ledger.jsonl'), JSON.stringify(rec) + '\n');
-    const env = { SKYNET_WORKSPACES: ws, SKYNET_DEV: '1', SKYNET_NIGHTSHIFT_AWAY_MS: '1', SKYNET_BUDGET_PER_AGENT: '5', SKYNET_BUDGET_PER_DAY: '40', SKYNET_BUDGET_GLOBAL: '100' };
+    const env = { EYEHOLD_WORKSPACES: ws, EYEHOLD_DEV: '1', EYEHOLD_NIGHTSHIFT_AWAY_MS: '1', EYEHOLD_BUDGET_PER_AGENT: '5', EYEHOLD_BUDGET_PER_DAY: '40', EYEHOLD_BUDGET_GLOBAL: '100' };
     let { child, port } = await boot(8980 + (process.pid % 25), env, 20);
     const B = 'http://' + HOST + ':' + port;
     try {
@@ -106,7 +106,7 @@ async function armAndStatus(B) {
     const dir = path.join(ws, '.spend-pending');
     fs.mkdirSync(dir, { recursive: true });
     fs.writeFileSync(path.join(dir, require('crypto').createHash('sha256').update('interrupted').digest('hex') + '.json'), JSON.stringify({ runId: 'interrupted', agentId: 'agent' }));
-    const env = { SKYNET_WORKSPACES: ws, SKYNET_DEV: '1', SKYNET_NIGHTSHIFT_AWAY_MS: '1', SKYNET_BUDGET_PER_DAY: '40' };
+    const env = { EYEHOLD_WORKSPACES: ws, EYEHOLD_DEV: '1', EYEHOLD_NIGHTSHIFT_AWAY_MS: '1', EYEHOLD_BUDGET_PER_DAY: '40' };
     let { child, port } = await boot(9000 + (process.pid % 25), env, 20);
     const B = 'http://' + HOST + ':' + port;
     try {
@@ -122,7 +122,7 @@ async function armAndStatus(B) {
   // ===== 3. PRECHECK INSPECTION FAILURE -> fail closed, spend nothing, and leave a truthful durable decision =====
   {
     const ws = fs.mkdtempSync(path.join(os.tmpdir(), 'sk-nsbudget-precheck-fault-'));
-    const env = { SKYNET_WORKSPACES: ws, SKYNET_DEV: '1', SKYNET_NIGHTSHIFT_AWAY_MS: '1', SKYNET_NIGHTSHIFT_TICK_MS: '10' };
+    const env = { EYEHOLD_WORKSPACES: ws, EYEHOLD_DEV: '1', EYEHOLD_NIGHTSHIFT_AWAY_MS: '1', EYEHOLD_NIGHTSHIFT_TICK_MS: '10' };
     let { child, port } = await boot(9020 + (process.pid % 25), env, 20, true);
     const B = 'http://' + HOST + ':' + port;
     try {

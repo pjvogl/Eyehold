@@ -26,7 +26,7 @@ const INDEX = path.resolve(__dirname, '..', 'sidecar', 'index.js');
 
 function boot(port, env, attemptsLeft) {
   return new Promise((resolve, reject) => {
-    const child = spawn(process.execPath, [INDEX], { env: Object.assign({}, process.env, env, { SKYNET_PORT: String(port) }), stdio: ['ignore', 'pipe', 'pipe'] });
+    const child = spawn(process.execPath, [INDEX], { env: Object.assign({}, process.env, env, { EYEHOLD_PORT: String(port) }), stdio: ['ignore', 'pipe', 'pipe'] });
     let out = '', settled = false;
     const onData = d => {
       out += d.toString();
@@ -49,7 +49,7 @@ function wsRecord(ws) { try { return JSON.parse(fs.readFileSync(path.join(ws, 'a
 
 (async () => {
   const ws = fs.mkdtempSync(path.join(os.tmpdir(), 'sk-nsgrant-e2e-'));
-  const env = { SKYNET_WORKSPACES: ws, SKYNET_DEV: '1' };
+  const env = { EYEHOLD_WORKSPACES: ws, EYEHOLD_DEV: '1' };
   let { child, port } = await boot(8960 + (process.pid % 30), env, 20);
   let B = 'http://' + HOST + ':' + port;
   try {

@@ -64,7 +64,7 @@ test('player props: generate on credits, land locally, list + serve, survive res
   });
   await new Promise((r) => server.listen(0, '127.0.0.1', r));
   const cloudUrl = 'http://127.0.0.1:' + server.address().port;
-  const env = { EYEHOLD_OPENROUTER_KEY: '', SKYNET_OPENROUTER_KEY: '', OPENROUTER_KEY: '', OPENROUTER_API_KEY: '', EYEHOLD_CREDITS_URL: '', SKYNET_CREDITS_URL: '', EYEHOLD_CREDITS_TOKEN: '', SKYNET_CREDITS_TOKEN: '', EYEHOLD_CLOUD_URL: cloudUrl, SKYNET_AUX_BUDGET: '0' };
+  const env = { EYEHOLD_OPENROUTER_KEY: '', EYEHOLD_OPENROUTER_KEY: '', OPENROUTER_KEY: '', OPENROUTER_API_KEY: '', EYEHOLD_CREDITS_URL: '', EYEHOLD_CREDITS_URL: '', EYEHOLD_CREDITS_TOKEN: '', EYEHOLD_CREDITS_TOKEN: '', EYEHOLD_CLOUD_URL: cloudUrl, EYEHOLD_AUX_BUDGET: '0' };
   const fixture = new SidecarFixture({ prefix: 'userprops-e2e-', timeoutMs: 20000, env });
   try {
     if (process.env.EYEHOLD_TEST_CLOUD_ROOT) {

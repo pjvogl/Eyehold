@@ -33,13 +33,13 @@ const INDEX = path.resolve(__dirname, '..', 'sidecar', 'index.js');
   const baseEnv = Object.assign({}, process.env, {
     LOCALAPPDATA: appData, APPDATA: appData,
     HOME: sandbox, USERPROFILE: sandbox,
-    SKYNET_WORKSPACES: ws, SKYNET_LIVE_PRICES: '0', SKYNET_QUEST_REFRESH: '0',
-    SKYNET_OPENROUTER_KEY: '', EYEHOLD_OPENROUTER_KEY: ''
+    EYEHOLD_WORKSPACES: ws, EYEHOLD_LIVE_PRICES: '0', EYEHOLD_QUEST_REFRESH: '0',
+    EYEHOLD_OPENROUTER_KEY: '', EYEHOLD_OPENROUTER_KEY: ''
   });
   function boot(port, attemptsLeft) {
     return new Promise((resolve, reject) => {
       const child = spawn(process.execPath, [INDEX], {
-        env: Object.assign({}, baseEnv, { SKYNET_PORT: String(port) }),
+        env: Object.assign({}, baseEnv, { EYEHOLD_PORT: String(port) }),
         stdio: ['ignore', 'pipe', 'pipe']
       });
       let out = '', settled = false;

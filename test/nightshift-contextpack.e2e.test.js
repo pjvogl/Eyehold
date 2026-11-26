@@ -89,7 +89,7 @@ function startMockOpenRouter() {
 
 function boot(port, env, attemptsLeft) {
   return new Promise((resolve, reject) => {
-    const child = spawn(process.execPath, [INDEX], { env: Object.assign({}, process.env, env, { SKYNET_PORT: String(port) }), stdio: ['ignore', 'pipe', 'pipe'] });
+    const child = spawn(process.execPath, [INDEX], { env: Object.assign({}, process.env, env, { EYEHOLD_PORT: String(port) }), stdio: ['ignore', 'pipe', 'pipe'] });
     let out = '', settled = false;
     const onData = d => {
       out += d.toString();
@@ -146,7 +146,7 @@ function seedLogs(ws, now) {
   const ws = fs.mkdtempSync(path.join(os.tmpdir(), 'sk-nscp-e2e-'));
   const now = Date.now();
   seedLogs(ws, now);
-  const env = { SKYNET_WORKSPACES: ws, SKYNET_DEV: '1', SKYNET_OPENROUTER_BASE: mock.base, SKYNET_OPENROUTER_KEY: 'sk-or-v1-nscp-fake', SKYNET_DEFAULT_MODEL: 'test/model' };
+  const env = { EYEHOLD_WORKSPACES: ws, EYEHOLD_DEV: '1', EYEHOLD_OPENROUTER_BASE: mock.base, EYEHOLD_OPENROUTER_KEY: 'sk-or-v1-nscp-fake', EYEHOLD_DEFAULT_MODEL: 'test/model' };
   const { child, port } = await boot(8970 + (process.pid % 25), env, 20);
   const B = 'http://' + HOST + ':' + port;
   try {
@@ -193,7 +193,7 @@ function seedLogs(ws, now) {
     // ===== COLD BOOT — a brand-new workspace: no dossier, no runs, no chats. The night-shift status must report a
     //        pre-spend readiness stand-down (binding:'readiness') with beatsUsedToday 0 — NO leash spent. =====
     const ws2 = fs.mkdtempSync(path.join(os.tmpdir(), 'sk-nscp-cold-'));
-    const boot2 = await boot(port + 1, Object.assign({}, env, { SKYNET_WORKSPACES: ws2 }), 20);
+    const boot2 = await boot(port + 1, Object.assign({}, env, { EYEHOLD_WORKSPACES: ws2 }), 20);
     const B2 = 'http://' + HOST + ':' + boot2.port;
     try {
       const token2 = await bootToken(B2, B2);

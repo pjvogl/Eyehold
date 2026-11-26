@@ -83,7 +83,7 @@ function startMockOpenRouter() {
 function boot(port, env, attemptsLeft) {
   return new Promise((resolve, reject) => {
     const child = spawn(process.execPath, [INDEX], {
-      env: Object.assign({}, process.env, env, { SKYNET_PORT: String(port) }),
+      env: Object.assign({}, process.env, env, { EYEHOLD_PORT: String(port) }),
       stdio: ['ignore', 'pipe', 'pipe']
     });
     let output = '', settled = false;
@@ -126,12 +126,12 @@ function stopChild(child) {
   let child = null;
   try {
     const env = {
-      SKYNET_WORKSPACES: workspace,
-      SKYNET_OPENROUTER_BASE: mock.base,
+      EYEHOLD_WORKSPACES: workspace,
       EYEHOLD_OPENROUTER_BASE: mock.base,
-      SKYNET_AUX_BUDGET: '0',
-      SKYNET_FULL_ACCESS: '1',
-      OPENROUTER_KEY: '', SKYNET_OPENROUTER_KEY: '',
+      EYEHOLD_OPENROUTER_BASE: mock.base,
+      EYEHOLD_AUX_BUDGET: '0',
+      EYEHOLD_FULL_ACCESS: '1',
+      OPENROUTER_KEY: '', EYEHOLD_OPENROUTER_KEY: '',
       ANTHROPIC_API_KEY: '', OPENAI_API_KEY: '', GEMINI_API_KEY: '', XAI_API_KEY: ''
     };
     const booted = await boot(8840 + (process.pid % 50), env, 20);

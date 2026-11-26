@@ -57,9 +57,9 @@ const textText = c => typeof c === 'string' ? c : (Array.isArray(c) ? c.map(p =>
   await new Promise(r => llm.listen(0, HOST, r));
   const env = {};
   for (const k of Object.keys(process.env)) {
-    if (/^(OPENROUTER|ANTHROPIC|OPENAI|GEMINI|GOOGLE_API|XAI|GROQ|MISTRAL|DEEPSEEK|TOGETHER|FIREWORKS|PERPLEXITY|CEREBRAS|KIMI|ELEVENLABS|EYEHOLD_|SKYNET_)/i.test(k)) env[k] = '';
+    if (/^(OPENROUTER|ANTHROPIC|OPENAI|GEMINI|GOOGLE_API|XAI|GROQ|MISTRAL|DEEPSEEK|TOGETHER|FIREWORKS|PERPLEXITY|CEREBRAS|KIMI|ELEVENLABS|EYEHOLD_|EYEHOLD_)/i.test(k)) env[k] = '';
   }
-  Object.assign(env, { SKYNET_FULL_ACCESS: '0', EYEHOLD_FULL_ACCESS: '0', SKYNET_SKILL_REVIEW: '0', SKYNET_SKILL_CURATOR: '0', SKYNET_THREAD_MINE: '0', EYEHOLD_LIVE_PRICES: '0' });
+  Object.assign(env, { EYEHOLD_FULL_ACCESS: '0', EYEHOLD_FULL_ACCESS: '0', EYEHOLD_SKILL_REVIEW: '0', EYEHOLD_SKILL_CURATOR: '0', EYEHOLD_THREAD_MINE: '0', EYEHOLD_LIVE_PRICES: '0' });
   const fixture = SidecarFixture.create({ prefix: 'eyehold-prompt-on-demand-', timeoutMs: 20000, env });
   const starter = [];
   for (const p of WM.starterDoc().props) { const c = WM.capForProp(p.t); if (c && c !== 'computer' && c !== 'connector' && starter.indexOf(c) < 0) starter.push(c); }

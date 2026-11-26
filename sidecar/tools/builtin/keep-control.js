@@ -102,7 +102,7 @@
     card: a => onOff(a.on) ? 'turn on keep-wide FULL POWER: every agent acts on this computer without asking.' : 'turn keep-wide FULL POWER off.',
     run: async (a, env) => {
       const r = await env.route('POST', '/api/permissions/bypass', { on: onOff(a.on) });
-      if (!onOff(a.on) && r && r.status < 400 && r.json && r.json.envFullAccess) return refusal('the Full Power switch is off, but Full Power STAYS ON: Eyehold was started with SKYNET_FULL_ACCESS set, and only restarting it without that ends it');
+      if (!onOff(a.on) && r && r.status < 400 && r.json && r.json.envFullAccess) return refusal('the Full Power switch is off, but Full Power STAYS ON: Eyehold was started with EYEHOLD_FULL_ACCESS set, and only restarting it without that ends it');
       return r;
     } });
   def('permission.grant', { takes: '{key: "cabinet:write"}', power: () => true, card: a => 'grant a standing approval for ' + clip(a.key, 40) + ' (no more asking for it).',

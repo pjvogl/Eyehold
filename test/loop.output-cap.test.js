@@ -54,7 +54,7 @@ function setup() {
 const priceOf = () => ({ in: 3, out: 15 });
 const openCtx = () => ({ canRun: () => true, canUse: () => ({ ok: true }), agentId: 'a', room: 'office' });
 // the composition root's own override (anthropic.js resolveMaxTokens: opts.maxTokens) is the realistic way a
-// Commander ends up asking for more than the model allows (e.g. SKYNET_ANTHROPIC_MAX_TOKENS=128000)
+// Commander ends up asking for more than the model allows (e.g. EYEHOLD_ANTHROPIC_MAX_TOKENS=128000)
 const anthropic = fetch => makeAnthropicProvider({ fetch, key: 'fixture-only', baseUrl: 'https://anthropic.fixture.invalid/v1', maxTokens: 128000 });
 
 (async () => {

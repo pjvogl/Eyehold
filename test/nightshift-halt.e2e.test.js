@@ -25,7 +25,7 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
 
 function boot(port, env, attemptsLeft) {
   return new Promise((resolve, reject) => {
-    const child = spawn(process.execPath, [INDEX], { env: Object.assign({}, process.env, env, { SKYNET_PORT: String(port) }), stdio: ['ignore', 'pipe', 'pipe'] });
+    const child = spawn(process.execPath, [INDEX], { env: Object.assign({}, process.env, env, { EYEHOLD_PORT: String(port) }), stdio: ['ignore', 'pipe', 'pipe'] });
     let out = '', settled = false;
     const onData = d => {
       out += d.toString();
@@ -42,7 +42,7 @@ function kill(child) { return new Promise(r => { try { child.on('exit', () => r(
 (async () => {
   const ws = fs.mkdtempSync(path.join(os.tmpdir(), 'sk-nshalt-ws-'));
   // away threshold 1ms so the pure gates get PAST 'present' and the status binding can truthfully name 'halt'.
-  const env = { SKYNET_WORKSPACES: ws, SKYNET_DEV: '1', SKYNET_NIGHTSHIFT_AWAY_MS: '1' };
+  const env = { EYEHOLD_WORKSPACES: ws, EYEHOLD_DEV: '1', EYEHOLD_NIGHTSHIFT_AWAY_MS: '1' };
   let { child, port } = await boot(8990 + (process.pid % 25), env, 20);
   let B = 'http://' + HOST + ':' + port;
   try {

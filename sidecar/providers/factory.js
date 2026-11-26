@@ -41,7 +41,12 @@
   function resolveMaxOutputTokens(profile, field = 'maxOutputTokens') {
     if (!profile) return 0;
     const envName = String(profile[field + 'Env'] || '');
-    const fromEnv = (envName && typeof process !== 'undefined' && process.env) ? Math.floor(Number(process.env[envName])) : 0;
+    const envValue = envName && typeof process !== 'undefined' && process.env
+      ? (process.env[envName] != null && String(process.env[envName]).trim() !== ''
+        ? process.env[envName]
+        : (envName.startsWith('SKYNET_') ? process.env['EYEHOLD_' + envName.slice(7)] : undefined))
+      : undefined;
+    const fromEnv = envValue != null ? Math.floor(Number(envValue)) : 0;
     if (Number.isFinite(fromEnv) && fromEnv > 0) return fromEnv;
     const declared = Math.floor(Number(profile[field]));
     return Number.isFinite(declared) && declared > 0 ? declared : 0;

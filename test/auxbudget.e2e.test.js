@@ -7,11 +7,11 @@
    assistant reply clears every salience floor + shouldReviewRun's 5 KB bar on a fresh workspace where all
    cooldowns are cold), and asserts the JOINT bound at the live seam:
 
-     ARM A — governor OFF (SKYNET_AUX_BUDGET=0): the harness fires MANY aux calls (> the on-arm budget). This is
+     ARM A — governor OFF (EYEHOLD_AUX_BUDGET=0): the harness fires MANY aux calls (> the on-arm budget). This is
              the NON-VACUOUS / fail-first control: it proves the run genuinely wants to spend, so a passing
              ARM B is real bounding and not "nothing fired anyway." Remove/neuter the governor and ARM B would
              match this count and fail its ceiling assertion.
-     ARM B — governor ON (SKYNET_AUX_BUDGET=2): at most 2 aux model calls fire for the same run — and strictly
+     ARM B — governor ON (EYEHOLD_AUX_BUDGET=2): at most 2 aux model calls fire for the same run — and strictly
              fewer than ARM A. The joint ceiling holds live.
 
    ZERO network, zero real key (the run key is a fake routed to the mock). Ports live in the 8964 range. */
@@ -86,14 +86,14 @@ async function settle(state, stableMs, maxMs) {
 }
 
 // aux passes not under test contribute NO model calls; quest-refresh (not one of the six) is silenced so it can
-// never contaminate the count. curator LLM stays default-off (no SKYNET_SKILL_CURATOR_LLM), so it adds 0 calls.
-const COMMON = { SKYNET_QUEST_REFRESH: '0' };
+// never contaminate the count. curator LLM stays default-off (no EYEHOLD_SKILL_CURATOR_LLM), so it adds 0 calls.
+const COMMON = { EYEHOLD_QUEST_REFRESH: '0' };
 
 async function runArm(label, budgetEnv) {
   const mock = await startMock();
   const fixture = SidecarFixture.create({
     prefix: 'sk-auxbudget-',
-    env: Object.assign({ SKYNET_OPENROUTER_BASE: mock.base, SKYNET_AUX_BUDGET: budgetEnv }, COMMON)
+    env: Object.assign({ EYEHOLD_OPENROUTER_BASE: mock.base, EYEHOLD_AUX_BUDGET: budgetEnv }, COMMON)
   });
   await fixture.start();
   const B = fixture.baseUrl;

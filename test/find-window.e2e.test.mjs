@@ -5,7 +5,7 @@
    every place / crew tab / conversation; Enter opens the result through Places.open — the SAME opener the agent's
    keep.show uses — and FIND steps aside; a query that matches nothing still has a way forward (ASK THE CREW types it
    into COMMS, never sends it). It also holds the window to the glass recipe (8px field, 10px rows, nothing under 14px)
-   and writes screenshots for a human look (SKYNET_SHOT_DIR, default the OS temp dir).
+   and writes screenshots for a human look (EYEHOLD_SHOT_DIR, default the OS temp dir).
 
    Isolated like keep-show.e2e: fresh seeded workspace, APPDATA/LOCALAPPDATA/USERPROFILE/HOME/HERMES_HOME in scratch,
    a fresh Chrome profile, OS-picked ports. No model calls. Skips LOUDLY with no Chromium. In test:http. */
@@ -45,7 +45,7 @@ const TYPE = q => `(() => { const f = document.querySelector('.find-win .fnd-fie
 const KEY = k => `(() => { const f = document.querySelector('.find-win .fnd-field'); if (!f) return false; f.dispatchEvent(new KeyboardEvent('keydown', { key: ${JSON.stringify(k)}, bubbles: true, cancelable: true })); return true; })()`;
 const ROWS = `(() => [...document.querySelectorAll('.find-win .fnd-row')].map(r => ({ name: (r.querySelector('.fnd-n') || {}).textContent, on: r.classList.contains('on') })))()`;
 
-const shotDir = process.env.SKYNET_SHOT_DIR || tmpdir();
+const shotDir = process.env.EYEHOLD_SHOT_DIR || tmpdir();
 const root = mkdtempSync(join(tmpdir(), 'eyehold-find-e2e-'));
 const iso = {};
 for (const [k, d] of [['APPDATA', 'appdata'], ['LOCALAPPDATA', 'localappdata'], ['USERPROFILE', 'home'], ['HOME', 'home'], ['HERMES_HOME', 'hermes']]) { iso[k] = join(root, 'iso', d); mkdirSync(iso[k], { recursive: true }); }
@@ -53,7 +53,7 @@ const workspace = join(root, 'workspace'), profile = join(root, 'profile');
 const appPort = await freePort(), cdpPort = await freePort();
 const base = 'http://127.0.0.1:' + appPort;
 materializeSeedWorkspace(workspace, 'test/model');
-const sidecar = bootSeededSidecar({ port: appPort, scratchDir: workspace, model: 'test/model', key: 'sk-or-v1-fake', env: Object.assign({ SKYNET_OPENROUTER_BASE: 'http://127.0.0.1:9/api/v1' }, iso) });
+const sidecar = bootSeededSidecar({ port: appPort, scratchDir: workspace, model: 'test/model', key: 'sk-or-v1-fake', env: Object.assign({ EYEHOLD_OPENROUTER_BASE: 'http://127.0.0.1:9/api/v1' }, iso) });
 const chrome = spawn(chromePath, ['--headless=new', '--disable-gpu', '--no-first-run', '--no-default-browser-check', '--no-proxy-server', '--hide-scrollbars', '--mute-audio',
   '--remote-debugging-port=' + cdpPort, '--window-size=1440,900', '--user-data-dir=' + profile, 'about:blank'], { stdio: 'ignore' });
 

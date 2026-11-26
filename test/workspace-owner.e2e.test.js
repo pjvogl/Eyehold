@@ -24,12 +24,12 @@ function freePort() {
 function start(workspaces, port, extraEnv) {
   const child = spawn(process.execPath, [INDEX], {
     env: Object.assign({}, process.env, {
-      SKYNET_WORKSPACES: workspaces,
-      SKYNET_PORT: String(port),
-      SKYNET_LIVE_PRICES: '0',
-      SKYNET_QUEST_REFRESH: '0',
-      SKYNET_CRON: '0',
-      SKYNET_OPENROUTER_KEY: '',
+      EYEHOLD_WORKSPACES: workspaces,
+      EYEHOLD_PORT: String(port),
+      EYEHOLD_LIVE_PRICES: '0',
+      EYEHOLD_QUEST_REFRESH: '0',
+      EYEHOLD_CRON: '0',
+      EYEHOLD_OPENROUTER_KEY: '',
       EYEHOLD_OPENROUTER_KEY: ''
     }, extraEnv || {}),
     stdio: ['ignore', 'pipe', 'pipe']
@@ -75,7 +75,7 @@ function waitExit(child, timeoutMs) {
     fs.writeFileSync(protectedSentinel, sentinelBytes);
     const protectedPort = await freePort();
     const dev = start(protectedRoot, protectedPort, {
-      LOCALAPPDATA: fakeAppData, APPDATA: fakeAppData, SKYNET_DEV: '1', EYEHOLD_DEV: '1'
+      LOCALAPPDATA: fakeAppData, APPDATA: fakeAppData, EYEHOLD_DEV: '1', EYEHOLD_DEV: '1'
     });
     processes.push(dev.child);
     const devRefused = await waitExit(dev.child, 5000);

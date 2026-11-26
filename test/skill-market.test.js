@@ -274,7 +274,7 @@ A.rejects = async (fn, re, label) => { let err = null; try { await fn(); } catch
     // the app build's floor: a fresh keep refuses an official catalog older than the one live at build time
     const { DEFAULT_CATALOG_URL } = require('../sidecar/skills/market.js');
     const oldOfficial = serve([GRILL], null, { serial: 2 });
-    const viaDefault = { fetchDocument: async (u) => oldOfficial.fetchDocument(u.replace('https://starnetos.com/', 'https://market.example/')) };
+    const viaDefault = { fetchDocument: async (u) => oldOfficial.fetchDocument(u.replace('https://eyehold.babelbook.net/', 'https://market.example/')) };
     await A.rejects(() => client(viaDefault, tmp(), DEFAULT_CATALOG_URL, new Map(), { floorSerial: 3 }).listing({}), /older than one this keep already saw \(2 < 3\)/, 'a fresh keep refuses an official catalog older than its app build\'s floor');
     A.eq((await client(viaDefault, tmp(), DEFAULT_CATALOG_URL, new Map(), { floorSerial: 2 }).listing({})).catalog.serial, 2, 'and accepts one at the floor');
 

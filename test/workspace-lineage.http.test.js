@@ -58,15 +58,15 @@ function keep(name, updatedAt, marker) {
   const baseEnv = Object.assign({}, process.env, {
     LOCALAPPDATA: appData, APPDATA: appData,
     HOME: sandbox, USERPROFILE: sandbox, HOMEDRIVE: path.parse(sandbox).root.replace(/[\\\/]$/, ''), HOMEPATH: sandbox.slice(path.parse(sandbox).root.length - 1),
-    SKYNET_WORKSPACES: current, SKYNET_API_TOKEN: TOKEN,
-    SKYNET_LIVE_PRICES: '0', SKYNET_QUEST_REFRESH: '0', SKYNET_CRON: '0',
-    SKYNET_OPENROUTER_KEY: '', EYEHOLD_OPENROUTER_KEY: ''
+    EYEHOLD_WORKSPACES: current, EYEHOLD_API_TOKEN: TOKEN,
+    EYEHOLD_LIVE_PRICES: '0', EYEHOLD_QUEST_REFRESH: '0', EYEHOLD_CRON: '0',
+    EYEHOLD_OPENROUTER_KEY: '', EYEHOLD_OPENROUTER_KEY: ''
   });
   let child = null;
   async function launch() {
     const port = await freePort(); let output = '';
     child = spawn(process.execPath, [INDEX], {
-      env: Object.assign({}, baseEnv, { SKYNET_PORT: String(port) }), stdio: ['ignore', 'pipe', 'pipe']
+      env: Object.assign({}, baseEnv, { EYEHOLD_PORT: String(port) }), stdio: ['ignore', 'pipe', 'pipe']
     });
     child.stdout.on('data', d => { output += d; }); child.stderr.on('data', d => { output += d; });
     await waitFor(() => output.includes('http://127.0.0.1:' + port), 20000);

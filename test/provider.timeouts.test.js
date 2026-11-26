@@ -189,15 +189,15 @@ async function collect(p, req) { const out = []; for await (const e of p.stream(
     A.eq(p.contextLimit('m'), 123, 'the re-warmed catalog now answers contextLimit');
   }
 
-  // 6. env-tunable idle timeout is read from SKYNET_PROVIDER_IDLE_MS (default 300s — generous, since after the
+  // 6. env-tunable idle timeout is read from EYEHOLD_PROVIDER_IDLE_MS (default 300s — generous, since after the
   //    connect guard disarms this is the streaming body's only ceiling and deep-reasoning turns go byte-silent).
   {
-    const saved = process.env.SKYNET_PROVIDER_IDLE_MS;
-    process.env.SKYNET_PROVIDER_IDLE_MS = '25';
-    A.eq(timeouts.idleMs(), 25, 'idle timeout honors SKYNET_PROVIDER_IDLE_MS');
-    delete process.env.SKYNET_PROVIDER_IDLE_MS;
+    const saved = process.env.EYEHOLD_PROVIDER_IDLE_MS;
+    process.env.EYEHOLD_PROVIDER_IDLE_MS = '25';
+    A.eq(timeouts.idleMs(), 25, 'idle timeout honors EYEHOLD_PROVIDER_IDLE_MS');
+    delete process.env.EYEHOLD_PROVIDER_IDLE_MS;
     A.eq(timeouts.idleMs(), 300000, 'idle timeout defaults to 300s when unset');
-    if (saved != null) process.env.SKYNET_PROVIDER_IDLE_MS = saved;
+    if (saved != null) process.env.EYEHOLD_PROVIDER_IDLE_MS = saved;
   }
 
   // ---- connect-guard end-to-end through a real adapter (makeOpenRouterProvider) ----
@@ -236,8 +236,8 @@ async function collect(p, req) { const out = []; for await (const e of p.stream(
   // 7. REGRESSION (the bug): headers arrive fast, then the body streams for LONGER than the connect window.
   //    With a tiny connect ms the OLD code aborted the body mid-stream; the disarmable guard must let it finish.
   {
-    const savedC = process.env.SKYNET_PROVIDER_CONNECT_MS;
-    process.env.SKYNET_PROVIDER_CONNECT_MS = '30';   // connect ceiling far SHORTER than the total stream time
+    const savedC = process.env.EYEHOLD_PROVIDER_CONNECT_MS;
+    process.env.EYEHOLD_PROVIDER_CONNECT_MS = '30';   // connect ceiling far SHORTER than the total stream time
     const chunks = [
       'data: ' + JSON.stringify({ choices: [{ delta: { content: 'hel' } }] }) + '\n',
       'data: ' + JSON.stringify({ choices: [{ delta: { content: 'lo' } }] }) + '\n',
@@ -255,14 +255,14 @@ async function collect(p, req) { const out = []; for await (const e of p.stream(
     } catch (e) { err = e; }
     A.ok(!err, 'a body that streams longer than the connect window completes WITHOUT a timeout error');
     A.eq(text, 'hello', 'the full streamed body is delivered after the connect guard is disarmed');
-    if (savedC != null) process.env.SKYNET_PROVIDER_CONNECT_MS = savedC; else delete process.env.SKYNET_PROVIDER_CONNECT_MS;
+    if (savedC != null) process.env.EYEHOLD_PROVIDER_CONNECT_MS = savedC; else delete process.env.EYEHOLD_PROVIDER_CONNECT_MS;
   }
 
   // 8. CONNECT EXPIRY: a fetch that never returns headers -> the guard fires -> after retries the stream() rejects
   //    with a `timeout`-classified error (message contains "timed out"), NOT an AbortError.
   {
-    const savedC = process.env.SKYNET_PROVIDER_CONNECT_MS;
-    process.env.SKYNET_PROVIDER_CONNECT_MS = '15';
+    const savedC = process.env.EYEHOLD_PROVIDER_CONNECT_MS;
+    process.env.EYEHOLD_PROVIDER_CONNECT_MS = '15';
     let attempts = 0;
     const fetchImpl = async (url, opts) => {
       if (!/chat\/completions/.test(url)) return new Response('{"data":[]}', { status: 200 });
@@ -277,7 +277,7 @@ async function collect(p, req) { const out = []; for await (const e of p.stream(
     A.ok(err && err.name !== 'AbortError', 'a connect expiry is NOT surfaced as a cancel/AbortError');
     A.eq(classifyApiError(err, {}).reason, 'timeout', 'the connect-expiry error classifies as timeout (retryable)');
     A.ok(attempts >= 2, 'a connect timeout retried like a transient network error (>=2 attempts)');
-    if (savedC != null) process.env.SKYNET_PROVIDER_CONNECT_MS = savedC; else delete process.env.SKYNET_PROVIDER_CONNECT_MS;
+    if (savedC != null) process.env.EYEHOLD_PROVIDER_CONNECT_MS = savedC; else delete process.env.EYEHOLD_PROVIDER_CONNECT_MS;
   }
 
   // 9. USER CANCEL never classifies as timeout — pre-headers AND mid-body both surface as a clean cancel.
@@ -322,8 +322,8 @@ async function collect(p, req) { const out = []; for await (const e of p.stream(
   //     `timeout`-classified error — never as a clean end-of-stream (which is what let loop.js record a
   //     successful turn and the run row read COMPLETE while the provider was wedged).
   {
-    const savedI = process.env.SKYNET_PROVIDER_IDLE_MS;
-    process.env.SKYNET_PROVIDER_IDLE_MS = '40';
+    const savedI = process.env.EYEHOLD_PROVIDER_IDLE_MS;
+    process.env.EYEHOLD_PROVIDER_IDLE_MS = '40';
     const fetchImpl = async (url) => {
       if (!/chat\/completions/.test(url)) return new Response('{"data":[]}', { status: 200 });
       let sent = false;
@@ -342,7 +342,7 @@ async function collect(p, req) { const out = []; for await (const e of p.stream(
     A.ok(err, 'a hung stream ERRORS out of the adapter — it must NOT end as a clean (done-looking) stream');
     A.ok(err && /timed out/i.test(err.message), 'the error is the idle timeout ("timed out")');
     A.eq(classifyApiError(err, {}).reason, 'timeout', 'it classifies as timeout — retryable, honest agent.run.error, never a silent reason:done');
-    if (savedI != null) process.env.SKYNET_PROVIDER_IDLE_MS = savedI; else delete process.env.SKYNET_PROVIDER_IDLE_MS;
+    if (savedI != null) process.env.EYEHOLD_PROVIDER_IDLE_MS = savedI; else delete process.env.EYEHOLD_PROVIDER_IDLE_MS;
   }
 
   A.report('provider.timeouts.test');

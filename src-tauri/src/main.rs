@@ -1871,14 +1871,16 @@ fn reap_orphan_sidecars(node: &Path, startup_log: &Option<PathBuf>) -> usize {
 /// The sidecar accepts both the canonical EYEHOLD_* names and legacy SKYNET_* aliases. Replace both
 /// spellings for every shell-owned value so an inherited stale variable cannot split the WebView from
 /// its sidecar or override a per-launch credential.
-fn set_sidecar_branded_env<V: AsRef<OsStr>>(cmd: &mut Command, legacy_name: &str, value: V) {
+fn set_sidecar_branded_env<V: AsRef<OsStr>>(cmd: &mut Command, name: &str, value: V) {
     let value = value.as_ref();
-    cmd.env(legacy_name, value);
-    if let Some(suffix) = legacy_name.strip_prefix("SKYNET_") {
-        cmd.env(format!("EYEHOLD_{suffix}"), value);
-    } else if let Some(suffix) = legacy_name.strip_prefix("EYEHOLD_") {
-        cmd.env(format!("SKYNET_{suffix}"), value);
-    }
+    // Replace both spellings. A stale inherited EYEHOLD_* or SKYNET_* must not split the
+    // desktop from the sidecar or override a per-launch credential.
+    let suffix = name
+        .strip_prefix("EYEHOLD_")
+        .or_else(|| name.strip_prefix("SKYNET_"))
+        .unwrap_or(name);
+    cmd.env(format!("EYEHOLD_{suffix}"), value);
+    cmd.env(format!("SKYNET_{suffix}"), value);
 }
 
 fn sidecar_command(state: &AppState, entry: &Path, node: &Path) -> Command {
@@ -1926,12 +1928,12 @@ fn sidecar_command(state: &AppState, entry: &Path, node: &Path) -> Command {
         )
         .env("EYEHOLD_BUILD_DIRTY", env!("EYEHOLD_BUILD_DIRTY"))
         .current_dir(&state.root);
-    set_sidecar_branded_env(&mut cmd, "SKYNET_PORT", state.port.to_string());
-    set_sidecar_branded_env(&mut cmd, "SKYNET_IPC_TOKEN", &state.ipc_token);
-    set_sidecar_branded_env(&mut cmd, "SKYNET_API_TOKEN", &state.api_token);
-    set_sidecar_branded_env(&mut cmd, "SKYNET_WORKSPACES", state.workspaces.as_os_str());
+    set_sidecar_branded_env(&mut cmd, "EYEHOLD_PORT", state.port.to_string());
+    set_sidecar_branded_env(&mut cmd, "EYEHOLD_IPC_TOKEN", &state.ipc_token);
+    set_sidecar_branded_env(&mut cmd, "EYEHOLD_API_TOKEN", &state.api_token);
+    set_sidecar_branded_env(&mut cmd, "EYEHOLD_WORKSPACES", state.workspaces.as_os_str());
     if let Some(key) = read_key() {
-        set_sidecar_branded_env(&mut cmd, "SKYNET_OPENROUTER_KEY", key);
+        set_sidecar_branded_env(&mut cmd, "EYEHOLD_OPENROUTER_KEY", key);
     }
     for (provider, env_name) in SIDECAR_PROVIDER_KEY_ENVS {
         if let Some(key) = read_key_for(provider) {
@@ -1942,7 +1944,7 @@ fn sidecar_command(state: &AppState, entry: &Path, node: &Path) -> Command {
         let pool = read_key_pool_for(provider);
         if !pool.is_empty() {
             let env_name = format!(
-                "SKYNET_KEY_POOL_{}",
+                "EYEHOLD_KEY_POOL_{}",
                 provider.to_ascii_uppercase().replace('-', "_")
             );
             set_sidecar_branded_env(&mut cmd, &env_name, pool.join(","));
@@ -1957,7 +1959,7 @@ fn sidecar_command(state: &AppState, entry: &Path, node: &Path) -> Command {
     let telegram_bot_tokens = read_telegram_bot_tokens(&state.workspaces);
     if !telegram_bot_tokens.is_empty() {
         if let Ok(encoded) = serde_json::to_string(&telegram_bot_tokens) {
-            set_sidecar_branded_env(&mut cmd, "SKYNET_TELEGRAM_BOT_TOKENS", encoded);
+            set_sidecar_branded_env(&mut cmd, "EYEHOLD_TELEGRAM_BOT_TOKENS", encoded);
         }
     }
     // Eyehold Cloud device token, same path. Because EVERY sidecar spawn goes through this builder,

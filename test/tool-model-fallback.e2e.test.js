@@ -48,11 +48,11 @@ function eventsOf(text) {
   const fixture = SidecarFixture.create({
     prefix: 'eyehold-tool-model-fallback-',
     env: {
-      SKYNET_OPENROUTER_BASE: provider.baseUrl,
       EYEHOLD_OPENROUTER_BASE: provider.baseUrl,
-      SKYNET_OPENROUTER_KEY: 'sk-or-v1-tool-fallback-fake',
+      EYEHOLD_OPENROUTER_BASE: provider.baseUrl,
       EYEHOLD_OPENROUTER_KEY: 'sk-or-v1-tool-fallback-fake',
-      SKYNET_QUEST_REFRESH: '0'
+      EYEHOLD_OPENROUTER_KEY: 'sk-or-v1-tool-fallback-fake',
+      EYEHOLD_QUEST_REFRESH: '0'
     }
   });
   try {

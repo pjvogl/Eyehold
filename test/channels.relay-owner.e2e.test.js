@@ -93,7 +93,7 @@ function startMockTelegram() {
 
 function boot(port, env, attemptsLeft) {
   return new Promise((resolve, reject) => {
-    const child = spawn(process.execPath, [INDEX], { env: Object.assign({}, process.env, env, { SKYNET_PORT: String(port), EYEHOLD_PORT: String(port) }), stdio: ['ignore', 'pipe', 'pipe'] });
+    const child = spawn(process.execPath, [INDEX], { env: Object.assign({}, process.env, env, { EYEHOLD_PORT: String(port), EYEHOLD_PORT: String(port) }), stdio: ['ignore', 'pipe', 'pipe'] });
     let out = '', settled = false;
     const onData = d => {
       out += d.toString();
@@ -122,14 +122,14 @@ async function waitUntil(fn, ms, label) {
   const home = path.join(ws, 'home');
   fs.mkdirSync(home, { recursive: true });
   const env = {
-    SKYNET_WORKSPACES: ws, EYEHOLD_WORKSPACES: ws,
+    EYEHOLD_WORKSPACES: ws, EYEHOLD_WORKSPACES: ws,
     // never let a test sidecar see (or recover into) the real user profile
     HOME: home, USERPROFILE: home, APPDATA: path.join(home, 'AppData', 'Roaming'), LOCALAPPDATA: path.join(home, 'AppData', 'Local'), HERMES_HOME: path.join(home, '.hermes'),
-    SKYNET_OPENROUTER_BASE: llm.base, EYEHOLD_OPENROUTER_BASE: llm.base,
-    SKYNET_OPENROUTER_KEY: 'sk-or-v1-relay-fake', EYEHOLD_OPENROUTER_KEY: 'sk-or-v1-relay-fake',
-    SKYNET_DEFAULT_MODEL: 'test/model', EYEHOLD_DEFAULT_MODEL: 'test/model',
-    SKYNET_TELEGRAM_TOKEN: 'TESTTOKEN', EYEHOLD_TELEGRAM_TOKEN: 'TESTTOKEN',
-    SKYNET_TELEGRAM_API_BASE: tg.base, EYEHOLD_TELEGRAM_API_BASE: tg.base,
+    EYEHOLD_OPENROUTER_BASE: llm.base, EYEHOLD_OPENROUTER_BASE: llm.base,
+    EYEHOLD_OPENROUTER_KEY: 'sk-or-v1-relay-fake', EYEHOLD_OPENROUTER_KEY: 'sk-or-v1-relay-fake',
+    EYEHOLD_DEFAULT_MODEL: 'test/model', EYEHOLD_DEFAULT_MODEL: 'test/model',
+    EYEHOLD_TELEGRAM_TOKEN: 'TESTTOKEN', EYEHOLD_TELEGRAM_TOKEN: 'TESTTOKEN',
+    EYEHOLD_TELEGRAM_API_BASE: tg.base, EYEHOLD_TELEGRAM_API_BASE: tg.base,
     EYEHOLD_CHANNEL_WEBHOOK_SECRET: SECRET
   };
   let child = null;

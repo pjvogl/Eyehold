@@ -48,9 +48,9 @@ let nextTool = GMAIL_READ;                                       // which tool t
   const cloud = 'http://127.0.0.1:' + server.address().port;
   const fakeImap = await startFakeImap({ user: 'me@example.com', pass: IMAP_PASS });
   const fixture = new SidecarFixture({ prefix: 'google-relay-guard-', timeoutMs: 30000, env: {
-    EYEHOLD_CREDITS_URL: '', SKYNET_CREDITS_URL: '', EYEHOLD_CREDITS_TOKEN: '', SKYNET_CREDITS_TOKEN: '',
-    SKYNET_DEFAULT_MODEL: 'test/model', EYEHOLD_CLOUD_URL: cloud, EYEHOLD_OPENROUTER_KEY: '', SKYNET_OPENROUTER_KEY: '',
-    OPENROUTER_API_KEY: '', OPENROUTER_KEY: '', SKYNET_AUX_BUDGET: '0', SKYNET_FULL_ACCESS: '1',
+    EYEHOLD_CREDITS_URL: '', EYEHOLD_CREDITS_URL: '', EYEHOLD_CREDITS_TOKEN: '', EYEHOLD_CREDITS_TOKEN: '',
+    EYEHOLD_DEFAULT_MODEL: 'test/model', EYEHOLD_CLOUD_URL: cloud, EYEHOLD_OPENROUTER_KEY: '', EYEHOLD_OPENROUTER_KEY: '',
+    OPENROUTER_API_KEY: '', OPENROUTER_KEY: '', EYEHOLD_AUX_BUDGET: '0', EYEHOLD_FULL_ACCESS: '1',
     EYEHOLD_GOOGLE_DESKTOP_CLIENT_JSON: JSON.stringify({ installed: { client_id: '123456-eyeholdtest.apps.googleusercontent.com' } }),
     EYEHOLD_TEST_FAKE_IMAP_PORT: String(fakeImap.port),
     NODE_OPTIONS: '--require=' + path.join(__dirname, 'fixtures/google-signin-preload.cjs').replace(/\\/g, '/') +

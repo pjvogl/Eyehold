@@ -96,7 +96,7 @@ function startMockTelegram() {
 function boot(port, env, attemptsLeft) {
   return new Promise((resolve, reject) => {
     const child = spawn(process.execPath, [INDEX], {
-      env: Object.assign({}, process.env, env, { SKYNET_PORT: String(port), EYEHOLD_PORT: String(port) }),
+      env: Object.assign({}, process.env, env, { EYEHOLD_PORT: String(port), EYEHOLD_PORT: String(port) }),
       stdio: ['ignore', 'pipe', 'pipe']
     });
     let out = '', settled = false;
@@ -136,12 +136,12 @@ async function waitUntil(fn, ms, label) { const deadline = Date.now() + ms; whil
   const tg = await startMockTelegram();
   const ws = fs.mkdtempSync(path.join(os.tmpdir(), 'sk-events-emit-'));
   const env = {
-    SKYNET_WORKSPACES: ws, EYEHOLD_WORKSPACES: ws,
-    SKYNET_OPENROUTER_BASE: llm.base, EYEHOLD_OPENROUTER_BASE: llm.base,
-    SKYNET_OPENROUTER_KEY: 'sk-or-v1-events-fake', EYEHOLD_OPENROUTER_KEY: 'sk-or-v1-events-fake',
-    SKYNET_DEFAULT_MODEL: 'test/model', EYEHOLD_DEFAULT_MODEL: 'test/model',
-    SKYNET_TELEGRAM_TOKEN: 'TESTTOKEN', EYEHOLD_TELEGRAM_TOKEN: 'TESTTOKEN',
-    SKYNET_TELEGRAM_API_BASE: tg.base, EYEHOLD_TELEGRAM_API_BASE: tg.base
+    EYEHOLD_WORKSPACES: ws, EYEHOLD_WORKSPACES: ws,
+    EYEHOLD_OPENROUTER_BASE: llm.base, EYEHOLD_OPENROUTER_BASE: llm.base,
+    EYEHOLD_OPENROUTER_KEY: 'sk-or-v1-events-fake', EYEHOLD_OPENROUTER_KEY: 'sk-or-v1-events-fake',
+    EYEHOLD_DEFAULT_MODEL: 'test/model', EYEHOLD_DEFAULT_MODEL: 'test/model',
+    EYEHOLD_TELEGRAM_TOKEN: 'TESTTOKEN', EYEHOLD_TELEGRAM_TOKEN: 'TESTTOKEN',
+    EYEHOLD_TELEGRAM_API_BASE: tg.base, EYEHOLD_TELEGRAM_API_BASE: tg.base
   };
   const { child, port } = await boot(8975 + (process.pid % 40), env, 20);
   const B = 'http://' + HOST + ':' + port;

@@ -9,8 +9,8 @@ const harness = read('frontend/app/harness.js');
 const settings = read('frontend/app/keepui.js');
 const connectors = read('frontend/app/windows/connectors.js');
 
-A.ok(/\("custom",\s*"SKYNET_CUSTOM_OPENAI_KEY"\)/.test(rust), 'desktop restart injects the custom-provider key');
-A.ok(/for provider in KEYCHAIN_PROVIDERS[\s\S]{0,500}SKYNET_KEY_POOL_/.test(rust), 'desktop restart injects every provider-scoped backup pool');
+A.ok(/\("custom",\s*"EYEHOLD_CUSTOM_OPENAI_KEY"\)/.test(rust), 'desktop restart injects the custom-provider key');
+A.ok(/for provider in KEYCHAIN_PROVIDERS[\s\S]{0,500}EYEHOLD_KEY_POOL_/.test(rust), 'desktop restart injects every provider-scoped backup pool');
 A.ok(/fn post_sidecar_json[\s\S]*MAX_RESPONSE_HEAD[\s\S]*parse_sidecar_status/.test(rust), 'desktop provider mutations share a bounded, complete HTTP acknowledgement seam');
 A.ok(/fn harness_store_provider_key_pool[\s\S]*rollback_error\(e, failures\)/.test(rust), 'desktop pool replacement reports incomplete rollback on live-push failure');
 A.eq((rust.match(/let _ = push_provider_(?:config|key_pool)/g) || []).length, 0, 'provider rollback acknowledgement failures are never swallowed');

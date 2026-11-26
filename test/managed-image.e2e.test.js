@@ -54,9 +54,9 @@ test('managed images: saved credits route generates, bills, survives restart and
   await new Promise(r => server.listen(0, '127.0.0.1', r));
   const cloudUrl = 'http://127.0.0.1:' + server.address().port;
   fixture = new SidecarFixture({ prefix: 'managed-image-proof-', timeoutMs: 20000, env: {
-    EYEHOLD_OPENROUTER_KEY: '', SKYNET_OPENROUTER_KEY: '', OPENROUTER_KEY: '', OPENROUTER_API_KEY: '',
-    EYEHOLD_CREDITS_URL: '', SKYNET_CREDITS_URL: '', EYEHOLD_CREDITS_TOKEN: '', SKYNET_CREDITS_TOKEN: '',
-    EYEHOLD_CLOUD_URL: cloudUrl, SKYNET_FULL_ACCESS: '1', SKYNET_AUX_BUDGET: '0',
+    EYEHOLD_OPENROUTER_KEY: '', EYEHOLD_OPENROUTER_KEY: '', OPENROUTER_KEY: '', OPENROUTER_API_KEY: '',
+    EYEHOLD_CREDITS_URL: '', EYEHOLD_CREDITS_URL: '', EYEHOLD_CREDITS_TOKEN: '', EYEHOLD_CREDITS_TOKEN: '',
+    EYEHOLD_CLOUD_URL: cloudUrl, EYEHOLD_FULL_ACCESS: '1', EYEHOLD_AUX_BUDGET: '0',
     EYEHOLD_OPENROUTER_BASE: cloudUrl + '/v1', EYEHOLD_CUSTOM_OPENAI_BASE_URL: cloudUrl + '/v1'
   } });
   try {

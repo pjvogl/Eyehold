@@ -88,7 +88,7 @@ function cli(args, env, timeoutMs) {
 // the hermetic profile the sidecar fixture uses — the CLI's OWN desktop discovery must look at the same empty
 // scratch roots, so it can never find (or boot into) the developer's real keep.
 function hermetic(profile) {
-  const h = { APPDATA: profile, LOCALAPPDATA: profile, XDG_DATA_HOME: profile, EYEHOLD_PORT: '', SKYNET_PORT: '', EYEHOLD_WORKSPACES: '', SKYNET_WORKSPACES: '', EYEHOLD_TOKEN: '', EYEHOLD_API_TOKEN: '', SKYNET_API_TOKEN: '' };
+  const h = { APPDATA: profile, LOCALAPPDATA: profile, XDG_DATA_HOME: profile, EYEHOLD_PORT: '', EYEHOLD_PORT: '', EYEHOLD_WORKSPACES: '', EYEHOLD_WORKSPACES: '', EYEHOLD_TOKEN: '', EYEHOLD_API_TOKEN: '', EYEHOLD_API_TOKEN: '' };
   if (process.platform !== 'win32') h.HOME = profile;
   return h;
 }
@@ -100,9 +100,9 @@ function hermetic(profile) {
     { when: 'write the secret file', tool: { name: 'fs.write', args: { path: 'cli-denied.md', content: 'must never exist' } } }
   ]);
   const providerEnv = {
-    SKYNET_OPENROUTER_BASE: mock.base, EYEHOLD_OPENROUTER_BASE: mock.base,
-    SKYNET_OPENROUTER_KEY: 'sk-or-v1-cli-fake', EYEHOLD_OPENROUTER_KEY: 'sk-or-v1-cli-fake',
-    SKYNET_DEFAULT_MODEL: 'test/model', EYEHOLD_DEFAULT_MODEL: 'test/model'
+    EYEHOLD_OPENROUTER_BASE: mock.base, EYEHOLD_OPENROUTER_BASE: mock.base,
+    EYEHOLD_OPENROUTER_KEY: 'sk-or-v1-cli-fake', EYEHOLD_OPENROUTER_KEY: 'sk-or-v1-cli-fake',
+    EYEHOLD_DEFAULT_MODEL: 'test/model', EYEHOLD_DEFAULT_MODEL: 'test/model'
   };
 
   /* ================= ATTACH: a running keep ================= */

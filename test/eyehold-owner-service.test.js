@@ -5,7 +5,7 @@
 const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path');
 const {SidecarFixture}=require('./helpers/sidecar-fixture.js');
 const {provision,authFile}=require('../sidecar/eyehold-owner-auth.js');
-const fixture=SidecarFixture.create({env:{SKYNET_BUDGET_GLOBAL:'0',SKYNET_BUDGET_PER_DAY:'0',SKYNET_LIVE_PRICES:'0'}});
+const fixture=SidecarFixture.create({env:{EYEHOLD_BUDGET_GLOBAL:'0',EYEHOLD_BUDGET_PER_DAY:'0',EYEHOLD_LIVE_PRICES:'0'}});
 const row={runId:'review-run',agentId:'deepforge',reason:'done',deliveryText:'Fixture only: readiness checks, measured acceptance criteria, and rollback plan.',ts:Date.now()};
 let key;
 const endpoint='/api/eyehold/review';

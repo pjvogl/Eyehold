@@ -116,7 +116,7 @@ const mock = await startMock();
 const appPort = await freePort(), cdpPort = await freePort();
 const base = 'http://127.0.0.1:' + appPort;
 materializeSeedWorkspace(workspace, 'test/model');
-const sidecar = bootSeededSidecar({ port: appPort, scratchDir: workspace, model: 'test/model', key: 'sk-or-v1-fake', env: Object.assign({ SKYNET_OPENROUTER_BASE: mock.base }, iso) });
+const sidecar = bootSeededSidecar({ port: appPort, scratchDir: workspace, model: 'test/model', key: 'sk-or-v1-fake', env: Object.assign({ EYEHOLD_OPENROUTER_BASE: mock.base }, iso) });
 const chrome = spawn(chromePath, ['--headless=new', '--disable-gpu', '--no-first-run', '--no-default-browser-check', '--no-proxy-server', '--hide-scrollbars', '--mute-audio',
   '--remote-debugging-port=' + cdpPort, '--window-size=1440,900', '--user-data-dir=' + profile, 'about:blank'], { stdio: 'ignore' });
 
@@ -216,7 +216,7 @@ try {
      look and the cap; DENY Full Power — the deny must leave it off. ---- */
   const workspace2 = join(root, 'workspace2'), appPort2 = await freePort(), base2 = 'http://127.0.0.1:' + appPort2;
   materializeSeedWorkspace(workspace2, 'test/model');
-  sidecar2 = bootSeededSidecar({ port: appPort2, scratchDir: workspace2, model: 'test/model', key: 'sk-or-v1-fake', fullAccess: false, env: Object.assign({ SKYNET_OPENROUTER_BASE: mock.base }, iso) });
+  sidecar2 = bootSeededSidecar({ port: appPort2, scratchDir: workspace2, model: 'test/model', key: 'sk-or-v1-fake', fullAccess: false, env: Object.assign({ EYEHOLD_OPENROUTER_BASE: mock.base }, iso) });
   check('ASK keep starts (Full Access off)', await waitUp(base2 + '/'));
   const token2 = await bootToken(base2, base2);
   await cdp.send('Page.navigate', { url: base2 + '/' });

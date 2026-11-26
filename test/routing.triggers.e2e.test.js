@@ -69,7 +69,7 @@ function startMockOpenRouter(script) {
 function boot(port, env, attemptsLeft) {
   return new Promise((resolve, reject) => {
     const child = spawn(process.execPath, [INDEX], {
-      env: Object.assign({}, process.env, env, { SKYNET_PORT: String(port), EYEHOLD_PORT: String(port) }),
+      env: Object.assign({}, process.env, env, { EYEHOLD_PORT: String(port), EYEHOLD_PORT: String(port) }),
       stdio: ['ignore', 'pipe', 'pipe']
     });
     let out = '', settled = false;
@@ -138,9 +138,9 @@ function twoStagePlan() {
   for (const d of [home, ws, drops, outside, path.join(root, 'hermes')]) fs.mkdirSync(d, { recursive: true });
   fs.writeFileSync(path.join(drops, 'old.txt'), 'was here before the trigger existed');
   const env = {
-    SKYNET_WORKSPACES: ws, EYEHOLD_WORKSPACES: ws, EYEHOLD_DEV: '', SKYNET_DEV: '',
+    EYEHOLD_WORKSPACES: ws, EYEHOLD_WORKSPACES: ws, EYEHOLD_DEV: '', EYEHOLD_DEV: '',
     HOME: home, USERPROFILE: home, HERMES_HOME: path.join(root, 'hermes'),
-    SKYNET_OPENROUTER_BASE: mock.base, SKYNET_OPENROUTER_KEY: 'sk-or-v1-triggers-fake', SKYNET_DEFAULT_MODEL: 'test/model',
+    EYEHOLD_OPENROUTER_BASE: mock.base, EYEHOLD_OPENROUTER_KEY: 'sk-or-v1-triggers-fake', EYEHOLD_DEFAULT_MODEL: 'test/model',
     EYEHOLD_TRIGGER_POLL_MS: '300', EYEHOLD_TRIGGER_SETTLE_MS: '200'
   };
   let { child, port } = await boot(9180 + (process.pid % 40), env, 20);

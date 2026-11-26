@@ -23,10 +23,10 @@ function boot(port, workspaces, attemptsLeft, extraEnv) {
     const child = spawn(process.execPath, [INDEX], {
       env: Object.assign({}, process.env, {
         EYEHOLD_PORT: String(port), EYEHOLD_WORKSPACES: workspaces,
-        EYEHOLD_DEV: '1', SKYNET_DEV: '1',                      // enables POST /api/dev/fault (404 otherwise)
+        EYEHOLD_DEV: '1', EYEHOLD_DEV: '1',                      // enables POST /api/dev/fault (404 otherwise)
         EYEHOLD_UNCAUGHT_EXIT_DELAY_MS: '3000',                 // widen the DEGRADED window so it is observable over sockets
-        EYEHOLD_UNCAUGHT_KEEP_SERVING: '', SKYNET_UNCAUGHT_KEEP_SERVING: '',
-        SKYNET_CRON_ENABLED: '', EYEHOLD_CRON_ENABLED: ''
+        EYEHOLD_UNCAUGHT_KEEP_SERVING: '', EYEHOLD_UNCAUGHT_KEEP_SERVING: '',
+        EYEHOLD_CRON_ENABLED: '', EYEHOLD_CRON_ENABLED: ''
       }, extraEnv || {}),
       stdio: ['ignore', 'pipe', 'pipe']
     });
@@ -198,7 +198,7 @@ function exited(child, ms) {
     fs.writeFileSync(ownerFile, ownerDoc);
     const bootAny = (port) => new Promise((resolve) => {
       const c = spawn(process.execPath, [INDEX], {
-        env: Object.assign({}, process.env, { EYEHOLD_PORT: String(port), EYEHOLD_WORKSPACES: wsOwn, EYEHOLD_DEV: '1', SKYNET_DEV: '1', SKYNET_CRON_ENABLED: '', EYEHOLD_CRON_ENABLED: '' }),
+        env: Object.assign({}, process.env, { EYEHOLD_PORT: String(port), EYEHOLD_WORKSPACES: wsOwn, EYEHOLD_DEV: '1', EYEHOLD_DEV: '1', EYEHOLD_CRON_ENABLED: '', EYEHOLD_CRON_ENABLED: '' }),
         stdio: ['ignore', 'pipe', 'pipe']
       });
       let out = '', done = false;

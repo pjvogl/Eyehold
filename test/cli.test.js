@@ -212,7 +212,7 @@ const lineage = require('../sidecar/workspace-lineage.js');
   A.eq(core.inferProvider({ env: {}, profiles }).provider, '', 'nothing set → no provider');
   A.eq(core.inferProvider({ env: { ANTHROPIC_API_KEY: 'k' }, profiles }).provider, 'anthropic', 'a bare key env');
   A.eq(core.inferProvider({ env: { EYEHOLD_OPENROUTER_KEY: 'k' }, profiles }).provider, 'openrouter', 'EYEHOLD_-scoped');
-  A.eq(core.inferProvider({ env: { SKYNET_OPENAI_API_KEY: 'k' }, profiles }).provider, 'openai', 'SKYNET_-scoped legacy');
+  A.eq(core.inferProvider({ env: { EYEHOLD_OPENAI_API_KEY: 'k' }, profiles }).provider, 'openai', 'EYEHOLD_-scoped legacy');
   A.eq(core.inferProvider({ env: { OPENAI_API_KEY: 'k', ANTHROPIC_API_KEY: 'k' }, profiles }).provider, 'openai', 'registry order decides ties');
   A.eq(core.inferProvider({ env: {}, profiles, codexTokensPresent: true }).provider, 'codex', 'a stored ChatGPT sign-in counts');
   A.eq(core.inferProvider({ env: { OPENAI_API_KEY: 'k' }, profiles, explicit: 'gemini' }).provider, 'gemini', '--provider wins');

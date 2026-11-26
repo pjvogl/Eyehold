@@ -1,4 +1,4 @@
-/* Real headless-WebGL parity for the shipped CRT detail pass. Requires Chromium (SKYNET_CHROME
+/* Real headless-WebGL parity for the shipped CRT detail pass. Requires Chromium (EYEHOLD_CHROME
    overrides discovery). Compiles the ACTUAL world.js shader and compares its readPixels output
    with the ACTUAL CPU sampler. No sidecar, saved keep, network service or renderer edits.
    Opaque input matches the composited camera feed; vignette/aberration are disabled to isolate

@@ -4,7 +4,7 @@
    actually projected into a run, that the target directory is built from the keep's real chat map, and that
    an approved channel.send genuinely reaches a transport and the text arrives.
 
-   It uses the DEV channel (SKYNET_DEV=1) as the live transport. That is a real channel with a real send — it
+   It uses the DEV channel (EYEHOLD_DEV=1) as the live transport. That is a real channel with a real send — it
    captures outbound text for POST /api/dev/inbound — it simply has no bot server behind it, which is exactly
    why it can be driven from a test without a Telegram/Discord token. Same rule the MCP bridge already uses for
    messages_send. So the bytes really do travel agent -> tool -> liveChannelFor -> transport -> readable text.
@@ -76,7 +76,7 @@ function startMockOpenRouter(script) {
 function boot(port, env, attemptsLeft) {
   return new Promise((resolve, reject) => {
     const child = spawn(process.execPath, [INDEX], {
-      env: Object.assign({}, process.env, env, { SKYNET_PORT: String(port) }),
+      env: Object.assign({}, process.env, env, { EYEHOLD_PORT: String(port) }),
       stdio: ['ignore', 'pipe', 'pipe']
     });
     let out = '', settled = false;
@@ -199,11 +199,11 @@ const toolCalls = (events) => events.filter(e => e.name === 'agent.tool_call').m
   ]);
   const ws = fs.mkdtempSync(path.join(os.tmpdir(), 'sk-comms-send-'));
   const env = {
-    SKYNET_WORKSPACES: ws,
-    SKYNET_DEV: '1',                      // the DEV channel is the live transport under test
-    SKYNET_OPENROUTER_BASE: mock.base,
-    SKYNET_OPENROUTER_KEY: 'sk-or-v1-comms-fake',
-    SKYNET_DEFAULT_MODEL: 'test/model'
+    EYEHOLD_WORKSPACES: ws,
+    EYEHOLD_DEV: '1',                      // the DEV channel is the live transport under test
+    EYEHOLD_OPENROUTER_BASE: mock.base,
+    EYEHOLD_OPENROUTER_KEY: 'sk-or-v1-comms-fake',
+    EYEHOLD_DEFAULT_MODEL: 'test/model'
   };
   const { child, port } = await boot(9010 + (process.pid % 40), env, 20);
   const B = 'http://' + HOST + ':' + port;

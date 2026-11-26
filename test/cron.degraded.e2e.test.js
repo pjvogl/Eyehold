@@ -35,7 +35,7 @@ async function boot(workspaces, extraEnv) {
     const appSandbox = path.join(workspaces, '_appdata');
     const child = spawn(process.execPath, [INDEX], {
       env: Object.assign({}, process.env, {
-        SKYNET_PORT: String(port), SKYNET_WORKSPACES: workspaces, SKYNET_DEV: '1',
+        EYEHOLD_PORT: String(port), EYEHOLD_WORKSPACES: workspaces, EYEHOLD_DEV: '1',
         LOCALAPPDATA: appSandbox, APPDATA: appSandbox, XDG_DATA_HOME: appSandbox
       }, extraEnv || {}),
       stdio: ['ignore', 'pipe', 'pipe']
@@ -64,7 +64,7 @@ async function boot(workspaces, extraEnv) {
   // arm the scheduler so the boot reconcile WOULD tick if the degraded gate were missing
   fs.writeFileSync(path.join(ws, 'cron.armed.json'), JSON.stringify({ version: 1, armed: true }), 'utf8');
 
-  let booted = await boot(ws, { SKYNET_CRON_TICK_MS: '1500' });
+  let booted = await boot(ws, { EYEHOLD_CRON_TICK_MS: '1500' });
   let child = booted.child, port = booted.port;
   const B = () => 'http://' + HOST + ':' + port;
   let apiToken = await bootToken(B(), B());

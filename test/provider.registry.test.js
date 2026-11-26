@@ -73,12 +73,12 @@ module.exports = (async () => {
   A.ok(!factory.getProviderProfile('custom').wireReasoningEffort, 'custom endpoints never assume reasoning_effort support');
 
   // Ollama can spend well over 30s loading a local model before it returns response headers. Its profile gets
-  // a local-only ceiling; hosted endpoints retain the shared SKYNET_PROVIDER_CONNECT_MS/default policy.
+  // a local-only ceiling; hosted endpoints retain the shared EYEHOLD_PROVIDER_CONNECT_MS/default policy.
   A.eq(factory.getProviderProfile('ollama').connectTimeoutMs, 300000, 'Ollama allows a five-minute cold model load');
   A.eq(factory.getProviderProfile('openai').connectTimeoutMs, undefined, 'hosted providers keep the shared connect ceiling');
   {
-    const previousConnectMs = process.env.SKYNET_PROVIDER_CONNECT_MS;
-    process.env.SKYNET_PROVIDER_CONNECT_MS = '10';
+    const previousConnectMs = process.env.EYEHOLD_PROVIDER_CONNECT_MS;
+    process.env.EYEHOLD_PROVIDER_CONNECT_MS = '10';
     let postAttempts = 0;
     try {
       const fetchImpl = async (url, init) => {
@@ -104,8 +104,8 @@ module.exports = (async () => {
       for await (const _ of local.stream({ model: 'llama3.1', messages: [{ role: 'user', content: 'hi' }] })) { /* drain */ }
       A.eq(postAttempts, 1, 'Ollama profile override reaches the adapter and prevents the global 10ms guard from retrying');
     } finally {
-      if (previousConnectMs == null) delete process.env.SKYNET_PROVIDER_CONNECT_MS;
-      else process.env.SKYNET_PROVIDER_CONNECT_MS = previousConnectMs;
+      if (previousConnectMs == null) delete process.env.EYEHOLD_PROVIDER_CONNECT_MS;
+      else process.env.EYEHOLD_PROVIDER_CONNECT_MS = previousConnectMs;
     }
   }
 
@@ -182,8 +182,8 @@ module.exports = (async () => {
   A.eq(factory.getProviderProfile('openai').maxOutputTokens, undefined, 'hosted OpenAI-compatible profiles declare no ceiling');
   {
     const wireFor = async (id, env, isTask) => {
-      const prev = process.env.SKYNET_OLLAMA_MAX_TOKENS;
-      if (env == null) delete process.env.SKYNET_OLLAMA_MAX_TOKENS; else process.env.SKYNET_OLLAMA_MAX_TOKENS = env;
+      const prev = process.env.EYEHOLD_OLLAMA_MAX_TOKENS;
+      if (env == null) delete process.env.EYEHOLD_OLLAMA_MAX_TOKENS; else process.env.EYEHOLD_OLLAMA_MAX_TOKENS = env;
       try {
         let wire = null;
         const p = factory.selectProvider({ provider: id, key: 'k', fetch: async (url, init) => {
@@ -196,11 +196,11 @@ module.exports = (async () => {
         if (wire && wire.options && wire.max_tokens === undefined) return { max_tokens: wire.options.num_predict };
         return wire;
       } finally {
-        if (prev == null) delete process.env.SKYNET_OLLAMA_MAX_TOKENS; else process.env.SKYNET_OLLAMA_MAX_TOKENS = prev;
+        if (prev == null) delete process.env.EYEHOLD_OLLAMA_MAX_TOKENS; else process.env.EYEHOLD_OLLAMA_MAX_TOKENS = prev;
       }
     };
     A.eq((await wireFor('ollama')).max_tokens, 4096, 'an Ollama run carries the profile ceiling as max_tokens');
-    A.eq((await wireFor('ollama', '8192')).max_tokens, 8192, 'SKYNET_OLLAMA_MAX_TOKENS overrides the declared ceiling');
+    A.eq((await wireFor('ollama', '8192')).max_tokens, 8192, 'EYEHOLD_OLLAMA_MAX_TOKENS overrides the declared ceiling');
     A.eq((await wireFor('ollama', 'junk')).max_tokens, 4096, 'a junk override falls back to the declared ceiling');
     A.eq((await wireFor('ollama', 'Infinity')).max_tokens, 4096, 'a non-finite environment override retains the ceiling');
     A.eq((await wireFor('ollama', null, false)).max_tokens, 512, 'an explicitly casual Ollama turn uses 512 tokens');

@@ -137,7 +137,7 @@ function boot(port, env, attemptsLeft) {
       env: Object.assign({}, process.env, {
         EYEHOLD_GOOGLE_DESKTOP_CLIENT_JSON: '{}',
         EYEHOLD_GOOGLE_OAUTH_CLIENT_ID: '', EYEHOLD_GOOGLE_OAUTH_CLIENT_SECRET: '',
-      }, env, { SKYNET_PORT: String(port), EYEHOLD_PORT: String(port) }),
+      }, env, { EYEHOLD_PORT: String(port), EYEHOLD_PORT: String(port) }),
       stdio: ['ignore', 'pipe', 'pipe']
     });
     let out = '', settled = false;
@@ -229,13 +229,13 @@ async function readNdjson(res) {
   const llm = await startMockOpenRouter();
   const ws = fs.mkdtempSync(path.join(os.tmpdir(), 'sk-mcp-e2e-'));
   const env = {
-    SKYNET_WORKSPACES: ws,
     EYEHOLD_WORKSPACES: ws,
-    SKYNET_OPENROUTER_BASE: llm.base,
+    EYEHOLD_WORKSPACES: ws,
     EYEHOLD_OPENROUTER_BASE: llm.base,
-    SKYNET_OPENROUTER_KEY: 'sk-or-v1-mcp-fake',
+    EYEHOLD_OPENROUTER_BASE: llm.base,
     EYEHOLD_OPENROUTER_KEY: 'sk-or-v1-mcp-fake',
-    SKYNET_DEFAULT_MODEL: 'test/model',
+    EYEHOLD_OPENROUTER_KEY: 'sk-or-v1-mcp-fake',
+    EYEHOLD_DEFAULT_MODEL: 'test/model',
     EYEHOLD_DEFAULT_MODEL: 'test/model'
   };
   let booted = await boot(9020 + (process.pid % 50), env, 20);
@@ -669,7 +669,7 @@ async function readNdjson(res) {
   let envChild = null;
   try {
     const envBoot = await boot(9080 + (process.pid % 50), {
-      SKYNET_WORKSPACES: envWs,
+      EYEHOLD_WORKSPACES: envWs,
       EYEHOLD_WORKSPACES: envWs,
       EYEHOLD_GOOGLE_OAUTH_CLIENT_ID: envClientId,
       EYEHOLD_GOOGLE_OAUTH_CLIENT_SECRET: envClientSecret

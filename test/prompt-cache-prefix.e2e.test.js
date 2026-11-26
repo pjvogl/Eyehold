@@ -19,7 +19,7 @@ const text = content => typeof content === 'string' ? content : (content || []).
   });
   await new Promise(resolve => upstream.listen(0, '127.0.0.1', resolve));
   const baseUrl = 'http://127.0.0.1:' + upstream.address().port + '/v1';
-  const fixture = new SidecarFixture({env:{SKYNET_FULL_ACCESS:'1',EYEHOLD_FULL_ACCESS:'1',SKYNET_SKILL_REVIEW:'0',SKYNET_SKILL_CURATOR:'0',SKYNET_THREAD_MINE:'0',EYEHOLD_CREDITS_URL:'',SKYNET_CREDITS_URL:''}});
+  const fixture = new SidecarFixture({env:{EYEHOLD_FULL_ACCESS:'1',EYEHOLD_FULL_ACCESS:'1',EYEHOLD_SKILL_REVIEW:'0',EYEHOLD_SKILL_CURATOR:'0',EYEHOLD_THREAD_MINE:'0',EYEHOLD_CREDITS_URL:'',EYEHOLD_CREDITS_URL:''}});
   try {
     await fixture.start();
     for (const provider of ['anthropic','openrouter','custom']) {

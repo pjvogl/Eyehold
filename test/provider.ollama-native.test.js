@@ -192,13 +192,13 @@ module.exports = (async () => {
     seen.length = 0;
     await collect(factory.selectProvider({ provider: 'custom', baseUrl: 'http://127.0.0.1:1234/v1', fetch: async (url) => { seen.push(url); return new Response('data: [DONE]\n\n', { status: 200 }); } }), { model: 'm', messages: [{ role: 'user', content: 'hi' }] });
     A.ok(seen.every(u => !/\/api\//.test(u)), 'a custom endpoint stays on /v1');
-    const prev = process.env.SKYNET_OLLAMA_NUM_CTX;
-    process.env.SKYNET_OLLAMA_NUM_CTX = '12000';
+    const prev = process.env.EYEHOLD_OLLAMA_NUM_CTX;
+    process.env.EYEHOLD_OLLAMA_NUM_CTX = '12000';
     try {
       let ctx = 0;
       await collect(factory.selectProvider({ provider: 'ollama', fetch: async (url, init) => { if (url.endsWith('/api/chat')) { ctx = JSON.parse(init.body).options.num_ctx; return ndjson([{ message: { content: '' }, done: true }]); } return new Response('{}', { status: 200 }); } }), { model: 'm', messages: [{ role: 'user', content: 'hi' }] });
-      A.eq(ctx, 12000, 'SKYNET_OLLAMA_NUM_CTX pins the window');
-    } finally { if (prev == null) delete process.env.SKYNET_OLLAMA_NUM_CTX; else process.env.SKYNET_OLLAMA_NUM_CTX = prev; }
+      A.eq(ctx, 12000, 'EYEHOLD_OLLAMA_NUM_CTX pins the window');
+    } finally { if (prev == null) delete process.env.EYEHOLD_OLLAMA_NUM_CTX; else process.env.EYEHOLD_OLLAMA_NUM_CTX = prev; }
   }
 
   // The window outlives the provider INSTANCE (a run builds a fresh one): a greeting after a task must not reload

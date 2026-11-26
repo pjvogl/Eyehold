@@ -76,8 +76,12 @@
       return (isFinite(n) && n > 0) ? n : dflt;
     } catch (_) { return dflt; }
   }
-  function connectMs() { return envInt('SKYNET_PROVIDER_CONNECT_MS', 30000); }
-  function idleMs() { return envInt('SKYNET_PROVIDER_IDLE_MS', 300000); }
+  function brandedInt(suffix, dflt) {
+    const eye = envInt('EYEHOLD_' + suffix, 0);
+    return eye || envInt('SKYNET_' + suffix, dflt);
+  }
+  function connectMs() { return brandedInt('PROVIDER_CONNECT_MS', 30000); }
+  function idleMs() { return brandedInt('PROVIDER_IDLE_MS', 300000); }
 
   // DEPRECATED for streaming fetches — new code MUST use connectGuard() instead. This merges the caller's
   // signal with a NON-disarmable AbortSignal.timeout: because a fetch signal governs the whole response, the

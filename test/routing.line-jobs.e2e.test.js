@@ -34,8 +34,8 @@ test('a line job is one durable record; SET IT UP FOR ME drafts only an offered 
   await new Promise(resolve => server.listen(0, '127.0.0.1', resolve));
   const base = 'http://127.0.0.1:' + server.address().port;
   const fixture = SidecarFixture.create({ prefix: 'line-jobs-', timeoutMs: 20000, env: {
-    EYEHOLD_DEFAULT_MODEL: '', SKYNET_DEFAULT_MODEL: '',
-    EYEHOLD_OPENROUTER_KEY: '', SKYNET_OPENROUTER_KEY: '',
+    EYEHOLD_DEFAULT_MODEL: '', EYEHOLD_DEFAULT_MODEL: '',
+    EYEHOLD_OPENROUTER_KEY: '', EYEHOLD_OPENROUTER_KEY: '',
     CUSTOM_OPENAI_KEY: 'direct-fixture', CUSTOM_OPENAI_BASE_URL: base + '/v1'
   } });
   try {

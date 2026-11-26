@@ -72,7 +72,7 @@ function startMockOpenRouter(dispatchArgs) {
 function boot(port, env, attemptsLeft) {
   return new Promise((resolve, reject) => {
     const child = spawn(process.execPath, [INDEX], {
-      env: Object.assign({}, process.env, env, { SKYNET_PORT: String(port) }), stdio: ['ignore', 'pipe', 'pipe']
+      env: Object.assign({}, process.env, env, { EYEHOLD_PORT: String(port) }), stdio: ['ignore', 'pipe', 'pipe']
     });
     let out = '', settled = false;
     const onData = d => {
@@ -155,7 +155,7 @@ async function drive(B, token, prompt) {
 async function run(label, dispatchArgs, sessions, body) {
   const mock = await startMockOpenRouter(dispatchArgs);
   const ws = fs.mkdtempSync(path.join(os.tmpdir(), 'sk-dispatch-'));
-  const env = { SKYNET_WORKSPACES: ws, SKYNET_OPENROUTER_BASE: mock.base, SKYNET_FULL_ACCESS: '1' };
+  const env = { EYEHOLD_WORKSPACES: ws, EYEHOLD_OPENROUTER_BASE: mock.base, EYEHOLD_FULL_ACCESS: '1' };
   const { child, port } = await boot(8940 + (process.pid % 40), env, 20);
   const B = 'http://' + HOST + ':' + port;
   const page = { close: () => {} };

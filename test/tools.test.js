@@ -401,9 +401,9 @@ const call = (name, args, id) => ({ id: id || 'c1', name, args, argsRaw: JSON.st
 
     /* THE KILL SWITCH MUST ACTUALLY WORK. A documented env override that silently does nothing is worse
        than not offering one — an operator would trust it. Re-required with a cache bust because the limit
-       is resolved once at module load (same discipline as SKYNET_ANTHROPIC_CACHE). */
-    const prev = process.env.SKYNET_TOOL_OUTPUT_MAX;
-    process.env.SKYNET_TOOL_OUTPUT_MAX = '500';
+       is resolved once at module load (same discipline as EYEHOLD_ANTHROPIC_CACHE). */
+    const prev = process.env.EYEHOLD_TOOL_OUTPUT_MAX;
+    process.env.EYEHOLD_TOOL_OUTPUT_MAX = '500';
     delete require.cache[require.resolve('../sidecar/tools/registry.js')];
     const tiny = require('../sidecar/tools/registry.js').makeRegistry();
     tiny.register({
@@ -412,11 +412,11 @@ const call = (name, args, id) => ({ id: id || 'c1', name, args, argsRaw: JSON.st
       run: async () => ({ content: 'y'.repeat(50000), summary: 'ok' })
     });
     const capped = await tiny.dispatch({ id: 'c5', name: 'flood', args: {} }, ctx);
-    A.ok(capped.content.length < 1200, 'SKYNET_TOOL_OUTPUT_MAX is honoured (' + capped.content.length + ' B)');
+    A.ok(capped.content.length < 1200, 'EYEHOLD_TOOL_OUTPUT_MAX is honoured (' + capped.content.length + ' B)');
     // The cap governs RETAINED CONTENT; the explanatory note rides on top at a fixed ~240 B. Pinned as
     // intentional — making the note eat the content budget would be the worse trade.
     A.ok(capped.content.length > 500, 'the note is additive to the cap, not carved out of it');
-    if (prev === undefined) delete process.env.SKYNET_TOOL_OUTPUT_MAX; else process.env.SKYNET_TOOL_OUTPUT_MAX = prev;
+    if (prev === undefined) delete process.env.EYEHOLD_TOOL_OUTPUT_MAX; else process.env.EYEHOLD_TOOL_OUTPUT_MAX = prev;
 
     /* PARKING: the elided middle must be RECOVERABLE. "narrow it" is sound advice for a search and useless
        for output that WAS the answer — a full test run, a big log — where the work is already done and paid

@@ -64,7 +64,7 @@ function startMockOpenRouter(defaultReply) {
 function boot(port, env, attemptsLeft) {
   return new Promise((resolve, reject) => {
     const child = spawn(process.execPath, [INDEX], {
-      env: Object.assign({}, process.env, env, { SKYNET_PORT: String(port) }),
+      env: Object.assign({}, process.env, env, { EYEHOLD_PORT: String(port) }),
       stdio: ['ignore', 'pipe', 'pipe']
     });
     let out = '', settled = false;
@@ -100,14 +100,14 @@ async function until(B, headers, pred, label, ms) {
   const POPS = 'Verified that all the project files exist and everything is in place. The structure is confirmed and ready.';
   const mock = await startMockOpenRouter(POPS);
   const ws = fs.mkdtempSync(path.join(os.tmpdir(), 'sk-loops-stall-e2e-'));
-  // NOTE: no SKYNET_BUDGET_* in this env — the point is what a fresh install ships with.
+  // NOTE: no EYEHOLD_BUDGET_* in this env — the point is what a fresh install ships with.
   const env = {
-    SKYNET_WORKSPACES: ws,
-    SKYNET_OPENROUTER_BASE: mock.base,
-    SKYNET_OPENROUTER_KEY: 'sk-or-v1-stall-fake',
-    SKYNET_DEFAULT_MODEL: 'test/model',
-    SKYNET_LOOP_TICK_MS: '1000',
-    SKYNET_FULL_ACCESS: '1'
+    EYEHOLD_WORKSPACES: ws,
+    EYEHOLD_OPENROUTER_BASE: mock.base,
+    EYEHOLD_OPENROUTER_KEY: 'sk-or-v1-stall-fake',
+    EYEHOLD_DEFAULT_MODEL: 'test/model',
+    EYEHOLD_LOOP_TICK_MS: '1000',
+    EYEHOLD_FULL_ACCESS: '1'
   };
   // scrub any inherited budget env so the assertion is about the shipped default, not this machine's shell
   for (const k of Object.keys(process.env)) if (/^(SKYNET|EYEHOLD)_BUDGET_/.test(k)) env[k] = '';

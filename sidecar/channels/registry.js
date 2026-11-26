@@ -41,19 +41,19 @@
     return [
       { id: 'telegram', label: 'Telegram', maxMessageLength: 4096, auth: 'token',
         makeAdapter: a.telegram || (tgMod && tgMod.makeTelegramAdapter),
-        env: { tokenVar: 'SKYNET_TELEGRAM_TOKEN', keyVar: 'SKYNET_OPENROUTER_KEY', modelVar: 'SKYNET_DEFAULT_MODEL' } },
+        env: { tokenVar: 'EYEHOLD_TELEGRAM_TOKEN', keyVar: 'EYEHOLD_OPENROUTER_KEY', modelVar: 'EYEHOLD_DEFAULT_MODEL' } },
       { id: 'discord', label: 'Discord', maxMessageLength: (dcMod && dcMod.MAX_MESSAGE_LENGTH) || 2000, auth: 'token',
         makeAdapter: a.discord || (dcMod && dcMod.makeDiscordAdapter),
-        env: { tokenVar: 'SKYNET_DISCORD_TOKEN', keyVar: 'SKYNET_OPENROUTER_KEY', modelVar: 'SKYNET_DEFAULT_MODEL' } },
+        env: { tokenVar: 'EYEHOLD_DISCORD_TOKEN', keyVar: 'EYEHOLD_OPENROUTER_KEY', modelVar: 'EYEHOLD_DEFAULT_MODEL' } },
       { id: 'slack', label: 'Slack', maxMessageLength: (slMod && slMod.MAX_MESSAGE_LENGTH) || 4000, auth: 'token2',
         makeAdapter: a.slack || (slMod && slMod.makeSlackAdapter),
-        env: { tokenVar: 'SKYNET_SLACK_TOKEN', keyVar: 'SKYNET_OPENROUTER_KEY', modelVar: 'SKYNET_DEFAULT_MODEL' } },
+        env: { tokenVar: 'EYEHOLD_SLACK_TOKEN', keyVar: 'EYEHOLD_OPENROUTER_KEY', modelVar: 'EYEHOLD_DEFAULT_MODEL' } },
       { id: 'matrix', label: 'Matrix', maxMessageLength: (mxMod && mxMod.MAX_MESSAGE_LENGTH) || 4096, auth: 'endpoint+token',
         makeAdapter: a.matrix || (mxMod && mxMod.makeMatrixAdapter),
-        env: { tokenVar: 'SKYNET_MATRIX_TOKEN', keyVar: 'SKYNET_OPENROUTER_KEY', modelVar: 'SKYNET_DEFAULT_MODEL' } },
+        env: { tokenVar: 'EYEHOLD_MATRIX_TOKEN', keyVar: 'EYEHOLD_OPENROUTER_KEY', modelVar: 'EYEHOLD_DEFAULT_MODEL' } },
       { id: 'signal', label: 'Signal', maxMessageLength: (sgMod && sgMod.MAX_MESSAGE_LENGTH) || 4096, auth: 'endpoint+account',
         makeAdapter: a.signal || (sgMod && sgMod.makeSignalAdapter),
-        env: { keyVar: 'SKYNET_OPENROUTER_KEY', modelVar: 'SKYNET_DEFAULT_MODEL' } }
+        env: { keyVar: 'EYEHOLD_OPENROUTER_KEY', modelVar: 'EYEHOLD_DEFAULT_MODEL' } }
     ];
   }
 

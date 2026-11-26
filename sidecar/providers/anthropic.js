@@ -24,7 +24,7 @@
   // resolve the env override once, tolerant of a garbage value (a typo must never wedge generation).
   const ENV_MAX_TOKENS = (function () {
     try {
-      const raw = (typeof process !== 'undefined' && process.env) ? process.env.SKYNET_ANTHROPIC_MAX_TOKENS : '';
+      const raw = (typeof process !== 'undefined' && process.env) ? (process.env.EYEHOLD_ANTHROPIC_MAX_TOKENS != null ? process.env.EYEHOLD_ANTHROPIC_MAX_TOKENS : process.env.SKYNET_ANTHROPIC_MAX_TOKENS) : '';
       const n = Number(String(raw == null ? '' : raw).trim());
       return (Number.isFinite(n) && n > 0) ? Math.floor(n) : 0;
     } catch (_) { return 0; }
@@ -33,7 +33,7 @@
   // switch: it changes what Anthropic BILLS, so there has to be a way to turn it off without a code change.
   const CACHE_OFF = (function () {
     try {
-      const raw = (typeof process !== 'undefined' && process.env) ? process.env.SKYNET_ANTHROPIC_CACHE : '';
+      const raw = (typeof process !== 'undefined' && process.env) ? (process.env.EYEHOLD_ANTHROPIC_CACHE != null ? process.env.EYEHOLD_ANTHROPIC_CACHE : process.env.SKYNET_ANTHROPIC_CACHE) : '';
       return String(raw == null ? '' : raw).trim() === '0';
     } catch (_) { return false; }
   })();
@@ -45,7 +45,7 @@
      tier actually requested. */
   const CACHE_TTL_1H = (function () {
     try {
-      const raw = (typeof process !== 'undefined' && process.env) ? process.env.SKYNET_ANTHROPIC_CACHE_TTL : '';
+      const raw = (typeof process !== 'undefined' && process.env) ? (process.env.EYEHOLD_ANTHROPIC_CACHE_TTL != null ? process.env.EYEHOLD_ANTHROPIC_CACHE_TTL : process.env.SKYNET_ANTHROPIC_CACHE_TTL) : '';
       return String(raw == null ? '' : raw).trim().toLowerCase() === '1h';
     } catch (_) { return false; }
   })();

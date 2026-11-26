@@ -16,7 +16,7 @@ function effectiveToolsets({ registry, agentId, agent, placed = [], disabled = {
       context: lead ? 'interactive lead' : 'capability grants',
       profile: profile.id, profileLabel: profile.label, filesystemLabel: unrestricted ? 'Whole local computer' : profile.filesystemLabel,
       approvalLabel: unrestricted ? 'FULL ACCESS — no Eyehold approval prompts' : 'ASK — standing grants apply',
-      revoke: source === 'environment' ? 'Clear SKYNET_FULL_ACCESS in the launch environment and restart.' : source === 'keep' ? 'Turn off the keep master bypass in Settings → Permissions; individual Full Access agents stay unrestricted.' : source === 'agent' ? 'Set this agent to ASK in its dossier.' : 'Revoke standing grants in Settings → Permissions.' },
+      revoke: source === 'environment' ? 'Clear EYEHOLD_FULL_ACCESS in the launch environment and restart.' : source === 'keep' ? 'Turn off the keep master bypass in Settings → Permissions; individual Full Access agents stay unrestricted.' : source === 'agent' ? 'Set this agent to ASK in its dossier.' : 'Revoke standing grants in Settings → Permissions.' },
     toolsets: toolsetRows(registry).map(r => {
       const enabled = disabled[r.id] !== false;
       const placedHere = !!(r.object && onFloor.has(r.object));

@@ -27,15 +27,15 @@ function boot(port, workspaces, attemptsLeft, extraEnv) {
   return new Promise((resolve, reject) => {
     const child = spawn(process.execPath, [INDEX], {
       env: Object.assign({}, process.env, {
-        SKYNET_PORT: String(port), EYEHOLD_PORT: String(port),
-        SKYNET_WORKSPACES: workspaces, EYEHOLD_WORKSPACES: workspaces,
+        EYEHOLD_PORT: String(port), EYEHOLD_PORT: String(port),
+        EYEHOLD_WORKSPACES: workspaces, EYEHOLD_WORKSPACES: workspaces,
         // clear every provider key so no route can reach the network (determinism + zero spend).
-        OPENROUTER_KEY: '', EYEHOLD_OPENROUTER_KEY: '', SKYNET_OPENROUTER_KEY: '',
-        OPENROUTER_API_KEY: '', EYEHOLD_OPENROUTER_API_KEY: '', SKYNET_OPENROUTER_API_KEY: '',
-        ANTHROPIC_API_KEY: '', EYEHOLD_ANTHROPIC_API_KEY: '', SKYNET_ANTHROPIC_API_KEY: '',
-        GEMINI_API_KEY: '', EYEHOLD_GEMINI_API_KEY: '', SKYNET_GEMINI_API_KEY: '',
+        OPENROUTER_KEY: '', EYEHOLD_OPENROUTER_KEY: '', EYEHOLD_OPENROUTER_KEY: '',
+        OPENROUTER_API_KEY: '', EYEHOLD_OPENROUTER_API_KEY: '', EYEHOLD_OPENROUTER_API_KEY: '',
+        ANTHROPIC_API_KEY: '', EYEHOLD_ANTHROPIC_API_KEY: '', EYEHOLD_ANTHROPIC_API_KEY: '',
+        GEMINI_API_KEY: '', EYEHOLD_GEMINI_API_KEY: '', EYEHOLD_GEMINI_API_KEY: '',
         // keep DEV off by default so POST /api/dev/inbound proves its 404 gate deterministically.
-        EYEHOLD_DEV: '', SKYNET_DEV: '',
+        EYEHOLD_DEV: '', EYEHOLD_DEV: '',
         EYEHOLD_APP_VERSION: '9.9.9-routes-test'
       }, extraEnv || {}),
       stdio: ['ignore', 'pipe', 'pipe']

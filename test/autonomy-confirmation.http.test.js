@@ -4,7 +4,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 const { SidecarFixture } = require('./helpers/sidecar-fixture');
 (async () => {
-  const host = SidecarFixture.create({ env: { SKYNET_DEV: '1', SKYNET_CRON_ENABLED: '0' } });
+  const host = SidecarFixture.create({ env: { EYEHOLD_DEV: '1', EYEHOLD_CRON_ENABLED: '0' } });
   const write = posture => host.json('POST', '/api/autonomy/posture', { posture, resumeHalt: true });
   const read = async () => (await host.json('GET', '/api/autonomy/posture')).body.summary;
   try {

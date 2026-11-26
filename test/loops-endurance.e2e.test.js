@@ -95,12 +95,12 @@ async function until(fixture, predicate, label, timeoutMs) {
     prefix: 'eyehold-loop-endurance-',
     timeoutMs: 12000,
     env: {
-      SKYNET_OPENROUTER_BASE: provider.baseUrl,
-      SKYNET_OPENROUTER_KEY: 'sk-or-v1-endurance-fake',
-      SKYNET_DEFAULT_MODEL: 'test/endurance',
-      SKYNET_LOOP_TICK_MS: '1000',
-      SKYNET_FULL_ACCESS: '1',
-      SKYNET_AUX_BUDGET: '0'
+      EYEHOLD_OPENROUTER_BASE: provider.baseUrl,
+      EYEHOLD_OPENROUTER_KEY: 'sk-or-v1-endurance-fake',
+      EYEHOLD_DEFAULT_MODEL: 'test/endurance',
+      EYEHOLD_LOOP_TICK_MS: '1000',
+      EYEHOLD_FULL_ACCESS: '1',
+      EYEHOLD_AUX_BUDGET: '0'
     }
   });
 

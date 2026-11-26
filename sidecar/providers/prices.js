@@ -288,7 +288,7 @@
      sides keeps the estimate honest — an operator who opts into the pricier tier sees it in the seatbelt. */
   const ANTHROPIC_TTL_1H = (function () {
     try {
-      const raw = (typeof process !== 'undefined' && process.env) ? process.env.SKYNET_ANTHROPIC_CACHE_TTL : '';
+      const raw = (typeof process !== 'undefined' && process.env) ? (process.env.EYEHOLD_ANTHROPIC_CACHE_TTL != null ? process.env.EYEHOLD_ANTHROPIC_CACHE_TTL : process.env.SKYNET_ANTHROPIC_CACHE_TTL) : '';
       return String(raw == null ? '' : raw).trim().toLowerCase() === '1h';
     } catch (_) { return false; }
   })();
@@ -311,7 +311,7 @@
   // model id beats a family prefix.
   const OVERRIDES = (function () {
     try {
-      const raw = (typeof process !== 'undefined' && process.env) ? process.env.SKYNET_MODEL_PRICES : '';
+      const raw = (typeof process !== 'undefined' && process.env) ? (process.env.EYEHOLD_MODEL_PRICES != null ? process.env.EYEHOLD_MODEL_PRICES : process.env.SKYNET_MODEL_PRICES) : '';
       const s = String(raw == null ? '' : raw).trim();
       if (!s) return [];
       const obj = JSON.parse(s);

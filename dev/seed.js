@@ -138,9 +138,9 @@ async function main() {
   if (!fs.existsSync(SIDECAR)) die('cannot find sidecar at ' + SIDECAR);
   if (!fs.existsSync(FIXTURE)) die('cannot find the seed fixture at ' + FIXTURE);
 
-  const key = String(process.env.SKYNET_OPENROUTER_KEY || '').trim();
-  const model = String(process.env.SKYNET_DEFAULT_MODEL || '').trim();
-  const port = String(process.env.SKYNET_PORT || process.env.PORT || '8787').trim();
+  const key = String(process.env.EYEHOLD_OPENROUTER_KEY || process.env.SKYNET_OPENROUTER_KEY || '').trim();
+  const model = String(process.env.EYEHOLD_DEFAULT_MODEL || process.env.SKYNET_DEFAULT_MODEL || '').trim();
+  const port = String(process.env.EYEHOLD_PORT || process.env.SKYNET_PORT || process.env.PORT || '8787').trim();
 
   if (!model) {
     die('no SKYNET_DEFAULT_MODEL set.\n' +
@@ -161,12 +161,19 @@ async function main() {
   materializeWorkspace(model);
 
   const childEnv = Object.assign({}, process.env, {
-    SKYNET_DEV: '1',
+    EYEHOLD_DEV: '1',
     // SEED_FULL_ACCESS=0 boots WITHOUT the env-forced override, so the PERMISSIONS pane can be exercised live.
-    SKYNET_FULL_ACCESS: process.env.SEED_FULL_ACCESS === '0' ? '' : '1',
-    SKYNET_WORKSPACES: SCRATCH,
-    SKYNET_PORT: port
+    EYEHOLD_FULL_ACCESS: process.env.SEED_FULL_ACCESS === '0' ? '' : '1',
+    EYEHOLD_WORKSPACES: SCRATCH,
+    EYEHOLD_PORT: port,
+    EYEHOLD_DEFAULT_MODEL: model,
+    EYEHOLD_OPENROUTER_KEY: key
   });
+  for (const [name, value] of Object.entries(childEnv)) {
+    if (name.startsWith('SKYNET_') && (childEnv['EYEHOLD_' + name.slice('SKYNET_'.length)] == null || childEnv['EYEHOLD_' + name.slice('SKYNET_'.length)] === '')) {
+      childEnv['EYEHOLD_' + name.slice('SKYNET_'.length)] = value;
+    }
+  }
 
   const url = 'http://127.0.0.1:' + port;
   console.log('');

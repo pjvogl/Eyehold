@@ -61,12 +61,12 @@ function startMock() {
 (async () => {
   const mock = await startMock();
   const fixture = SidecarFixture.create({ entry: process.env.TAINT_E2E_ENTRY, prefix: 'taint-lineage-', timeoutMs: 20000, env: {
-    SKYNET_OPENROUTER_BASE: mock.base, EYEHOLD_OPENROUTER_BASE: mock.base,
-    SKYNET_OPENROUTER_KEY: 'fixture', EYEHOLD_OPENROUTER_KEY: 'fixture',
-    SKYNET_DEFAULT_MODEL: 'test/model', EYEHOLD_DEFAULT_MODEL: 'test/model',
-    SKYNET_CRON_ENABLED: '0', EYEHOLD_CRON_ENABLED: '0'
+    EYEHOLD_OPENROUTER_BASE: mock.base, EYEHOLD_OPENROUTER_BASE: mock.base,
+    EYEHOLD_OPENROUTER_KEY: 'fixture', EYEHOLD_OPENROUTER_KEY: 'fixture',
+    EYEHOLD_DEFAULT_MODEL: 'test/model', EYEHOLD_DEFAULT_MODEL: 'test/model',
+    EYEHOLD_CRON_ENABLED: '0', EYEHOLD_CRON_ENABLED: '0'
   } });
-  const FULL = { SKYNET_FULL_ACCESS: '1', EYEHOLD_FULL_ACCESS: '1' };
+  const FULL = { EYEHOLD_FULL_ACCESS: '1', EYEHOLD_FULL_ACCESS: '1' };
   async function run(streamId, content) {
     const r = await fixture.json('POST', '/api/run', { key: 'sk-or-v1-fake', model: 'test/model', provider: 'openrouter', agentId: 'agent', isTask: true, streamId, messages: [{ role: 'user', content }] });
     A.eq(r.status, 200, 'POST /api/run streams (' + streamId + ')');

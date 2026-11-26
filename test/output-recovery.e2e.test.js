@@ -61,16 +61,16 @@ function startProvider() {
     prefix: 'eyehold-output-recovery-',
     timeoutMs: 12000,
     env: {
-      SKYNET_OPENROUTER_BASE: provider.baseUrl,
       EYEHOLD_OPENROUTER_BASE: provider.baseUrl,
-      SKYNET_OPENROUTER_KEY: 'sk-or-v1-output-recovery-fake',
+      EYEHOLD_OPENROUTER_BASE: provider.baseUrl,
       EYEHOLD_OPENROUTER_KEY: 'sk-or-v1-output-recovery-fake',
-      SKYNET_DEFAULT_MODEL: 'test/output-recovery',
+      EYEHOLD_OPENROUTER_KEY: 'sk-or-v1-output-recovery-fake',
+      EYEHOLD_DEFAULT_MODEL: 'test/output-recovery',
       EYEHOLD_DEFAULT_MODEL: 'test/output-recovery',
       // Pin the per-run tool-output budget: the production cap scales with the model's context window
       // (window-blind fake provider => 128k cold-catalog default => ~341KB), which the two 61KB floods
       // could never cross. An explicit env value is absolute, restoring the deterministic 120KB seam.
-      SKYNET_MAX_TOOL_BYTES: '120000',
+      EYEHOLD_MAX_TOOL_BYTES: '120000',
       EYEHOLD_MAX_TOOL_BYTES: '120000'
     }
   });

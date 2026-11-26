@@ -209,7 +209,7 @@ function jwt(claims) {
       'a tombstone carrying any credential field is not a tombstone');
 
     /* ⛔ A CREDENTIAL MUST NOT CROSS AN ISOLATION BOUNDARY. Every test boot, dev seed and QA journey points
-       SKYNET_WORKSPACES at a fresh temp dir. The candidate scan used to run there too, so booting the sidecar
+       EYEHOLD_WORKSPACES at a fresh temp dir. The candidate scan used to run there too, so booting the sidecar
        with a temp workspace COPIED the Commander's live ChatGPT refresh token into os.tmpdir() — and a
        "clean-room" boot silently inherited their real sign-in, so a fresh-install test was never fresh. */
     const tempRoot = pathMod.join(pathMod.sep === '\\' ? 'C:\\' : '/', 'tmp', 'sk-probe-abc123');

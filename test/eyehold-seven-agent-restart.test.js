@@ -11,7 +11,7 @@ const ids=['agent','raven','sages','iron','deepforge','silver','treasury'];
 const names=['THE EYE','RAVEN COURT','STAR SAGES','IRON HOST','DEEPFORGE','SILVER BOUGH','TREASURY WATCH'];
 const specialties=['eyehold-keep','eyehold-archive','eyehold-astral','eyehold-foundry','eyehold-forge','eyehold-moonleaf','eyehold-astral'];
 const roster=ids.map((agentId,i)=>({agentId,name:names[i],model:'openai/gpt-4.1-mini',provider:'openrouter',specialtyId:specialties[i],system:'Offline fixture only; never submit a model request.'}));
-const fixture=SidecarFixture.create({env:{SKYNET_BUDGET_GLOBAL:'0',SKYNET_BUDGET_PER_DAY:'0',SKYNET_LIVE_PRICES:'0'}});
+const fixture=SidecarFixture.create({env:{EYEHOLD_BUDGET_GLOBAL:'0',EYEHOLD_BUDGET_PER_DAY:'0',EYEHOLD_LIVE_PRICES:'0'}});
 async function crew(){const r=await fixture.json('GET','/api/eyehold/crew');assert.equal(r.status,200);assert.equal(r.body.source,'server-roster');assert.deepEqual(r.body.agents.map(a=>a.agentId).sort(),[...ids].sort());for(const a of r.body.agents){assert.equal(a.model,'openai/gpt-4.1-mini');assert.equal(a.provider,'openrouter');assert(!('system' in a),'read-only crew API must omit prompts');}}
 async function run(){
  await fixture.start();

@@ -69,7 +69,7 @@ function startMock(replies) {
 
 function boot(port, env, attemptsLeft) {
   return new Promise((resolve, reject) => {
-    const child = spawn(process.execPath, [INDEX], { env: Object.assign({}, process.env, env, { SKYNET_PORT: String(port) }), stdio: ['ignore', 'pipe', 'pipe'] });
+    const child = spawn(process.execPath, [INDEX], { env: Object.assign({}, process.env, env, { EYEHOLD_PORT: String(port) }), stdio: ['ignore', 'pipe', 'pipe'] });
     let out = '', settled = false;
     const onData = d => {
       out += d.toString();
@@ -115,7 +115,7 @@ async function pollScout(B, token, pred, label, ms) {
   throw new Error('timed out waiting for: ' + label + '\nlast /api/scout: ' + JSON.stringify(last));
 }
 
-const QUIET = { SKYNET_THREAD_MINE: '0', SKYNET_SKILL_REVIEW: '0', SKYNET_SKILL_CURATOR: '0' };
+const QUIET = { EYEHOLD_THREAD_MINE: '0', EYEHOLD_SKILL_REVIEW: '0', EYEHOLD_SKILL_CURATOR: '0' };
 
 (async () => {
   /* ================= BOOT 1 — the happy chain ================= */
@@ -138,7 +138,7 @@ const QUIET = { SKYNET_THREAD_MINE: '0', SKYNET_SKILL_REVIEW: '0', SKYNET_SKILL_
     });
     const ws = fs.mkdtempSync(path.join(os.tmpdir(), 'sk-scout-e2e-'));
     seedScoutState(ws);   // no interests file: the histogram starts COLD — warmth must be EARNED live
-    const { child, port } = await boot(8930 + (process.pid % 25), Object.assign({ SKYNET_WORKSPACES: ws, SKYNET_OPENROUTER_BASE: mock.base }, QUIET), 20);
+    const { child, port } = await boot(8930 + (process.pid % 25), Object.assign({ EYEHOLD_WORKSPACES: ws, EYEHOLD_OPENROUTER_BASE: mock.base }, QUIET), 20);
     const B = 'http://' + HOST + ':' + port;
     try {
       const token = await bootToken(B, B);
@@ -210,7 +210,7 @@ const QUIET = { SKYNET_THREAD_MINE: '0', SKYNET_SKILL_REVIEW: '0', SKYNET_SKILL_
     fs.writeFileSync(path.join(ws, 'scout.interests.json'), JSON.stringify({
       v: 1, state: { v: 1, topics: { 'kubernetes-ops': { label: 'kubernetes ops', w: 5, n: 5, lastAt: Date.now(), ev: [{ q: 'kubernetes ops', at: Date.now() }] } }, lastPassAt: 0, runsSincePass: 0 }
     }));
-    const { child, port } = await boot(8960 + (process.pid % 25), Object.assign({ SKYNET_WORKSPACES: ws, SKYNET_OPENROUTER_BASE: mock.base }, QUIET), 20);
+    const { child, port } = await boot(8960 + (process.pid % 25), Object.assign({ EYEHOLD_WORKSPACES: ws, EYEHOLD_OPENROUTER_BASE: mock.base }, QUIET), 20);
     const B = 'http://' + HOST + ':' + port;
     try {
       const token = await bootToken(B, B);
@@ -261,7 +261,7 @@ const QUIET = { SKYNET_THREAD_MINE: '0', SKYNET_SKILL_REVIEW: '0', SKYNET_SKILL_
     fs.writeFileSync(path.join(ws, 'scout.interests.json'), JSON.stringify({
       v: 1, state: { v: 1, topics: { 'gpu-price-tracking': { label: 'gpu price tracking', w: 5, n: 5, lastAt: Date.now(), ev: [{ q: 'gpu price tracking', at: Date.now() }] } }, lastPassAt: Date.now(), runsSincePass: 0 }
     }));
-    const { child, port } = await boot(8890 + (process.pid % 25), Object.assign({ SKYNET_WORKSPACES: ws, SKYNET_OPENROUTER_BASE: mock.base }, QUIET), 20);
+    const { child, port } = await boot(8890 + (process.pid % 25), Object.assign({ EYEHOLD_WORKSPACES: ws, EYEHOLD_OPENROUTER_BASE: mock.base }, QUIET), 20);
     const B = 'http://' + HOST + ':' + port;
     try {
       const token = await bootToken(B, B);

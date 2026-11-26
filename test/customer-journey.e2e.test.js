@@ -82,10 +82,10 @@ test('customer journey: connect, select, tool, output, restart and repeat on all
   });
   await new Promise(r => server.listen(0, '127.0.0.1', r));
   const base = 'http://127.0.0.1:' + server.address().port;
-  const env = { EYEHOLD_IPC_TOKEN: IPC, EYEHOLD_FULL_ACCESS: '1', EYEHOLD_CREDITS_URL: '', EYEHOLD_CLOUD_URL: base + '/eyehold', EYEHOLD_CREDITS_TOKEN: 'eyehold-fixture', EYEHOLD_DEFAULT_MODEL: '', SKYNET_DEFAULT_MODEL: '' };
+  const env = { EYEHOLD_IPC_TOKEN: IPC, EYEHOLD_FULL_ACCESS: '1', EYEHOLD_CREDITS_URL: '', EYEHOLD_CLOUD_URL: base + '/eyehold', EYEHOLD_CREDITS_TOKEN: 'eyehold-fixture', EYEHOLD_DEFAULT_MODEL: '', EYEHOLD_DEFAULT_MODEL: '' };
   // All ordinary credentials are delivered through the real desktop IPC route. Ambient keys cannot win.
   for (const name of ['OPENROUTER_KEY', 'OPENROUTER_API_KEY', 'OPENAI_API_KEY', 'GEMINI_API_KEY', 'GOOGLE_API_KEY', 'GOOGLE_AI_API_KEY', 'CUSTOM_OPENAI_KEY', 'CREDITS_API_KEY']) {
-    env[name] = ''; env['EYEHOLD_' + name] = ''; env['SKYNET_' + name] = '';
+    env[name] = ''; env['EYEHOLD_' + name] = ''; env['EYEHOLD_' + name] = '';
   }
   const fixture = SidecarFixture.create({ prefix: 'customer-journey-', timeoutMs: 20000, env });
   try {

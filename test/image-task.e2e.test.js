@@ -67,7 +67,7 @@ function startProvider() {
 
 function boot(port, env, attempts) {
   return new Promise((resolve, reject) => {
-    const child = spawn(process.execPath, [INDEX], { env: Object.assign({}, process.env, env, { SKYNET_PORT: String(port) }), stdio: ['ignore', 'pipe', 'pipe'] });
+    const child = spawn(process.execPath, [INDEX], { env: Object.assign({}, process.env, env, { EYEHOLD_PORT: String(port) }), stdio: ['ignore', 'pipe', 'pipe'] });
     let output = '', settled = false;
     const onData = d => {
       output += d.toString();
@@ -94,12 +94,12 @@ async function run(base, token, body) {
 (async () => {
   const provider = await startProvider();
   const workspace = fs.mkdtempSync(path.join(os.tmpdir(), 'eyehold-image-task-e2e-'));
-  const noOpenRouterKey = { EYEHOLD_OPENROUTER_KEY: '', SKYNET_OPENROUTER_KEY: '', OPENROUTER_KEY: '', OPENROUTER_API_KEY: '' };
+  const noOpenRouterKey = { EYEHOLD_OPENROUTER_KEY: '', EYEHOLD_OPENROUTER_KEY: '', OPENROUTER_KEY: '', OPENROUTER_API_KEY: '' };
   const env = Object.assign({}, noOpenRouterKey, {
-    SKYNET_WORKSPACES: workspace,
+    EYEHOLD_WORKSPACES: workspace,
     EYEHOLD_OPENROUTER_BASE: provider.baseUrl,
-    SKYNET_FULL_ACCESS: '1',
-    SKYNET_AUX_BUDGET: '0'
+    EYEHOLD_FULL_ACCESS: '1',
+    EYEHOLD_AUX_BUDGET: '0'
   });
   const { child, port } = await boot(8870 + (process.pid % 40), env, 20);
   const base = 'http://' + HOST + ':' + port;

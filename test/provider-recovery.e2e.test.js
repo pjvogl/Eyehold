@@ -104,9 +104,9 @@ async function eventsOf(response) {
       // The request supplies both credentials and the loopback base URL. Clear ambient credentials so no
       // unrelated background path can escape the fixture.
       OPENROUTER_KEY: '', OPENROUTER_API_KEY: '', ANTHROPIC_API_KEY: '',
-      SKYNET_BUDGET_PER_RUN: '10', SKYNET_BUDGET_PER_AGENT: '0',
-      SKYNET_BUDGET_PER_DAY: '0.30', SKYNET_BUDGET_GLOBAL: '0',
-      SKYNET_EDGE_TTS: '0', EYEHOLD_EDGE_TTS: '0'
+      EYEHOLD_BUDGET_PER_RUN: '10', EYEHOLD_BUDGET_PER_AGENT: '0',
+      EYEHOLD_BUDGET_PER_DAY: '0.30', EYEHOLD_BUDGET_GLOBAL: '0',
+      EYEHOLD_EDGE_TTS: '0', EYEHOLD_EDGE_TTS: '0'
     }
   });
   const ws = sidecar.workspace;

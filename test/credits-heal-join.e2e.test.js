@@ -37,9 +37,9 @@ async function cloudFixture(firstMode) {
 
 function makeFixture(cloud, prefix) {
   const fixture = SidecarFixture.create({ prefix, timeoutMs: 15000, env: {
-    EYEHOLD_CLOUD_URL: cloud.url, EYEHOLD_CREDITS_URL: '', SKYNET_CREDITS_URL: '',
+    EYEHOLD_CLOUD_URL: cloud.url, EYEHOLD_CREDITS_URL: '', EYEHOLD_CREDITS_URL: '',
     EYEHOLD_CREDITS_TOKEN: 'fixture-keychain-token', EYEHOLD_CREDITS_HEAL_RETRY_MS: '200',
-    SKYNET_PROVIDER: 'replay', EYEHOLD_PROVIDER: 'replay'
+    EYEHOLD_PROVIDER: 'replay', EYEHOLD_PROVIDER: 'replay'
   } });
   fs.mkdirSync(path.join(fixture.workspace, '.secrets'), { recursive: true });
   return fixture;

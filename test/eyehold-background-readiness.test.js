@@ -5,7 +5,7 @@
 const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path');
 const {SidecarFixture}=require('./helpers/sidecar-fixture.js');
 const Jobs=require('../sidecar/routing/linejobs.js');
-const f=SidecarFixture.create({env:{SKYNET_BUDGET_GLOBAL:'0',SKYNET_BUDGET_PER_DAY:'0',SKYNET_LIVE_PRICES:'0'}});
+const f=SidecarFixture.create({env:{EYEHOLD_BUDGET_GLOBAL:'0',EYEHOLD_BUDGET_PER_DAY:'0',EYEHOLD_LIVE_PRICES:'0'}});
 async function run(){
  let state=Jobs.start({jobs:[]},{id:'job-aaaaaaaaaaaa',line:'pilot-line',text:'Interrupted fixture',at:1}).state;
  state=Jobs.start(state,{id:'job-bbbbbbbbbbbb',line:'pilot-line',text:'Completed fixture',at:2}).state;

@@ -43,7 +43,7 @@ async function drain(res) { const rd = res.body.getReader(); const dec = new Tex
 
 (async () => {
   const mock = await startMockOpenRouter();
-  const fixture = SidecarFixture.create({ prefix: 'sk-attach-e2e-', env: { SKYNET_OPENROUTER_BASE: mock.base } });
+  const fixture = SidecarFixture.create({ prefix: 'sk-attach-e2e-', env: { EYEHOLD_OPENROUTER_BASE: mock.base } });
   await fixture.start();
   const B = fixture.baseUrl;
   try {

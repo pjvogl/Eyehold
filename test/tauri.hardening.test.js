@@ -65,9 +65,9 @@ A.ok(/runBrowser = makeBrowserTools\(Object\.assign\(\{ session: runKeepBrowser 
 A.ok(/relaunch\(\{ headed: true, forceHeadless: false, headless: false, syntheticInputOnly: false \}\)/.test(browserJs), 'browser.login is the narrow human-consented exception that may open a real visible Chrome window');
 A.ok(/fn sidecar_command[\s\S]*?\.env\("EYEHOLD_USER_CONTROL_MODE", "preserve"\)/.test(mainRs), 'every desktop sidecar launch pins user-control preservation');
 A.ok(/fn sidecar_command[\s\S]*?\.env\("EYEHOLD_MCP_STDIO", "0"\)/.test(mainRs), 'installed desktop refuses unsandboxed local MCP children');
-A.ok(/fn set_sidecar_branded_env[\s\S]*?strip_prefix\("SKYNET_"\)[\s\S]*?EYEHOLD_\{suffix\}/.test(mainRs), 'desktop-owned sidecar values replace both brand aliases');
+A.ok(/fn set_sidecar_branded_env[\s\S]*?strip_prefix\("EYEHOLD_"\)[\s\S]*?EYEHOLD_\{suffix\}/.test(mainRs), 'desktop-owned sidecar values replace both brand aliases');
 for (const suffix of ['PORT', 'IPC_TOKEN', 'API_TOKEN', 'WORKSPACES', 'OPENROUTER_KEY']) {
-  A.ok(new RegExp(`set_sidecar_branded_env\\(&mut cmd, "SKYNET_${suffix}"`).test(mainRs), `desktop pins both aliases for ${suffix}`);
+  A.ok(new RegExp(`set_sidecar_branded_env\\(&mut cmd, "EYEHOLD_${suffix}"`).test(mainRs), `desktop pins both aliases for ${suffix}`);
 }
 A.ok(/for \(provider, env_name\) in SIDECAR_PROVIDER_KEY_ENVS[\s\S]*?set_sidecar_branded_env\(&mut cmd, env_name, key\)/.test(mainRs), 'provider keychain values cannot be shadowed by inherited canonical aliases');
 A.ok(/for \(channel, env_name\) in SIDECAR_CHANNEL_TOKEN_ENVS[\s\S]*?set_sidecar_branded_env\(&mut cmd, env_name, token\)/.test(mainRs), 'channel keychain values cannot be shadowed by inherited canonical aliases');

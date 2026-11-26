@@ -52,7 +52,7 @@ function feed() {
 
 export default {
   async scheduled(_event, env, ctx) {
-    ctx.waitUntil(runScheduledCycle(env).catch(error => {
+    ctx.waitUntil(runScheduledCycle(env, { now: Date.now() }).catch(error => {
       console.log(JSON.stringify({ message: 'openai-cycle-failed', error: error.message }));
     }));
   },

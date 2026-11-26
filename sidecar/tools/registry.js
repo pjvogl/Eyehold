@@ -42,7 +42,7 @@
      command output, and a head-only cut throws away the part that answers the question. */
   const OUTPUT_MAX = (function () {
     try {
-      const raw = (typeof process !== 'undefined' && process.env) ? process.env.SKYNET_TOOL_OUTPUT_MAX : '';
+      const raw = (typeof process !== 'undefined' && process.env) ? (process.env.EYEHOLD_TOOL_OUTPUT_MAX != null ? process.env.EYEHOLD_TOOL_OUTPUT_MAX : process.env.SKYNET_TOOL_OUTPUT_MAX) : '';
       const n = Number(String(raw == null ? '' : raw).trim());
       return (Number.isFinite(n) && n > 0) ? Math.floor(n) : 80000;
     } catch (_) { return 80000; }

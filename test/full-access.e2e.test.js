@@ -87,10 +87,10 @@ async function driveShell(fixture, decision) {
   const fixture = SidecarFixture.create({
     prefix: 'sk-full-access-',
     env: {
-      SKYNET_OPENROUTER_BASE: provider.baseUrl, EYEHOLD_OPENROUTER_BASE: provider.baseUrl,
-      SKYNET_OPENROUTER_KEY: 'sk-or-v1-full-access-fake', EYEHOLD_OPENROUTER_KEY: 'sk-or-v1-full-access-fake',
-      SKYNET_DEFAULT_MODEL: 'test/model', EYEHOLD_DEFAULT_MODEL: 'test/model',
-      SKYNET_CONSENT_TIMEOUT_MS: '1000', EYEHOLD_CONSENT_TIMEOUT_MS: '1000'
+      EYEHOLD_OPENROUTER_BASE: provider.baseUrl, EYEHOLD_OPENROUTER_BASE: provider.baseUrl,
+      EYEHOLD_OPENROUTER_KEY: 'sk-or-v1-full-access-fake', EYEHOLD_OPENROUTER_KEY: 'sk-or-v1-full-access-fake',
+      EYEHOLD_DEFAULT_MODEL: 'test/model', EYEHOLD_DEFAULT_MODEL: 'test/model',
+      EYEHOLD_CONSENT_TIMEOUT_MS: '1000', EYEHOLD_CONSENT_TIMEOUT_MS: '1000'
     }
   });
   try {

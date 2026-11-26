@@ -108,10 +108,10 @@ function stubFetch(routes) {
     A.ok(out.ok, 'a LONG page mentioning block phrases is real content — the text heuristic only fires on terse pages');
   }
 
-  // ---- E. kill switch: SKYNET_WEB_READER=0 reports unavailable and never boots a driver ----
+  // ---- E. kill switch: EYEHOLD_WEB_READER=0 reports unavailable and never boots a driver ----
   {
     const fd = fakeDriver(() => ({ status: 200, text: 'x' }));
-    const r = makeWebReader({ makeDriver: () => fd.driver, env: { SKYNET_WEB_READER: '0' } });
+    const r = makeWebReader({ makeDriver: () => fd.driver, env: { EYEHOLD_WEB_READER: '0' } });
     A.eq(r.available().ok, false, 'the kill switch disables the reader');
     const out = await r.fetchText('https://ok.example/a');
     A.ok(!out.ok && fd.calls.navigations.length === 0, 'a disabled reader never navigates');

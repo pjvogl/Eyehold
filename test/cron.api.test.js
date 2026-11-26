@@ -33,7 +33,7 @@ function boot(port, workspaces, attemptsLeft) {
     const appSandbox = path.join(workspaces, '_appdata');
     const child = spawn(process.execPath, [INDEX], {
       env: Object.assign({}, process.env, {
-        SKYNET_PORT: String(port), SKYNET_WORKSPACES: workspaces, SKYNET_DEV: '1',
+        EYEHOLD_PORT: String(port), EYEHOLD_WORKSPACES: workspaces, EYEHOLD_DEV: '1',
         LOCALAPPDATA: appSandbox, APPDATA: appSandbox, XDG_DATA_HOME: appSandbox
       }),
       stdio: ['ignore', 'pipe', 'pipe']
@@ -139,7 +139,7 @@ function boot(port, workspaces, attemptsLeft) {
     const badAgent = await j('POST', '/api/cron', { name: 'x', prompt: 'y', schedule: 'every 1h', agentId: '../escape' });
     A.eq(badAgent.status, 400, 'malformed routine agentId -> 400');
 
-    // ---- list: the snapshot the panel renders; enabled:false because SKYNET_CRON_ENABLED is unset ----
+    // ---- list: the snapshot the panel renders; enabled:false because EYEHOLD_CRON_ENABLED is unset ----
     const list = await j('GET', '/api/cron');
     A.eq(list.status, 200, 'GET /api/cron -> 200');
     A.eq(list.body.jobs.length, 2, 'two routines listed');

@@ -18,12 +18,12 @@ function boot(port, workspaces, fixture, attemptsLeft) {
     const prior = String(process.env.NODE_OPTIONS || '').trim();
     const child = spawn(process.execPath, [INDEX], {
       env: Object.assign({}, process.env, {
-        SKYNET_PORT: String(port), SKYNET_WORKSPACES: workspaces,
+        EYEHOLD_PORT: String(port), EYEHOLD_WORKSPACES: workspaces,
         EYEHOLD_TEST_SKILL_FIXTURE: fixture,
         NODE_OPTIONS: (prior ? prior + ' ' : '') + '--require=' + PRELOAD,
-        OPENROUTER_KEY: '', EYEHOLD_OPENROUTER_KEY: '', SKYNET_OPENROUTER_KEY: '',
-        OPENROUTER_API_KEY: '', EYEHOLD_OPENROUTER_API_KEY: '', SKYNET_OPENROUTER_API_KEY: '',
-        SKYNET_SKILL_REVIEW: '0', SKYNET_SKILL_CURATOR: '0'
+        OPENROUTER_KEY: '', EYEHOLD_OPENROUTER_KEY: '', EYEHOLD_OPENROUTER_KEY: '',
+        OPENROUTER_API_KEY: '', EYEHOLD_OPENROUTER_API_KEY: '', EYEHOLD_OPENROUTER_API_KEY: '',
+        EYEHOLD_SKILL_REVIEW: '0', EYEHOLD_SKILL_CURATOR: '0'
       }),
       stdio: ['ignore', 'pipe', 'pipe']
     });

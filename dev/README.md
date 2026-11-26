@@ -56,4 +56,4 @@ golden agent). Leave `agent.model` as `""` — the launcher stamps in your `SKYN
 ## Testing onboarding itself
 
 When you actually want the cold first-run flow, launch the plain way (`npm start` with a fresh
-`SKYNET_WORKSPACES` and a clean browser profile) — no `SKYNET_DEV`, no seed.
+`EYEHOLD_WORKSPACES` and a clean browser profile) — no `EYEHOLD_DEV`, no seed.

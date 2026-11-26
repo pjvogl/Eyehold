@@ -198,7 +198,7 @@ async function settle(state, stableMs, maxMs) {
   // so what fires — and what does NOT — is decided ONLY by the failure-review gate under test.
   const fixture = SidecarFixture.create({
     prefix: 'sk-failreview-',
-    env: { SKYNET_OPENROUTER_BASE: mock.base, EYEHOLD_AUX_MODEL: AUX_MODEL, SKYNET_AUX_BUDGET: '0', SKYNET_QUEST_REFRESH: '0', SKYNET_FULL_ACCESS: '1' }
+    env: { EYEHOLD_OPENROUTER_BASE: mock.base, EYEHOLD_AUX_MODEL: AUX_MODEL, EYEHOLD_AUX_BUDGET: '0', EYEHOLD_QUEST_REFRESH: '0', EYEHOLD_FULL_ACCESS: '1' }
   });
   // PROJECT TIER (arm 7): two blessed project roots, granted the way the projects rail grants them (the same
   // files project-root.e2e writes) so /api/run's projectRoot passes isBlessedRoot and rides into the run.

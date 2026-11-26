@@ -36,7 +36,7 @@ function fakeFetch() { return async () => ({ ok: true, status: 200, async json()
     A.eq(typeof reg.get('signal').makeAdapter, 'function', 'signal descriptor points at a real adapter factory');
     A.eq(reg.get('discord').maxMessageLength, MAX_MESSAGE_LENGTH, 'discord descriptor carries the real 2000 cap');
     A.eq(reg.get('discord').makeAdapter, makeDiscordAdapter, 'discord descriptor points at the REAL adapter factory (no longer dead code)');
-    A.eq(reg.get('discord').env.tokenVar, 'SKYNET_DISCORD_TOKEN', 'discord descriptor names its env token var for auto-start');
+    A.eq(reg.get('discord').env.tokenVar, 'EYEHOLD_DISCORD_TOKEN', 'discord descriptor names its env token var for auto-start');
     A.eq(reg.get('nope'), null, 'unknown channel -> null');
   }
 

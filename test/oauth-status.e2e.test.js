@@ -24,7 +24,7 @@ const INDEX = path.resolve(__dirname, '..', 'sidecar', 'index.js');
 
 function boot(port, env, attemptsLeft) {
   return new Promise((resolve, reject) => {
-    const child = spawn(process.execPath, [INDEX], { env: Object.assign({}, process.env, env, { SKYNET_PORT: String(port) }), stdio: ['ignore', 'pipe', 'pipe'] });
+    const child = spawn(process.execPath, [INDEX], { env: Object.assign({}, process.env, env, { EYEHOLD_PORT: String(port) }), stdio: ['ignore', 'pipe', 'pipe'] });
     let out = '', settled = false;
     const onData = d => {
       out += d.toString();
@@ -50,7 +50,7 @@ function seedTokens(ws, id, envelope) {
 
 (async () => {
   const ws = fs.mkdtempSync(path.join(os.tmpdir(), 'sk-oauthstat-ws-'));
-  const env = { SKYNET_WORKSPACES: ws, SKYNET_DEV: '1' };
+  const env = { EYEHOLD_WORKSPACES: ws, EYEHOLD_DEV: '1' };
 
   // ===== boot 1: a persisted DEAD marker for BOTH providers =====
   const deadMarker = { reason: 'This sign-in expired — sign in again.', code: 'invalid_grant', at: '2026-07-16T06:00:00.000Z' };

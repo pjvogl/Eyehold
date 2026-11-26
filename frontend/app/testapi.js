@@ -1,4 +1,4 @@
-/* SKYNET — testapi.js : DEV-ONLY behavioral + truthfulness test surface (window.__SKYNET_TEST__).
+/* SKYNET — testapi.js : DEV-ONLY behavioral + truthfulness test surface (window.__EYEHOLD_TEST__).
 
    GATED ON window.__EYEHOLD_DEV__ — this entire module is INERT in a normal/shipped build (the dev
    hook is only ever injected by a SKYNET_DEV sidecar; a packaged Tauri build never sets it). So it
@@ -155,6 +155,6 @@
   // Capture the HUD zero-point once the floor is up, so delta-truthfulness has a baseline.
   (function armBaseline(tries) { if (ready()) { captureBaseline(); return; } if (tries < 150) setTimeout(() => armBaseline(tries + 1), 200); })(0);
 
-  window.__SKYNET_TEST__ = api;
-  try { console.log('[testapi] window.__SKYNET_TEST__ armed (DEV) v' + VERSION); } catch (_) {}
+  window.__EYEHOLD_TEST__ = api;
+  try { console.log('[testapi] window.__EYEHOLD_TEST__ armed (DEV) v' + VERSION); } catch (_) {}
 })();

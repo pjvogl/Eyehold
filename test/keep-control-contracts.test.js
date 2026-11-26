@@ -71,7 +71,7 @@ const changed = s => s.routes.filter(r => r.method !== 'GET');
   // ---- Full Power OFF while the boot flag keeps it on ----
   s = keep(LISTS, { 'POST /api/permissions/bypass': { status: 200, json: { ok: true, masterBypass: false, envFullAccess: true } } }); t = make(s);
   r = await t.controlTool.run({ action: 'fullpower.set', args: { on: false } });
-  A.ok(refused(r) && /STAYS ON/.test(r.content) && /SKYNET_FULL_ACCESS/.test(r.content), 'Full Power off under the boot flag says it stays on');
+  A.ok(refused(r) && /STAYS ON/.test(r.content) && /EYEHOLD_FULL_ACCESS/.test(r.content), 'Full Power off under the boot flag says it stays on');
   s = keep(LISTS, { 'POST /api/permissions/bypass': { status: 200, json: { ok: true, masterBypass: false, envFullAccess: false } } }); t = make(s);
   A.ok(!refused(await t.controlTool.run({ action: 'fullpower.set', args: { on: false } })), 'Full Power off without it is done');
 

@@ -25,9 +25,9 @@ test('eyehold runs carry x-eyehold-run-id = the run id; custom endpoint runs do 
   await new Promise(r => server.listen(0, '127.0.0.1', r));
   const cloud = 'http://127.0.0.1:' + server.address().port;
   const fixture = new SidecarFixture({ prefix: 'eyehold-run-id-', timeoutMs: 20000, env: {
-    EYEHOLD_CREDITS_URL: '', SKYNET_CREDITS_URL: '', EYEHOLD_CREDITS_TOKEN: '', SKYNET_CREDITS_TOKEN: '',
-    SKYNET_DEFAULT_MODEL: 'test/model', EYEHOLD_CLOUD_URL: cloud, EYEHOLD_OPENROUTER_KEY: '', SKYNET_OPENROUTER_KEY: '',
-    OPENROUTER_API_KEY: '', OPENROUTER_KEY: '', SKYNET_AUX_BUDGET: '0', SKYNET_FULL_ACCESS: '1'
+    EYEHOLD_CREDITS_URL: '', EYEHOLD_CREDITS_URL: '', EYEHOLD_CREDITS_TOKEN: '', EYEHOLD_CREDITS_TOKEN: '',
+    EYEHOLD_DEFAULT_MODEL: 'test/model', EYEHOLD_CLOUD_URL: cloud, EYEHOLD_OPENROUTER_KEY: '', EYEHOLD_OPENROUTER_KEY: '',
+    OPENROUTER_API_KEY: '', OPENROUTER_KEY: '', EYEHOLD_AUX_BUDGET: '0', EYEHOLD_FULL_ACCESS: '1'
   } });
   const savedPath = path.join(fixture.workspace, '.secrets/credits.json');
   fs.mkdirSync(path.dirname(savedPath), { recursive: true });

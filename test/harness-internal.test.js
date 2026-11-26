@@ -48,7 +48,7 @@ A.ok(src.includes("invoke('harness_store_provider_key'"), 'desktop Harness pushe
 A.ok(src.includes('getKey(provider)') || /const\s+getKey\s*=\s*provider\s*=>/.test(src), 'Harness.getKey accepts a provider argument');
 /* ---------- BOOTFIX regression guard: the seeded DEV / resume floor must NEVER wait on the model catalog ----------
    listModels() proxies a LIVE external OpenRouter /models fetch; awaiting it inline on the auto-resume path
-   strands boot on #screen-connect forever when that upstream is slow/blocked (the seeded SKYNET_DEV shoot
+   strands boot on #screen-connect forever when that upstream is slow/blocked (the seeded EYEHOLD_DEV shoot
    regression). The catalog is cosmetic for resume, so the auto-resume branch must fire it in the BACKGROUND
    (fire-and-forget) and enter the keep immediately — and every catalog fetch must be timeout-bounded so
    listModels() always settles. If a future refactor re-introduces an inline `await Harness.listModels()` on

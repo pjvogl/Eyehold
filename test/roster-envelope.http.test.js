@@ -14,7 +14,7 @@ const { SidecarFixture } = require('./helpers/sidecar-fixture.js');
 (async () => {
   const fixture = SidecarFixture.create({
     prefix: 'sk-roster-',
-    env: { OPENROUTER_KEY: '', EYEHOLD_OPENROUTER_KEY: '', SKYNET_OPENROUTER_KEY: '' }
+    env: { OPENROUTER_KEY: '', EYEHOLD_OPENROUTER_KEY: '', EYEHOLD_OPENROUTER_KEY: '' }
   });
   const ws = fixture.workspace;
   // PRE-SEED a LEGACY roster file: the pre-P1.1 on-disk shape with NO updatedAt and an UNKNOWN field an older
@@ -146,7 +146,7 @@ const { SidecarFixture } = require('./helpers/sidecar-fixture.js');
   // failure and rolls its freshness baseline back so a later, genuinely newer-than-disk push is still accepted.
   const fault = SidecarFixture.create({
     prefix: 'sk-roster-write-fault-',
-    env: { OPENROUTER_KEY: '', EYEHOLD_OPENROUTER_KEY: '', SKYNET_OPENROUTER_KEY: '' }
+    env: { OPENROUTER_KEY: '', EYEHOLD_OPENROUTER_KEY: '', EYEHOLD_OPENROUTER_KEY: '' }
   });
   await fault.start();
   try {
@@ -180,7 +180,7 @@ const { SidecarFixture } = require('./helpers/sidecar-fixture.js');
   // Block the roster replace and prove the route leaves both the live agent and its recoverable files untouched.
   const deleteFault = SidecarFixture.create({
     prefix: 'sk-agent-delete-write-fault-',
-    env: { OPENROUTER_KEY: '', EYEHOLD_OPENROUTER_KEY: '', SKYNET_OPENROUTER_KEY: '' }
+    env: { OPENROUTER_KEY: '', EYEHOLD_OPENROUTER_KEY: '', EYEHOLD_OPENROUTER_KEY: '' }
   });
   await deleteFault.start();
   try {

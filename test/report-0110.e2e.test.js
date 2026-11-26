@@ -12,7 +12,7 @@ test('real file approvals show entire edits and patches; deny leaves bytes uncha
   res.write('data: '+JSON.stringify({choices:[{delta}]})+'\n\n');res.write('data: '+JSON.stringify({choices:[{delta:{},finish_reason:step?'tool_calls':'stop'}],usage:{prompt_tokens:5,completion_tokens:2,total_tokens:7}})+'\n\n');res.end('data: [DONE]\n\n');
  });
  await new Promise(r=>server.listen(0,'127.0.0.1',r));const base='http://127.0.0.1:'+server.address().port;
- const fixture=SidecarFixture.create({prefix:'eyehold-payload-',timeoutMs:20000,env:{SKYNET_FULL_ACCESS:'0',EYEHOLD_FULL_ACCESS:'0',SKYNET_OPENROUTER_BASE:base,EYEHOLD_OPENROUTER_BASE:base,SKYNET_OPENROUTER_KEY:'fixture-key',EYEHOLD_OPENROUTER_KEY:'fixture-key'}});
+ const fixture=SidecarFixture.create({prefix:'eyehold-payload-',timeoutMs:20000,env:{EYEHOLD_FULL_ACCESS:'0',EYEHOLD_FULL_ACCESS:'0',EYEHOLD_OPENROUTER_BASE:base,EYEHOLD_OPENROUTER_BASE:base,EYEHOLD_OPENROUTER_KEY:'fixture-key',EYEHOLD_OPENROUTER_KEY:'fixture-key'}});
  const target=path.join(fixture.workspace,'agent','sample.txt');
  async function run(toolSteps,decision){
   steps=[{name:'brief_proceed',args:{objective:'Perform the controlled operation.'}},...toolSteps];

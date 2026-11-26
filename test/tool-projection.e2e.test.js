@@ -34,7 +34,7 @@ const { SidecarFixture } = require('./helpers/sidecar-fixture.js');
   });
   await new Promise(r => upstream.listen(0, '127.0.0.1', r));
   const baseUrl = 'http://127.0.0.1:' + upstream.address().port;
-  const fixture = SidecarFixture.create({ timeoutMs: 20000, env: { EYEHOLD_FULL_ACCESS: '0', SKYNET_FULL_ACCESS: '0' } });
+  const fixture = SidecarFixture.create({ timeoutMs: 20000, env: { EYEHOLD_FULL_ACCESS: '0', EYEHOLD_FULL_ACCESS: '0' } });
   try {
     fs.writeFileSync(path.join(fixture.workspace, 'permissions.allow.json'), JSON.stringify({ version: 1, allow: ['cabinet:write'], meta: {} }));
     await fixture.start();

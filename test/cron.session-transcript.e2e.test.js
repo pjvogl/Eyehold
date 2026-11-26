@@ -52,7 +52,7 @@ function startMockOpenRouter() {
 function boot(port, env, attemptsLeft) {
   return new Promise((resolve, reject) => {
     const child = spawn(process.execPath, [INDEX], {
-      env: Object.assign({}, process.env, env, { SKYNET_PORT: String(port) }),
+      env: Object.assign({}, process.env, env, { EYEHOLD_PORT: String(port) }),
       stdio: ['ignore', 'pipe', 'pipe']
     });
     let out = '', settled = false;
@@ -105,10 +105,10 @@ async function drainNdjson(res) { const reader = res.body.getReader(); const dec
   const mock = await startMockOpenRouter();
   const wsDir = fs.mkdtempSync(path.join(os.tmpdir(), 'sk-cron-session-'));
   const env = {
-    SKYNET_WORKSPACES: wsDir,
-    SKYNET_OPENROUTER_BASE: mock.base,
-    SKYNET_OPENROUTER_KEY: 'sk-or-v1-session-fake',
-    SKYNET_DEFAULT_MODEL: 'test/model'
+    EYEHOLD_WORKSPACES: wsDir,
+    EYEHOLD_OPENROUTER_BASE: mock.base,
+    EYEHOLD_OPENROUTER_KEY: 'sk-or-v1-session-fake',
+    EYEHOLD_DEFAULT_MODEL: 'test/model'
   };
   const { child, port } = await boot(8960 + (process.pid % 40), env, 20);
   const B = 'http://' + HOST + ':' + port;

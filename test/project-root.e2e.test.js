@@ -61,9 +61,9 @@ function startProvider() {
   const fixture = SidecarFixture.create({
     prefix: 'eyehold-project-root-sidecar-', timeoutMs: 15000,
     env: {
-      SKYNET_OPENROUTER_BASE: provider.baseUrl, EYEHOLD_OPENROUTER_BASE: provider.baseUrl,
-      SKYNET_OPENROUTER_KEY: 'sk-or-v1-project-root-fake', EYEHOLD_OPENROUTER_KEY: 'sk-or-v1-project-root-fake',
-      SKYNET_DEFAULT_MODEL: 'test/project-root', EYEHOLD_DEFAULT_MODEL: 'test/project-root'
+      EYEHOLD_OPENROUTER_BASE: provider.baseUrl, EYEHOLD_OPENROUTER_BASE: provider.baseUrl,
+      EYEHOLD_OPENROUTER_KEY: 'sk-or-v1-project-root-fake', EYEHOLD_OPENROUTER_KEY: 'sk-or-v1-project-root-fake',
+      EYEHOLD_DEFAULT_MODEL: 'test/project-root', EYEHOLD_DEFAULT_MODEL: 'test/project-root'
     }
   });
   try {

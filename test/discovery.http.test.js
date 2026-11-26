@@ -32,7 +32,7 @@ function git(cwd, args) { execFileSync('git', args, { cwd, stdio: 'ignore', wind
 
   const fixture = SidecarFixture.create({
     prefix: 'sk-discovery-',
-    env: { OPENROUTER_KEY: '', EYEHOLD_OPENROUTER_KEY: '', SKYNET_OPENROUTER_KEY: '' }
+    env: { OPENROUTER_KEY: '', EYEHOLD_OPENROUTER_KEY: '', EYEHOLD_OPENROUTER_KEY: '' }
   });
   const ws = fixture.workspace;
   await fixture.start();

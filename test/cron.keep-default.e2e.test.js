@@ -34,9 +34,9 @@ test('routines on an unpinned agent run on the keep default (Run Now + scheduled
   await new Promise(resolve => server.listen(0, '127.0.0.1', resolve));
   const base = 'http://127.0.0.1:' + server.address().port;
   const fixture = SidecarFixture.create({ prefix: 'cron-keep-default-', timeoutMs: 20000, env: {
-    EYEHOLD_DEFAULT_MODEL: '', SKYNET_DEFAULT_MODEL: '',
-    EYEHOLD_OPENROUTER_KEY: '', SKYNET_OPENROUTER_KEY: '',
-    EYEHOLD_CRON_TICK_MS: '400', SKYNET_CRON_TICK_MS: '400',
+    EYEHOLD_DEFAULT_MODEL: '', EYEHOLD_DEFAULT_MODEL: '',
+    EYEHOLD_OPENROUTER_KEY: '', EYEHOLD_OPENROUTER_KEY: '',
+    EYEHOLD_CRON_TICK_MS: '400', EYEHOLD_CRON_TICK_MS: '400',
     CUSTOM_OPENAI_KEY: 'direct-fixture', CUSTOM_OPENAI_BASE_URL: base + '/v1'
   } });
   // arm the scheduler before boot so the scheduled leg really ticks

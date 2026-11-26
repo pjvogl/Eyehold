@@ -10,7 +10,7 @@
      1. Every EYEHOLD_* / SKYNET_* variable. That is Eyehold's own namespace: the desktop shell injects every
         secret it hands the sidecar under these names (src-tauri main.rs sidecar_command: SKYNET_API_TOKEN,
         SKYNET_IPC_TOKEN, SKYNET_<PROVIDER>_API_KEY, SKYNET_KEY_POOL_*, SKYNET_TELEGRAM/DISCORD_TOKEN,
-        SKYNET_TELEGRAM_BOT_TOKENS, EYEHOLD_CREDITS_TOKEN, EYEHOLD_CONNECTOR_ENCRYPTION_KEY, …, each in both
+        EYEHOLD_TELEGRAM_BOT_TOKENS, EYEHOLD_CREDITS_TOKEN, EYEHOLD_CONNECTOR_ENCRYPTION_KEY, …, each in both
         spellings), and the sidecar reads its own secrets only through them (ENV()).
      2. Every name the sidecar itself exported into process.env (the KEYS-tab service keys — servicekeys.applyEnv
         tracks exactly which names it owns). A helper never needs them; the agent shell gets them back explicitly

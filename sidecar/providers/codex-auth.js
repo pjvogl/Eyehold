@@ -46,7 +46,7 @@
   // which leaves the fetch un-timed rather than erroring — the same graceful degrade the stream adapters use.
   function authTimeoutSignal() {
     try {
-      const v = (typeof process !== 'undefined' && process.env && process.env.SKYNET_PROVIDER_CONNECT_MS);
+      const v = (typeof process !== 'undefined' && process.env && (process.env.EYEHOLD_PROVIDER_CONNECT_MS != null ? process.env.EYEHOLD_PROVIDER_CONNECT_MS : process.env.SKYNET_PROVIDER_CONNECT_MS));
       const n = v != null && String(v).trim() !== '' ? parseInt(v, 10) : NaN;
       const ms = (isFinite(n) && n > 0) ? n : 30000;
       if (typeof AbortSignal !== 'undefined' && typeof AbortSignal.timeout === 'function') return AbortSignal.timeout(ms);

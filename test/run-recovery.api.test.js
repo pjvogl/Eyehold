@@ -22,7 +22,7 @@ function bootSidecar(port, workspaces, attempts) {
     const appSandbox = path.join(workspaces, '_appdata');
     const child = spawn(process.execPath, [INDEX], {
       env: Object.assign({}, process.env, {
-        SKYNET_PORT: String(port), SKYNET_WORKSPACES: workspaces, SKYNET_DEV: '1', CONSENT_TIMEOUT_MS: '1000',
+        EYEHOLD_PORT: String(port), EYEHOLD_WORKSPACES: workspaces, EYEHOLD_DEV: '1', CONSENT_TIMEOUT_MS: '1000',
         LOCALAPPDATA: appSandbox, APPDATA: appSandbox, XDG_DATA_HOME: appSandbox
       }), stdio: ['ignore', 'pipe', 'pipe']
     });

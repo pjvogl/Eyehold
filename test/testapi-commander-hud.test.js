@@ -14,7 +14,7 @@ const ctx = vm.createContext({
   Xp: { fresh: () => ({}), compute: () => ({ level: 77 }) }
 });
 vm.runInContext(fs.readFileSync(path.join(__dirname, '../frontend/app/testapi.js'), 'utf8'), ctx);
-const probe = ctx.window.__SKYNET_TEST__;
+const probe = ctx.window.__EYEHOLD_TEST__;
 assert.equal(probe.hud().allOk, true, 'unknown Commander level is honestly shown as a dash');
 label.textContent = 'Lv 1';
 assert.equal(probe.hud().allOk, false, 'no fabricated initial level before backend data');

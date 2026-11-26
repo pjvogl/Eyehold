@@ -43,10 +43,10 @@ async function journey() {
   const providerBase='http://127.0.0.1:'+server.address().port+'/v1';
   const live = process.env.EYEHOLD_MEMORY_LIVE_URL;
   const fixture = live ? null : SidecarFixture.create({prefix:'memory-corrections-',timeoutMs:20000,env:{
-    SKYNET_FULL_ACCESS:'1',EYEHOLD_FULL_ACCESS:'1',SKYNET_AUX_BUDGET:'1',EYEHOLD_AUX_BUDGET:'1',
-    SKYNET_OPENROUTER_KEY:'memory-fixture',EYEHOLD_OPENROUTER_KEY:'memory-fixture',
-    SKYNET_OPENROUTER_BASE:providerBase,EYEHOLD_OPENROUTER_BASE:providerBase,
-    SKYNET_DEFAULT_MODEL:'memory-fixture',EYEHOLD_DEFAULT_MODEL:'memory-fixture'
+    EYEHOLD_FULL_ACCESS:'1',EYEHOLD_FULL_ACCESS:'1',EYEHOLD_AUX_BUDGET:'1',EYEHOLD_AUX_BUDGET:'1',
+    EYEHOLD_OPENROUTER_KEY:'memory-fixture',EYEHOLD_OPENROUTER_KEY:'memory-fixture',
+    EYEHOLD_OPENROUTER_BASE:providerBase,EYEHOLD_OPENROUTER_BASE:providerBase,
+    EYEHOLD_DEFAULT_MODEL:'memory-fixture',EYEHOLD_DEFAULT_MODEL:'memory-fixture'
   }});
   if(fixture && process.argv.includes('--seeded')) {
     fixture.entry=path.resolve(__dirname,'../dev/seed.js'); fixture.args=['--keep','--workspace',fixture.workspace]; fixture.timeoutMs=30000;

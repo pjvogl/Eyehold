@@ -14,7 +14,7 @@ const INDEX = path.resolve(__dirname, '..', 'sidecar', 'index.js');
 
 function boot(port, env, attemptsLeft) {
   return new Promise((resolve, reject) => {
-    const child = spawn(process.execPath, [INDEX], { env: Object.assign({}, process.env, env, { SKYNET_PORT: String(port) }), stdio: ['ignore', 'pipe', 'pipe'] });
+    const child = spawn(process.execPath, [INDEX], { env: Object.assign({}, process.env, env, { EYEHOLD_PORT: String(port) }), stdio: ['ignore', 'pipe', 'pipe'] });
     let out = '', settled = false;
     const onData = d => {
       out += d.toString();
@@ -50,7 +50,7 @@ const row = (o) => Object.assign({
     row({ recipeId: '' })   // a non-recipe run: ignored
   ];
   fs.writeFileSync(path.join(ws, 'runs.jsonl'), rows.map(r => JSON.stringify(r)).join('\n') + '\n');
-  const { child, port } = await boot(9310 + (process.pid % 50), { SKYNET_WORKSPACES: ws }, 20);
+  const { child, port } = await boot(9310 + (process.pid % 50), { EYEHOLD_WORKSPACES: ws }, 20);
   const B = 'http://' + HOST + ':' + port;
   try {
     const token = await bootToken(B, B);
