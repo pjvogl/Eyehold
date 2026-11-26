@@ -10,13 +10,13 @@
       Andrew asked for it to be improved in place (structured nebulas, stepped twinkle, sparkle).
       Its CHARACTER is still the law: sparse cold points on real black, faint distant gas, no
       parallax, the same drift. Never decorate it with bodies.
-      On 2026-07-14 a galaxy + ringed planet were added to it and Andrew had them reverted
+      On 2026-07-14 a realm + ringed realm were added to it and Andrew had them reverted
       (514386de: "keep the sky to starfield + nebulas + band + meteor"). That call stands.
       Richer space lives in THE NURSERY, which is opt-in. Never decorate the default.
       Corollary, learned the hard way on 2026-07-24: a NEW backdrop must not be the default
       plus decoration either. The first attempt at richer space reused this file's own
       nebula/dust/twinkle recipe and added bodies on top, and read exactly as what it was —
-      "just the void with planets". A backdrop earns its place by INVERTING the default's
+      "just the void with realms". A backdrop earns its place by INVERTING the default's
       signature, not by extending it.
    2. A BACKDROP IS NOT A WALLPAPER. Anything at a finite distance below the keep MUST
       parallax with the camera, or the eye reads "picture behind a picture" instantly. Deep
@@ -840,40 +840,40 @@ const SpaceBG = (() => {
   /* ------------------------------------------------------------ BACKDROP: ANDROMEDA ---- */
   /* Built to a REFERENCE Andrew supplied on 2026-09-04 after rejecting two guesses (a face-on
      black-hole disc: "i hate it"; the void sharpened: "just looks like our original but worse").
-     The reference: a hard-quantized pixel-art galaxy — pure black, then FOUR blues (navy, blue,
+     The reference: a hard-quantized pixel-art realm — pure black, then FOUR blues (navy, blue,
      cyan, white) and nothing else; chunky 2-4px cells; a tilted spiral with a blown-white core
      falling off through cyan and blue to scattered single navy pixels; a dense dust of tiny blue
      stars everywhere; a few big ROUND white stars. His words: "something like this but animated,
      should have space travel actively moving in the background, stars that actually twinkle, and
-     a galaxy or maybe even black hole."
+     a realm or maybe even black hole."
 
      So, the three things the reference does not do on its own and this must:
        1. TRAVEL. The star layers STREAM, continuously and visibly (the void's drift is 3-15 px/s
           and reads as still; this runs 5-30 px/s diagonally, far slow / near fast) and the
-          galaxy, being the farthest thing, barely moves at all. That speed ladder IS the travel.
+          realm, being the farthest thing, barely moves at all. That speed ladder IS the travel.
        2. TWINKLE that reads as pixels: the near stars step between three brightness levels
           rather than fading smoothly, and the big stars pulse their halo ring on and off.
-       3. THE GALAXY as the subject: a fixed tile (like THE NURSERY) so a resize never re-rolls
+       3. THE REALM as the subject: a fixed tile (like THE NURSERY) so a resize never re-rolls
           it, pinned to the frame centre with a slow sway, plus a hair of camera parallax.
 
      Palette law: NOTHING in this backdrop is drawn outside the five-colour ramp below. That is
-     what makes it match the reference instead of the void with a galaxy stuck on. */
+     what makes it match the reference instead of the void with a realm stuck on. */
 
-  const GALAXY_BG = {
+  const REALM_BG = {
     label: 'ANDROMEDA',
     blurb: 'Hard blue pixels, a spiral in frame, and the field streaming past.',
     base: '#000000',
     PAL: {
       NAVY: [0, 14, 74], BLUE: [0, 58, 184], CYAN: [30, 148, 212], WHITE: [200, 228, 245],
       TEAL: [48, 180, 160],
-      PALE: [110, 190, 232],               // the galaxy's TOP colour — never white (Andrew: "just dont like the white part")                  // the reference's rare green-cyan speck
+      PALE: [110, 190, 232],               // the realm's TOP colour — never white (Andrew: "just dont like the white part")                  // the reference's rare green-cyan speck
     },
     // travel: px/sec per layer along DIR (far → near), and the parallax depth of each
     DIR: [-0.94, 0.34],
     SPD: { far: 5, gal: 0.8, mid: 13, big: 9, near: 28 },
     D: { far: 0.010, gal: 0.020, mid: 0.030, big: 0.035, near: 0.055 },
     SWAY: { x: 30, y: 10, sx: 260, sy: 330 },
-    CELL: 1,                                 // galaxy pixel size in device px (was 3: Andrew, "way too pixelated")
+    CELL: 1,                                 // realm pixel size in device px (was 3: Andrew, "way too pixelated")
 
     fixedTile: () => {
       const scr = (typeof window !== 'undefined' && window.screen) || {};
@@ -883,7 +883,7 @@ const SpaceBG = (() => {
     },
 
     build(w, h, rnd) {
-      const P = GALAXY_BG.PAL, u = px1();
+      const P = REALM_BG.PAL, u = px1();
       const col = (c, a) => rgba(c, a == null ? 1 : a);
       const hash = (x, y) => {
         let k = Math.imul(x + 0x5BD1E995, 0x27D4EB2D) ^ Math.imul(y + 0x2545F491, 0x165667B1);
@@ -900,7 +900,7 @@ const SpaceBG = (() => {
         fc.fillRect((rnd() * w) | 0, (rnd() * h) | 0, u, u);
       }
 
-      /* ---- 2. THE GALAXY, at cell resolution, hard-quantized ----
+      /* ---- 2. THE REALM, at cell resolution, hard-quantized ----
          A tilted spiral: elliptical falloff for the disc, a steep core, two log-spiral arms
          modulating the density, and low-frequency noise so the edge is ragged. Quantized to the
          ramp with a per-cell hash dither at the thresholds, so the bands interlock in pixels the
@@ -908,21 +908,21 @@ const SpaceBG = (() => {
          thin for a band, the cell becomes a SINGLE SCATTERED PIXEL with probability ~ density —
          which is how the reference dissolves its outskirts into the star dust. */
       const galCv = mkCv(w, h), gc = galCv.getContext('2d');
-      const C = GALAXY_BG.CELL, GW = Math.ceil(w / C), GH = Math.ceil(h / C);
+      const C = REALM_BG.CELL, GW = Math.ceil(w / C), GH = Math.ceil(h / C);
       const ang = -0.62, ca = Math.cos(ang), sa = Math.sin(ang);
-      const A = 0.23 * w, B = 0.085 * w;               // semi-axes (the tile is square) — the reference's galaxy is ~40% of frame
+      const A = 0.23 * w, B = 0.085 * w;               // semi-axes (the tile is square) — the reference's realm is ~40% of frame
       const cx = w * 0.5, cy = h * 0.5;
       const rag = wrapNoise(9, rnd), rag2 = wrapNoise(23, rnd), rag3 = wrapNoise(47, rnd), rag4 = wrapNoise(101, rnd);
       const mass = { cxs: 0, sxs: 0, cys: 0, sys: 0, m: 0 };
       for (let gy = 0; gy < GH; gy++) {
         for (let gx = 0; gx < GW; gx++) {
           const px = gx * C + C / 2 - cx, py = gy * C + C / 2 - cy;
-          const x = px * ca + py * sa, y = -px * sa + py * ca;   // into galaxy frame
+          const x = px * ca + py * sa, y = -px * sa + py * ca;   // into realm frame
           const ex = x / A, ey = y / B;
           const rho = Math.hypot(ex, ey);
           if (rho > 1.9) continue;
           const th = Math.atan2(ey, ex);
-          /* DETAIL (Andrew: "the galaxy does not have any detail"). Arms are NARROW (a power on the
+          /* DETAIL (Andrew: "the realm does not have any detail"). Arms are NARROW (a power on the
              cosine), a dust lane runs just inside each arm, knots of star formation sit on the arm
              crests, and a fourth, fine noise octave gives the disc grain. */
           const sp = 2 * th - 4.6 * Math.log(rho + 0.10);
@@ -982,7 +982,7 @@ const SpaceBG = (() => {
     },
 
     draw(ctx, w, h, now, cam, st) {
-      const S = GALAXY_BG.SPD, D = GALAXY_BG.D, P = GALAXY_BG.PAL, [dx, dy] = GALAXY_BG.DIR;
+      const S = REALM_BG.SPD, D = REALM_BG.D, P = REALM_BG.PAL, [dx, dy] = REALM_BG.DIR;
       const t = now / 1000;
       const TW = st.farCv.width, TH = st.farCv.height;
       const fl = v => Math.floor(v);
@@ -990,9 +990,9 @@ const SpaceBG = (() => {
       // far dust streams slowest
       tileN(ctx, st.farCv, TW, TH, w, h, parX(cam, D.far) + t * S.far * dx, parY(cam, D.far) + t * S.far * dy);
 
-      // the galaxy: pinned to the frame centre, swaying, creeping along DIR at the slowest rate
-      const F = st.focus || { r: 0 }, SW = GALAXY_BG.SWAY;
-      // pinned LEFT of centre (Andrew, 2026-09-05: "have the galaxy slightly to the left") so it
+      // the realm: pinned to the frame centre, swaying, creeping along DIR at the slowest rate
+      const F = st.focus || { r: 0 }, SW = REALM_BG.SWAY;
+      // pinned LEFT of centre (Andrew, 2026-09-05: "have the realm slightly to the left") so it
       // shows beside the keep rather than hiding behind it
       const pinX = F.r > 0.08 ? w * 0.36 - F.x : 0, pinY = F.r > 0.08 ? h * 0.46 - F.y : 0;
       tileN(ctx, st.galCv, TW, TH, w, h,
@@ -1040,7 +1040,7 @@ const SpaceBG = (() => {
      with a different thing in it, so the field is built and drawn by these shared helpers. */
 
   function blueField(w, h, rnd, o) {
-    const P = GALAXY_BG.PAL, u = px1(), col = (c, a) => rgba(c, a == null ? 1 : a);
+    const P = REALM_BG.PAL, u = px1(), col = (c, a) => rgba(c, a == null ? 1 : a);
     const farCv = mkCv(w, h), fc = farCv.getContext('2d');
     const farN = Math.min(16000, Math.round((w * h) / (o.farDiv || 190)));
     for (let i = 0; i < farN; i++) {
@@ -1066,7 +1066,7 @@ const SpaceBG = (() => {
 
   /* the live part of the field: round pulsing stars and three-step twinklers, streaming along dir */
   function drawBlueLive(ctx, w, h, now, cam, st, dir, spd, dep) {
-    const P = GALAXY_BG.PAL, t = now / 1000, fl = Math.floor, [dx, dy] = dir;
+    const P = REALM_BG.PAL, t = now / 1000, fl = Math.floor, [dx, dy] = dir;
     const bx0 = parX(cam, dep.big) + t * spd.big * dx, by0 = parY(cam, dep.big) + t * spd.big * dy;
     for (const b of st.big) {
       const x = fl(((b.x * w + bx0) % w + w) % w), y = fl(((b.y * h + by0) % h + h) % h);
@@ -1896,8 +1896,8 @@ const SpaceBG = (() => {
 
   /* ---------------------------------------------------------------------- registry ---- */
 
-  const BACKDROPS = { void: VOID_BG, galaxy: GALAXY_BG, belt: BELT_BG, nursery: NURSERY_BG, ocean: OCEAN_BG, city: CITY_BG };
-  const ORDER = ["void", "galaxy", "belt", "nursery", "ocean", "city"];
+  const BACKDROPS = { void: VOID_BG, realm: REALM_BG, belt: BELT_BG, nursery: NURSERY_BG, ocean: OCEAN_BG, city: CITY_BG };
+  const ORDER = ["void", "realm", "belt", "nursery", "ocean", "city"];
   const DEFAULT_ID = 'void';
 
   const has = id => Object.prototype.hasOwnProperty.call(BACKDROPS, id);

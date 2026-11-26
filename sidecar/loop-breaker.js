@@ -3,7 +3,7 @@
    The loop guard in loop.js stops ONE byte-identical call that keeps FAILING; the evidence-progress guard
    (tool-progress-guard.js, host dispatch) stops identical successful READS. Three stuck shapes slipped between
    them and ran until a human noticed (audit probes, all unattended-capable):
-     · UNKNOWN TOOLS — 15 turns of a hallucinated `launch_rocket` each answered "unknown tool", nothing stopped.
+     · UNKNOWN TOOLS — 15 turns of a hallucinated `launch_beacon` each answered "unknown tool", nothing stopped.
      · A FAILURE STREAK WITH VARYING ARGUMENTS — 15 net_get failures on 15 different URLs (30 executions after
        the transient-read retry); the identical-args guard never matched because no two calls were identical.
      · NO-PROGRESS SUCCESS POLLING on a non-read tool — the same call, the same arguments, the same answer, turn

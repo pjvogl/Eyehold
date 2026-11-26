@@ -20,7 +20,7 @@ function registerAgent(id, color) {
    per-set downscale applied at tint time (crew sprites render on a 92px canvas). */
 DATA.SKINS = {
   blank: {"name":"Cadet","set":"approved_android","scale":0.25,"sourceStandingHeight":76},
-  astronaut: {"name":"Retro Astronaut","set":"approved_astronaut","scale":0.25,"sourceStandingHeight":76},
+  warden: {"name":"Retro Warden","set":"approved_warden","scale":0.25,"sourceStandingHeight":76},
   robot: {"name":"Robot","set":"approved_robot","scale":0.25,"sourceStandingHeight":76},
   crthead: {"name":"CRT Head","set":"approved_crthead","scale":0.25,"sourceStandingHeight":76},
   alien: {"name":"Alien","set":"approved_alien","scale":0.25,"sourceStandingHeight":76},

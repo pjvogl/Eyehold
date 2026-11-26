@@ -15,7 +15,7 @@
       "maxWalkHeight": 75
     },
     {
-      "id": "astronaut",
+      "id": "warden",
       "status": "complete",
       "standingHeight": 19,
       "rotations": 8,

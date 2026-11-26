@@ -643,7 +643,7 @@ const PropSprites = (() => {
     ctx.beginPath(); ctx.moveTo(wx + 4, wy + 1); ctx.lineTo(hcx - 9, hcy + 1);
     ctx.lineTo(hcx + 9, hcy + 1); ctx.lineTo(wx + ww - 4, wy + 1); ctx.closePath(); ctx.fill();
     ctx.restore();
-    // the hologram itself: a keep core with wings, an orbit ring and one blip running it
+    // the hologram itself: a keep core with wings, an circuit ring and one blip running it
     const gA = (0.42 + 0.24 * Math.sin(now / 400 + ph)) * g0;
     ctx.globalAlpha = gA;
     px(hcx - 8, hcy - 1, 16, 2, ACC.data);                         // main ring/hull bar
@@ -6339,7 +6339,7 @@ const PropSprites = (() => {
        POD CHAIR   — ROUND. A deep moulded bucket on a swivel pedestal, opening toward whatever it
                      faces. Lounge furniture: soft, warm-cushioned, no hard edge on it anywhere.
      ⛔ TWO EARLIER ATTEMPTS AT A SECOND SEAT WERE CUT ON SIGHT — a hooped brass cafe chair (fragile
-        at this size and furniture from the wrong planet) and a harnessed crash seat. This keep's
+        at this size and furniture from the wrong realm) and a harnessed crash seat. This keep's
         seating is MOULDED: a rigid shell with something soft set into it. When one design in a pair
         lands and the others do not, the survivor is the brief. */
 
@@ -8409,7 +8409,7 @@ const PropSprites = (() => {
     // Paired against bridge_dispatch_pylon this is the family's hardest read: both are 1x2 columns. They are
     // separated on the axis of their light — the pylon is ONE continuous VERTICAL bar; this is a stack of
     // discrete HORIZONTAL segments climbing bottom-up behind smoked glass, like a threat gauge filling. The
-    // body is bulked out to match: an external rib CAGE, a flared foot and an orbit RING on the crown, against
+    // body is bulked out to match: an external rib CAGE, a flared foot and an circuit RING on the crown, against
     // the pylon's smooth slim column and single mast. f.work = escalated -> 5 segments lit instead of 3.
     const r = RAMP.gun, ph = (f && f.x) || 0, on = !!(f && f.work);
     const ROSE = '#ff5c7a', ROSEL = '#ffd9e2', AMB = '#ffb84d';
@@ -8474,7 +8474,7 @@ const PropSprites = (() => {
       px(x + 3, vy, w - 6, 1, '#0d0e10');
       px(x + 3, vy + 1, w - 6, 1, U.shade(r.face, 0.12));
     }
-    // CROWN: a real orbit RING with the sweep dot riding it — the pylon's crown is a flat mast head
+    // CROWN: a real circuit RING with the sweep dot riding it — the pylon's crown is a flat mast head
     const hubx = x + Math.floor(w / 2), huby = y - 8;
     px(hubx - 1, huby, 2, 3, LINE); px(hubx - 1, huby, 1, 3, r.lit);
     ctx.save();

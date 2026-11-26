@@ -60,7 +60,7 @@ function block(title, quote, starter, conf) {
   A.eq(legacy.proposals.length, 0, 'legacy two-line blocks (no DO/CONFIDENCE) no longer qualify — the bar moved');
 
   // ---- GROUNDING VETO is load-bearing: an all-invented reply mines NOTHING ----
-  const invented = await mine(run, { propose: () => block('Build a spaceship', 'please build me a spaceship', 'a spaceship design doc'), clock: makeClock(0) });
+  const invented = await mine(run, { propose: () => block('Build a carrack', 'please build me a carrack', 'a carrack design doc'), clock: makeClock(0) });
   A.eq(invented.proposals.length, 0, 'a thread whose quote never appears in the conversation is dropped');
 
   // ---- dedup vs the live ledger + the permanent declined denylist (known fingerprints from the store) ----

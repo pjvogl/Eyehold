@@ -21,7 +21,7 @@ const fresh = fs => makeJourneyStore({ fs: fs || memFs(), path, workspaces: '/ws
 (async () => {
   A.eq(normalize(null), { goals: [], achievements: [], achievementKeys: [], commanderPoints: 0, v: 1, seq: 0, commanderEpoch: 0, startedAt: 0, metrics: [], outcomes: [], outcomeKeys: [], mastery: [], receipts: [], goalsReached: [], suppressed: {} }, 'missing journey state hydrates safely');
   A.eq([tierFor(0), tierFor(1), tierFor(3), tierFor(7)], ['unproven', 'tested', 'practiced', 'proven'], 'mastery tiers cross only on verified outcome counts');
-  A.eq(evolutionFor(['a', 'b']).name, 'ORBIT', 'keep evolution is derived from distinct goals reached');
+  A.eq(evolutionFor(['a', 'b']).name, 'CIRCUIT', 'keep evolution is derived from distinct goals reached');
   A.eq(evolutionFor(Array.from({ length: 9 }, (_, i) => String(i))).stage, 9, 'keep evolution remains uncapped across a long Commander journey');
 
   const fs = memFs();

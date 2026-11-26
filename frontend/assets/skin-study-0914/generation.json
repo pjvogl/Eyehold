@@ -8,9 +8,9 @@
       "An eerie faceless keep android, ivory ceramic shell over graphite articulated joints, subtle seams, compact oval head with a narrow dark optical slit, believable pelvis shoulders knees and hands, lightly worn edges. Preserve the simple white android identity."
     ],
     [
-      "astronaut",
-      "Astronaut",
-      "A keep astronaut wearing a muted burnt orange pressure suit, compact round helmet with smoked black glass visor and a subtle reflected highlight, ivory collar ring, realistic fabric folds, integrated life support pack, dark gloves and practical boots. Preserve orange astronaut identity."
+      "warden",
+      "Warden",
+      "A keep warden wearing a muted burnt orange pressure suit, compact round helmet with smoked black glass visor and a subtle reflected highlight, ivory collar ring, realistic fabric folds, integrated life support pack, dark gloves and practical boots. Preserve orange warden identity."
     ],
     [
       "robot",
@@ -40,7 +40,7 @@
       }
     },
     {
-      "id": "astronaut",
+      "id": "warden",
       "characterId": "7fb34e84-7614-4cb3-932d-9a17509f14d5",
       "rotations": {
         "south": "https://backblaze.pixellab.ai/file/pixellab-characters/1ff7d2cf-cfe6-44f9-9533-9eea41eb05cb/7fb34e84-7614-4cb3-932d-9a17509f14d5/rotations/south.png?t=1789360396",

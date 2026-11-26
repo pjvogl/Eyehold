@@ -32,7 +32,7 @@ Owner screenshot shows provider statuses offset beside actions, generic dots ins
 
 Anchors: frontend/app/keepui.js:4342; test/provider-connections-ui.test.js; test/settings-codex-row.test.js.
 
-Live seeded app on :18917, branch agent/providers-polish-0910: DOM receipt `{logos:18, alignment:true, animation:"ov-orbit", overflow:false}`. Reduced motion receipt `none`; narrow viewport overflow check `true` (all cards fit). Add-key editor opened; invalid credential was rejected by validation. A disposable saved-key fixture through Harness.setKey rendered `KEY SAVED · NOT VERIFIED`, grid column 2, then was cleared. Eyehold action opened Store. Local evidence: dev/providers-proof.log, dev/providers-desktop.png. Focused existing contracts passed 54 and 26 assertions.
+Live seeded app on :18917, branch agent/providers-polish-0910: DOM receipt `{logos:18, alignment:true, animation:"ov-circuit", overflow:false}`. Reduced motion receipt `none`; narrow viewport overflow check `true` (all cards fit). Add-key editor opened; invalid credential was rejected by validation. A disposable saved-key fixture through Harness.setKey rendered `KEY SAVED · NOT VERIFIED`, grid column 2, then was cleared. Eyehold action opened Store. Local evidence: dev/providers-proof.log, dev/providers-desktop.png. Focused existing contracts passed 54 and 26 assertions.
 
 ## Verdict
 
@@ -79,4 +79,4 @@ Implemented on the isolated lane. Full fast gate passed: 771/771 steps. Website 
 
 Before: owner screenshot and baseline renderer place status inside the left selection button, beside a separate action; generic conn-dot replaces provider identity.
 
-After: seeded live DOM finds all 18 logo masks, right edges of action and status within one pixel, no card overflow at desktop or 650px viewport, and KEY SAVED in grid column 2. Reduced motion disables the border orbit. Existing provider contracts pass 80 assertions.
+After: seeded live DOM finds all 18 logo masks, right edges of action and status within one pixel, no card overflow at desktop or 650px viewport, and KEY SAVED in grid column 2. Reduced motion disables the border circuit. Existing provider contracts pass 80 assertions.

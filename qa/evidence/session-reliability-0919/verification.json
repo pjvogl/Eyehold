@@ -161,7 +161,7 @@
     "history": [
       {
         "role": "user",
-        "content": "Remember the launch code: ORBIT-17"
+        "content": "Remember the launch code: CIRCUIT-17"
       },
       {
         "role": "assistant",
@@ -230,7 +230,7 @@
       "history": [
         {
           "role": "user",
-          "content": "Remember the launch code: ORBIT-17"
+          "content": "Remember the launch code: CIRCUIT-17"
         },
         {
           "role": "assistant",
@@ -293,7 +293,7 @@
           "content": "⚠ The reply stream stopped before it finished — Eyehold's local service answered a health check, so the app itself is running; this was the connection carrying the reply. Try again."
         }
       ],
-      "visible": "COMMANDER\nRemember the launch code: ORBIT-17\n⧉\nNOVA\nI have the launch code.\n⧉\nCOMMANDER\nThe destination is Europa.\n⧉\nNOVA\nEuropa is the destination.\n⧉\nCOMMANDER\nChange destination to Titan.\n⧉\nNOVA\nTitan is now the destination.\n⧉\nCOMMANDER\n14:51\nWhat destination did we choose?\n⧉\nNOVA\n14:51\nContinuity checked.\n⧉\nCOMMANDER\n14:51\nStay bound to A while I read B\n⧉\nNOVA\n14:51\nContinuity checked.\n⧉\nCOMMANDER\n14:51\nPreserve this message through a failed restore\n⧉\nNOVA\n14:51\n⚠ Conversation history could not be restored. Your message is kept; try again when the connection returns.\n⧉\nContinuity checked.\n⧉\nCOMMANDER\n14:51\nRetain a partial reply\n⧉\nNOVA\n14:51\nContinuity checked.\n⧉\n⚠ The reply stream stopped before it finished — Eyehold's local service answered a health check, so the app itself is running; this was the connection carrying the reply. Try again.\n⧉\n↻ Try again\n⧉ copy diagnostics for a bug report"
+      "visible": "COMMANDER\nRemember the launch code: CIRCUIT-17\n⧉\nNOVA\nI have the launch code.\n⧉\nCOMMANDER\nThe destination is Europa.\n⧉\nNOVA\nEuropa is the destination.\n⧉\nCOMMANDER\nChange destination to Titan.\n⧉\nNOVA\nTitan is now the destination.\n⧉\nCOMMANDER\n14:51\nWhat destination did we choose?\n⧉\nNOVA\n14:51\nContinuity checked.\n⧉\nCOMMANDER\n14:51\nStay bound to A while I read B\n⧉\nNOVA\n14:51\nContinuity checked.\n⧉\nCOMMANDER\n14:51\nPreserve this message through a failed restore\n⧉\nNOVA\n14:51\n⚠ Conversation history could not be restored. Your message is kept; try again when the connection returns.\n⧉\nContinuity checked.\n⧉\nCOMMANDER\n14:51\nRetain a partial reply\n⧉\nNOVA\n14:51\nContinuity checked.\n⧉\n⚠ The reply stream stopped before it finished — Eyehold's local service answered a health check, so the app itself is running; this was the connection carrying the reply. Try again.\n⧉\n↻ Try again\n⧉ copy diagnostics for a bug report"
     }
   }
 }

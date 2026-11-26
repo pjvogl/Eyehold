@@ -69,7 +69,7 @@ A.eq(turninCalls[0], { agentId: 'agent', runId: 'batch1', id: 'p2', verdict: 'ed
 A.ok(ThreadStore.isExhausted('Rebuild the docs site'), 'an edited idea resolves under its ORIGINAL title fingerprint');
 
 /* ---------- 5. the server refusing is passed through honestly (denylist / duplicate) ---------- */
-const p3 = prop('p3', 'Invented spaceship');
+const p3 = prop('p3', 'Invented carrack');
 turninReply = { ok: true, reason: 'declined' };
 r = await ThreadStore.keep(p3, 'batch1', 'agent', null);
 A.eq(r.reason, 'declined', 'a fingerprint-denylisted keep reports reason:declined (the card must not flash "kept")');

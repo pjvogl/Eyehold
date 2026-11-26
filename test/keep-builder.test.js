@@ -1262,8 +1262,8 @@ for (const c of T.catalog) {
       A.ok(!rs.ok && /Rooms do not resize: remove one and build it again the size it should be\./.test(rs.error), 'a resize says how instead: ' + rs.error);
       const two = SB.planEdit(st.serialize(), { remove: 'GYM', clear: 'LAB' }, E);
       A.ok(!two.ok && /^An edit is one of:/.test(two.error), 'two edits at once are refused');
-      const bad = SB.planEdit(st.serialize(), { refurnish: { room: 'GYM', style: 'spaceship' } }, E);
-      A.ok(!bad.ok && /^There is no room style called "spaceship"\. Styles: lounge, /.test(bad.error), 'an unknown style lists the styles');
+      const bad = SB.planEdit(st.serialize(), { refurnish: { room: 'GYM', style: 'carrack' } }, E);
+      A.ok(!bad.ok && /^There is no room style called "carrack"\. Styles: lounge, /.test(bad.error), 'an unknown style lists the styles');
       A.eq(snapOf(), before, 'no refusal changed anything');
     }
     // refurnish: the furniture is replaced by another style's, floor and walls too, the name follows; lines and seats stay
@@ -1323,8 +1323,8 @@ for (const c of T.catalog) {
       const mine = st.props().filter(p => inR('LOUNGE', p));
       A.eq(mine.length, n0 + 4, 'four pieces stand in the LOUNGE now');
     });
-    const bad = SB.planEdit(st.serialize(), { add: { room: 'GYM', pieces: ['a spaceship'] } }, E);
-    A.ok(!bad.ok && /^There is no piece called "spaceship"\. Pieces include: a couch, /.test(bad.error), 'an unknown piece is refused with what there is');
+    const bad = SB.planEdit(st.serialize(), { add: { room: 'GYM', pieces: ['a carrack'] } }, E);
+    A.ok(!bad.ok && /^There is no piece called "carrack"\. Pieces include: a couch, /.test(bad.error), 'an unknown piece is refused with what there is');
     const mach = SB.planEdit(st.serialize(), { add: { room: 'GYM', pieces: ['an inbox'] } }, E);
     A.ok(!mach.ok && /Workflow machines come with a line\./.test(mach.error), 'a workflow machine is not a piece');
     const many = SB.planEdit(st.serialize(), { add: { room: 'GYM', pieces: ['40 plants', '40 lamps', '40 rugs', 'a tv'] } }, E);

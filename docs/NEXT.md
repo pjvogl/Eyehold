@@ -152,7 +152,7 @@ Implemented in `172acd77e`, with layout and review corrections through `e529f9dc
 
 Live verified on the isolated seed: possibility -> goal -> revised step -> pause/resume ->
 real harness run through brief.proceed/fs.write -> recorded step -> metric update -> explicit
-outcome report -> illuminated star and ORBIT stage. Reaching the metric target alone did not
+outcome report -> illuminated star and CIRCUIT stage. Reaching the metric target alone did not
 finish the goal. Browser and sidecar restarts retained ideas, links, constraints, revisions,
 reflections, and exactly the same outcome receipts. Crew review opened as an editable prompt
 with the reported result explicitly distinguished from independent verification. Export

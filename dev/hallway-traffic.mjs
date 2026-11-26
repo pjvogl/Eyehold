@@ -13,7 +13,7 @@ const hook=`window.__hallwayProof = (width=2, natural=false) => {
   st.placeHallway({rect:{x1:10,y1:11,x2:9+width,y2:19}});
   loadKeep(st); activity='idle'; awakeFrozen=false;chatFocusId=null;
   agent.skin='pikachu';
-  const a=agent,b=makeCrewBody('traffic-fixture','PASSER','#ffffff',0,0,'astronaut');
+  const a=agent,b=makeCrewBody('traffic-fixture','PASSER','#ffffff',0,0,'warden');
   crew.splice(0,crew.length,b);
   const local=(x,y)=>({x:x-geo.origin.tx,y:y-geo.origin.ty});
   const starts=[local(10,15),local(10,19)],ends=[local(10,23),local(10,7)];

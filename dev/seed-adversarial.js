@@ -20,7 +20,7 @@ const CHUNKS = Math.max(1, parseInt(process.env.SKYNET_MOCK_CHUNKS || '200', 10)
 const INTERVAL = Math.max(10, parseInt(process.env.SKYNET_MOCK_INTERVAL_MS || '300', 10) || 300);
 const FIRST_DELAY = Math.max(0, parseInt(process.env.SKYNET_MOCK_FIRST_DELAY_MS || '1200', 10) || 1200);
 
-const WORDS = ['keep', 'telemetry', 'harness', 'truthful', 'orbit', 'module', 'docking', 'crew', 'signal', 'relay'];
+const WORDS = ['keep', 'telemetry', 'harness', 'truthful', 'circuit', 'module', 'docking', 'crew', 'signal', 'relay'];
 
 function startMock() {
   return new Promise(resolve => {

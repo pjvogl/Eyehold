@@ -1313,12 +1313,12 @@
       "state": "crew-commander"
     },
     {
-      "id": "ui/crew/aria-retro-astronaut",
+      "id": "ui/crew/aria-retro-warden",
       "kind": "ui",
       "area": "crew",
-      "name": "Retro Astronaut",
+      "name": "Retro Warden",
       "purpose": "AGENT DOSSIER > BRIEF > CHANGE SKIN \u2014 one skin-picker tile (the aria-<name> button IS a .ag-skin-thumb[data-skin]); clicking it swaps this agent\u2019s genesis skin.",
-      "promise": "Clicking the \"Retro Astronaut\" tile calls World.setSkin so the agent\u2019s floor sprite swaps live, the .sel selected-tile marker moves to it, and the skin persists as a roster property (survives reload).",
+      "promise": "Clicking the \"Retro Warden\" tile calls World.setSkin so the agent\u2019s floor sprite swaps live, the .sel selected-tile marker moves to it, and the skin persists as a roster property (survives reload).",
       "wiring": {
         "files": [
           "frontend/app/keepui.js",
@@ -1347,9 +1347,9 @@
       "firstSeen": "2026-07-18T00:54:02.715Z",
       "lastSeen": "2026-07-18T00:54:02.715Z",
       "missing": false,
-      "selector": "button[aria-label=\"Retro Astronaut\"]",
+      "selector": "button[aria-label=\"Retro Warden\"]",
       "state": "crew-agents",
-      "notes": "Re-proof @ 0a009ec2: skin picker is a 27-tile [data-skin] grid; PROVEN the round-trip (blank -> bear -> reverted to blank; the .sel marker followed each click). This named tile (\"Retro Astronaut\") is present in the live set. PERFECTED (wave-3): machine assertion test/world-setskin.test.js guards the DATA.SKINS catalog + the setSkin/setAgentSkin validate->persist(roster)->re-render wiring; the live sprite round-trip + .sel move were live-proven @0a009ec2 (canvas pixel stays sweep-only). Finding d2121f51 resolved. Ev .uiatlas/crew-perfwave/run1-full.json (skin-picker) + skin-list enumeration."
+      "notes": "Re-proof @ 0a009ec2: skin picker is a 27-tile [data-skin] grid; PROVEN the round-trip (blank -> bear -> reverted to blank; the .sel marker followed each click). This named tile (\"Retro Warden\") is present in the live set. PERFECTED (wave-3): machine assertion test/world-setskin.test.js guards the DATA.SKINS catalog + the setSkin/setAgentSkin validate->persist(roster)->re-render wiring; the live sprite round-trip + .sel move were live-proven @0a009ec2 (canvas pixel stays sweep-only). Finding d2121f51 resolved. Ev .uiatlas/crew-perfwave/run1-full.json (skin-picker) + skin-list enumeration."
     },
     {
       "id": "ui/crew/aria-robot",

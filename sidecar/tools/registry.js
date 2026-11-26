@@ -362,7 +362,7 @@
     return { ctrl, detach };
   }
 
-  /* UNKNOWN TOOL, WITH A WAY OUT (Step 2, Hermes audit 2026-09-22). A bare "unknown tool: launch_rocket" gave a
+  /* UNKNOWN TOOL, WITH A WAY OUT (Step 2, Hermes audit 2026-09-22). A bare "unknown tool: launch_beacon" gave a
      hallucinating model nothing to correct toward, and it asked again — 15 turns in the audit probe. The answer now
      names up to three REAL tools whose names are closest (edit distance over the names this run can actually call:
      ctx.toolNames, the host's advertised + deferred wire names; the registry's own names when absent), or says

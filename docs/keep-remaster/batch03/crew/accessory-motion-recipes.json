@@ -1003,7 +1003,7 @@
           "intentionalStatic": {
             "enabled": true,
             "scope": "Entire figurine, including visor",
-            "rationale": "New art is an unpowered astronaut collectible with dark visor, not an electronic head. The old blinking eye is decorative and intentionally removed."
+            "rationale": "New art is an unpowered warden collectible with dark visor, not an electronic head. The old blinking eye is decorative and intentionally removed."
           },
           "functionalCapabilitiesPreserved": [
             "Optional surface mount and collectible decoration."
@@ -2362,7 +2362,7 @@
           },
           "palette": {
             "canvas": "#d8cfaf",
-            "planet": "#ac683e",
+            "realm": "#ac683e",
             "space": "#607472",
             "wood": "#99703f"
           },

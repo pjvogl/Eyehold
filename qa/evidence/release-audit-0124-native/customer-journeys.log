@@ -364,7 +364,7 @@ session-continuity (48 lifecycle sequences, both shipped trees): OK (48 assertio
   "history": [
     {
       "role": "user",
-      "content": "Remember the launch code: ORBIT-17"
+      "content": "Remember the launch code: CIRCUIT-17"
     },
     {
       "role": "assistant",

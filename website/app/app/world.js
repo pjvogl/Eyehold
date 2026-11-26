@@ -330,7 +330,7 @@ const World = (() => {
     poker: ['no one to bluff', 'the odds hold', 'dealt to empty chairs', 'i fold'],
     vend: ['i dont eat', 'the light is nice', 'row C never drops', 'for the company, then'],
     fridge: ['nothing in it for me', 'it hums back', 'cold and honest', 'still humming'],
-    fish: ['they dont ask me anything', 'small orbits', 'it is restful', 'round and round'],
+    fish: ['they dont ask me anything', 'small circuits', 'it is restful', 'round and round'],
     dj: ['nothing queued', 'the room wants a beat', 'someday, a crowd', 'levels are fine'],
     gacha: ['one more', 'what falls out is chance', 'the capsules are empty', 'i like the sound'],
     locker: ['nothing of mine in here', 'someone elses things', 'all empty', 'closed again'],
@@ -514,7 +514,7 @@ const World = (() => {
     // Speed already eases with alignment. Applying it twice makes every corner drag.
     const step=error>=limit?0:Math.min(d,b.spd*seconds);
     // Arc along the facing only while the leg is long enough to converge on its target; close to a
-    // waypoint (or badly misaligned) the chord wins so a body can never orbit what it is walking to.
+    // waypoint (or badly misaligned) the chord wins so a body can never circuit what it is walking to.
     const arc=!plant&&step>0&&error<CORNER_ARC&&d>ARC_MIN_D+(b.spd||0)/TURN_RATE;
     b._stepDir=arc?{x:Math.cos(b.faceA),y:Math.sin(b.faceA)}:null;
     // Only translation advances the stride. Rotation used to add almost an entire fake cycle.
@@ -4707,7 +4707,7 @@ const World = (() => {
      THE ASK, verbatim: "every so often if the keep is quiet, they will all be gathered into an
      area big group, and then the overseer who is by himself, looking at the agents, and talking in
      his language... they all scatter like cockroaches when the user comes back, and they pretend
-     like everything's normal. That's the whole idea." Reference: the security guard in Planet of the
+     like everything's normal. That's the whole idea." Reference: the security guard in Realm of the
      Apes noticing the apes gathered around their leader.
 
      WHY THIS IS ITS OWN BEAT AND NOT A BIG HUDDLE. The D3 social system is built on one encounter
@@ -4881,7 +4881,7 @@ const World = (() => {
 
   /* gatheringBroken — the scatter trigger, and the beat's most important predicate. ANY of: work
      arriving on any participant, the hero summoned, a live chat stare, or the Commander simply
-     MOVING THE CURSOR. That last one is the Planet of the Apes shot: the guard walks in and the room
+     MOVING THE CURSOR. That last one is the Realm of the Apes shot: the guard walks in and the room
      stops being what it was. */
   function gatheringBroken(now) {
     if (!gathering) return true;

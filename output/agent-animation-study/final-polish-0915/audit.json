@@ -796,8 +796,8 @@
     }
   },
   {
-    "id": "astronaut",
-    "set": "approved_astronaut",
+    "id": "warden",
+    "set": "approved_warden",
     "sourceHeight": 76,
     "frameCounts": {
       "rot.south": 1,

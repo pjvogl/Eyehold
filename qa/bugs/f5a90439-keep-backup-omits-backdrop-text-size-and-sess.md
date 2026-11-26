@@ -31,9 +31,9 @@ making this silent partial restoration especially confusing.
 
 Live before-fix proof on trunk `d107e5ef2`, isolated seeded sidecar :9186:
 
-    SELECT { lighting: 0.62, backdrop: 'galaxy' }
+    SELECT { lighting: 0.62, backdrop: 'realm' }
     EXPORTED settings included roomLighting:'high' but no backdrop/textScale/sessionRow
-    RELOADED { lighting: 0.62, backdrop: 'galaxy' }
+    RELOADED { lighting: 0.62, backdrop: 'realm' }
     RESTORED { lighting: 0.62, backdrop: 'void', message: '✓ imported 6 sections' }
 
 Artifact: `.bugloops/release-ui-audit-0906/release-audit-backup-before.log` in the audit worktree. The production
@@ -51,7 +51,7 @@ This omission predates the newest backdrop redesign and was exposed while auditi
 
 `test/settings-p1-ui.test.js`: before-fix collector assertion fails; after-fix 70/70
 assertions pass, including sky/ground IDs and the other appearance preferences.
-Live export -> change preferences -> import returned `backdrop:'galaxy', zoom:1.3,
+Live export -> change preferences -> import returned `backdrop:'realm', zoom:1.3,
 inbox:true, lighting:0.62`. A real sidecar stop, `node dev/seed.js --keep` restart, and
 page reload retained exactly those values. Evidence: audit artifacts
 `release-audit-backup-all-after.log` and `release-audit-restarted.json`.

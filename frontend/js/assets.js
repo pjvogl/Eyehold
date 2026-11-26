@@ -16,7 +16,7 @@ const SPRITES = (() => {
   const loadedSets = new Set();
   let meta = { minion: { fw: 0, fh: 0 }, ultron: { fw: 0, fh: 0 } };
 
-  /* the crew base is a white space-suit astronaut with glowing CYAN visor eyes
+  /* the crew base is a white space-suit warden with glowing CYAN visor eyes
      (~hue 190). the light suit is ~desaturated so hue-rotate barely shifts it;
      the saturated eyes are what recolor — so each agent's accent color lands on
      the eyes (their identity) while the suit stays a clean premium white. */
@@ -823,7 +823,7 @@ const SPRITES = (() => {
       const man = await resp.json();
       if(typeof SkinStudy!=='undefined')await SkinStudy.install(man);
       tracksBySet = SpriteLoadPlan.groupTracks(man.sprites);
-      // ready when the DEFAULT skin's base pose loaded (the old `minion` astronaut set
+      // ready when the DEFAULT skin's base pose loaded (the old `minion` warden set
       // was retired in favour of DATA.SKINS — gating on it left ready=false forever, so
       // every body fell through to the procedural fallback regardless of picked skin).
       const defSet = (typeof DATA !== 'undefined' && DATA.SKINS && DATA.DEFAULT_SKIN

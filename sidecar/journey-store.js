@@ -21,7 +21,7 @@ const DOMAINS = ['building', 'research', 'writing', 'growth', 'operations', 'cre
 const DOMAIN_SET = new Set(DOMAINS);
 const OUTCOME_KINDS = new Set(['quest', 'milestone', 'metric', 'goal']);
 const TIER_STEPS = [[7, 'proven'], [3, 'practiced'], [1, 'tested']];
-const EVOLUTION_NAMES = ['DRIFT', 'VECTOR', 'ORBIT', 'CONSTELLATION', 'DEEP FIELD'];
+const EVOLUTION_NAMES = ['DRIFT', 'VECTOR', 'CIRCUIT', 'CONSTELLATION', 'DEEP FIELD'];
 const METRIC_CAP = 40, OUTCOME_CAP = 300, RECEIPT_CAP = 100, HISTORY_CAP = 24;
 const AGENT_RE = /^[A-Za-z0-9_-]{1,40}$/;
 

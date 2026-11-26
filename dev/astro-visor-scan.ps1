@@ -1,9 +1,9 @@
 # astro-visor-scan.ps1 — count visor-gold pixels inside the helmet band of every
-# north-ish astronaut frame. The astronaut's suit is orange too, so the scan is
+# north-ish warden frame. The warden's suit is orange too, so the scan is
 # restricted to the HELMET BAND: rows contentTop .. contentTop+bandRows-1.
 # A clean back-of-helmet has zero warm pixels there; any warm pixel = front visor.
 Add-Type -AssemblyName System.Drawing
-$dir = Join-Path $PSScriptRoot "..\frontend\assets\sprites\astronaut"
+$dir = Join-Path $PSScriptRoot "..\frontend\assets\sprites\warden"
 $bandRows = 26   # helmet vertical extent on the 92px master, measured from content top
 
 function Scan($file) {

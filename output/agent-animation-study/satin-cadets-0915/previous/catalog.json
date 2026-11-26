@@ -18,9 +18,9 @@
       "style": "Pixel-shaded faceless messenger figure"
     },
     {
-      "id": "astronaut",
-      "skin": "astronaut",
-      "name": "Astronaut",
+      "id": "warden",
+      "skin": "warden",
+      "name": "Warden",
       "stage": "complete",
       "targetStandingHeight": 19,
       "walkFramesReady": true,
@@ -29,7 +29,7 @@
       "retainedOriginal": false,
       "sourceStandingHeight": 76,
       "readyForKeep": true,
-      "renderSet": "approved_astronaut"
+      "renderSet": "approved_warden"
     },
     {
       "id": "robot",

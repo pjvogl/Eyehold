@@ -1,13 +1,13 @@
 [
   {
-    "id": "astronaut",
-    "skin": "astronaut",
-    "name": "Astronaut",
+    "id": "warden",
+    "skin": "warden",
+    "name": "Warden",
     "stage": "pending",
     "targetStandingHeight": 19,
     "description": "Burnt-orange pressure fabric, smoked glass and a more practical suit silhouette.",
-    "source": "C:/Users/andro/gen-trees/sprite-reimagine-0914/output/agent-animation-study/rollout-20px/astronaut-source.png",
-    "prompt": "Create ONE front-facing full-body game sprite of Astronaut. Identity: Burnt-orange pressure fabric, smoked glass and a more practical suit silhouette.. Reference image defines approved industrial pixel art style and proportions. Match its anatomical head/body ratio and limb lengths exactly for humanoids: compact natural adult build, small head around one fifth total height, shoulders about 40% total height, not chibi and not long skinny legs. Preserve recognizable species and character traits. Crisp angular chunky pixel clusters, broad matte shaded planes, readable details at 19 world pixels tall. Upright standing, subtle overhead head/shoulder tops, feet under hips, relaxed arms. Transparent background. No floor, shadow, text or scene.",
+    "source": "C:/Users/andro/gen-trees/sprite-reimagine-0914/output/agent-animation-study/rollout-20px/warden-source.png",
+    "prompt": "Create ONE front-facing full-body game sprite of Warden. Identity: Burnt-orange pressure fabric, smoked glass and a more practical suit silhouette.. Reference image defines approved industrial pixel art style and proportions. Match its anatomical head/body ratio and limb lengths exactly for humanoids: compact natural adult build, small head around one fifth total height, shoulders about 40% total height, not chibi and not long skinny legs. Preserve recognizable species and character traits. Crisp angular chunky pixel clusters, broad matte shaded planes, readable details at 19 world pixels tall. Upright standing, subtle overhead head/shoulder tops, feet under hips, relaxed arms. Transparent background. No floor, shadow, text or scene.",
     "status": "generated"
   },
   {

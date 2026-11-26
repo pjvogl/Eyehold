@@ -39,7 +39,7 @@ A.eq(Au.atLeast(free, 'reach', 'bogus-level'), false, 'an unknown level is false
 A.eq(Au.setInitiative(Au.fresh(), 'free').initiative, 'free', 'setInitiative applies a valid level');
 A.eq(Au.setInitiative(Au.fresh(), 'ludicrous').initiative, 'propose', 'setInitiative ignores an invalid level');
 A.eq(Au.setReach(Au.fresh(), 'reach').reach, 'reach', 'setReach applies a valid level');
-A.eq(Au.setReach(Au.fresh(), 'orbit').reach, 'sandbox', 'setReach ignores an invalid level');
+A.eq(Au.setReach(Au.fresh(), 'circuit').reach, 'sandbox', 'setReach ignores an invalid level');
 A.eq(Au.setLeash(Au.fresh(), 8).leashPerDay, 8, 'setLeash applies a clamped value');
 A.eq(Au.setLeash(Au.fresh(), 50).leashPerDay, 12, 'setLeash clamps to the max');
 

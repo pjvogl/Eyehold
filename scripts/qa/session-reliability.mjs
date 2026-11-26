@@ -64,7 +64,7 @@ try {
     const delay = ms => new Promise(r => setTimeout(r, ms));
     const a = Workstreams.create('Reliability A', { agentId: 'agent' });
     const b = Workstreams.create('Reliability B', { agentId: 'agent', activate: false });
-    a.history = [{role:'user',content:'Remember the launch code: ORBIT-17',sourceRunId:'seed-run'},
+    a.history = [{role:'user',content:'Remember the launch code: CIRCUIT-17',sourceRunId:'seed-run'},
       {role:'assistant',content:'I have the launch code.',sourceRunId:'seed-run'}];
     const canonical = a.history.concat({role:'user',content:'The destination is Europa.',sourceRunId:'remote-run'},
       {role:'assistant',content:'Europa is the destination.',sourceRunId:'remote-run'});

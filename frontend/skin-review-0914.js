@@ -1,7 +1,7 @@
 'use strict';
 const studies = [
   ['android','blank','Cadet / Android','Ivory ceramic over graphite joints. A compact head and clearer limb construction.'],
-  ['astronaut','astronaut','Astronaut','Burnt-orange pressure fabric, smoked glass and a more practical suit silhouette.'],
+  ['warden','warden','Warden','Burnt-orange pressure fabric, smoked glass and a more practical suit silhouette.'],
   ['robot','robot','Robot','Brushed metal, recessed optics and articulated machinery with less toy-like bulk.'],
   ['crthead','crthead','CRT-head','A smaller phosphor monitor over navy workwear; familiar character, more keep hardware.'],
   ['alien','alien','Alien','Muted sage skin and a fitted utility suit, with a more restrained head-to-body ratio.'],

@@ -17,7 +17,7 @@
      3. THE COMMANDER RETURNING IS AN EXIT, and it is the PRIMARY one — the trigger needs 30 minutes
         of unattended quiet, so the likely end of any gathering is somebody walking back to the desk.
      4. THE OVERSEER BREAKS LAST. Deleting the delay breaks no behaviour a normal test would notice;
-        it just quietly removes the Planet-of-the-Apes shot the whole beat exists for.
+        it just quietly removes the Realm-of-the-Apes shot the whole beat exists for.
 
    Plus the standing product law: the keep must never ACKNOWLEDGE the gathering. No COMMS beat, no
    toast, no event, nothing persisted — a gathering the harness could prove would stop being

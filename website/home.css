@@ -249,8 +249,8 @@
 .sch-models [data-cycle]{ transition:opacity .25s; }
 .sch-models [data-cycle].swap{ opacity:0; }
 /* reach */
-.sch-reach .orbit{ fill:none; stroke:rgba(255,157,47,.22); stroke-dasharray:3 7; transform-box:view-box; transform-origin:240px 150px; animation:hm-sweep 40s linear infinite; }
-.sch-reach .orbit.o2{ animation-direction:reverse; animation-duration:60s; }
+.sch-reach .circuit{ fill:none; stroke:rgba(255,157,47,.22); stroke-dasharray:3 7; transform-box:view-box; transform-origin:240px 150px; animation:hm-sweep 40s linear infinite; }
+.sch-reach .circuit.o2{ animation-direction:reverse; animation-duration:60s; }
 .sch-reach .ray-bg{ stroke:rgba(255,157,47,.2); stroke-width:1; fill:none; }
 .sch-reach .chan circle{ fill:var(--amber); filter:drop-shadow(0 0 5px #ff9d2f); animation:sc-twinkle 2s ease-in-out infinite; }
 .sch-reach .ray{ stroke:var(--amber); stroke-width:1.6; fill:none; stroke-dasharray:16 84; stroke-dashoffset:100; animation:hm-ray 2.5s linear infinite; opacity:.9; }

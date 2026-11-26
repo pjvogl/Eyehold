@@ -56,7 +56,7 @@ Per skin, in order:
 
 | set | source id | set | source id |
 |---|---|---|---|
-| endoskeleton | `e30d1197-5733-40e8-a8d0-319f39aefb22` | astronaut | `c01cab90-a5ce-4733-b7f2-5dc48fbaf50a` |
+| endoskeleton | `e30d1197-5733-40e8-a8d0-319f39aefb22` | warden | `c01cab90-a5ce-4733-b7f2-5dc48fbaf50a` |
 | heisenberg | `99ed62eb-1ac2-4f7f-b7ee-d52054341d3c` | vaultboy | `f9022b14-4dce-4761-a204-391c553b51ee` |
 | robot | `688b77cc-5c2b-423a-afb2-c974242a18c6` | crewmate | `f7214c81-2f8b-4750-a156-6916fc6481f3` |
 | alien | `851b7b25-1597-4c95-825f-22900086e81e` | steve | `ea50696a-4722-4a7b-a3ba-7b6702b319cf` |

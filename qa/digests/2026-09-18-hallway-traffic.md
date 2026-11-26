@@ -19,7 +19,7 @@ clearance checks. New commands cancel the old passing agreement.
   destinations at widths 1, 2 and 4. [Before trace](../evidence/hallway-awareness-0917/before.json).
 - `node dev/hallway-traffic.mjs`: all six original destinations reached, no
   abandoned goals, zero illegal foot segments. The normal rendered animation loop
-  with Pikachu and Retro Astronaut completed both routes over 458 observed frames
+  with Pikachu and Retro Warden completed both routes over 458 observed frames
   with zero wall violations. [After trace](../evidence/hallway-awareness-0917/after.json).
 - Live-tested world source SHA-256:
   `6fe9f101e8650294412f68f66deb925a8127c72a2fc3122000318d6bb022e4c2`.

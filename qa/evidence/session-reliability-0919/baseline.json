@@ -9,7 +9,7 @@
   "history": [
     {
       "role": "user",
-      "content": "Remember the launch code: ORBIT-17"
+      "content": "Remember the launch code: CIRCUIT-17"
     },
     {
       "role": "assistant",
@@ -46,7 +46,7 @@
     "history": [
       {
         "role": "user",
-        "content": "Remember the launch code: ORBIT-17"
+        "content": "Remember the launch code: CIRCUIT-17"
       },
       {
         "role": "assistant",
@@ -77,6 +77,6 @@
         "content": "Continuity checked."
       }
     ],
-    "visible": "COMMANDER\nRemember the launch code: ORBIT-17\n⧉\nNOVA\nI have the launch code.\n⧉\nCOMMANDER\nThe destination is Europa.\n⧉\nNOVA\nEuropa is the destination.\n⧉\nCOMMANDER\nChange destination to Titan.\n⧉\nNOVA\nTitan is now the destination.\n⧉\nCOMMANDER\n14:28\nWhat destination did we choose?\n⧉\nNOVA\n14:28\nContinuity checked.\n⧉"
+    "visible": "COMMANDER\nRemember the launch code: CIRCUIT-17\n⧉\nNOVA\nI have the launch code.\n⧉\nCOMMANDER\nThe destination is Europa.\n⧉\nNOVA\nEuropa is the destination.\n⧉\nCOMMANDER\nChange destination to Titan.\n⧉\nNOVA\nTitan is now the destination.\n⧉\nCOMMANDER\n14:28\nWhat destination did we choose?\n⧉\nNOVA\n14:28\nContinuity checked.\n⧉"
   }
 }

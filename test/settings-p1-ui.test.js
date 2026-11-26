@@ -42,7 +42,7 @@ ok(/function exportState\(/.test(auto) && /function importState\(/.test(auto), '
 const collectStart = ui.indexOf('    const browserSections = () => {');
 const collectEnd = ui.indexOf('    if (exportBtn)', collectStart);
 ok(collectStart >= 0 && collectEnd > collectStart, 'P1-7: browser export collector is located');
-for (const backdrop of ['void', 'galaxy', 'belt', 'moon']) {
+for (const backdrop of ['void', 'realm', 'belt', 'moon']) {
   const settings = { theme: 'green', themeHue: 140, themeSat: 85, themeGlow: 75,
     panelBright: 20, roomLighting: 'high', backdrop, textScale: 115, sessionRow: 'inbox',
     flicker: false, crtGlass: 'off', staticLevel: 45, sound: false, keepComputerAwake: false, notifyPrefs: { sound: false } };

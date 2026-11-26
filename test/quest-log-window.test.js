@@ -156,7 +156,7 @@ A.ok(/\.q-track \{/.test(css) && /\.q-node-now \.q-node-dot/.test(css), 'the tra
 A.ok(/const milestones = rest\.filter/.test(keep) && /<details class="q-milestones\b[^"]*"><summary>/.test(keep), 'lifetime milestones live in a collapsed shelf instead of inflating the current OPEN list');
 /* the payoff: what the path cashes out in. The stage NAME must come from the engine, never a copy of the
    ladder in the frontend — and it must not read as an unlock, because evolution grants nothing. */
-A.ok(/evo\.next/.test(trackFn) && !/DRIFT|VECTOR|ORBIT|CONSTELLATION|DEEP FIELD/.test(trackFn),
+A.ok(/evo\.next/.test(trackFn) && !/DRIFT|VECTOR|CIRCUIT|CONSTELLATION|DEEP FIELD/.test(trackFn),
   'the payoff names the SIDECAR’s next stage (evolution.next) and never hardcodes the ladder in the UI');
 A.ok(/never your tools/.test(trackEmitted), 'the payoff states the expressive-only boundary in the same breath');
 const jstore = read('sidecar/journey-store.js');
