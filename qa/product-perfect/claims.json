@@ -18,7 +18,7 @@
   "expectedClaimCount": 40,
   "releaseSurface": {
     "algorithm": "sha256",
-    "sourceCommit": "86a62986588a11302a09510cf37b339081c1e924",
+    "sourceCommit": "b4e73c456e669c4222818baa524f286a7a348fe6",
     "pathSetSha256": "3d4f57d403d87e8cf5431f038fc44aec0bda972d8d3d1efdae11938c96f49bfc",
     "files": [
       {
@@ -523,8 +523,8 @@
       },
       {
         "path": "frontend/app/eyehold-roles.js",
-        "bytes": 4924,
-        "sha256": "df6f41e335fe6080d98464cda7f08675c913ce19b1d485c068b8bd14199f50c3"
+        "bytes": 5018,
+        "sha256": "90a9722f6cb271c94dc1edfaa7618690c3ed818644b6021a7f4e12b2eb6df5d3"
       },
       {
         "path": "frontend/app/eyehold-room-loot.js",
