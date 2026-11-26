@@ -18,7 +18,7 @@
   "expectedClaimCount": 40,
   "releaseSurface": {
     "algorithm": "sha256",
-    "sourceCommit": "d0d734969fdb624df4e92939e2fd75d7e18eb16f",
+    "sourceCommit": "86a62986588a11302a09510cf37b339081c1e924",
     "pathSetSha256": "3d4f57d403d87e8cf5431f038fc44aec0bda972d8d3d1efdae11938c96f49bfc",
     "files": [
       {
@@ -28,8 +28,8 @@
       },
       {
         "path": "PRIVACY.md",
-        "bytes": 15218,
-        "sha256": "d6ad60355333f70a2c0e436553a324665c1842c27e3c7568b33cdb89f44e52d7"
+        "bytes": 15234,
+        "sha256": "1dd19b2248e2cd04386eaf99c123bfc17c177c064efbebe283b3a14cb228ea49"
       },
       {
         "path": "README.md",
@@ -118,18 +118,18 @@
       },
       {
         "path": "frontend/agent-demo/propsprites.js",
-        "bytes": 797978,
-        "sha256": "f645c36c9865ed85973e147c69e0d0f34951ab7a62eb3b09e5f5832669e85589"
+        "bytes": 797983,
+        "sha256": "de9e7a86a095956b0717186e0a4f90cce3f0ba160664e0309ed94c730e966f58"
       },
       {
         "path": "frontend/agent-demo/review-world.js",
         "bytes": 742385,
-        "sha256": "eb0bbcfc84b8f821677af7128c3ff6bbe454e4a42cc43bd6a5479856fa51afa6"
+        "sha256": "ac92aff755b26fbf2e3fcd3e2a3e4d5d0ed028cde48d9339af9917325c5cad78"
       },
       {
         "path": "frontend/agent-demo/sprites.js",
-        "bytes": 43896,
-        "sha256": "e0366a48a8550722b2408ba36461db0d395230a72c22237b8348a8b0e63aeb03"
+        "bytes": 43890,
+        "sha256": "00764853e31b48a10fdc7d2b8b0968ca5f58e956eb3309381ed0834f35f5db60"
       },
       {
         "path": "frontend/agent-demo/worldsurface.js",
@@ -423,8 +423,8 @@
       },
       {
         "path": "frontend/app/data-shim.js",
-        "bytes": 6347,
-        "sha256": "42e13293e549f38829a8962a2d31e523550bac992caac9d8502ce944c0d92375"
+        "bytes": 6338,
+        "sha256": "4eb378218b972f3a6d2919667e254fcb1169ec1e81546a4a46c0de52f5c41139"
       },
       {
         "path": "frontend/app/datareset.js",
@@ -978,8 +978,8 @@
       },
       {
         "path": "frontend/app/propsprites.js",
-        "bytes": 814272,
-        "sha256": "6933c16be98f4a87dab5fafe78a4a6dd225bcb9469decfebd1d9a9625a995059"
+        "bytes": 814277,
+        "sha256": "0a631aed8cd5f075375148a328e80dd401405033d1d528928d8a0f444380646f"
       },
       {
         "path": "frontend/app/prospect.js",
@@ -1238,8 +1238,8 @@
       },
       {
         "path": "frontend/app/spacebg.js",
-        "bytes": 129083,
-        "sha256": "cc039c34b8f8d0a4367263b185f5745fb9e1f87c0f7906b33c84d381c376c71f"
+        "bytes": 129054,
+        "sha256": "c6a178a15ee56804673acf4e6115c642c5da19856cd2227066766e49e2cbc373"
       },
       {
         "path": "frontend/app/specialties.js",
@@ -1523,8 +1523,8 @@
       },
       {
         "path": "frontend/app/world.js",
-        "bytes": 845407,
-        "sha256": "ca04f2937272bc92131e2330aec55f6bfdb99e71a61bc55d9754d5d8803b7b51"
+        "bytes": 845409,
+        "sha256": "296060ac82c99196c87f85319f375b4ba823c1282ef02c17e0bf2962c9155f49"
       },
       {
         "path": "frontend/app/worldlab.js",
@@ -1583,8 +1583,8 @@
       },
       {
         "path": "frontend/assets/industrial/space-preview.html",
-        "bytes": 5126,
-        "sha256": "61e3b445894c76bcc9423b4cf94ba7825bb0db1ea14b1fc32cd2d4bc81125391"
+        "bytes": 5128,
+        "sha256": "f978edc00af40e90503d758b472046d03ef1b59e8d7d031deb2ee4ca57a1bfc6"
       },
       {
         "path": "frontend/authored-machine-review.html",
@@ -1713,8 +1713,8 @@
       },
       {
         "path": "frontend/css/overseer-setup.css",
-        "bytes": 24689,
-        "sha256": "f5f561afbc895339db98f1ffe23007d3e250c11ba008594c08a1a7deba9739d2"
+        "bytes": 24693,
+        "sha256": "2f2e852189d11b2d4642d2486ac3d1cd4490b21374f3708e327c13f16f0fcf62"
       },
       {
         "path": "frontend/css/panelchrome.css",
@@ -1773,8 +1773,8 @@
       },
       {
         "path": "frontend/css/settings.css",
-        "bytes": 18841,
-        "sha256": "d267d1bd5f3052509b2eea9e929cb69bb698c805b90ea01ddd98b7310e27256b"
+        "bytes": 18843,
+        "sha256": "a208317aede6ab4c8fed8fbc81df382cf0a7ced6f410161f0b75b6c4c3220484"
       },
       {
         "path": "frontend/css/stepin.css",
@@ -1898,8 +1898,8 @@
       },
       {
         "path": "frontend/js/assets.js",
-        "bytes": 52564,
-        "sha256": "578556d14536cea361789d5f69c8a5110713e283f75c88af16eb1df10c0b6a4f"
+        "bytes": 52558,
+        "sha256": "a765e7b0e286dcb81db35da40a3571be7e62bb7821aa600501ef708632291375"
       },
       {
         "path": "frontend/js/audio.js",
@@ -1983,8 +1983,8 @@
       },
       {
         "path": "frontend/skin-review-0914.js",
-        "bytes": 8733,
-        "sha256": "d52b6e629f7fd577d725c61c0547adb64a4c4bcfb56ad733bc4915c7c82e5b30"
+        "bytes": 8724,
+        "sha256": "dd630aa7e5dae9a7d1f44b896690367f8d8ccd334704c9cb95b8c5f5c2be6810"
       }
     ]
   },
